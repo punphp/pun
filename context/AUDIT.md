@@ -203,25 +203,25 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 37. `crates/pun-format/src/php_parser.rs:440-442` copies the reduction's right-hand side with `.to_vec()` on
   every grammar reduction of every linted file; `values` is a local, so `&values[values.len() - len..]` works. Hot
   path; removes an allocation. Fixed in 2cb0bbf.
-- [ ] 38. `crates/pun-fixers/src/analyzers/preg.rs`: seven `unsafe` blocks (`:43`, `:54`, `:93`, `:182-239`, `:244`,
+- [x] 38. `crates/pun-fixers/src/analyzers/preg.rs`: seven `unsafe` blocks (`:43`, `:54`, `:93`, `:182-239`, `:244`,
   `:268`, `:285`) with no `// SAFETY:` (clippy `undocumented_unsafe_blocks`), the 58-line block at `:182` mixes safe
   code with FFI, `Matcher::new` never checks the two `*_create` calls for NULL, and the `!Send` invariant of `Regex`
   is implicit. Add SAFETY comments, shrink the blocks to the FFI calls, return `Option` on NULL, and make `!Send`
-  explicit.
-- [ ] 39. `crates/pun-fixers/src/analyzers/docblock/tag.rs:10,21-34` and `annotation.rs:36-37,91-99,172-192` cache
+  explicit. Confirmed at 74e2937 by reading: no SAFETY comments, unchecked `*_create` results. Each `unsafe` now holds one FFI call with a `// SAFETY:` comment, `Code` owns the compiled pattern, `Matcher::new` returns `None` when a `*_create` call returns NULL (freeing the other), and `tests::regex_is_not_send` fails to compile if `Regex` becomes `Send`. Fixed in wf/audit-fixers-perf.
+- [x] 39. `crates/pun-fixers/src/analyzers/docblock/tag.rs:10,21-34` and `annotation.rs:36-37,91-99,172-192` cache
   in `RefCell<Option<Vec<u8>>>` and clone on every read; `support_types` calls `get_name` 18 times per annotation,
   so phpdoc_types and phpdoc_scalar clone up to ~37 vectors per annotation. Use `OnceCell` and return slices.
-  Hot path.
-- [ ] 40. `crates/pun-fixers/src/analyzers/switch_analyzer.rs:6-40` byte-compares the whole file on every
+  Hot path. Confirmed at 74e2937. `Tag::get_name` is a `OnceCell` returning `&[u8]`, so `support_types` reads the name once instead of cloning it per tag. The `Annotation` type caches stay `RefCell`s: `set_types`/`remove` clear them through `&self` (annotations are borrowed from `DocBlock`'s `OnceCell`), so they still clone once per read. Fixed in wf/audit-fixers-perf.
+- [x] 40. `crates/pun-fixers/src/analyzers/switch_analyzer.rs:6-40` byte-compares the whole file on every
   `belongs_to_switch` call from `ternary_operator_spaces.rs:34`'s per-`?`/`:` loop (O(tokens × colons)) and keeps a
-  copy of the last file per rayon thread. Cache the colon indices on `Tokens`, invalidated on change. Spans crates.
-- [ ] 41. `crates/pun-fixers/src/analyzers/preg.rs:89-105`, `:494-503`: the per-thread pattern caches never evict,
+  copy of the last file per rayon thread. Cache the colon indices on `Tokens`, invalidated on change. Spans crates. Confirmed at 74e2937 (`same_code` walks every token per `?`/`:`). `Tokens::switch_colon_indices` caches the sorted indices until the next edit, like `namespace_declarations` (dropped together in `drop_derived`); `belongs_to_switch` binary-searches them. Test: `tokens::tests::derived_values_cached_until_changed`. Fixed in wf/audit-fixers-perf.
+- [x] 41. `crates/pun-fixers/src/analyzers/preg.rs:89-105`, `:494-503`: the per-thread pattern caches never evict,
   and `docblock/annotation.rs:77-88`, `:126-131` build patterns from docblock content, so memory grows with the
-  number of distinct `@param` types in a project. Add an uncached entry point for content-built patterns.
-- [ ] 42. `crates/pun-fixers/src/analyzers/preg.rs:534-573`: the `flags` argument of `match_groups`, `match_at` and
+  number of distinct `@param` types in a project. Add an uncached entry point for content-built patterns. Confirmed at 74e2937. `Preg::match_groups_uncached` / `replace_limit_uncached` compile for the call only; `Annotation::get_variable_name` and `set_types` use them. Test: `preg::tests::uncached_patterns_are_not_kept` (values from PHP). Fixed in wf/audit-fixers-perf.
+- [x] 42. `crates/pun-fixers/src/analyzers/preg.rs:534-573`: the `flags` argument of `match_groups`, `match_at` and
   `match_all` is dropped as `_flags` at all 48 call sites, including the one `PREG_OFFSET_CAPTURE`
-  (`global_namespace_import.rs:489`). Remove Parameter.
-- [ ] 43. Enum-valued fixer options are kept as `String` and compared in `fix()`, some per token:
+  (`global_namespace_import.rs:489`). Remove Parameter. Confirmed at 74e2937 (48 call sites, all dropped). Removed the parameter and `PREG_OFFSET_CAPTURE`. Fixed in wf/audit-fixers-perf.
+- [x] 43. Enum-valued fixer options are kept as `String` and compared in `fix()`, some per token:
   `braces_position.rs:19-28,77-85` (five fields looked up by name through a catch-all `_` arm),
   `align_multiline_comment.rs:13`, `cast_spaces.rs:10,56`, `concat_space.rs:10,80`,
   `class_attributes_separation.rs:22,64,167-177,398-426`, `method_argument_space.rs:14,16,252`,
@@ -229,11 +229,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `no_trailing_comma_in_singleline.rs:13,79-81`, `modifier_keywords.rs:40,59-70` (despite `ClassyElementType`),
   `no_unneeded_control_parentheses.rs:10,72-81`, `ordered_imports.rs:43` and `analyzers/import_processor.rs:10`
   (despite `NamespaceUseType`). A typo in a literal compiles and disables a branch. Parse once in `configure` into
-  enums; siblings like `declare_strict_types::Strategy` already do.
-- [ ] 44. Per-token lowercasing before checking: `native_type_declaration_casing.rs:51` (every token),
+  enums; siblings like `declare_strict_types::Strategy` already do. Confirmed at 74e2937. `Resolved::choice`/`choices` map an allowed value to its variant, keeping upstream's order for the error message; every listed option is an enum now (`class_attributes_separation` and `modifier_keywords` use `ClassyElementType`, `ordered_imports` and `ImportProcessor` use `NamespaceUseType`, `ordered_imports` `sort_algorithm` drops its `_` arm). New oracle error cases in `tests/cases/{cast_spaces,concat_space,modifier_keywords,no_spaces_around_offset,ordered_imports}.json`. Fixed in wf/audit-fixers-perf.
+- [x] 44. Per-token lowercasing before checking: `native_type_declaration_casing.rs:51` (every token),
   `lowercase_keywords.rs:27`, `lowercase_cast.rs:29`, `no_alias_functions.rs:99`, `mb_str_functions.rs:65`. All but
   the last are in the Laravel preset. Test with `eq_ignore_ascii_case` / "has uppercase" first and allocate only on
-  rewrite. Hot path.
+  rewrite. Hot path. Confirmed at 74e2937. Each checks for an ASCII uppercase byte (or compares with `eq_ignore_ascii_case`) first and lowercases only for the rewrite. Fixed in wf/audit-fixers-perf.
 - [x] 45. Pipelines are built far more often than needed: `crates/pun-format/src/lib.rs:214` calls `factory()` (all
   ~175 fixers) once per enabled rule, and `pint_laravel_blade/php_block_formatting.rs:57-79` builds one or two
   full-preset pipelines per Blade file, re-parsing the preset and swallowing errors (`unwrap_or_default()`, `.ok()`).
@@ -321,8 +321,8 @@ items marked "not checked against Pint" still need one oracle run before the fix
   (`OMap`), `global_namespace_import.rs:43-63`, `lambda_not_used_import.rs:10-21`, `ordered_class_elements.rs:189-200`,
   `no_extra_blank_lines.rs:299-305`, `ordered_imports.rs:268-273`. `indexmap` is already a workspace dependency; keep
   order-sensitive equality with `iter().eq`.
-- [ ] 61. `Preg` and `RawPreg` repeat the match, match-all and replace loops (`preg.rs:550-555` vs `829-834`,
-  `566-572` vs `845-851`, `632-646` vs `862-874`). Extract Method on `Regex`.
+- [x] 61. `Preg` and `RawPreg` repeat the match, match-all and replace loops (`preg.rs:550-555` vs `829-834`,
+  `566-572` vs `845-851`, `632-646` vs `862-874`). Extract Method on `Regex`. Confirmed at 74e2937. `Regex::captures_at`, `captures_all` and `replace_with` hold the loops; both `Preg` and `RawPreg` call them. Fixed in wf/audit-fixers-perf.
 - [x] 62. Option defaults are written in both `fixer()` and `configure()` in about 24 fixers (for example
   `increment_style.rs:14/35`, `ordered_imports.rs:31-33/72-110`, `yoda_style.rs:27/48-50`,
   `trailing_comma_in_multiline.rs:20-23/43`), while `phpdoc_align`, `method_argument_space` and others call
@@ -440,14 +440,14 @@ items marked "not checked against Pint" still need one oracle run before the fix
   together.
 - [x] 84. `crates/pun-fixers/src/fixers/final_class.rs:3` imports `final_internal_class`, the only fixer-to-fixer
   import, so `PUN_FIXERS_ONLY=final_class` fails to build. Move the shared core into `analyzers/`. Fixed in edb08b1.
-- [ ] 85. Per-token clones and pre-check work on Laravel-preset paths: `braces_position.rs:148`,
+- [x] 85. Per-token clones and pre-check work on Laravel-preset paths: `braces_position.rs:148`,
   `array_indentation.rs:85`, `no_alternative_syntax.rs:38`, `method_argument_space.rs:404-405`,
   `multiline_whitespace_before_semicolons.rs:136-137` (also computes an unused indent per `;`),
   `no_trailing_whitespace_in_comment.rs:30`, `binary_operator_spaces.rs:280-281,411`; `Vec`s built in `is_candidate`
   (`magic_constant_casing.rs:33-34`, `no_spaces_after_function_name.rs:47-49`); sort keys recomputed per comparison
   (`ordered_imports.rs:166-189`, `ordered_traits.rs:265-285`); a regex rebuilt per comment (`no_break_comment.rs:166-175`)
   and per parse (`type_expression.rs:267-273`); `insert_slices` splicing back to front (`tokens.rs:625-628`); and
-  `woc_ends` quadratic in a whitespace run (`lexer.rs:360-412`). Borrow the token, copy its id, or compute once.
+  `woc_ends` quadratic in a whitespace run (`lexer.rs:360-412`). Borrow the token, copy its id, or compute once. Confirmed at 74e2937 (all sites still there). Borrowed or copied the kind instead of cloning, `multiline_whitespace_before_semicolons` finds the indent only for chained calls, the `is_candidate` `Vec`s are gone, `ordered_imports`/`ordered_traits` compute each sort key once, `no_break_comment` builds its pattern in `configure`, `type_expression` keeps its three prefixed patterns in `LazyLock`s, `insert_slices` rebuilds in one pass and `woc_ends` tracks seen ends in a `HashSet`. Group 38-44/61/85, `pun check --test --no-cache` with the Laravel preset on laravel-framework (HEAVY_EXCLUSIVE, profiling build, median of 7): 1.966 s before, 1.829 s after; harness 0 differing files on pinkary, pinkary-dirty, laravel-framework and laravel-framework `--preset laravel`. Fixed in wf/audit-fixers-perf.
 - [x] 86. `crates/pun-tokens/src/tokens.rs:42`, `kind.rs:234` and `pun-fixers/src/analyzers/preg.rs:14` carry
   `allow(non_upper_case_globals)` that suppresses nothing; nine `allow`s have no reason (clippy
   `allow_attributes_without_reason`). Delete them or switch to `#[expect(.., reason = ..)]`. Reproduced: the three
