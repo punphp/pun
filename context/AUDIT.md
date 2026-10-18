@@ -256,7 +256,8 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `FixSafety`) and build error lists from them. Spans crates.
 - [ ] 52. Unreadable files are treated as missing: `crates/pun-config/src/composer.rs:124-126` skips the PHP 8.4 gate
   on any read error, and `crates/pun-analyse/src/codebase.rs:36` with `rules/mod.rs:204-206` reports nothing for an
-  unreadable file. Treat only `ErrorKind::NotFound` as absent and propagate the rest with the path.
+  unreadable file. Treat only `ErrorKind::NotFound` as absent and propagate the rest with the path. The
+  `composer.rs` part (reproduced with a directory named composer.json) is fixed in wf/audit-config.
 - [ ] 53. The PHP target version has six representations: `Config.php: String`, `(u64, u64)` in
   `pun-config/src/schema.rs:220,264`, `composer::Version`, `constraint::V` (bridged by `From`), and `u32` ids in
   `pun-lint/src/lib.rs:28,136` and `pun-analyse/src/project.rs:21`. One `PhpVersion` in pun-config with `FromStr`,

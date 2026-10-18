@@ -73,8 +73,8 @@ impl Composer {
     }
 }
 
-/// Reads `root/composer.json` and `root/composer.lock`. A missing file is not an error; invalid JSON or an
-/// unparsable `require.php` is.
+/// Reads `root/composer.json` and `root/composer.lock`. A missing file is not an error; an unreadable one, invalid
+/// JSON or an unparsable `require.php` is.
 pub fn detect(root: &Path) -> Result<Composer> {
     let mut out = Composer::default();
     out.php = php_require(root, &mut out.sources)?;
@@ -121,8 +121,9 @@ pub(crate) fn php_require(root: &Path, sources: &mut Vec<PathBuf>) -> Result<Opt
 }
 
 fn read(path: &Path, sources: &mut Vec<PathBuf>) -> Result<Option<Value>> {
-    let Ok(bytes) = std::fs::read(path) else {
-        return Ok(None);
+    let bytes = match std::fs::read(path) {
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        r => r.with_context(|| format!("cannot read {}", path.display()))?,
     };
     let v =
         serde_json::from_slice(&bytes).with_context(|| format!("invalid {}", path.display()))?;
@@ -351,5 +352,13 @@ mod tests {
             e(&[("composer.json", r#"{"require":{"php":">="}}"#)])
                 .starts_with("invalid constraint `>=`: ")
         );
+        // A file that is there but can't be read is not a missing one: the PHP 8.4 gate would be skipped.
+        for name in ["composer.json", "composer.lock"] {
+            let d = dir(&[]);
+            std::fs::create_dir(d.join(name)).unwrap();
+            let e = format!("{:#}", detect(&d).unwrap_err());
+            let want = format!("cannot read {}: ", d.join(name).display());
+            assert!(e.starts_with(&want), "{e}");
+        }
     }
 }
