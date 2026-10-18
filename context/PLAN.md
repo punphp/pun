@@ -192,7 +192,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | --- | --- |
 | output follow-up: add a warning text token to design/tokens.json that reads on a light ground (light terminals fall back to SGR 33) | todo |
 | output follow-up: decide the rule docs base URL so `Renderer::with_rule_docs` (now `#[cfg(test)]`, drop that) links rule IDs, and switch `pun explain`'s docs row from the mapping.toml#L<line> link (`pun_config::MAPPING_URL`) to the rule page | todo |
-| output 5: `pun check` grouped view | todo |
+| output 5: `pun check` grouped view (deferred, Pushpak 2026-10-18: parity starts without it; when built, add a row to put the analyse step in the view) | deferred |
 | output follow-up: when lint and analyse emit `pun_problem::Problem` values, annotate them through `github::problem` (`::warning` for lint warnings); analyse decides whether to drop `title=` for byte parity with PHPStan's `--error-format=github` | todo |
 | output follow-up (decision): under agent mode with `--format=github`, should run errors print `::error ::<message>` instead of the agent line | todo |
 | output follow-up: re-run scripts/coverage.sh punphp after output 4 and 6 once the gpgsign and BSD-script test rows land, and refresh reports/COVERAGE.md (its 2302-line baseline is stale) | todo |
