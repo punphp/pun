@@ -245,10 +245,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   state, the per-file driver, Mago type inference, guard bookkeeping (split with `scope.rs`) and reflection; the trait
   context is three fields that must change together (`:138-145`). Move Function into `driver.rs`, `infer.rs`,
   `reflection.rs` and `scope.rs`, and replace the three fields with `Option<TraitContext>`.
-- [ ] 50. `rules/mapping.toml` is parsed by slicing its text in eight places (`crates/pun-config/src/lib.rs:146-151,
+- [x] 50. `rules/mapping.toml` is parsed by slicing its text in eight places (`crates/pun-config/src/lib.rs:146-151,
   339-341, 371-376`, `schema.rs:272-273`, `options.rs:61-63`, `explain.rs:53-55, 117-121, 126-127`), each depending on
   section order and on no value line starting with `[`. Extract Function `section(name)` with one lazily parsed value
-  per section.
+  per section. `crates/pun-config/src/mapping.rs` splits the file at the lines TOML reads as headers. Fixed in
+  wf/audit-config.
 - [ ] 51. Presets, ecosystems and fix safety are strings matched in several places: `pun-config/src/lib.rs:28-51,
   236-243`, `migrate.rs:194-198`, `schema.rs:25-33, 511, 581, 597, 226-233, 256` (`Gates::locked("doctrine")` falls
   through to PHPUnit), and `RuleMeta.fix` compared as `== "safe"` in `pun-cli/src/report.rs:398` although

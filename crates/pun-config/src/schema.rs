@@ -269,12 +269,8 @@ pub(crate) fn version(v: &str) -> Option<(u64, u64)> {
 /// The group list of mapping.toml (`[meta.groups]`).
 fn groups() -> &'static Vec<String> {
     static T: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
-        let body = crate::MAPPING.split_once("[meta.groups]\n").unwrap().1;
-        let body = body.split("\n[").next().unwrap();
-        toml::from_str::<toml::Table>(body)
-            .unwrap()
-            .into_iter()
-            .map(|(k, _)| k)
+        (crate::mapping::section(&["meta", "groups"]).table().keys())
+            .cloned()
             .collect()
     });
     &T

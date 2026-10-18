@@ -6,6 +6,7 @@
 pub mod composer;
 mod constraint;
 mod explain;
+mod mapping;
 pub mod migrate;
 pub mod options;
 mod schema;
@@ -152,17 +153,13 @@ struct PunFormat {
     rules: toml::Table,
 }
 
-/// `[upstream.php-cs-fixer]`, `[upstream.pint]` and `[upstream.pun]` of rules/mapping.toml: fixer => entry. Only
-/// these sections are parsed: every `pun format` run needs them, the rest of the file is ten times bigger.
+/// `[upstream.php-cs-fixer]`, `[upstream.pint]` and `[upstream.pun]` of rules/mapping.toml: fixer => entry. Every
+/// `pun format` run needs them, and only them.
 pub fn fixer_entries() -> &'static toml::Table {
     static T: LazyLock<toml::Table> = LazyLock::new(|| {
         let mut out = toml::Table::new();
         for tool in ["php-cs-fixer", "pint", "pun"] {
-            let head = format!("[upstream.{tool}]\n");
-            let body = MAPPING.split_once(&head).expect("mapping section").1;
-            let body = body.split("\n[").next().unwrap();
-            let entries = toml::from_str::<toml::Table>(body).expect("mapping.toml");
-            out.extend(entries);
+            out.extend(mapping::section(&["upstream", tool]).table().clone());
         }
         out
     });
@@ -356,15 +353,14 @@ fn renamed(name: &str) -> Option<&'static str> {
 fn upstream() -> &'static Vec<(String, &'static str)> {
     static T: LazyLock<Vec<(String, &'static str)>> = LazyLock::new(|| {
         let mut out = vec![];
-        for part in MAPPING.split("\n[upstream.").skip(1) {
-            let body = part.split_once("]\n").unwrap().1;
-            for (k, e) in toml::from_str::<toml::Table>(body).unwrap() {
+        for (_, s) in mapping::under("upstream") {
+            for (k, e) in s.table() {
                 if let Some(id) = e.get("pun").and_then(toml::Value::as_str) {
                     let id = rules()
                         .iter()
                         .find(|(r, _)| r == id)
                         .map(|(r, _)| r.as_str());
-                    out.extend(id.map(|id| (k, id)));
+                    out.extend(id.map(|id| (k.clone(), id)));
                 }
             }
         }
@@ -388,15 +384,8 @@ fn rules() -> &'static Vec<(String, toml::Value)> {
         ["format", "lint", "analyse"]
             .iter()
             .flat_map(|c| {
-                let body = MAPPING
-                    .split_once(&format!("[rules.{c}]\n"))
-                    .expect("mapping section")
-                    .1;
-                let rules =
-                    toml::from_str::<toml::Table>(body.split("\n[").next().unwrap()).unwrap();
-                rules
-                    .into_iter()
-                    .map(move |(rule, e)| (format!("{c}/{rule}"), e))
+                (mapping::section(&["rules", c]).table().iter())
+                    .map(move |(rule, e)| (format!("{c}/{rule}"), e.clone()))
             })
             .collect()
     });

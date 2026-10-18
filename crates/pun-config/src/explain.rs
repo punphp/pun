@@ -1,7 +1,7 @@
 //! `pun explain <rule>`: a rule's summary, group, sets, fix safety, upstream names and docs link, all from
 //! rules/mapping.toml (context/plan/config.md Build 8).
 
-use crate::{MAPPING, renamed, rules};
+use crate::{mapping, renamed, rules};
 use anyhow::{Result, bail};
 use std::fmt::Write;
 
@@ -50,11 +50,9 @@ fn is_rule(id: &str) -> bool {
 /// Every `[upstream.<tool>]` entry, in file order: (tool, upstream key, entry).
 fn entries() -> Vec<(String, String, toml::Value)> {
     let mut out = vec![];
-    for part in MAPPING.split("\n[upstream.").skip(1) {
-        let (tool, body) = part.split_once("]\n").unwrap();
-        let body = body.split("\n[").next().unwrap();
-        for (k, e) in toml::from_str::<toml::Table>(body).unwrap() {
-            out.push((tool.to_string(), k, e));
+    for (tool, s) in mapping::under("upstream") {
+        for (k, e) in s.table() {
+            out.push((tool.to_string(), k.clone(), e.clone()));
         }
     }
     out
@@ -115,15 +113,11 @@ fn text(id: &str) -> String {
 
 /// The 1-based line of `"<group>/<name>" = ` in `[rules.<command>]` of mapping.toml.
 fn line(command: &str, key: &str) -> usize {
-    let head = format!("[rules.{command}]\n");
-    let start = MAPPING.find(&head).unwrap();
-    let at = start + MAPPING[start..].find(&format!("\n\"{key}\" = ")).unwrap() + 1;
-    MAPPING[..at].matches('\n').count() + 1
+    mapping::section(&["rules", command]).line_of(key).unwrap()
 }
 
 /// A group's one-line description from `[meta.groups]`.
 fn group_description(group: &str) -> String {
-    let body = MAPPING.split_once("[meta.groups]\n").unwrap().1;
-    let groups: toml::Table = toml::from_str(body.split("\n[").next().unwrap()).unwrap();
+    let groups = mapping::section(&["meta", "groups"]).table();
     groups[group].as_str().unwrap().to_string()
 }

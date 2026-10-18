@@ -3,7 +3,7 @@
 //! behind the rule (`to_fixer`), and a fixer's options back to pun.toml's spelling (`to_pun`) for `pun migrate` and
 //! `pun config`.
 
-use crate::MAPPING;
+use crate::mapping;
 use anyhow::{Result, anyhow, bail};
 use serde_json::{Map, Value};
 use std::sync::LazyLock;
@@ -59,10 +59,6 @@ const KINDS: [(&str, Kind); 8] = [
 /// Every `[options."<rule ID>"]` table of rules/mapping.toml.
 fn all() -> &'static Vec<(String, Vec<RuleOption>)> {
     static T: LazyLock<Vec<(String, Vec<RuleOption>)>> = LazyLock::new(|| {
-        let start = MAPPING.find("\n[options.").expect("mapping options");
-        let end = MAPPING.find("\n[upstream.").unwrap();
-        let t = toml::from_str::<toml::Table>(&MAPPING[start..end]).expect("mapping.toml");
-        let rules = t["options"].as_table().unwrap();
         let pairs = |e: &toml::Value, k: &str| -> Vec<(String, String)> {
             (e.get(k)
                 .and_then(toml::Value::as_table)
@@ -71,10 +67,9 @@ fn all() -> &'static Vec<(String, Vec<RuleOption>)> {
             .map(|(p, u)| (p.clone(), u.as_str().unwrap().to_string()))
             .collect()
         };
-        rules
-            .iter()
+        mapping::under("options")
             .map(|(id, opts)| {
-                let opts = (opts.as_table().unwrap().iter())
+                let opts = (opts.table().iter())
                     .map(|(name, e)| {
                         let s = |k: &str| e.get(k).and_then(toml::Value::as_str).map(String::from);
                         RuleOption {
@@ -92,7 +87,7 @@ fn all() -> &'static Vec<(String, Vec<RuleOption>)> {
                         }
                     })
                     .collect();
-                (id.clone(), opts)
+                (id.to_string(), opts)
             })
             .collect()
     });
