@@ -1,0 +1,298 @@
+{
+    "fixer": "set_type_to_cast",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\SetTypeToCastFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/SetTypeToCastFixerTest.php",
+    "case_count": 36,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\SetTypeToCastFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "null cast",
+                    "args": [
+                        "<?php $foo = null;",
+                        "<?php settype($foo, \"null\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "null cast comments",
+                    "args": [
+                        "<?php\n# 0\n$foo = null# 1\n# 2\n# 3\n# 4\n# 5\n# 6\n# 7\n# 8\n# 9\n# 10\n;",
+                        "<?php\n# 0\nsettype# 1\n# 2\n(# 3\n# 4\n$foo# 5\n# 6\n,# 7\n# 8\n\"null\"# 9\n)# 10\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array + spacing",
+                    "args": [
+                        "<?php $foo = (array) $foo;",
+                        "<?php settype  (  $foo  , 'array');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bool + casing",
+                    "args": [
+                        "<?php $foo = (bool) $foo;",
+                        "<?php settype  (  $foo  , \"Bool\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "boolean with extra space",
+                    "args": [
+                        "<?php $foo = (bool) $foo;",
+                        "<?php settype  (  $foo  , \"boolean\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double",
+                    "args": [
+                        "<?php $foo = (float) $foo;",
+                        "<?php settype($foo, \"double\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "float",
+                    "args": [
+                        "<?php $foo = (float) $foo;",
+                        "<?php settype($foo, \"float\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "float in loop",
+                    "args": [
+                        "<?php while(a()){$foo = (float) $foo;}",
+                        "<?php while(a()){settype($foo, \"float\");}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "int full caps",
+                    "args": [
+                        "<?php $foo = (int) $foo;",
+                        "<?php settype($foo, \"INT\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "integer (simple)",
+                    "args": [
+                        "<?php $foo = (int) $foo;",
+                        "<?php settype($foo, \"integer\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "object",
+                    "args": [
+                        "<?php echo 1; $foo = (object) $foo;",
+                        "<?php echo 1; settype($foo, \"object\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "string",
+                    "args": [
+                        "<?php $foo = (string) $foo;",
+                        "<?php settype($foo, \"string\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "string in function body",
+                    "args": [
+                        "<?php function A(){ $foo = (string) $foo; return $foo; }",
+                        "<?php function A(){ settype($foo, \"string\"); return $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "integer + no space",
+                    "args": [
+                        "<?php $foo = (int) $foo;",
+                        "<?php settype($foo,\"integer\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no space comments",
+                    "args": [
+                        "<?php /*0*//*1*/$foo = (int) $foo/*2*//*3*//*4*//*5*//*6*//*7*/;/*8*/",
+                        "<?php /*0*//*1*/settype/*2*/(/*3*/$foo/*4*/,/*5*/\"integer\"/*6*/)/*7*/;/*8*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments with line breaks",
+                    "args": [
+                        "<?php #0\n#1\n$foo = (int) $foo#2\n#3\n#4\n#5\n#6\n#7\n#8\n;#9",
+                        "<?php #0\n#1\nsettype#2\n#3\n(#4\n$foo#5\n,#6\n\"integer\"#7\n)#8\n;#9"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "first argument is not a variable",
+                    "args": [
+                        "<?php\n                    namespace A\\B;             // comment\n                    function settype($a, $b){} // \"\n\n                    settype(1, \"double\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "first argument is variable followed by operation",
+                    "args": [
+                        "<?php\n                    namespace A\\B;                // comment\n                    function settype($a, $b){}    // \"\n\n                    settype($foo + 1, \"integer\"); // function must be overridden, so do not fix it\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrong numbers of arguments",
+                    "args": [
+                        "<?php settype($foo, \"integer\", $a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "other namespace I",
+                    "args": [
+                        "<?php a\\b\\settype($foo, \"integer\", $a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "other namespace II",
+                    "args": [
+                        "<?php \\b\\settype($foo, \"integer\", $a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static call",
+                    "args": [
+                        "<?php A::settype($foo, \"integer\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "member call",
+                    "args": [
+                        "<?php $a->settype($foo, \"integer\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unknown type",
+                    "args": [
+                        "<?php $a->settype($foo, \"foo\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return value used I",
+                    "args": [
+                        "<?php $a = settype($foo, \"integer\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return value used II",
+                    "args": [
+                        "<?php a(settype($foo, \"integer\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return value used III",
+                    "args": [
+                        "<?php $a = \"123\"; $b = [settype($a, \"integer\")];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return value used IV",
+                    "args": [
+                        "<?php $a = \"123\"; $b = [3 => settype($a, \"integer\")];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return value used V",
+                    "args": [
+                        "<?= settype($foo, \"object\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped statements, fixable after removing the useless parenthesis brace",
+                    "args": [
+                        "<?php\n                    settype(/*1*//*2*/($a), 'int');\n                    settype($b, ('int'));\n                    settype(($c), ('int'));\n                    settype((($d)), (('int')));\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped statements, not-fixable, even after removing the useless parenthesis brace",
+                    "args": [
+                        "<?php\n                    namespace A\\B;                // comment\n                    function settype($a, $b){}    // \"\n\n                    settype($foo1, ((\"integer\").\"1\"));\n                    settype($foo2, (\"1\".(\"integer\")));\n                    settype($foo3, (((\"integer\").\"1\")));\n                    settype((($foo)+1), \"integer\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested is not an issue for this fixer, as these non may be fixed",
+                    "args": [
+                        "<?php\n                    settype($foo, settype($foo, \"double\"));\n                    settype(settype($foo, \"double\"), \"double\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unknown type II",
+                    "args": [
+                        "<?php settype($foo, \"stringX\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "boolean",
+                    "args": [
+                        "<?php $foo = (bool) $foo;",
+                        "<?php settype($foo, \"boolean\", );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments with line breaks II",
+                    "args": [
+                        "<?php #0\n#1\n$foo = (int) $foo#2\n#3\n#4\n#5\n#6\n#7\n#8\n#9\n;#10",
+                        "<?php #0\n#1\nsettype#2\n#3\n(#4\n$foo#5\n,#6\n\"integer\"#7\n,#8\n)#9\n;#10"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "first argument is complex statement",
+                    "args": [
+                        "<?php settype($foo[1], \"bar\");"
+                    ]
+                }
+            ]
+        }
+    ]
+}

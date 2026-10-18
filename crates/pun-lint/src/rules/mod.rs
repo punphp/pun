@@ -49,6 +49,7 @@ mod prefer_in_array_over_search;
 mod prefer_new_self;
 mod prefer_not_in_array;
 mod prefer_null_coalesce;
+mod prefer_property_over_local_getter;
 mod prefer_simple_condition;
 mod rector_code_quality;
 mod rector_conditions;
@@ -103,6 +104,7 @@ pub use prefer_in_array_over_search::PreferInArrayOverSearch;
 pub use prefer_new_self::PreferNewSelf;
 pub use prefer_not_in_array::PreferNotInArray;
 pub use prefer_null_coalesce::PreferNullCoalesce;
+pub use prefer_property_over_local_getter::PreferPropertyOverLocalGetter;
 pub use prefer_simple_condition::PreferSimpleCondition;
 
 use crate::Rule;
@@ -159,5 +161,6 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferArrayLiteral),
         Box::new(NoRedundantReadonlyProperty),
         Box::new(PreferAbsoluteInclude),
+        Box::new(PreferPropertyOverLocalGetter),
     ]
 }

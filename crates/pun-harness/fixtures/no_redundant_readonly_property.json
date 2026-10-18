@@ -1,0 +1,52 @@
+{
+    "fixer": "no_redundant_readonly_property",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoRedundantReadonlyPropertyFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/NoRedundantReadonlyPropertyFixerTest.php",
+    "case_count": 3,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoRedundantReadonlyPropertyFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "normal properties",
+                    "args": [
+                        "<?php\nreadonly class C1\n{\n    private int $bar;\n    private int $baz;\n}\n\nclass C2\n{\n    private readonly int $bar;\n    private readonly int $baz;\n}",
+                        "<?php\nreadonly class C1\n{\n    private readonly int $bar;\n    private readonly int $baz;\n}\n\nclass C2\n{\n    private readonly int $bar;\n    private readonly int $baz;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait with anonymous class",
+                    "args": [
+                        "<?php\ntrait T\n{\n    protected string $foo = 'bar';\n\n    public function setUp(): void\n    {\n        $x = new class() extends \\stdClass {\n            public string $foo;\n        };\n    }\n}",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "promoted properties",
+                    "args": [
+                        "<?php\nreadonly class C1\n{\n    public function __construct(\n        private int $bar,\n        private int $baz,\n    ) {\n    }\n}\n\nclass C2\n{\n    public function __construct(\n        private readonly int $bar,\n        private readonly int $baz,\n    ) {\n    }\n}",
+                        "<?php\nreadonly class C1\n{\n    public function __construct(\n        private readonly int $bar,\n        private readonly int $baz,\n    ) {\n    }\n}\n\nclass C2\n{\n    public function __construct(\n        private readonly int $bar,\n        private readonly int $baz,\n    ) {\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

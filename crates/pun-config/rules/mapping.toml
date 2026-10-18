@@ -256,17 +256,17 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/add-dynamic-properties" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "classes/add-stringable" = { fix = "safe", sets = ["modernize"], ported = false, status = "decided", summary = "A class that implements the `__toString()` method must explicitly implement the `Stringable` interface." }
 "classes/no-explicit-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided" }
-"classes/no-null-property-default" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4)." }
+"classes/no-null-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4)." }
 "classes/no-null-property-init" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided" }
 "classes/no-protected-constant-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided" }
 "classes/no-protected-in-final" = { fix = "safe", sets = ["privatization"], ported = true, status = "decided", summary = "Converts `protected` variables and methods to `private` where possible." }
 "classes/no-protected-method-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided" }
 "classes/no-protected-property-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided" }
-"classes/no-redundant-readonly" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes redundant readonly from properties in readonly classes." }
+"classes/no-redundant-readonly" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes redundant readonly from properties in readonly classes." }
 "classes/no-redundant-readonly-property" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "In a readonly class, drop `readonly` from properties and promoted parameters" }
 "classes/no-static-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided" }
 "classes/no-underscore-class" = { fix = "none", sets = ["modernize"], ported = false, origin = "mago", status = "decided", summary = "Detects class, interface, trait, or enum declarations named `_`." }
-"classes/no-unset-on-property" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Properties should be set to `null` instead of using `unset`." }
+"classes/no-unset-on-property" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Properties should be set to `null` instead of using `unset`." }
 "classes/prefer-new-self" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `new static()` to `new self()` in a final class" }
 "classes/prefer-self-in-final" = { fix = "safe", sets = ["modernize", "code-quality"], ported = true, status = "decided", summary = "Inside an enum or `final`/anonymous class, `self` should be preferred over `static`." }
 "classes/prefer-self-over-static" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
@@ -762,7 +762,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "security/no-eval" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects unsafe uses of the `eval` construct." }
 "security/no-ffi" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects unsafe use of the PHP FFI (Foreign Function Interface) extension." }
 "security/no-global" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects the use of the `global` keyword and the `$GLOBALS` variable." }
-"security/no-homoglyph-names" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace accidental usage of homoglyphs (non ascii characters) in names." }
+"security/no-homoglyph-names" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace accidental usage of homoglyphs (non ascii characters) in names." }
 "security/no-insecure-comparison" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects insecure comparison of passwords or tokens using `==`, `!=`, `===`, or `!==`." }
 "security/no-literal-password" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects the use of literal values for passwords or sensitive data." }
 "security/no-request-variable" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects the use of the `$_REQUEST` variable, which is considered unsafe." }
@@ -820,17 +820,17 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-sprintf-concat" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Disallows string concatenation with the result of an `sprintf` call." }
 "style/no-unreachable-loop" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects loops (for, foreach, while, do-while) that unconditionally break or return" }
 "style/no-useless-printf" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "There must be no `printf` calls with only the first argument." }
-"style/no-useless-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove sprintf() calls with only the format argument." }
+"style/no-useless-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove sprintf() calls with only the format argument." }
 "style/no-variable-variable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
 "style/prefer-arrow-function" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Anonymous functions with return as the only statement must use arrow functions." }
 "style/prefer-cast-over-intval" = { fix = "unsafe", ported = true, status = "decided", summary = "Replaces `intval`, `floatval`, `doubleval`, `strval` and `boolval` function calls with according type casting operator." }
-"style/prefer-cast-over-settype" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Cast shall be used, not `settype`." }
+"style/prefer-cast-over-settype" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast shall be used, not `settype`." }
 "style/prefer-catch-name-from-type" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Type and name of catch exception should match" }
 "style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = false, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
 "style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided" }
 "style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
 "style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided" }
-"style/prefer-compound-assignment" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
+"style/prefer-compound-assignment" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
 "style/prefer-create-from-timestamp" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Suggests `DateTimeImmutable::createFromTimestamp()` when a Unix timestamp is converted" }
 "style/prefer-date-time-immutable" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "Class `DateTimeImmutable` should be used instead of `DateTime`." }
 "style/prefer-dir-constant" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replaces `dirname(__FILE__)` expression with equivalent `__DIR__` constant." }
@@ -839,14 +839,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-early-return" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return early instead of nesting the rest of the function in an if or else." }
 "style/prefer-early-return-of-variable" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return the value directly where an if overrides a variable that is returned right after." }
 "style/prefer-early-return-over-prepared-value" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return early from each if instead of preparing a variable that is returned at the end." }
-"style/prefer-empty-string-compare" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Compare with `''` instead of strlen() === 0." }
+"style/prefer-empty-string-compare" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Compare with `''` instead of strlen() === 0." }
 "style/prefer-generic-array-phpdoc" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "PHPDoc `array<T>` type must be used instead of `T[]`." }
 "style/prefer-instanceof-stringable" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects the legacy pattern `is_object($x) && method_exists($x, '__toString')` and suggests" }
 "style/prefer-list-phpdoc" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "PHPDoc `list` type must be used instead of `array` without a key." }
 "style/prefer-php-version-id" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Changes use of call to version compare function to use of PHP version constant" }
 "style/prefer-phpdoc-comment" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Comments with annotation should be docblock when used on structural elements." }
 "style/prefer-pow-operator" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Converts `pow` to the `**` operator." }
-"style/prefer-property-over-local-getter" = { fix = "unsafe", sets = ["privatization"], ported = false, status = "decided", summary = "Privatize getter of local property to property" }
+"style/prefer-property-over-local-getter" = { fix = "unsafe", sets = ["privatization"], ported = true, status = "decided", summary = "Privatize getter of local property to property" }
 "style/prefer-random-int" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`." }
 "style/prefer-readonly-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts readonly comment on classes to the readonly keyword." }
 "style/prefer-self-reference" = { fix = "unsafe", ported = true, status = "decided", summary = "Inside class or interface element `self` should be preferred to the class name itself." }

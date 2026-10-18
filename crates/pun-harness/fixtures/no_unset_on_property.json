@@ -1,0 +1,340 @@
+{
+    "fixer": "no_unset_on_property",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NoUnsetOnPropertyFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/NoUnsetOnPropertyFixerTest.php",
+    "case_count": 38,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NoUnsetOnPropertyFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces an unset on a property with = null",
+                    "args": [
+                        "<?php $foo->bar = null;",
+                        "<?php unset($foo->bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces an unset on a property with = null II",
+                    "args": [
+                        "<?php $foo->bar = null ;",
+                        "<?php unset($foo->bar );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces an unset on a static property with = null",
+                    "args": [
+                        "<?php TestClass::$bar = null;",
+                        "<?php unset(TestClass::$bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace unset on a variable with = null",
+                    "args": [
+                        "<?php $b->a; unset($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces multiple unsets on variables with = null",
+                    "args": [
+                        "<?php $foo->bar = null; $bar->foo = null; $bar->baz = null; $a->ba = null;",
+                        "<?php unset($foo->bar, $bar->foo, $bar->baz, $a->ba);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces multiple unsets, but not those that arent properties",
+                    "args": [
+                        "<?php $foo->bar = null; $bar->foo = null; unset($bar);",
+                        "<?php unset($foo->bar, $bar->foo, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces multiple unsets, but not those that arent properties in multiple places",
+                    "args": [
+                        "<?php unset($foo); $bar->foo = null; unset($bar);",
+                        "<?php unset($foo, $bar->foo, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces $this -> and self:: replacements",
+                    "args": [
+                        "<?php $this->bar = null; self::$foo = null; unset($bar);",
+                        "<?php unset($this->bar, self::$foo, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace unsets on arrays",
+                    "args": [
+                        "<?php unset($bar->foo[0]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works in a more complex unset",
+                    "args": [
+                        "<?php unset($bar->foo[0]); self::$foo = null; \\Test\\Baz::$fooBar = null; unset($bar->foo[0]); $this->foo = null; unset($a); unset($b);",
+                        "<?php unset($bar->foo[0], self::$foo, \\Test\\Baz::$fooBar, $bar->foo[0], $this->foo, $a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works with consecutive unsets",
+                    "args": [
+                        "<?php $foo->bar = null; unset($foo); unset($bar); unset($baz); $this->ab = null;",
+                        "<?php unset($foo->bar, $foo, $bar, $baz, $this->ab);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works when around messy whitespace",
+                    "args": [
+                        "<?php\n     unset($a); $this->b = null;\n     $this->a = null; unset($b);\n",
+                        "<?php\n     unset($a, $this->b);\n     unset($this->a, $b);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works with weirdly placed comments",
+                    "args": [
+                        "<?php unset/*foo*/(/*bar*/$bar->foo[0]); self::$foo = null/*baz*/; /*hello*/\\Test\\Baz::$fooBar = null/*comment*/; unset($bar->foo[0]); $this->foo = null; unset($a); unset($b);\n                unset/*foo*/(/*bar*/$bar);",
+                        "<?php unset/*foo*/(/*bar*/$bar->foo[0], self::$foo/*baz*/, /*hello*/\\Test\\Baz::$fooBar/*comment*/, $bar->foo[0], $this->foo, $a, $b);\n                unset/*foo*/(/*bar*/$bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not mess with consecutive unsets",
+                    "args": [
+                        "<?php unset($a, $b, $c);\n                $this->a = null;",
+                        "<?php unset($a, $b, $c);\n                unset($this->a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace function call with class constant inside",
+                    "args": [
+                        "<?php unset($foos[array_search(BadFoo::NAME, $foos)]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace function call with class constant and property inside",
+                    "args": [
+                        "<?php unset($this->property[array_search(\\Types::TYPE_RANDOM, $this->property)]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not break complex expressions",
+                    "args": [
+                        "<?php\n                unset(a()[b()[\"a\"]]);\n                unset(a()[b()]);\n                unset(a()[\"a\"]);\n                unset(c($a)->a);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces an unset on a property with = null 1",
+                    "args": [
+                        "<?php $foo->bar = null;",
+                        "<?php unset($foo->bar,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces multiple unsets, but not those that arent properties 1",
+                    "args": [
+                        "<?php $foo->bar = null; $bar->foo = null; unset($bar,);",
+                        "<?php unset($foo->bar, $bar->foo, $bar,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces an unset on a static property with = null 1",
+                    "args": [
+                        "<?php TestClass::$bar = null;",
+                        "<?php unset(TestClass::$bar,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace unset on a variable with = null 1",
+                    "args": [
+                        "<?php $b->a; unset($foo,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces multiple unsets on variables with = null 1",
+                    "args": [
+                        "<?php $foo->bar = null; $bar->foo = null; $bar->baz = null; $a->ba = null;",
+                        "<?php unset($foo->bar, $bar->foo, $bar->baz, $a->ba,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces multiple unsets, but not those that arent properties in multiple places 1",
+                    "args": [
+                        "<?php unset($foo); $bar->foo = null; unset($bar,);",
+                        "<?php unset($foo, $bar->foo, $bar,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It replaces $this -> and self:: replacements 1",
+                    "args": [
+                        "<?php $this->bar = null; self::$foo = null; unset($bar,);",
+                        "<?php unset($this->bar, self::$foo, $bar,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace unsets on arrays 1",
+                    "args": [
+                        "<?php unset($bar->foo[0],);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works in a more complex unset 1",
+                    "args": [
+                        "<?php unset($bar->foo[0]); self::$foo = null; \\Test\\Baz::$fooBar = null; unset($bar->foo[0]); $this->foo = null; unset($a); unset($b,);",
+                        "<?php unset($bar->foo[0], self::$foo, \\Test\\Baz::$fooBar, $bar->foo[0], $this->foo, $a, $b,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works with consecutive unsets 1",
+                    "args": [
+                        "<?php $foo->bar = null; unset($foo); unset($bar); unset($baz); $this->ab = null;",
+                        "<?php unset($foo->bar, $foo, $bar, $baz, $this->ab,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works when around messy whitespace 1",
+                    "args": [
+                        "<?php\n     unset($a); $this->b = null;\n     $this->a = null; unset($b,);\n",
+                        "<?php\n     unset($a, $this->b,);\n     unset($this->a, $b,);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works with weirdly placed comments 11",
+                    "args": [
+                        "<?php unset/*foo*/(/*bar*/$bar->foo[0]); self::$foo = null/*baz*/; /*hello*/\\Test\\Baz::$fooBar = null/*comment*/; unset($bar->foo[0]); $this->foo = null; unset($a); unset($b,);\n                unset/*foo*/(/*bar*/$bar,);",
+                        "<?php unset/*foo*/(/*bar*/$bar->foo[0], self::$foo/*baz*/, /*hello*/\\Test\\Baz::$fooBar/*comment*/, $bar->foo[0], $this->foo, $a, $b,);\n                unset/*foo*/(/*bar*/$bar,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not mess with consecutive unsets 1",
+                    "args": [
+                        "<?php unset($a, $b, $c,);\n                $this->a = null;",
+                        "<?php unset($a, $b, $c,);\n                unset($this->a,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace function call with class constant inside 1",
+                    "args": [
+                        "<?php unset($foos[array_search(BadFoo::NAME, $foos)],);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not replace function call with class constant and property inside 1",
+                    "args": [
+                        "<?php unset($this->property[array_search(\\Types::TYPE_RANDOM, $this->property)],);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo->bar = null ;",
+                        "<?php unset($foo->bar, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $foo->bar = null ;",
+                        "<?php unset($foo->bar ,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $foo->bar = null  ;",
+                        "<?php unset($foo->bar , );"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NoUnsetOnPropertyFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "It does not replace unsets on arrays with special notation",
+                    "args": [
+                        "<?php unset($bar->foo{0});"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "It does not replace unsets on arrays with special notation 1",
+                    "args": [
+                        "<?php unset($bar->foo{0},);"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "It does not break curly access expressions",
+                    "args": [
+                        "<?php unset(a(){\"a\"});"
+                    ]
+                }
+            ]
+        }
+    ]
+}

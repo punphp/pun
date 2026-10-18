@@ -1,0 +1,206 @@
+{
+    "fixer": "no_homoglyph_names",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Naming\\NoHomoglyphNamesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Naming/NoHomoglyphNamesFixerTest.php",
+    "case_count": 23,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Naming\\NoHomoglyphNamesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $øøøøa = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $name = \"This should not be changed\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $name = \"Это не меняется\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $name = 'Это не меняется';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php // This should not be chаnged"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /* This should not be chаnged */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $name = 'wrong';",
+                        "<?php $nаmе = 'wrong';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a->name = 'wrong';",
+                        "<?php $a->nаmе = 'wrong';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php class A { private $name; }",
+                        "<?php class A { private $nаmе; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php class Broken {}",
+                        "<?php class Вroken {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php interface Broken {}",
+                        "<?php interface Вroken {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php trait Broken {}",
+                        "<?php trait Вroken {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a = new Broken();",
+                        "<?php $a = new Вroken();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php class A extends Broken {}",
+                        "<?php class A extends Вroken {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php class A implements Broken {}",
+                        "<?php class A implements Вroken {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php class A { use Broken; }",
+                        "<?php class A { use Вroken; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php echo Broken::class;",
+                        "<?php echo Вroken::class;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php function name() {}",
+                        "<?php function nаmе() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php name();",
+                        "<?php nаmе();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $first_name = \"a\";",
+                        "<?php $first＿name = \"a\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php class A { private string $name; }",
+                        "<?php class A { private string $nаmе; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php class A { private ? Foo\\Bar $name; }",
+                        "<?php class A { private ? Foo\\Bar $nаmе; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php class A { private array $name; }",
+                        "<?php class A { private array $nаmе; }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

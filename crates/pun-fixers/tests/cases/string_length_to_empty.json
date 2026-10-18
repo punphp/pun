@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "string_length_to_empty",
+        "input": "<?php\n$a = 1 + 0 === strlen($b);\n$c = !strlen($d) === 0;\n",
+        "expected": "<?php\n$a = 1 + 0 === strlen($b);\n$c = !strlen($d) === 0;\n"
+    }
+]

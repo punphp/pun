@@ -1,0 +1,523 @@
+{
+    "fixer": "no_null_property_initialization",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoNullPropertyInitializationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/NoNullPropertyInitializationFixerTest.php",
+    "case_count": 59,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoNullPropertyInitializationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { public $bar; }",
+                        "<?php class Foo { public $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { protected $bar; }",
+                        "<?php class Foo { protected $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo { private $bar; }",
+                        "<?php class Foo { private $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo { var $bar; }",
+                        "<?php class Foo { var $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo { VAR $bar; }",
+                        "<?php class Foo { VAR $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php class Foo { public $bar; }",
+                        "<?php class Foo { public $bar = NULL; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo { PUblic $bar; }",
+                        "<?php class Foo { PUblic $bar = nuLL; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php trait Foo { public $bar; }",
+                        "<?php trait Foo { public $bar = nuLL; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php class Foo { public $bar; }",
+                        "<?php class Foo { public $bar = \\null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php class Foo {/* */public/* A */$bar/* B *//** C */;/* D */}",
+                        "<?php class Foo {/* */public/* A */$bar/* B */=/** C */null;/* D */}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo { public $bar; protected $baz; }",
+                        "<?php class Foo { public $bar = null; protected $baz = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php class Foo { public $bar = 'null'; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php class Foo { public function bar() { return null; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php class Foo { protected $bar, $baz, $qux; }",
+                        "<?php class Foo { protected $bar = null, $baz = null, $qux = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php class Foo { protected $bar, $baz = 'baz', $qux; }",
+                        "<?php class Foo { protected $bar, $baz = 'baz', $qux = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php trait Foo { public $bar; } abstract class Bar { protected $bar, $baz = 'baz', $qux; }",
+                        "<?php trait Foo { public $bar = null; } abstract class Bar { protected $bar, $baz = 'baz', $qux = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php class Foo { public function foo() { return null; } public $bar; public function baz() { return null; } }",
+                        "<?php class Foo { public function foo() { return null; } public $bar = null; public function baz() { return null; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php class#1\nFoo#2\n{#3\nprotected#4\n$bar#5\n#6\n,#7\n$baz#8\n#9\n,#10\n$qux#11\n#12\n;#13\n}\n",
+                        "<?php class#1\nFoo#2\n{#3\nprotected#4\n$bar#5\n=#6\nnull,#7\n$baz#8\n=#9\nnull,#10\n$qux#11\n=#12\nnull;#13\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php class Foo { public static $bar; }",
+                        "<?php class Foo { public static $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php class Foo { protected static $bar; }",
+                        "<?php class Foo { protected static $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php class Foo { private static $bar; }",
+                        "<?php class Foo { private static $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php class Foo { static $bar; }",
+                        "<?php class Foo { static $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php class Foo { STATIC $bar; }",
+                        "<?php class Foo { STATIC $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php class Foo { public static $bar; }",
+                        "<?php class Foo { public static $bar = NULL; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php class Foo { PUblic STatic $bar; }",
+                        "<?php class Foo { PUblic STatic $bar = nuLL; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php trait Foo { public static $bar; }",
+                        "<?php trait Foo { public static $bar = nuLL; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php class Foo { public static $bar; }",
+                        "<?php class Foo { public static $bar = \\null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php class Foo {/* */public/* */static/* A */$bar/* B *//** C */;/* D */}",
+                        "<?php class Foo {/* */public/* */static/* A */$bar/* B */=/** C */null;/* D */}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php class Foo { public static $bar; protected static $baz; }",
+                        "<?php class Foo { public static $bar = null; protected static $baz = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php class Foo { public static $bar = 'null'; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php class Foo { public static function bar() { return null; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php class Foo { protected static $bar, $baz, $qux; }",
+                        "<?php class Foo { protected static $bar = null, $baz = null, $qux = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php class Foo { protected static $bar, $baz = 'baz', $qux; }",
+                        "<?php class Foo { protected static $bar, $baz = 'baz', $qux = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php trait Foo { public static $bar; } abstract class Bar { protected static $bar, $baz = 'baz', $qux; }",
+                        "<?php trait Foo { public static $bar = null; } abstract class Bar { protected static $bar, $baz = 'baz', $qux = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php class Foo { public function foo() { return null; } public static $bar; public function baz() { return null; } }",
+                        "<?php class Foo { public function foo() { return null; } public static $bar = null; public function baz() { return null; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php class#1\nFoo#2\n{#3\nprotected#4\nstatic#4.5\n$bar#5\n#6\n,#7\n$baz#8\n#9\n,#10\n$qux#11\n#12\n;#13\n}\n",
+                        "<?php class#1\nFoo#2\n{#3\nprotected#4\nstatic#4.5\n$bar#5\n=#6\nnull,#7\n$baz#8\n=#9\nnull,#10\n$qux#11\n=#12\nnull;#13\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php class Foo { const FOO = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php class Foo { public function foo() { static $foo = null; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php function foo() { static $foo = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php new class () { public $bar; };",
+                        "<?php new class () { public $bar = null; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php class Foo { public function foo() { return new class() { private $bar; }; } }",
+                        "<?php class Foo { public function foo() { return new class() { private $bar = null; }; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php class Foo { public function foo() { return new class() { private $bar; }; } } trait Baz { public $baz; }",
+                        "<?php class Foo { public function foo() { return new class() { private $bar = null; }; } } trait Baz { public $baz = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php new class () { public static $bar; };",
+                        "<?php new class () { public static $bar = null; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php class Foo { public function foo() { return new class() { private static $bar; }; } }",
+                        "<?php class Foo { public function foo() { return new class() { private static $bar = null; }; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php class Foo { public function foo() { return new class() { private static $bar; }; } } trait Baz { public static $baz; }",
+                        "<?php class Foo { public function foo() { return new class() { private static $bar = null; }; } } trait Baz { public static $baz = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php class Foo { public function foo() { return new class() { public function foo() { static $foo = null; } }; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php function foo() { return new class() { public function foo() { static $foo = null; } }; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php class Foo { public const FOO = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php class Foo { protected ?int $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php class Foo { protected ? string $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php class Foo { protected ? array $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php class Foo { protected static ?int $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php class Foo { protected static ? string $bar = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php class Foo { protected static ? array $bar = null; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoNullPropertyInitializationFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { public $bar; }",
+                        "<?php class Foo { public $bar = \\     null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { public $bar/* oh hai! */; }",
+                        "<?php class Foo { public $bar = \\/* oh hai! */null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo { public static $bar; }",
+                        "<?php class Foo { public static $bar = \\     null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo { public static $bar/* oh hai! */; }",
+                        "<?php class Foo { public static $bar = \\/* oh hai! */null; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoNullPropertyInitializationFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "readonly - cannot have default value, fixer should not crash",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public readonly string $prop;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

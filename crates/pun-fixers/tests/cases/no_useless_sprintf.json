@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_useless_sprintf",
+        "input": "<?php\necho sprintf(...$args);\necho sprintf('%s', $a);\necho \\sprintf('bar');\n",
+        "expected": "<?php\necho sprintf(...$args);\necho sprintf('%s', $a);\necho 'bar';\n"
+    }
+]

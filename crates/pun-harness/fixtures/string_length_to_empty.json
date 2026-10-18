@@ -1,0 +1,302 @@
+{
+    "fixer": "string_length_to_empty",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\StringLengthToEmptyFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/StringLengthToEmptyFixerTest.php",
+    "case_count": 36,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\StringLengthToEmptyFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = '' === $b;",
+                        "<?php $a = 0 === strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "casing",
+                    "args": [
+                        "<?php $a1 = '' === $b ?>",
+                        "<?php $a1 = 0 === \\STRlen($b) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested",
+                    "args": [
+                        "<?php $a2 = '' === foo('' === foo('' === foo('' === foo('' === foo('' === foo('' === $b))))));",
+                        "<?php $a2 = 0 === strlen(foo(0 === strlen(foo(0 === strlen(foo(0 === strlen(foo(0 === strlen(foo(0 === strlen(foo(0 === strlen($b)))))))))))));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a3 = '' !== $b;",
+                        "<?php $a3 = 0 !== strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a4 = 0 <= strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a5 = '' === $b;",
+                        "<?php $a5 = 0 >= strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $a6 = '' !== $b;",
+                        "<?php $a6 = 0 < strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $a7 = 0 > strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $a8 = 1 === strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a9 = 1 !== strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $a10 = '' !== $b;",
+                        "<?php $a10 = 1 <= strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $a11 = 1 >= strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $a12 = 1 < strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $a13 = '' === $b;",
+                        "<?php $a13 = 1 > strlen($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a14 = $b === '';",
+                        "<?php $a14 = strlen($b) === 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $a15 = $b !== '';",
+                        "<?php $a15 = strlen($b) !== 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a16 = $b === '';",
+                        "<?php $a16 = strlen($b) <= 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $a17 = strlen($b) >= 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a18 = strlen($b) < 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $a19 = $b !== '';",
+                        "<?php $a19 = strlen($b) > 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $a20 = strlen($b) === 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $a21 = strlen($b) !== 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $a22 = strlen($b) <= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $a23 = $b !== '';",
+                        "<?php $a23 = strlen($b) >= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $a24 = $b === '';",
+                        "<?php $a24 = strlen($b) < 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $a25 = strlen($b) > 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $e = 0 === foo() ? -1 : '' === $a;",
+                        "<?php $e = 0 === foo() ? -1 : 0 === strlen($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $x = /* 1 */ $b /* 2 */ ->a !== '';",
+                        "<?php $x = strlen(/* 1 */ $b /* 2 */ ->a) >= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $y = $b[0] === '';",
+                        "<?php $y = strlen($b[0]) < 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $y1 = $b[0]->$a[$a++](1) /* 1 */  === '';",
+                        "<?php $y1 = strlen($b[0]->$a[$a++](1) /* 1 */ ) < 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $z = '' === $b[1]->foo(++$i, static function () use ($z){ return $z + 1;});",
+                        "<?php $z = 0 === strlen($b[1]->foo(++$i, static function () use ($z){ return $z + 1;}));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php if ((string) $node !== '') { echo 1; }",
+                        "<?php if (\\strlen((string) $node) > 0) { echo 1; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix",
+                    "args": [
+                        "<?php\n//-----------------------------------\n// operator precedence\n\n$a01 = 0 === strlen($b) ** $c;\n$a03 = 0 === strlen($b) % $c;\n$a04 = 0 === strlen($b) / $c;\n$a05 = 0 === strlen($b) * $c;\n$a06 = 0 === strlen($b) + $c;\n$a07 = 0 === strlen($b) - $c;\n$a08 = 0 === strlen($b) . $c;\n$a09 = 0 === strlen($b) >> $c;\n$a10 = 0 === strlen($b) << $c;\n\n$a01n = strlen($b) === 0 ** $c;\n$a03n = strlen($b) === 0 % $c;\n$a04n = strlen($b) === 0 / $c;\n$a05n = strlen($b) === 0 * $c;\n$a06n = strlen($b) === 0 + $c;\n$a07n = strlen($b) === 0 - $c;\n$a08n = strlen($b) === 0 . $c;\n$a09n = strlen($b) === 0 >> $c;\n$a10n = strlen($b) === 0 << $c;\n\n$b = \"a\";\n\n$c = 0 === strlen($b) - 1;\nvar_dump($c);\n\n$c = \"\" === $b - 1;\nvar_dump($c);\n\n//-----------------------------------\n// type juggle\n\n$d = false;\n\n$e = 0 === strlen($d) ? -1 : 0;\nvar_dump($e);\n\n$e = \"\" === $d ? -1 : 0;\nvar_dump($e);\n\n//-----------------------------------\n// wrong argument count\n\n$f = strlen(1,2);\n$g = \\strlen(1,2,3);\n\n//-----------------------------------\n// others\n\n$h = 0 === (string) strlen($b);\n$i = 0 === @strlen($b);\n$j = 0 === !strlen($b);\n\n$jj = 2 === strlen($b);\n$jk = __DIR__ === strlen($b);\n$jl = 'X' !== strlen($b);\n\n$jj = strlen($b) === 2;\n$jk = strlen($b) === __DIR__;\n$jl = strlen($b) !== 'X';\n\n//-----------------------------------\n// not global calls\n\n$k = 0 === $a->strlen($b);\n$l = 0 === Foo::strlen($b);\n\n//-----------------------------------\n// comments\n\n// $a = 0 === strlen($b);\n# $a = 0 === strlen($b);\n/* $a = 0 === strlen($b); */\n/** $a = 0 === strlen($b); */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $e = ($a = trim($b)) !== '';",
+                        "<?php $e = \\strlen($a = trim($b)) > 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php if ('' === ($value = foo())) { echo 2; }",
+                        "<?php if (0 === \\strlen($value = foo())) { echo 2; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n                $a02 = 0 === strlen($b) instanceof stdClass;\n                $a02n = strlen($b) === 0 instanceof stdClass;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

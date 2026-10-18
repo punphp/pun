@@ -1,0 +1,155 @@
+{
+    "fixer": "no_useless_sprintf",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUselessSprintfFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/NoUselessSprintfFixerTest.php",
+    "case_count": 14,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUselessSprintfFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php echo \"bar\";",
+                        "<?php echo sprintf(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple II",
+                    "args": [
+                        "<?php echo 'bar' ?>",
+                        "<?php echo sprintf('bar') ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple III",
+                    "args": [
+                        "<?php echo $bar;",
+                        "<?php echo sprintf($bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple IV",
+                    "args": [
+                        "<?php echo 1;",
+                        "<?php echo sprintf(1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal",
+                    "args": [
+                        "<?php $foo;",
+                        "<?php sprintf($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive",
+                    "args": [
+                        "<?php echo \"bar\";",
+                        "<?php echo SPRINTF(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested",
+                    "args": [
+                        "<?php echo /* test */\"bar\";",
+                        "<?php echo sprintf(sprintf(sprintf(/* test */sprintf(sprintf(sprintf(\"bar\"))))));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php namespace Foo {\n                function sprintf($foo) {\n                    echo $foo;\n                }\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php namespace Foo;\n                function sprintf($foo) {\n                    echo $foo;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                echo \\Foo\\sprintf(\"abc\");\n                echo $bar->sprintf($foo);\n                echo Bar::sprintf($foo);\n                echo sprint(...$foo);\n                echo sprint(\"%d\", 1);\n                echo sprint(\"%d%d%d\", 1, 2, 3);\n                echo sprint();\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php echo sprint[2](\"foo\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trailing comma",
+                    "args": [
+                        "<?php echo \"bar\";",
+                        "<?php echo sprintf(\"bar\",);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUselessSprintfFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo  \"bar\";",
+                        "<?php echo \\ sprintf(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo A /* 1 */ \\ B \\ sprintf(\"bar\");"
+                    ]
+                }
+            ]
+        }
+    ]
+}

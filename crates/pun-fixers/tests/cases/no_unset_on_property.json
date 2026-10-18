@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_unset_on_property",
+        "input": "<?php\nunset(static::$foo, $this->bar);\n",
+        "expected": "<?php\nunset(static::$foo); $this->bar = null;\n"
+    }
+]
