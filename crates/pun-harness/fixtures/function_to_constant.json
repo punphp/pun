@@ -1,0 +1,448 @@
+{
+    "fixer": "function_to_constant",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\FunctionToConstantFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/FunctionToConstantFixerTest.php",
+    "case_count": 36,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\FunctionToConstantFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "Minimal case, alternative casing, alternative statement end.",
+                    "args": [
+                        "<?php echo PHP_VERSION?>",
+                        "<?php echo PHPversion()?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With embedded comment.",
+                    "args": [
+                        "<?php echo PHP_VERSION/**/?>",
+                        "<?php echo phpversion(/**/)?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With white space.",
+                    "args": [
+                        "<?php echo PHP_VERSION      ;",
+                        "<?php echo phpversion  (  )  ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With multi line whitespace.",
+                    "args": [
+                        "<?php echo\n                PHP_VERSION\n                \n                \n                ;",
+                        "<?php echo\n                phpversion\n                (\n                )\n                ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Global namespaced.",
+                    "args": [
+                        "<?php echo \\PHP_VERSION;",
+                        "<?php echo \\phpversion();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Wrong number of arguments.",
+                    "args": [
+                        "<?php phpversion($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Wrong namespace.",
+                    "args": [
+                        "<?php A\\B\\phpversion();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Class creating.",
+                    "args": [
+                        "<?php new phpversion();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Class static method call.",
+                    "args": [
+                        "<?php A::phpversion();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Class method call.",
+                    "args": [
+                        "<?php $a->phpversion();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Overridden function.",
+                    "args": [
+                        "<?php if (!function_exists(\"phpversion\")){function phpversion(){}}?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "phpversion only",
+                    "args": [
+                        "<?php echo PHP_VERSION; echo php_sapi_name(); echo pi();",
+                        "<?php echo phpversion(); echo php_sapi_name(); echo pi();",
+                        {
+                            "functions": [
+                                "phpversion"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "php_sapi_name only",
+                    "args": [
+                        "<?php echo phpversion(); echo PHP_SAPI; echo pi();",
+                        "<?php echo phpversion(); echo php_sapi_name(); echo pi();",
+                        {
+                            "functions": [
+                                "php_sapi_name"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "php_sapi_name in conditional",
+                    "args": [
+                        "<?php if (\"cli\" === PHP_SAPI && $a){ echo 123;}",
+                        "<?php if (\"cli\" === php_sapi_name() && $a){ echo 123;}",
+                        {
+                            "functions": [
+                                "php_sapi_name"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pi only",
+                    "args": [
+                        "<?php echo phpversion(); echo php_sapi_name(); echo M_PI;",
+                        "<?php echo phpversion(); echo php_sapi_name(); echo pi();",
+                        {
+                            "functions": [
+                                "pi"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multi line pi",
+                    "args": [
+                        "<?php\n$a =\n    $b\n    || $c < M_PI\n;",
+                        "<?php\n$a =\n    $b\n    || $c < pi()\n;",
+                        {
+                            "functions": [
+                                "pi"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "phpversion and pi",
+                    "args": [
+                        "<?php echo PHP_VERSION; echo php_sapi_name(); echo M_PI;",
+                        "<?php echo phpversion(); echo php_sapi_name(); echo M_PI;",
+                        {
+                            "functions": [
+                                "pi",
+                                "phpversion"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "diff argument count than native allows",
+                    "args": [
+                        "<?php\n                    echo phpversion(1);\n                    echo php_sapi_name(1,2);\n                    echo pi(1);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "get_class => T_CLASS",
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        public function echoClassName($notMe)\n                        {\n                            echo get_class($notMe);\n                            echo self::class/** 1 *//* 2 */;\n                            echo self::class;\n                        }\n                    }\n\n                    class B\n                    {\n                        use A;\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        public function echoClassName($notMe)\n                        {\n                            echo get_class($notMe);\n                            echo get_class(/** 1 *//* 2 */);\n                            echo GET_Class();\n                        }\n                    }\n\n                    class B\n                    {\n                        use A;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "get_class with leading backslash",
+                    "args": [
+                        "<?php self::class;",
+                        "<?php \\get_class();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "get_class left unchanged when neither \"get_class\" nor \"get_class_this\" is configured",
+                    "args": [
+                        "<?php echo get_class();",
+                        null,
+                        {
+                            "functions": [
+                                "phpversion"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class A { function B(){ echo static::class; }}",
+                        "<?php class A { function B(){ echo get_called_class(); }}",
+                        {
+                            "functions": [
+                                "get_called_class"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class A { function B(){\necho#.\n#0\nstatic::class#1\n#2\n#3\n#4\n#5\n#6\n;#7\n}}\n                ",
+                        "<?php class A { function B(){\necho#.\n#0\nget_called_class#1\n#2\n(#3\n#4\n)#5\n#6\n;#7\n}}\n                ",
+                        {
+                            "functions": [
+                                "get_called_class"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "get_called_class with leading backslash",
+                    "args": [
+                        "<?php class A { function B(){echo static::class; }}",
+                        "<?php class A { function B(){echo \\get_called_class(); }}",
+                        {
+                            "functions": [
+                                "get_called_class"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "get_called_class overridden",
+                    "args": [
+                        "<?php echo get_called_class(1);",
+                        null,
+                        {
+                            "functions": [
+                                "get_called_class"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo{ public function Bar(){ echo static::class  ; }}",
+                        "<?php class Foo{ public function Bar(){ echo get_class( $This ); }}",
+                        {
+                            "functions": [
+                                "get_class_this"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo{ public function Bar(){ echo static::class; get_class(1, 2); get_class($a); get_class($a, $b);}}",
+                        "<?php class Foo{ public function Bar(){ echo get_class($this); get_class(1, 2); get_class($a); get_class($a, $b);}}",
+                        {
+                            "functions": [
+                                "get_class_this"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo{ public function Bar(){ echo static::class /* 0 */  /* 1 */ ;}}",
+                        "<?php class Foo{ public function Bar(){ echo \\get_class( /* 0 */ $this /* 1 */ );}}",
+                        {
+                            "functions": [
+                                "get_class_this"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php class Foo{ public function Bar(){ echo static::class; echo self::class; }}",
+                        "<?php class Foo{ public function Bar(){ echo \\get_class((($this))); echo get_class(); }}",
+                        {
+                            "functions": [
+                                "get_class_this",
+                                "get_class"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                    class Foo{ public function Bar(){ echo $reflection = new \\ReflectionClass(get_class($this->extension)); }}\n                    class Foo{ public function Bar(){ echo $reflection = new \\ReflectionClass(get_class($this() )); }}\n                ",
+                        null,
+                        {
+                            "functions": [
+                                "get_class_this"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php namespace Foo;\nfunction &PHPversion(){}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedExceptionMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\FunctionToConstantFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $expectedExceptionMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($expectedExceptionMessage);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        {
+                            "functions": [
+                                "a"
+                            ]
+                        },
+                        "[function_to_constant] Invalid configuration: The option \"functions\" with value array is invalid."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "functions": [
+                                1
+                            ]
+                        },
+                        "[function_to_constant] Invalid configuration: The option \"functions\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 2,
+                    "args": [
+                        {
+                            "functions": {
+                                "abc": true
+                            }
+                        },
+                        "[function_to_constant] Invalid configuration: The option \"functions\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"bool\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 3,
+                    "args": [
+                        [
+                            "pi123"
+                        ],
+                        "[function_to_constant] Invalid configuration: The option \"0\" does not exist. Defined options are: \"functions\"."
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\FunctionToConstantFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "first callable class",
+                    "args": [
+                        "<?php $a = get_class(...);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

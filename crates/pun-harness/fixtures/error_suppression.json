@@ -1,0 +1,266 @@
+{
+    "fixer": "error_suppression",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ErrorSuppressionFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/ErrorSuppressionFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ErrorSuppressionFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php trigger_error(\"This is not a deprecation warning.\"); @f(); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php trigger_error(\"This is not a deprecation warning.\", E_USER_WARNING); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php A\\B\\trigger_error(\"This is not a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php @trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); ?>",
+                        "<?php trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); ?>",
+                        null,
+                        {
+                            "mute_deprecation_error": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php @\\trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); ?>",
+                        "<?php \\trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php echo \"test\";@trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); ?>",
+                        "<?php echo \"test\";trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php //\n@Trigger_Error/**/(\"This is a deprecation warning.\", E_USER_DEPRECATED/***/); ?>",
+                        "<?php //\nTrigger_Error/**/(\"This is a deprecation warning.\", E_USER_DEPRECATED/***/); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php new trigger_error(\"This is not a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php new \\trigger_error(\"This is not a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $foo->trigger_error(\"This is not a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php Foo::trigger_error(\"This is not a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php @trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); mkdir(\"dir\"); ?>",
+                        "<?php trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); @mkdir(\"dir\"); ?>",
+                        {
+                            "mute_deprecation_error": true,
+                            "noise_remaining_usages": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $foo->isBar(); ?>",
+                        "<?php @$foo->isBar(); ?>",
+                        {
+                            "noise_remaining_usages": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php Foo::isBar(); ?>",
+                        "<?php @Foo::isBar(); ?>",
+                        {
+                            "noise_remaining_usages": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php @trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); @mkdir(\"dir\"); ?>",
+                        "<?php trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); @mkdir(\"dir\"); ?>",
+                        {
+                            "mute_deprecation_error": true,
+                            "noise_remaining_usages": true,
+                            "noise_remaining_usages_exclude": [
+                                "mkdir"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php @trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); @mkdir(\"dir\"); unlink($path); ?>",
+                        "<?php trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); @mkdir(\"dir\"); @unlink($path); ?>",
+                        {
+                            "mute_deprecation_error": true,
+                            "noise_remaining_usages": true,
+                            "noise_remaining_usages_exclude": [
+                                "mkdir"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php @trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); @trigger_error(\"This is not a deprecation warning.\", E_USER_WARNING); ?>",
+                        "<?php trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED); @trigger_error(\"This is not a deprecation warning.\", E_USER_WARNING); ?>",
+                        {
+                            "mute_deprecation_error": true,
+                            "noise_remaining_usages": true,
+                            "noise_remaining_usages_exclude": [
+                                "trigger_error"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php @trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED, );",
+                        "<?php trigger_error(\"This is a deprecation warning.\", E_USER_DEPRECATED, );"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ErrorSuppressionFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php \\A\\B/* */\\trigger_error(\"This is not a deprecation warning.\", E_USER_DEPRECATED); ?>"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ErrorSuppressionFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = trigger_error(...);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

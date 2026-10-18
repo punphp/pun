@@ -1,0 +1,202 @@
+{
+    "fixer": "simplified_if_return",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SimplifiedIfReturnFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/SimplifiedIfReturnFixerTest.php",
+    "case_count": 22,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SimplifiedIfReturnFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php return (bool) ($foo)      ;",
+                        "<?php if ($foo) { return true; } return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple-negative",
+                    "args": [
+                        "<?php return ! ($foo)      ;",
+                        "<?php if ($foo) { return false; } return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple-negative II",
+                    "args": [
+                        "<?php return ! (!$foo && $a())      ;",
+                        "<?php if (!$foo && $a()) { return false; } return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple-braceless",
+                    "args": [
+                        "<?php return (bool) ($foo)    ;",
+                        "<?php if ($foo) return true; return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple-braceless-negative",
+                    "args": [
+                        "<?php return ! ($foo)    ;",
+                        "<?php if ($foo) return false; return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bug-consecutive-ifs",
+                    "args": [
+                        "<?php if ($bar) { return 1; } return (bool) ($foo)      ;",
+                        "<?php if ($bar) { return 1; } if ($foo) { return true; } return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bug-consecutive-ifs-negative",
+                    "args": [
+                        "<?php if ($bar) { return 1; } return ! ($foo)      ;",
+                        "<?php if ($bar) { return 1; } if ($foo) { return false; } return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bug-consecutive-ifs-braceless",
+                    "args": [
+                        "<?php if ($bar) return 1; return (bool) ($foo)    ;",
+                        "<?php if ($bar) return 1; if ($foo) return true; return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bug-consecutive-ifs-braceless-negative",
+                    "args": [
+                        "<?php if ($bar) return 1; return ! ($foo)    ;",
+                        "<?php if ($bar) return 1; if ($foo) return false; return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nfunction f1() { return (bool) ($f1)      ; }\nfunction f2() { return true; } return false;\nfunction f3() { return (bool) ($f3)      ; }\nfunction f4() { return true; } return false;\nfunction f5() { return (bool) ($f5)      ; }\nfunction f6() { return false; } return true;\nfunction f7() { return ! ($f7)      ; }\nfunction f8() { return false; } return true;\nfunction f9() { return ! ($f9)      ; }",
+                        "<?php\nfunction f1() { if ($f1) { return true; } return false; }\nfunction f2() { return true; } return false;\nfunction f3() { if ($f3) { return true; } return false; }\nfunction f4() { return true; } return false;\nfunction f5() { if ($f5) { return true; } return false; }\nfunction f6() { return false; } return true;\nfunction f7() { if ($f7) { return false; } return true; }\nfunction f8() { return false; } return true;\nfunction f9() { if ($f9) { return false; } return true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "preserve-comments",
+                    "args": [
+                        "<?php\n// C1\nreturn (bool)\n# C2\n(\n/* C3 */\n$foo\n/** C4 */\n)\n// C5\n\n# C6\n\n// C7\n\n# C8\n\n/* C9 */\n\n/** C10 */\n\n// C11\n\n# C12\n;\n/* C13 */",
+                        "<?php\n// C1\nif\n# C2\n(\n/* C3 */\n$foo\n/** C4 */\n)\n// C5\n{\n# C6\nreturn\n// C7\ntrue\n# C8\n;\n/* C9 */\n}\n/** C10 */\nreturn\n// C11\nfalse\n# C12\n;\n/* C13 */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "preserve-comments-braceless",
+                    "args": [
+                        "<?php\n// C1\nreturn (bool)\n# C2\n(\n/* C3 */\n$foo\n/** C4 */\n)\n// C5\n# C6\n\n// C7\n\n# C8\n\n/* C9 */\n/** C10 */\n\n// C11\n\n# C12\n;\n/* C13 */",
+                        "<?php\n// C1\nif\n# C2\n(\n/* C3 */\n$foo\n/** C4 */\n)\n// C5\n# C6\nreturn\n// C7\ntrue\n# C8\n;\n/* C9 */\n/** C10 */\nreturn\n// C11\nfalse\n# C12\n;\n/* C13 */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else-if",
+                    "args": [
+                        "<?php if ($bar) { return $bar; } else return (bool) ($foo)      ;",
+                        "<?php if ($bar) { return $bar; } else if ($foo) { return true; } return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else-if-negative",
+                    "args": [
+                        "<?php if ($bar) { return $bar; } else return ! ($foo)      ;",
+                        "<?php if ($bar) { return $bar; } else if ($foo) { return false; } return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else-if-braceless",
+                    "args": [
+                        "<?php if ($bar) return $bar; else return (bool) ($foo)    ;",
+                        "<?php if ($bar) return $bar; else if ($foo) return true; return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else-if-braceless-negative",
+                    "args": [
+                        "<?php if ($bar) return $bar; else return ! ($foo)    ;",
+                        "<?php if ($bar) return $bar; else if ($foo) return false; return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif",
+                    "args": [
+                        "<?php if ($bar) { return $bar; } return (bool) ($foo)      ;",
+                        "<?php if ($bar) { return $bar; } elseif ($foo) { return true; } return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif-negative",
+                    "args": [
+                        "<?php if ($bar) { return $bar; } return ! ($foo)      ;",
+                        "<?php if ($bar) { return $bar; } elseif ($foo) { return false; } return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif-braceless",
+                    "args": [
+                        "<?php if ($bar) return $bar; return (bool) ($foo)    ;",
+                        "<?php if ($bar) return $bar; elseif ($foo) return true; return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif-braceless-negative",
+                    "args": [
+                        "<?php if ($bar) return $bar; return ! ($foo)    ;",
+                        "<?php if ($bar) return $bar; elseif ($foo) return false; return true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no braces loops",
+                    "args": [
+                        "<?php\nfunction foo1(string $str, array $letters): bool\n{\n    foreach ($letters as $letter)\n        if ($str === $letter)\n            return true;\n    return false;\n}\n\nfunction foo2(int $z): bool\n{\n    for ($i = 0; $i < 3; ++$i)\n        if ($i === $z)\n            return true;\n    return false;\n}\n\nfunction foo3($y): bool\n{\n    while ($x = bar())\n        if ($x === $z)\n            return true;\n    return false;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alternative syntax not supported",
+                    "args": [
+                        "<?php\nif ($foo):\n    return true;\nelse:\n    return false;\nendif;\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

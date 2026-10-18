@@ -1,0 +1,429 @@
+{
+    "fixer": "ternary_to_null_coalescing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryToNullCoalescingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/TernaryToNullCoalescingFixerTest.php",
+    "case_count": 51,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryToNullCoalescingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = isset($a) ? $a[1] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = isset($a) and $a ? $a : \"\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = \"isset($a) ? $a : null\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = isset($a) ? $$a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = isset($this) ? $this : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = isset($A) ? $a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = isset($a) ? \"$a\" : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = isset($a) ?: false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $x = $y ?? isset($a) ? $a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $x = isset($a) ?: $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $x = isset($a, $b) ? $a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $x = $a && isset($b) ? $b : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $x = $a & isset($b) ? $b : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $x = ! isset($a) ? $a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x = false === isset($a) ? $a : 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $x = 4 * isset($a) ? $a : 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $x = \"4\" . isset($a) ? $a : 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $x = 3 ** isset($a) ? $a : 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $x = 1 | isset($a) ? $a : 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $x = (array) isset($a) ? $a : 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $x = isset($a[++$i]) ? $a[++$i] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $x = function(){isset($a[yield]) ? $a[yield] : null;};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $x = isset($a[foo()]) ? $a[foo()] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $x = isset($a[$callback()]) ? $a[$callback()] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $y = isset($a) ? 2**3 : 3**2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $x = function(){isset($a[yield from $a]) ? $a[yield from $a] : null;};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Common fix case (I).",
+                    "args": [
+                        "<?php $x = $a ?? null;",
+                        "<?php $x = isset($a) ? $a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Common fix case (II).",
+                    "args": [
+                        "<?php $x = $a[0] ?? 1;",
+                        "<?php $x = isset($a[0]) ? $a[0] : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Minimal number of tokens case.",
+                    "args": [
+                        "<?php\n$x=$a??null?>",
+                        "<?php\n$x=isset($a)?$a:null?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $x = $a ?? 1; $y = isset($b) ? \"b\" : 2; $x = $c ?? 3;",
+                        "<?php $x = isset($a) ? $a : 1; $y = isset($b) ? \"b\" : 2; $x = isset($c) ? $c : 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $x = $a[ $b[ \"c\"  ]]   ?? null;",
+                        "<?php $x = isset   (  $a[$b[\"c\"]]) ?$a[ $b[ \"c\"  ]]   : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $x = $a ?? $b[func(1, true)];",
+                        "<?php $x = isset($a) ? $a : $b[func(1, true)];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $x = $a ?? ($b ?? \"\");",
+                        "<?php $x = isset($a) ? $a : (isset($b) ? $b : \"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $x = ($a ?? isset($b)) ? $b : \"\";",
+                        "<?php $x = (isset($a) ? $a : isset($b)) ? $b : \"\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $x = $obj->a ?? null;",
+                        "<?php $x = isset($obj->a) ? $obj->a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $x = $obj->a->b ?? null;",
+                        "<?php $x = isset($obj->a->b) ? $obj->a->b : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $x = $obj->$a ?? null;",
+                        "<?php $x = isset($obj->$a) ? $obj->$a : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $x = $obj->a->$b ?? null;",
+                        "<?php $x = isset($obj->a->$b) ? $obj->a->$b : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $x = $obj->a[3] ?? null;",
+                        "<?php $x = isset($obj->a[3]) ? $obj->a[3] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $x = $obj->a['foo'] ?? null;",
+                        "<?php $x = isset($obj->a['foo']) ? $obj->a['foo'] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $x = $obj->a[$b] ?? null;",
+                        "<?php $x = isset($obj->a[$b]) ? $obj->a[$b] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $x = $obj->a[$b]['foo'] ?? null;",
+                        "<?php $x = isset($obj->a[$b]['foo']) ? $obj->a[$b]['foo'] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $x = $obj->a[$b['foo']] ?? null;",
+                        "<?php $x = isset($obj->a[$b['foo']]) ? $obj->a[$b['foo']] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php $x = $a[$obj->b] ?? null;",
+                        "<?php $x = isset($a[$obj->b]) ? $a[$obj->b] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php $x = Foo::A[$b] ?? null;",
+                        "<?php $x = isset(Foo::A[$b]) ? Foo::A[$b] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $x = $a[Foo::B] ?? null;",
+                        "<?php $x = isset($a[Foo::B]) ? $a[Foo::B] : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php $x = (\n// c1\n// c2\n// c3\n$a\n// c4\n??\n// c5\nnull\n/* c6 */\n)\n# c7\n;",
+                        "<?php $x = (\n// c1\nisset($a)\n// c2\n?\n// c3\n$a\n// c4\n:\n// c5\nnull\n/* c6 */\n)\n# c7\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php $x = $THIS ?? null;",
+                        "<?php $x = isset($THIS) ? $THIS : null;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryToNullCoalescingFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = $a ? $a : isset($b) ? $b : isset($c) ? $c : \"\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = $a ?? isset($b) ? $b : isset($c) ? $c : \"\";",
+                        "<?php $x = isset($a) ? $a : isset($b) ? $b : isset($c) ? $c : \"\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = /*a1*//*a2*/ /*b*/ $a /*c*/ ?? /*d*/ isset($b) /*e*/ ? /*f*/ $b /*g*/ : /*h*/ isset($c) /*i*/ ? /*j*/ $c /*k*/ : /*l*/ \"\";",
+                        "<?php $x = isset($a) /*a1*//*a2*/ ? /*b*/ $a /*c*/ : /*d*/ isset($b) /*e*/ ? /*f*/ $b /*g*/ : /*h*/ isset($c) /*i*/ ? /*j*/ $c /*k*/ : /*l*/ \"\";"
+                    ]
+                }
+            ]
+        }
+    ]
+}

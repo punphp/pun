@@ -1,0 +1,92 @@
+{
+    "fixer": "logical_operators",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\LogicalOperatorsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/LogicalOperatorsFixerTest.php",
+    "case_count": 8,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\LogicalOperatorsFixerTest",
+            "body": "    public function testFix(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php if ($a == \"foo\" && $b == \"bar\") {}",
+                        "<?php if ($a == \"foo\" and $b == \"bar\") {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php if ($a == \"foo\" || $b == \"bar\") {}",
+                        "<?php if ($a == \"foo\" or $b == \"bar\") {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php if ($a == \"foo\" && ($b == \"bar\" || $c == \"baz\")) {}",
+                        "<?php if ($a == \"foo\" and ($b == \"bar\" or $c == \"baz\")) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php if ($a == \"foo\" && ($b == \"bar\" || $c == \"baz\")) {}",
+                        "<?php if ($a == \"foo\" and ($b == \"bar\" || $c == \"baz\")) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php if ($a == \"foo\" && ($b == \"bar\" || $c == \"baz\")) {}",
+                        "<?php if ($a == \"foo\" && ($b == \"bar\" or $c == \"baz\")) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php if ($a == \"foo\" && ($b == \"bar\" || $c == \"baz\")) {}",
+                        "<?php if ($a == \"foo\" AND ($b == \"bar\" OR $c == \"baz\")) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php if ($a == \"foo\" && ($b == \"bar\" || $c == \"baz\")) {}",
+                        "<?php if ($a == \"foo\" and ($b == \"bar\" OR $c == \"baz\")) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php if ($a == \"foo\" && ($b == \"bar\" || $c == \"baz\")) {}",
+                        "<?php if ($a == \"foo\" AND ($b == \"bar\" or $c == \"baz\")) {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

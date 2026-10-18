@@ -1,0 +1,687 @@
+{
+    "fixer": "long_to_shorthand_operator",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\LongToShorthandOperatorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/LongToShorthandOperatorFixerTest.php",
+    "case_count": 82,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\LongToShorthandOperatorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple I",
+                    "args": [
+                        "<?php $a += 123;",
+                        "<?php $a = $a + 123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple II",
+                    "args": [
+                        "<?php $b[0] *= 789;",
+                        "<?php $b[0] = ($b[0]) * 789;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple III",
+                    "args": [
+                        "<?php ($b *= 789);",
+                        "<?php ($b = $b * 789);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple IV",
+                    "args": [
+                        "<?php foo($c /= 1234, 1);",
+                        "<?php foo($c = $c / 1234, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple V",
+                    "args": [
+                        "<?php foo(1, $x *= 1235, 1);",
+                        "<?php foo(1, $x = $x * 1235, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple II' array",
+                    "args": [
+                        "<?php $aa[1] %= 963;",
+                        "<?php $aa[1] = $aa[1] % 963;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple III array",
+                    "args": [
+                        "<?php $a[1][2] -= 852;",
+                        "<?php $a[1][2] = $a[1][2] - 852;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple IV array",
+                    "args": [
+                        "<?php {$a[0][1][122] ^= $a;}",
+                        "<?php {$a[0][1][122] = $a[0][1][122] ^ $a;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $xa .= $b;",
+                        "<?php $xa = $xa . $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c #0",
+                    "args": [
+                        "<?php $fa .= \"foo\";",
+                        "<?php $fa = $fa . \"foo\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c reverse #0",
+                    "args": [
+                        "<?php $ga *= \"foo\"  ;",
+                        "<?php $ga = \"foo\" * $ga;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c #1",
+                    "args": [
+                        "<?php $fa .= 'foo';",
+                        "<?php $fa = $fa . 'foo';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c reverse #1",
+                    "args": [
+                        "<?php $ga *= 'foo'  ;",
+                        "<?php $ga = 'foo' * $ga;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c #2",
+                    "args": [
+                        "<?php $fa .= 1;",
+                        "<?php $fa = $fa . 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c reverse #2",
+                    "args": [
+                        "<?php $ga *= 1  ;",
+                        "<?php $ga = 1 * $ga;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c #3",
+                    "args": [
+                        "<?php $fa .= 1.1;",
+                        "<?php $fa = $fa . 1.1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "c reverse #3",
+                    "args": [
+                        "<?php $ga *= 1.1  ;",
+                        "<?php $ga = 1.1 * $ga;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non commutative kind \"-\"",
+                    "args": [
+                        "<?php $nck = 5 - $nck;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non commutative kind \"/\"",
+                    "args": [
+                        "<?php $nck = 5 / $nck;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non commutative kind \".\"",
+                    "args": [
+                        "<?php $nck = 5 . $nck;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non commutative kind \"%\"",
+                    "args": [
+                        "<?php $nck = 5 % $nck;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "commutative operator \"*\".",
+                    "args": [
+                        "<?php $a3 *= \"456\"  ;",
+                        "<?php $a3 = \"456\" * $a3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "commutative operator \"|\".",
+                    "args": [
+                        "<?php $a3 |= \"456\"  ;",
+                        "<?php $a3 = \"456\" | $a3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "commutative operator \"&\".",
+                    "args": [
+                        "<?php $a3 &= \"456\"  ;",
+                        "<?php $a3 = \"456\" & $a3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "commutative operator \"^\".",
+                    "args": [
+                        "<?php $a3 ^= \"456\"  ;",
+                        "<?php $a3 = \"456\" ^ $a3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple I array",
+                    "args": [
+                        "<?php $ai[1] += 566;",
+                        "<?php $ai[1] = $ai[1] + 566;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple II array",
+                    "args": [
+                        "<?php $p[1] += 789;",
+                        "<?php $p[1] = $p[1] + 789;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal",
+                    "args": [
+                        "<?php $a += 1;",
+                        "<?php $a=$a+1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal, multiple",
+                    "args": [
+                        "<?php $a += 1;$a += 1;$a += 1;$a += 1;",
+                        "<?php $a=$a+1;$a=$a+1;$a=$a+1;$a=$a+1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"+\" var/var.",
+                    "args": [
+                        "<?php $a1 += $b;",
+                        "<?php $a1 = $a1 + $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"+\" var/const.",
+                    "args": [
+                        "<?php $a2 += 1;",
+                        "<?php $a2 = $a2 + 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"-\" var/var.",
+                    "args": [
+                        "<?php $a1 -= $b;",
+                        "<?php $a1 = $a1 - $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"-\" var/const.",
+                    "args": [
+                        "<?php $a2 -= 1;",
+                        "<?php $a2 = $a2 - 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"*\" var/var.",
+                    "args": [
+                        "<?php $a1 *= $b;",
+                        "<?php $a1 = $a1 * $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"*\" var/const.",
+                    "args": [
+                        "<?php $a2 *= 1;",
+                        "<?php $a2 = $a2 * 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"/\" var/var.",
+                    "args": [
+                        "<?php $a1 /= $b;",
+                        "<?php $a1 = $a1 / $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"/\" var/const.",
+                    "args": [
+                        "<?php $a2 /= 1;",
+                        "<?php $a2 = $a2 / 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"&\" var/var.",
+                    "args": [
+                        "<?php $a1 &= $b;",
+                        "<?php $a1 = $a1 & $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"&\" var/const.",
+                    "args": [
+                        "<?php $a2 &= 1;",
+                        "<?php $a2 = $a2 & 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \".\" var/var.",
+                    "args": [
+                        "<?php $a1 .= $b;",
+                        "<?php $a1 = $a1 . $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \".\" var/const.",
+                    "args": [
+                        "<?php $a2 .= 1;",
+                        "<?php $a2 = $a2 . 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"%\" var/var.",
+                    "args": [
+                        "<?php $a1 %= $b;",
+                        "<?php $a1 = $a1 % $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"%\" var/const.",
+                    "args": [
+                        "<?php $a2 %= 1;",
+                        "<?php $a2 = $a2 % 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"|\" var/var.",
+                    "args": [
+                        "<?php $a1 |= $b;",
+                        "<?php $a1 = $a1 | $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"|\" var/const.",
+                    "args": [
+                        "<?php $a2 |= 1;",
+                        "<?php $a2 = $a2 | 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"^\" var/var.",
+                    "args": [
+                        "<?php $a1 ^= $b;",
+                        "<?php $a1 = $a1 ^ $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Simple test with operator \"^\" var/const.",
+                    "args": [
+                        "<?php $a2 ^= 1;",
+                        "<?php $a2 = $a2 ^ 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a4 += ++$b;",
+                        "<?php $a4 = $a4 + ++$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a5 .=  \n<<<EOD\nEOD\n;",
+                        "<?php $a5 = $a5 .\n<<<EOD\nEOD\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a6 .=  \n<<<'EOD'\nEOD\n?>",
+                        "<?php $a6 = $a6 .\n<<<'EOD'\nEOD\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                $t += 1;\n                $t1 -= 1;\n                $t2 *= 1;\n                $t3 /= 1;\n                $t4 .= /* */  1;",
+                        "<?php\n                $t = ((($t))) + 1;\n                $t1 = ($t1) - 1;\n                $t2 = $t2 * 1;\n                $t3 = ($t3) / 1;\n                $t4 = ($t4) /* */ . 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minus itself",
+                    "args": [
+                        "<?php ;$a -= $a;",
+                        "<?php ;$a = $a - $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "after not needed block",
+                    "args": [
+                        "<?php {echo 1;} $a &= $a;",
+                        "<?php {echo 1;} $a = $a & $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "after if",
+                    "args": [
+                        "<?php if($z){echo 2;} $a |= $a;",
+                        "<?php if($z){echo 2;} $a = $a | $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fn minus itself",
+                    "args": [
+                        "<?php foo(1, $an -= $an);",
+                        "<?php foo(1, $an = $an - $an);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, before ) I",
+                    "args": [
+                        "<?php if ($a) $a .= \"X\"?>",
+                        "<?php if ($a) $a = $a . \"X\"?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                $a1 /= +$b1;\n                $a2 /= -$b2;\n            ",
+                        "<?php\n                $a1 = $a1 / +$b1;\n                $a2 = $a2 / -$b2;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix various",
+                    "args": [
+                        "<?php\n            $a = ${foo} . 1;\n            $a = ${foo}++ + 1;\n            $a = $a[1] * 1;\n            $a = $a(1 + 2) . 1;\n            $a = $a[1][2] . 1;\n            $a = $a[1][2][3][foo()][$a++][1+$a][${\"foo\"}][99] . 1;\n            $a = ${foo}++ . 1;\n            $a = ($a /* */ /* */ /* */ /* */ + 1 /* */ ) + 1;\n            $a = 1 . 1 + foo();\n            $a = 1 . foo() + 1;\n            $a = 1 . foo();\n            $a = 1 . foo(1, ++$a);\n            $a = foo() . 1;\n            $a = foo(1, ++$a) . 1;\n            $a = $a[1] * 1;\n            $a[1] = $a[0] * 1;\n            $a = $a(1 + 2) . 1;\n            foo($b, ${foo} + 1);\n            foo($a + 1);\n            $a++ + 2;\n            2 + $a++;\n            $a = 7 . (int) $a;\n            $a = (int) $a . 7;\n            (int) $a = 7 . (int) $a;\n            (int) $a = (int) $a . 7;\n            $a = 1 . $a + foo();\n            $a = $a instanceof \\Foo & $b;\n            $a = $a + $b instanceof \\Foo;\n            $a = $d / $a + $b;\n            $d + $a = $a - $e;\n            $a = $a >= $b;\n            $a[1] = $a[1] instanceof \\Foo & $b;\n        "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $a = 123 + $a + $c ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a = $a + 123 + $c ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php ($a + 123);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php while(true){$a + 123;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $a + 123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php ; $a + 123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                $a = 1;\n                $b = 3;\n                $a = $a + $b ? 1 : 2;\n                var_dump($a);\n\n                $a = 1;\n                $b = 3;\n                $a += $b ? 1 : 2;\n                var_dump($a);\n\n                //---------------------\n\n                $a = 2;\n                $b = null;\n                $a = $a + $b ?? 3;\n                var_dump($a);\n\n                $a = 2;\n                $b = null;\n                $a += $b ?? 3;\n                var_dump($a);\n\n                //---------------------\n\n                $a = 3;\n                $b = null;\n                $a = $a + $b === null ? 3 : 1;\n                var_dump($a);\n\n                $a = 3;\n                $b = null;\n                $a += $b === null ? 3 : 1;\n                var_dump($a);\n\n                //---------------------\n\n                $a = $a & $a ^ true;\n                $a = $a ^ true & $a;\n                $a = 1 . $a + foo();\n\n                //---------------------\n\n                $a = 1;\n                $b = false;\n                $z = true;\n\n                $a = $a + $b || $z;\n                var_dump($a);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php {echo 1;} $a = new class{} & $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple I reverse",
+                    "args": [
+                        "<?php $a *= 9988   ?>",
+                        "<?php $a = 9988 * $a ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple V, comments, reverse",
+                    "args": [
+                        "<?php foo(1, /*1*/$x /*2*/*= /*3*/123/*4*//*5*//*6*/, 1);",
+                        "<?php foo(1, /*1*/$x/*2*/=/*3*/123/*4*/*/*5*/$x/*6*/, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple VI, `)`, reverse",
+                    "args": [
+                        "<?php foo(1, $x *= 123);",
+                        "<?php foo(1, $x=123*$x);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a99 .= // foo\n<<<EOD\nEOD\n    ;",
+                        "<?php $a99 = $a99 . // foo\n<<<EOD\nEOD\n    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $a00 .= // foo2\n<<<'EOD'\nEOD\n;",
+                        "<?php $a00 = $a00 . // foo2\n<<<'EOD'\nEOD\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do bother with to much mess",
+                    "args": [
+                        "<?php\n                $a = 1 + $a + 2 + $a;\n                $a = $a + 1 + $a + 2;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                $r[1] = [&$r[1]];\n                $r[1] = [$r[1],&$r[1]];\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch case & default",
+                    "args": [
+                        "<?php\n                switch(foo()) {\n                    case 'X':\n                        $pX -= 789;\n                        break;\n                    default:\n                        $pY -= $b5;\n                }\n            ",
+                        "<?php\n                switch(foo()) {\n                    case 'X':\n                        $pX = $pX - 789;\n                        break;\n                    default:\n                        $pY = $pY - $b5;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "operator precedence",
+                    "args": [
+                        "<?php $x = $z ? $b : $a = $a + 123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alternative syntax",
+                    "args": [
+                        "<?php foreach([1, 2, 3] as $i): $a += $i; endforeach;",
+                        "<?php foreach([1, 2, 3] as $i): $a = $a + $i; endforeach;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "assign and return",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    private int $test = 1;\n\n    public function bar(int $i): int\n    {\n        return $this->test += $i;\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    private int $test = 1;\n\n    public function bar(int $i): int\n    {\n        return $this->test = $this->test + $i;\n    }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\LongToShorthandOperatorFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                $a = $a[1]{2} . 1;\n                $a = $a[1]{2}[3][foo()][$a++][1+$a][${\"foo\"}][99] . 1;\n                $a = 1 . $a[1]{2};\n                $a = 1 . $a[1]{2}[3][foo()][$a++][1+$a][${\"foo\"}][99];"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "simple I' array",
+                    "args": [
+                        "<?php $a[1] += 963;",
+                        "<?php $a[1] = $a{1} + 963;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "simple II array",
+                    "args": [
+                        "<?php $a[1]{1} += 852;",
+                        "<?php $a[1]{1} = $a[1]{1} + 852;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "simple III array",
+                    "args": [
+                        "<?php $a{7} += 742;",
+                        "<?php $a{7} = $a[7] + 742;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "simple IV array",
+                    "args": [
+                        "<?php {$a[0]{1}[1] ^= $azz;} ?>",
+                        "<?php {$a[0]{1}[1] = $a[0][1]{1} ^ $azz;} ?>"
+                    ]
+                }
+            ]
+        }
+    ]
+}

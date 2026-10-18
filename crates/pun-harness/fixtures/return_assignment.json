@@ -1,0 +1,735 @@
+{
+    "fixer": "return_assignment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\ReturnAssignmentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ReturnNotation/ReturnAssignmentFixerTest.php",
+    "case_count": 82,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "exceptionExpression",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\ReturnAssignmentFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $exceptionExpression): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($exceptionExpression);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid option",
+                    "args": [
+                        {
+                            "foo": true
+                        },
+                        "/^\\[return_assignment\\] Invalid configuration: The option \"foo\" does not exist\\. Defined options are: \"skip_named_var_tags\"\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong config type for \"skip_named_var_tags\"",
+                    "args": [
+                        {
+                            "skip_named_var_tags": "123"
+                        },
+                        "/^\\[return_assignment\\] Invalid configuration: The option \"skip_named_var_tags\" with value \"123\" is expected to be of type \"bool\", but is of type \"string\"\\.$/"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\ReturnAssignmentFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nfunction A($a0,$a1,$a2,$d)\n{\n    if ($a0) {\n        return 1;\n          // fix me\n    }\n\n    if ($a1) {\n        return 2;\n          // fix me\n    }\n\n    $nested0 = function() {\n        global $a;\n\n        ++$a;\n        $d = 2;\n\n        $nested1 = function () use ($d) {\n            if ($d) {\n                return 3;\n                  // fix me\n            }\n\n            $nested2 = function (&$d) {\n                if ($d) {\n                    $f = 1;\n                    return $f; // fix me not\n                }\n\n                $d = function () {\n                    return 4;\n                      // fix me\n                };\n\n                if ($d+1) {\n                    $f = 1;\n                    return $f; // fix me not\n                }\n            };\n\n            return $nested2();\n        };\n\n        return $a; // fix me not\n    };\n\n    if ($a2) {\n        return 5;\n          // fix me\n    }\n}\n\nfunction B($b0, $b1, $b2)\n{\n    if ($b0) {\n        return 10;\n          // fix me\n    }\n\n    if ($b1) {\n        return 20;\n          // fix me\n    }\n\n    if ($b2) {\n        return 30;\n          // fix me\n    }\n}\n",
+                        "<?php\nfunction A($a0,$a1,$a2,$d)\n{\n    if ($a0) {\n        $b = 1;\n        return $b; // fix me\n    }\n\n    if ($a1) {\n        $c = 2;\n        return $c; // fix me\n    }\n\n    $nested0 = function() {\n        global $a;\n\n        ++$a;\n        $d = 2;\n\n        $nested1 = function () use ($d) {\n            if ($d) {\n                $f = 3;\n                return $f; // fix me\n            }\n\n            $nested2 = function (&$d) {\n                if ($d) {\n                    $f = 1;\n                    return $f; // fix me not\n                }\n\n                $d = function () {\n                    $a = 4;\n                    return $a; // fix me\n                };\n\n                if ($d+1) {\n                    $f = 1;\n                    return $f; // fix me not\n                }\n            };\n\n            return $nested2();\n        };\n\n        return $a; // fix me not\n    };\n\n    if ($a2) {\n        $d = 5;\n        return $d; // fix me\n    }\n}\n\nfunction B($b0, $b1, $b2)\n{\n    if ($b0) {\n        $b = 10;\n        return $b; // fix me\n    }\n\n    if ($b1) {\n        $c = 20;\n        return $c; // fix me\n    }\n\n    if ($b2) {\n        $d = 30;\n        return $d; // fix me\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                    function A()\n                    {\n                        return 15;\n                    }\n                ",
+                        "<?php\n                    function A()\n                    {\n                        $a = 15;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                    function A()\n                    {\n                        /*0*/return /*1*//*2*/15;/*3*//*4*/ /*5*/ /*6*//*7*//*8*/\n                    }\n                ",
+                        "<?php\n                    function A()\n                    {\n                        /*0*/$a/*1*/=/*2*/15;/*3*//*4*/ /*5*/ return/*6*/$a/*7*/;/*8*/\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments with leading space",
+                    "args": [
+                        "<?php\n                    function A()\n                    { #1\n #2\n return #3\n #4\n  #5\n #6\n 15 #7\n ; #8\n #9\n  #10\n #11\n   #12\n #13\n   #14\n #15\n                    }\n                ",
+                        "<?php\n                    function A()\n                    { #1\n #2\n $a #3\n #4\n = #5\n #6\n 15 #7\n ; #8\n #9\n return #10\n #11\n $a  #12\n #13\n ;  #14\n #15\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    abstract class B\n                    {\n                        abstract protected function Z();public function A()\n                        {\n                            return 16;\n                        }\n                    }\n                ",
+                        "<?php\n                    abstract class B\n                    {\n                        abstract protected function Z();public function A()\n                        {\n                            $a = 16; return $a;\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                    function b() {\n                        if ($c) {\n                            return 0;\n                        }\n                        return testFunction(654+1);\n                    }\n                ",
+                        "<?php\n                    function b() {\n                        if ($c) {\n                            $b = 0;\n                            return $b;\n                        }\n                        $a = testFunction(654+1);\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal notation",
+                    "args": [
+                        "<?php $e=function(){return 1;};$f=function(){return 1;};$g=function(){return 1;};",
+                        "<?php $e=function(){$a=1;return$a;};$f=function(){$a=1;return$a;};$g=function(){$a=1;return$a;};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    function A()\n                    {#1\n#2                    \nreturn #3\n#4\n#5\n#6\n15#7\n;#8\n#9\n#10\n#11\n#12\n#13\n#14\n#15\n                    }\n                ",
+                        "<?php\n                    function A()\n                    {#1\n#2                    \n$a#3\n#4\n=#5\n#6\n15#7\n;#8\n#9\nreturn#10\n#11\n$a#12\n#13\n;#14\n#15\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nfunction A($b)\n{\n        // Comment\n        return a(\"2\", 4, $b);\n}\n",
+                        "<?php\nfunction A($b)\n{\n        // Comment\n        $value = a(\"2\", 4, $b);\n\n        return $value;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php function a($b,$c)  {if($c>1){echo 1;} return (1 + 2 + $b);  }",
+                        "<?php function a($b,$c)  {if($c>1){echo 1;} $a= (1 + 2 + $b);return $a; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function a($b,$c)  {return (3 * 4 + $b);  }",
+                        "<?php function a($b,$c)  {$zz= (3 * 4 + $b);return $zz; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    function a() {\n                        return 4563;\n                          ?> <?php\n                    }\n                ",
+                        "<?php\n                    function a() {\n                        $a = 4563;\n                        return $a ?> <?php\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        return $c + 1; /*\nvar names are case-insensitive */ }\n                ",
+                        "<?php\n                    function a()\n                    {\n                        $A = $c + 1; /*\nvar names are case-insensitive */ return $a   ;}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                    function A()\n                    {\n                        return $f[1]->a();\n                    }\n                ",
+                        "<?php\n                    function A()\n                    {\n                        $a = $f[1]->a();\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                    function a($foos) {\n                        return array_map(function ($foo) {\n                            return (string) $foo;\n                        }, $foos);\n                    }",
+                        "<?php\n                    function a($foos) {\n                        $bars = array_map(function ($foo) {\n                            return (string) $foo;\n                        }, $foos);\n\n                        return $bars;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                    function a($foos) {\n                        return ($foos = ['bar']);\n                    }",
+                        "<?php\n                    function a($foos) {\n                        $bars = ($foos = ['bar']);\n\n                        return $bars;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                    function a($foos) {\n                        return (function ($foos) {\n                            return $foos;\n                        })($foos);\n                    }",
+                        "<?php\n                    function a($foos) {\n                        $bars = (function ($foos) {\n                            return $foos;\n                        })($foos);\n\n                        return $bars;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous classes",
+                    "args": [
+                        "<?php\n                    function A()\n                    {\n                        return new class {};\n                    }\n\n                    function B()\n                    {\n                        return new class() {};\n                    }\n\n                    function C()\n                    {\n                        return new class(1,2) { public function Z(Foo $d){} };\n                    }\n\n                    function D()\n                    {\n                        return new class extends Y {};\n                    }\n\n                    function E()\n                    {\n                        return new class extends Y implements A\\O,P {};\n                    }\n                ",
+                        "<?php\n                    function A()\n                    {\n                        $a = new class {};\n                        return $a;\n                    }\n\n                    function B()\n                    {\n                        $b = new class() {};\n                        return $b;\n                    }\n\n                    function C()\n                    {\n                        $c = new class(1,2) { public function Z(Foo $d){} };\n                        return $c;\n                    }\n\n                    function D()\n                    {\n                        $c = new class extends Y {};\n                        return $c;\n                    }\n\n                    function E()\n                    {\n                        $c = new class extends Y implements A\\O,P {};\n                        return $c;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "lambda",
+                    "args": [
+                        "<?php\n                    function A()\n                    {\n                        return function () {};\n                    }\n\n                    function B()\n                    {\n                        return function ($a, $b) use ($z) {};\n                    }\n\n                    function C()\n                    {\n                        return static function ($a, $b) use ($z) {};\n                    }\n\n                    function D()\n                    {\n                        return function &() use(&$b) {\n                            return $b; // do not fix\n                        };\n                          // fix\n                    }\n\n                    function E()\n                    {\n                        return function &() {\n                            $z = new A(); return $z; // do not fix\n                        };\n                          // fix\n                    }\n\n                    function A99()\n                    {\n                        $v = static function ($a, $b) use ($z) {};\n                        return 15;\n                    }\n                ",
+                        "<?php\n                    function A()\n                    {\n                        $a = function () {};\n\n                        return $a;\n                    }\n\n                    function B()\n                    {\n                        $b = function ($a, $b) use ($z) {};\n\n                        return $b;\n                    }\n\n                    function C()\n                    {\n                        $c = static function ($a, $b) use ($z) {};\n\n                        return $c;\n                    }\n\n                    function D()\n                    {\n                        $a = function &() use(&$b) {\n                            return $b; // do not fix\n                        };\n\n                        return $a; // fix\n                    }\n\n                    function E()\n                    {\n                        $a = function &() {\n                            $z = new A(); return $z; // do not fix\n                        };\n\n                        return $a; // fix\n                    }\n\n                    function A99()\n                    {\n                        $v = static function ($a, $b) use ($z) {};\n                        $a = 15;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "arrow functions",
+                    "args": [
+                        "<?php\n                    function Foo() {\n                        return fn($x) => $x + $y;\n                    }\n                ",
+                        "<?php\n                    function Foo() {\n                        $fn1 = fn($x) => $x + $y;\n\n                        return $fn1;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try catch",
+                    "args": [
+                        "<?php\n                function foo()\n                {\n                    if (isSomeCondition()) {\n                        return getSomeResult();\n                    }\n\n                    try {\n                        $result = getResult();\n\n                        return $result;\n                    } catch (\\Throwable $exception) {\n                        baz($result ?? null);\n                    }\n                }\n                ",
+                        "<?php\n                function foo()\n                {\n                    if (isSomeCondition()) {\n                        $result = getSomeResult();\n\n                        return $result;\n                    }\n\n                    try {\n                        $result = getResult();\n\n                        return $result;\n                    } catch (\\Throwable $exception) {\n                        baz($result ?? null);\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple try/catch blocks separated with conditional return",
+                    "args": [
+                        "<?php\n                function foo()\n                {\n                    try {\n                        return getResult();\n                    } catch (\\Throwable $exception) {\n                        error_log($exception->getMessage());\n                    }\n\n                    if (isSomeCondition()) {\n                        return getSomeResult();\n                    }\n\n                    try {\n                        $result = $a + $b;\n                        return $result;\n                    } catch (\\Throwable $th) {\n                        var_dump($result ?? null);\n                    }\n                }\n                ",
+                        "<?php\n                function foo()\n                {\n                    try {\n                        $result = getResult();\n                        return $result;\n                    } catch (\\Throwable $exception) {\n                        error_log($exception->getMessage());\n                    }\n\n                    if (isSomeCondition()) {\n                        $result = getSomeResult();\n                        return $result;\n                    }\n\n                    try {\n                        $result = $a + $b;\n                        return $result;\n                    } catch (\\Throwable $th) {\n                        var_dump($result ?? null);\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try/catch/finally",
+                    "args": [
+                        "<?php\n                function foo()\n                {\n                    if (isSomeCondition()) {\n                        return getSomeResult();\n                    }\n\n                    try {\n                        $result = getResult();\n\n                        return $result;\n                    } catch (\\Throwable $exception) {\n                        error_log($exception->getMessage());\n                    } finally {\n                        baz($result);\n                    }\n                }\n                ",
+                        "<?php\n                function foo()\n                {\n                    if (isSomeCondition()) {\n                        $result = getSomeResult();\n\n                        return $result;\n                    }\n\n                    try {\n                        $result = getResult();\n\n                        return $result;\n                    } catch (\\Throwable $exception) {\n                        error_log($exception->getMessage());\n                    } finally {\n                        baz($result);\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple try/catch separated with conditional return, with finally block",
+                    "args": [
+                        "<?php\n                function foo()\n                {\n                    try {\n                        return getResult();\n                    } catch (\\Throwable $exception) {\n                        error_log($exception->getMessage());\n                    }\n\n                    if (isSomeCondition()) {\n                        return getSomeResult();\n                    }\n\n                    try {\n                        $result = $a + $b;\n                        return $result;\n                    } catch (\\Throwable $th) {\n                        throw $th;\n                    } finally {\n                        echo \"result:\", $result, \\PHP_EOL;\n                    }\n                }\n                ",
+                        "<?php\n                function foo()\n                {\n                    try {\n                        $result = getResult();\n                        return $result;\n                    } catch (\\Throwable $exception) {\n                        error_log($exception->getMessage());\n                    }\n\n                    if (isSomeCondition()) {\n                        $result = getSomeResult();\n                        return $result;\n                    }\n\n                    try {\n                        $result = $a + $b;\n                        return $result;\n                    } catch (\\Throwable $th) {\n                        throw $th;\n                    } finally {\n                        echo \"result:\", $result, \\PHP_EOL;\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid reference stays invalid",
+                    "args": [
+                        "<?php\n                    function bar() {\n                        $foo = &foo();\n                        return $foo;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static",
+                    "args": [
+                        "<?php\n                    function a() {\n                        static $a;\n                        $a = time();\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "global",
+                    "args": [
+                        "<?php\n                    function a() {\n                        global $a;\n                        $a = time();\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "passed by reference",
+                    "args": [
+                        "<?php\n                function foo(&$var)\n                    {\n                        $var = 1;\n                        return $var;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not in function scope",
+                    "args": [
+                        "<?php\n                    $a = 1; // var might be global here\n                    return $a;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open-close with ;",
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        $a = 1;\n                        ?>\n                        <?php\n                        ;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open-close single line",
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        $a = 1 ?><?php return $a;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open-close",
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        $a = 1\n                        ?>\n                        <?php\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open-close before function",
+                    "args": [
+                        "<?php\n                    $zz = 1 ?><?php\n                    function a($zz)\n                    {\n                        ;\n                        return $zz;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return complex statement",
+                    "args": [
+                        "<?php\n                    function a($c)\n                    {\n                        $a = 1;\n                        return $a + $c;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array assign",
+                    "args": [
+                        "<?php\n                    function a($c)\n                    {\n                        $_SERVER[\"abc\"] = 3;\n                        return $_SERVER;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if assign",
+                    "args": [
+                        "<?php\n                    function foo ($bar)\n                    {\n                        $a = 123;\n                        if ($bar)\n                            $a = 12345;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else assign",
+                    "args": [
+                        "<?php\n                    function foo ($bar)\n                    {\n                        $a = 123;\n                        if ($bar)\n                            ;\n                        else\n                            $a = 12345;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif assign",
+                    "args": [
+                        "<?php\n                    function foo ($bar)\n                    {\n                        $a = 123;\n                        if ($bar)\n                            ;\n                        elseif($b)\n                            $a = 12345;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "echo $a = N / comment $a = N;",
+                    "args": [
+                        "<?php\n                    function a($c)\n                    {\n                        $a = 1;\n                        echo $a.\"=1\";\n                        return $a;\n                    }\n\n                    function b($c)\n                    {\n                        $a = 1;\n                        echo $a.\"=1;\";\n                        return $a;\n                    }\n\n                    function c($c)\n                    {\n                        $a = 1;\n                        echo $a;\n                        // $a =1;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if ($a = N)",
+                    "args": [
+                        "<?php\n                    function a($c)\n                    {\n                        if ($a = 1)\n                            return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "changed after declaration",
+                    "args": [
+                        "<?php\n                    function a($c)\n                    {\n                        $a = 1;\n                        $a += 1;\n                        return $a;\n                    }\n\n                    function b($c)\n                    {\n                        $a = 1;\n                        $a -= 1;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex statement",
+                    "args": [
+                        "<?php\n                    function a($c)\n                    {\n                        $d = $c && $a = 1;\n                        return $a;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHP close tag within function",
+                    "args": [
+                        "<?php\n                    function a($zz)\n                    {\n                        $zz = 1 ?><?php\n                        ;\n                        return $zz;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import global using \"require\"",
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        require __DIR__.\"/test3.php\";\n                        $b = 1;\n                        return $b;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import global using \"require_once\"",
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        require_once __DIR__.\"/test3.php\";\n                        $b = 1;\n                        return $b;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import global using \"include\"",
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        include __DIR__.\"/test3.php\";\n                        $b = 1;\n                        return $b;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import global using \"include_once\"",
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                        include_once __DIR__.\"/test3.php\";\n                        $b = 1;\n                        return $b;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "eval",
+                    "args": [
+                        "<?php\n                    $b = function ($z) {\n                        $c = eval($z);\n\n                        return $c;\n                    };\n\n                    $c = function ($x) {\n                        $x = eval($x);\n                        $x = 1;\n                        return $x;\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "${X}",
+                    "args": [
+                        "<?php\n                    function A($g)\n                    {\n                        $h = ${$g};\n\n                        return $h;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "$$",
+                    "args": [
+                        "<?php\n                    function B($c)\n                    {\n                        $b = $$c;\n\n                        return $b;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nclass XYZ\n{\n    public function test1()\n    {\n        $GLOBALS['a'] = 2;\n\n        return $GLOBALS;\n    }\n\n    public function test2()\n    {\n        $_server = 2;\n\n        return $_server;\n    }\n\n    public function __destruct()\n    {\n        $GLOBALS['a'] = 2;\n\n        return $GLOBALS['a']; // destruct cannot return but still lints\n    }\n};\n\n$a = new XYZ();\n$a = 1;\nvar_dump($a); // $a = 2 here _╯°□°╯︵┻━┻\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable returned by reference in function",
+                    "args": [
+                        "<?php\n                function &foo() {\n                    $var = 1;\n                    return $var;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable returned by reference in method",
+                    "args": [
+                        "<?php\n                class Foo {\n                    public function &bar() {\n                        $var = 1;\n                        return $var;\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable returned by reference in lambda",
+                    "args": [
+                        "<?php $a = function &() {$z = new A(); return $z;};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                function F() {\n                    $a = 1;\n\n                    while(bar()) {\n                        ++$a;\n                    }; // keep this\n\n                    return $a;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try/catch/finally - do not fix",
+                    "args": [
+                        "<?php\n                function add($a, $b): mixed\n                {\n                    try {\n                        $result = $a + $b;\n\n                        return $result;\n                    } catch (\\Throwable $th) {\n                        throw $th;\n                    } finally {\n                        echo 'result:', $result, \\PHP_EOL;\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try with multiple catch blocks",
+                    "args": [
+                        "<?php\n                function foo() {\n                    try {\n                        $bar = bar();\n\n                        return $bar;\n                    } catch (\\LogicException $e) {\n                        echo \"catch ... \";\n                    } catch (\\RuntimeException $e) {\n                        echo $bar;\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try/catch/finally with some comments",
+                    "args": [
+                        "<?php\n                function add($a, $b): mixed\n                {\n                    try {\n                        $result = $a + $b;\n\n                        return $result;\n                    } /* foo */ catch /** bar */ (\\LogicException $th) {\n                        throw $th;\n                    }\n                    // Or maybe this....\n                    catch (\\RuntimeException $th) {\n                        throw $th;\n                    }\n                    # Print the result anyway\n                    finally {\n                        echo 'result:', $result, \\PHP_EOL;\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    return bar();\n}\n",
+                        "<?php\n\nfunction foo() {\n    $a = bar();\n    $b = $a;\n\n    return $b;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n\nfunction foo(&$c) {\n    $a = $c;\n    $b = $a;\n\n    return $b;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @var tag for the variable (without variable name and default config)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @var int[] */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @var int[] */\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @var tag for the variable (without variable name and \"skip_named_var_tags\" option)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @var int[] */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @var int[] */\n    $a = doSomething();\n\n    return $a;\n}\n",
+                        {
+                            "skip_named_var_tags": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @var tag for the variable (with variable name and default config)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @var int[] $a */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @var int[] $a */\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @var tag for the variable (with variable name and \"skip_named_var_tags\" option)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @var int[] $a */\n    $a = doSomething();\n\n    return $a;\n}\n",
+                        null,
+                        {
+                            "skip_named_var_tags": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @phpstan-var tag for the variable (without variable name and default config)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @phpstan-var int[] */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @phpstan-var int[] */\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @phpstan-var tag for the variable (without variable name and \"skip_named_var_tags\" option)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @phpstan-var int[] */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @phpstan-var int[] */\n    $a = doSomething();\n\n    return $a;\n}\n",
+                        {
+                            "skip_named_var_tags": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @phpstan-var tag for the variable (with variable name and default config)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @phpstan-var int[] $a */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @phpstan-var int[] $a */\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @phpstan-var tag for the variable (with variable name and \"skip_named_var_tags\" option)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @phpstan-var int[] $a */\n    $a = doSomething();\n\n    return $a;\n}\n",
+                        null,
+                        {
+                            "skip_named_var_tags": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @psalm-var tag for the variable (without variable name and default config)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @psalm-var int[] */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @psalm-var int[] */\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @psalm-var tag for the variable (without variable name and \"skip_named_var_tags\" option)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @psalm-var int[] */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @psalm-var int[] */\n    $a = doSomething();\n\n    return $a;\n}\n",
+                        {
+                            "skip_named_var_tags": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @psalm-var tag for the variable (with variable name and default config)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @psalm-var int[] $a */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** @psalm-var int[] $a */\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment with @psalm-var tag for the variable (with variable name and \"skip_named_var_tags\" option)",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** @psalm-var int[] $a */\n    $a = doSomething();\n\n    return $a;\n}\n",
+                        null,
+                        {
+                            "skip_named_var_tags": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "doc comment without tags for the variable",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    /** Just saying hello */\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    /** Just saying hello */\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic comment for the variable",
+                    "args": [
+                        "<?php\n\nfunction foo() {\n    // some comment\n    return doSomething();\n}\n",
+                        "<?php\n\nfunction foo() {\n    // some comment\n    $a = doSomething();\n\n    return $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n\nfunction foo0() {\n\treturn bar();\n}\nfunction foo1() {\n\treturn bar();\n}\nfunction foo2() {\n\treturn bar();\n}\nfunction foo3() {\n\treturn bar();\n}\nfunction foo4() {\n\treturn bar();\n}\nfunction foo5() {\n\treturn bar();\n}\nfunction foo6() {\n\treturn bar();\n}\nfunction foo7() {\n\treturn bar();\n}\nfunction foo8() {\n\treturn bar();\n}\nfunction foo9() {\n\treturn bar();\n}",
+                        "<?php\n\nfunction foo0() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo1() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo2() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo3() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo4() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo5() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo6() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo7() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo8() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}\nfunction foo9() {\n\t$a = bar();\n\t$b = $a;\n\nreturn $b;\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\ReturnAssignmentFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "try with non-capturing catch block",
+                    "args": [
+                        "<?php\n                function add($a, $b): mixed\n                {\n                    try {\n                        $result = $a + $b;\n\n                        return $result;\n                    }\n                    catch (\\Throwable) {\n                        noop();\n                    }\n                    finally {\n                        echo 'result:', $result, \\PHP_EOL;\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "match",
+                    "args": [
+                        "<?php\n            function Foo($food) {\n                return match ($food) {\n                    \"apple\" => \"This food is an apple\",\n                    \"cake\" => \"This food is a cake\",\n                };\n            }\n            ",
+                        "<?php\n            function Foo($food) {\n                $return_value = match ($food) {\n                    \"apple\" => \"This food is an apple\",\n                    \"cake\" => \"This food is a cake\",\n                };\n\n                return $return_value;\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute before anonymous `class`",
+                    "args": [
+                        "<?php\n                function A()\n                {\n                    return new #[Foo] class {};\n                }\n            ",
+                        "<?php\n                function A()\n                {\n                    $a = new #[Foo] class {};\n                    return $a;\n                }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\ReturnAssignmentFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "anonymous readonly class",
+                    "args": [
+                        "<?php\n                function A()\n                {\n                    return new readonly class {};\n                }\n            ",
+                        "<?php\n                function A()\n                {\n                    $a = new readonly class {};\n                    return $a;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "attribute before anonymous `readonly class`",
+                    "args": [
+                        "<?php\n                function A()\n                {\n                    return new #[Foo] readonly class {};\n                }\n            ",
+                        "<?php\n                function A()\n                {\n                    $a = new #[Foo] readonly class {};\n                    return $a;\n                }\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

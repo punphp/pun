@@ -1,0 +1,44 @@
+{
+    "fixer": "no_useless_nullsafe_operator",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NoUselessNullsafeOperatorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/NoUselessNullsafeOperatorFixerTest.php",
+    "case_count": 2,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NoUselessNullsafeOperatorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple case + comment",
+                    "args": [
+                        "<?php $a = new class extends foo {\n                public function bar() {\n                    $this->g();\n                    // $this?->g();\n                }\n            };",
+                        "<?php $a = new class extends foo {\n                public function bar() {\n                    $this?->g();\n                    // $this?->g();\n                }\n            };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple casing cases + comment + no candidate",
+                    "args": [
+                        "<?php $a = new class extends foo {\n                public function bar() {\n                    return $THIS /*1*/ -> g().$THis->g().$this->do()?->o();\n                }\n            };",
+                        "<?php $a = new class extends foo {\n                public function bar() {\n                    return $THIS /*1*/ ?-> g().$THis?->g().$this->do()?->o();\n                }\n            };"
+                    ]
+                }
+            ]
+        }
+    ]
+}

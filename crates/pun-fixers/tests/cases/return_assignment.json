@@ -1,0 +1,44 @@
+[
+    {
+        "fixer": "return_assignment",
+        "input": "<?php\nfunction foo() {\n    interface I { public function bar(); }\n    $a = 1;\n    return $a;\n}\n",
+        "expected": "<?php\nfunction foo() {\n    interface I { public function bar(); }\n    return 1;\n}\n"
+    },
+    {
+        "fixer": "return_assignment",
+        "input": "<?php\nfunction foo() {\n    echo $a = 1;\n    return $a;\n}\n",
+        "expected": "<?php\nfunction foo() {\n    echo $a = 1;\n    return $a;\n}\n"
+    },
+    {
+        "fixer": "return_assignment",
+        "input": "<?php\nfunction foo($x) {\n    $y = match ($x) { default => 1 };\n    do { $a = 1; } while (0);\n    return $a;\n}\n",
+        "expected": "<?php\nfunction foo($x) {\n    $y = match ($x) { default => 1 };\n    do { $a = 1; } while (0);\n    return $a;\n}\n"
+    },
+    {
+        "fixer": "return_assignment",
+        "config": {
+            "skip_named_var_tags": true
+        },
+        "input": "<?php\nfunction foo() {\n    $a = bar();\n    return $a;\n}\n",
+        "expected": "<?php\nfunction foo() {\n    return bar();\n}\n"
+    },
+    {
+        "fixer": "return_assignment",
+        "config": {
+            "foo": true
+        },
+        "error": "[return_assignment] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"skip_named_var_tags\"."
+    },
+    {
+        "fixer": "return_assignment",
+        "config": {
+            "skip_named_var_tags": "123"
+        },
+        "error": "[return_assignment] Invalid configuration: The option \"skip_named_var_tags\" with value \"123\" is expected to be of type \"bool\", but is of type \"string\"."
+    },
+    {
+        "fixer": "return_assignment",
+        "input": "<?php\nfunction foo() {\n    $b = 1;\n    return $a;\n}\nfunction bar() {\n    $A = 1;\n    return $a;\n}\n",
+        "expected": "<?php\nfunction foo() {\n    $b = 1;\n    return $a;\n}\nfunction bar() {\n    return 1;\n}\n"
+    }
+]

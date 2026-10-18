@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "error_suppression",
+        "config": {
+            "foo": true
+        },
+        "error": "[error_suppression] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"mute_deprecation_error\", \"noise_remaining_usages\", \"noise_remaining_usages_exclude\"."
+    }
+]

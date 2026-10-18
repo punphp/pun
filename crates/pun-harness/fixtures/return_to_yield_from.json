@@ -1,0 +1,204 @@
+{
+    "fixer": "return_to_yield_from",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\ReturnToYieldFromFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ArrayNotation/ReturnToYieldFromFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\ReturnToYieldFromFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php return [function() { return [1, 2, 3]; }];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php return [fn() => [1, 2, 3]];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                function foo(): iterable { return $z; }\n\n                return [1,2] ?>  X  <?php { echo 2; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo() { return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(): MyAwesomeIterableType { return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(): iterable { if (true) { return [1]; } else { return [2]; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(): ?iterable { return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n            abstract class Foo {\n                abstract public function bar(): iterable;\n                public function baz(): array { return []; }\n            }\n        "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php return [function(): iterable { yield from [1, 2, 3]; }];",
+                        "<?php return [function(): iterable { return [1, 2, 3]; }];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php class Foo {\n                function bar(): iterable { yield from [1, 2, 3]; }\n            }",
+                        "<?php class Foo {\n                function bar(): iterable { return [1, 2, 3]; }\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php function foo(): iterable { yield from [1, 2, 3];;;;;;;; }",
+                        "<?php function foo(): iterable { return [1, 2, 3];;;;;;;; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php function foo(): iterable { yield from array(1, 2, 3); }",
+                        "<?php function foo(): iterable { return array(1, 2, 3); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php function foo(): iterable { $x = 0; yield from [1, 2, 3]; }",
+                        "<?php function foo(): iterable { $x = 0; return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php function foo(): iterable { $x = 0; yield from array(1, 2, 3); }",
+                        "<?php function foo(): iterable { $x = 0; return array(1, 2, 3); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php function foo(): ITERABLE { yield from [1, 2, 3]; }",
+                        "<?php function foo(): ITERABLE { return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $f = function(): iterable { yield from [1, 2, 3]; };",
+                        "<?php $f = function(): iterable { return [1, 2, 3]; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                function foo(): array { return [3, 4]; }\n                function bar(): iterable { yield from [1, 2]; }\n                function baz(): int { return 5; }\n            ",
+                        "<?php\n                function foo(): array { return [3, 4]; }\n                function bar(): iterable { return [1, 2]; }\n                function baz(): int { return 5; }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\ReturnToYieldFromFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(): null|iterable { return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(): iterable|null { return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(): ITERABLE|null { return [1, 2, 3]; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(): Bar|iterable { return [1, 2, 3]; }"
+                    ]
+                }
+            ]
+        }
+    ]
+}
