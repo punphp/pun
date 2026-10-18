@@ -15,11 +15,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
 
 ## P0: Broken
 
-- [ ] 1. `crates/pun-workspace/tests/finder.rs:107`: `pun_config::migrate::from_pint(&pint, None)` no longer compiles
+- [x] 1. `crates/pun-workspace/tests/finder.rs:107`: `pun_config::migrate::from_pint(&pint, None)` no longer compiles
   since fb790c3 added the `runs` parameter (`crates/pun-config/src/migrate.rs:25`), so `cargo test --workspace` and
   the CI test and coverage jobs fail before running anything. Pass `&|_| true` (or the `pun_fixers::all` check `pun
   migrate` uses). Reproduced (clippy compile error E0061). Spans crates.
-- [ ] 2. `crates/pun-cli/tests/output.rs:591` and `:605` are not rustfmt-clean (last touched in 4e5a182), so CI's
+- [x] 2. `crates/pun-cli/tests/output.rs:591` and `:605` are not rustfmt-clean (last touched in 4e5a182), so CI's
   `cargo fmt --all --check` (`.github/workflows/ci.yml:29`) is red. Run `cargo fmt -p punphp`. Reproduced.
 - [ ] 3. `crates/pun-config/src/options.rs:358-367` (`rejected`'s `entry` closure) and `:411-416` unwrap a bad entry
   that isn't there when a map or list option holds `null`, so `pun migrate` panics on

@@ -104,7 +104,7 @@ fn listing(root: &Path, files: anyhow::Result<Vec<PathBuf>>) -> Listing {
 /// What Pun runs for `root`'s pint.json (or `config`): the pun.toml `pun migrate` writes from it.
 fn load(root: &Path, config: Option<&str>) -> Result<pun_config::Config, String> {
     let pint = root.join(config.unwrap_or("pint.json"));
-    pun_config::migrate::from_pint(&pint, None)
+    pun_config::migrate::from_pint(&pint, None, &|_| true)
         .and_then(|m| pun_config::from_toml(root, &m.toml))
         .map_err(|e| e.to_string())
 }

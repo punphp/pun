@@ -375,7 +375,11 @@ fn infer<'arena>(
     // Only the declarations holding a wanted expression: a method's types come from its own body and the codebase,
     // so the file's other functions and methods would only cost time (most of the rules' time on large classes).
     let program = arena.alloc(Program {
-        statements: Prune { arena, wanted: &wanted.0 }.statements(&program.statements),
+        statements: Prune {
+            arena,
+            wanted: &wanted.0,
+        }
+        .statements(&program.statements),
         ..program.clone()
     });
     // ponytail: Mago's analyzer trips debug assertions on some code (an empty TUnion::from_vec); no types then

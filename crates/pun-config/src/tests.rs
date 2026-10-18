@@ -343,8 +343,11 @@ fn lint_groups() {
     // 92 style rules at warn, the set's two control-flow rules at error.
     let l = lint("[lint]\nsets = [\"early-return\"]\n[lint.groups]\nstyle = \"warn\"\n");
     assert_eq!(l.rules.len(), 94);
-    assert!(l.rules.iter().all(|r| r.level == Level::Warn
-        || r.id.starts_with("lint/control-flow/no-")));
+    assert!(
+        l.rules
+            .iter()
+            .all(|r| r.level == Level::Warn || r.id.starts_with("lint/control-flow/no-"))
+    );
     assert_eq!(
         level(&l, "lint/control-flow/no-useless-else"),
         Some(Level::Error)
@@ -483,9 +486,7 @@ fn analyse() {
         }
     );
     assert_eq!(a.rules.len(), 155 + 104 + 80 - 13);
-    assert!(
-        has(&a, "analyse/undefined/method") && !has(&a, "analyse/types/missing-return-type")
-    );
+    assert!(has(&a, "analyse/undefined/method") && !has(&a, "analyse/types/missing-return-type"));
     let preset = |p: &str, lock: bool| {
         let toml = format!("[analyse]\npreset = \"{p}\"\n");
         let mut files = vec![("pun.toml", toml.as_str())];
@@ -553,10 +554,7 @@ laravel = "on"
         rule("analyse/undefined/method"),
         Some(json!({"magic": true}))
     );
-    assert_eq!(
-        rule("analyse/types/missing-return-type"),
-        Some(Value::Null)
-    );
+    assert_eq!(rule("analyse/types/missing-return-type"), Some(Value::Null));
     assert_eq!(rule("analyse/undefined/function"), None);
     assert_eq!(rule("analyse/laravel/useless-with-call"), None);
     // laravel/framework locked, the group switched off.
@@ -564,7 +562,10 @@ laravel = "on"
         ("pun.toml", "[analyse.rules]\nlaravel = \"off\"\n"),
         ("composer.lock", LARAVEL_LOCK),
     ]);
-    assert_eq!((a.rules.len(), a.ecosystems.len()), (155 + 104 + 80 - 13, 0));
+    assert_eq!(
+        (a.rules.len(), a.ecosystems.len()),
+        (155 + 104 + 80 - 13, 0)
+    );
 }
 #[test]
 fn composer_gate() {
@@ -631,10 +632,7 @@ fn rule_metadata() {
         Some("Unused `use` statements must be removed.")
     );
     // Analyse rules have no fix.
-    assert_eq!(
-        rule("analyse/types/argument").unwrap().fix,
-        "none"
-    );
+    assert_eq!(rule("analyse/types/argument").unwrap().fix, "none");
     assert!(rule("dead-code/no-self-assignment").is_none());
     assert!(rule("lint.no-self-assignment").is_none());
     assert!(rule("format/imports/no-unused").is_none());
@@ -1023,7 +1021,11 @@ fn pun_toml_errors() {
         // Upstream names: PHP-CS-Fixer, Pint, Rector, PHPStan.
         ("format", "array_syntax", "format/arrays/syntax"),
         ("format", "Pint/laravel_blade", "format/laravel/blade"),
-        ("lint", "StrictInArray", "lint/functions/require-strict-in-array"),
+        (
+            "lint",
+            "StrictInArray",
+            "lint/functions/require-strict-in-array",
+        ),
         ("lint", "method.notFound", "analyse/undefined/method"),
         ("analyse", "method.notFound", "analyse/undefined/method"),
         // A rule of the other command, full or short.

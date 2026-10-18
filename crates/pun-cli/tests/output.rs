@@ -591,7 +591,12 @@ fn prettier_preflight_like_pint() {
     );
     reset(&cx.dir, &opts);
     let php = which("php");
-    let pint = [php.as_str(), cx.oracle.to_str().unwrap(), "--test", "app/Clean.php"];
+    let pint = [
+        php.as_str(),
+        cx.oracle.to_str().unwrap(),
+        "--test",
+        "app/Clean.php",
+    ];
     let want = run(&pint, &cx.dir, PLAIN);
     let message = "[Pint/laravel_blade] Is not configurable.";
     assert!(
@@ -605,7 +610,10 @@ fn prettier_preflight_like_pint() {
         .output()
         .unwrap();
     let stderr = String::from_utf8_lossy(&got.stderr);
-    assert!(!got.status.success() && stderr.contains(message), "{stderr}");
+    assert!(
+        !got.status.success() && stderr.contains(message),
+        "{stderr}"
+    );
     // Installed but too old / too new.
     let mut old = t.clone();
     let manifests: Vec<(String, String)> = [
