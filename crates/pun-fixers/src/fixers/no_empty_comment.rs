@@ -92,7 +92,7 @@ fn get_comment_type(content: &[u8]) -> CommentType {
 
 fn get_line_break_count(tokens: &Tokens, white_start: usize, white_end: usize) -> usize {
     (white_start..white_end)
-        .map(|i| Preg::match_all(r"/\R/u", tokens[i].get_content(), 0).len())
+        .map(|i| Preg::match_all(r"/\R/u", tokens[i].get_content()).len())
         .sum()
 }
 
