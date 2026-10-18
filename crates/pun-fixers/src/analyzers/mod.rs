@@ -13,6 +13,7 @@ pub(crate) mod classy_analyzer;
 pub(crate) mod constant_invocation;
 pub(crate) mod control_case_structures_analyzer;
 pub(crate) mod docblock;
+pub(crate) mod final_internal_class;
 pub(crate) mod fixer_configuration_resolver;
 pub(crate) mod fully_qualified_name_analyzer;
 pub(crate) mod functions_analyzer;

@@ -401,8 +401,8 @@ items marked "not checked against Pint" still need one oracle run before the fix
   the terminal summary and three reporters while the other four live in `fix_report.rs`, and it imports
   `pint_error`, which imports it back. Move `abort_box` to `pint_error.rs`, the probe to `prettier.rs`, the reporters
   together.
-- [ ] 84. `crates/pun-fixers/src/fixers/final_class.rs:3` imports `final_internal_class`, the only fixer-to-fixer
-  import, so `PUN_FIXERS_ONLY=final_class` fails to build. Move the shared core into `analyzers/`.
+- [x] 84. `crates/pun-fixers/src/fixers/final_class.rs:3` imports `final_internal_class`, the only fixer-to-fixer
+  import, so `PUN_FIXERS_ONLY=final_class` fails to build. Move the shared core into `analyzers/`. Fixed in wf/audit-fixers-rules.
 - [ ] 85. Per-token clones and pre-check work on Laravel-preset paths: `braces_position.rs:148`,
   `array_indentation.rs:85`, `no_alternative_syntax.rs:38`, `method_argument_space.rs:404-405`,
   `multiline_whitespace_before_semicolons.rs:136-137` (also computes an unused indent per `;`),

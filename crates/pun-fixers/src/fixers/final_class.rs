@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\ClassNotation\FinalClassFixer` (AbstractProxyFixer over a
 //! FinalInternalClassFixer configured with `include: []`, `consider_absent_docblock_as_internal_class: true`).
-use crate::final_internal_class::FinalInternalClassFixer;
+use crate::analyzers::final_internal_class::FinalInternalClassFixer;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
