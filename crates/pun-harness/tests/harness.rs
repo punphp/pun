@@ -30,6 +30,8 @@ fn root(name: &str) -> PathBuf {
     let r = std::env::temp_dir().join(format!("pun-harness-test-{}-{name}", std::process::id()));
     let _ = fs::remove_dir_all(&r);
     fs::create_dir_all(&r).unwrap();
+    // The harness canonicalizes its root (macOS's temp dir is a symlink into /private).
+    let r = r.canonicalize().unwrap();
     symlink(repo().join(".oracle"), r.join(".oracle")).unwrap();
     symlink(repo().join("scripts"), r.join("scripts")).unwrap();
     write(
@@ -212,11 +214,25 @@ fn missing_pieces() {
     );
     assert_eq!(code, Some(1));
 
-    // A pun that exists but can't be spawned.
+    // A pun that exists but can't be spawned. The run stops after copying the project twice; the copies still go.
     write(&r.join("not-exec"), "");
-    let (_, err, code) = harness(&r, &r.join("not-exec"), &["--corpus", "b"]);
+    let tmp = r.join("tmp");
+    fs::create_dir(&tmp).unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_pun-harness"))
+        .args(["format", "--corpus", "b"])
+        .env("PUN_HARNESS_ROOT", &r)
+        .env("PUN_BIN", r.join("not-exec"))
+        .env("TMPDIR", &tmp)
+        .output()
+        .unwrap();
+    let err = String::from_utf8_lossy(&out.stderr);
     assert!(err.starts_with("Error: spawning pun migrate\n"), "{err}");
-    assert_eq!(code, Some(1));
+    assert_eq!(out.status.code(), Some(1));
+    assert_eq!(
+        fs::read_dir(&tmp).unwrap().count(),
+        0,
+        "copies left in {tmp:?}"
+    );
 
     // No php to run the oracle with.
     let out = Command::new(env!("CARGO_BIN_EXE_pun-harness"))

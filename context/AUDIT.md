@@ -417,9 +417,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
 
 ### Errors and tests
 
-- [ ] 79. `crates/pun-harness/src/main.rs:82-171` leaks two corpus copies in `/tmp` on any `?` after `copy_tree`
+- [x] 79. `crates/pun-harness/src/main.rs:82-171` leaks two corpus copies in `/tmp` on any `?` after `copy_tree`
   (its own `missing_pieces` test triggers it), and `process::exit(1)` at `:169`. Use a Drop guard and
-  `main() -> Result<ExitCode>`.
+  `main() -> Result<ExitCode>`. Reproduced with `TMPDIR` set for the unspawnable-pun case (one copy left), which
+  `missing_pieces` now asserts. Fixed in wf/audit-cli-structure.
 - [x] 80. Tests that share fixed paths or leak state: `pun-cli/tests/rules_e2e.rs:31-45` and `perf.rs:31-40` write ~200
   cache files into the real `~/.cache/pun` per run; `pun-phpstan/tests/schema.rs:13` and `config.rs:149-167` reuse
   fixed temp dirs across concurrent runs; `pun-fixers/src/analyzers/active_preset.rs:22-27` mutates a global;

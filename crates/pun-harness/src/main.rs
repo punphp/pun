@@ -7,7 +7,7 @@ use serde::Deserialize;
 use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, ExitCode};
 
 #[derive(Parser)]
 struct Cli {
@@ -53,7 +53,16 @@ struct Outcome {
     pun_changed: usize,
 }
 
-fn main() -> Result<()> {
+/// The run's scratch copies under the temp dir, removed however the run ends (an error after `copy_tree` too).
+struct Scratch(PathBuf);
+
+impl Drop for Scratch {
+    fn drop(&mut self) {
+        fs::remove_dir_all(&self.0).ok();
+    }
+}
+
+fn main() -> Result<ExitCode> {
     // PUN_HARNESS_ROOT: run against another checkout layout (corpus/, .oracle/, scripts/, docs/).
     let root = std::env::var_os("PUN_HARNESS_ROOT")
         .map(PathBuf::from)
@@ -79,7 +88,8 @@ fn main() -> Result<()> {
         eprintln!("note: {} missing, treating pun as identity", pun.display());
     }
 
-    let tmp = std::env::temp_dir().join(format!("pun-harness-{}", std::process::id()));
+    let scratch = Scratch(std::env::temp_dir().join(format!("pun-harness-{}", std::process::id())));
+    let tmp = &scratch.0;
     let mut outcomes = vec![];
     for p in manifest
         .project
@@ -160,15 +170,15 @@ fn main() -> Result<()> {
         outcomes.push(o);
         fs::remove_dir_all(tmp.join(&p.name)).ok();
     }
-    fs::remove_dir_all(&tmp).ok();
+    drop(scratch);
 
     if fixer.is_none() && preset.is_none() {
         write_scoreboard(&root.join("context/reports/scoreboard.md"), &outcomes)?;
     }
-    if outcomes.iter().any(|o| !o.differing.is_empty()) {
-        std::process::exit(1);
-    }
-    Ok(())
+    Ok(match outcomes.iter().any(|o| !o.differing.is_empty()) {
+        true => ExitCode::FAILURE,
+        false => ExitCode::SUCCESS,
+    })
 }
 
 fn run(cmd: &mut Command, what: &str) -> Result<()> {
