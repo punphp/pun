@@ -697,6 +697,14 @@ fn migrate_entry_types() {
             "{fixer}"
         );
     }
+    // The fixer's own check passes over a good entry to the bad one after it.
+    assert_eq!(
+        write(
+            "class_attributes_separation",
+            json!({"elements": {"method": "one", "property": "nope"}})
+        ),
+        Err("[class_attributes_separation] Invalid configuration: Unexpected spacing for element type \"nope\", expected any of \"none\", \"one\" and \"only_if_meta\", got \"string#nope\".".to_string())
+    );
     // binary_operator_spaces' `operators` is an `array`, so a `null` entry reaches the fixer's own key check.
     assert_eq!(
         write("binary_operator_spaces", json!({"operators": {"nope": null}})),
