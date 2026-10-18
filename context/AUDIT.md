@@ -192,9 +192,9 @@ items marked "not checked against Pint" still need one oracle run before the fix
   type (`NamespaceAnalysis`), and a second user's failed downcast would be swallowed by `.ok()`. Move
   `NamespaceAnalysis` and `NamespacesAnalyzer::compute` (pun-tokens-only dependencies) into pun-tokens, where upstream
   keeps them, and type the cache. Spans crates.
-- [ ] 37. `crates/pun-format/src/php_parser.rs:440-442` copies the reduction's right-hand side with `.to_vec()` on
+- [x] 37. `crates/pun-format/src/php_parser.rs:440-442` copies the reduction's right-hand side with `.to_vec()` on
   every grammar reduction of every linted file; `values` is a local, so `&values[values.len() - len..]` works. Hot
-  path; removes an allocation.
+  path; removes an allocation. Fixed in wf/audit-format.
 - [ ] 38. `crates/pun-fixers/src/analyzers/preg.rs`: seven `unsafe` blocks (`:43`, `:54`, `:93`, `:182-239`, `:244`,
   `:268`, `:285`) with no `// SAFETY:` (clippy `undocumented_unsafe_blocks`), the 58-line block at `:182` mixes safe
   code with FFI, `Matcher::new` never checks the two `*_create` calls for NULL, and the `!Send` invariant of `Regex`

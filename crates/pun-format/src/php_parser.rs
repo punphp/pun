@@ -437,9 +437,9 @@ impl Parser<'_> {
             }
             let rule = rule as usize;
             let len = YYR2[rule] as usize;
-            let rhs: Vec<(usize, usize)> = values[values.len() - len..].to_vec();
+            let rhs = &values[values.len() - len..];
             let below = values.len().checked_sub(2).map(|i| values[i]);
-            self.action(rule, &rhs, below)?;
+            self.action(rule, rhs, below)?;
             let n = self.toks.len();
             let range = if len == 0 {
                 (n, n)
