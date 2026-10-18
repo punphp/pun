@@ -346,7 +346,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
 | design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
 | wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
-| pun-fixers Preg: compile rejects the `r` modifier (PCRE2_EXTRA_CASELESS_RESTRICT) that PHP 8.4+ accepts (`preg_match('/a/r', 'a')` panics); no upstream pattern uses it yet | todo |
 | oracle: the local PHP (Herd ini) runs with pcre.jit=Off, so preg limit errors read 'Recursion limit exhausted' where PHP's default (and Pun) give 'JIT stack limit exhausted'; run preg oracles with `-d pcre.jit=1` | todo |
 | fixers: binary_operator_spaces with an array in `operators` prints PHP's 'Warning: Array to string conversion' before the configure error upstream; Pun prints only the error | todo |
 | audit fixers-messages follow-up: run scripts/cli-parity.sh on a bad fixer config to confirm the reworded configure errors end to end | todo |
@@ -365,6 +364,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
 | coverage: reports/COVERAGE.md still lists punphp-fixers at 100% while scripts/coverage.sh reports 99.99% (method_argument_space.rs:336, yoda_style.rs:426, same on main); update the row with the fix | todo |
 | audit item 88: the namespaces_analyzer.rs part (cloning the whole cached list) is done in the item 36 commit; the rest of item 88 is open | todo |
+| audit php-compat follow-up: an invalid PHP regex in a pint.json notPath/notName (unknown modifier, missing end delimiter) is now a run error with PHP's message, as Pint fails; mention it on the docs config page | todo |
+| pun-phpstan: with the `n` modifier `php_compat::preg_compile` prepends `(?n)`, so the error offset of `/(a)\1/n` is 5 where PHP says 4; set PCRE2_NO_AUTO_CAPTURE as the fixers' raw compile does | todo |
+| tests: on macOS PHP rejects a non-ASCII regex delimiter such as `§` as alphanumeric (locale isalnum) while php_compat::preg_parse reports an unknown modifier; check glibc PHP and add a case if they agree | todo |
 | perf lint 1 follow-up: if the pun-lint tree walk grows with more rules, skip leaf node kinds no rule targets (about 28% of nodes: DirectVariable, Keyword, LocalIdentifier, Terminator, LiteralString); under 3% today | todo |
 | perf lint 2 follow-up: peak memory is Mago's parse arena (about 41x source size; a 462 KB file takes a 26 MB arena, 39k allocations of 376 bytes); cutting it needs an upstream change in Mago, not pun-lint | todo |
 | perf lint 2 follow-up: opening files is the largest system cost (about 25% of samples) and does not scale past 4 threads on macOS; openat through a held directory handle did not help | todo |
