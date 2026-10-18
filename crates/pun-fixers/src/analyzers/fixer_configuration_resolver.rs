@@ -9,12 +9,12 @@ pub struct Resolved {
     map: Map<String, Value>,
 }
 
-/// `Null` (rule enabled with `true`) means "all defaults". Unknown keys are rejected like upstream.
 /// The variant paired with `value`, which `string`/`strings` already checked against the names.
 fn variant<T: Copy>(choices: &[(&str, T)], value: &str) -> T {
     choices.iter().find(|&&(name, _)| name == value).unwrap().1
 }
 
+/// `Null` (rule enabled with `true`) means "all defaults". Unknown keys are rejected like upstream.
 pub fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) -> Result<Resolved> {
     // RuleSet / FixerFactory::useRuleSet checks, done before configure() upstream.
     let map = match options {
