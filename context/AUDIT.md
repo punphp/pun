@@ -73,7 +73,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 12. `crates/pun-format/src/php_parser.rs:333-338`, `lib.rs:389-393` (`LintError.message: String`) and
   `fixer_annotation.rs:99-106` build parse-error and annotation messages with `from_utf8_lossy`, so a token cut at
   byte 30 inside `é`, or any Latin-1 byte, prints `�` where PHP prints the raw bytes. Keep messages as `Vec<u8>`
-  until pun-cli writes them. Not checked against Pint. Spans crates.
+  until pun-cli writes them. Not checked against Pint. Spans crates. Reproduced at 88d4cfe against Pint: its `--format=*`
+  ERROR lines and `-q` lines print the raw bytes (`\xc3...`, `caf\xe9`) where Pun prints `�` (Pint's own human
+  output and `--format=agent` do not keep them). The annotation messages are never lossy: the pattern's values are
+  ASCII, or whole UTF-8 characters under `/u`. Deferred: the fix (`LintError.message: Vec<u8>`, and pun-cli's
+  `report.rs`/`run.rs`/`console.rs` writing those two lines through a byte `console::format_bytes`) touches pun-cli
+  files another track is reworking; the validated patch is `pun-wf/scratch/audit-format-item12.patch`.
 - [x] 13. `crates/pun-fixers/src/analyzers/utils.rs:8-15` (`camel_case_to_underscore(&str)`), called with
   `from_utf8_lossy` from `php_unit_method_casing.rs:108`, writes U+FFFD into a renamed test method where upstream
   keeps PHP's byte semantics (`mb_strtolower` gives `?`). Take `&[u8]` and port the substitution into `php_compat`.
