@@ -76,23 +76,58 @@ fn compile(pattern: &str) -> Result<Regex, String> {
             m => return Err(format!("Unknown modifier '{m}'")),
         }
     }
+    // PCRE2 accepts `(*VERB)` settings only at the very start, before the inline flags and the `A` wrapper.
+    let mut verbs = 0;
+    while let Some(rest) = body[verbs..].strip_prefix("(*")
+        && let Some(end) = rest.find(')')
+        && rest[..end]
+            .bytes()
+            .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || b"_=".contains(&c))
+    {
+        verbs += end + 3;
+    }
+    let (verbs, body) = body.split_at(verbs);
+    let build = |pattern: String| {
+        b.build(&pattern).map_err(|e| {
+            // (An offset inside the leading verbs comes before the moved flags.)
+            let at = e.offset().unwrap_or(0);
+            let at = if at <= verbs.len() {
+                at
+            } else {
+                at - flags.len()
+            };
+            let text = e.to_string();
+            let msg = text
+                .split_once("pattern at offset ")
+                .and_then(|(_, r)| r.split_once(": "))
+                .map_or(text.as_str(), |(_, m)| m);
+            format!("Compilation failed: {msg} at offset {at}")
+        })
+    };
     // Compiled as written first, so error offsets are PHP's; `A` (PCRE2_ANCHORED) then wraps it after `\G`.
-    let re = b.build(&format!("{flags}{body}")).map_err(|e| {
-        let at = e.offset().unwrap_or(0).saturating_sub(flags.len());
-        let text = e.to_string();
-        let msg = text
-            .split_once("pattern at offset ")
-            .and_then(|(_, r)| r.split_once(": "))
-            .map_or(text.as_str(), |(_, m)| m);
-        format!("Compilation failed: {msg} at offset {at}")
-    })?;
+    let re = build(format!("{verbs}{flags}{body}"))?;
     if !anchored {
         return Ok(re);
     }
-    // (A newline ends an `x`-mode comment before the closing parenthesis.)
+    // An unclosed `\Q` would quote the closing parenthesis, and a newline ends an `x`-mode comment before it.
+    let unquote = if open_quote(body) { "\\E" } else { "" };
     let close = if extended { "\n)" } else { ")" };
-    Ok(b.build(&format!("{flags}\\G(?:{body}{close}"))
-        .expect("compiles unanchored"))
+    build(format!("{verbs}{flags}\\G(?:{body}{unquote}{close}"))
+}
+
+/// Whether `body` ends inside a `\Q...` quote that no `\E` closes (inside one, only `\E` is special).
+fn open_quote(body: &str) -> bool {
+    let (mut quoted, mut rest) = (false, body.as_bytes());
+    while let Some((&c, tail)) = rest.split_first() {
+        rest = tail;
+        match (c, quoted, tail.first()) {
+            (b'\\', true, Some(b'E')) => quoted = false,
+            (b'\\', false, next) => quoted = next == Some(&b'Q'),
+            _ => continue,
+        }
+        rest = &tail[1..];
+    }
+    quoted
 }
 
 /// `preg_match($pattern, $subject) === 1` once compiled; matching errors (e.g. invalid UTF-8 under `/u`) count as no match.
@@ -131,7 +166,7 @@ pub fn fnmatch(pattern: &str, string: &str) -> bool {
 
 /// `FileHelper::normalizePath()` with `/` as the directory separator.
 pub fn normalize_path(original: &str) -> String {
-    let local = original.starts_with('/') || (original.len() >= 3 && &original[1..3] == ":\\");
+    let local = original.starts_with('/') || original.as_bytes().get(1..3) == Some(b":\\");
     let (mut scheme, path) = match original.split_once("://") {
         Some((s, p))
             if !local

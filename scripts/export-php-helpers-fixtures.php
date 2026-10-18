@@ -36,6 +36,9 @@ $patterns = [
     ['', 'a'], ['   ', 'a'], ['abc', 'a'], ['\\a\\', 'a'], ['/abc', 'a'], ['(abc', 'a'], ['{a', 'a'], ['/a/Z', 'a'], ['/a/ i', 'a'],
     ["/a/\0", 'a'], ['/a(/', 'a'], ['/a)/', 'a'], ['/[a/', 'a'], ['/a{2,1}/', 'a'], ['/(?<1a>x)/', 'x'], ['/a/A', 'ba'],
     ['/a(/A', 'a'], ['/x(/i', 'a'], ['/\p{Zz}/u', 'a'], ["/\xff/u", 'a'], ['/a/u', "\xff"], ['~^\d+~', '123'], ['/a #c/xA', 'a'], ['/a #c/xA', 'ba'],
+    ['#\\Qfoo#A', 'foo'], ['#\\Qfoo#A', 'xfoo'], ['#\\Qa)#A', 'a)'], ['#\\Qa\\Eb#A', 'ab'], ['#\\\\Qa#A', '\\Qa'], ['/a #\\Q/xA', 'a'],
+    ['#(*ANYCRLF)a#A', 'a'], ['#(*ANYCRLF)a#A', 'ba'], ['#(*ANYCRLF)(*UCP)a#AU', 'a'], ['#(*ANYCRLF)a#U', 'a'], ['#(*FOO)a#U', 'a'],
+    ['#(*FOO)a#A', 'a'], ['#(*CR)a(#U', 'a'],
 ];
 foreach ($patterns as [$pattern, $subject]) {
     try {
@@ -56,7 +59,7 @@ foreach ([['a.b*c?d+e(f)g[h]i{j}k=l!m<n>o|p:q-r#s/t\\u^v$w', null], ['a/b#c', '/
 
 $helper = new FileHelper('/cwd/project');
 $normalize = [];
-foreach (['/a/b/../c', '/a/./b//c/', 'a\\b\\c', '../x', '/../x', 'phar:///x/y.phar/../z', 'phar:///x/y.phar/a/../b', 'PHAR:///a/./b', 'C:\\a\\..\\b', 'vfs://root/a/../b', '1x://a', 'a://', '://a', '', '/', 'a/b/../../..'] as $p) {
+foreach (['/a/b/../c', '/a/./b//c/', 'a\\b\\c', '../x', '/../x', 'phar:///x/y.phar/../z', 'phar:///x/y.phar/a/../b', 'PHAR:///a/./b', 'C:\\a\\..\\b', 'vfs://root/a/../b', '1x://a', 'a://', '://a', '', '/', 'a/b/../../..', '*/€uro/*', '*€/a.php', '€:\\a'] as $p) {
     $normalize[] = ['path' => $p, 'normalized' => $helper->normalizePath($p)];
 }
 $absolutize = [];

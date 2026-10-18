@@ -27,19 +27,19 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `{"phpdoc_tag_type":{"tags":{"param":null}}}` and `{"group_import":{"group_types":[null]}}` (also through
   `.php-cs-fixer.php`). Handle a `null` entry first with upstream's message and return `Option` from `entry`; add the
   three inputs as oracle cases. Reproduced.
-- [ ] 4. `crates/pun-phpstan/src/php.rs:134`: `normalize_path` slices `&original[1..3]` on a `&str`, so an
+- [x] 4. `crates/pun-phpstan/src/php.rs:134`: `normalize_path` slices `&original[1..3]` on a `&str`, so an
   `excludePaths` or `ignoreErrors.path` entry like `*/€uro/*` or `*€/a.php` panics ("byte index 3 is not a char
   boundary") in `FileExcluder::new` and `IgnoredErrors`. Compare bytes: `original.as_bytes().get(1..3) ==
-  Some(b":\\")`. Reproduced.
-- [ ] 5. `crates/pun-phpstan/src/phpfile.rs:33-36` (`eat`): `rest[..t.len()]` cuts a `&str` mid-character, so any
+  Some(b":\\")`. Reproduced. Fixed in wf/audit-phpstan.
+- [x] 5. `crates/pun-phpstan/src/phpfile.rs:33-36` (`eat`): `rest[..t.len()]` cuts a `&str` mid-character, so any
   included `.php` config holding non-ASCII text (`<?php return ["a€"];`) panics instead of returning "Unsupported
   PHP config". Use `rest.as_bytes().get(..t.len()).is_some_and(|p| p.eq_ignore_ascii_case(t.as_bytes()))`.
-  Reproduced.
-- [ ] 6. `crates/pun-phpstan/src/php.rs:94-95`: `preg` wraps an `A`-modifier pattern as `\G(?:body)` and
+  Reproduced. Fixed in wf/audit-phpstan.
+- [x] 6. `crates/pun-phpstan/src/php.rs:94-95`: `preg` wraps an `A`-modifier pattern as `\G(?:body)` and
   `expect("compiles unanchored")`, but `#\Qfoo#A` (an unclosed `\Q` swallows the `)`) and `#(*ANYCRLF)a#A` (a verb
   must stay at offset 0) fail to compile, so an `ignoreErrors` message regex panics `config::resolve`. PHP compiles
   both. Return the error with `?`, close a trailing `\Q` with `\E`, and keep leading `(*VERB)`s before `\G`.
-  Reproduced (PHP and Pun).
+  Reproduced (PHP and Pun). Fixed in wf/audit-phpstan.
 - [ ] 7. `crates/pun-fixers/src/fixers/pun_prefer_first_class_callable.rs:106-111`, `:155-163`: the arrow-function
   branch never checks the receiver against the parameters, so `fn ($x) => $x->equals($x)` becomes
   `$x->equals(...)`, which reads an undefined outer `$x`. Return `None` when `callee` is one of `params`, and add the

@@ -234,6 +234,71 @@
             "pattern": "/a #c/xA",
             "subject": "ba",
             "matched": false
+        },
+        {
+            "pattern": "#\\Qfoo#A",
+            "subject": "foo",
+            "matched": true
+        },
+        {
+            "pattern": "#\\Qfoo#A",
+            "subject": "xfoo",
+            "matched": false
+        },
+        {
+            "pattern": "#\\Qa)#A",
+            "subject": "a)",
+            "matched": true
+        },
+        {
+            "pattern": "#\\Qa\\Eb#A",
+            "subject": "ab",
+            "matched": true
+        },
+        {
+            "pattern": "#\\\\Qa#A",
+            "subject": "\\Qa",
+            "matched": true
+        },
+        {
+            "pattern": "/a #\\Q/xA",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "#(*ANYCRLF)a#A",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "#(*ANYCRLF)a#A",
+            "subject": "ba",
+            "matched": false
+        },
+        {
+            "pattern": "#(*ANYCRLF)(*UCP)a#AU",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "#(*ANYCRLF)a#U",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "#(*FOO)a#U",
+            "subject": "a",
+            "error": "Compilation failed: (*VERB) not recognized or malformed at offset 5 in pattern: #(*FOO)a#U"
+        },
+        {
+            "pattern": "#(*FOO)a#A",
+            "subject": "a",
+            "error": "Compilation failed: (*VERB) not recognized or malformed at offset 5 in pattern: #(*FOO)a#A"
+        },
+        {
+            "pattern": "#(*CR)a(#U",
+            "subject": "a",
+            "error": "Compilation failed: missing closing parenthesis at offset 7 in pattern: #(*CR)a(#U"
         }
     ],
     "quote": [
@@ -332,6 +397,18 @@
         {
             "path": "a/b/../../..",
             "normalized": ""
+        },
+        {
+            "path": "*/€uro/*",
+            "normalized": "*/€uro/*"
+        },
+        {
+            "path": "*€/a.php",
+            "normalized": "*€/a.php"
+        },
+        {
+            "path": "€:\\a",
+            "normalized": "€:/a"
         }
     ],
     "absolutize": [
