@@ -11,7 +11,9 @@ use std::sync::OnceLock;
 /// PATH that reports 8.5. Anything else fails the test with the versions it found.
 pub fn php_path() -> PathBuf {
     static PHP: OnceLock<Result<PathBuf, String>> = OnceLock::new();
-    PHP.get_or_init(find_php).clone().unwrap_or_else(|e| panic!("{e}"))
+    PHP.get_or_init(find_php)
+        .clone()
+        .unwrap_or_else(|e| panic!("{e}"))
 }
 
 /// `php_path()` as a command.
