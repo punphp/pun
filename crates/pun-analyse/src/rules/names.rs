@@ -40,7 +40,20 @@ impl Known<'_> {
         !self.is_trait() && !self.is_interface() && !self.is_enum()
     }
 
-    fn display(&self) -> String {
+    /// `getClassTypeDescription()`.
+    pub(super) fn type_description(&self) -> &'static str {
+        if self.is_interface() {
+            "Interface"
+        } else if self.is_trait() {
+            "Trait"
+        } else if self.is_enum() {
+            "Enum"
+        } else {
+            "Class"
+        }
+    }
+
+    pub(super) fn display(&self) -> String {
         match self {
             Known::User(k) => String::from_utf8_lossy(k.original_name.as_bytes()).into_owned(),
             Known::Builtin(k) => k.name.clone(),
@@ -340,6 +353,7 @@ fn hint_classes<'arena>(
 }
 
 /// Where a function-like's typehint errors go: PHPStan's messages name the function differently per kind.
+#[derive(Clone, Copy)]
 pub enum FunctionKind<'s> {
     Function(&'s str),
     Method(&'s str, &'s str),
@@ -411,7 +425,61 @@ pub fn typehints<'arena>(
     }
 }
 
-/// ExistingClassInClassExtendsRule and ExistingClassesInClassImplementsRule (class), ExistingClassesInInterfaceExtendsRule
+/// The `#[NoDiscard]` part of FunctionDefinitionCheck: the attribute on a function-like whose return type is void or
+/// never. `at` is the function-like (the line when no return type is written). A function or method reads its
+/// reflection's return type: `forced_void` for the methods PHPStan always types void (constructors, `__destruct()`,
+/// `__set()` & co.), else the native type, else the PHPDoc type Mago read (`docblock`). An anonymous function reads
+/// only a native `void` or `never`.
+pub fn no_discard<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    kind: FunctionKind,
+    at: Span,
+    lists: &[AttributeList<'arena>],
+    return_type: Option<&FunctionLikeReturnTypeHint<'arena>>,
+    forced_void: bool,
+    docblock: Option<&mago_codex::ttype::union::TUnion>,
+) {
+    if !lists
+        .iter()
+        .flat_map(|l| l.attributes.iter())
+        .any(|a| c.resolved(&a.name).eq_ignore_ascii_case("nodiscard"))
+    {
+        return;
+    }
+    let native = return_type.and_then(|r| match r.hint {
+        Hint::Void(_) => Some("void"),
+        Hint::Never(_) => Some("never"),
+        _ => None,
+    });
+    let described = match kind {
+        FunctionKind::Anonymous => native,
+        _ if forced_void => Some("void"),
+        _ if return_type.is_some() => native,
+        _ => docblock.and_then(|t| {
+            if t.is_void() {
+                Some("void")
+            } else {
+                t.is_never().then_some("never")
+            }
+        }),
+    };
+    let Some(described) = described else {
+        return;
+    };
+    let message = match kind {
+        FunctionKind::Function(f) => format!("{described} function {f}()"),
+        FunctionKind::Method(k, m) => format!("{described} method {k}::{m}()"),
+        FunctionKind::Anonymous => format!("{described} anonymous function"),
+    };
+    c.report(
+        return_type.map_or(at, |r| r.hint.span()),
+        "attribute.target",
+        format!("Attribute NoDiscard cannot be used on {message}."),
+        None,
+    );
+}
+
+/// ExistingClassInClassExtendsRule andExistingClassesInClassImplementsRule (class), ExistingClassesInInterfaceExtendsRule
 /// (interface) and ExistingClassesInEnumImplementsRule (enum): `current` is e.g. `Class Foo`, `None` for an
 /// anonymous class.
 pub fn class_hierarchy<'arena>(

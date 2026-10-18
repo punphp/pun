@@ -2,6 +2,7 @@
 //! registered for that node type, in PHPStan's source order.
 
 mod assign;
+mod attributes;
 mod calls;
 mod classes;
 mod declarations;
@@ -216,6 +217,26 @@ pub const IDENTIFIERS: &[&str] = &[
     "property.readOnlyByPhpDocDefaultValue",
     "property.promotedNotSupported",
     "property.invalidPromoted",
+    "attribute.notFound",
+    "attribute.notAttribute",
+    "attribute.abstract",
+    "attribute.target",
+    "attribute.nonRepeatable",
+    "attribute.noConstructor",
+    "attribute.constructorNotPublic",
+    "attribute.interface",
+    "attribute.enum",
+    "attribute.trait",
+    "class.deprecatedAttribute",
+    "interface.deprecatedAttribute",
+    "enum.deprecatedAttribute",
+    "trait.deprecatedAttribute",
+    "class.allowDynamicPropertiesReadonly",
+    "enum.allowDynamicProperties",
+    "interface.allowDynamicProperties",
+    "trait.allowDynamicProperties",
+    "property.overrideAttribute",
+    "constant.attributesNotSupported",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -973,6 +994,18 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         self.decls.push(decl);
         declarations::duplicates(self, class.members.as_slice());
+        let name = self.resolved_span(class.name.span);
+        attributes::class_like(
+            self,
+            class.span(),
+            class.attribute_lists.as_slice(),
+            SymbolKind::Class,
+            class
+                .modifiers
+                .iter()
+                .any(|m| matches!(m, Modifier::Readonly(_))),
+            Some(&name),
+        );
     }
     fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -993,6 +1026,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         self.decls.push(decl);
         declarations::duplicates(self, i.members.as_slice());
+        let name = self.resolved_span(i.name.span);
+        attributes::class_like(
+            self,
+            i.span(),
+            i.attribute_lists.as_slice(),
+            SymbolKind::Interface,
+            false,
+            Some(&name),
+        );
     }
     fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -1012,6 +1054,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.decls.push(decl);
         enums::sanity(self, e);
         declarations::duplicates(self, e.members.as_slice());
+        let name = self.resolved_span(e.name.span);
+        attributes::class_like(
+            self,
+            e.span(),
+            e.attribute_lists.as_slice(),
+            SymbolKind::Enum,
+            false,
+            Some(&name),
+        );
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -1025,6 +1076,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let end = i64::from(self.file.line_number(t.span().end.offset)) + 1;
         self.trait_lines.push((start, end));
         let Some((_, class)) = self.context.clone() else {
+            attributes::trait_declaration(self, t);
             return;
         };
         let name = self.resolved_span(t.name.span);
@@ -1042,6 +1094,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.classes[saved].name = Some(class.clone());
         self.decls.push(decl);
         self.in_target = true;
+        attributes::trait_in_context(self, t);
         for member in t.members.iter() {
             if let ClassLikeMember::Method(m) = member {
                 let original = String::from_utf8_lossy(m.name.value).into_owned();
@@ -1080,6 +1133,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             a.extends.as_ref(),
         );
         self.decls.push(decl);
+        attributes::class_like(
+            self,
+            a.span(),
+            a.attribute_lists.as_slice(),
+            SymbolKind::Class,
+            a.modifiers
+                .iter()
+                .any(|m| matches!(m, Modifier::Readonly(_))),
+            None,
+        );
     }
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
@@ -1092,6 +1155,27 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             names::FunctionKind::Function(&name),
             &f.parameter_list,
             f.return_type_hint.as_ref(),
+        );
+        let docblock = self
+            .codebase
+            .get_function(name.as_bytes())
+            .and_then(|f| f.return_type_metadata.as_ref())
+            .filter(|t| t.from_docblock)
+            .map(|t| &t.type_union);
+        names::no_discard(
+            self,
+            names::FunctionKind::Function(&name),
+            f.span(),
+            f.attribute_lists.as_slice(),
+            f.return_type_hint.as_ref(),
+            false,
+            docblock,
+        );
+        attributes::check(
+            self,
+            f.attribute_lists.as_slice(),
+            attributes::TARGET_FUNCTION,
+            "function",
         );
         declarations::promoted(
             self,
@@ -1148,12 +1232,36 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             properties::promoted(self, &m.parameter_list);
         }
         if let Some(class) = self.class_scope() {
+            let docblock = self
+                .codebase
+                .get_method(class.name.as_bytes(), method.as_bytes())
+                .and_then(|f| f.return_type_metadata.as_ref())
+                .filter(|t| t.from_docblock)
+                .map(|t| &t.type_union);
             let class = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
-            names::typehints(
+            let kind = names::FunctionKind::Method(&class, &method);
+            names::typehints(self, kind, &m.parameter_list, m.return_type_hint.as_ref());
+            // PhpMethodFromParserNodeReflection's void methods
+            let forced_void = m.name.value.eq_ignore_ascii_case(b"__construct")
+                || [
+                    "__construct",
+                    "__destruct",
+                    "__unset",
+                    "__wakeup",
+                    "__clone",
+                    "__set",
+                    "__unserialize",
+                ]
+                .iter()
+                .any(|n| method.eq_ignore_ascii_case(n));
+            names::no_discard(
                 self,
-                names::FunctionKind::Method(&class, &method),
-                &m.parameter_list,
+                kind,
+                m.span(),
+                m.attribute_lists.as_slice(),
                 m.return_type_hint.as_ref(),
+                forced_void,
+                docblock,
             );
         }
         syntax::function_like_types(self, Some(&m.parameter_list), m.return_type_hint.as_ref());
@@ -1170,6 +1278,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             }
         }
         self.syntax.by_ref.push(m.ampersand.is_some());
+        attributes::check(
+            self,
+            m.attribute_lists.as_slice(),
+            attributes::TARGET_METHOD,
+            "method",
+        );
         let guards = if m.name.value.eq_ignore_ascii_case(b"__construct") {
             Vec::new()
         } else {
@@ -1410,12 +1524,34 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 syntax::complex_type(self, hint);
             }
         }
+        let lists = match p {
+            Property::Plain(p) => p.attribute_lists.as_slice(),
+            Property::Hooked(h) => h.attribute_lists.as_slice(),
+        };
+        for v in p.variables() {
+            attributes::property(self, v.span(), lists, false);
+        }
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
         declarations::constant(self, k);
+        attributes::check(
+            self,
+            k.attribute_lists.as_slice(),
+            attributes::TARGET_CLASS_CONSTANT,
+            "class constant",
+        );
     }
     fn walk_in_enum_case(&mut self, case: &'ast EnumCase<'arena>, _: &mut ()) {
         enums::case_outside(self, case);
+        attributes::check(
+            self,
+            case.attribute_lists.as_slice(),
+            attributes::TARGET_CLASS_CONSTANT,
+            "class constant",
+        );
+    }
+    fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
+        attributes::constant(self, k);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         functions::function_like(self, f, &f.parameter_list);
@@ -1435,6 +1571,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             names::FunctionKind::Anonymous,
             &f.parameter_list,
             f.return_type_hint.as_ref(),
+        );
+        names::no_discard(
+            self,
+            names::FunctionKind::Anonymous,
+            f.span(),
+            f.attribute_lists.as_slice(),
+            f.return_type_hint.as_ref(),
+            false,
+            None,
+        );
+        attributes::check(
+            self,
+            f.attribute_lists.as_slice(),
+            attributes::TARGET_FUNCTION,
+            "function",
         );
         declarations::promoted(
             self,
@@ -1467,6 +1618,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
             f.return_type_hint.as_ref(),
         );
+        names::no_discard(
+            self,
+            names::FunctionKind::Anonymous,
+            f.span(),
+            f.attribute_lists.as_slice(),
+            f.return_type_hint.as_ref(),
+            false,
+            None,
+        );
+        attributes::check(
+            self,
+            f.attribute_lists.as_slice(),
+            attributes::TARGET_FUNCTION,
+            "function",
+        );
         declarations::promoted(
             self,
             f.span(),
@@ -1497,6 +1663,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.namespaces.pop();
     }
     fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+        attributes::property_hook(self, h);
         if let Some(params) = &h.parameter_list {
             functions::function_like(self, h, params);
             declarations::promoted(self, h.span(), declarations::FunctionLike::Other, params);
@@ -1516,6 +1683,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         functions::parameter(self, p);
         statements::parameter_default(self, p);
+        attributes::parameter(self, p);
+        if !p.modifiers.is_empty() {
+            attributes::property(self, p.span(), p.attribute_lists.as_slice(), true);
+        }
         self.push_frame(FrameKind::Param);
     }
     fn walk_out_function_like_parameter(

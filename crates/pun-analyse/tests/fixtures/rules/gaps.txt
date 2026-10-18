@@ -2,8 +2,6 @@
 # tests/rules.rs fails when a listed case passes or an unlisted one fails.
 # method.staticCall on PHPStan\Node\InClassNode::__construct(): PHPStan's own classes, the parent::__construct() special case
 Api/ApiStaticCallRuleTest::testRuleOutOfPhpStan
-# attribute arguments (ClassAttributesRule and friends) not ported
-Classes/ClassAttributesRuleTest::testRule
 # dynamic constant names (`Foo::{$name}`) need the name's type
 Classes/ClassConstantRuleTest::testDynamicAccess
 # `new $object` where Mago types an object of an unknown class as mixed

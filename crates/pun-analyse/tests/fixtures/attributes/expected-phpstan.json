@@ -1,0 +1,236 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "flags.php",
+   "line": 28,
+   "identifier": "attribute.nonRepeatable",
+   "message": "Attribute class Attribute is not repeatable but is already present above the class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 31,
+   "identifier": "class.nameCase",
+   "message": "Class Attribute referenced with incorrect case: attribute.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 40,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $foo in call to Attribute constructor.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.nonRepeatable",
+   "message": "Attribute class AttributeFlags\\Big is not repeatable but is already present above the class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.notAttribute",
+   "message": "Class AttributeFlags\\Lowercase is not an Attribute class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.notAttribute",
+   "message": "Class AttributeFlags\\NotAnInteger is not an Attribute class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.notAttribute",
+   "message": "Class AttributeFlags\\Twice is not an Attribute class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.notAttribute",
+   "message": "Class Cassandra\\Bigint is not an Attribute class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeFlags\\Big does not have the class target.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeFlags\\Big does not have the class target.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeFlags\\ClassConstant does not have the class target.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeFlags\\GlobalConstant does not have the class target.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeFlags\\Named does not have the class target.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 46,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeFlags\\Sum does not have the class target.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 49,
+   "identifier": "attribute.notAttribute",
+   "message": "Class AttributeFlags\\PlatformConstant is not an Attribute class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 53,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeFlags\\Named does not have the class target.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 55,
+   "identifier": "class.allowDynamicPropertiesReadonly",
+   "message": "Attribute class AllowDynamicProperties cannot be used with readonly class.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 57,
+   "identifier": "attribute.target",
+   "message": "Attribute class SensitiveParameter does not have the function target.",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 6,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on void function AttributeNoDiscard\\nativeVoid().",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 9,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on never function AttributeNoDiscard\\never().",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 12,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on void function AttributeNoDiscard\\docVoid().",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 16,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on never function AttributeNoDiscard\\docNever().",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 26,
+   "identifier": "attribute.notFound",
+   "message": "Attribute class AttributeNoDiscard\\NoDiscard does not exist.",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 29,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on void anonymous function.",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 30,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on never anonymous function.",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 35,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on void method AttributeNoDiscard\\Magic::__set().",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 36,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on void method AttributeNoDiscard\\Magic::__unserialize().",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php",
+   "line": 39,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on void method AttributeNoDiscard\\Magic::doc().",
+   "tip": null
+  },
+  {
+   "file": "nodiscard.php (in context of class AttributeNoDiscard\\UsesTrait)",
+   "line": 46,
+   "identifier": "attribute.target",
+   "message": "Attribute NoDiscard cannot be used on void method AttributeNoDiscard\\UsesTrait::fromTrait().",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 8,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeVersions\\OnClass does not have the constant target.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 22,
+   "identifier": "property.override",
+   "message": "Property AttributeVersions\\Uses::$a has #[\\Override] attribute but does not override any property.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 25,
+   "identifier": "property.override",
+   "message": "Property AttributeVersions\\Uses::$b has #[\\Override] attribute but does not override any property.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 27,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeVersions\\OnClass does not have the parameter or property target.",
+   "tip": null
+  }
+ ]
+}

@@ -322,3 +322,17 @@ Assistant's calls in analyse 3d (syntax-only level-0 rules, 2026-10-18; the plan
 - A promoted constructor property with an invalid type is reported twice (parameter and ClassPropertyNode), as PHPStan does.
 - To find by-reference callees, TypedExpressions also asks Mago for the type of method-call objects and static-call class
   expressions, only when an argument is a `[]` fetch or a dim fetch on `$this`.
+
+Assistant's calls in analyse 3e (the attribute rules on AttributesCheck, and FunctionDefinitionCheck's `#[NoDiscard]`
+check, 2026-10-18; the plan was silent):
+- `#[Attribute]`'s flags are the type Mago's scan gives the constructor's first argument after ArgumentsNormalizer
+  (first positional, else `flags:`, else the first unknown named one), with class and global constants expanded
+  through the codebase; anything but one integer makes the class no attribute class, as PHPStan's
+  ConstantIntegerType check does. A built-in class Mago's prelude lacks counts as no attribute class.
+- The attribute name check (class.nameCase, class.prefixed) waits for ClassNameCheck's port: other level-0 rules emit
+  those identifiers too. attribute.deprecated waits for deprecation-rules (`deprecationRulesInstalled` is false).
+- constant.attributesRuleCannotRun is never reported: Pun behaves as PHPStan on a PHP 8.5 runtime.
+- `%s.deprecatedAttribute` and NonClassAttributeClassRule skip anonymous classes (no `class@anonymous` display name).
+- `#[NoDiscard]` on a function or method reads the native return type, then (with none) the PHPDoc type Mago read;
+  constructors, `__destruct()`, `__unset()`, `__wakeup()`, `__clone()`, `__set()` and `__unserialize()` are void, as
+  in PhpMethodFromParserNodeReflection.

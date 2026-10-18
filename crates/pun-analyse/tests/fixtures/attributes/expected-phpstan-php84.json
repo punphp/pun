@@ -1,0 +1,54 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "versions.php",
+   "line": 8,
+   "identifier": "constant.attributesNotSupported",
+   "message": "Attributes on global constants are supported only on PHP 8.5 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 22,
+   "identifier": "property.override",
+   "message": "Property AttributeVersions\\Uses::$a has #[\\Override] attribute but does not override any property.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 22,
+   "identifier": "property.overrideAttribute",
+   "message": "Attribute class Override can be used with properties only on PHP 8.5 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 25,
+   "identifier": "property.override",
+   "message": "Property AttributeVersions\\Uses::$b has #[\\Override] attribute but does not override any property.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 25,
+   "identifier": "property.overrideAttribute",
+   "message": "Attribute class Override can be used with properties only on PHP 8.5 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 27,
+   "identifier": "attribute.target",
+   "message": "Attribute class AttributeVersions\\OnClass does not have the parameter or property target.",
+   "tip": null
+  },
+  {
+   "file": "versions.php (in context of class AttributeVersions\\Uses)",
+   "line": 11,
+   "identifier": "trait.deprecatedAttribute",
+   "message": "Attribute class Deprecated can be used with traits only on PHP 8.5 and later.",
+   "tip": null
+  }
+ ]
+}
