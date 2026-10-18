@@ -50,7 +50,7 @@ pub fn strcasecmp(a: &[u8], b: &[u8]) -> i32 {
 }
 
 pub fn strnatcmp(a: &[u8], b: &[u8]) -> i32 {
-    strnatcmp_ex(a, b, false)
+    strnatcmp_ex(a, b)
 }
 
 /// Default character list of trim()/rtrim()/ltrim().
@@ -175,7 +175,7 @@ pub fn isspace(c: u8) -> bool {
 }
 
 /// Port of strnatcmp_ex. Reads past the end yield NUL, as on PHP's NUL-terminated strings.
-fn strnatcmp_ex(a: &[u8], b: &[u8], ci: bool) -> i32 {
+fn strnatcmp_ex(a: &[u8], b: &[u8]) -> i32 {
     if a.is_empty() || b.is_empty() {
         return sign(a.len().cmp(&b.len()));
     }
@@ -218,10 +218,6 @@ fn strnatcmp_ex(a: &[u8], b: &[u8], ci: bool) -> i32 {
             }
             ca = at(a, ap);
             cb = at(b, bp);
-        }
-        if ci {
-            ca = ca.to_ascii_uppercase();
-            cb = cb.to_ascii_uppercase();
         }
         if ca < cb {
             return -1;

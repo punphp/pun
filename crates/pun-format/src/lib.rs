@@ -512,6 +512,36 @@ mod tests {
         }
         fn fix(&self, _: &Path, _: &mut Tokens) {}
     }
+    /// Writes the preset it was given over the first name, to show what `Pipeline::set_preset` handed it.
+    struct ShowPreset(String);
+    impl Fixer for ShowPreset {
+        fn name(&self) -> &'static str {
+            "show_preset"
+        }
+        fn priority(&self) -> i32 {
+            0
+        }
+        fn is_candidate(&self, _: &Tokens) -> bool {
+            true
+        }
+        fn fix(&self, _: &Path, t: &mut Tokens) {
+            let i = (0..t.count()).find(|&i| t[i].is_kind(Kind::T_STRING)).unwrap();
+            t.set(i, Token::new(Kind::T_STRING, self.0.as_str()));
+        }
+        fn set_preset(&mut self, preset: &str) {
+            self.0 = preset.into();
+        }
+    }
+
+    #[test]
+    fn set_preset_reaches_every_fixer() {
+        let all = || -> Vec<Box<dyn Fixer>> { vec![Box::new(ShowPreset("laravel".into())), Box::new(Plain)] };
+        let mut p = Pipeline::new(&[rule("show_preset"), rule("plain")], &all).unwrap();
+        p.set_preset("psr12");
+        let fixed = p.run(Path::new("a.php"), b"<?php foo;").unwrap().unwrap();
+        assert_eq!(fixed.code, b"<?php psr12;");
+    }
+
     fn rule(n: &str) -> Rule {
         Rule {
             name: n.into(),
