@@ -109,7 +109,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   through a temp name that is the same for every rayon thread (`worker.<pid>`), so on a cold temp dir two threads can
   truncate each other's file and one `rename` fails, reporting a Blade file as errored. The guard also checks only
   `worker.cjs`. Build the files once per process in a `OnceLock`. Likely; not reproduced. Reproduced at 0c5bd30: 16
-  threads on a fresh dir fail the rename with ENOENT. Fixed in wf/audit-blade.
+  threads on a fresh dir fail the rename with ENOENT. Fixed in e48bd81.
 - [ ] 21. `crates/pun-tokens/src/tokens.rs:23-27`: the derived public `Default` leaves `found_kinds` empty, so
   `Tokens::default().is_token_kind_found(..)` and `insert_at` index out of bounds (`:681`, `:860`). No caller today.
   Implement `Default` as `from_array(Vec::new())`, or make `found_kinds` a fixed-size array.
@@ -137,7 +137,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   template containing `[PINT_PRETTIER_WORKER_END]` desyncs the reply stream and the next file panics. Bail with
   Pint's "worker terminated unexpectedly" message and search END after START. Reproduced at 0c5bd30 with a stand-in
   worker; Pint's own message for a missing marker is "did not return a valid response" (`Prettier::format`), and it
-  keeps the worker, so Pun does the same. Fixed in wf/audit-blade.
+  keeps the worker, so Pun does the same. Fixed in e48bd81.
 - [ ] 26. Run configuration lives in process globals: `crates/pun-fixers/src/analyzers/active_preset.rs:6-18`
   (`static PRESET: RwLock`, set twice from `pun-cli/src/run.rs:83`, `:367`, read by the Blade fixer) and
   `pun-cli/src/agent.rs:16` (`MODE: OnceLock`, read at 11 sites, `expect`s it was initialised). A fixer's output
@@ -223,7 +223,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   full-preset pipelines per Blade file, re-parsing the preset and swallowing errors (`unwrap_or_default()`, `.ok()`).
   That is ~22k boxed fixers per Blade file on Pinkary. Call the factory once and `take()` by name, and cache the Blade
   pipelines per preset in a `LazyLock`. Spans crates. The preset's parse errors are still swallowed, as before.
-  Fixed in wf/audit-blade.
+  Fixed in 9ce385c.
 - [ ] 46. Pest and Laravel `Pun/*` rules copy helpers that have already drifted: the global-call check in
   `pun_no_only.rs:99-105`, `pun_use_dedicated_expectation.rs:183-194`, `pun_use_simpler_expectation.rs:104-115` and
   `pun_use_specific_expectations.rs:103-105` (this copy accepts `Foo\expect(..)`); the matcher in

@@ -309,6 +309,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | wf tooling: link crates/pun-fixers/node_modules into worktrees (blade_like_pint needs it) | todo |
 | wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
 | perf (from bench): analyse is slower than a warm PHPStan result cache (pun 0.5-1.8 s vs 0.4-0.8 s) and 1.5-2.2x slower than Mago's analyser; targets for the perf rounds (reports/scoreboard.md "Analyse benchmark") | todo |
+| audit item 9 (decision): on a `<style>`/`<script>` regex backtrack failure Pint writes an empty Blade file and Pun matches it; choose parity or keep the input / report the file as errored | todo |
+| coverage: method_argument_space.rs:337 and yoda_style.rs:426 are uncovered (already on 0c5bd30); regenerate reports/COVERAGE.md | todo |
+| coverage: the php_block_formatting.rs:221 exclusion in reports/COVERAGE.md is keyed by line number and moves with any edit above it; key it by something stable | todo |
 | perf: analyse speed and memory, round by round against the bench, errors unchanged | doing (workflow, wf/perf-analyse-N) |
 | perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
