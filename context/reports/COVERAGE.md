@@ -4,6 +4,7 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 2302 | 2302 | 100.00% | ok |
+| punphp-analyse | 3547 | 3497 | 98.59% | ok |
 | punphp-config | 609 | 609 | 100.00% | ok |
 | punphp-fixers | 25729 | 25729 | 100.00% | ok |
 | punphp-format | 940 | 940 | 100.00% | ok |
@@ -16,6 +17,14 @@
 
 Uncovered lines:
 
+- `crates/pun-analyse/src/project.rs` 99.40% (1 lines): 96
+- `crates/pun-analyse/src/rules/calls.rs` 98.77% (4 lines): 62, 177, 184, 241
+- `crates/pun-analyse/src/rules/classes.rs` 98.28% (4 lines): 56, 67, 71, 96
+- `crates/pun-analyse/src/rules/members.rs` 97.20% (3 lines): 64, 81, 160
+- `crates/pun-analyse/src/rules/mod.rs` 97.42% (20 lines): 226, 257, 313, 386, 855-860, 862-865, 1065-1070
+- `crates/pun-analyse/src/rules/names.rs` 97.56% (11 lines): 94, 106, 241-247, 260, 328
+- `crates/pun-analyse/src/rules/params.rs` 98.08% (2 lines): 102, 112
+- `crates/pun-analyse/src/rules/scope.rs` 96.03% (5 lines): 43, 53-54, 146, 154
 - `crates/pun-phpstan/src/types.rs` 98.83% (29 lines): 2321, 2927-2929, 2940, 2973-2976, 3023, 3026, 3031, 3097, 3131, 3137, 3277, 3303, 3314, 3333, 3358-3367
 <!-- coverage:end -->
 

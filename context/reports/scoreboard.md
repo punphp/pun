@@ -207,6 +207,36 @@ change, A/B with `/usr/bin/time` on pinkary, laravel-framework and laravel-pint:
   overlap, +20% rss); 3 reader threads opening files ahead of the scan threads (wall -2 to -4%, rss +13 to +18%);
   mimalloc in the example (wall -4 to -5%, rss -6% on pinkary and laravel-framework, +7% on laravel-pint; the
   allocator belongs to the `pun` binary, a pun-cli follow-up); more or fewer rayon threads (4/6 slower, 12/16 equal).
+Round 3 (2026-10-18; precise: 11 alternating `/usr/bin/time` runs of the round 2 binary and the round 3 one, median,
+after the load average fell below 3; bench.py: `RUNS=5`, same call, other non-heavy load on the machine):
+
+| project | before (precise) | after (precise) | wall | rss | before (bench.py) | after (bench.py) |
+|---|---:|---:|---:|---:|---:|---:|
+| pinkary | 0.55 s, 851 MB | 0.41 s, 597 MB | -25% | -30% | 0.52 s, 883 MB | 0.39 s, 595 MB |
+| larastan (v3.10.0) | 0.26 s, 545 MB | 0.26 s, 518 MB | 0% | -5% | 0.30 s, 541 MB | 0.31 s, 519 MB |
+| laravel-framework | 0.55 s, 1115 MB | 0.38 s, 628 MB | -31% | -44% | 0.58 s, 1103 MB | 0.52 s, 629 MB |
+| pest | 0.20 s, 446 MB | 0.20 s, 407 MB | 0% | -9% | 0.26 s, 445 MB | 0.25 s, 405 MB |
+| laravel-pint | 0.18 s, 349 MB | 0.18 s, 311 MB | 0% | -11% | 0.36 s, 344 MB | 0.22 s, 311 MB |
+
+- round 3: Composer's psr-4 and psr-0 files are scanned on demand, as PHPStan's PSR locators find classes by name: a
+  file is scanned once an analysed or scanned file names the class its path holds (rounds: each scans the files the
+  previous one named). Names are over-approximated from each file's bytes (every name-like token in code, docblocks,
+  comments and strings, `\\` included, as written, relative to each declared namespace and through every import,
+  case-insensitively), so a class any rule or type could reach is scanned. Pinkary scans 10.1k of 17.8k files,
+  laravel-framework 7.7k of 15.8k; the opens, Mago's parse and scan, and Mago's metadata of the rest are gone. Wall
+  -25% pinkary, -31% laravel-framework, 0% on the three smaller projects (their critical path is the prelude, the
+  PHPStan API stub scan and Mago's populate, not the vendor scan); rss -5 to -44%. Errors identical on four projects;
+  laravel-framework gains two errors PHPStan 2.2.7 also reports (`Laravel\Octane\Events\RequestReceived` not found,
+  Listener.php:38 and CloudBootstrapper.php:391): before, Pun saw the `class_alias()` in a psr-4 test file
+  (tests/Foundation/Cloud/ExceptionReportingTest.php) that PHPStan never loads. A psr-4 file below excludePaths'
+  analyseAndScan is found as PHPStan finds it (its PSR locators ignore excludePaths).
+- round 3, tried and dropped: per-file results with dynamic rayon tasks instead of rounds (wall -3 to -5%, rss +4 to
+  +8%); scanning PHPStan's API stub beside the later rounds instead of after them (larastan and pest -20% wall, but 2
+  of 14 runs stalled for 600-1000 s; not understood, so not kept); skipping vendor method bodies' names (about 17%
+  fewer files on Pinkary, but Mago infers assertions from bodies).
+- What is left (round 3 profile, pinkary): directory walk 18% of samples (one opendir per psr directory; walking only
+  the directories a lookup needs would read about half), file reads 15%, Mago's parse and scan 25-30%, the name
+  scan 9%, Mago's populate 15-20% of wall. On larastan and pest the serial API stub scan is about 60 ms of 260 ms.
 - What is left (round 2 profile): the machine is CPU-bound. `open()` is about 30% of all CPU samples (kernel time:
   15 µs per file alone, 50-60 µs while the other cores parse, and it stops scaling past 4 threads), Mago's parse and
   scan about 35%, Mago's populate 15-20% of wall, malloc 7-10%. None of it is pun-analyse code; the next step is the
