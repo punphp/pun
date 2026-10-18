@@ -295,3 +295,6 @@ Assistant's calls in analyse 3b (the first 13 level-0 declaration and keyword ru
   `class@anonymous/<relative path>:<line>`, which needs the analysed paths), and a trait method's alias comes from the
   class's alias map, not from the `use` block of that trait alone.
 - BacktickRule also reports an empty pair of backticks, where PHPStan stops the file with an internal error.
+- Verify (2026-10-18): PHPStan runs no rule on statements after a terminating one (`return; echo __CLASS__;` reports
+  nothing), while Pun's walk checks dead code for every rule, these 13 included. That is an engine gap (unreachable
+  statements, later with never-returning calls from inference), not a bug in this batch; it shows only on dead code.
