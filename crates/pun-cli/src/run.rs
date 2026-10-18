@@ -80,7 +80,6 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     let every: Vec<_> = (cfg.rules.iter().cloned())
         .chain(lint_fixers.iter().map(|(r, _, _)| r.clone()))
         .collect();
-    pun_fixers::analyzers::active_preset::set(&cfg.preset);
     let not_ported = Pipeline::new(&every, &pun_fixers::all)?.not_ported;
     let unnamed = |name: &String| {
         lint_fixers
@@ -382,8 +381,12 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
 }
 
 fn pipeline(cfg: &Config) -> Result<Pipeline> {
-    pun_fixers::analyzers::active_preset::set(&cfg.preset);
     let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
+    p.set_preset(&cfg.preset);
+    p.ignore_mismatched_rules(
+        std::env::var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS")
+            .is_ok_and(|v| pun_format::php_bool(&v)),
+    );
     // PUN_PROFILE=1: per-stage timings on stderr after the run.
     if std::env::var_os("PUN_PROFILE").is_some() {
         p.enable_profile();

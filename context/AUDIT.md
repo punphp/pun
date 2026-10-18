@@ -156,27 +156,34 @@ items marked "not checked against Pint" still need one oracle run before the fix
   (`analyzers/fixer_configuration_resolver.rs`) `pub(crate)`, use them, and record the upstream messages as oracle
   cases. Recorded 40 oracle cases (configure errors, including the int-key ones of item 63); binary_operator_spaces
   also printed `string#7` for an int key where upstream prints `integer#7`. Fixed in c9adf6f.
-- [ ] 23. `crates/pun-fixers/src/fixers/ordered_class_elements.rs:473-476` panics ("no position for
+- [x] 23. `crates/pun-fixers/src/fixers/ordered_class_elements.rs:473-476` panics ("no position for
   property_public_static_readonly") on modifier mixes the grammar accepts and PHP's compiler rejects (`public static
   readonly int $x;`, `readonly public function f()`). Reproduced. Decide whether to mirror upstream's undefined-key
-  behaviour or skip the element. Needs a decision.
-- [ ] 24. `crates/pun-fixers/src/fixers/general_phpdoc_tag_rename.rs:147-173` puts replacement keys into the pattern
+  behaviour or skip the element. Needs a decision. Pint 1.29.3 fails the file with `assert(isset($this->typePosition[$type]))`
+  (upstream asserts before the lookup), so the panic, Pun's per-file error, now carries that message and the file is
+  left as is, as in Pint. Fixed in this commit.
+- [x] 24. `crates/pun-fixers/src/fixers/general_phpdoc_tag_rename.rs:147-173` puts replacement keys into the pattern
   unquoted and unwraps the key lookup, so `{"replacements": {"a|b": "c"}}` with `/** @a */` panics inside `fix()`.
-  Fall back to the matched text, or mirror upstream's error. Needs a decision.
+  Fall back to the matched text, or mirror upstream's error. Needs a decision. Pint 1.29.3 fails the file with
+  `assert(isset($replacements[$matches['tag']]))`; Pun's per-file error now has that message. Fixed in this commit.
 - [x] 25. `crates/pun-fixers/src/fixers/pint_laravel_blade.rs:235-238` unwraps both worker markers in Node's output; a
   template containing `[PINT_PRETTIER_WORKER_END]` desyncs the reply stream and the next file panics. Bail with
   Pint's "worker terminated unexpectedly" message and search END after START. Reproduced at 0c5bd30 with a stand-in
   worker; Pint's own message for a missing marker is "did not return a valid response" (`Prettier::format`), and it
   keeps the worker, so Pun does the same. Fixed in e48bd81.
-- [ ] 26. Run configuration lives in process globals: `crates/pun-fixers/src/analyzers/active_preset.rs:6-18`
+- [x] 26. Run configuration lives in process globals: `crates/pun-fixers/src/analyzers/active_preset.rs:6-18`
   (`static PRESET: RwLock`, set twice from `pun-cli/src/run.rs:83`, `:367`, read by the Blade fixer) and
   `pun-cli/src/agent.rs:16` (`MODE: OnceLock`, read at 11 sites, `expect`s it was initialised). A fixer's output
   depends on whichever `set` ran last. Pass the preset into the pipeline and an `OutputMode` down from `main`. Spans
-  crates. Needs a decision.
+  crates. Needs a decision. The preset half: `Fixer::set_preset` and `Pipeline::set_preset`; the Blade fixer keeps the
+  preset it is given and `active_preset` is gone. pun-cli's agent `MODE` stays with the platform track (see PLAN).
+  Fixed in this commit.
 - [ ] 27. Libraries read harness environment variables and their tests set them with `unsafe { set_var }` while other
   test threads call `temp_dir()` (a `getenv`): `crates/pun-format/src/lib.rs:333-337` with tests at `:755-764`, and
   `crates/pun-config/src/lib.rs:495` with tests at `tests.rs:581-583`. Read each variable once in pun-cli and pass a
   field (`Pipeline::ignore_mismatched_rules`, `Options::ignore_php_constraint`); the `unsafe` blocks go. Spans crates.
+  pun-format half done: `Pipeline::ignore_mismatched_rules(bool)`, read once in pun-cli's `pipeline()` through
+  `pun_format::php_bool`; pun-config's `ignore_php_constraint` is the config track's.
 - [ ] 28. No shared lint policy: the root `Cargo.toml` has no `[workspace.lints]`, clippy doesn't gate in CI
   (`ci.yml:30-32`), and nothing compiles the `mago-lint` feature that release builds ship
   (`crates/pun-cli/Cargo.toml:15-16`; no test passes `--mago`). Add the block below, `[lints] workspace = true` in each

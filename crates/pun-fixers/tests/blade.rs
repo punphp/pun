@@ -148,6 +148,28 @@ fn oracle_blade_fixtures() {
             ));
         }
     }
+    // The run's preset formats the embedded PHP (Pint 1.29.3 `--blade` with pint.json `{"preset": ...}`): psr12 keeps
+    // `array()`, laravel shortens it.
+    let mut blade_only = pun_format::Pipeline::new(
+        &[pun_config::Rule {
+            name: "Pint/laravel_blade".into(),
+            options: serde_json::Value::Null,
+        }],
+        &pun_fixers::all,
+    )
+    .unwrap();
+    let embedded: &[u8] = b"<div>\n    @php\n        $a = array(1,2);\n        if($a){ $b = 1; }\n    @endphp\n</div>\n";
+    let body = b"        if ($a) {\n            $b = 1;\n        }\n    @endphp\n</div>\n";
+    let file = Path::new("a.blade.php");
+    assert_eq!(
+        run(&blade_only, file, embedded),
+        [&b"<div>\n    @php\n        $a = [1, 2];\n"[..], body].concat()
+    );
+    blade_only.set_preset("psr12");
+    assert_eq!(
+        run(&blade_only, file, embedded),
+        [&b"<div>\n    @php\n        $a = array(1,2);\n"[..], body].concat()
+    );
     std::env::set_current_dir(root).unwrap();
     std::fs::remove_dir_all(&project).unwrap();
     std::fs::remove_dir_all(&bare).unwrap();

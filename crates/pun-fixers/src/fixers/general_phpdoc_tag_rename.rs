@@ -49,4 +49,14 @@ mod tests {
             assert!(fixer().configure(&ok).is_ok(), "{ok}");
         }
     }
+
+    // Pint 1.29.3 with `{"a|b": "c"}` on `/** @a @b @c */`: the file errors with this message.
+    #[test]
+    #[should_panic(expected = "assert(isset($replacements[$matches['tag']]))")]
+    fn unquoted_key_errors_like_upstream() {
+        let mut f = fixer();
+        f.configure(&json!({"replacements": {"a|b": "c"}})).unwrap();
+        let mut tokens = pun_tokens::Tokens::from_code(b"<?php\n/** @a @b @c */\nfunction f() {}\n");
+        f.fix(std::path::Path::new("a.php"), &mut tokens);
+    }
 }

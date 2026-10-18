@@ -446,7 +446,9 @@ impl OrderedClassElementsFixer {
         *self
             .type_position
             .get(&ty)
-            .unwrap_or_else(|| panic!("ordered_class_elements: no position for {ty}"))
+            // A modifier mix PHP's compiler rejects (`public static readonly`): upstream's assert fails and the file
+            // errors with its message.
+            .unwrap_or_else(|| panic!("assert(isset($this->typePosition[$type]))"))
     }
 
     fn sort_group_elements(&self, a: &Element, b: &Element) -> Ordering {
@@ -467,4 +469,17 @@ fn sort_tokens(tokens: &mut Tokens, start_index: usize, end_index: usize, elemen
         replace.extend_from_slice(&tokens.as_slice()[e.start..=e.end]);
     }
     tokens.override_range(start_index + 1, end_index, replace);
+}
+
+#[cfg(test)]
+mod tests {
+    // Pint 1.29.3 on a property PHP's compiler rejects (`public static readonly`): the file errors with this message.
+    #[test]
+    #[should_panic(expected = "assert(isset($this->typePosition[$type]))")]
+    fn rejected_modifier_mix_errors_like_upstream() {
+        let mut tokens = pun_tokens::Tokens::from_code(
+            b"<?php\nclass A {\n    public function b() {}\n    public static readonly int $x;\n    public $a;\n}\n",
+        );
+        super::fixer().fix(std::path::Path::new("a.php"), &mut tokens);
+    }
 }

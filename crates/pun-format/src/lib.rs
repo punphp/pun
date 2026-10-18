@@ -38,6 +38,8 @@ pub trait Fixer: Send + Sync {
     fn fix(&self, file: &Path, tokens: &mut Tokens);
     /// `WhitespacesAwareFixerInterface::setWhitespacesConfig`; only whitespace-aware fixers store it.
     fn set_whitespaces_config(&mut self, _config: &WhitespacesFixerConfig) {}
+    /// The run's preset (Pint's `ConfigurationJsonRepository::preset()`); only `Pint/laravel_blade` reads it.
+    fn set_preset(&mut self, _preset: &str) {}
 }
 
 /// `PhpCsFixer\WhitespacesFixerConfig` (Pint never overrides the defaults: four spaces, "\n").
@@ -157,7 +159,7 @@ impl Fixer for Proxy {
         self.inner.priority()
     }
     // is_risky / configure / set_whitespaces_config are never called on the proxy: the inner fixer is configured
-    // before wrapping, and modifier_keywords is not risky (the trait default).
+    // before wrapping, and modifier_keywords is not risky (the trait default). It ignores set_preset too.
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         self.inner.is_candidate(tokens)
     }
@@ -176,6 +178,8 @@ pub struct Pipeline {
     pub not_ported: Vec<String>,
     /// Per-stage wall time and call count, only when profiling (`PUN_PROFILE=1` in the CLI).
     profile: Option<Mutex<BTreeMap<&'static str, (Duration, u64)>>>,
+    /// `PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS`, read once by the CLI: skip `check_annotations`' name check.
+    ignore_mismatched_rules: bool,
 }
 
 #[derive(Debug)]
@@ -243,7 +247,20 @@ impl Pipeline {
             fixers,
             not_ported,
             profile: None,
+            ignore_mismatched_rules: false,
         })
+    }
+
+    /// Hands every fixer the run's preset (`Fixer::set_preset`).
+    pub fn set_preset(&mut self, preset: &str) {
+        for f in &mut self.fixers {
+            f.set_preset(preset);
+        }
+    }
+
+    /// See `ignore_mismatched_rules`; the CLI passes `php_bool` of the environment variable.
+    pub fn ignore_mismatched_rules(&mut self, ignore: bool) {
+        self.ignore_mismatched_rules = ignore;
     }
 
     /// Turn on per-stage timing (lint, tokenize, each fixer, generate); see `profile_report`.
@@ -340,9 +357,7 @@ impl Pipeline {
                 return Err(AnnotationError::UndefinedArrayKey.into());
             }
         };
-        if std::env::var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS")
-            .is_ok_and(|v| php_bool(&v))
-        {
+        if self.ignore_mismatched_rules {
             return Ok(());
         }
         let used = |n: &[u8]| {
@@ -407,7 +422,7 @@ fn has_annotation(code: &[u8]) -> bool {
 }
 
 /// `filter_var($v, FILTER_VALIDATE_BOOLEAN)`.
-fn php_bool(v: &str) -> bool {
+pub fn php_bool(v: &str) -> bool {
     ["1", "true", "on", "yes"].contains(&v.trim().to_ascii_lowercase().as_str())
 }
 
@@ -792,17 +807,20 @@ mod tests {
             kind(b"<?php\n// @php-cs-fixer-ignore nope\n"),
             AnnotationError::NotEnabled(_)
         ));
-        // PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS (FILTER_VALIDATE_BOOLEAN) turns the name check off, not the analysis.
-        unsafe { std::env::set_var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS", " Yes") };
-        p.check_annotations(Path::new("a.php"), b"<?php\n// @php-cs-fixer-ignore nope\n")
+        // PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS turns the name check off, not the analysis.
+        let mut q = Pipeline::new(&[rule("upper")], &factory).unwrap();
+        q.ignore_mismatched_rules(true);
+        q.check_annotations(Path::new("a.php"), b"<?php\n// @php-cs-fixer-ignore nope\n")
             .unwrap();
         assert_eq!(
-            err(b"<?php\n// @php-cs-fixer-ignore\tx\n"),
+            q.check_annotations(Path::new("a.php"), b"<?php\n// @php-cs-fixer-ignore\tx\n")
+                .unwrap_err()
+                .to_string(),
             "Undefined array key 1"
         );
-        unsafe { std::env::set_var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS", "0") };
-        assert!(err(b"<?php\n// @php-cs-fixer-ignore nope\n").ends_with("you are using."));
-        unsafe { std::env::remove_var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS") };
+        // filter_var(FILTER_VALIDATE_BOOLEAN), as PHP reads the variable.
+        assert!(php_bool(" Yes") && php_bool("on") && php_bool("1") && php_bool("TRUE"));
+        assert!(!php_bool("0") && !php_bool("y") && !php_bool(""));
     }
 
     #[test]

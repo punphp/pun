@@ -33,10 +33,16 @@ const WORKER: &str = include_str!("pint_laravel_blade/worker.cjs");
 const PRETTIERRC: &str = include_str!("pint_laravel_blade/prettierrc.json");
 const WORKER_IDLE_TIMEOUT: Duration = Duration::from_secs(30);
 
-struct LaravelBladeFixer;
+/// `preset`: the run's preset (Pint's `ConfigurationJsonRepository::preset()`: `--preset`, else pint.json's `preset`,
+/// else "laravel"); embedded PHP is formatted with that preset's rules.
+struct LaravelBladeFixer {
+    preset: String,
+}
 
 pub(crate) fn fixer() -> Box<dyn Fixer> {
-    Box::new(LaravelBladeFixer)
+    Box::new(LaravelBladeFixer {
+        preset: "laravel".into(),
+    })
 }
 
 impl Fixer for LaravelBladeFixer {
@@ -48,6 +54,9 @@ impl Fixer for LaravelBladeFixer {
     }
     fn is_candidate(&self, _tokens: &Tokens) -> bool {
         true
+    }
+    fn set_preset(&mut self, preset: &str) {
+        self.preset = preset.into();
     }
     fn fix(&self, file: &Path, tokens: &mut Tokens) {
         // SplFileInfo::getRealPath()
@@ -62,7 +71,7 @@ impl Fixer for LaravelBladeFixer {
         }
         // PrettierException (or a failed masker regex): the runner reports the file as errored with the message and
         // leaves it untouched. Pun's fixers panic where upstream throws.
-        let content = format(&path_str, &content).unwrap_or_else(|e| panic!("{e}"));
+        let content = format(&path_str, &content, &self.preset).unwrap_or_else(|e| panic!("{e}"));
         // Tokens::setCode() rejects an empty string, so clear the tokens directly.
         if content.is_empty() {
             for index in 0..tokens.count() {
@@ -86,7 +95,7 @@ fn is_ignored(path: &str) -> bool {
 }
 
 /// `BladeFormatter::format`: pre-formatters, prettier, then post-formatters in declaration order.
-fn format(path: &str, content: &[u8]) -> Result<Vec<u8>> {
+fn format(path: &str, content: &[u8], preset: &str) -> Result<Vec<u8>> {
     let mut masker = embedded_blade_masker::EmbeddedBladeMasker::default();
     let content = masker.pre_format(content).map_err(anyhow::Error::msg)?;
     let formatted = prettier_format(path, &content)?;
@@ -100,7 +109,7 @@ fn format(path: &str, content: &[u8]) -> Result<Vec<u8>> {
     let formatted = dedent_hugged_terminator::post_format(&formatted);
     let formatted = masker.post_format(&formatted);
     let blocks = php_block_formatting::PhpBlockFormatting::new(
-        php_block_formatting::PhpFragmentFormatter::new(crate::analyzers::active_preset::get()),
+        php_block_formatting::PhpFragmentFormatter::new(preset.into()),
     );
     Ok(blocks.post_format(&formatted))
 }
