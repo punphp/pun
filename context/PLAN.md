@@ -238,11 +238,16 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
 | lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | todo |
-| lint 7: the 428 lint rules for 1.0 native, in usage order (`later = true` rules wait) | todo; 64 of 428 native (batch 2: 14 syntax-only code-quality rules done) |
+| lint 7: the 428 lint rules for 1.0 native, in usage order (`later = true` rules wait) | todo; 77 of 428 native (batch 1: 13 syntax-only dead-code rules done; batch 2: 14 syntax-only code-quality rules done) |
 | lint 7 follow-up (from batch 2): optional code-quality rules TernaryImplodeToImplode, SingularSwitchToIf, TernaryConditionVariableAssignment, SimplifyIfNotNullReturn, ConsecutiveNullCompareReturnsToNullCoalesceQueue | todo |
 | lint 7 follow-up (from batch 2): move crates/pun-lint/src/rules/rector_code_quality.rs's shared helpers (precedence table, in_parent, statements_edit, inverse_node/de_morgan, call_to/args/is_constant/equal) into `crate::syntax` for later batches (syntax.rs is owned by lint 1-2) | todo |
 | lint 7 follow-up (from batch 2): `lint/complexity/prefer-null-coalesce`'s mapping summary describes more than ArrayKeyExistsTernaryThenValueToCoalescing (isset ternaries, if/return chains, foreach lookups); check whether more upstream rules belong to it | todo |
 | lint 7 follow-up (from batch 2): on a colon-body `if (...): ... endif;` Rector reprints the `if` with braces when one statement becomes two, Pun keeps the colon syntax | todo |
+| lint 7 follow-up (from batch 1): port `lint/dead-code/no-empty-loop` (RemoveDeadLoopRector) once analyse gives pun-lint pure-function and Throwable checks (Build 8) | todo |
+| lint 7 follow-up (from batch 1): decide in the engine whether Rector-sourced rules apply one pass per file, as Rector does, instead of fix rounds until no fix is left (`if ($a) {} else {}` is `if (!$a) {}` in Rector, removed in Pun) | todo |
+| lint 7 follow-up (from batch 1): rewrite an emptied alternative-syntax body with braces in rules/php_parser.rs's shared remove(), so no-empty-block and no-useless-catch match Rector as no-useless-continue does | todo |
+| lint 7 follow-up (from batch 1): examples/fix_dir.rs runs `rules::all()`, which now holds the batch 1 and 2 rules; check that this is intended | todo |
+| lint 7 follow-up (from batch 1): merge rules/php_parser.rs and rules/used_variable.rs with batch 2's rules/rector_code_quality.rs helpers when they move into `crate::syntax` | todo |
 | lint (from mapping): write summaries in rules/mapping.toml for the 286 lint rules added by the one-to-one mapping (several have none) | todo |
 | lint (from mapping): look at the upstream rector-laravel laravel-120 set's RenameMethod bug, and decide whether the livewire-40 set belongs in scope | todo |
 | migrate 4: rector.php | todo |
