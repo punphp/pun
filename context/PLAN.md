@@ -310,6 +310,8 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit item 9 (decision): on a `<style>`/`<script>` regex backtrack failure Pint writes an empty Blade file and Pun matches it; choose parity or keep the input / report the file as errored | todo |
 | coverage: method_argument_space.rs:337 and yoda_style.rs:426 are uncovered (already on 0c5bd30); regenerate reports/COVERAGE.md | todo |
 | coverage: the php_block_formatting.rs:221 exclusion in reports/COVERAGE.md is keyed by line number and moves with any edit above it; key it by something stable | todo |
+| audit item 46 follow-up: Pun/use_specific_expectations (like its sibling Pest rules) now skips `namespace\expect(..)`, which Mago 1.57.0 fixes in the global namespace; decide whether all Pest rules should accept it | todo |
+| fixers: switch_continue_to_break decodes `continue 0X1F;` as octal because it checks only lowercase `0x`/`0b`; this matches upstream SwitchContinueToBreakFixer.php, so keep it unless upstream changes | todo |
 | perf: analyse speed and memory, round by round against the bench, errors unchanged | doing (workflow, wf/perf-analyse-N) |
 | perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |

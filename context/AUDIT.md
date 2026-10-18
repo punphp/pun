@@ -43,10 +43,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 7. `crates/pun-fixers/src/fixers/pun_prefer_first_class_callable.rs:106-111`, `:155-163`: the arrow-function
   branch never checks the receiver against the parameters, so `fn ($x) => $x->equals($x)` becomes
   `$x->equals(...)`, which reads an undefined outer `$x`. Return `None` when `callee` is one of `params`, and add the
-  case to the tests. Reproduced. Fixed in wf/audit-fixers-rules.
+  case to the tests. Reproduced. Fixed in d226ab4.
 - [x] 8. `crates/pun-fixers/src/fixers/pun_prefer_dedicated_status_assertion.rs:58-67` parses `0404` as decimal 404,
   so `assertStatus(0404)` (octal 260 in PHP) becomes `assertNotFound()` and changes what the test asserts. Skip
-  literals with a leading `0`, or decode them like `switch_continue_to_break::base_dec`. Reproduced (PHP gives 260). Fixed in wf/audit-fixers-rules.
+  literals with a leading `0`, or decode them like `switch_continue_to_break::base_dec`. Reproduced (PHP gives 260). Fixed in 250c5f1.
 - [ ] 9. `crates/pun-fixers/src/fixers/pint_laravel_blade/embedded_blade_masker.rs:56-70` returns
   `result.unwrap_or_default()` when the `<style|script>` regex fails, and `pint_laravel_blade.rs:65-71` then clears
   every token, so `pun format` empties the file. The pattern's `(?:"[^"]*"|'[^']*'|[^>])*` is ambiguous: a
@@ -229,7 +229,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `pun_use_specific_expectations.rs:103-105` (this copy accepts `Foo\expect(..)`); the matcher in
   `pun_use_dedicated_expectation.rs:154-201` and `pun_use_simpler_expectation.rs:84-117`; compound-assignment lists
   in three files. Extract one Pest helper module and drop the dead `T_NAME_FULLY_QUALIFIED` branch and the
-  always-`true` `allow_not`. Fixed in wf/audit-fixers-rules: `analyzers/pest.rs` holds the global-call check, the
+  always-`true` `allow_not`. Fixed in 273f905: `analyzers/pest.rs` holds the global-call check, the
   chain-root walk and the `expect()` matcher; `analyzers/helpers.rs` holds `COMPOUND_ASSIGNMENTS`. `Foo\expect(..)` is
   no longer rewritten (Mago 1.57.0 leaves it too).
 - [ ] 47. `ignoreErrors` entries are read by string key in `crates/pun-phpstan/src/config.rs:676-810`,
@@ -357,7 +357,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 73. Forwarding wrappers: `ordered_imports.rs:153-155` (`spaceship`), `no_alias_functions.rs:56-58` (`merge`),
   `import_processor.rs:59-61` (`tokenize_name`), `type_expression.rs:358-364`, `helpers.rs:28-30` (`has_newline`,
   used twice while 28 sites call `Preg` directly), `pun-phpstan/src/types.rs:288-290`, and all of
-  `docblock/preg.rs` (49 lines renaming `Preg` methods). Inline Function. Fixed in wf/audit-fixers-rules (`has_newline` now has 7 call sites, all
+  `docblock/preg.rs` (49 lines renaming `Preg` methods). Inline Function. Fixed in fe1af67 (`has_newline` now has 7 call sites, all
   inlined; in `types.rs` the forwarded `is_implicit_mixed` went and `is_plain_implicit_mixed` keeps its body).
 - [ ] 74. `crates/pun-cli/src/run.rs:480-487`: `assert!(thread::spawn(|| panic!()).join().is_err())` passes whatever
   the panic hook does. Delete it or assert the hook's effect.
@@ -405,7 +405,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `pint_error`, which imports it back. Move `abort_box` to `pint_error.rs`, the probe to `prettier.rs`, the reporters
   together.
 - [x] 84. `crates/pun-fixers/src/fixers/final_class.rs:3` imports `final_internal_class`, the only fixer-to-fixer
-  import, so `PUN_FIXERS_ONLY=final_class` fails to build. Move the shared core into `analyzers/`. Fixed in wf/audit-fixers-rules.
+  import, so `PUN_FIXERS_ONLY=final_class` fails to build. Move the shared core into `analyzers/`. Fixed in edb08b1.
 - [ ] 85. Per-token clones and pre-check work on Laravel-preset paths: `braces_position.rs:148`,
   `array_indentation.rs:85`, `no_alternative_syntax.rs:38`, `method_argument_space.rs:404-405`,
   `multiline_whitespace_before_semicolons.rs:136-137` (also computes an unused indent per `;`),
