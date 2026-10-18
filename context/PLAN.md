@@ -203,7 +203,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| format 1: presets cut to laravel, psr12, empty | todo |
 | format 3: fewer allocations per token (inline Content type; first attempt stopped, nothing landed) | todo |
 | format 4-5: memory target; 8-core benchmark in CI (laravel-framework under 1 s cold) | todo |
 | format 4-5 follow-up (from bench, needs Pushpak): BENCH=format runs Pint with Xdebug loaded on this Mac; set XDEBUG_MODE=off as the analyse and lint modes do (changes format-mode behaviour of scripts/bench.py) | todo |
@@ -293,6 +292,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | tests: crates/pun-cli/tests/watch.rs `watch_reformats_like_pint` fails on macOS (FSEvents re-reports the first run's own writes, which are not recorded in `done`) | todo |
 | CI: clippy gate (`-D warnings`); clippy is at 0 warnings | todo |
 | CI: pun-analyse coverage to 100% (97.59% in CI); regenerate reports/COVERAGE.md | todo |
+| CI: confirm punphp (pun-cli) line coverage at 100% on Linux after format 1 (run.rs preset branch and report.rs PER/Symfony labels removed; macOS runs miss lines behind the 5 environment-failing tests) | todo |
 | CI: one branch and PR per thread; rewrite AGENTS.md "Work with other agents" (§4 Q1) | todo |
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
 | tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
