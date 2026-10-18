@@ -1,0 +1,383 @@
+{
+    "fixer": "multiline_promoted_properties",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\MultilinePromotedPropertiesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/MultilinePromotedPropertiesFixerTest.php",
+    "case_count": 33,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\MultilinePromotedPropertiesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "single parameter",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    public int $x\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(public int $x) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single parameter with trailing comma",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    protected int $x,\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(protected int $x,) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple parameters",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x,\n                    private int $y,\n                    private int $z\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(private int $x, private int $y, private int $z) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple parameters and only one promoted",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    int $x,\n                    private int $y,\n                    int $z\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(int $x, private int $y, int $z) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "parameters with default values",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    private array $a = [1, 2, 3, 4],\n                    private bool $b = self::DEFAULT_B,\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(private array $a = [1, 2, 3, 4], private bool $b = self::DEFAULT_B,) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "parameters with attributes",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    private array $a = [1, 2, 3, 4],\n                    #[Bar(1, 2, 3)] private bool $b = self::DEFAULT_B,\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(private array $a = [1, 2, 3, 4], #[Bar(1, 2, 3)] private bool $b = self::DEFAULT_B,) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple classes",
+                    "args": [
+                        "<?php\n            class ClassWithSinglePromotedProperty {\n                public function __construct(\n                    private int $foo\n                ) {}\n            }\n            class ClassWithoutConstructor {}\n            class ClassWithoutPromotedProperties {\n                public function __construct(string $a, string $b) {}\n            }\n            class ClassWithMultiplePromotedProperties {\n                public function __construct(\n                    private int $x,\n                    private int $y,\n                    private int $z\n                ) {}\n            }",
+                        "<?php\n            class ClassWithSinglePromotedProperty {\n                public function __construct(private int $foo) {}\n            }\n            class ClassWithoutConstructor {}\n            class ClassWithoutPromotedProperties {\n                public function __construct(string $a, string $b) {}\n            }\n            class ClassWithMultiplePromotedProperties {\n                public function __construct(private int $x, private int $y, private int $z) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "0 parameters with 0 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct() {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 0
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters with 0 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(\n                        private int $x,\n                        private int $y\n                    ) {}\n                }",
+                        "<?php class Foo {\n                    public function __construct(private int $x, private int $y) {}\n                }",
+                        {
+                            "minimum_number_of_parameters": 0
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and only one promoted with 0 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(\n                        int $x,\n                        private int $y\n                    ) {}\n                }",
+                        "<?php class Foo {\n                    public function __construct(int $x, private int $y) {}\n                }",
+                        {
+                            "minimum_number_of_parameters": 0
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters with 1 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(\n                        private int $x,\n                        private int $y\n                    ) {}\n                }",
+                        "<?php class Foo {\n                    public function __construct(private int $x, private int $y) {}\n                }",
+                        {
+                            "minimum_number_of_parameters": 1
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and only one promoted with 1 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(\n                        int $x,\n                        private int $y\n                    ) {}\n                }",
+                        "<?php class Foo {\n                    public function __construct(int $x, private int $y) {}\n                }",
+                        {
+                            "minimum_number_of_parameters": 1
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters with 2 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(\n                        private int $x,\n                        private int $y\n                    ) {}\n                }",
+                        "<?php class Foo {\n                    public function __construct(private int $x, private int $y) {}\n                }",
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and only one promoted with 2 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(\n                        int $x,\n                        private int $y\n                    ) {}\n                }",
+                        "<?php class Foo {\n                    public function __construct(int $x, private int $y) {}\n                }",
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters with 3 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(private int $x, private int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 3
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and only one promoted with 3 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(int $x, private int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 3
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters with 4 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(private int $x, private int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 4
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and only one promoted with 4 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(int $x, private int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 4
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and none promoted with 1 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(int $x, int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 1
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and none promoted with 2 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(int $x, int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and none promoted with 3 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(int $x, int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 3
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "2 parameters and none promoted with 4 configured",
+                    "args": [
+                        "<?php class Foo {\n                    public function __construct(int $x, int $y) {}\n                }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 4
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single parameter unwrapped with minimum 2",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(private int $x) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x\n                ) {}\n            }",
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single parameter with trailing comma unwrapped with minimum 2",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(private int $x,) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x,\n                ) {}\n            }",
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single non-promoted parameter not unwrapped with minimum 2",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    int $x\n                ) {}\n            }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single parameter with comment not unwrapped with minimum 2",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    // The name\n                    private string $name,\n                ) {}\n            }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single parameter with attribute not unwrapped with minimum 2",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    #[Assert\\NotBlank]\n                    private string $name,\n                ) {}\n            }",
+                        null,
+                        {
+                            "minimum_number_of_parameters": 2
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "two parameters unwrapped with minimum 3",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(private int $x, private int $y) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x,\n                    private int $y\n                ) {}\n            }",
+                        {
+                            "minimum_number_of_parameters": 3
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "blank lines removed",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x,\n                    private int $y,\n                    private int $z\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x,\n\n                    private int $y,\n\n                    private int $z\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no blank lines",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x,\n                    private int $y,\n                    private int $z\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x, private int $y,\n\n                    private int $z\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "blank lines kept",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x,\n                    private int $y,\n\n                    private int $z\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    private int $x, private int $y,\n\n                    private int $z\n                ) {}\n            }",
+                        {
+                            "keep_blank_lines": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\MultilinePromotedPropertiesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "new in initializers",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        public Bar $x = new Bar(),\n        public Bar $y = new Bar()\n    )\n    {\n    }\n}",
+                        "<?php class Foo\n{\n    public function __construct(public Bar $x = new Bar(), public Bar $y = new Bar())\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "new in initializers with trailing comma",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        public Bar $x = new Bar(),\n        public Bar $y = new Bar(),\n    )\n    {\n    }\n}",
+                        "<?php class Foo\n{\n    public function __construct(public Bar $x = new Bar(), public Bar $y = new Bar(),)\n    {\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

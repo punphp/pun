@@ -1,0 +1,518 @@
+{
+    "fixer": "phpdoc_line_span",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocLineSpanFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocLineSpanFixerTest.php",
+    "case_count": 37,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocLineSpanFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change doc blocks if not needed",
+                    "args": [
+                        "<?php\n\n/**\n * Class description.\n */\nclass Foo\n{\n    /**\n     * Important\n     */\n    const FOO_BAR = \"foobar\";\n\n    /**\n     * @var bool\n     */\n    public $variable = true;\n\n    /**\n     * @var bool\n     */\n    private $var = false;\n\n\n    /**\n     * @return void\n     */\n    public function hello() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change trait_import and other doc blocks by default",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @use Bar<string>\n     */\n    use Bar;\n\n    /** @use Baz<string> */\n    use Baz;\n\n    function a() {\n        /**\n         * @var string\n         */\n        $a = \"test\";\n\n        /** @var non-empty-string */\n        return $a;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does change doc blocks to multi by default",
+                    "args": [
+                        "<?php\n\n/**\n * Class description.\n */\nclass Foo\n{\n    /**\n     * Important\n     */\n    const FOO_BAR = \"foobar\";\n\n    /**\n     * @var bool\n     */\n    public $variable = true;\n\n    /**\n     * @var bool\n     */\n    private $var = false;\n\n\n    /**\n     * @return void\n     */\n    public function hello() {}\n}\n",
+                        "<?php\n\n/** Class description. */\nclass Foo\n{\n    /** Important */\n    const FOO_BAR = \"foobar\";\n\n    /** @var bool */\n    public $variable = true;\n\n    /** @var bool */\n    private $var = false;\n\n\n    /** @return void */\n    public function hello() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does change trait_import and other doc blocks to multi if configured to do so",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @use Bar<string>\n     */\n    use Bar;\n\n    public function hello()\n    {\n        /**\n         * @var string\n         */\n        $a = \"test\";\n\n        /**\n         * @var non-empty-string\n         */\n        return $a;\n    }\n}\n",
+                        "<?php\n\nclass Foo\n{\n    /** @use Bar<string> */\n    use Bar;\n\n    public function hello()\n    {\n        /** @var string */\n        $a = \"test\";\n\n        /** @var non-empty-string */\n        return $a;\n    }\n}\n",
+                        {
+                            "trait_import": "multi",
+                            "other": "multi"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does change doc blocks to single if configured to do so",
+                    "args": [
+                        "<?php\n\n/** Class description. */\nclass Foo\n{\n    /** @use Bar<string> */\n    use Bar;\n\n    /** Important */\n    const FOO_BAR = \"foobar\";\n\n    /** @var bool */\n    public $variable = true;\n\n    /** @var bool */\n    private $var = false;\n\n\n    /** @return void */\n    public function hello()\n    {\n        /** @var string */\n        $a = \"test\";\n\n        /** @var non-empty-string */\n        return $a;\n    }\n}\n",
+                        "<?php\n\n/**\n * Class description.\n */\nclass Foo\n{\n    /**\n     * @use Bar<string>\n     */\n    use Bar;\n\n    /**\n     * Important\n     */\n    const FOO_BAR = \"foobar\";\n\n    /**\n     * @var bool\n     */\n    public $variable = true;\n\n    /**\n     * @var bool\n     */\n    private $var = false;\n\n\n    /**\n     * @return void\n     */\n    public function hello()\n    {\n        /**\n         * @var string\n         */\n        $a = \"test\";\n\n        /**\n         * @var non-empty-string\n         */\n        return $a;\n    }\n}\n",
+                        {
+                            "class": "single",
+                            "trait_import": "single",
+                            "property": "single",
+                            "const": "single",
+                            "method": "single",
+                            "other": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does change complicated doc blocks to single if configured to do so",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var bool */\n    public $variable1 = true;\n\n    /** @var bool */\n    public $variable2 = true;\n\n    /** @Assert\\File(mimeTypes={ \"image/jpeg\", \"image/png\" }) */\n    public $imageFileObject;\n}\n",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var bool */\n    public $variable1 = true;\n\n    /** @var bool\n     */\n    public $variable2 = true;\n\n    /**\n     * @Assert\\File(mimeTypes={ \"image/jpeg\", \"image/png\" })\n     */\n    public $imageFileObject;\n}\n",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not changes doc blocks from single if configured to do so",
+                    "args": [
+                        "<?php\n\n/** Class description. */\nclass Foo\n{\n    /** @use Bar<string> */\n    use Bar;\n\n    /** Important */\n    const FOO_BAR = \"foobar\";\n\n    /** @var bool */\n    public $variable = true;\n\n    /** @var bool */\n    private $var = false;\n\n\n    /** @return void */\n    public function hello()\n    {\n        /** @var string */\n        $a = \"test\";\n    }\n}\n",
+                        null,
+                        {
+                            "class": "single",
+                            "trait_import": "single",
+                            "property": "single",
+                            "const": "single",
+                            "method": "single",
+                            "other": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can be configured to change certain elements to single line",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Important\n     */\n    const FOO_BAR = \"foobar\";\n\n    /** @var bool */\n    public $variable = true;\n\n    /** @var bool */\n    private $var = false;\n\n\n    /**\n     * @return void\n     */\n    public function hello() {}\n}\n",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Important\n     */\n    const FOO_BAR = \"foobar\";\n\n    /**\n     * @var bool\n     */\n    public $variable = true;\n\n    /**\n     * @var bool\n     */\n    private $var = false;\n\n\n    /**\n     * @return void\n     */\n    public function hello() {}\n}\n",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It wont change a doc block to single line if it has multiple useful lines",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Important\n     * Really important\n     */\n    const FOO_BAR = \"foobar\";\n}\n",
+                        null,
+                        {
+                            "const": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It updates doc blocks correctly, even with more indentation",
+                    "args": [
+                        "<?php\n\nif (false) {\n    class Foo\n    {\n        /** @var bool */\n        public $var = true;\n\n        /**\n         * @return void\n         */\n        public function hello () {}\n    }\n}\n",
+                        "<?php\n\nif (false) {\n    class Foo\n    {\n        /**\n         * @var bool\n         */\n        public $var = true;\n\n        /** @return void */\n        public function hello () {}\n    }\n}\n",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can convert empty doc blocks",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     *\n     */\n    const FOO = \"foobar\";\n\n    /**  */\n    private $foo;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**  */\n    const FOO = \"foobar\";\n\n    /**\n     *\n     */\n    private $foo;\n}",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can update doc blocks of static properties",
+                    "args": [
+                        "<?php\n\nclass Bar\n{\n    /**\n     * Important\n     */\n    public static $variable = \"acme\";\n}\n",
+                        "<?php\n\nclass Bar\n{\n    /** Important */\n    public static $variable = \"acme\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can update doc blocks of properties that use the var keyword instead of public",
+                    "args": [
+                        "<?php\n\nclass Bar\n{\n    /**\n     * Important\n     */\n    var $variable = \"acme\";\n}\n",
+                        "<?php\n\nclass Bar\n{\n    /** Important */\n    var $variable = \"acme\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can update doc blocks of static that do not declare visibility",
+                    "args": [
+                        "<?php\n\nclass Bar\n{\n    /**\n     * Important\n     */\n    static $variable = \"acme\";\n}\n",
+                        "<?php\n\nclass Bar\n{\n    /** Important */\n    static $variable = \"acme\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change method doc blocks if configured to do so",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @return mixed */\n    public function bar() {}\n\n    /**\n     * @return void\n     */\n    public function baz() {}\n}",
+                        null,
+                        {
+                            "method": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change property doc blocks if configured to do so",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var int\n     */\n    public $foo;\n\n    /** @var mixed */\n    public $bar;\n}",
+                        null,
+                        {
+                            "property": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change const doc blocks if configured to do so",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var int\n     */\n    public const FOO = 1;\n\n    /** @var mixed */\n    public const BAR = null;\n}",
+                        null,
+                        {
+                            "const": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can handle constants with visibility, does not crash on trait imports",
+                    "args": [
+                        "<?php\ntrait Bar\n{}\n\nclass Foo\n{\n    /** whatever */\n    use Bar;\n\n    /**\n     *\n     */\n    public const FOO = \"foobar\";\n\n    /**  */\n    private $foo;\n}",
+                        "<?php\ntrait Bar\n{}\n\nclass Foo\n{\n    /** whatever */\n    use Bar;\n\n    /**  */\n    public const FOO = \"foobar\";\n\n    /**\n     *\n     */\n    private $foo;\n}",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can handle properties with type declaration",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**  */\n    private ?string $foo;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     *\n     */\n    private ?string $foo;\n}",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It can handle properties with array type declaration",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var string[] */\n    private array $foo;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var string[]\n     */\n    private array $foo;\n}",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It handles all classy types",
+                    "args": [
+                        "<?php\n\n/** Foo */\nabstract class Foo {}\n\n/** Bar */\ninterface Bar {}\n\n/** Baz */\ntrait Baz {}\n",
+                        "<?php\n\n/**\n * Foo\n */\nabstract class Foo {}\n\n/**\n * Bar\n */\ninterface Bar {}\n\n/**\n * Baz\n */\ntrait Baz {}\n",
+                        {
+                            "class": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It handles functions correctly",
+                    "args": [
+                        "<?php\n            /**\n             * Description of foo function.\n             */\n            function foo(): void {}\n            ",
+                        "<?php\n            /** Description of foo function. */\n            function foo(): void {}\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocLineSpanFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "It handles constructor property promotion",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function __construct(\n        /** @var string[] */\n        #[Attribute1]\n        private array $foo1,\n\n        /** @var string[] */\n        private array $foo2,\n    ) {}\n}",
+                        "<?php\n\nclass Foo\n{\n    public function __construct(\n        /**\n         * @var string[]\n         */\n        #[Attribute1]\n        private array $foo1,\n\n        /**\n         * @var string[]\n         */\n        private array $foo2,\n    ) {}\n}",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "It detects attributes between docblock and token",
+                    "args": [
+                        "<?php\n\n/**\n * @internal\n */\n#[Attribute1(\n    /** @phpstan-ignore */\n    Bar::class\n)]\nclass Foo\n{\n    /** @var string[] */\n    #[Attribute1]\n    private array $foo1;\n\n    /** @var string[] */\n    #[Attribute1]\n    #[Attribute2]\n    private array $foo2;\n\n    /** @var string[] */\n    #[Attribute1, Attribute2]\n    public array $foo3;\n}",
+                        "<?php\n\n/** @internal */\n#[Attribute1(\n    /**\n     * @phpstan-ignore\n     */\n    Bar::class\n)]\nclass Foo\n{\n    /**\n     * @var string[]\n     */\n    #[Attribute1]\n    private array $foo1;\n\n    /**\n     * @var string[]\n     */\n    #[Attribute1]\n    #[Attribute2]\n    private array $foo2;\n\n    /**\n     * @var string[]\n     */\n    #[Attribute1, Attribute2]\n    public array $foo3;\n}",
+                        {
+                            "class": "multi",
+                            "property": "single",
+                            "other": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "It handles class constants correctly",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    /**\n     * 0\n     */\n    #[Attribute1]\n    const B0 = \"0\";\n\n    /**\n     * 1\n     */\n    #[Attribute1]\n    #[Attribute2]\n    public const B1 = \"1\";\n\n    /**\n     * 2\n     */\n    #[Attribute1, Attribute2]\n    public const B2 = \"2\";\n}\n",
+                        "<?php\nclass Foo\n{\n    /** 0 */\n    #[Attribute1]\n    const B0 = \"0\";\n\n    /** 1 */\n    #[Attribute1]\n    #[Attribute2]\n    public const B1 = \"1\";\n\n    /** 2 */\n    #[Attribute1, Attribute2]\n    public const B2 = \"2\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "It handles class functions correctly",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    /**\n                     * @return void\n                     */\n                    #[Attribute1]\n                    public function hello1() {}\n\n                    /**\n                     * @return void\n                     */\n                    #[Attribute1]\n                    #[Attribute2]\n                    public function hello2() {}\n\n                    /**\n                     * @return void\n                     */\n                    #[Attribute1, Attribute2]\n                    public function hello3() {}\n                }\n            ",
+                        "<?php\n                class Foo\n                {\n                    /** @return void */\n                    #[Attribute1]\n                    public function hello1() {}\n\n                    /** @return void */\n                    #[Attribute1]\n                    #[Attribute2]\n                    public function hello2() {}\n\n                    /** @return void */\n                    #[Attribute1, Attribute2]\n                    public function hello3() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "It handles unions in properties correctly",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    /**\n                     * @var string[]|string\n                     */\n                    public array|string $foo;\n                }\n            ",
+                        "<?php\n                class Foo\n                {\n                    /** @var string[]|string */\n                    public array|string $foo;\n                }\n            ",
+                        {
+                            "property": "multi"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocLineSpanFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "It handles readonly properties correctly",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var string[] */\n    private readonly array $foo1;\n\n    /** @var string[] */\n    readonly private array $foo2;\n\n    /** @var string[] */\n    readonly array $foo3;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var string[]\n     */\n    private readonly array $foo1;\n\n    /**\n     * @var string[]\n     */\n    readonly private array $foo2;\n\n    /**\n     * @var string[]\n     */\n    readonly array $foo3;\n}",
+                        {
+                            "property": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "It handles class constant correctly",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    /**\n     * 0\n     */\n    const B0 = \"0\";\n\n    /**\n     * 1\n     */\n    final public const B1 = \"1\";\n\n    /**\n     * 2\n     */\n    public final const B2 = \"2\";\n\n    /**\n     * 3\n     */\n    final const B3 = \"3\";\n}\n",
+                        "<?php\nclass Foo\n{\n    /** 0 */\n    const B0 = \"0\";\n\n    /** 1 */\n    final public const B1 = \"1\";\n\n    /** 2 */\n    public final const B2 = \"2\";\n\n    /** 3 */\n    final const B3 = \"3\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "It handles enums correctly",
+                    "args": [
+                        "<?php\n                /**\n                 * @internal\n                 */\n                enum Foo\n                {\n                    /**\n                     * @return void\n                     */\n                    public function hello() {}\n                }\n            ",
+                        "<?php\n                /** @internal  */\n                enum Foo\n                {\n                    /** @return void */\n                    public function hello() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "It handles enum function with attributes correctly",
+                    "args": [
+                        "<?php\n                enum Foo\n                {\n                    /**\n                     * @return void\n                     */\n                    #[Attribute1]\n                    public function hello1() {}\n\n                    /**\n                     * @return void\n                     */\n                    #[Attribute1]\n                    #[Attribute2]\n                    public function hello2() {}\n\n                    /**\n                     * @return void\n                     */\n                    #[Attribute1, Attribute2]\n                    public function hello3() {}\n                }\n            ",
+                        "<?php\n                enum Foo\n                {\n                    /** @return void */\n                    #[Attribute1]\n                    public function hello1() {}\n\n                    /** @return void */\n                    #[Attribute1]\n                    #[Attribute2]\n                    public function hello2() {}\n\n                    /** @return void */\n                    #[Attribute1, Attribute2]\n                    public function hello3() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "It handles enum cases correctly",
+                    "args": [
+                        "<?php\n                enum Foo: string\n                {\n                        /**\n                         * 0\n                         */\n                        case B0 = \"0\";\n\n                        /**\n                         * 1\n                         */\n                        case B1 = \"1\";\n                }\n            ",
+                        "<?php\n                enum Foo: string\n                {\n                        /** 0 */\n                        case B0 = \"0\";\n\n                        /** 1 */\n                        case B1 = \"1\";\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "It handles enum case with attributes correctly",
+                    "args": [
+                        "<?php\n                enum Foo: string\n                {\n                        /**\n                         * 0\n                         */\n                        #[Attribute1]\n                        case B0 = \"0\";\n\n                        /**\n                         * 1\n                         */\n                        #[Attribute1]\n                        #[Attribute2]\n                        case B1 = \"1\";\n\n                        /**\n                         * 2\n                         */\n                        #[Attribute1, Attribute2]\n                        case B2 = \"2\";\n                }\n            ",
+                        "<?php\n                enum Foo: string\n                {\n                        /** 0 */\n                        #[Attribute1]\n                        case B0 = \"0\";\n\n                        /** 1 */\n                        #[Attribute1]\n                        #[Attribute2]\n                        case B1 = \"1\";\n\n                        /** 2 */\n                        #[Attribute1, Attribute2]\n                        case B2 = \"2\";\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "It handles intersection types in properties correctly",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    /**\n                     * @var Countable&Traversable\n                     */\n                    public Countable&Traversable $foo;\n                }\n            ",
+                        "<?php\n                class Foo\n                {\n                    /** @var Countable&Traversable */\n                    public Countable&Traversable $foo;\n                }\n            ",
+                        {
+                            "property": "multi"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocLineSpanFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "constant in trait",
+                    "args": [
+                        "<?php\ntrait Foo {\n    /**\n     * @var string\n     */\n    const Foo = 'foo';\n}",
+                        "<?php\ntrait Foo {\n    /** @var string */\n    const Foo = 'foo';\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocLineSpanFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Foo\n{\n    /**\n     * @var bool\n     */\n    public public(set) bool $a;\n    /**\n     * @var bool\n     */\n    public protected(set) bool $b;\n    /**\n     * @var bool\n     */\n    public private(set) bool $c;\n}",
+                        "<?php class Foo\n{\n    /** @var bool */\n    public public(set) bool $a;\n    /** @var bool */\n    public protected(set) bool $b;\n    /** @var bool */\n    public private(set) bool $c;\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocLineSpanFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "It handles callables inside attributes",
+                    "args": [
+                        "<?php\n/**\n * @internal\n */\n#[Attribute1(\n    /** @phpstan-ignore */\n    static function (#[Attribute2] string $str) {\n        /** @var non-false-string */\n        return $str;\n    }\n)]\nclass Foo {}",
+                        "<?php\n/** @internal */\n#[Attribute1(\n    /** @phpstan-ignore */\n    static function (#[Attribute2] string $str) {\n        /**\n         * @var non-false-string\n         */\n        return $str;\n    }\n)]\nclass Foo {}",
+                        {
+                            "other": "single"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

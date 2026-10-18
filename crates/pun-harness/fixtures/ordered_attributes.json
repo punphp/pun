@@ -1,0 +1,325 @@
+{
+    "fixer": "ordered_attributes",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\AttributeNotation\\OrderedAttributesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/AttributeNotation/OrderedAttributesFixerTest.php",
+    "case_count": 19,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedExceptionMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\AttributeNotation\\OrderedAttributesFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $expectedExceptionMessage): void\n    {\n        self::expectException(InvalidFixerConfigurationException::class);\n        self::expectExceptionMessage($expectedExceptionMessage);\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "Custom order strategy without `order` option",
+                    "args": [
+                        {
+                            "sort_algorithm": "custom"
+                        },
+                        "The custom order strategy requires providing `order` option with a list of attributes's FQNs."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "Custom order strategy with empty `order` option",
+                    "args": [
+                        {
+                            "sort_algorithm": "custom",
+                            "order": []
+                        },
+                        "The custom order strategy requires providing `order` option with a list of attributes's FQNs."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "Non unique attributes throw an exception",
+                    "args": [
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "A\\B\\Bar",
+                                "Test\\Corge",
+                                "A\\B\\Bar"
+                            ]
+                        },
+                        "The list includes attributes that are not unique."
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\AttributeNotation\\OrderedAttributesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "Alpha on various declarations",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[AB\\Baz(prop: 'baz')]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[\\A\\B\\Qux()]\n            #[BarAlias(3)]\n            #[Corge]\n            #[Foo(4, 'baz qux')]\n            class X\n            {\n                #[AB\\Baz(prop: 'baz')]\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[\\A\\B\\Qux()]\n                #[BarAlias(3)]\n                #[Corge]\n                #[Foo(4, 'baz qux')]\n                const Y = 1;\n\n                #[AB\\Baz(prop: 'baz')]\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[\\A\\B\\Qux()]\n                #[BarAlias(3)]\n                #[Corge]\n                #[Foo(4, 'baz qux')]\n                public $y;\n\n                #[AB\\Baz(prop: 'baz')]\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[\\A\\B\\Qux()]\n                #[BarAlias(3)]\n                #[Corge]\n                #[Foo(4, 'baz qux')]\n                public function y() {}\n            }\n\n            #[AB\\Baz(prop: 'baz')]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[\\A\\B\\Qux()]\n            #[BarAlias(3)]\n            #[Corge]\n            #[Foo(4, 'baz qux')]\n            function f(\n                #[AB\\Baz(prop: 'baz')]\n                #[BarAlias(3)]\n                #[Foo(4, 'baz qux')]\n                string $param1,\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[\\A\\B\\Qux()]\n                #[Corge]\n                string $param2\n            ) {}\n\n            function f2(#[BarAlias(3)] #[Foo(4, 'baz qux')] string $param1, #[\\A\\B\\Qux()] #[Corge] string $param2) {}\n\n            $anon = #[AB\\Baz(prop: 'baz')] #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')] #[\\A\\B\\Qux()] #[BarAlias(3)] #[Corge] #[Foo(4, 'baz qux')] function () {};\n            $short = #[AB\\Baz(prop: 'baz')] #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')] #[\\A\\B\\Qux()] #[BarAlias(3)] #[Corge] #[Foo(4, 'baz qux')] fn () => null;\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            #[AB\\Baz(prop: 'baz')]\n            #[\\A\\B\\Qux()]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[Corge]\n            class X\n            {\n                #[Foo(4, 'baz qux')]\n                #[BarAlias(3)]\n                #[AB\\Baz(prop: 'baz')]\n                #[\\A\\B\\Qux()]\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[Corge]\n                const Y = 1;\n\n                #[Foo(4, 'baz qux')]\n                #[BarAlias(3)]\n                #[AB\\Baz(prop: 'baz')]\n                #[\\A\\B\\Qux()]\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[Corge]\n                public $y;\n\n                #[Foo(4, 'baz qux')]\n                #[BarAlias(3)]\n                #[AB\\Baz(prop: 'baz')]\n                #[\\A\\B\\Qux()]\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[Corge]\n                public function y() {}\n            }\n\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            #[AB\\Baz(prop: 'baz')]\n            #[\\A\\B\\Qux()]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[Corge]\n            function f(\n                #[Foo(4, 'baz qux')]\n                #[BarAlias(3)]\n                #[AB\\Baz(prop: 'baz')]\n                string $param1,\n                #[\\A\\B\\Qux()]\n                #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[Corge]\n                string $param2\n            ) {}\n\n            function f2(#[Foo(4, 'baz qux')] #[BarAlias(3)] string $param1, #[\\A\\B\\Qux()] #[Corge] string $param2) {}\n\n            $anon = #[Foo(4, 'baz qux')] #[BarAlias(3)] #[AB\\Baz(prop: 'baz')] #[\\A\\B\\Qux()] #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')] #[Corge] function () {};\n            $short = #[Foo(4, 'baz qux')] #[BarAlias(3)] #[AB\\Baz(prop: 'baz')] #[\\A\\B\\Qux()] #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')] #[Corge] fn () => null;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Explicit in namespace",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[BarAlias(3)]\n            #[Corge]\n            #[AB\\Baz(prop: 'baz')]\n            #[Foo(4, 'baz qux')]\n            #[\\A\\B\\Qux()]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            #[AB\\Baz(prop: 'baz')]\n            #[\\A\\B\\Qux()]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[Corge]\n            function f() {}\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "Test\\A\\B\\Quux",
+                                "A\\B\\Bar",
+                                "Test\\Corge",
+                                "A\\B\\Baz",
+                                "A\\B\\Foo",
+                                "A\\B\\Qux"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Explicit in global namespace",
+                    "args": [
+                        "<?php\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[BarAlias(3)]\n            #[Corge]\n            #[AB\\Baz(prop: 'baz')]\n            #[Foo(4, 'baz qux')]\n            #[\\A\\B\\Qux()]\n            function f() {}\n            ",
+                        "<?php\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            #[AB\\Baz(prop: 'baz')]\n            #[\\A\\B\\Qux()]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[Corge]\n            function f() {}\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "A\\B\\Quux",
+                                "A\\B\\Bar",
+                                "Corge",
+                                "A\\B\\Baz",
+                                "A\\B\\Foo",
+                                "A\\B\\Qux"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Explicit with unconfigured attributes",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[AB\\Baz(prop: 'baz')]\n            #[\\A\\B\\Qux()]\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            #[Corge]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            #[AB\\Baz(prop: 'baz')]\n            #[\\A\\B\\Qux()]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[Corge]\n            function f() {}\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "Test\\A\\B\\Quux",
+                                "A\\B\\Baz",
+                                "A\\B\\Qux"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Multiple namespaces",
+                    "args": [
+                        "<?php\n            namespace Test\n            {\n                use A\\B\\Foo;\n                use A\\B\\Bar as BarAlias;\n\n                #[BarAlias(3)]\n                #[AB\\Baz(prop: 'baz')]\n                #[Foo(4, 'baz qux')]\n                function f() {}\n            }\n\n            namespace Test2\n            {\n                use A\\B\\Bar as BarAlias;\n                use A\\B as AB;\n\n                #[BarAlias(3)]\n                #[\\A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                #[AB\\Baz(prop: 'baz')]\n                function f() {}\n            }\n\n            namespace Test\n            {\n                use A\\B\\Foo;\n                use A\\B\\Bar as BarAlias2;\n\n                #[BarAlias2(3)]\n                #[AB\\Baz(prop: 'baz')]\n                #[Foo(4, 'baz qux')]\n                function f2() {}\n            }\n\n            namespace\n            {\n                use A\\B\\Foo;\n                use A\\B\\Bar as BarAlias3;\n\n                #[BarAlias3(3)]\n                #[Foo(4, 'baz qux')]\n                #[AB\\Baz(prop: 'baz')]\n                function f() {}\n            }\n            ",
+                        "<?php\n            namespace Test\n            {\n                use A\\B\\Foo;\n                use A\\B\\Bar as BarAlias;\n\n                #[AB\\Baz(prop: 'baz')]\n                #[Foo(4, 'baz qux')]\n                #[BarAlias(3)]\n                function f() {}\n            }\n\n            namespace Test2\n            {\n                use A\\B\\Bar as BarAlias;\n                use A\\B as AB;\n\n                #[BarAlias(3)]\n                #[AB\\Baz(prop: 'baz')]\n                #[\\A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n                function f() {}\n            }\n\n            namespace Test\n            {\n                use A\\B\\Foo;\n                use A\\B\\Bar as BarAlias2;\n\n                #[AB\\Baz(prop: 'baz')]\n                #[Foo(4, 'baz qux')]\n                #[BarAlias2(3)]\n                function f2() {}\n            }\n\n            namespace\n            {\n                use A\\B\\Foo;\n                use A\\B\\Bar as BarAlias3;\n\n                #[AB\\Baz(prop: 'baz')]\n                #[Foo(4, 'baz qux')]\n                #[BarAlias3(3)]\n                function f() {}\n            }\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "A\\B\\Bar",
+                                "Test\\AB\\Baz",
+                                "A\\B\\Quux",
+                                "A\\B\\Baz",
+                                "A\\B\\Foo",
+                                "AB\\Baz"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With whitespaces",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[   AB\\Baz   (prop: 'baz')   ]\n            #[   A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')   ]\n            #[   \\A\\B\\Qux()   ]\n            #[   BarAlias   (3)   ]\n            #[   Corge   ]\n            #[   Foo   (4, 'baz qux')   ]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[   Foo   (4, 'baz qux')   ]\n            #[   BarAlias   (3)   ]\n            #[   AB\\Baz   (prop: 'baz')   ]\n            #[   \\A\\B\\Qux()   ]\n            #[   A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')   ]\n            #[   Corge   ]\n            function f() {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With docblock",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            /**\n             * Start docblock\n             */\n            /**\n             * AB\\Baz docblock\n             */\n            #[AB\\Baz(prop: 'baz')]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[\\A\\B\\Qux()]\n            #[BarAlias(3)]\n            /**\n             * Corge docblock\n             */\n            #[Corge]\n            #[Foo(4, 'baz qux')]\n            /**\n             * End docblock\n             */\n            class X\n            {}\n\n            function f2(/** Start docblock */#[\\A\\B\\Qux()] #[BarAlias(3)] /** Corge docblock */#[Corge] #[Foo(4, 'baz qux')] /** End docblock */string $param) {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            /**\n             * Start docblock\n             */\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            /**\n             * AB\\Baz docblock\n             */\n            #[AB\\Baz(prop: 'baz')]\n            #[\\A\\B\\Qux()]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            /**\n             * Corge docblock\n             */\n            #[Corge]\n            /**\n             * End docblock\n             */\n            class X\n            {}\n\n            function f2(/** Start docblock */#[Foo(4, 'baz qux')] #[BarAlias(3)] #[\\A\\B\\Qux()] /** Corge docblock */#[Corge] /** End docblock */string $param) {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With comments",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[/* comment */A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar') /* comment */]\n            #[ /* comment */ BarAlias/* comment */(3)/* comment */]\n            #[/* comment */ Corge/* comment */]\n            #[/* comment */AB\\Baz /* comment */ (prop: 'baz') /* comment */ ]\n            #[/* comment */Foo/* comment */(4, 'baz qux') /* comment */ ]\n            #[   /* comment */   \\A\\B\\Qux()/* comment */]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[/* comment */Foo/* comment */(4, 'baz qux') /* comment */ ]\n            #[ /* comment */ BarAlias/* comment */(3)/* comment */]\n            #[/* comment */AB\\Baz /* comment */ (prop: 'baz') /* comment */ ]\n            #[   /* comment */   \\A\\B\\Qux()/* comment */]\n            #[/* comment */A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar') /* comment */]\n            #[/* comment */ Corge/* comment */]\n            function f() {}\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "Test\\A\\B\\Quux",
+                                "A\\B\\Bar",
+                                "Test\\Corge",
+                                "A\\B\\Baz",
+                                "A\\B\\Foo",
+                                "A\\B\\Qux"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Alpha with multiple attributes",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                AB\\Baz(prop: 'baz'),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                \\A\\B\\Qux(),\n                BarAlias(3),\n                Corge,\n                Foo(4, 'baz qux'),\n            ]\n            class X\n            {\n                #[ AB\\Baz(prop: 'baz'), A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'), \\A\\B\\Qux(), BarAlias(3), Corge,Foo(4, 'baz qux')]\n                public function y() {}\n            }\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                Foo(4, 'baz qux'),\n                BarAlias(3),\n                AB\\Baz(prop: 'baz'),\n                \\A\\B\\Qux(),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                Corge,\n            ]\n            class X\n            {\n                #[Foo(4, 'baz qux'), BarAlias(3), AB\\Baz(prop: 'baz'), \\A\\B\\Qux(), A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'), Corge]\n                public function y() {}\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Explicit with multiple attributes",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                BarAlias(3),\n                Corge,\n                AB\\Baz(prop: 'baz'),\n                \\A\\B\\Qux(),\n                Foo(4, 'baz qux'),\n            ]\n            class X\n            {\n                #[ A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'), BarAlias(3), Corge, AB\\Baz(prop: 'baz'), \\A\\B\\Qux(),Foo(4, 'baz qux')]\n                public function y() {}\n            }\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                Foo(4, 'baz qux'),\n                BarAlias(3),\n                AB\\Baz(prop: 'baz'),\n                \\A\\B\\Qux(),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                Corge,\n            ]\n            class X\n            {\n                #[Foo(4, 'baz qux'), BarAlias(3), AB\\Baz(prop: 'baz'), \\A\\B\\Qux(), A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'), Corge]\n                public function y() {}\n            }\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "Test\\A\\B\\Quux",
+                                "A\\B\\Bar",
+                                "Test\\Corge",
+                                "A\\B\\Baz",
+                                "A\\B\\Qux"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Multiline with no trailing comma",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                AB\\Baz(prop: 'baz'),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                \\A\\B\\Qux(),\n                BarAlias(3),\n                Corge,\n                Foo(4, 'baz qux')\n            ]\n            class X\n            {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                Foo(4, 'baz qux'),\n                BarAlias(3),\n                AB\\Baz(prop: 'baz'),\n                \\A\\B\\Qux(),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                Corge\n            ]\n            class X\n            {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Multiple with comments",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                /*\n                 * AB\\Baz comment\n                 */\n                AB\\Baz(prop: 'baz'),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                \\A\\B\\Qux(),\n                BarAlias(3),\n                /*\n                 * Corge comment\n                 */\n                Corge,\n                /**\n                 * Foo docblock\n                 */\n                Foo(4, 'baz qux'),\n            ]\n            class X\n            {\n                #[ /* AB\\Baz comment */AB\\Baz(prop: 'baz'), A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'), \\A\\B\\Qux(), BarAlias(3), /* Corge comment */Corge,/** Foo docblock */Foo(4, 'baz qux')]\n                public function y() {}\n            }\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                /**\n                 * Foo docblock\n                 */\n                Foo(4, 'baz qux'),\n                BarAlias(3),\n                /*\n                 * AB\\Baz comment\n                 */\n                AB\\Baz(prop: 'baz'),\n                \\A\\B\\Qux(),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                /*\n                 * Corge comment\n                 */\n                Corge,\n            ]\n            class X\n            {\n                #[/** Foo docblock */Foo(4, 'baz qux'), BarAlias(3), /* AB\\Baz comment */AB\\Baz(prop: 'baz'), \\A\\B\\Qux(), A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'), /* Corge comment */Corge]\n                public function y() {}\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Alpha with mixed multiple attribute declarations and attributes",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[AB\\Baz(prop: 'baz')]\n            #[ A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),Corge]\n            #[ \\A\\B\\Qux(), BarAlias(3),Foo(4, 'baz qux')]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[Foo(4, 'baz qux'), \\A\\B\\Qux(), BarAlias(3)]\n            #[AB\\Baz(prop: 'baz')]\n            #[Corge, A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            function f() {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Explicit with mixed multiple attribute declarations and attributes",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[ A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),Corge]\n            #[ BarAlias(3), \\A\\B\\Qux(),Foo(4, 'baz qux')]\n            #[AB\\Baz(prop: 'baz')]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[Foo(4, 'baz qux'), \\A\\B\\Qux(), BarAlias(3)]\n            #[AB\\Baz(prop: 'baz')]\n            #[Corge, A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            function f() {}\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "Test\\A\\B\\Quux",
+                                "A\\B\\Bar",
+                                "Test\\Corge",
+                                "A\\B\\Baz",
+                                "A\\B\\Qux"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\AttributeNotation\\OrderedAttributesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "Alpha with nested attribute",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[AB\\Baz(prop: new P\\R())]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[\\A\\B\\Qux()]\n            #[BarAlias(3)]\n            #[Corge]\n            #[Foo(4, 'baz qux')]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[Foo(4, 'baz qux')]\n            #[BarAlias(3)]\n            #[AB\\Baz(prop: new P\\R())]\n            #[\\A\\B\\Qux()]\n            #[A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar')]\n            #[Corge]\n            function f() {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "Explicit multiple with nested attribute",
+                    "args": [
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                BarAlias(3),\n                Corge,\n                AB\\Baz(prop: new P\\R()),\n                Foo(4, 'baz qux'),\n                \\A\\B\\Qux(),\n            ]\n            function f() {}\n            ",
+                        "<?php\n            namespace Test;\n\n            use A\\B\\Foo;\n            use A\\B\\Bar as BarAlias;\n            use A\\B as AB;\n\n            #[\n                Foo(4, 'baz qux'),\n                BarAlias(3),\n                AB\\Baz(prop: new P\\R()),\n                \\A\\B\\Qux(),\n                A\\B\\Quux(prop1: [1, 2, 4], prop2: true, prop3: 'foo bar'),\n                Corge,\n            ]\n            function f() {}\n            ",
+                        {
+                            "sort_algorithm": "custom",
+                            "order": [
+                                "Test\\A\\B\\Quux",
+                                "A\\B\\Bar",
+                                "Test\\Corge",
+                                "A\\B\\Baz",
+                                "A\\B\\Foo",
+                                "A\\B\\Qux"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

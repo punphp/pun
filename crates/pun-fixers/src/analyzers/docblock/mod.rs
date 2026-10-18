@@ -20,6 +20,7 @@ pub(crate) use short_description::ShortDescription;
 pub(crate) use type_expression::TypeExpression;
 
 use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg};
+use pun_tokens::php_compat::{str_replace, trim};
 use std::cell::OnceCell;
 
 #[derive(Clone, Debug)]
@@ -102,6 +103,44 @@ impl DocBlock {
             .collect()
     }
 
+    pub(crate) fn make_multi_line(&mut self, indent: &[u8], line_end: &[u8]) {
+        if self.is_multi_line() {
+            return;
+        }
+        let line_content = single_line_doc_block_entry(self.lines[0].borrow().get_content());
+        let middle = if line_content.is_empty() {
+            [indent, b" *", line_end].concat()
+        } else {
+            [indent, b" * ", &line_content, line_end].concat()
+        };
+        self.set_lines(vec![
+            [&b"/**"[..], line_end].concat(),
+            middle,
+            [indent, b" */"].concat(),
+        ]);
+    }
+
+    pub(crate) fn make_single_line(&mut self) {
+        if !self.is_multi_line() {
+            return;
+        }
+        let useful: Vec<&LineRef> = (self.lines.iter())
+            .filter(|l| l.borrow().contains_useful_content())
+            .collect();
+        if useful.len() > 1 {
+            return;
+        }
+        let line_content = (useful.first())
+            .map(|l| single_line_doc_block_entry(l.borrow().get_content()))
+            .unwrap_or_default();
+        self.set_lines(vec![[&b"/** "[..], &line_content, b" */"].concat()]);
+    }
+
+    fn set_lines(&mut self, lines: Vec<Vec<u8>>) {
+        self.lines = lines.into_iter().map(Line::shared).collect();
+        self.annotations = OnceCell::new();
+    }
+
     fn find_annotation_length(&self, start: usize) -> usize {
         let mut index = start;
         loop {
@@ -127,6 +166,16 @@ impl DocBlock {
         }
         index - start
     }
+}
+
+/// `getSingleLineDocBlockEntry`: the line without `*/`, the opening `/**` or a leading `*`, trimmed.
+fn single_line_doc_block_entry(line: &[u8]) -> Vec<u8> {
+    let line = str_replace(b"*/", b"", line);
+    let line = trim(&line);
+    let line = (line.strip_prefix(b"/**"))
+        .or_else(|| line.strip_prefix(b"*"))
+        .unwrap_or(line);
+    trim(line).to_vec()
 }
 
 /// `preg_split('/([^\n\r]+\R*)/', ..., NO_EMPTY | DELIM_CAPTURE)` for ASCII content not starting with CR/LF:

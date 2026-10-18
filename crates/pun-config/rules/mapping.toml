@@ -94,7 +94,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "arrays/trim-spaces" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Arrays should be formatted like function/method arguments, without leading or trailing single line space." }
 "attributes/empty-parentheses" = { fix = "safe", ported = true, status = "decided", summary = "PHP attributes declared without arguments must (not) be followed by empty parentheses." }
 "attributes/no-block-spaces" = { fix = "safe", ported = true, status = "decided", summary = "Remove spaces before and after the attributes block." }
-"attributes/ordered" = { fix = "safe", ported = false, status = "decided", summary = "Sorts attributes using the configured sort algorithm." }
+"attributes/ordered" = { fix = "safe", ported = true, status = "decided", summary = "Sorts attributes using the configured sort algorithm." }
 "casing/class-reference" = { fix = "safe", ported = true, status = "decided", summary = "When referencing an internal class it must be written using the correct casing." }
 "casing/constants" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "The PHP constants `true`, `false`, and `null` MUST be written using the correct casing." }
 "casing/integer-literals" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Integer literals must be in correct case." }
@@ -112,7 +112,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/definition" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Whitespace around the keywords of a class, trait, enum or interfaces definition should be one space." }
 "classes/member-separation" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Class, trait and interface elements must be separated with one or none blank line." }
 "classes/modifier-keywords" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Classes, constants, properties, and methods MUST have visibility declared, and keyword modifiers MUST be in the following order: inheritance modifier (`abstract` or `final`), visibility modifier (`public`, `protected`, or `private`), set-visibility modifier (`public(set)`, `protected(set)`, or `private(set)`), scope modifier (`static`), mutation modifier (`readonly`), type declaration, name." }
-"classes/multiline-promoted-properties" = { fix = "safe", ported = false, status = "decided", summary = "Promoted properties must be on separate lines." }
+"classes/multiline-promoted-properties" = { fix = "safe", ported = true, status = "decided", summary = "Promoted properties must be on separate lines." }
 "classes/no-blank-line-after-opening" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There should be no empty lines after class opening brace." }
 "classes/ordered-interfaces" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Orders the interfaces in an `implements` or `interface extends` clause." }
 "classes/single-member-per-statement" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There MUST NOT be more than one property or constant declared per statement." }
@@ -182,14 +182,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/annotation-without-dot" = { fix = "safe", ported = true, status = "decided", summary = "PHPDoc annotation descriptions should not be a sentence." }
 "phpdoc/indent" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Docblocks should have the same indentation as the documented subject." }
 "phpdoc/inline-tag" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Fixes PHPDoc inline tags." }
-"phpdoc/line-span" = { fix = "safe", ported = false, status = "decided", summary = "Changes doc blocks from single to multi line, or reversed." }
+"phpdoc/line-span" = { fix = "safe", ported = true, status = "decided", summary = "Changes doc blocks from single to multi line, or reversed." }
 "phpdoc/no-alias-tag" = { fix = "safe", ported = true, status = "decided", summary = "No alias PHPDoc tags should be used." }
 "phpdoc/no-blank-line-after" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be blank lines between docblock and the documented element." }
 "phpdoc/no-duplicate-types" = { fix = "safe", ported = true, status = "decided", summary = "Removes duplicate PHPDoc types." }
 "phpdoc/no-empty" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be empty PHPDoc blocks." }
 "phpdoc/order" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Annotations in PHPDoc should be ordered in defined sequence." }
 "phpdoc/order-by-value" = { fix = "safe", ported = true, status = "decided", summary = "Order PHPDoc tags by value." }
-"phpdoc/param-order" = { fix = "safe", ported = false, status = "decided", summary = "Orders all `@param` annotations in DocBlocks according to method signature." }
+"phpdoc/param-order" = { fix = "safe", ported = true, status = "decided", summary = "Orders all `@param` annotations in DocBlocks according to method signature." }
 "phpdoc/return-self-reference" = { fix = "safe", ported = true, status = "decided", summary = "The type of `@return` annotations of methods returning a reference to itself must the configured one." }
 "phpdoc/scalar" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Scalar types should always be written in the same form. `int` not `integer`, `bool` not `boolean`, `float` not `real` or `double`." }
 "phpdoc/separation" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Annotations in PHPDoc should be grouped together so that annotations of the same type immediately follow each other. Annotations of a different type are separated by a single blank line." }
