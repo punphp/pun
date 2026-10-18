@@ -598,3 +598,125 @@ fn migrate_errors() {
         "[array_syntax] Invalid configuration: The option \"syntax\" with value \"medium\" is invalid. Accepted values are: \"long\", \"short\"."
     );
 }
+
+/// A list or table entry of the wrong type stops at Symfony's OptionsResolver type check, before the fixer's own
+/// check of the entries: every expectation is Pint's output on a pint.json holding that rule.
+#[test]
+fn migrate_entry_types() {
+    let elements = |of: &str, types: &str, got: &str| {
+        format!(
+            "Invalid configuration: The option \"{of}\" with value array is expected to be of type \"{types}\", but one of the elements is of type \"{got}\"."
+        )
+    };
+    let cases = [
+        (
+            "class_attributes_separation",
+            json!({"elements": {"method": null}}),
+            elements("elements", "string[]", "null"),
+        ),
+        (
+            "class_attributes_separation",
+            json!({"elements": {"nope": null}}),
+            elements("elements", "string[]", "null"),
+        ),
+        (
+            "class_attributes_separation",
+            json!({"elements": {"method": 1.5}}),
+            elements("elements", "string[]", "float"),
+        ),
+        (
+            "class_attributes_separation",
+            json!({"elements": {"method": true}}),
+            elements("elements", "string[]", "bool"),
+        ),
+        (
+            "phpdoc_tag_type",
+            json!({"tags": {"param": null}}),
+            elements("tags", "string[]", "null"),
+        ),
+        (
+            "phpdoc_tag_type",
+            json!({"tags": {"param": []}}),
+            elements("tags", "string[]", "array"),
+        ),
+        (
+            "phpdoc_no_alias_tag",
+            json!({"replacements": {"a": null}}),
+            elements("replacements", "string[]", "null"),
+        ),
+        (
+            "group_import",
+            json!({"group_types": [null]}),
+            elements("group_types", "string[]", "null"),
+        ),
+        (
+            "group_import",
+            json!({"group_types": [1]}),
+            elements("group_types", "string[]", "int"),
+        ),
+        (
+            "group_import",
+            json!({"group_types": [null, 1, null]}),
+            elements("group_types", "string[]", "null|int"),
+        ),
+        (
+            "phpdoc_align",
+            json!({"tags": [null]}),
+            elements("tags", "string[]", "null"),
+        ),
+        (
+            "phpdoc_align",
+            json!({"spacing": {"param": null}}),
+            elements("spacing", "int\" or \"int[]", "array|null"),
+        ),
+        (
+            "blank_line_before_statement",
+            json!({"statements": [null]}),
+            elements("statements", "string[]", "null"),
+        ),
+        (
+            "phpdoc_separation",
+            json!({"groups": [[null]]}),
+            elements("groups", "string[][]", "null"),
+        ),
+        (
+            "phpdoc_separation",
+            json!({"groups": ["a"]}),
+            elements("groups", "string[][]", "string"),
+        ),
+        (
+            "phpdoc_separation",
+            json!({"groups": [["a", 1]]}),
+            elements("groups", "string[][]", "int"),
+        ),
+    ];
+    for (fixer, options, msg) in cases {
+        assert_eq!(
+            write(fixer, options),
+            Err(format!("[{fixer}] {msg}")),
+            "{fixer}"
+        );
+    }
+    // binary_operator_spaces' `operators` is an `array`, so a `null` entry reaches the fixer's own key check.
+    assert_eq!(
+        write("binary_operator_spaces", json!({"operators": {"nope": null}})),
+        Err("[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\" and \"??=\", got \"string#nope\".".to_string())
+    );
+    // Through `pun migrate`, which panicked on it.
+    let e = crate::migrate::from_pint(
+        &dir(&[(
+            "pint.json",
+            r#"{"rules":{"group_import":{"group_types":[null]}}}"#,
+        )])
+        .join("pint.json"),
+        None,
+        &|_| true,
+    );
+    assert_eq!(
+        e.err().unwrap().to_string(),
+        format!(
+            "[group_import] {}",
+            elements("group_types", "string[]", "null")
+        )
+    );
+}

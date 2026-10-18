@@ -294,7 +294,7 @@ pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value, String> {
                 "The option {k:?} does not exist. Defined options are: {defined}."
             )));
         };
-        if let Some(msg) = sort_types(fixer, k, v) {
+        if let Some(msg) = element_types(o, v).or_else(|| sort_types(fixer, k, v)) {
             return Err(invalid(msg));
         }
         let Some(p) = pun_value(o, v) else {
@@ -348,6 +348,77 @@ fn sort_types(fixer: &str, option: &str, v: &Value) -> Option<String> {
     ))
 }
 
+/// The types upstream's option resolver allows for `o`, each one a separate allowed type.
+fn allowed_types(o: &RuleOption) -> &'static [&'static str] {
+    match o.kind {
+        Kind::Bool => &["bool"],
+        Kind::Int => &["int"],
+        Kind::String => &["string"],
+        Kind::ListOfLists => &["string[][]"],
+        Kind::IntOrMap => &["int", "int[]"],
+        // `array<string, ?string>` is declared as `array`, `array<string, string>` as `string[]`.
+        Kind::Map if o.null.is_some() => &["array"],
+        Kind::List | Kind::Map => &["string[]"],
+        // A closed list of values, checked by value alone.
+        Kind::Enum => &[],
+    }
+}
+
+/// PHP's `get_debug_type` of a JSON value.
+fn debug_type(v: &Value) -> &'static str {
+    match v {
+        Value::Null => "null",
+        Value::Bool(_) => "bool",
+        Value::Number(n) if n.is_f64() => "float",
+        Value::Number(_) => "int",
+        Value::String(_) => "string",
+        Value::Array(_) | Value::Object(_) => "array",
+    }
+}
+
+/// Symfony OptionsResolver's `verifyTypes` for one type: whether `v` is a `ty`, adding the debug types that fail it
+/// to `invalid` (only the first at the top level, every one inside a list).
+fn verify_type(ty: &str, v: &Value, invalid: &mut Vec<&'static str>, level: usize) -> bool {
+    let entries: Vec<&Value> = match v {
+        Value::Array(a) => a.iter().collect(),
+        Value::Object(m) => m.values().collect(),
+        _ => Vec::new(),
+    };
+    if let (Some(inner), "array") = (ty.strip_suffix("[]"), debug_type(v)) {
+        let failed = (entries.into_iter())
+            .filter(|e| !verify_type(inner, e, invalid, level + 1))
+            .count();
+        return failed == 0;
+    }
+    let t = debug_type(v);
+    if t == ty {
+        return true;
+    }
+    if (invalid.is_empty() || level > 0) && !invalid.contains(&t) {
+        invalid.push(t);
+    }
+    false
+}
+
+/// The option resolver's message for a list or table `v` with an entry of a type `o` doesn't allow, checked before
+/// the values themselves, else `None`.
+fn element_types(o: &RuleOption, v: &Value) -> Option<String> {
+    let types = allowed_types(o);
+    if !v.is_array() && !v.is_object() || !types.iter().any(|t| t.ends_with("[]")) {
+        return None;
+    }
+    let mut invalid = Vec::new();
+    if types.iter().any(|t| verify_type(t, v, &mut invalid, 0)) {
+        return None;
+    }
+    Some(format!(
+        "The option {:?} with value array is expected to be of type \"{}\", but one of the elements is of type \"{}\".",
+        o.upstream,
+        types.join("\" or \""),
+        invalid.join("|")
+    ))
+}
+
 /// PHP-CS-Fixer's message for `v`, a value option `o` of `fixer` doesn't take: the option resolver's for a `null`
 /// or a value outside a closed list, the fixer's own where it checks a table's or a list's entries itself.
 fn rejected(fixer: &str, o: &RuleOption, v: &Value) -> String {
@@ -355,70 +426,51 @@ fn rejected(fixer: &str, o: &RuleOption, v: &Value) -> String {
     let ups = |l: &[(String, String)]| natural(l.iter().map(|(_, u)| u.as_str()));
     let bad = |l: &[(String, String)], s: &str| !l.iter().any(|(_, u)| u == s);
     // The table entry upstream's check stops at: its key when outside `keys`, else its string value.
-    let entry = || -> (&str, Option<&str>) {
-        let (key, value) = (v.as_object().unwrap().iter())
-            .find(|(e, s)| {
-                (!o.keys.is_empty() && bad(&o.keys, e))
-                    || s.as_str().is_some_and(|s| bad(&o.values, s))
-            })
-            .unwrap();
-        let key_ok = o.keys.is_empty() || !bad(&o.keys, key);
-        (key.as_str(), key_ok.then(|| value.as_str().unwrap()))
-    };
-    match (fixer, v) {
-        (_, Value::Null) if o.kind != Kind::Enum => {
-            let types = match o.kind {
-                Kind::Bool => "\"bool\"",
-                Kind::Int => "\"int\"",
-                Kind::String => "\"string\"",
-                Kind::ListOfLists => "\"string[][]\"",
-                Kind::IntOrMap => "\"int\" or \"int[]\"",
-                // `array<string, ?string>` prints as `array`, `array<string, string>` as `string[]`.
-                Kind::Map if o.null.is_some() => "\"array\"",
-                _ => "\"string[]\"",
-            };
+    let entry = v.as_object().and_then(|m| {
+        m.iter().find_map(|(e, s)| match s.as_str() {
+            _ if !o.keys.is_empty() && bad(&o.keys, e) => Some((e.as_str(), None)),
+            Some(s) if bad(&o.values, s) => Some((e.as_str(), Some(s))),
+            _ => None,
+        })
+    });
+    // The list entry upstream's check stops at: the first string outside `values`.
+    let item = (v.as_array().into_iter().flatten())
+        .filter_map(Value::as_str)
+        .find(|s| bad(&o.values, s));
+    match (fixer, v, entry, item) {
+        (_, Value::Null, ..) if o.kind != Kind::Enum => {
+            let types = allowed_types(o).join("\" or \"");
             format!(
-                "The option {k:?} with value null is expected to be of type {types}, but is of type \"null\"."
+                "The option {k:?} with value null is expected to be of type \"{types}\", but is of type \"null\"."
             )
         }
-        ("class_attributes_separation", Value::Object(_)) => match entry() {
-            (e, None) => format!(
-                "Unexpected element type, expected any of {}, got \"string#{e}\".",
-                ups(&o.keys)
-            ),
-            // Upstream prints the spacing where it means the element type.
-            (_, Some(s)) => format!(
-                "Unexpected spacing for element type \"{s}\", expected any of {}, got \"string#{s}\".",
-                ups(&o.values)
-            ),
-        },
-        ("binary_operator_spaces", Value::Object(_)) => match entry() {
-            (e, None) => format!(
-                "Unexpected \"operators\" key, expected any of {}, got \"string#{e}\".",
-                ups(&o.keys)
-            ),
-            (e, Some(s)) => {
-                let values: Vec<String> = (o.values.iter().map(|(_, u)| format!("'{u}'")))
-                    .chain(["null".to_string()])
-                    .collect();
-                format!(
-                    "Unexpected value for operator \"{e}\", expected any of {}, got \"string#{s}\".",
-                    natural(values.iter().map(String::as_str))
-                )
-            }
-        },
-        ("phpdoc_tag_type", Value::Object(_)) => {
-            format!("Unknown tag type \"{}\".", entry().1.unwrap())
-        }
-        ("group_import", Value::Array(a)) => {
-            let t = (a.iter().filter_map(Value::as_str))
-                .find(|s| bad(&o.values, s))
-                .unwrap();
+        ("class_attributes_separation", _, Some((e, None)), _) => format!(
+            "Unexpected element type, expected any of {}, got \"string#{e}\".",
+            ups(&o.keys)
+        ),
+        // Upstream prints the spacing where it means the element type.
+        ("class_attributes_separation", _, Some((_, Some(s))), _) => format!(
+            "Unexpected spacing for element type \"{s}\", expected any of {}, got \"string#{s}\".",
+            ups(&o.values)
+        ),
+        ("binary_operator_spaces", _, Some((e, None)), _) => format!(
+            "Unexpected \"operators\" key, expected any of {}, got \"string#{e}\".",
+            ups(&o.keys)
+        ),
+        ("binary_operator_spaces", _, Some((e, Some(s))), _) => {
+            let values: Vec<String> = (o.values.iter().map(|(_, u)| format!("'{u}'")))
+                .chain(["null".to_string()])
+                .collect();
             format!(
-                "Invalid group type: {t}, allowed types: {}.",
-                ups(&o.values)
+                "Unexpected value for operator \"{e}\", expected any of {}, got \"string#{s}\".",
+                natural(values.iter().map(String::as_str))
             )
         }
+        ("phpdoc_tag_type", _, Some((_, Some(s))), _) => format!("Unknown tag type \"{s}\"."),
+        ("group_import", _, _, Some(t)) => format!(
+            "Invalid group type: {t}, allowed types: {}.",
+            ups(&o.values)
+        ),
         _ => {
             let accepted = match o.kind {
                 Kind::Enum => {

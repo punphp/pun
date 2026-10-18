@@ -21,12 +21,13 @@ items marked "not checked against Pint" still need one oracle run before the fix
   migrate` uses). Reproduced (clippy compile error E0061). Spans crates. Fixed in 0c5bd30.
 - [x] 2. `crates/pun-cli/tests/output.rs:591` and `:605` are not rustfmt-clean (last touched in 4e5a182), so CI's
   `cargo fmt --all --check` (`.github/workflows/ci.yml:29`) is red. Run `cargo fmt -p punphp`. Reproduced. Fixed in 0c5bd30.
-- [ ] 3. `crates/pun-config/src/options.rs:358-367` (`rejected`'s `entry` closure) and `:411-416` unwrap a bad entry
+- [x] 3. `crates/pun-config/src/options.rs:358-367` (`rejected`'s `entry` closure) and `:411-416` unwrap a bad entry
   that isn't there when a map or list option holds `null`, so `pun migrate` panics on
   `{"rules":{"class_attributes_separation":{"elements":{"method":null}}}}`,
   `{"phpdoc_tag_type":{"tags":{"param":null}}}` and `{"group_import":{"group_types":[null]}}` (also through
   `.php-cs-fixer.php`). Handle a `null` entry first with upstream's message and return `Option` from `entry`; add the
-  three inputs as oracle cases. Reproduced.
+  three inputs as oracle cases. Reproduced. Pint stops these at Symfony's `verifyTypes` ("one of the elements is of
+  type ..."), so `to_pun` now runs that check first. Fixed in wf/audit-config.
 - [x] 4. `crates/pun-phpstan/src/php.rs:134`: `normalize_path` slices `&original[1..3]` on a `&str`, so an
   `excludePaths` or `ignoreErrors.path` entry like `*/€uro/*` or `*€/a.php` panics ("byte index 3 is not a char
   boundary") in `FileExcluder::new` and `IgnoredErrors`. Compare bytes: `original.as_bytes().get(1..3) ==
