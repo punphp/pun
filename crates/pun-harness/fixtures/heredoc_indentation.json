@@ -1,0 +1,135 @@
+{
+    "fixer": "heredoc_indentation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\HeredocIndentationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/HeredocIndentationFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\HeredocIndentationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    foo(<<<EOD\n        EOD\n    );",
+                        "<?php\n    foo(<<<EOD\nEOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    foo(<<<EOD\n\n        EOD\n    );",
+                        "<?php\n    foo(<<<EOD\n\nEOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    foo(<<<EOD\n        abc\n\n            def\n        EOD\n    );",
+                        "<?php\n    foo(<<<EOD\nabc\n\n    def\nEOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    foo(<<<'EOD'\n\n        abc\n            def\n\n        EOD\n    );",
+                        "<?php\n    foo(<<<'EOD'\n\nabc\n    def\n\nEOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    foo(<<<'EOD'\n        abc\n            def\n        EOD\n    );",
+                        "<?php\n    foo(<<<'EOD'\n            abc\n                def\n            EOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    foo(<<<EOD\n        $abc\n            $def\n        {$ghi}\n        EOD\n    );",
+                        "<?php\n    foo(<<<EOD\n$abc\n    $def\n{$ghi}\nEOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    $a = <<<'EOD'\n        <?php\n            $b = <<<FOO\n        abc\n        FOO;\n        EOD;",
+                        "<?php\n    $a = <<<'EOD'\n<?php\n    $b = <<<FOO\nabc\nFOO;\nEOD;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "\n<?php\n    foo(<<<EOD\n          \n        abc\n          \n        def\n          \n        EOD\n    );",
+                        "\n<?php\n    foo(<<<EOD\n        \n      abc\n        \n      def\n        \n      EOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "\n<?php\n    foo(<<<EOD\n\n        abc\n\n        def\n\n        EOD\n    );",
+                        "\n<?php\n    foo(<<<EOD\n  \n      abc\n  \n      def\n  \n      EOD\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php foo(<<<EOD\n    EOD\n);",
+                        "<?php foo(<<<EOD\nEOD\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    foo(<<<EOD\n    abc\n\n        def\n    EOD\n    );",
+                        "<?php\n    foo(<<<EOD\nabc\n\n    def\nEOD\n    );",
+                        {
+                            "indentation": "same_as_start"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    foo(<<<EOD\n    abc\n\n        def\n    EOD\n    );",
+                        "<?php\n    foo(<<<EOD\n        abc\n\n            def\n        EOD\n    );",
+                        {
+                            "indentation": "same_as_start"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

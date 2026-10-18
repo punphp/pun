@@ -1,0 +1,106 @@
+{
+    "fixer": "no_whitespace_in_empty_array",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\NoWhitespaceInEmptyArrayFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ArrayNotation/NoWhitespaceInEmptyArrayFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\NoWhitespaceInEmptyArrayFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n$foo = [];\n",
+                        "<?php\n\n$foo = [\n];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n$foo = [];\n",
+                        "<?php\n\n$foo = [      ];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n$foo = [];\n",
+                        "<?php\n\n$foo = [\n\n];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n$foo = [\n    // foo\n];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n$foo = [];\n",
+                        "<?php\n\n$foo = [\n    \n];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n$foo = [ /* test */ ];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo {\n    private const Foo = [];\n}",
+                        "<?php class Foo {\n    private const Foo = [\n    ];\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php class Foo {\n    public function bar(): void {\n        $foo = [];\n    }\n}",
+                        "<?php class Foo {\n    public function bar(): void {\n        $foo = [   ];\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php class Foo {\n    public array $ignore = [];\n}",
+                        "<?php class Foo {\n    public array $ignore = [\n    ];\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mix of multiple candidates",
+                    "args": [
+                        "<?php\n$a = [];\n$b = [];\n$c = [];\n$d = [ /**/  ];\n$e = [];\n$f = [];",
+                        "<?php\n$a = [\n];\n$b = [   ];\n$c = [];\n$d = [ /**/  ];\n$e = [   ];\n$f = [      ];"
+                    ]
+                }
+            ]
+        }
+    ]
+}

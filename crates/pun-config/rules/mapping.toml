@@ -86,7 +86,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "arrays/no-multiline-double-arrow" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Operator `=>` should not be surrounded by multi-line whitespaces." }
 "arrays/no-space-around-offset" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There MUST NOT be spaces around offset braces." }
 "arrays/no-space-before-comma" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "In array declaration, there MUST NOT be a whitespace before each comma." }
-"arrays/no-space-in-empty" = { fix = "safe", ported = false, status = "decided", summary = "Empty arrays should not contain only whitespace." }
+"arrays/no-space-in-empty" = { fix = "safe", ported = true, status = "decided", summary = "Empty arrays should not contain only whitespace." }
 "arrays/no-trailing-comma-single-line" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "If a list of values separated by a comma is contained on a single line, then the last item MUST NOT have a trailing comma." }
 "arrays/space-after-comma" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "In array declaration, there MUST be a whitespace after each comma." }
 "arrays/syntax" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "PHP arrays should be declared using the configured syntax." }
@@ -119,7 +119,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/single-trait-per-statement" = { fix = "safe", presets = ["psr12"], ported = true, status = "decided", summary = "Each trait `use` must be done as single statement." }
 "comments/align-multiline" = { fix = "safe", ported = true, status = "decided", summary = "Each line of multi-line DocComments must have an asterisk [PSR-5] and must be aligned with the first one." }
 "comments/header" = { fix = "safe", ported = false, status = "decided", summary = "Add, replace or remove header comment." }
-"comments/multiline-delimiters" = { fix = "safe", ported = false, status = "decided", summary = "DocBlocks must start with two asterisks, multiline comments must start with a single asterisk, after the opening slash. Both must end with a single asterisk before the closing slash." }
+"comments/multiline-delimiters" = { fix = "safe", ported = true, status = "decided", summary = "DocBlocks must start with two asterisks, multiline comments must start with a single asterisk, after the opening slash. Both must end with a single asterisk before the closing slash." }
 "comments/no-empty" = { fix = "safe", ported = true, status = "decided", summary = "There should not be any empty comments." }
 "comments/no-trailing-whitespace" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must be no trailing whitespace at the end of lines in comments and PHPDocs." }
 "comments/single-line-spacing" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Single-line comments must have proper spacing." }
@@ -167,12 +167,12 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "operators/concat-spacing" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Concatenation should be spaced according to configuration." }
 "operators/increment-style" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Pre- or post-increment and decrement operators should be used if possible." }
 "operators/linebreak" = { fix = "safe", ported = true, status = "decided", summary = "Operators - when multiline - must always be at the beginning or at the end of the line." }
-"operators/new-expression-parentheses" = { fix = "safe", ported = false, status = "decided", summary = "All `new` expressions with a further call must (not) be wrapped in parentheses." }
+"operators/new-expression-parentheses" = { fix = "safe", ported = true, status = "decided", summary = "All `new` expressions with a further call must (not) be wrapped in parentheses." }
 "operators/new-parentheses" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "All instances created with `new` keyword must (not) be followed by parentheses." }
 "operators/no-space-around-arrow" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be space before or after object operators `->` and `?->`." }
 "operators/no-space-around-double-colon" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must be no space around double colons (also called Scope Resolution Operator or Paamayim Nekudotayim)." }
 "operators/no-useless-concat" = { fix = "safe", ported = true, status = "decided", summary = "There should not be useless concat operations." }
-"operators/not-with-space" = { fix = "safe", ported = false, status = "decided", summary = "Logical NOT operators (`!`) should have leading and trailing whitespaces." }
+"operators/not-with-space" = { fix = "safe", ported = true, status = "decided", summary = "Logical NOT operators (`!`) should have leading and trailing whitespaces." }
 "operators/not-with-successor-space" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Logical NOT operators (`!`) should have one trailing whitespace." }
 "operators/standardize-increment" = { fix = "safe", ported = true, status = "decided", summary = "Increment and decrement operators should be used if possible." }
 "operators/standardize-not-equals" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Replace all `<>` with `!=`." }
@@ -213,7 +213,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/no-mixed-echo-print" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Either language construct `print` or `echo` should be used." }
 "statements/no-space-before-semicolon" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Single-line whitespace before closing semicolon are prohibited." }
 "statements/numeric-literal-separator" = { fix = "safe", ported = false, status = "decided", summary = "Adds separators to numeric literals of any kind." }
-"statements/octal-notation" = { fix = "safe", ported = false, status = "decided", summary = "Literal octal must be in `0o` notation." }
+"statements/octal-notation" = { fix = "safe", ported = true, status = "decided", summary = "Literal octal must be in `0o` notation." }
 "statements/one-per-line" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must not be more than one statement per line." }
 "statements/semicolon-after-instruction" = { fix = "safe", ported = true, status = "decided", summary = "Instructions must be terminated with a semicolon." }
 "statements/single-line-empty-body" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Empty body of class, interface, trait, enum or function must be abbreviated as `{}` and placed on the same line as the previous symbol, separated by a single space." }
@@ -222,9 +222,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "strings/complex-variable" = { fix = "safe", ported = true, status = "decided", summary = "Converts explicit variables in double-quoted strings and heredoc syntax from simple to complex format (`${` to `{$`)." }
 "strings/explicit-variable" = { fix = "safe", ported = true, status = "decided", summary = "Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax." }
 "strings/heredoc-closing-marker" = { fix = "safe", ported = false, status = "decided", summary = "Unify `heredoc` or `nowdoc` closing marker." }
-"strings/heredoc-indentation" = { fix = "safe", ported = false, status = "decided", summary = "Heredoc/nowdoc content must be properly indented." }
+"strings/heredoc-indentation" = { fix = "safe", ported = true, status = "decided", summary = "Heredoc/nowdoc content must be properly indented." }
 "strings/heredoc-to-nowdoc" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Convert `heredoc` to `nowdoc` where possible." }
-"strings/implicit-backslashes" = { fix = "safe", ported = false, status = "decided", summary = "Handles implicit backslashes in strings and heredocs. Depending on the chosen strategy, it can escape implicit backslashes to ease the understanding of which are special chars interpreted by PHP and which not (`escape`), or it can remove these additional backslashes if you find them superfluous (`unescape`). You can also leave them as-is using `ignore` strategy." }
+"strings/implicit-backslashes" = { fix = "safe", ported = true, status = "decided", summary = "Handles implicit backslashes in strings and heredocs. Depending on the chosen strategy, it can escape implicit backslashes to ease the understanding of which are special chars interpreted by PHP and which not (`escape`), or it can remove these additional backslashes if you find them superfluous (`unescape`). You can also leave them as-is using `ignore` strategy." }
 "strings/multiline-to-heredoc" = { fix = "safe", ported = false, status = "decided", summary = "Convert multiline string to `heredoc` or `nowdoc`." }
 "strings/no-binary" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be a binary flag before strings." }
 "strings/single-quote" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Convert double quotes to single quotes for simple strings." }

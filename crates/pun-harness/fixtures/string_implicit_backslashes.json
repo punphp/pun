@@ -1,0 +1,425 @@
+{
+    "fixer": "string_implicit_backslashes",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\StringImplicitBackslashesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/StringImplicitBackslashesFixerTest.php",
+    "case_count": 44,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\StringImplicitBackslashesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $var = 'String (\\\\\\'\\r\\n\\x0\\) for My\\Prefix\\\\';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $var = 'String (\\\\\\'\\\\r\\\\n\\\\x0\\\\) for My\\\\Prefix\\\\';",
+                        "<?php $var = 'String (\\\\\\'\\r\\n\\x0\\) for My\\Prefix\\\\';",
+                        {
+                            "single_quoted": "escape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$var = \"\\\\A\\\\B\\\\C\\\\D\\\\E\\\\F\\\\G\\\\H\\\\I\\\\J\\\\K\\\\L\\\\M\\\\N\\\\O\\\\P\\\\Q\\\\R\\\\S\\\\T\\\\U\\\\V\\\\W\\\\X\\\\Y\\\\Z\";\n$var = \"\\\\a\\\\b\\\\c\\\\d\\\\g\\\\h\\\\i\\\\j\\\\k\\\\l\\\\m\\\\o\\\\p\\\\q\\\\s\\\\w\\\\y\\\\z \\\\' \\\\8\\\\9 \\\\xZ \\\\u\";\n$var = \"$foo \\\\A \\\\a \\\\' \\\\8\\\\9 \\\\xZ \\\\u ${bar}\";\n$var = <<<HEREDOC\n\\\\A\\\\B\\\\C\\\\D\\\\E\\\\F\\\\G\\\\H\\\\I\\\\J\\\\K\\\\L\\\\M\\\\N\\\\O\\\\P\\\\Q\\\\R\\\\S\\\\T\\\\U\\\\V\\\\W\\\\X\\\\Y\\\\Z\n\\\\a\\\\b\\\\c\\\\d\\\\g\\\\h\\\\i\\\\j\\\\k\\\\l\\\\m\\\\o\\\\p\\\\q\\\\s\\\\w\\\\y\\\\z\n\\\\\"\n\\\\'\n\\\\8\\\\9\n\\\\xZ\n\\\\u\nHEREDOC;\n$var = <<<HEREDOC\n$foo \\\\A \\\\a \\\\\" \\\\' \\\\8\\\\9 \\\\xZ \\\\u ${bar}\nHEREDOC;\n$var = <<<'NOWDOC'\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nNOWDOC;\n",
+                        "<?php\n$var = \"\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\";\n$var = \"\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z \\' \\8\\9 \\xZ \\u\";\n$var = \"$foo \\A \\a \\' \\8\\9 \\xZ \\u ${bar}\";\n$var = <<<HEREDOC\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\\"\n\\'\n\\8\\9\n\\xZ\n\\u\nHEREDOC;\n$var = <<<HEREDOC\n$foo \\A \\a \\\" \\' \\8\\9 \\xZ \\u ${bar}\nHEREDOC;\n$var = <<<'NOWDOC'\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nNOWDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$var = \"\\e\\f\\n\\r\\t\\v \\\\ \\$ \\\"\";\n$var = \"$foo \\e\\f\\n\\r\\t\\v \\\\ \\$ \\\" ${bar}\";\n$var = <<<HEREDOC\n\\e\\f\\n\\r\\t\\v \\\\ \\$\nHEREDOC;\n$var = <<<HEREDOC\n$foo \\e\\f\\n\\r\\t\\v \\\\ \\$ ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$var = \"\\0 \\00 \\000 \\0000 \\00000\";\n$var = \"$foo \\0 \\00 \\000 \\0000 \\00000 ${bar}\";\n$var = <<<HEREDOC\n\\0 \\00 \\000 \\0000 \\00000\nHEREDOC;\n$var = <<<HEREDOC\n$foo \\0 \\00 \\000 \\0000 \\00000 ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$var = \"\\xA \\x99 \\u{0}\";\n$var = \"$foo \\xA \\x99 \\u{0} ${bar}\";\n$var = <<<HEREDOC\n\\xA \\x99 \\u{0}\nHEREDOC;\n$var = <<<HEREDOC\n$foo \\xA \\x99 \\u{0} ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$var = 'backslash \\ not escaped';\n$var = 'code coverage';\n$var = \"backslash \\\\ already escaped\";\n$var = \"code coverage\";\n$var = <<<HEREDOC\nbackslash \\\\ already escaped\nHEREDOC;\n$var = <<<HEREDOC\ncode coverage\nHEREDOC;\n$var = <<<'NOWDOC'\nbackslash \\\\ already escaped\nNOWDOC;\n$var = <<<'NOWDOC'\ncode coverage\nNOWDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$var = \"\\A\\a \\' \\8\\9 \\xZ \\u\";\n$var = \"$foo \\A\\a \\' \\8\\9 \\xZ \\u ${bar}\";",
+                        null,
+                        {
+                            "double_quoted": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$var = <<<HEREDOC\n\\A\\Z\n\\a\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nHEREDOC;\n$var = <<<HEREDOC\n$foo\n\\A\\Z\n\\a\\z\n\\'\n\\8\\9\n\\xZ\n\\u\n${bar}\nHEREDOC;\n",
+                        null,
+                        {
+                            "heredoc": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $var = b'String (\\\\\\'\\r\\n\\x0) for My\\Prefix\\\\';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $var = b'String (\\\\\\'\\\\r\\\\n\\\\x0) for My\\\\Prefix\\\\';",
+                        "<?php $var = b'String (\\\\\\'\\r\\n\\x0) for My\\Prefix\\\\';",
+                        {
+                            "single_quoted": "escape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n$var = b\"\\\\A\\\\B\\\\C\\\\D\\\\E\\\\F\\\\G\\\\H\\\\I\\\\J\\\\K\\\\L\\\\M\\\\N\\\\O\\\\P\\\\Q\\\\R\\\\S\\\\T\\\\U\\\\V\\\\W\\\\X\\\\Y\\\\Z\";\n$var = b\"\\\\a\\\\b\\\\c\\\\d\\\\g\\\\h\\\\i\\\\j\\\\k\\\\l\\\\m\\\\o\\\\p\\\\q\\\\s\\\\w\\\\y\\\\z \\\\' \\\\8\\\\9 \\\\xZ \\\\u\";\n$var = b\"$foo \\\\A \\\\a \\\\' \\\\8\\\\9 \\\\xZ \\\\u ${bar}\";\n$var = b<<<HEREDOC\n\\\\A\\\\B\\\\C\\\\D\\\\E\\\\F\\\\G\\\\H\\\\I\\\\J\\\\K\\\\L\\\\M\\\\N\\\\O\\\\P\\\\Q\\\\R\\\\S\\\\T\\\\U\\\\V\\\\W\\\\X\\\\Y\\\\Z\n\\\\a\\\\b\\\\c\\\\d\\\\g\\\\h\\\\i\\\\j\\\\k\\\\l\\\\m\\\\o\\\\p\\\\q\\\\s\\\\w\\\\y\\\\z\n\\\\\"\n\\\\'\n\\\\8\\\\9\n\\\\xZ\n\\\\u\nHEREDOC;\n$var = b<<<HEREDOC\n$foo \\\\A \\\\a \\\\\" \\\\' \\\\8\\\\9 \\\\xZ \\\\u ${bar}\nHEREDOC;\n$var = b<<<'NOWDOC'\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nNOWDOC;\n",
+                        "<?php\n$var = b\"\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\";\n$var = b\"\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z \\' \\8\\9 \\xZ \\u\";\n$var = b\"$foo \\A \\a \\' \\8\\9 \\xZ \\u ${bar}\";\n$var = b<<<HEREDOC\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\\"\n\\'\n\\8\\9\n\\xZ\n\\u\nHEREDOC;\n$var = b<<<HEREDOC\n$foo \\A \\a \\\" \\' \\8\\9 \\xZ \\u ${bar}\nHEREDOC;\n$var = b<<<'NOWDOC'\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nNOWDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n$var = b\"\\e\\f\\n\\r\\t\\v \\\\ \\$ \\\"\";\n$var = b\"$foo \\e\\f\\n\\r\\t\\v \\\\ \\$ \\\" ${bar}\";\n$var = b<<<HEREDOC\n\\e\\f\\n\\r\\t\\v \\\\ \\$\nHEREDOC;\n$var = b<<<HEREDOC\n$foo \\e\\f\\n\\r\\t\\v \\\\ \\$ ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n$var = b\"\\0 \\00 \\000 \\0000 \\00000\";\n$var = b\"$foo \\0 \\00 \\000 \\0000 \\00000 ${bar}\";\n$var = b<<<HEREDOC\n\\0 \\00 \\000 \\0000 \\00000\nHEREDOC;\n$var = b<<<HEREDOC\n$foo \\0 \\00 \\000 \\0000 \\00000 ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n$var = b\"\\xA \\x99 \\u{0}\";\n$var = b\"$foo \\xA \\x99 \\u{0} ${bar}\";\n$var = b<<<HEREDOC\n\\xA \\x99 \\u{0}\nHEREDOC;\n$var = b<<<HEREDOC\n$foo \\xA \\x99 \\u{0} ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n$var = b'backslash \\ not escaped';\n$var = b'code coverage';\n$var = b\"backslash \\\\ already escaped\";\n$var = b\"code coverage\";\n$var = b<<<HEREDOC\nbackslash \\\\ already escaped\nHEREDOC;\n$var = b<<<HEREDOC\ncode coverage\nHEREDOC;\n$var = b<<<'NOWDOC'\nbackslash \\\\ already escaped\nNOWDOC;\n$var = b<<<'NOWDOC'\ncode coverage\nNOWDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n$var = b\"\\A\\a \\' \\8\\9 \\xZ \\u\";\n$var = b\"$foo \\A\\a \\' \\8\\9 \\xZ \\u ${bar}\";",
+                        null,
+                        {
+                            "double_quoted": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n$var = b<<<HEREDOC\n\\A\\Z\n\\a\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nHEREDOC;\n$var = b<<<HEREDOC\n$foo\n\\A\\Z\n\\a\\z\n\\'\n\\8\\9\n\\xZ\n\\u\n${bar}\nHEREDOC;\n",
+                        null,
+                        {
+                            "heredoc": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $var = B'String (\\\\\\'\\r\\n\\x0) for My\\Prefix\\\\';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $var = B'String (\\\\\\'\\\\r\\\\n\\\\x0) for My\\\\Prefix\\\\';",
+                        "<?php $var = B'String (\\\\\\'\\r\\n\\x0) for My\\Prefix\\\\';",
+                        {
+                            "single_quoted": "escape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n$var = B\"\\\\A\\\\B\\\\C\\\\D\\\\E\\\\F\\\\G\\\\H\\\\I\\\\J\\\\K\\\\L\\\\M\\\\N\\\\O\\\\P\\\\Q\\\\R\\\\S\\\\T\\\\U\\\\V\\\\W\\\\X\\\\Y\\\\Z\";\n$var = B\"\\\\a\\\\b\\\\c\\\\d\\\\g\\\\h\\\\i\\\\j\\\\k\\\\l\\\\m\\\\o\\\\p\\\\q\\\\s\\\\w\\\\y\\\\z \\\\' \\\\8\\\\9 \\\\xZ \\\\u\";\n$var = B\"$foo \\\\A \\\\a \\\\' \\\\8\\\\9 \\\\xZ \\\\u ${bar}\";\n$var = B<<<HEREDOC\n\\\\A\\\\B\\\\C\\\\D\\\\E\\\\F\\\\G\\\\H\\\\I\\\\J\\\\K\\\\L\\\\M\\\\N\\\\O\\\\P\\\\Q\\\\R\\\\S\\\\T\\\\U\\\\V\\\\W\\\\X\\\\Y\\\\Z\n\\\\a\\\\b\\\\c\\\\d\\\\g\\\\h\\\\i\\\\j\\\\k\\\\l\\\\m\\\\o\\\\p\\\\q\\\\s\\\\w\\\\y\\\\z\n\\\\\"\n\\\\'\n\\\\8\\\\9\n\\\\xZ\n\\\\u\nHEREDOC;\n$var = B<<<HEREDOC\n$foo \\\\A \\\\a \\\\\" \\\\' \\\\8\\\\9 \\\\xZ \\\\u ${bar}\nHEREDOC;\n$var = B<<<'NOWDOC'\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nNOWDOC;\n",
+                        "<?php\n$var = B\"\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\";\n$var = B\"\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z \\' \\8\\9 \\xZ \\u\";\n$var = B\"$foo \\A \\a \\' \\8\\9 \\xZ \\u ${bar}\";\n$var = B<<<HEREDOC\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\\"\n\\'\n\\8\\9\n\\xZ\n\\u\nHEREDOC;\n$var = B<<<HEREDOC\n$foo \\A \\a \\\" \\' \\8\\9 \\xZ \\u ${bar}\nHEREDOC;\n$var = B<<<'NOWDOC'\n\\A\\B\\C\\D\\E\\F\\G\\H\\I\\J\\K\\L\\M\\N\\O\\P\\Q\\R\\S\\T\\U\\V\\W\\X\\Y\\Z\n\\a\\b\\c\\d\\g\\h\\i\\j\\k\\l\\m\\o\\p\\q\\s\\w\\y\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nNOWDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n$var = B\"\\e\\f\\n\\r\\t\\v \\\\ \\$ \\\"\";\n$var = B\"$foo \\e\\f\\n\\r\\t\\v \\\\ \\$ \\\" ${bar}\";\n$var = B<<<HEREDOC\n\\e\\f\\n\\r\\t\\v \\\\ \\$\nHEREDOC;\n$var = B<<<HEREDOC\n$foo \\e\\f\\n\\r\\t\\v \\\\ \\$ ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n$var = B\"\\0 \\00 \\000 \\0000 \\00000\";\n$var = B\"$foo \\0 \\00 \\000 \\0000 \\00000 ${bar}\";\n$var = B<<<HEREDOC\n\\0 \\00 \\000 \\0000 \\00000\nHEREDOC;\n$var = B<<<HEREDOC\n$foo \\0 \\00 \\000 \\0000 \\00000 ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n$var = B\"\\xA \\x99 \\u{0}\";\n$var = B\"$foo \\xA \\x99 \\u{0} ${bar}\";\n$var = B<<<HEREDOC\n\\xA \\x99 \\u{0}\nHEREDOC;\n$var = B<<<HEREDOC\n$foo \\xA \\x99 \\u{0} ${bar}\nHEREDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n$var = B'backslash \\ not escaped';\n$var = B'code coverage';\n$var = B\"backslash \\\\ already escaped\";\n$var = B\"code coverage\";\n$var = B<<<HEREDOC\nbackslash \\\\ already escaped\nHEREDOC;\n$var = B<<<HEREDOC\ncode coverage\nHEREDOC;\n$var = B<<<'NOWDOC'\nbackslash \\\\ already escaped\nNOWDOC;\n$var = B<<<'NOWDOC'\ncode coverage\nNOWDOC;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n$var = B\"\\A\\a \\' \\8\\9 \\xZ \\u\";\n$var = B\"$foo \\A\\a \\' \\8\\9 \\xZ \\u ${bar}\";",
+                        null,
+                        {
+                            "double_quoted": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n$var = B<<<HEREDOC\n\\A\\Z\n\\a\\z\n\\'\n\\8\\9\n\\xZ\n\\u\nHEREDOC;\n$var = B<<<HEREDOC\n$foo\n\\A\\Z\n\\a\\z\n\\'\n\\8\\9\n\\xZ\n\\u\n${bar}\nHEREDOC;\n",
+                        null,
+                        {
+                            "heredoc": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n$var = \"\\\\bar\";\n$var = \"\\\\bar\";\n$var = \"\\\\\\\\bar\";\n$var = \"\\\\\\\\bar\";\n$var = \"\\\\\\\\\\\\bar\";\n$var = \"\\\\\\\\\\\\bar\";",
+                        "<?php\n$var = \"\\bar\";\n$var = \"\\\\bar\";\n$var = \"\\\\\\bar\";\n$var = \"\\\\\\\\bar\";\n$var = \"\\\\\\\\\\bar\";\n$var = \"\\\\\\\\\\\\bar\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n$var = '\\\\bar';\n$var = '\\\\bar';\n$var = '\\\\\\\\bar';\n$var = '\\\\\\\\bar';\n$var = '\\\\\\\\\\\\bar';\n$var = '\\\\\\\\\\\\bar';",
+                        "<?php\n$var = '\\bar';\n$var = '\\\\bar';\n$var = '\\\\\\bar';\n$var = '\\\\\\\\bar';\n$var = '\\\\\\\\\\bar';\n$var = '\\\\\\\\\\\\bar';",
+                        {
+                            "single_quoted": "escape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n$var = <<<TXT\n\\\\bar\n\\\\bar\n\\\\\\\\bar\n\\\\\\\\bar\n\\\\\\\\\\\\bar\n\\\\\\\\\\\\bar\nTXT;\n",
+                        "<?php\n$var = <<<TXT\n\\bar\n\\\\bar\n\\\\\\bar\n\\\\\\\\bar\n\\\\\\\\\\bar\n\\\\\\\\\\\\bar\nTXT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n$var = <<<'TXT'\n\\bar\n\\\\bar\n\\\\\\bar\n\\\\\\\\bar\n\\\\\\\\\\bar\n\\\\\\\\\\\\bar\nTXT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in single quoted string - backslash",
+                    "args": [
+                        "<?php\n'\\\\';\n'\\\\\\\\';\n'\\\\\\\\\\\\';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in single quoted string - reserved double quote",
+                    "args": [
+                        "<?php\n'\\\"';\n'\\\"';\n'\\\\\\\"';\n'\\\\\\\"';\n'\\\\\\\\\\\"';\n'\\\\\\\\\\\"';\n'\\\\\\\\\\\\\\\"';\n'\\\\\\\\\\\\\\\"';",
+                        "<?php\n'\\\"';\n'\\\\\"';\n'\\\\\\\"';\n'\\\\\\\\\"';\n'\\\\\\\\\\\"';\n'\\\\\\\\\\\\\"';\n'\\\\\\\\\\\\\\\"';\n'\\\\\\\\\\\\\\\\\"';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in single quoted string - reserved chars",
+                    "args": [
+                        "<?php\n'\\b';\n'\\b';\n'\\\\\\b';\n'\\\\\\b';\n'\\\\\\\\\\b';\n'\\\\\\\\\\b';\n'\\\\\\\\\\\\\\b';\n'\\\\\\\\\\\\\\b';\n'\\$v';\n'\\$v';\n'\\{$v}';\n'\\{$v}';\n'\\n';\n'\\n';",
+                        "<?php\n'\\b';\n'\\\\b';\n'\\\\\\b';\n'\\\\\\\\b';\n'\\\\\\\\\\b';\n'\\\\\\\\\\\\b';\n'\\\\\\\\\\\\\\b';\n'\\\\\\\\\\\\\\\\b';\n'\\$v';\n'\\\\$v';\n'\\{$v}';\n'\\\\{$v}';\n'\\n';\n'\\\\n';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in double quoted string - backslash",
+                    "args": [
+                        "<?php\n\"\\\\\";\n\"\\\\\\\\\";\n\"\\\\\\\\\\\\\";",
+                        null,
+                        {
+                            "double_quoted": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in double quoted string - reserved chars",
+                    "args": [
+                        "<?php\n\"\\b\";\n\"\\b\";\n\"\\\\\\b\";\n\"\\\\\\b\";\n\"\\\\\\\\\\b\";\n\"\\\\\\\\\\b\";\n\"\\\\\\\\\\\\\\b\";\n\"\\\\\\\\\\\\\\b\";\n\"\\$v\";\n\"\\\\$v\";\n\"\\{$v}\";\n\"\\\\{$v}\";\n\"\\n\";\n\"\\\\n\";",
+                        "<?php\n\"\\b\";\n\"\\\\b\";\n\"\\\\\\b\";\n\"\\\\\\\\b\";\n\"\\\\\\\\\\b\";\n\"\\\\\\\\\\\\b\";\n\"\\\\\\\\\\\\\\b\";\n\"\\\\\\\\\\\\\\\\b\";\n\"\\$v\";\n\"\\\\$v\";\n\"\\{$v}\";\n\"\\\\{$v}\";\n\"\\n\";\n\"\\\\n\";",
+                        {
+                            "double_quoted": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in heredoc - backslash",
+                    "args": [
+                        "<?php\n<<<EOD\n\\\n\\\n\\\\\\\n\\\\\\\n\\\\\\\\\\\n\\\\\\\\\\\n\\\\\\\\\\\\\\\nEOD;",
+                        "<?php\n<<<EOD\n\\\n\\\\\n\\\\\\\n\\\\\\\\\n\\\\\\\\\\\n\\\\\\\\\\\\\n\\\\\\\\\\\\\\\nEOD;",
+                        {
+                            "heredoc": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in heredoc - reserved single quote",
+                    "args": [
+                        "<?php\n<<<EOD\n\\'\n\\'\n\\\\\\'\n\\\\\\'\n\\\\\\\\\\'\n\\\\\\\\\\'\n\\\\\\\\\\\\\\'\nEOD;",
+                        "<?php\n<<<EOD\n\\'\n\\\\'\n\\\\\\'\n\\\\\\\\'\n\\\\\\\\\\'\n\\\\\\\\\\\\'\n\\\\\\\\\\\\\\'\nEOD;",
+                        {
+                            "heredoc": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in heredoc - reserved double quote",
+                    "args": [
+                        "<?php\n<<<EOD\n\\\"\n\\\"\n\\\\\\\"\n\\\\\\\"\n\\\\\\\\\\\"\n\\\\\\\\\\\"\n\\\\\\\\\\\\\\\"\nEOD;",
+                        "<?php\n<<<EOD\n\\\"\n\\\\\"\n\\\\\\\"\n\\\\\\\\\"\n\\\\\\\\\\\"\n\\\\\\\\\\\\\"\n\\\\\\\\\\\\\\\"\nEOD;",
+                        {
+                            "heredoc": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unescaped backslashes in heredoc - reserved chars",
+                    "args": [
+                        "<?php\n<<<EOD\n\\$v\n\\\\$v\n\\{$v}\n\\\\{$v}\n\\n\n\\\\n\n\\b\n\\b\n\\\\\\b\n\\\\\\b\n\\\\\\\\\\b\n\\\\\\\\\\b\n\\\\\\\\\\\\\\b\nEOD;",
+                        "<?php\n<<<EOD\n\\$v\n\\\\$v\n\\{$v}\n\\\\{$v}\n\\n\n\\\\n\n\\b\n\\\\b\n\\\\\\b\n\\\\\\\\b\n\\\\\\\\\\b\n\\\\\\\\\\\\b\n\\\\\\\\\\\\\\b\nEOD;",
+                        {
+                            "heredoc": "unescape"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignored mixed implicit backslashes in single quoted string",
+                    "args": [
+                        "<?php\n$var = 'a\\b\\\\c';",
+                        null,
+                        {
+                            "single_quoted": "ignore"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignored mixed implicit backslashes in double quoted string",
+                    "args": [
+                        "<?php\n$var = \"a\\b\\\\c\";",
+                        null,
+                        {
+                            "double_quoted": "ignore"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignored mixed implicit backslashes in heredoc",
+                    "args": [
+                        "<?php\n$var = <<<HEREDOC\n    a\\b\\\\c\n    HEREDOC;",
+                        null,
+                        {
+                            "heredoc": "ignore"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "execution operator",
+                    "args": [
+                        "<?php $var = `ls a\\\\b`;",
+                        "<?php $var = `ls a\\b`;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,68 @@
+{
+    "fixer": "not_operator_with_space",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NotOperatorWithSpaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/NotOperatorWithSpaceFixerTest.php",
+    "case_count": 5,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NotOperatorWithSpaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $i = 0; $i++; ++$i; $foo = ! false || ( ! true);",
+                        "<?php $i = 0; $i++; ++$i; $foo = !false || (!true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $i = 0; $i--; --$i; $foo = ! false || ($i && ! true);",
+                        "<?php $i = 0; $i--; --$i; $foo = !false || ($i && !true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $i = 0; $i--; $foo = ! false || ($i && ! /* some comment */true);",
+                        "<?php $i = 0; $i--; $foo = !false || ($i && !/* some comment */true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $i = 0; $i--; $foo = ! false || ($i && !    true);",
+                        "<?php $i = 0; $i--; $foo = !false || ($i && !    true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $i = 0; $i--; $foo = ! false || ($i &&    !    true);",
+                        "<?php $i = 0; $i--; $foo = !false || ($i &&    !    true);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

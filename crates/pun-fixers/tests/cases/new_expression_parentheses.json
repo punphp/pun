@@ -1,0 +1,30 @@
+[
+    {
+        "fixer": "new_expression_parentheses",
+        "input": "<?php\n(new static())->foo();\n(new self)->foo();\n(new (getClass())())->bar();\n(new class(1, 2) extends A {})::foo();\n(new $a->b[1]())?->c();\n(new Foo())->bar()->baz();\n",
+        "expected": "<?php\n(new static())->foo();\n(new self)->foo();\nnew (getClass())()->bar();\nnew class(1, 2) extends A {}::foo();\nnew $a->b[1]()?->c();\nnew Foo()->bar()->baz();\n"
+    },
+    {
+        "fixer": "new_expression_parentheses",
+        "config": {
+            "use_parentheses": true
+        },
+        "input": "<?php\n(new static())->foo();\n(new self)->foo();\n(new (getClass())())->bar();\n(new class(1, 2) extends A {})::foo();\n(new $a->b[1]())?->c();\n(new Foo())->bar()->baz();\n",
+        "expected": "<?php\n(new static())->foo();\n(new self)->foo();\n(new (getClass())())->bar();\n(new class(1, 2) extends A {})::foo();\n(new $a->b[1]())?->c();\n(new Foo())->bar()->baz();\n"
+    },
+    {
+        "fixer": "new_expression_parentheses",
+        "config": {
+            "use_parentheses": true
+        },
+        "input": "<?php\n(new Foo())->bar();\nnew Foo()::$x;\nnew class {}->bar();\nnew Foo();\n$x = new Foo()[1];\n",
+        "expected": "<?php\n(new Foo())->bar();\n(new Foo())::$x;\n(new class {})->bar();\nnew Foo();\n$x = new Foo()[1];\n"
+    },
+    {
+        "fixer": "new_expression_parentheses",
+        "config": {
+            "use_parentheses": "yes"
+        },
+        "error": "[new_expression_parentheses] Invalid configuration: The option \"use_parentheses\" with value \"yes\" is expected to be of type \"bool\", but is of type \"string\"."
+    }
+]

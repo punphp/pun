@@ -1,0 +1,75 @@
+{
+    "fixer": "octal_notation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\OctalNotationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Basic/OctalNotationFixerTest.php",
+    "case_count": 6,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\OctalNotationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                $a = 0;\n                $b = '0';\n                $foo = 0b01;\n                $foo = 0x01;\n                $foo = 0B01;\n                $foo = 0X01;\n                $foo = 0b0;\n                $foo = 0x0;\n                $foo = 0B0;\n                $foo = 0X0;\n                $foo = 1;\n                $foo = 10;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $foo = 0o0000;",
+                        "<?php $foo = 00000;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                $foo = 0o123;\n                $foo = 0o1;\n            ",
+                        "<?php\n                $foo = 0123;\n                $foo = 01;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $foo = 0o1_234;",
+                        "<?php $foo = 01_234;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $foo = +0o1_234;",
+                        "<?php $foo = +01_234;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $foo = -0o123_456;",
+                        "<?php $foo = -0_123_456;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

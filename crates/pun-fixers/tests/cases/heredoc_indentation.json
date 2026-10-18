@@ -1,0 +1,27 @@
+[
+    {
+        "fixer": "heredoc_indentation",
+        "input": "<?php\nfunction f() {\n\t$a = <<<EOD\nfoo\r\n  bar $x\nEOD;\n\t$b = <<<EOD\n    EOD;\n}\n",
+        "expected": "<?php\nfunction f() {\n\t$a = <<<EOD\n\t    foo\r\n\t      bar $x\n\t    EOD;\n\t$b = <<<EOD\n\t    EOD;\n}\n"
+    },
+    {
+        "fixer": "heredoc_indentation",
+        "input": "<?php\n    $a = <<<EOD\n      a\n        b {$c}\n      EOD;\n    $b = <<<EOD\n\n      x\n      EOD;\n    $c = <<<EOD\n    $x\n      y\n    EOD;\n",
+        "expected": "<?php\n    $a = <<<EOD\n        a\n          b {$c}\n        EOD;\n    $b = <<<EOD\n\n        x\n        EOD;\n    $c = <<<EOD\n        $x\n          y\n        EOD;\n"
+    },
+    {
+        "fixer": "heredoc_indentation",
+        "config": {
+            "indentation": "same_as_start"
+        },
+        "input": "<?php\n    $a = <<<EOD\n      a\n        b {$c}\n      EOD;\n    $b = <<<EOD\n\n      x\n      EOD;\n    $c = <<<EOD\n    $x\n      y\n    EOD;\n",
+        "expected": "<?php\n    $a = <<<EOD\n    a\n      b {$c}\n    EOD;\n    $b = <<<EOD\n\n    x\n    EOD;\n    $c = <<<EOD\n    $x\n      y\n    EOD;\n"
+    },
+    {
+        "fixer": "heredoc_indentation",
+        "config": {
+            "indentation": "x"
+        },
+        "error": "[heredoc_indentation] Invalid configuration: The option \"indentation\" with value \"x\" is invalid. Accepted values are: \"start_plus_one\", \"same_as_start\"."
+    }
+]

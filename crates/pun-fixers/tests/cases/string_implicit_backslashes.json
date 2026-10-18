@@ -1,0 +1,41 @@
+[
+    {
+        "fixer": "string_implicit_backslashes",
+        "input": "<?php\n$a = 'a\\b \\\\ c \\'';\n$b = b'x\\\\y';\n$c = B\"p\\q \\n\";\n$d = <<<'EOD'\n  a\\b\nEOD;\n$e = <<<EOD\n  a\\b $x c\\d\nEOD;\n$f = \"x $y \\z\";\n",
+        "expected": "<?php\n$a = 'a\\b \\ c \\'';\n$b = b'x\\y';\n$c = B\"p\\\\q \\n\";\n$d = <<<'EOD'\n  a\\b\nEOD;\n$e = <<<EOD\n  a\\\\b $x c\\\\d\nEOD;\n$f = \"x $y \\\\z\";\n"
+    },
+    {
+        "fixer": "string_implicit_backslashes",
+        "config": {
+            "single_quoted": "escape",
+            "double_quoted": "unescape",
+            "heredoc": "unescape"
+        },
+        "input": "<?php\n$a = 'a\\b \\\\ c \\'';\n$b = b'x\\\\y';\n$c = B\"p\\q \\n\";\n$d = <<<'EOD'\n  a\\b\nEOD;\n$e = <<<EOD\n  a\\b $x c\\d\nEOD;\n$f = \"x $y \\z\";\n",
+        "expected": "<?php\n$a = 'a\\\\b \\\\ c \\'';\n$b = b'x\\\\y';\n$c = B\"p\\q \\n\";\n$d = <<<'EOD'\n  a\\b\nEOD;\n$e = <<<EOD\n  a\\b $x c\\d\nEOD;\n$f = \"x $y \\z\";\n"
+    },
+    {
+        "fixer": "string_implicit_backslashes",
+        "config": {
+            "single_quoted": "ignore",
+            "double_quoted": "ignore",
+            "heredoc": "ignore"
+        },
+        "input": "<?php\n$a = 'a\\b \\\\ c \\'';\n$b = b'x\\\\y';\n$c = B\"p\\q \\n\";\n$d = <<<'EOD'\n  a\\b\nEOD;\n$e = <<<EOD\n  a\\b $x c\\d\nEOD;\n$f = \"x $y \\z\";\n",
+        "expected": "<?php\n$a = 'a\\b \\\\ c \\'';\n$b = b'x\\\\y';\n$c = B\"p\\q \\n\";\n$d = <<<'EOD'\n  a\\b\nEOD;\n$e = <<<EOD\n  a\\b $x c\\d\nEOD;\n$f = \"x $y \\z\";\n"
+    },
+    {
+        "fixer": "string_implicit_backslashes",
+        "config": {
+            "foo": "escape"
+        },
+        "error": "[string_implicit_backslashes] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"double_quoted\", \"heredoc\", \"single_quoted\"."
+    },
+    {
+        "fixer": "string_implicit_backslashes",
+        "config": {
+            "heredoc": "bar"
+        },
+        "error": "[string_implicit_backslashes] Invalid configuration: The option \"heredoc\" with value \"bar\" is invalid. Accepted values are: \"escape\", \"unescape\", \"ignore\"."
+    }
+]

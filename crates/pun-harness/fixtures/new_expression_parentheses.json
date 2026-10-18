@@ -1,0 +1,385 @@
+{
+    "fixer": "new_expression_parentheses",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewExpressionParenthesesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/NewExpressionParenthesesFixerTest.php",
+    "case_count": 42,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewExpressionParenthesesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php (new class {});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php ((new class {}))->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php new class {}->bar;",
+                        "<?php (new class {})->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php  /**/ new /**/ class /**/ {} /**/ ->bar;",
+                        "<?php ( /**/ new /**/ class /**/ {} /**/ )->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php new class ($x, (1 + 2) / 3) {}->bar;",
+                        "<?php (new class ($x, (1 + 2) / 3) {})->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php new class (new class {}) {}->bar;",
+                        "<?php (new class (new class {}) {})->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php new class ($x, (1 + 2) / 3) extends stdClass implements Throwable {}->bar;",
+                        "<?php (new class ($x, (1 + 2) / 3) extends stdClass implements Throwable {})->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php new class { public function __construct() { new class {}->bar; } }->bar;",
+                        "<?php (new class { public function __construct() { (new class {})->bar; } })->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php (new class {})->bar;",
+                        null,
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php (new class {})->bar;",
+                        "<?php new class {}->bar;",
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php (new stdClass());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php ((new stdClass()));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php new stdClass()->bar;",
+                        "<?php (new stdClass())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php new \\stdClass()->bar;",
+                        "<?php (new \\stdClass())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php new namespace\\Foo()->bar;",
+                        "<?php (new namespace\\Foo())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php new Name\\Space\\Foo()->bar;",
+                        "<?php (new Name\\Space\\Foo())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php new \\Name\\Space\\Foo()->bar;",
+                        "<?php (new \\Name\\Space\\Foo())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php  /**/ new /**/ \\Name\\Space\\Foo /**/ () /**/ ->bar;",
+                        "<?php ( /**/ new /**/ \\Name\\Space\\Foo /**/ () /**/ )->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php new Foo($x, (1 + 2) / 3)->bar;",
+                        "<?php (new Foo($x, (1 + 2) / 3))->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php new Foo(new Baz()->m())->bar;",
+                        "<?php (new Foo((new Baz())->m()))->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php (new Foo)->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php (new Foo())->bar;",
+                        null,
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php (new Foo())->bar;",
+                        "<?php new Foo()->bar;",
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php new $class()->bar;",
+                        "<?php (new $class())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php  /**/ new /**/ $class /**/ ( /**/ ) /**/ ->bar;",
+                        "<?php ( /**/ new /**/ $class /**/ ( /**/ ) /**/ )->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php new $$var()->bar;",
+                        "<?php (new $$var())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php new ${\"var\"}()->bar;",
+                        "<?php (new ${\"var\"}())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php new $obj->prop()->bar;",
+                        "<?php (new $obj->prop())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php new $obj?->prop()->bar;",
+                        "<?php (new $obj?->prop())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php new $obj::$prop()->bar;",
+                        "<?php (new $obj::$prop())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php new SomeClass::$prop()->bar;",
+                        "<?php (new SomeClass::$prop())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php new $obj[\"x\"]()->bar;",
+                        "<?php (new $obj[\"x\"]())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php new $obj[1][2]()->bar;",
+                        "<?php (new $obj[1][2]())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php (new $class)->bar;",
+                        null,
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php (new $class())->bar;",
+                        "<?php new $class()->bar;",
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php (new (foo()));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php ((new (foo())));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php new (foo())()->bar;",
+                        "<?php (new (foo())())->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php  /**/ new /**/ ( /**/ foo() /**/ ) /**/ ( /**/ ) /**/ ->bar;",
+                        "<?php ( /**/ new /**/ ( /**/ foo() /**/ ) /**/ ( /**/ ) /**/ )->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php (new (foo()))->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php (new (foo()))->bar;",
+                        null,
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php (new (foo())())->bar;",
+                        "<?php new (foo())()->bar;",
+                        {
+                            "use_parentheses": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

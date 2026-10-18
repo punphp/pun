@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "not_operator_with_space",
+        "input": "<?php\n$a = !!$b;\nif (!$c && ! $d) {}\n",
+        "expected": "<?php\n$a = ! ! $b;\nif ( ! $c && ! $d) {}\n"
+    }
+]

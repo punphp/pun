@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "multiline_comment_opening_closing",
+        "input": "<?php\n/***** a *****/\n/** b **/\n/**/\n/***/\n// c **/\n# d\n/*** e\n*\n ***/\n",
+        "expected": "<?php\n/* a */\n/** b */\n/**/\n/**/\n// c **/\n# d\n/* e\n*\n */\n"
+    }
+]

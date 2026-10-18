@@ -1,0 +1,106 @@
+{
+    "fixer": "multiline_comment_opening_closing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Comment\\MultilineCommentOpeningClosingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Comment/MultilineCommentOpeningClosingFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Comment\\MultilineCommentOpeningClosingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** Opening DocBlock */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /* Opening comment */",
+                        "<?php /*** Opening comment */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /*\\ Opening false-DocBlock */",
+                        "<?php /**\\ Opening false-DocBlock */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** Closing DocBlock */",
+                        "<?php /** Closing DocBlock ***/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /* Closing comment */",
+                        "<?php /* Closing comment ***/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /**/",
+                        "<?php /***/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /**/",
+                        "<?php /********/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\n/*\n * WUT\n */",
+                        "<?php\n\n/********\n * WUT\n ********/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\n/*\\\n * False DocBlock\n */",
+                        "<?php\n\n/**\\\n * False DocBlock\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n# Hash\n#*** Hash asterisk\n// Slash\n//*** Slash asterisk\n\n/*\n/**\n/***\nWeird multiline comment\n*/\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

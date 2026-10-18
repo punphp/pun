@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_whitespace_in_empty_array",
+        "input": "<?php\n$a = [ ];\n$b = [\n\n];\n$c = array( );\n$d = [/* x */ ];\n[ ] = $e;\n",
+        "expected": "<?php\n$a = [];\n$b = [];\n$c = array( );\n$d = [/* x */ ];\n[ ] = $e;\n"
+    }
+]
