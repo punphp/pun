@@ -48,3 +48,5 @@ Variables/DefinedVariableRuleTest::testDefinedVariables
 # declare inside a method body), so it reports none of the file's errors; Pun reports the two declares as the
 # RuleTestCase expects
 Keywords/DeclareStrictTypesRuleTest::testNested
+# anonymous class display names (class@anonymous/<file>:<line>, FuzzyRelativePathHelper) are not ported
+Methods/MissingMethodImplementationRuleTest::testRule

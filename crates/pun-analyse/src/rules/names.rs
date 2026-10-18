@@ -3,6 +3,7 @@
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
+use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_word::word;
@@ -18,25 +19,25 @@ pub enum Known<'a> {
 }
 
 impl Known<'_> {
-    fn is_trait(&self) -> bool {
+    pub fn is_trait(&self) -> bool {
         matches!(self, Known::User(k) if k.kind == SymbolKind::Trait)
     }
 
-    fn is_interface(&self) -> bool {
+    pub fn is_interface(&self) -> bool {
         match self {
             Known::User(k) => k.kind == SymbolKind::Interface,
             Known::Builtin(k) => k.is_interface,
         }
     }
 
-    fn is_enum(&self) -> bool {
+    pub fn is_enum(&self) -> bool {
         match self {
             Known::User(k) => k.kind == SymbolKind::Enum,
             Known::Builtin(k) => !k.cases.is_empty(),
         }
     }
 
-    fn is_class(&self) -> bool {
+    pub fn is_class(&self) -> bool {
         !self.is_trait() && !self.is_interface() && !self.is_enum()
     }
 
@@ -53,7 +54,7 @@ impl Known<'_> {
         }
     }
 
-    pub(super) fn display(&self) -> String {
+    pub fn display(&self) -> String {
         match self {
             Known::User(k) => String::from_utf8_lossy(k.original_name.as_bytes()).into_owned(),
             Known::Builtin(k) => k.name.clone(),
@@ -263,8 +264,12 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
     }
 }
 
-/// ExistingClassInInstanceOfRule.
-pub fn instanceof<'arena>(c: &mut Checker<'_, 'arena>, class: &Expression<'arena>) {
+/// ExistingClassInInstanceOfRule for `expr instanceof class`.
+pub fn instanceof<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    expr: &Expression<'arena>,
+    class: &Expression<'arena>,
+) {
     match class {
         Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) => {
             if c.classes.is_empty() {
@@ -283,15 +288,44 @@ pub fn instanceof<'arena>(c: &mut Checker<'_, 'arena>, class: &Expression<'arena
         }
         Expression::Identifier(id) => {
             let name = c.resolved(id);
-            if known(c, &name).is_none() && !c.in_class_exists(&name) {
-                c.report(
+            match known(c, &name) {
+                None if c.in_class_exists(&name) => {}
+                None => c.report(
                     id,
                     "class.notFound",
                     format!("Class {name} not found."),
                     Some(DISCOVERING_SYMBOLS_TIP),
-                );
+                ),
+                Some(k) if k.is_trait() => {
+                    // `$scope->getType($expr)->describe()`: only `$this` (ThisType) and `mixed` are described until
+                    // analyse 4 maps Mago's types to PHPStan's descriptions
+                    let described = match expr {
+                        Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+                            c.class_scope().map(|k| {
+                                format!(
+                                    "$this({})",
+                                    String::from_utf8_lossy(k.original_name.as_bytes())
+                                )
+                            })
+                        }
+                        _ => c
+                            .type_of(expr)
+                            .filter(|t| t.get_id().as_bytes() == b"mixed")
+                            .map(|_| "mixed".to_string()),
+                    };
+                    if let Some(described) = described {
+                        c.report(
+                            expr,
+                            "instanceof.trait",
+                            format!(
+                                "Instanceof between {described} and trait {name} will always evaluate to false."
+                            ),
+                            None,
+                        );
+                    }
+                }
+                Some(_) => {}
             }
-            // ponytail: instanceof.trait needs the expression's described type
         }
         _ => {}
     }
@@ -480,8 +514,8 @@ pub fn no_discard<'arena>(
 }
 
 /// ExistingClassInClassExtendsRule and ExistingClassesInClassImplementsRule (class), ExistingClassesInInterfaceExtendsRule
-/// (interface) and ExistingClassesInEnumImplementsRule (enum): `current` is e.g. `Class Foo`, `None` for an
-/// anonymous class.
+/// (interface) and ExistingClassesInEnumImplementsRule (enum): `current` is e.g. `Class Foo` or `Anonymous class`,
+/// `readonly` whether the class is declared `readonly`.
 pub fn class_hierarchy<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
@@ -489,6 +523,7 @@ pub fn class_hierarchy<'arena>(
     extends: Option<&Extends<'arena>>,
     implements: Option<&Implements<'arena>>,
     interface: bool,
+    readonly: bool,
 ) {
     if let Some(e) = extends {
         for id in e.types.iter() {
@@ -543,8 +578,12 @@ pub fn class_hierarchy<'arena>(
                             format!("{current} extends {what} {}.", k.display()),
                             None,
                         );
+                    } else {
+                        super::hierarchy::extends_final(c, at, current, k);
                     }
-                    // ponytail: final and readonly parents (class.extendsFinal, class.readOnly) unchecked
+                    if k.is_class() {
+                        super::hierarchy::extends_readonly(c, at, current, readonly, k);
+                    }
                 }
             }
         }

@@ -53,15 +53,15 @@
   {
    "file": "assign.php",
    "line": 19,
-   "identifier": "assign.invalidExpr",
-   "message": "Expression on left side of assignment is not assignable.",
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
    "tip": null
   },
   {
    "file": "assign.php",
    "line": 19,
-   "identifier": "offsetAccess.noDim",
-   "message": "Cannot use [] for reading.",
+   "identifier": "assign.invalidExpr",
+   "message": "Expression on left side of assignment is not assignable.",
    "tip": null
   },
   {
@@ -179,16 +179,16 @@
   {
    "file": "assign.php",
    "line": 60,
-   "identifier": "function.notFound",
-   "message": "Function unknownFunction not found.",
-   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
   },
   {
    "file": "assign.php",
    "line": 60,
-   "identifier": "offsetAccess.noDim",
-   "message": "Cannot use [] for reading.",
-   "tip": null
+   "identifier": "function.notFound",
+   "message": "Function unknownFunction not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
   },
   {
    "file": "assign.php",
@@ -364,6 +364,118 @@
    "identifier": "declareStrictTypes.value",
    "message": "Declare strict_types must have 0 or 1 as its value, \\Foo\\BAR given.",
    "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 10,
+   "identifier": "class.extendsFinal",
+   "message": "Class Hierarchy\\ExtendsFinalBoth extends final class Hierarchy\\FinalBoth.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 24,
+   "identifier": "class.extendsFinal",
+   "message": "Class Hierarchy\\ExtendsClosure extends final class Closure.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 45,
+   "identifier": "traitUse.class",
+   "message": "Class Hierarchy\\UsesClass uses class Hierarchy\\Base.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 62,
+   "identifier": "consistentConstructor.private",
+   "message": "Private constructor cannot be enforced as consistent for child classes.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 78,
+   "identifier": "sealed.onTrait",
+   "message": "PHPDoc tag @phpstan-sealed is only valid on class or interface.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 89,
+   "identifier": "method.abstract",
+   "message": "Non-abstract class Hierarchy\\CountsNothing contains abstract method count() from interface Countable.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 110,
+   "identifier": "method.abstract",
+   "message": "Non-abstract class Hierarchy\\OnlyTraitFoo contains abstract method foo() from class Hierarchy\\OnlyTraitFoo.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 120,
+   "identifier": "method.abstract",
+   "message": "Non-abstract class Hierarchy\\ConcreteChild contains abstract method bar() from class Hierarchy\\AbstractParent.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 161,
+   "identifier": "property.callableType",
+   "message": "Property Hierarchy\\UsesCallableProperty::$either cannot have callable in its type declaration.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 163,
+   "identifier": "property.callableType",
+   "message": "Property Hierarchy\\UsesCallableProperty::$dnf cannot have callable in its type declaration.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 181,
+   "identifier": "instanceof.trait",
+   "message": "Instanceof between mixed and trait Hierarchy\\AbstractFoo will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php",
+   "line": 195,
+   "identifier": "method.abstract",
+   "message": "Non-abstract class Hierarchy\\Filter contains abstract method accept() from class FilterIterator.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php (in context of class Hierarchy\\OnlyTraitFoo)",
+   "line": 95,
+   "identifier": "method.abstract",
+   "message": "Non-abstract class Hierarchy\\OnlyTraitFoo contains abstract method foo().",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php (in context of class Hierarchy\\UsesCallableProperty)",
+   "line": 154,
+   "identifier": "property.callableType",
+   "message": "Property Hierarchy\\UsesCallableProperty::$callback cannot have callable in its type declaration.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php (in context of class Hierarchy\\UsesUsesNonTraits)",
+   "line": 34,
+   "identifier": "traitUse.class",
+   "message": "Trait Hierarchy\\UsesNonTraits uses class Hierarchy\\Base.",
+   "tip": null
+  },
+  {
+   "file": "hierarchy.php (in context of class Hierarchy\\UsesUsesNonTraits)",
+   "line": 35,
+   "identifier": "trait.notFound",
+   "message": "Trait Hierarchy\\UsesNonTraits uses unknown trait Hierarchy\\MissingTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
   },
   {
    "file": "loops.php",

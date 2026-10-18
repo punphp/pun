@@ -336,3 +336,22 @@ check, 2026-10-18; the plan was silent):
 - `#[NoDiscard]` on a function or method reads the native return type, then (with none) the PHPDoc type Mago read;
   constructors, `__destruct()`, `__unset()`, `__wakeup()`, `__clone()`, `__set()` and `__unserialize()` are void, as
   in PhpMethodFromParserNodeReflection.
+
+Assistant's calls in analyse 3f (class-hierarchy declaration rules, hierarchy.rs, 2026-10-18; the plan was silent):
+- `isFinalByKeyword()` of a user class reads the `final` modifier from the declaration's source (after its attributes,
+  outside comments): Mago's FINAL flag also holds `@final`, even a comment between the attributes and the keyword,
+  which PHPStan does not read as the class's PHPDoc (oracle-confirmed). Without the source (PHPStan's API stub) the
+  flag is the keyword.
+- A method is abstract when declared `abstract` or in an interface (BetterReflection); Mago also flags a body-less
+  method, so the modifier is read from the source.
+- MissingMethodImplementationRule resolves each method name with `members::method()` (class, traits, parents, then
+  interfaces) instead of Mago's declaring ids, which also hold `@method` tags; a trait's abstract method is satisfied
+  by a parent's concrete one, and an interface's by a concrete method of any trait the class or a parent uses
+  (Mago's declaring ids let another trait's `@method` tag hide it: Carbon's `tomorrow()` on laravel-framework), as
+  in PHP. A class whose parent or interface is of the wrong kind (a class implementing an enum) is skipped: PHP
+  refuses that hierarchy and PHPStan reports no missing method. `isProvidedByBuiltinAncestor()` is not ported:
+  Mago's stubs give the built-in parents concrete methods, so no input reaches it.
+- `instanceof.trait` describes only `$this` (`$this(Class)`) and `mixed`; other expression types wait for analyse 4.
+- Anonymous classes are skipped where the message names them (`class@anonymous/<path>:<line>` needs
+  FuzzyRelativePathHelper): MissingMethodImplementationRuleTest::testRule stays in gaps.txt for that.
+- The ClassNameCheck part of the three ExistingClassIn* rules (`*.nameCase`, `class.prefixed`) is not ported.

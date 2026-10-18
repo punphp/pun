@@ -8,6 +8,7 @@ mod classes;
 mod declarations;
 mod enums;
 mod functions;
+mod hierarchy;
 mod members;
 mod names;
 mod params;
@@ -237,6 +238,22 @@ pub const IDENTIFIERS: &[&str] = &[
     "trait.allowDynamicProperties",
     "property.overrideAttribute",
     "constant.attributesNotSupported",
+    "class.extendsFinal",
+    "class.extendsFinalByPhpDoc",
+    "class.readOnly",
+    "class.nonReadOnly",
+    "trait.notFound",
+    "traitUse.class",
+    "traitUse.enum",
+    "traitUse.interface",
+    "interface.traitUse",
+    "instanceof.trait",
+    "method.abstract",
+    "method.nonAbstract",
+    "consistentConstructor.private",
+    "sealed.onTrait",
+    "property.callableType",
+    "class.serializable",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -512,11 +529,27 @@ fn in_trait_context(
 }
 
 /// The expressions whose type a rule reads: the class of `new $expr`, the object or class expression of a call whose
-/// by-reference parameters matter.
-#[derive(Default)]
-struct TypedExpressions(Vec<Span>);
+/// by-reference parameters matter, the expression of an `instanceof` naming a trait.
+struct TypedExpressions<'n, 'arena> {
+    spans: Vec<Span>,
+    names: &'n ResolvedNames<'arena>,
+    codebase: &'n CodebaseMetadata,
+}
 
-impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions {
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> {
+    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+        // `$this` is described without its type
+        if matches!(b.operator, BinaryOperator::Instanceof(_))
+            && !matches!(b.lhs, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+            && let Expression::Identifier(id) = b.rhs
+            && self
+                .codebase
+                .get_class_like(self.names.get(&id.span()))
+                .is_some_and(|k| k.kind == SymbolKind::Trait)
+        {
+            self.spans.push(b.lhs.span());
+        }
+    }
     fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, _: &mut ()) {
         if !matches!(
             new.class,
@@ -526,15 +559,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions {
                 | Expression::Parent(_)
                 | Expression::AnonymousClass(_)
         ) {
-            self.0.push(new.class.span());
+            self.spans.push(new.class.span());
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
-        self.0
+        self.spans
             .extend(assign::typed_object(call.object, &call.argument_list).map(HasSpan::span));
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        self.0
+        self.spans
             .extend(assign::typed_object(call.class, &call.argument_list).map(HasSpan::span));
     }
 }
@@ -548,9 +581,14 @@ fn infer<'arena>(
     codebase: &CodebaseMetadata,
     php_version: u32,
 ) -> HashMap<Span, TUnion> {
-    let mut wanted = TypedExpressions::default();
+    let mut wanted = TypedExpressions {
+        spans: Vec::new(),
+        names,
+        codebase,
+    };
     wanted.walk_program(program, &mut ());
-    if wanted.0.is_empty() {
+    let wanted = wanted.spans;
+    if wanted.is_empty() {
         return HashMap::new();
     }
     let registry = PluginRegistry::new();
@@ -562,7 +600,7 @@ fn infer<'arena>(
     let program = arena.alloc(Program {
         statements: Prune {
             arena,
-            wanted: &wanted.0,
+            wanted: &wanted,
         }
         .statements(&program.statements),
         ..program.clone()
@@ -575,7 +613,6 @@ fn infer<'arena>(
         return HashMap::new();
     };
     wanted
-        .0
         .into_iter()
         .filter_map(|span| Some((span, artifacts.get_expression_type(&span)?.clone())))
         .collect()
@@ -978,6 +1015,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class.extends.as_ref(),
             class.implements.as_ref(),
             false,
+            class
+                .modifiers
+                .iter()
+                .any(|m| matches!(m, Modifier::Readonly(_))),
         );
         if self.context.is_none() {
             let name = self.resolved_span(class.name.span);
@@ -1006,6 +1047,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 .any(|m| matches!(m, Modifier::Readonly(_))),
             Some(&name),
         );
+        hierarchy::in_class(self, class.span(), &name);
     }
     fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -1014,7 +1056,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
         let current = format!("Interface {}", self.resolved_span(i.name.span));
-        names::class_hierarchy(self, i.span(), &current, i.extends.as_ref(), None, true);
+        names::class_hierarchy(
+            self,
+            i.span(),
+            &current,
+            i.extends.as_ref(),
+            None,
+            true,
+            false,
+        );
         self.enter_class(Some(i.name.span), i.members.as_slice());
         self.push_frame(FrameKind::Class);
         let decl = self.decl_of(
@@ -1043,7 +1093,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
         let current = format!("Enum {}", self.resolved_span(e.name.span));
-        names::class_hierarchy(self, e.span(), &current, None, e.implements.as_ref(), false);
+        names::class_hierarchy(
+            self,
+            e.span(),
+            &current,
+            None,
+            e.implements.as_ref(),
+            false,
+            false,
+        );
         if self.context.is_none() {
             let name = self.resolved_span(e.name.span);
             self.trait_uses_of(&name, e.members.as_slice());
@@ -1063,6 +1121,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             false,
             Some(&name),
         );
+        hierarchy::in_class(self, e.span(), &name);
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -1077,6 +1136,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.trait_lines.push((start, end));
         let Some((_, class)) = self.context.clone() else {
             attributes::trait_declaration(self, t);
+            hierarchy::sealed_trait(self, t);
             return;
         };
         let name = self.resolved_span(t.name.span);
@@ -1122,6 +1182,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             a.extends.as_ref(),
             a.implements.as_ref(),
             false,
+            a.modifiers
+                .iter()
+                .any(|m| matches!(m, Modifier::Readonly(_))),
         );
         self.enter_class(None, a.members.as_slice());
         self.push_frame(FrameKind::Class);
@@ -1216,6 +1279,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             _ => String::from_utf8_lossy(m.name.value).into_owned(),
         };
         declarations::method(self, m, &method);
+        hierarchy::method(self, m, &method);
         declarations::promoted(
             self,
             m.span(),
@@ -1230,6 +1294,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             || m.name.value.eq_ignore_ascii_case(b"__construct")
         {
             properties::promoted(self, &m.parameter_list);
+            for p in m
+                .parameter_list
+                .parameters
+                .iter()
+                .filter(|p| p.is_promoted_property())
+            {
+                hierarchy::callable_property(self, p.span(), p.variable.name, p.hint.as_ref());
+            }
         }
         if let Some(class) = self.class_scope() {
             let docblock = self
@@ -1384,7 +1456,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_binary(&mut self, b: &'ast Binary<'arena>, c: &mut ()) {
         if matches!(b.operator, BinaryOperator::Instanceof(_)) {
-            names::instanceof(self, b.rhs);
+            names::instanceof(self, b.lhs, b.rhs);
         }
         self.walk_expression(b.lhs, c);
         let extra = match b.operator {
@@ -1511,6 +1583,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.mark_top_level(e);
         }
     }
+    fn walk_in_trait_use(&mut self, u: &'ast mago_syntax::cst::TraitUse<'arena>, _: &mut ()) {
+        hierarchy::trait_use(self, u);
+    }
     fn walk_in_use(&mut self, u: &'ast Use<'arena>, _: &mut ()) {
         names::use_functions(self, u);
     }
@@ -1518,6 +1593,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
         names::property_type(self, p.span(), p.hint(), &names);
         properties::property(self, p);
+        for v in p.variables() {
+            hierarchy::callable_property(self, v.span(), v.name, p.hint());
+        }
         // one ClassPropertyNode per property of the declaration
         if let Some(hint) = p.hint() {
             for _ in &names {

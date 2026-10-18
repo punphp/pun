@@ -106,11 +106,7 @@ pub fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
     let enum_name = c.resolved_span(e.name.span);
     if c.codebase
         .get_class_like(enum_name.as_bytes())
-        .is_some_and(|k| {
-            k.all_parent_interfaces
-                .iter()
-                .any(|i| i.as_bytes().eq_ignore_ascii_case(b"serializable"))
-        })
+        .is_some_and(super::hierarchy::implements_serializable)
     {
         c.report_non_ignorable(
             e,

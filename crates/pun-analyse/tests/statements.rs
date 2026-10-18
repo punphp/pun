@@ -1,6 +1,7 @@
 //! Branches of the declaration, keyword, assignment and type rules that PHPStan's own rule fixtures miss (other
 //! `phpVersion`s, declare values, trait aliases, interface constructors, by-reference arguments, destructuring
-//! targets, use statements, promoted and hooked property types). Expected: PHPStan's run on tests/fixtures/statements for each
+//! targets, use statements, promoted and hooked property types, final and abstract parents, traits used in a trait).
+//! Expected: PHPStan's run on tests/fixtures/statements for each
 //! phpstan*.neon there, restricted to the identifiers Pun reports.
 
 use std::path::Path;
