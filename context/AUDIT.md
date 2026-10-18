@@ -61,10 +61,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   now fails the file with `preg_replace_callback(): Backtrack limit exhausted` and leaves it untouched (Pint empties
   it), a PrettierException fails the file too (it used to print to stderr and pass), and the two `php_block_formatting`
   patterns panic, failing only the file, if they ever fail. Fixed in f4e297f.
-- [ ] 10. `crates/pun-cli/src/report.rs:208-219` (`caret_satisfies`): with base `0.8.0` (`first == 1`) an installed
+- [x] 10. `crates/pun-cli/src/report.rs:208-219` (`caret_satisfies`): with base `0.8.0` (`first == 1`) an installed
   `prettier-plugin-tailwindcss` version string `"1"` gives `v = [1]`, `v >= b` holds, and `v[..=1]` panics on the
   main thread outside `isolated`. Pad both to three parts before comparing. Traced by hand; the trigger is a
-  malformed `package.json`.
+  malformed `package.json`. Fixed in 0af1ad4: `caret_satisfies` (now in prettier.rs) pads both versions to three parts; unit test `caret_ranges`.
 
 ## P1: Misleading
 
@@ -125,10 +125,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   reported identifier is listed. Still holds at ff31836 (`property.trait` at `names.rs:553`, missing from
   `IDENTIFIERS`, `rules/mod.rs:64-140`). Deferred: the fix is in `crates/pun-analyse/src/rules/*`, which the
   analyse tracks claim. `Checker::report()` debug-asserts that every reported identifier is listed, so every test run checks it. Fixed in 52ec4f2.
-- [ ] 18. `crates/pun-cli/src/watch.rs:92-96` prints `{e}`, dropping anyhow's cause chain, so a broken pun.toml during
+- [x] 18. `crates/pun-cli/src/watch.rs:92-96` prints `{e}`, dropping anyhow's cause chain, so a broken pun.toml during
   `--watch` shows only "invalid /p/pun.toml" with no line or column, while the first run shows the chain. Errors are
   printed four ways (`main.rs:236-247`, `run.rs:53-60`, `pint_error.rs:12-14`, `watch.rs`). Extract one
-  `report_error(&anyhow::Error)`.
+  `report_error(&anyhow::Error)`. Fixed in 0af1ad4: `watch.rs` reports through `report::fail`, the one path `main` uses, so the cause chain shows (tests/watch.rs asserts the TOML parse error).
 - [x] 19. I/O errors without the file: `crates/pun-cli/src/migrate.rs:352` (`fs::write(f, new)?`), `lint.rs:50`,
   `crates/pun-config/src/migrate.rs:120` print "Permission denied (os error 13)" alone; `pun-cli/src/migrate.rs:443-458`
   discards PHP's stderr, so a fatal error in `.php-cs-fixer.php` prints `pun: ` with nothing after it. Add
@@ -187,10 +187,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 28. No shared lint policy: the root `Cargo.toml` has no `[workspace.lints]`, clippy doesn't gate in CI
   (`ci.yml:30-32`), and nothing compiles the `mago-lint` feature that release builds ship
   (`crates/pun-cli/Cargo.toml:15-16`; no test passes `--mago`). Add the block below, `[lints] workspace = true` in each
-  crate, `--all-features` to the clippy job and one `pun lint --mago` smoke test. Spans crates. Needs a decision.
-- [ ] 29. `crates/pun-cli/src/main.rs:210` and `lint.rs:24`: `pun lint --mago` parses every `FormatArgs` flag and then
+  crate, `--all-features` to the clippy job and one `pun lint --mago` smoke test. Spans crates. Needs a decision. Partly fixed in 0af1ad4: the block is in the root Cargo.toml and pun-cli, pun-workspace and pun-problem opt in (their hits fixed; pun-cli allows print_stdout/print_stderr). The `mago-lint` feature is gone (item 29). Left: the other crates opt in (request row in PLAN.md); CI is off, so no clippy job.
+- [x] 29. `crates/pun-cli/src/main.rs:210` and `lint.rs:24`: `pun lint --mago` parses every `FormatArgs` flag and then
   drops them, so `--dirty`, `--fix` and `--format=json` silently do nothing. Give it its own args or
-  `conflicts_with_all`.
+  `conflicts_with_all`. Fixed in 0af1ad4: `pun lint --mago` and the `mago-lint` feature are removed; `pun lint` runs the native rules, Mago's Laravel ones among them.
 - [ ] 30. Report formats are strings: `main.rs:133-141` (`Option<String>`, help lists 3 of 7), `report.rs:662-745`
   (`match format`), `run.rs:317` and `report.rs:260,297` (`format.is_none()` as a mode), `list_files.rs:23,37-41`, and
   `report.rs:371-379` compares `agent::cmd()` with `"format"`. Replace Type Code with Enum `ReportFormat` (`FromStr`),
@@ -206,12 +206,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `pint_error.rs` and `run.rs` belong to the platform/format track, so pun-cli still matches the text; the switch
   (`Thrown::of(&anyhow::Error)` by `downcast_ref`, a `PintError` for the read/write/report-file errors) lands once
   that claim is released.
-- [ ] 32. `crates/pun-cli/src/run.rs:50-364`: `format` is 315 lines with a 100-line `process` closure, returns
+- [x] 32. `crates/pun-cli/src/run.rs:50-364`: `format` is 315 lines with a 100-line `process` closure, returns
   `type Processed = (FileResult, Option<String>, bool, Option<FileResult>)` read as `.0`/`.2`, and
   `pint_error.rs:123-124` is generic only to accept that tuple; `lint_fixers: Vec<(Rule, bool, bool)>` and
   `Stage::Lint(bool)` are bools as modes. Introduce Parameter Object `Processed`, Extract Function `resolve_rules`,
   `select_files`, `process_file`, and name the bools. Still held at 8cc3efa (`format` is 331 lines, the closure
-  110), except that `pint_error.rs` is no longer generic. Deferred: `run.rs` is claimed by the platform/format track.
+  110), except that `pint_error.rs` is no longer generic. Deferred: `run.rs` is claimed by the platform/format track. Fixed in 0af1ad4: `Processed` is a struct, `process_file` and `filter_problems` are functions, the token pipelines live in `Pipelines`, and `Stage::{Lint, Check} { fix }` names the bool.
 - [x] 33. `crates/pun-cli/src/migrate.rs:148-393`: `run` is 245 lines covering detection, prompts, planning, the
   summary table, conversion, clash checks, ignore-comment rewrites, writes and two output modes, and rebinds `from`
   and `toml` with new meanings (`:264`, `:280`, `:355`). Extract Function per phase and return a `Report` the two
@@ -446,8 +446,8 @@ items marked "not checked against Pint" still need one oracle run before the fix
   used twice while 28 sites call `Preg` directly), `pun-phpstan/src/types.rs:288-290`, and all of
   `docblock/preg.rs` (49 lines renaming `Preg` methods). Inline Function. Fixed in fe1af67 (`has_newline` now has 7 call sites, all
   inlined; in `types.rs` the forwarded `is_implicit_mixed` went and `is_plain_implicit_mixed` keeps its body).
-- [ ] 74. `crates/pun-cli/src/run.rs:480-487`: `assert!(thread::spawn(|| panic!()).join().is_err())` passes whatever
-  the panic hook does. Delete it or assert the hook's effect.
+- [x] 74. `crates/pun-cli/src/run.rs:480-487`: `assert!(thread::spawn(|| panic!()).join().is_err())` passes whatever
+  the panic hook does. Delete it or assert the hook's effect. Fixed in 0af1ad4: the `thread::spawn` assertion is deleted.
 
 ### Types
 
@@ -500,7 +500,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 
 ### Splits and smaller items
 
-- [ ] 83. `crates/pun-cli/src/report.rs` (780 lines) holds the Symfony error box, the Node/Prettier probe and semver,
+- [x] 83. `crates/pun-cli/src/report.rs` (780 lines) holds the Symfony error box, the Node/Prettier probe and semver,
   the terminal summary and three reporters while the other four live in `fix_report.rs`, and it imports
   `pint_error`, which imports it back. Move `abort_box` to `pint_error.rs`, the probe to `prettier.rs`, the reporters
   together. Still held at 8cc3efa (974 lines). Deferred: `report.rs`, `pint_error.rs`, `fix_report.rs` and
@@ -508,7 +508,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `pun-wf/scratch/audit-cli-structure-item83.patch` (applies to 8cc3efa; the json, txt and agent reporters join the
   other four in `fix_report.rs`, `report.rs` keeps the dispatch): 170 runs of `pun format`/`lint`/`check` over the
   sample, a Latin-1 file and the abort cases (every `--format`, `-q`, `--ansi`, `-v`, agent, `--output-to-file`)
-  print the same bytes as before.
+  print the same bytes as before. Fixed in 0af1ad4: the patch is applied (prettier.rs, `abort_box` in pint_error.rs, the json/txt/agent reporters in fix_report.rs).
 - [x] 84. `crates/pun-fixers/src/fixers/final_class.rs:3` imports `final_internal_class`, the only fixer-to-fixer
   import, so `PUN_FIXERS_ONLY=final_class` fails to build. Move the shared core into `analyzers/`. Fixed in edb08b1.
 - [x] 85. Per-token clones and pre-check work on Laravel-preset paths: `braces_position.rs:148`,
