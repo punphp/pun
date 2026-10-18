@@ -1,0 +1,145 @@
+{
+    "fixer": "phpdoc_tag_casing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagCasingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocTagCasingFixerTest.php",
+    "case_count": 8,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagCasingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @inheritDoc */",
+                        "<?php /** @inheritdoc */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @inheritDoc */",
+                        "<?php /** @inheritdoc */",
+                        {
+                            "tags": [
+                                "inheritDoc"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @inheritdoc */",
+                        "<?php /** @inheritDoc */",
+                        {
+                            "tags": [
+                                "inheritdoc"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** {@inheritDoc} */",
+                        "<?php /** {@inheritdoc} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /** {@inheritDoc} */",
+                        "<?php /** {@inheritdoc} */",
+                        {
+                            "tags": [
+                                "inheritDoc"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** {@inheritdoc} */",
+                        "<?php /** {@inheritDoc} */",
+                        {
+                            "tags": [
+                                "inheritdoc"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "message",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagCasingFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $message): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($message);\n\n        $this->fixer->configure($configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "tag containing comment-end sequence",
+                    "args": [
+                        {
+                            "tags": [
+                                "foo*/"
+                            ]
+                        },
+                        "[phpdoc_tag_casing] Invalid configuration: Tag \"foo*/\" cannot be replaced by invalid tag \"foo*/\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "tag with whitespace",
+                    "args": [
+                        {
+                            "tags": [
+                                "foo bar"
+                            ]
+                        },
+                        "[phpdoc_tag_casing] Invalid configuration: Tag \"foo bar\" cannot be replaced by invalid tag \"foo bar\"."
+                    ]
+                }
+            ]
+        }
+    ]
+}

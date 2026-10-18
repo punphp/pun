@@ -18,9 +18,18 @@ pub fn strtoupper(s: &[u8]) -> Vec<u8> {
 
 /// `mb_strtolower($s)` (UTF-8): full Unicode lowercasing, with each maximal invalid UTF-8 subpart replaced by `?`.
 pub fn mb_strtolower(s: &[u8]) -> Vec<u8> {
+    mb_convert_case(s, str::to_lowercase)
+}
+
+/// `mb_strtoupper($s)` (UTF-8): full Unicode uppercasing (`ß` -> `SS`), invalid UTF-8 as in `mb_strtolower`.
+pub fn mb_strtoupper(s: &[u8]) -> Vec<u8> {
+    mb_convert_case(s, str::to_uppercase)
+}
+
+fn mb_convert_case(s: &[u8], convert: fn(&str) -> String) -> Vec<u8> {
     let mut out = Vec::with_capacity(s.len());
     for chunk in s.utf8_chunks() {
-        out.extend_from_slice(chunk.valid().to_lowercase().as_bytes());
+        out.extend_from_slice(convert(chunk.valid()).as_bytes());
         if !chunk.invalid().is_empty() {
             out.push(b'?');
         }
@@ -632,6 +641,15 @@ mod tests {
         for (input, expected) in cases {
             assert_eq!(mb_strtolower(input), *expected, "{input:?}");
         }
+    }
+
+    // mb_strtoupper($s) on PHP 8.5.
+    #[test]
+    fn mb_strtoupper_matches_php() {
+        assert_eq!(
+            mb_strtoupper(b"stra\xc3\x9fe_\xc3\xa9\xffx"),
+            "STRASSE_É?X".as_bytes()
+        );
     }
 
     // var_export($s, true) on PHP 8.5.

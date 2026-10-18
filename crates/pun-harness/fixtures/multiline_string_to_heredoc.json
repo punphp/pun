@@ -1,0 +1,153 @@
+{
+    "fixer": "multiline_string_to_heredoc",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\MultilineStringToHeredocFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/MultilineStringToHeredocFixerTest.php",
+    "case_count": 16,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\MultilineStringToHeredocFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty string",
+                    "args": [
+                        "<?php $a = '';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single line string",
+                    "args": [
+                        "<?php $a = 'a b';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single line string with \"\\n\"",
+                    "args": [
+                        "<?php $a = 'a\\nb';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple single quoted",
+                    "args": [
+                        "<?php\n$a = <<<'EOD'\nline1\nline2\nEOD;",
+                        "<?php\n$a = 'line1\nline2';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple double quoted",
+                    "args": [
+                        "<?php\n$a = <<<EOD\nline1\nline2\nEOD;",
+                        "<?php\n$a = \"line1\nline2\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "colliding closing marker - one",
+                    "args": [
+                        "<?php\n$a = <<<'EOD_'\nline1\nEOD\nline2\nEOD_;",
+                        "<?php\n$a = 'line1\nEOD\nline2';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "colliding closing marker - two",
+                    "args": [
+                        "<?php\n$a = <<<'EOD__'\nline1\nEOD\nEOD_\nline2\nEOD__;",
+                        "<?php\n$a = 'line1\nEOD\nEOD_\nline2';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single quoted unescape",
+                    "args": [
+                        "<?php\n$a = <<<'EOD'\nline1\n\\\n\\n\n'\n\\\\'\n\\\"\n\\\n\nEOD;",
+                        "<?php\n$a = 'line1\n\\\\\n\\n\n\\'\n\\\\\\\\\\'\n\\\"\n\\\n';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double quoted unescape",
+                    "args": [
+                        "<?php\n$a = <<<EOD\nline1\n\\\\\n\\n\n\"\n\\\\\\\\\"\n\\'\n\\\n\"{$rawPath}\"\n\nEOD;",
+                        "<?php\n$a = \"line1\n\\\\\n\\n\n\\\"\n\\\\\\\\\\\"\n\\'\n\\\n\\\"{$rawPath}\\\"\n\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single quoted /w variable",
+                    "args": [
+                        "<?php\n$a = <<<'EOD'\nline1$var\nline2\nEOD;",
+                        "<?php\n$a = 'line1$var\nline2';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double quoted /w simple variable",
+                    "args": [
+                        "<?php\n$a = <<<EOD\nline1$var\nline2\nEOD;",
+                        "<?php\n$a = \"line1$var\nline2\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double quoted /w simple curly variable",
+                    "args": [
+                        "<?php\n$a = <<<EOD\nline1{$var}\nline2\nEOD;",
+                        "<?php\n$a = \"line1{$var}\nline2\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double quoted /w complex curly variable",
+                    "args": [
+                        "<?php\n$a = <<<EOD\n{$arr['foo'][3]}\n{ $obj->values[3]->name }\n{${getName()}}\nEOD;",
+                        "<?php\n$a = \"{$arr['foo'][3]}\n{ $obj->values[3]->name }\n{${getName()}}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test stateful fixing loop",
+                    "args": [
+                        "<?php\n<<<EOD\n$a\n{$b['x']}\nEOD;\n<<<'EOD'\nc\nd\nEOD;\n\n<<<EOD\n$a\n$b\nEOD;\n<<<EOD\n$c\n$d\nEOD;\n\n'a';\n<<<'EOD'\nb\nc\nEOD;\n\n<<<'EOD'\nEOD;\n<<<EOD\n$a $b\nEOD;\n<<<'EOD'\nc d\nEOD;\n<<<EOD\n$a $b\nEOD;\n<<<EOD\n$a\n$b\nEOD;\n<<<'EOD'\n$c\n$d\nEOD;",
+                        "<?php\n\"$a\n{$b['x']}\";\n'c\nd';\n\n\"$a\n$b\";\n\"$c\n$d\";\n\n'a';\n'b\nc';\n\n<<<'EOD'\nEOD;\n<<<EOD\n$a $b\nEOD;\n<<<'EOD'\nc d\nEOD;\n<<<EOD\n$a $b\nEOD;\n<<<EOD\n$a\n$b\nEOD;\n<<<'EOD'\n$c\n$d\nEOD;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple strings prefixed with b/B",
+                    "args": [
+                        "<?php\n$a = <<<'EOD'\nline1\nline2\nEOD;\n$b = <<<EOD\nline1\nline2\nEOD;",
+                        "<?php\n$a = b'line1\nline2';\n$b = B\"line1\nline2\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double quoted /w simple variable prefixed with b/B",
+                    "args": [
+                        "<?php\n$a = <<<EOD\nline1$var\nline2\nEOD;\n$b = <<<EOD\nline1$var\nline2\nEOD;",
+                        "<?php\n$a = b\"line1$var\nline2\";\n$b = B\"line1$var\nline2\";"
+                    ]
+                }
+            ]
+        }
+    ]
+}

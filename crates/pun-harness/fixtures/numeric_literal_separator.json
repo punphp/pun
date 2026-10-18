@@ -1,0 +1,817 @@
+{
+    "fixer": "numeric_literal_separator",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\NumericLiteralSeparatorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Basic/NumericLiteralSeparatorFixerTest.php",
+    "case_count": 69,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\NumericLiteralSeparatorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not override existing separator",
+                    "args": [
+                        "<?php\necho 0B01010100_01101000;\necho 70_10_00;\n",
+                        null,
+                        {
+                            "override_existing": false,
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "override existing separator",
+                    "args": [
+                        "<?php\necho 1_234.5;\necho 701_000;",
+                        "<?php\necho 123_4.5;\necho 70_10_00;",
+                        {
+                            "override_existing": true,
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to decimal 1234",
+                    "args": [
+                        "<?php echo 1_234;",
+                        "<?php echo 1234;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to decimal -1234",
+                    "args": [
+                        "<?php echo -1_234;",
+                        "<?php echo -1234;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to decimal 12345",
+                    "args": [
+                        "<?php echo 12_345;",
+                        "<?php echo 12345;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to decimal 123456",
+                    "args": [
+                        "<?php echo 123_456;",
+                        "<?php echo 123456;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from decimal 1234",
+                    "args": [
+                        "<?php echo 1234;",
+                        "<?php echo 1_234;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from decimal -1234",
+                    "args": [
+                        "<?php echo -1234;",
+                        "<?php echo -1_234;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from decimal 12345",
+                    "args": [
+                        "<?php echo 12345;",
+                        "<?php echo 12_345;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from decimal 123456",
+                    "args": [
+                        "<?php echo 123456;",
+                        "<?php echo 123_456;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to binary 0b0101010001101000",
+                    "args": [
+                        "<?php echo 0b01010100_01101000;",
+                        "<?php echo 0b0101010001101000;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to binary 0b01010100011010000110010101101111",
+                    "args": [
+                        "<?php echo 0b01010100_01101000_01100101_01101111;",
+                        "<?php echo 0b01010100011010000110010101101111;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to binary 0b110001000",
+                    "args": [
+                        "<?php echo 0b1_10001000;",
+                        "<?php echo 0b110001000;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from binary 0b0101010001101000",
+                    "args": [
+                        "<?php echo 0b0101010001101000;",
+                        "<?php echo 0b01010100_01101000;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from binary 0b01010100011010000110010101101111",
+                    "args": [
+                        "<?php echo 0b01010100011010000110010101101111;",
+                        "<?php echo 0b01010100_01101000_01100101_01101111;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from binary 0b110001000",
+                    "args": [
+                        "<?php echo 0b110001000;",
+                        "<?php echo 0b1_10001000;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not modify valid float .001",
+                    "args": [
+                        "<?php echo .001;",
+                        null,
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float .1001",
+                    "args": [
+                        "<?php echo .100_1;",
+                        "<?php echo .1001;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 0.0001",
+                    "args": [
+                        "<?php echo 0.000_1;",
+                        "<?php echo 0.0001;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not modify valid float 0.001",
+                    "args": [
+                        "<?php echo 0.001;",
+                        null,
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1234.5",
+                    "args": [
+                        "<?php echo 1_234.5;",
+                        "<?php echo 1234.5;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1.2345",
+                    "args": [
+                        "<?php echo 1.234_5;",
+                        "<?php echo 1.2345;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1234e5",
+                    "args": [
+                        "<?php echo 1_234e5;",
+                        "<?php echo 1234e5;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1234E5",
+                    "args": [
+                        "<?php echo 1_234E5;",
+                        "<?php echo 1234E5;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1e2345",
+                    "args": [
+                        "<?php echo 1e2_345;",
+                        "<?php echo 1e2345;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1234.5678e1234",
+                    "args": [
+                        "<?php echo 1_234.567_8e1_234;",
+                        "<?php echo 1234.5678e1234;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float .5678e1234",
+                    "args": [
+                        "<?php echo .567_8e1_234;",
+                        "<?php echo .5678e1234;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1.1e-1234",
+                    "args": [
+                        "<?php echo 1.1e-1_234;",
+                        "<?php echo 1.1e-1234;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1.1e-12345",
+                    "args": [
+                        "<?php echo 1.1e-12_345;",
+                        "<?php echo 1.1e-12345;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float 1.1e-123456",
+                    "args": [
+                        "<?php echo 1.1e-123_456;",
+                        "<?php echo 1.1e-123456;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to float .1e-12345",
+                    "args": [
+                        "<?php echo .1e-12_345;",
+                        "<?php echo .1e-12345;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float .1001",
+                    "args": [
+                        "<?php echo .1001;",
+                        "<?php echo .100_1;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 0.0001",
+                    "args": [
+                        "<?php echo 0.0001;",
+                        "<?php echo 0.000_1;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1234.5",
+                    "args": [
+                        "<?php echo 1234.5;",
+                        "<?php echo 1_234.5;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1.2345",
+                    "args": [
+                        "<?php echo 1.2345;",
+                        "<?php echo 1.234_5;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1234e5",
+                    "args": [
+                        "<?php echo 1234e5;",
+                        "<?php echo 1_234e5;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1234E5",
+                    "args": [
+                        "<?php echo 1234E5;",
+                        "<?php echo 1_234E5;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1e2345",
+                    "args": [
+                        "<?php echo 1e2345;",
+                        "<?php echo 1e2_345;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1234.5678e1234",
+                    "args": [
+                        "<?php echo 1234.5678e1234;",
+                        "<?php echo 1_234.567_8e1_234;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float .5678e1234",
+                    "args": [
+                        "<?php echo .5678e1234;",
+                        "<?php echo .567_8e1_234;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1.1e-1234",
+                    "args": [
+                        "<?php echo 1.1e-1234;",
+                        "<?php echo 1.1e-1_234;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1.1e-12345",
+                    "args": [
+                        "<?php echo 1.1e-12345;",
+                        "<?php echo 1.1e-12_345;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float 1.1e-123456",
+                    "args": [
+                        "<?php echo 1.1e-123456;",
+                        "<?php echo 1.1e-123_456;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from float .1e-12345",
+                    "args": [
+                        "<?php echo .1e-12345;",
+                        "<?php echo .1e-12_345;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to hexadecimal 0x42726F776E",
+                    "args": [
+                        "<?php echo 0x42_72_6F_77_6E;",
+                        "<?php echo 0x42726F776E;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to hexadecimal 0X42726F776E",
+                    "args": [
+                        "<?php echo 0X42_72_6F_77_6E;",
+                        "<?php echo 0X42726F776E;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to hexadecimal 0x2726F776E",
+                    "args": [
+                        "<?php echo 0x2_72_6F_77_6E;",
+                        "<?php echo 0x2726F776E;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to hexadecimal 0x1234567890abcdef",
+                    "args": [
+                        "<?php echo 0x12_34_56_78_90_ab_cd_ef;",
+                        "<?php echo 0x1234567890abcdef;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to hexadecimal 0X1234567890ABCDEF",
+                    "args": [
+                        "<?php echo 0X12_34_56_78_90_AB_CD_EF;",
+                        "<?php echo 0X1234567890ABCDEF;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to hexadecimal 0x1234e5",
+                    "args": [
+                        "<?php echo 0x12_34_e5;",
+                        "<?php echo 0x1234e5;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from hexadecimal 0x42726F776E",
+                    "args": [
+                        "<?php echo 0x42726F776E;",
+                        "<?php echo 0x42_72_6F_77_6E;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from hexadecimal 0X42726F776E",
+                    "args": [
+                        "<?php echo 0X42726F776E;",
+                        "<?php echo 0X42_72_6F_77_6E;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from hexadecimal 0x2726F776E",
+                    "args": [
+                        "<?php echo 0x2726F776E;",
+                        "<?php echo 0x2_72_6F_77_6E;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from hexadecimal 0x1234567890abcdef",
+                    "args": [
+                        "<?php echo 0x1234567890abcdef;",
+                        "<?php echo 0x12_34_56_78_90_ab_cd_ef;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from hexadecimal 0X1234567890ABCDEF",
+                    "args": [
+                        "<?php echo 0X1234567890ABCDEF;",
+                        "<?php echo 0X12_34_56_78_90_AB_CD_EF;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from hexadecimal 0x1234e5",
+                    "args": [
+                        "<?php echo 0x1234e5;",
+                        "<?php echo 0x12_34_e5;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to octal 012345",
+                    "args": [
+                        "<?php echo 012_345;",
+                        "<?php echo 012345;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to octal 0123456",
+                    "args": [
+                        "<?php echo 0123_456;",
+                        "<?php echo 0123456;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add separator to octal 01234567",
+                    "args": [
+                        "<?php echo 01_234_567;",
+                        "<?php echo 01234567;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from octal 012345",
+                    "args": [
+                        "<?php echo 012345;",
+                        "<?php echo 012_345;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from octal 0123456",
+                    "args": [
+                        "<?php echo 0123456;",
+                        "<?php echo 0123_456;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove separator from octal 01234567",
+                    "args": [
+                        "<?php echo 01234567;",
+                        "<?php echo 01_234_567;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not change float to int when there is nothing after the dot",
+                    "args": [
+                        "<?php $x = 100.;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\NumericLiteralSeparatorFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, ?array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "do not override existing separator",
+                    "args": [
+                        "<?php echo 0o123_45;",
+                        null,
+                        {
+                            "override_existing": false,
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "override existing separator",
+                    "args": [
+                        "<?php echo 1_234.5;",
+                        "<?php echo 123_4.5;",
+                        {
+                            "override_existing": true,
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "add separator to octal 0o12345",
+                    "args": [
+                        "<?php echo 0o12_345;",
+                        "<?php echo 0o12345;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "add separator to octal 0o123456",
+                    "args": [
+                        "<?php echo 0o123_456;",
+                        "<?php echo 0o123456;",
+                        {
+                            "strategy": "use_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "remove separator from octal 0o12345",
+                    "args": [
+                        "<?php echo 0o12345;",
+                        "<?php echo 0o12_345;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "remove separator from octal 0o123456",
+                    "args": [
+                        "<?php echo 0o123456;",
+                        "<?php echo 0o123_456;",
+                        {
+                            "strategy": "no_separator"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

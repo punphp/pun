@@ -92,7 +92,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "arrays/syntax" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "PHP arrays should be declared using the configured syntax." }
 "arrays/trailing-comma-multiline" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Arguments lists, array destructuring lists, arrays that are multi-line, `match`-lines and parameters lists must have a trailing comma." }
 "arrays/trim-spaces" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Arrays should be formatted like function/method arguments, without leading or trailing single line space." }
-"attributes/empty-parentheses" = { fix = "safe", ported = false, status = "decided", summary = "PHP attributes declared without arguments must (not) be followed by empty parentheses." }
+"attributes/empty-parentheses" = { fix = "safe", ported = true, status = "decided", summary = "PHP attributes declared without arguments must (not) be followed by empty parentheses." }
 "attributes/no-block-spaces" = { fix = "safe", ported = true, status = "decided", summary = "Remove spaces before and after the attributes block." }
 "attributes/ordered" = { fix = "safe", ported = false, status = "decided", summary = "Sorts attributes using the configured sort algorithm." }
 "casing/class-reference" = { fix = "safe", ported = true, status = "decided", summary = "When referencing an internal class it must be written using the correct casing." }
@@ -195,7 +195,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/separation" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Annotations in PHPDoc should be grouped together so that annotations of the same type immediately follow each other. Annotations of a different type are separated by a single blank line." }
 "phpdoc/single-line-var-spacing" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Single line `@var` PHPDoc should have proper spacing." }
 "phpdoc/summary" = { fix = "safe", ported = true, status = "decided", summary = "PHPDoc summary should end in either a full stop, exclamation mark, or question mark." }
-"phpdoc/tag-casing" = { fix = "safe", ported = false, status = "decided", summary = "Fixes casing of PHPDoc tags." }
+"phpdoc/tag-casing" = { fix = "safe", ported = true, status = "decided", summary = "Fixes casing of PHPDoc tags." }
 "phpdoc/tag-type" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Forces PHPDoc tags to be either regular annotations or inline." }
 "phpdoc/trim" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "PHPDoc should start and end with content, excluding the very first and last line of the docblocks." }
 "phpdoc/trim-blank-lines" = { fix = "safe", ported = true, status = "decided", summary = "Removes extra blank lines after summary and after description in PHPDoc." }
@@ -212,7 +212,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/multiline-semicolon" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Forbid multi-line whitespace before the closing semicolon or move the semicolon to the new line for chained calls." }
 "statements/no-mixed-echo-print" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Either language construct `print` or `echo` should be used." }
 "statements/no-space-before-semicolon" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Single-line whitespace before closing semicolon are prohibited." }
-"statements/numeric-literal-separator" = { fix = "safe", ported = false, status = "decided", summary = "Adds separators to numeric literals of any kind." }
+"statements/numeric-literal-separator" = { fix = "safe", ported = true, status = "decided", summary = "Adds separators to numeric literals of any kind." }
 "statements/octal-notation" = { fix = "safe", ported = true, status = "decided", summary = "Literal octal must be in `0o` notation." }
 "statements/one-per-line" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must not be more than one statement per line." }
 "statements/semicolon-after-instruction" = { fix = "safe", ported = true, status = "decided", summary = "Instructions must be terminated with a semicolon." }
@@ -225,7 +225,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "strings/heredoc-indentation" = { fix = "safe", ported = true, status = "decided", summary = "Heredoc/nowdoc content must be properly indented." }
 "strings/heredoc-to-nowdoc" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Convert `heredoc` to `nowdoc` where possible." }
 "strings/implicit-backslashes" = { fix = "safe", ported = true, status = "decided", summary = "Handles implicit backslashes in strings and heredocs. Depending on the chosen strategy, it can escape implicit backslashes to ease the understanding of which are special chars interpreted by PHP and which not (`escape`), or it can remove these additional backslashes if you find them superfluous (`unescape`). You can also leave them as-is using `ignore` strategy." }
-"strings/multiline-to-heredoc" = { fix = "safe", ported = false, status = "decided", summary = "Convert multiline string to `heredoc` or `nowdoc`." }
+"strings/multiline-to-heredoc" = { fix = "safe", ported = true, status = "decided", summary = "Convert multiline string to `heredoc` or `nowdoc`." }
 "strings/no-binary" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be a binary flag before strings." }
 "strings/single-quote" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Convert double quotes to single quotes for simple strings." }
 "tags/blank-line-after-opening" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Ensure there is no code on the same line as the PHP open tag and it is followed by a blank line." }
