@@ -282,3 +282,16 @@ Assistant's calls in the engine spike (Build 0, 2026-10-17; the plan was silent)
   Analyse 3a fixed the 5 (assistant's calls, where the port stops short of PHPStan: `@method` tags count only for
   `$this->` calls (CallMethodsRule), not static calls yet; `$this instanceof X` narrows `$this` to `never` only for
   those calls; a trait alias's new visibility (`foo as protected`) is not applied to the walked method).
+
+Assistant's calls in analyse 3b (the first 13 level-0 declaration and keyword rules, 2026-10-18; the plan was silent):
+- DeclareStrictTypesRule prints a constant value by its resolved name (`\FOO`) and any other value as written, in
+  place of a port of php-parser's printer; the oracle agrees on ints, strings and constants.
+- `Keywords/DeclareStrictTypesRuleTest::testNested` is in gaps.txt: PHPStan's own level-0 run aborts that file with
+  an internal error (MissingReturnRule), so it reports none of its errors. Pun reports both declares, as the
+  RuleTestCase expects.
+- A `(void)` cast that starts an expression statement counts as first-level even when Mago parses it as the input of
+  `|>` (`(void) 5 |> f(...);`), since PHP's grammar has `(void) expr;` as a statement.
+- ConstructorReturnTypeRule skips anonymous classes (no class scope; PHPStan names them
+  `class@anonymous/<relative path>:<line>`, which needs the analysed paths), and a trait method's alias comes from the
+  class's alias map, not from the `use` block of that trait alone.
+- BacktickRule also reports an empty pair of backticks, where PHPStan stops the file with an internal error.

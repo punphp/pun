@@ -1,0 +1,335 @@
+//! Keyword, cast and context checks that need no types: MagicConstantContextRule, DeclareStrictTypesRule,
+//! GotoUndefinedLabelRule, ConstructorReturnTypeRule, DeprecatedCastRule, UnsetCastRule, VoidCastRule and
+//! BacktickRule.
+
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
+
+use super::Checker;
+
+/// What a scope boundary on [`Checker::frames`] is.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum FrameKind {
+    /// The file's top level.
+    Top,
+    /// A class-like body: a fresh scope with no function.
+    Class,
+    /// A function, method or property hook (`$scope->getFunction()`).
+    Named,
+    /// A closure or arrow function (`$scope->isInAnonymousFunction()`).
+    Anonymous,
+    /// A parameter: analysed in the scope around its function-like.
+    Param,
+}
+
+/// A scope boundary, with the goto labels and gotos directly in it (GotoLabelVisitor's scope stack).
+pub struct Frame {
+    pub kind: FrameKind,
+    labels: Vec<Vec<u8>>,
+    gotos: Vec<(Vec<u8>, Span)>,
+}
+
+impl Frame {
+    pub fn new(kind: FrameKind) -> Frame {
+        Frame {
+            kind,
+            labels: Vec::new(),
+            gotos: Vec::new(),
+        }
+    }
+}
+
+impl Checker<'_, '_> {
+    pub(super) fn push_frame(&mut self, kind: FrameKind) {
+        self.frames.push(Frame::new(kind));
+    }
+
+    /// Leaves a scope boundary: GotoUndefinedLabelRule reports its gotos to labels it does not hold.
+    pub(super) fn pop_frame(&mut self) {
+        let frame = self.frames.pop().expect("pushed");
+        for (label, at) in frame.gotos {
+            if frame.labels.contains(&label) {
+                continue;
+            }
+            self.report_non_ignorable(
+                at,
+                "goto.labelUndefined",
+                format!(
+                    "Goto to undefined label '{}'.",
+                    String::from_utf8_lossy(&label)
+                ),
+                None,
+            );
+        }
+    }
+
+    /// The innermost function-like a node is analysed in, up to the enclosing class-like: a parameter belongs to the
+    /// scope around its function-like.
+    fn function_frames(&self) -> impl Iterator<Item = FrameKind> + '_ {
+        let mut skip = 0;
+        self.frames
+            .iter()
+            .rev()
+            .map(|f| f.kind)
+            .take_while(|k| *k != FrameKind::Class)
+            .filter(move |k| match k {
+                FrameKind::Param => {
+                    skip += 1;
+                    false
+                }
+                _ if skip > 0 => {
+                    skip -= 1;
+                    false
+                }
+                _ => true,
+            })
+    }
+
+    /// `$scope->getFunction() !== null`.
+    pub(super) fn in_named_function(&self) -> bool {
+        self.function_frames().any(|k| k == FrameKind::Named)
+    }
+
+    /// `$scope->getFunctionName() !== null || $scope->isInAnonymousFunction()`.
+    fn in_function_like(&self) -> bool {
+        self.function_frames()
+            .any(|k| matches!(k, FrameKind::Named | FrameKind::Anonymous))
+    }
+
+    pub(super) fn label(&mut self, l: &Label) {
+        let frame = self.frames.last_mut().expect("top frame");
+        frame.labels.push(l.name.value.to_vec());
+    }
+
+    pub(super) fn goto(&mut self, g: &Goto) {
+        let frame = self.frames.last_mut().expect("top frame");
+        frame.gotos.push((g.label.value.to_vec(), g.span()));
+    }
+}
+
+/// MagicConstantContextRule.
+pub fn magic_constant(c: &mut Checker, m: &MagicConstant) {
+    let (name, identifier, message) = match m {
+        MagicConstant::Class(_) if c.classes.is_empty() => {
+            ("__CLASS__", "magicConstant.outOfClass", "outside a class")
+        }
+        MagicConstant::Trait(_) if !c.in_target => {
+            ("__TRAIT__", "magicConstant.outOfTrait", "outside a trait")
+        }
+        MagicConstant::Method(_) | MagicConstant::Function(_)
+            if !c.in_function_like() && !c.magic_defaults.contains(&m.span()) =>
+        {
+            let name = match m {
+                MagicConstant::Method(_) => "__METHOD__",
+                _ => "__FUNCTION__",
+            };
+            (name, "magicConstant.outOfFunction", "outside a function")
+        }
+        MagicConstant::Namespace(_) if c.namespaces.last().is_none_or(|n| n.is_none()) => (
+            "__NAMESPACE__",
+            "magicConstant.outOfNamespace",
+            "in global namespace",
+        ),
+        _ => return,
+    };
+    c.report(
+        m,
+        identifier,
+        format!("Magic constant {name} is always empty {message}."),
+        None,
+    );
+}
+
+/// MagicConstantParamDefaultVisitor: a parameter's default that is a magic constant.
+pub fn parameter_default(c: &mut Checker, p: &FunctionLikeParameter) {
+    if let Some(d) = &p.default_value
+        && let Expression::MagicConstant(m) = d.value
+    {
+        c.magic_defaults.insert(m.span());
+    }
+}
+
+/// DeclarePositionVisitor: whether each `declare` is the file's first statement (a shebang line before it is not a
+/// statement, nor are the tags).
+pub fn statement_position(c: &mut Checker, s: &Statement) {
+    match s {
+        Statement::OpeningTag(_) | Statement::ClosingTag(_) => {}
+        Statement::Inline(i) if c.first_statement && i.value.starts_with(b"#!") => {}
+        // PHP's `?>` token takes the newline after it, so php-parser has no InlineHTML for it
+        Statement::Inline(i)
+            if matches!(i.value, b"\n" | b"\r\n")
+                && c.file.contents[..i.span.start.offset as usize].ends_with(b"?>") => {}
+        Statement::Declare(d) => {
+            if !c.first_statement {
+                c.declares_not_first.push(d.span());
+            }
+            c.first_statement = false;
+        }
+        _ => c.first_statement = false,
+    }
+}
+
+/// DeclareStrictTypesRule.
+pub fn declare(c: &mut Checker, d: &Declare) {
+    let Some(item) = d.items.iter().find(|i| i.name.value == b"strict_types") else {
+        return;
+    };
+    if !matches!(item.value, Expression::Literal(Literal::Integer(i)) if matches!(i.value, Some(0 | 1)))
+    {
+        let value = print_expr(c, item.value);
+        c.report_non_ignorable(
+            d,
+            "declareStrictTypes.value",
+            format!("Declare strict_types must have 0 or 1 as its value, {value} given."),
+            None,
+        );
+        return;
+    }
+    if c.declares_not_first.contains(&d.span()) {
+        c.report_non_ignorable(
+            d,
+            "declareStrictTypes.notFirst",
+            "Declare strict_types must be the very first statement.".to_string(),
+            None,
+        );
+    }
+}
+
+/// ExprPrinter for a declare value: a constant prints by its resolved name (`\true`), anything else as written.
+// assistant's call: php-parser's printer reprints literals in their written form, so the source text stands in for it
+fn print_expr(c: &Checker, e: &Expression) -> String {
+    let written =
+        || String::from_utf8_lossy(&c.file.contents[e.span().to_range_usize()]).into_owned();
+    match e {
+        Expression::Literal(Literal::True(_) | Literal::False(_) | Literal::Null(_)) => {
+            format!("\\{}", written())
+        }
+        Expression::ConstantAccess(a) => match &a.name {
+            Identifier::FullyQualified(_) => written(),
+            Identifier::Local(_) if c.namespaces.last().is_some_and(|n| n.is_some()) => written(),
+            _ => format!("\\{}", c.resolved(&a.name)),
+        },
+        _ => written(),
+    }
+}
+
+/// ConstructorReturnTypeRule (`InClassMethodNode`).
+pub fn constructor_return_type(c: &mut Checker, m: &Method) {
+    // ponytail: anonymous classes have no class scope here (PHPStan names them class@anonymous/<file>:<line>)
+    let (Some(_), Some(class)) = (&m.return_type_hint, c.class_scope()) else {
+        return;
+    };
+    let mut name = m.name.value.to_ascii_lowercase();
+    if c.in_target {
+        // processNodesForTraitUse: a method the class aliases is analysed under the alias, remembering its name
+        let alias = class
+            .trait_alias_map
+            .iter()
+            .find(|(_, original)| original.as_bytes().eq_ignore_ascii_case(&name))
+            .map(|(alias, _)| alias.as_bytes().to_ascii_lowercase());
+        if let Some(alias) = alias {
+            if name == b"__construct" {
+                let t = c.context_trait.clone().unwrap_or_default();
+                let display = c.codebase.get_class_like(t.as_bytes()).map_or(t, |t| {
+                    String::from_utf8_lossy(t.original_name.as_bytes()).into_owned()
+                });
+                c.report_non_ignorable(
+                    m,
+                    "constructor.returnType",
+                    format!("Original constructor of trait {display} has a return type."),
+                    None,
+                );
+                return;
+            }
+            name = alias;
+        }
+        // NodeScopeResolver skips a trait method the class declares itself
+        if let Some(f) = c.codebase.get_method(class.name.as_bytes(), &name)
+            && f.span.file_id == class.span.file_id
+            && class.span.start.offset <= f.span.start.offset
+            && f.span.end.offset <= class.span.end.offset
+        {
+            return;
+        }
+    }
+    if name != b"__construct" {
+        return;
+    }
+    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+    c.report_non_ignorable(
+        m,
+        "constructor.returnType",
+        format!("Constructor of class {display} has a return type."),
+        None,
+    );
+}
+
+/// DeprecatedCastRule, UnsetCastRule and VoidCastRule.
+pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
+    let deprecated = match u.operator {
+        UnaryPrefixOperator::IntegerCast(..) => Some(("integer", "int")),
+        UnaryPrefixOperator::BooleanCast(..) => Some(("boolean", "bool")),
+        UnaryPrefixOperator::DoubleCast(..) => Some(("double", "float")),
+        UnaryPrefixOperator::BinaryCast(..) => Some(("binary", "string")),
+        _ => None,
+    };
+    if let Some((written, standard)) = deprecated {
+        // PhpVersion::deprecatesNonStandardCasts()
+        if c.php_version >= 80500 {
+            c.report(
+                u,
+                "cast.deprecated",
+                format!(
+                    "Non-standard ({written}) cast is deprecated in PHP 8.5. Use ({standard}) instead."
+                ),
+                None,
+            );
+        }
+    } else if matches!(u.operator, UnaryPrefixOperator::UnsetCast(..)) {
+        // PhpVersion::supportsUnsetCast()
+        if c.php_version >= 80000 {
+            c.report_non_ignorable(
+                u,
+                "cast.unset",
+                "The (unset) cast is no longer supported in PHP 8.0 and later.".to_string(),
+                None,
+            );
+        }
+    } else if matches!(u.operator, UnaryPrefixOperator::VoidCast(..)) {
+        // PhpVersion::supportsVoidCast()
+        if c.php_version < 80500 {
+            c.report_non_ignorable(
+                u,
+                "cast.voidNotSupported",
+                "The (void) cast is supported only on PHP 8.5 and later.".to_string(),
+                None,
+            );
+        }
+        // PHP's grammar has `(void) expr;` as a statement, so `(void) 5 |> f(...);` casts the whole pipe (Mago
+        // parses the cast as the pipe's input)
+        let start = u.span().start.offset;
+        if !c.top_level.iter().any(|(s, _)| *s == start) {
+            c.report_non_ignorable(
+                u,
+                "cast.void",
+                "The (void) cast cannot be used within an expression.".to_string(),
+                None,
+            );
+        }
+    }
+}
+
+/// BacktickRule.
+pub fn backtick(c: &mut Checker, s: &ShellExecuteString) {
+    // PhpVersion::deprecatesBacktickOperator()
+    if c.php_version < 80500 {
+        return;
+    }
+    c.report(
+        s,
+        "backtick.deprecated",
+        "Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead."
+            .to_string(),
+        None,
+    );
+}

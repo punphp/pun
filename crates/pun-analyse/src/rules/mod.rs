@@ -3,10 +3,12 @@
 
 mod calls;
 mod classes;
+mod functions;
 mod members;
 mod names;
 mod params;
 mod scope;
+mod statements;
 
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
@@ -38,6 +40,7 @@ use crate::codebase::Sources;
 use mago_codex::symbol::SymbolKind;
 use mago_database::file::FileId;
 use scope::{Guard, falsy, statements_terminate, terminates, truthy};
+use statements::{Frame, FrameKind};
 use std::path::PathBuf;
 
 /// What the rules read of the project (its `ignoreErrors` stay on the calling thread).
@@ -106,6 +109,27 @@ pub const IDENTIFIERS: &[&str] = &[
     "enumImplements.class",
     "enumImplements.trait",
     "enumImplements.enum",
+    "parameter.duplicate",
+    "parameter.variadicNotLast",
+    "parameter.superglobal",
+    "parameter.this",
+    "closure.useDuplicate",
+    "closure.useSuperGlobal",
+    "closure.useThis",
+    "function.inner",
+    "magicConstant.outOfClass",
+    "magicConstant.outOfFunction",
+    "magicConstant.outOfNamespace",
+    "magicConstant.outOfTrait",
+    "declareStrictTypes.notFirst",
+    "declareStrictTypes.value",
+    "goto.labelUndefined",
+    "constructor.returnType",
+    "cast.deprecated",
+    "cast.unset",
+    "cast.void",
+    "cast.voidNotSupported",
+    "backtick.deprecated",
     "ignore.unmatchedLine",
     "ignore.unmatchedIdentifier",
     "ignore.parseError",
@@ -179,6 +203,16 @@ pub struct Checker<'a, 'arena> {
     php_version: u32,
     /// Line ranges of the traits declared in this file (their ignores are never unmatched here).
     trait_lines: Vec<(i64, i64)>,
+    php_version: u32,
+    /// Scope boundaries: what `$scope->getFunction()` & co. see, and the goto labels of each.
+    frames: Vec<Frame>,
+    /// `$scope->getNamespace()` per namespace statement entered (`None`: the global one).
+    namespaces: Vec<Option<String>>,
+    /// Magic constants that are a parameter's default (MagicConstantParamDefaultVisitor).
+    magic_defaults: HashSet<Span>,
+    /// DeclarePositionVisitor: no statement seen yet, and the `declare`s that came after one.
+    first_statement: bool,
+    declares_not_first: Vec<Span>,
     errors: Vec<Error>,
 }
 
@@ -222,6 +256,12 @@ fn checker<'a, 'arena>(
         renamed: None,
         php_version,
         trait_lines: Vec::new(),
+        php_version,
+        frames: Vec::new(),
+        namespaces: Vec::new(),
+        magic_defaults: HashSet::new(),
+        first_statement: true,
+        declares_not_first: Vec::new(),
         errors: Vec::new(),
     }
 }
@@ -510,8 +550,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         message: String,
         tip: Option<&str>,
     ) {
+        let count = self.errors.len();
         self.report(at, identifier, message, tip);
-        self.errors.last_mut().expect("reported").can_be_ignored = false;
+        if let Some(e) = self.errors.get_mut(count) {
+            e.can_be_ignored = false;
+        }
     }
 
     /// `(string) $node->name` after php-parser's NameResolver: an unqualified function or constant name stays as
@@ -793,17 +836,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.trait_uses_of(&name, class.members.as_slice());
         }
         self.enter_class(Some(class.name.span), class.members.as_slice());
+        self.push_frame(FrameKind::Class);
     }
     fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
         self.classes.pop();
+        self.pop_frame();
     }
     fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
         let current = format!("Interface {}", self.resolved_span(i.name.span));
         names::class_hierarchy(self, i.span(), &current, i.extends.as_ref(), None, true);
         self.enter_class(Some(i.name.span), i.members.as_slice());
+        self.push_frame(FrameKind::Class);
     }
     fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
         self.classes.pop();
+        self.pop_frame();
     }
     fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
         let current = format!("Enum {}", self.resolved_span(e.name.span));
@@ -813,9 +860,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.trait_uses_of(&name, e.members.as_slice());
         }
         self.enter_class(Some(e.name.span), e.members.as_slice());
+        self.push_frame(FrameKind::Class);
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
         self.classes.pop();
+        self.pop_frame();
     }
     // ponytail: trait bodies have no class scope; PHPStan analyses them once per using class (add with traits).
     /// A trait is analysed only in the context of each class using it (see [`in_trait_context()`]).
@@ -867,9 +916,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             false,
         );
         self.enter_class(None, a.members.as_slice());
+        self.push_frame(FrameKind::Class);
     }
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+        functions::inner_function(self, f);
+        functions::function_like(self, f, &f.parameter_list);
+        self.push_frame(FrameKind::Named);
         let name = self.resolved_span(f.name.span);
         names::typehints(
             self,
@@ -884,10 +937,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
+        self.pop_frame();
         self.leave_function();
         self.functions.pop();
     }
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+        functions::function_like(self, m, &m.parameter_list);
+        statements::constructor_return_type(self, m);
+        self.push_frame(FrameKind::Named);
         // ponytail: methods of traits and anonymous classes (no class scope yet) unchecked
         for p in m
             .parameter_list
@@ -926,6 +983,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
+        self.pop_frame();
         self.leave_function();
         self.functions.pop();
     }
@@ -1059,6 +1117,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
         self.classes.pop();
+        self.pop_frame();
     }
 
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
@@ -1105,11 +1164,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     // ponytail: a rebound closure gets no class scope (PHPStan checks it against the bound object's class)
     fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        self.pop_frame();
         if self.rebound.contains(&f.span()) {
             self.classes.pop();
         }
     }
     fn walk_out_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        self.pop_frame();
         if self.rebound.contains(&f.span()) {
             self.classes.pop();
         }
@@ -1131,6 +1192,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         names::property_type(self, p.span(), p.hint(), &names);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        functions::function_like(self, f, &f.parameter_list);
+        functions::closure_use(self, f);
+        self.push_frame(FrameKind::Anonymous);
         if self.rebound.contains(&f.span()) {
             self.classes.push(ClassScope {
                 name: None,
@@ -1151,6 +1215,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         names::catch(self, clause);
     }
     fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        functions::function_like(self, f, &f.parameter_list);
+        self.push_frame(FrameKind::Anonymous);
         if self.rebound.contains(&f.span()) {
             self.classes.push(ClassScope {
                 name: None,
@@ -1170,6 +1236,66 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_match_default_arm(&mut self, a: &'ast MatchDefaultArm<'arena>, _: &mut ()) {
         self.mark_top_level(a.expression);
+    }
+
+    fn walk_in_program(&mut self, _: &'ast Program<'arena>, _: &mut ()) {
+        self.push_frame(FrameKind::Top);
+    }
+    fn walk_out_program(&mut self, _: &'ast Program<'arena>, _: &mut ()) {
+        self.pop_frame();
+    }
+    fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
+        let name = n.name.as_ref().map(|id| self.resolved(id));
+        self.namespaces.push(name);
+    }
+    fn walk_out_namespace(&mut self, _: &'ast Namespace<'arena>, _: &mut ()) {
+        self.namespaces.pop();
+    }
+    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+        if let Some(params) = &h.parameter_list {
+            functions::function_like(self, h, params);
+        }
+        self.push_frame(FrameKind::Named);
+    }
+    fn walk_out_property_hook(&mut self, _: &'ast PropertyHook<'arena>, _: &mut ()) {
+        self.pop_frame();
+    }
+    fn walk_in_function_like_parameter(
+        &mut self,
+        p: &'ast FunctionLikeParameter<'arena>,
+        _: &mut (),
+    ) {
+        functions::parameter(self, p);
+        statements::parameter_default(self, p);
+        self.push_frame(FrameKind::Param);
+    }
+    fn walk_out_function_like_parameter(
+        &mut self,
+        _: &'ast FunctionLikeParameter<'arena>,
+        _: &mut (),
+    ) {
+        self.pop_frame();
+    }
+    fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
+        statements::statement_position(self, s);
+    }
+    fn walk_in_declare(&mut self, d: &'ast Declare<'arena>, _: &mut ()) {
+        statements::declare(self, d);
+    }
+    fn walk_in_goto(&mut self, g: &'ast Goto<'arena>, _: &mut ()) {
+        self.goto(g);
+    }
+    fn walk_in_label(&mut self, l: &'ast Label<'arena>, _: &mut ()) {
+        self.label(l);
+    }
+    fn walk_in_magic_constant(&mut self, m: &'ast MagicConstant<'arena>, _: &mut ()) {
+        statements::magic_constant(self, m);
+    }
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+        statements::cast(self, u);
+    }
+    fn walk_in_shell_execute_string(&mut self, s: &'ast ShellExecuteString<'arena>, _: &mut ()) {
+        statements::backtick(self, s);
     }
 }
 

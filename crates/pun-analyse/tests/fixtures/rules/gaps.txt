@@ -43,3 +43,7 @@ Properties/ExistingClassesInPropertiesRuleTest::testPromotedProperties
 Properties/ExistingClassesInPropertyHookTypehintsRuleTest::testRule
 Properties/MissingReadOnlyPropertyAssignRuleTest::testRedeclaredReadonlyProperties
 Variables/DefinedVariableRuleTest::testDefinedVariables
+# PHPStan 2.2.7 at level 0 aborts this file with an internal error (MissingReturnRule, ShouldNotHappenException on a
+# declare inside a method body), so it reports none of the file's errors; Pun reports the two declares as the
+# RuleTestCase expects
+Keywords/DeclareStrictTypesRuleTest::testNested

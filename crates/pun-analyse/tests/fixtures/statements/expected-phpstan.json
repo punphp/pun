@@ -1,0 +1,103 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "casts.php",
+   "line": 6,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 7,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (boolean) cast is deprecated in PHP 8.5. Use (bool) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 8,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (double) cast is deprecated in PHP 8.5. Use (float) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 9,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (binary) cast is deprecated in PHP 8.5. Use (string) instead.",
+   "tip": null
+  },
+  {
+   "file": "casts.php",
+   "line": 10,
+   "identifier": "backtick.deprecated",
+   "message": "Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.",
+   "tip": null
+  },
+  {
+   "file": "constructors.php",
+   "line": 35,
+   "identifier": "constructor.returnType",
+   "message": "Constructor of class Constructors\\HasConstructor has a return type.",
+   "tip": null
+  },
+  {
+   "file": "constructors.php (in context of class Constructors\\Aliases)",
+   "line": 7,
+   "identifier": "constructor.returnType",
+   "message": "Constructor of class Constructors\\Aliases has a return type.",
+   "tip": null
+  },
+  {
+   "file": "declare-constant.php",
+   "line": 1,
+   "identifier": "declareStrictTypes.value",
+   "message": "Declare strict_types must have 0 or 1 as its value, \\FOO given.",
+   "tip": null
+  },
+  {
+   "file": "declare-fully-qualified.php",
+   "line": 1,
+   "identifier": "declareStrictTypes.value",
+   "message": "Declare strict_types must have 0 or 1 as its value, \\FOO given.",
+   "tip": null
+  },
+  {
+   "file": "declare-int.php",
+   "line": 1,
+   "identifier": "declareStrictTypes.value",
+   "message": "Declare strict_types must have 0 or 1 as its value, 2 given.",
+   "tip": null
+  },
+  {
+   "file": "declare-namespace.php",
+   "line": 4,
+   "identifier": "declareStrictTypes.value",
+   "message": "Declare strict_types must have 0 or 1 as its value, FOO given.",
+   "tip": null
+  },
+  {
+   "file": "declare-qualified.php",
+   "line": 1,
+   "identifier": "declareStrictTypes.value",
+   "message": "Declare strict_types must have 0 or 1 as its value, \\Foo\\BAR given.",
+   "tip": null
+  },
+  {
+   "file": "magic.php",
+   "line": 4,
+   "identifier": "magicConstant.outOfNamespace",
+   "message": "Magic constant __NAMESPACE__ is always empty in global namespace.",
+   "tip": null
+  },
+  {
+   "file": "unset.php",
+   "line": 4,
+   "identifier": "cast.unset",
+   "message": "The (unset) cast is no longer supported in PHP 8.0 and later.",
+   "tip": null
+  }
+ ]
+}
