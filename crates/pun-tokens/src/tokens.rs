@@ -11,8 +11,47 @@ use std::sync::Arc;
 use crate::kind::Kind::{self, *};
 use crate::token::{FoundKey, Proto, Token};
 
+/// `Tokens::BLOCK_TYPE_*`; the discriminant is upstream's number.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub struct BlockType(pub u8);
+#[repr(u8)]
+pub enum BlockType {
+    Parenthesis = 1,
+    Brace,
+    IndexBracket,
+    ArrayBracket,
+    DynamicPropBrace,
+    DynamicVarBrace,
+    IndexBrace,
+    GroupImportBrace,
+    DestructuringBracket,
+    ClassInstantiationParenthesis,
+    Attribute,
+    DisjunctiveNormalFormTypeParenthesis,
+    DynamicClassConstantFetchBrace,
+    ComplexStringVariable,
+    PropertyHook,
+}
+
+impl BlockType {
+    /// Every block type, in `getBlockEdgeDefinitions()` order.
+    pub const ALL: [BlockType; 15] = [
+        BlockType::Parenthesis,
+        BlockType::Brace,
+        BlockType::IndexBracket,
+        BlockType::ArrayBracket,
+        BlockType::DynamicPropBrace,
+        BlockType::DynamicVarBrace,
+        BlockType::IndexBrace,
+        BlockType::GroupImportBrace,
+        BlockType::DestructuringBracket,
+        BlockType::ClassInstantiationParenthesis,
+        BlockType::Attribute,
+        BlockType::DisjunctiveNormalFormTypeParenthesis,
+        BlockType::DynamicClassConstantFetchBrace,
+        BlockType::ComplexStringVariable,
+        BlockType::PropertyHook,
+    ];
+}
 
 #[derive(Clone, Debug, Default)]
 struct BlockCache {
@@ -53,23 +92,25 @@ impl Index<usize> for Tokens {
     }
 }
 
-#[allow(non_upper_case_globals)]
 impl Tokens {
-    pub const BLOCK_TYPE_PARENTHESIS: BlockType = BlockType(1);
-    pub const BLOCK_TYPE_BRACE: BlockType = BlockType(2);
-    pub const BLOCK_TYPE_INDEX_BRACKET: BlockType = BlockType(3);
-    pub const BLOCK_TYPE_ARRAY_BRACKET: BlockType = BlockType(4);
-    pub const BLOCK_TYPE_DYNAMIC_PROP_BRACE: BlockType = BlockType(5);
-    pub const BLOCK_TYPE_DYNAMIC_VAR_BRACE: BlockType = BlockType(6);
-    pub const BLOCK_TYPE_INDEX_BRACE: BlockType = BlockType(7);
-    pub const BLOCK_TYPE_GROUP_IMPORT_BRACE: BlockType = BlockType(8);
-    pub const BLOCK_TYPE_DESTRUCTURING_BRACKET: BlockType = BlockType(9);
-    pub const BLOCK_TYPE_CLASS_INSTANTIATION_PARENTHESIS: BlockType = BlockType(10);
-    pub const BLOCK_TYPE_ATTRIBUTE: BlockType = BlockType(11);
-    pub const BLOCK_TYPE_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS: BlockType = BlockType(12);
-    pub const BLOCK_TYPE_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE: BlockType = BlockType(13);
-    pub const BLOCK_TYPE_COMPLEX_STRING_VARIABLE: BlockType = BlockType(14);
-    pub const BLOCK_TYPE_PROPERTY_HOOK: BlockType = BlockType(15);
+    pub const BLOCK_TYPE_PARENTHESIS: BlockType = BlockType::Parenthesis;
+    pub const BLOCK_TYPE_BRACE: BlockType = BlockType::Brace;
+    pub const BLOCK_TYPE_INDEX_BRACKET: BlockType = BlockType::IndexBracket;
+    pub const BLOCK_TYPE_ARRAY_BRACKET: BlockType = BlockType::ArrayBracket;
+    pub const BLOCK_TYPE_DYNAMIC_PROP_BRACE: BlockType = BlockType::DynamicPropBrace;
+    pub const BLOCK_TYPE_DYNAMIC_VAR_BRACE: BlockType = BlockType::DynamicVarBrace;
+    pub const BLOCK_TYPE_INDEX_BRACE: BlockType = BlockType::IndexBrace;
+    pub const BLOCK_TYPE_GROUP_IMPORT_BRACE: BlockType = BlockType::GroupImportBrace;
+    pub const BLOCK_TYPE_DESTRUCTURING_BRACKET: BlockType = BlockType::DestructuringBracket;
+    pub const BLOCK_TYPE_CLASS_INSTANTIATION_PARENTHESIS: BlockType =
+        BlockType::ClassInstantiationParenthesis;
+    pub const BLOCK_TYPE_ATTRIBUTE: BlockType = BlockType::Attribute;
+    pub const BLOCK_TYPE_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS: BlockType =
+        BlockType::DisjunctiveNormalFormTypeParenthesis;
+    pub const BLOCK_TYPE_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE: BlockType =
+        BlockType::DynamicClassConstantFetchBrace;
+    pub const BLOCK_TYPE_COMPLEX_STRING_VARIABLE: BlockType = BlockType::ComplexStringVariable;
+    pub const BLOCK_TYPE_PROPERTY_HOOK: BlockType = BlockType::PropertyHook;
     // deprecated upstream aliases
     pub const BLOCK_TYPE_PARENTHESIS_BRACE: BlockType = Self::BLOCK_TYPE_PARENTHESIS;
     pub const BLOCK_TYPE_CURLY_BRACE: BlockType = Self::BLOCK_TYPE_BRACE;
@@ -86,76 +127,110 @@ impl Tokens {
     /// `getBlockEdgeDefinitions()[$type]`: (start, end).
     pub fn block_edges(t: BlockType) -> (Proto<'static>, Proto<'static>) {
         use Proto::{Char as C, KindContent as K};
-        match t.0 {
-            1 => (C(b"("), C(b")")),
-            2 => (C(b"{"), C(b"}")),
-            3 => (C(b"["), C(b"]")),
-            4 => (
+        match t {
+            BlockType::Parenthesis => (C(b"("), C(b")")),
+            BlockType::Brace => (C(b"{"), C(b"}")),
+            BlockType::IndexBracket => (C(b"["), C(b"]")),
+            BlockType::ArrayBracket => (
                 K(CT_ARRAY_BRACKET_OPEN, b"["),
                 K(CT_ARRAY_BRACKET_CLOSE, b"]"),
             ),
-            5 => (
+            BlockType::DynamicPropBrace => (
                 K(CT_DYNAMIC_PROP_BRACE_OPEN, b"{"),
                 K(CT_DYNAMIC_PROP_BRACE_CLOSE, b"}"),
             ),
-            6 => (
+            BlockType::DynamicVarBrace => (
                 K(CT_DYNAMIC_VAR_BRACE_OPEN, b"{"),
                 K(CT_DYNAMIC_VAR_BRACE_CLOSE, b"}"),
             ),
-            7 => (
+            BlockType::IndexBrace => (
                 K(CT_ARRAY_INDEX_BRACE_OPEN, b"{"),
                 K(CT_ARRAY_INDEX_BRACE_CLOSE, b"}"),
             ),
-            8 => (
+            BlockType::GroupImportBrace => (
                 K(CT_GROUP_IMPORT_BRACE_OPEN, b"{"),
                 K(CT_GROUP_IMPORT_BRACE_CLOSE, b"}"),
             ),
-            9 => (
+            BlockType::DestructuringBracket => (
                 K(CT_DESTRUCTURING_BRACKET_OPEN, b"["),
                 K(CT_DESTRUCTURING_BRACKET_CLOSE, b"]"),
             ),
-            10 => (
+            BlockType::ClassInstantiationParenthesis => (
                 K(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN, b"("),
                 K(CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE, b")"),
             ),
-            11 => (K(T_ATTRIBUTE, b"#["), K(CT_ATTRIBUTE_CLOSE, b"]")),
-            12 => (
+            BlockType::Attribute => (K(T_ATTRIBUTE, b"#["), K(CT_ATTRIBUTE_CLOSE, b"]")),
+            BlockType::DisjunctiveNormalFormTypeParenthesis => (
                 K(CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN, b"("),
                 K(CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE, b")"),
             ),
-            13 => (
+            BlockType::DynamicClassConstantFetchBrace => (
                 K(CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN, b"{"),
                 K(CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE, b"}"),
             ),
-            14 => (
+            BlockType::ComplexStringVariable => (
                 K(T_DOLLAR_OPEN_CURLY_BRACES, b"${"),
                 K(CT_DOLLAR_CLOSE_CURLY_BRACES, b"}"),
             ),
-            15 => (
+            BlockType::PropertyHook => (
                 K(CT_PROPERTY_HOOK_BRACE_OPEN, b"{"),
                 K(CT_PROPERTY_HOOK_BRACE_CLOSE, b"}"),
             ),
-            _ => panic!("Invalid param type: \"{}\".", t.0),
         }
     }
 
     /// `detectBlockType`: (type, is_start) for a block edge token. Matches upstream's
     /// lookup by kind (array tokens) or content (others).
     pub fn detect_block_type(token: &Token) -> Option<(BlockType, bool)> {
-        for t in 1..=15u8 {
-            let (s, e) = Self::block_edges(BlockType(t));
-            for (edge, is_start) in [(s, true), (e, false)] {
-                let hit = match (edge, token.id) {
-                    (Proto::Char(c), None) => token.content == c,
-                    (Proto::KindContent(k, _), Some(id)) => k == id,
-                    _ => false,
-                };
-                if hit {
-                    return Some((BlockType(t), is_start));
+        use BlockType as B;
+        Some(match token.id {
+            None => match &token.content[..] {
+                b"(" => (B::Parenthesis, true),
+                b")" => (B::Parenthesis, false),
+                b"{" => (B::Brace, true),
+                b"}" => (B::Brace, false),
+                b"[" => (B::IndexBracket, true),
+                b"]" => (B::IndexBracket, false),
+                _ => return None,
+            },
+            Some(id) => match id {
+                CT_ARRAY_BRACKET_OPEN => (B::ArrayBracket, true),
+                CT_ARRAY_BRACKET_CLOSE => (B::ArrayBracket, false),
+                CT_DYNAMIC_PROP_BRACE_OPEN => (B::DynamicPropBrace, true),
+                CT_DYNAMIC_PROP_BRACE_CLOSE => (B::DynamicPropBrace, false),
+                CT_DYNAMIC_VAR_BRACE_OPEN => (B::DynamicVarBrace, true),
+                CT_DYNAMIC_VAR_BRACE_CLOSE => (B::DynamicVarBrace, false),
+                CT_ARRAY_INDEX_BRACE_OPEN => (B::IndexBrace, true),
+                CT_ARRAY_INDEX_BRACE_CLOSE => (B::IndexBrace, false),
+                CT_GROUP_IMPORT_BRACE_OPEN => (B::GroupImportBrace, true),
+                CT_GROUP_IMPORT_BRACE_CLOSE => (B::GroupImportBrace, false),
+                CT_DESTRUCTURING_BRACKET_OPEN => (B::DestructuringBracket, true),
+                CT_DESTRUCTURING_BRACKET_CLOSE => (B::DestructuringBracket, false),
+                CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN => (B::ClassInstantiationParenthesis, true),
+                CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE => {
+                    (B::ClassInstantiationParenthesis, false)
                 }
-            }
-        }
-        None
+                T_ATTRIBUTE => (B::Attribute, true),
+                CT_ATTRIBUTE_CLOSE => (B::Attribute, false),
+                CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN => {
+                    (B::DisjunctiveNormalFormTypeParenthesis, true)
+                }
+                CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE => {
+                    (B::DisjunctiveNormalFormTypeParenthesis, false)
+                }
+                CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN => {
+                    (B::DynamicClassConstantFetchBrace, true)
+                }
+                CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE => {
+                    (B::DynamicClassConstantFetchBrace, false)
+                }
+                T_DOLLAR_OPEN_CURLY_BRACES => (B::ComplexStringVariable, true),
+                CT_DOLLAR_CLOSE_CURLY_BRACES => (B::ComplexStringVariable, false),
+                CT_PROPERTY_HOOK_BRACE_OPEN => (B::PropertyHook, true),
+                CT_PROPERTY_HOOK_BRACE_CLOSE => (B::PropertyHook, false),
+                _ => return None,
+            },
+        })
     }
 
     pub fn from_array(tokens: Vec<Token>) -> Tokens {
@@ -929,6 +1004,14 @@ mod tests {
             t.find_sequence(&[T_STRING.into(), "(".into()], 0, None, |_| true),
             Some(vec![1, 2])
         );
+    }
+
+    #[test]
+    fn block_type_all_is_in_upstream_order() {
+        // Tokens::BLOCK_TYPE_PARENTHESIS = 1 ... BLOCK_TYPE_PROPERTY_HOOK = 15.
+        let numbers: Vec<u8> = BlockType::ALL.iter().map(|&t| t as u8).collect();
+        assert_eq!(numbers, (1..=15).collect::<Vec<u8>>());
+        assert_eq!(Tokens::BLOCK_TYPE_PROPERTY_HOOK as u8, 15);
     }
 
     #[test]

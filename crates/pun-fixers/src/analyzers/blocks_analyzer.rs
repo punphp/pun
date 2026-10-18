@@ -21,8 +21,8 @@ impl BlocksAnalyzer {
 
     /// First block type (in `getBlockEdgeDefinitions` order) whose start the token equals.
     fn get_block_type(token: &Token) -> Option<BlockType> {
-        (1..=15)
-            .map(BlockType)
+        BlockType::ALL
+            .into_iter()
             .find(|&t| token.equals(Tokens::block_edges(t).0, true))
     }
 }

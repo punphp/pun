@@ -187,12 +187,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 34. `crates/pun-cli/tests/agent.rs:366` and `watch.rs:194` fake a read error with mode `000`, which root can
   read, so on this machine (uid 0) `errors` fails and `watch_reformats_like_pint` waits 60 s and fails. Use a
   directory or a dangling path instead. Likely; not run.
-- [ ] 35. `crates/pun-tokens/src/tokens.rs:14-15`: `BlockType(pub u8)` accepts 0 and 16, which panic in
+- [x] 35. `crates/pun-tokens/src/tokens.rs:14-15`: `BlockType(pub u8)` accepts 0 and 16, which panic in
   `block_edges` (`:73-126`); the `1..=15` range is copied in `tokens.rs:131`,
   `pun-fixers/src/analyzers/blocks_analyzer.rs:24` and `fixers/class_reference_name_casing.rs:78`; and
   `detect_block_type` rebuilds up to 30 prototypes per call on per-token paths (`tokens_analyzer.rs:164`, `:245`).
   Replace Type Code with Enum (`#[repr(u8)]`, `BlockType::ALL`, keeping the `BLOCK_TYPE_*` consts) and match
-  directly. Spans crates.
+  directly. Spans crates. Reproduced (`BlockType(0)` compiles and panics; the api cases' `blockEnd 0`/`16` throw). `BlockType` is now a `#[repr(u8)]` enum, `detect_block_type` matches the token directly, `blockEnd 0`/`16` in the api test index `BlockType::ALL` and still panic like upstream. Fixed in wf/audit-tokens.
 - [ ] 36. `crates/pun-tokens/src/tokens.rs:30-31`, `:244-261` keep a `dyn Any` cache that downcasts a pun-fixers
   type (`NamespaceAnalysis`), and a second user's failed downcast would be swallowed by `.ok()`. Move
   `NamespaceAnalysis` and `NamespacesAnalyzer::compute` (pun-tokens-only dependencies) into pun-tokens, where upstream

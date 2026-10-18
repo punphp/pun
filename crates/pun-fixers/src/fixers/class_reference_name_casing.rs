@@ -75,8 +75,8 @@ impl Fixer for ClassReferenceNameCasingFixer {
 fn get_class_reference(tokens: &Tokens, namespace: &NamespaceAnalysis) -> Vec<usize> {
     let mut before: Vec<Proto> = vec![",".into()];
     let mut after: Vec<Proto> = vec![",".into()];
-    for t in 1..=15 {
-        let (start, end) = Tokens::block_edges(BlockType(t));
+    for t in BlockType::ALL {
+        let (start, end) = Tokens::block_edges(t);
         before.push(start);
         after.push(end);
     }

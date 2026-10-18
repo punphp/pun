@@ -77,7 +77,7 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
         "changed" => json!(t.is_changed()),
         "partial" => s(&t.generate_partial_code(u(0), u(1))),
         "detect" => {
-            json!(Tokens::detect_block_type(&t[u(0)]).map(|(bt, start)| json!([bt.0, start])))
+            json!(Tokens::detect_block_type(&t[u(0)]).map(|(bt, start)| json!([bt as u8, start])))
         }
         "blocks" => json!(Tokens::detect_block_type(&t[u(0)]).map(|(bt, start)| {
             if start {
@@ -86,8 +86,9 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
                 t.find_block_start(bt, u(0))
             }
         })),
-        "blockEnd" => json!(t.find_block_end(BlockType(u(0) as u8), u(1))),
-        "blockStart" => json!(t.find_block_start(BlockType(u(0) as u8), u(1))),
+        // Upstream throws on an unknown type (0, 16); `BlockType::ALL` has none, so `[..]` panics there.
+        "blockEnd" => json!(t.find_block_end(BlockType::ALL[u(0).wrapping_sub(1)], u(1))),
+        "blockStart" => json!(t.find_block_start(BlockType::ALL[u(0).wrapping_sub(1)], u(1))),
         "givenKind" => {
             let start = x.get(1).and_then(Value::as_u64).unwrap_or(0) as usize;
             if x[0].is_string() {
