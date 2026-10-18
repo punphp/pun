@@ -1,0 +1,363 @@
+{
+    "fixer": "group_import",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\GroupImportFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/GroupImportFixerTest.php",
+    "case_count": 31,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "wrongConfig",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\GroupImportFixerTest",
+            "body": "    public function testInvalidConfiguration(string $expectedMessage, array $wrongConfig): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($expectedMessage);\n\n        $this->fixer->configure($wrongConfig); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "unknown option",
+                    "args": [
+                        "[group_import] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"group_types\".",
+                        {
+                            "foo": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid option type",
+                    "args": [
+                        "[group_import] Invalid configuration: The option \"group_types\" with value \"classy\" is expected to be of type \"string[]\", but is of type \"string\".",
+                        {
+                            "group_types": "classy"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid group type value",
+                    "args": [
+                        "[group_import] Invalid configuration: Invalid group type: bar, allowed types: \"classy\", \"functions\" and \"constants\".",
+                        {
+                            "group_types": [
+                                "classy",
+                                "bar"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\GroupImportFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace X1\\Y1;\n\nuse A\\{B as X, C as Y};\nuse B\\C;\n",
+                        "<?php\nnamespace X1\\Y1;\n\nuse A\\B as X;\nuse A\\C as Y;\nuse B\\C;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse A\\{B as X, C as Y};\n",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse A\\B as X;\nuse A\\C as Y;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\nnamespace Test;\n\nuse Foo\\{Bar, Baz, Test};\n",
+                        "<?php\n\nnamespace Test;\n\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse Foo\\Test;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\nuse App\\First;\nuse Foo\\{Bar, Baz};\nuse Test\\Second;\n",
+                        "<?php\n\nuse App\\First;\nuse Foo\\Bar;\nuse Test\\Second;\nuse Foo\\Baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nuse App\\{First, Second};\nuse Foo\\{Bar, Baz};\n",
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse App\\First;\nuse App\\Second;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\nuse App\\{First, Second};\nuse Foo\\{Bar, Baz};\n",
+                        "<?php\n\nuse Foo\\Bar;\nuse App\\First;\nuse Foo\\Baz;\nuse App\\Second;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\nuse Foo\\{Bar as Test, Baz};\nuse App;\n",
+                        "<?php\n\nuse Foo\\Bar as Test;\nuse Foo\\Baz;\nuse App;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\nuse App\\Repository\\{Customer as Client, Profile, User};\n",
+                        "<?php\n\nuse App\\Repository\\User;\nuse App\\Repository\\Profile;\nuse App\\Repository\\Customer as Client;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nuse function Foo\\{Bar, Baz, Test as Alias};\n",
+                        "<?php\n\nuse function Foo\\Bar;\nuse function Foo\\Baz;\nuse function Foo\\Test as Alias;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\nuse const Some\\Place\\{A, B, C as D};\n",
+                        "<?php\n\nuse const Some\\Place\\A;\nuse const Some\\Place\\B;\nuse const Some\\Place\\C as D;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nuse Foo\\Bar;\nuse Foo\\Baz\\Lorem\\Ipsum\\Lets\\Write\\Some\\More\\Strings\\{One, Two};\n",
+                        "<?php\nuse Foo\\Bar;\nuse Foo\\Baz\\Lorem\\Ipsum\\Lets\\Write\\Some\\More\\Strings\\One;\nuse Foo\\Baz\\Lorem\\Ipsum\\Lets\\Write\\Some\\More\\Strings\\Two;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nuse Foo\\{Bar, Baz};\nuse Foo\\Baz\\John\\{Doe, Smith};\nuse Foo\\Baz\\Johnny\\{DoeSecond, SmithSecond};\nuse Foo\\Baz\\John\\Smith\\Junior;\n",
+                        "<?php\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse Foo\\Baz\\John\\Doe;\nuse Foo\\Baz\\John\\Smith;\nuse Foo\\Baz\\John\\Smith\\Junior;\nuse Foo\\Baz\\Johnny\\DoeSecond;\nuse Foo\\Baz\\Johnny\\SmithSecond;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\nuse PhpCsFixer\\Tokenizer\\{AbstractTransformer, CT, Token, Tokens};\n",
+                        "<?php\nuse PhpCsFixer\\Tokenizer\\AbstractTransformer;\nuse PhpCsFixer\\Tokenizer\\CT;\nuse PhpCsFixer\\Tokenizer\\Token;\nuse PhpCsFixer\\Tokenizer\\Tokens;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nuse Foo\\{Bar, Baz};\n",
+                        "<?php\nuse Foo\\Bar;use Foo\\Baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nuse Foo\\{Bar, Baz};\n\\DontTouch::me();\n",
+                        "<?php\nuse Foo\\Bar;use Foo\\Baz;\\DontTouch::me();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\nuse Foo\\{Bar, Baz};\nuse ReflectionClass;\nuse ReflectionMethod;\n",
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse ReflectionClass;\nuse ReflectionMethod;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\nuse Foo\\{Bar, Baz};\nuse \\ReflectionClass;\nuse \\ReflectionMethod;\n",
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse \\ReflectionClass;\nuse \\ReflectionMethod;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\nuse Framework\\Database\\Query\\JoinClause;\nuse Framework\\Support\\{Arr, Collection};\nuse Framework\\Database\\ORM\\{Model, SoftDeletes};\nuse Framework\\Notifications\\{Notifiable, Notification};\nuse Framework\\Support\\Facades\\{DB, Log};\nuse Framework\\Database\\ORM\\Relations\\{BelongsTo, HasOne};\n",
+                        "<?php\n\nuse Framework\\Database\\ORM\\Model;\nuse Framework\\Database\\ORM\\Relations\\BelongsTo;\nuse Framework\\Database\\ORM\\Relations\\HasOne;\nuse Framework\\Database\\ORM\\SoftDeletes;\nuse Framework\\Database\\Query\\JoinClause;\nuse Framework\\Notifications\\Notifiable;\nuse Framework\\Notifications\\Notification;\nuse Framework\\Support\\Arr;\nuse Framework\\Support\\Collection;\nuse Framework\\Support\\Facades\\DB;\nuse Framework\\Support\\Facades\\Log;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n\nuse Framework\\Bar\\{Class3, Class4, Class5};\nuse Framework\\Foo\\{Class1, Class2, Class7};\nuse Framework\\Baz\\Class6;\n",
+                        "<?php\n\nuse Framework\\Foo\\Class1;\nuse Framework\\Foo\\Class2;\nuse Framework\\Bar\\Class3;\nuse Framework\\Bar\\Class4;\nuse Framework\\Bar\\Class5;\nuse Framework\\Baz\\Class6;\nuse Framework\\Foo\\Class7;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n\nuse Foo\\{Bar, Baz};\nuse function Foo\\baz;\n",
+                        "<?php\n\nuse Foo\\Bar;\nuse function Foo\\baz;\nuse Foo\\Baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar\\C;\nuse Foo\\{D, E};\nuse Foo\\Bar\\Baz\\{A, B};\nuse function Foo\\{a, b};\n",
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse function Foo\\a;\nuse function Foo\\b;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only class-like",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar\\C;\nuse Foo\\{D, E};\nuse Foo\\Bar\\Baz\\{A, B};\nuse function Foo\\a;\nuse function Foo\\b;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse function Foo\\a;\nuse function Foo\\b;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        {
+                            "group_types": [
+                                "classy"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only functions",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\{a, b};\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\a;\nuse function Foo\\b;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        {
+                            "group_types": [
+                                "functions"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only constants",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\a;\nuse function Foo\\b;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\{X, Y};\n",
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\a;\nuse function Foo\\b;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        {
+                            "group_types": [
+                                "constants"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class-likes and functions",
+                    "args": [
+                        "<?php\n\nuse function Foo\\{a, b};\nuse Foo\\Bar\\C;\nuse Foo\\{D, E};\nuse Foo\\Bar\\Baz\\{A, B};\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\a;\nuse function Foo\\b;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        {
+                            "group_types": [
+                                "classy",
+                                "functions"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class-likes and constants",
+                    "args": [
+                        "<?php\n\nuse function Foo\\a;\nuse function Foo\\b;\nuse Foo\\Bar\\C;\nuse Foo\\{D, E};\nuse Foo\\Bar\\Baz\\{A, B};\nuse const Foo\\{X, Y};\n",
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\a;\nuse function Foo\\b;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        {
+                            "group_types": [
+                                "classy",
+                                "constants"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "functions and constants",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\{a, b};\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\{X, Y};\n",
+                        "<?php\n\nuse Foo\\Bar\\Baz\\A;\nuse Foo\\Bar\\Baz\\B;\nuse function Foo\\a;\nuse function Foo\\b;\nuse Foo\\Bar\\C;\nuse Foo\\D;\nuse Foo\\E;\nuse const Foo\\X;\nuse const Foo\\Y;\n",
+                        {
+                            "group_types": [
+                                "functions",
+                                "constants"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\GroupImportFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/*1*/use A\\{B, C, D};\n/*2*//*3*//*4*//*5*//*6*/\n/*7*//*8*//*9*//*10*//*11*//*12*/\n/*13*//*14*//*15*//*16*//*17*//*18*/\n",
+                        "<?php\n\n/*1*/use/*2*/A/*3*/\\/*4*/B/*5*/;/*6*/\n/*7*/use/*8*/A/*9*/\\/*10*/C/*11*/;/*12*/\n/*13*/use/*14*/A/*15*/\\/*16*/D/*17*/;/*18*/\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

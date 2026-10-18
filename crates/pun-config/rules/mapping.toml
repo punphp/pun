@@ -118,7 +118,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/single-member-per-statement" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There MUST NOT be more than one property or constant declared per statement." }
 "classes/single-trait-per-statement" = { fix = "safe", presets = ["psr12"], ported = true, status = "decided", summary = "Each trait `use` must be done as single statement." }
 "comments/align-multiline" = { fix = "safe", ported = true, status = "decided", summary = "Each line of multi-line DocComments must have an asterisk [PSR-5] and must be aligned with the first one." }
-"comments/header" = { fix = "safe", ported = false, status = "decided", summary = "Add, replace or remove header comment." }
+"comments/header" = { fix = "safe", ported = true, status = "decided", summary = "Add, replace or remove header comment." }
 "comments/multiline-delimiters" = { fix = "safe", ported = true, status = "decided", summary = "DocBlocks must start with two asterisks, multiline comments must start with a single asterisk, after the opening slash. Both must end with a single asterisk before the closing slash." }
 "comments/no-empty" = { fix = "safe", ported = true, status = "decided", summary = "There should not be any empty comments." }
 "comments/no-trailing-whitespace" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must be no trailing whitespace at the end of lines in comments and PHPDocs." }
@@ -156,7 +156,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "imports/clean-namespace" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Namespace must not contain spacing, comments or PHPDoc." }
 "imports/fully-qualified-strict-types" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Removes the leading part of fully qualified symbol references if a given symbol is imported or belongs to the current namespace." }
 "imports/global-namespace" = { fix = "safe", ported = true, status = "decided", summary = "Imports or fully qualifies global classes/functions/constants." }
-"imports/group" = { fix = "safe", ported = false, status = "decided", summary = "There MUST be group use for the same namespaces." }
+"imports/group" = { fix = "safe", ported = true, status = "decided", summary = "There MUST be group use for the same namespaces." }
 "imports/no-leading-namespace-whitespace" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "The namespace declaration line shouldn't contain leading whitespace." }
 "imports/no-leading-slash" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Remove leading slashes in `use` clauses." }
 "imports/no-unneeded-alias" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Imports should not be aliased as the same name." }

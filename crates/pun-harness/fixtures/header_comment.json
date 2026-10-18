@@ -1,0 +1,809 @@
+{
+    "fixer": "header_comment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Comment\\HeaderCommentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Comment/HeaderCommentFixerTest.php",
+    "case_count": 60,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Comment\\HeaderCommentFixerTest",
+            "body": "    public function testFix(\n        string $expected,\n        ?string $input,\n        array $configuration,\n        ?WhitespacesFixerConfig $whitespacesConfig = null\n    ): void {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n$a;",
+                        "<?php\n\n/**\n * new\n */\n$a;",
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\ndeclare(strict_types=1);\n\n/*\n * tmp\n */\n\nnamespace A\\B;\n\necho 1;",
+                        "<?php\ndeclare(strict_types=1);namespace A\\B;\n\necho 1;",
+                        {
+                            "header": "tmp",
+                            "location": "after_declare_strict"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\ndeclare(strict_types=1);\n/**\n * tmp\n */\n\nnamespace A\\B;\n\necho 1;",
+                        "<?php\ndeclare(strict_types=1);\n\nnamespace A\\B;\n\necho 1;",
+                        {
+                            "header": "tmp",
+                            "location": "after_declare_strict",
+                            "separate": "bottom",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/*\n * tmp\n */\n\ndeclare(strict_types=1);\n\nnamespace A\\B;\n\necho 1;",
+                        "<?php\ndeclare(strict_types=1);\n\nnamespace A\\B;\n\necho 1;",
+                        {
+                            "header": "tmp",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n/*\n * new\n */\n                ",
+                        "<?php\n                    /** test */\n                ",
+                        {
+                            "header": "new",
+                            "comment_type": "comment"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n/**\n * new\n */\n                ",
+                        "<?php\n                    /* test */\n                ",
+                        {
+                            "header": "new",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * def\n */\n",
+                        "<?php\n",
+                        {
+                            "header": "def",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\n/*\n * xyz\n */\n\n    $b;",
+                        "<?php\n    $b;",
+                        {
+                            "header": "xyz"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n/*\n * xyz123\n */\n    $a;",
+                        "<?php\n    $a;",
+                        {
+                            "header": "xyz123",
+                            "separate": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * abc\n */\n\n$c;",
+                        "<?php\n$c;",
+                        {
+                            "header": "abc",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\n/*\n * ghi\n */\n\n$d;",
+                        "<?php\n$d;",
+                        {
+                            "header": "ghi",
+                            "separate": "both"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\n/*\n * ghi\n */\n$d;",
+                        "<?php\n$d;",
+                        {
+                            "header": "ghi",
+                            "separate": "top"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/*\n * tmp\n */\n\ndeclare(ticks=1);\n\necho 1;",
+                        "<?php\ndeclare(ticks=1);\n\necho 1;",
+                        {
+                            "header": "tmp",
+                            "location": "after_declare_strict"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\n/*\n * Foo\n */\n\necho 'bar';",
+                        "<?php echo 'bar';",
+                        {
+                            "header": "Foo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\n/*\n * x\n */\n\necho 'a';",
+                        "<?php\n\n/*\n * y\n * z\n */\n\necho 'a';",
+                        {
+                            "header": "x"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/*\n * a\n * a\n */\n\necho 'x';",
+                        "<?php\n\n\n/*\n * b\n * c\n */\n\n\necho 'x';",
+                        {
+                            "header": "a\na"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n/**\n * foo\n */\n\ndeclare(strict_types=1);\n\nnamespace A;\n\necho 1;",
+                        "<?php\n\ndeclare(strict_types=1);\n/**\n * foo\n */\n\nnamespace A;\n\necho 1;",
+                        {
+                            "header": "foo",
+                            "location": "after_open",
+                            "separate": "bottom",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n/**\n * foo\n */\n\ndeclare(strict_types=1);\n/**\n * bar\n */\n\nnamespace A;\n\necho 1;",
+                        "<?php\n\ndeclare(strict_types=1);\n/**\n * bar\n */\n\nnamespace A;\n\necho 1;",
+                        {
+                            "header": "foo",
+                            "location": "after_open",
+                            "separate": "bottom",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n\ndeclare(strict_types=1);\n/*\n * Foo\n */\nnamespace SebastianBergmann\\Foo;\n\nclass Bar\n{\n}",
+                        "<?php\n/*\n * Foo\n */\n\ndeclare(strict_types=1);\n\nnamespace SebastianBergmann\\Foo;\n\nclass Bar\n{\n}",
+                        {
+                            "header": "Foo",
+                            "separate": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n\n/*\n * tmp\n */\n\n/**\n * Foo class doc.\n */\nclass Foo {}",
+                        "<?php\n\n/**\n * Foo class doc.\n */\nclass Foo {}",
+                        {
+                            "header": "tmp"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n\n/*\n * tmp\n */\n\nclass Foo {}",
+                        "<?php\n\n/*\n * Foo class doc.\n */\nclass Foo {}",
+                        {
+                            "header": "tmp"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n\n/**\n * tmp1\n */\n\n/**\n * Foo class doc.\n */\nclass Foo {}",
+                        "<?php\n\n/**\n * Foo class doc.\n */\nclass Foo {}",
+                        {
+                            "header": "tmp1",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n\n/**\n * tmp2\n */\n\nclass Foo {}",
+                        "<?php\n\n/**\n * tmp2\n */\nclass Foo {}",
+                        {
+                            "header": "tmp2",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n\n/*\n * tmp3\n */\nclass Foo {}",
+                        "<?php\n/**\n * Foo class doc.\n */\nclass Foo {}",
+                        {
+                            "header": "tmp3",
+                            "separate": "top"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n\n/*\n * bar\n */\n\ndeclare(strict_types=1);\n\n// foo\nfoo();",
+                        "<?php\n\n/*\n * foo\n */\n\ndeclare(strict_types=1);\n\n// foo\nfoo();",
+                        {
+                            "header": "bar",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n\n/*\n * bar\n */\n\ndeclare(strict_types=1);\n\n/* foo */\nfoo();",
+                        "<?php\n\n/*\n * foo\n */\n\ndeclare(strict_types=1);\n\n/* foo */\nfoo();",
+                        {
+                            "header": "bar",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n\n/*\n * tmp4\n */\n\ndeclare(strict_types=1) ?>",
+                        "<?php\ndeclare(strict_types=1) ?>",
+                        {
+                            "header": "tmp4",
+                            "location": "after_declare_strict"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "#!/usr/bin/env php\n<?php\ndeclare(strict_types=1);\n\n/*\n * tmp5\n */\n\nnamespace A\\B;\n\necho 1;",
+                        "#!/usr/bin/env php\n<?php\ndeclare(strict_types=1);namespace A\\B;\n\necho 1;",
+                        {
+                            "header": "tmp5",
+                            "location": "after_declare_strict"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "Short mixed file A\nHello<?php echo \"World!\"; ?>",
+                        null,
+                        {
+                            "header": "tmp",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "Short mixed file B\n<?php echo \"Hello\"; ?>World!",
+                        null,
+                        {
+                            "header": "tmp",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "File with anything at the beginning and with multiple opening tags are not supported\n<?php\necho 1;\n?>Hello World!<?php\nscript_continues_here();",
+                        null,
+                        {
+                            "header": "tmp",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "using validator, but existing comment in wrong place - adding new one",
+                    "args": [
+                        "<?php\n\n/*\n * This file is part of the xxx.\n *\n * (c) Foo Bar <foo@bar.com>\n *\n * This\n * is\n * sub\n * note.\n *\n * For the full copyright and license information, please view the LICENSE\n * file that was distributed with this source code.\n */\n\ndeclare(strict_types=1);\n\nnamespace A;\n\necho 1;",
+                        "<?php\n\ndeclare(strict_types=1);\n/*\n * This file is part of the xxx.\n *\n * (c) Foo Bar <foo@bar.com>\n *\n * This\n * is\n * sub\n * note.\n *\n * For the full copyright and license information, please view the LICENSE\n * file that was distributed with this source code.\n */\n\nnamespace A;\n\necho 1;",
+                        {
+                            "header": "This file is part of the xxx.\n\n(c) Foo Bar <foo@bar.com>For the full copyright and license information, please view the LICENSE\nfile that was distributed with this source code.",
+                            "validator": "/This file is part of the xxx\\.\n\n\\(c\\) Foo Bar \\<foo@bar\\.com\\>(?P<EXTRA>.*)??For the full copyright and license information, please view the LICENSE\nfile that was distributed with this source code\\./s",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "using validator, existing comment matches",
+                    "args": [
+                        "<?php\n\n/*\n * This file is part of the xxx.\n *\n * (c) Foo Bar <foo@bar.com>\n *\n * This\n * is\n * sub\n * note.\n *\n * For the full copyright and license information, please view the LICENSE\n * file that was distributed with this source code.\n */\n\ndeclare(strict_types=1);\n\nnamespace A;\n\necho 1;",
+                        null,
+                        {
+                            "header": "This file is part of the xxx.\n\n(c) Foo Bar <foo@bar.com>For the full copyright and license information, please view the LICENSE\nfile that was distributed with this source code.",
+                            "validator": "/This file is part of the xxx\\.\n\n\\(c\\) Foo Bar \\<foo@bar\\.com\\>(?P<EXTRA>.*)??For the full copyright and license information, please view the LICENSE\nfile that was distributed with this source code\\./s",
+                            "location": "after_open"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "using validator, existing comment matches but misplaced",
+                    "args": [
+                        "<?php\n\n/**\n * This file is part of the xxx.\n *\n * (c) Foo Bar <foo@bar.com>\n *\n * This\n * is\n * sub\n * note.\n *\n * For the full copyright and license information, please view the LICENSE\n * file that was distributed with this source code.\n */\n\nclass Foo {}",
+                        "<?php\n\n/**\n * This file is part of the xxx.\n *\n * (c) Foo Bar <foo@bar.com>\n *\n * This\n * is\n * sub\n * note.\n *\n * For the full copyright and license information, please view the LICENSE\n * file that was distributed with this source code.\n */\nclass Foo {}",
+                        {
+                            "header": "This file is part of the xxx.\n\n(c) Foo Bar <foo@bar.com>For the full copyright and license information, please view the LICENSE\nfile that was distributed with this source code.",
+                            "validator": "/This file is part of the xxx\\.\n\n\\(c\\) Foo Bar \\<foo@bar\\.com\\>(?P<EXTRA>.*)??For the full copyright and license information, please view the LICENSE\nfile that was distributed with this source code\\./s",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "default configuration",
+                    "args": [
+                        "<?php\n\n/*\n * a\n */\n\necho 1;",
+                        "<?php\necho 1;",
+                        {
+                            "header": "a"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n\n/*\n * a\n */\n\necho 1;",
+                        "<?php\necho 1;",
+                        {
+                            "header": "a",
+                            "comment_type": "comment"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n\n/**\n * a\n */\n\necho 1;",
+                        "<?php\necho 1;",
+                        {
+                            "header": "a",
+                            "comment_type": "PHPDoc"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nphpinfo();\n?>\n<?",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        " <?php\nphpinfo();\n",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\nphpinfo();\n?><hr/>",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "  <?php\n",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?= 1?>",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?= 1?><?php\n",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?= 1?>\n<?php\n",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n// comment 1\n?><?php\n// comment 2\n",
+                        null,
+                        {
+                            "header": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\r\ndeclare(strict_types=1);\r\n/**\r\n * whitemess\r\n */\r\n\r\nnamespace A\\B;\r\n\r\necho 1;",
+                        "<?php\r\ndeclare(strict_types=1);\r\n\r\nnamespace A\\B;\r\n\r\necho 1;",
+                        {
+                            "header": "whitemess",
+                            "location": "after_declare_strict",
+                            "separate": "bottom",
+                            "comment_type": "PHPDoc"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n\n/*\n * Foo\n */\n\necho 1;",
+                        "<?php\necho 1;",
+                        {
+                            "header": "Foo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\r\n\r\n/*\r\n * Foo\r\n */\r\n\r\necho 1;",
+                        "<?php\r\necho 1;",
+                        {
+                            "header": "Foo"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\r\n\r\n/*\r\n * Bar\r\n */\r\n\r\necho 1;",
+                        "<?php\r\necho 1;",
+                        {
+                            "header": "Bar"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n\n/*\n * Bar\n */\n\necho 1;",
+                        "<?php\necho 1;",
+                        {
+                            "header": "Bar"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Comment\\HeaderCommentFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input, array $configuration): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/*\n * tmp\n */\n\n/**\n * Foo class doc.\n */\nenum Foo {}",
+                        "<?php\n\n/**\n * Foo class doc.\n */\nenum Foo {}",
+                        {
+                            "header": "tmp"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                },
+                {
+                    "name": "exceptionMessage",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "exception",
+                    "type": "string",
+                    "default": "PhpCsFixer\\ConfigurationException\\InvalidFixerConfigurationException"
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Comment\\HeaderCommentFixerTest",
+            "body": "    public function testInvalidConfiguration(\n        ?array $configuration,\n        string $exceptionMessage,\n        string $exception = InvalidFixerConfigurationException::class\n    ): void {\n        $this->expectException($exception);\n        $this->expectExceptionMessageMatches(\"#^\\\\[header_comment\\\\] {$exceptionMessage}$#\");\n\n        if (null !== $configuration) {\n            $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n        } else {\n            $this->doTest('<?php echo 1;');\n        }\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        null,
+                        "Configuration is required.",
+                        "PhpCsFixer\\ConfigurationException\\RequiredFixerConfigurationException"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        [],
+                        "Missing required configuration: The required option \"header\" is missing."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 2,
+                    "args": [
+                        {
+                            "header": 1
+                        },
+                        "Invalid configuration: The option \"header\" with value 1 is expected to be of type \"string\", but is of type \"(int|integer)\"\\."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 3,
+                    "args": [
+                        {
+                            "header": "",
+                            "comment_type": "foo"
+                        },
+                        "Invalid configuration: The option \"comment_type\" with value \"foo\" is invalid\\. Accepted values are: \"PHPDoc\", \"comment\"\\."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 4,
+                    "args": [
+                        {
+                            "header": "",
+                            "comment_type": {
+                                "__class": "stdClass"
+                            }
+                        },
+                        "Invalid configuration: The option \"comment_type\" with value stdClass is invalid\\. Accepted values are: \"PHPDoc\", \"comment\"\\."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 5,
+                    "args": [
+                        {
+                            "header": "",
+                            "location": {
+                                "__class": "stdClass"
+                            }
+                        },
+                        "Invalid configuration: The option \"location\" with value stdClass is invalid\\. Accepted values are: \"after_open\", \"after_declare_strict\"\\."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 6,
+                    "args": [
+                        {
+                            "header": "",
+                            "separate": {
+                                "__class": "stdClass"
+                            }
+                        },
+                        "Invalid configuration: The option \"separate\" with value stdClass is invalid\\. Accepted values are: \"both\", \"top\", \"bottom\", \"none\"\\."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 7,
+                    "args": [
+                        {
+                            "header": "Foo",
+                            "validator": "/\\w+++/"
+                        },
+                        "Provided RegEx is not valid."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 8,
+                    "args": [
+                        {
+                            "header": "/** test */",
+                            "comment_type": "PHPDoc"
+                        },
+                        "Cannot use '\\*/' in header\\.$"
+                    ]
+                }
+            ]
+        }
+    ]
+}
