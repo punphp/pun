@@ -435,6 +435,12 @@ impl Renderer {
         format!("{}\n", parts.join(&format!(" {separator} ")))
     }
 
+    /// A done line (`pun init`): `✔ message`, the glyph in the ok colour.
+    pub fn done(&self, message: &str) -> String {
+        let glyph = self.look.paint(Role::Ok, self.look.glyph("✔", "ok"));
+        format!("{glyph} {message}\n")
+    }
+
     /// A run error: one red line (`path:line  message`), then the hint indented under it, line by line.
     pub fn run_error(&self, e: &RunError) -> String {
         let glyph = self.look.glyph("✖", "x");

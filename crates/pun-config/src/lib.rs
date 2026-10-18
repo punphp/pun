@@ -46,7 +46,8 @@ const SETS: &str = include_str!("../presets/sets.json");
 const MAPPING: &str = include_str!("../rules/mapping.toml");
 
 /// What every command prints when the project has no pun.toml.
-pub const NO_CONFIG: &str = "No pun.toml found. Run `pun migrate`.";
+pub const NO_CONFIG: &str =
+    "No pun.toml found. Run `pun migrate`, or `pun init` for a new project.";
 
 /// The format presets pun.toml and `--preset` take. `per` and `symfony` stay in [`PRESETS`] only for `pun migrate`,
 /// which expands them over `empty`; `format`, `lint`, `check` and `config` reject them with [`RemovedPreset`].

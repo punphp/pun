@@ -1,50 +1,20 @@
 //! `pun migrate` end to end. Expectations are hand-derived from pint.json and context/plan/rules.md §4, or come from the real
 //! Pint (`php .oracle/pint/builds/pint`) on the unmigrated project.
+#[path = "common/pty.rs"]
+mod common;
+
+use common::{pun, read};
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
-fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
-    run(Command::new(env!("CARGO_BIN_EXE_pun")).args(args), dir)
-}
-
-/// Agent mode off and stdin is not a terminal, so nothing is asked.
-fn run(cmd: &mut Command, dir: &Path) -> (String, String, Option<i32>) {
-    let out = cmd
-        .current_dir(dir)
-        .env_clear()
-        .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
-        .env("PUN_AGENT", "0")
-        .output()
-        .unwrap();
-    let s = |b: Vec<u8>| String::from_utf8(b).unwrap();
-    (s(out.stdout), s(out.stderr), out.status.code())
-}
-
-/// `pun migrate` on a pseudo-terminal (util-linux `script`), typing `keys` (printf escapes) once it is up. The
-/// output with `\r` removed.
+/// `pun migrate` on a pseudo-terminal, typing `keys` (printf escapes) once it is up. The output with `\r` removed.
 fn pty(dir: &Path, keys: &str) -> String {
-    let sh = format!(
-        "(sleep 1; printf '{keys}'; sleep 2) | script -qec '{} migrate' /dev/null",
-        env!("CARGO_BIN_EXE_pun")
-    );
-    let (out, _, code) = run(Command::new("sh").args(["-c", &sh]), dir);
+    let (out, code) = common::pty(dir, "migrate", keys, &[]);
     assert_eq!(code, Some(0), "{out}");
-    out.replace('\r', "")
+    out
 }
 
 fn project(name: &str, files: &[(&str, &str)]) -> PathBuf {
-    let d = std::env::temp_dir().join(format!("pun-migrate-{name}-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&d);
-    std::fs::create_dir_all(&d).unwrap();
-    for (f, c) in files {
-        std::fs::create_dir_all(d.join(f).parent().unwrap()).unwrap();
-        std::fs::write(d.join(f), c).unwrap();
-    }
-    d.canonicalize().unwrap()
-}
-
-fn read(d: &Path, f: &str) -> String {
-    std::fs::read_to_string(d.join(f)).unwrap()
+    common::project("migrate", name, files)
 }
 
 const PINT: &str = r#"{"preset":"empty","rules":{"array_syntax":true,"final_class":true}}"#;

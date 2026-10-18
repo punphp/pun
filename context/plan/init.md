@@ -1,6 +1,7 @@
 # Plan: `pun init`
 
-Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Nothing is built. The journey comes from
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Build 1-3 and 5 are built
+(crates/pun-cli/src/init.rs, tests/init.rs); Build 4 waits for analyse 1-2. The journey comes from
 Pushpak (lint.md §8). Decisions with dates: ../PLAN.md §2. Build list: §3.
 
 ## 1. What it is
@@ -69,3 +70,21 @@ Answered 2026-10-17 (Pushpak):
 - **No workflow wiring in init** (too much code to maintain for now). init prints the commands; the user adds them.
   Later: agent skills (a `pun-init` and a `pun-migrate` skill) do the composer, CI and hook wiring instead of Pun code.
 - **`empty` is hidden from init** (assistant default); it stays a valid `[format] preset`.
+
+Assistant's calls (2026-10-18, building 1-3 and 5; change them freely):
+
+- **Old config without a terminal exits 2** and writes nothing: "Found pint.json: this project fits `pun migrate`,
+  which turns it into pun.toml. Nothing written." It is the same refusal as an existing pun.toml (init did not do what
+  was asked), so scripts and agents notice it. On a terminal, "no" to the migrate offer goes on with the questions.
+- **The header names major versions** ("Laravel 13, Pest 4", as §2 shows), a branch by its locked name (`dev-main`),
+  PHPUnit only without Pest (Pest runs on it), the PHP constraint as written, and the composer files actually read
+  ("(composer.json, composer.lock)").
+- **The answers print as dialoguer's default theme reports them** ("Code style: laravel"), the same lines without a
+  terminal, where nothing is asked.
+- **`CI`** (set, and not empty, `0` or `false`) counts as non-interactive, as §2 lists CI next to agents and no terminal.
+- **Flags also set the terminal's defaults**: `pun init --style psr12` on a terminal starts the question on psr12.
+- **Flag errors keep schema.rs's wording** with the flag in place of the pun.toml location: "--lint-sets: `x` is not a
+  lint set; the sets are …", "--analyse x: expected `basic`, …". `--lint-sets ""` means no sets.
+- **pun.toml starts with ``# Written by `pun init`.``**, as migrate's does; the three keys are all it holds.
+- **Agent mode** prints one `pun init: ok, pun.toml written, style …, lint sets …, analyse …` line and the next steps
+  as its item.

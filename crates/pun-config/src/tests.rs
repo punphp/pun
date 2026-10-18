@@ -31,7 +31,11 @@ fn preset(p: &str) -> Options {
 #[test]
 fn needs_pun_toml() {
     let d = dir(&[("pint.json", r#"{"preset":"psr12"}"#)]);
-    assert_eq!(err(&d, Options::default()), NO_CONFIG);
+    // The decided text (PLAN.md §2), by hand.
+    assert_eq!(
+        err(&d, Options::default()),
+        "No pun.toml found. Run `pun migrate`, or `pun init` for a new project."
+    );
     // An explicit preset or --no-config runs without one (pint.json is never read).
     assert_eq!(load(&d, &preset("psr12")).unwrap().preset, "psr12");
     let c = load(

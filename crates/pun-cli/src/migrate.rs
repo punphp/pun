@@ -12,7 +12,7 @@ use std::io::IsTerminal;
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
 
-#[derive(clap::Args)]
+#[derive(clap::Args, Default)]
 pub struct MigrateArgs {
     /// Print what would change, as a diff, and write nothing.
     #[arg(long)]
@@ -102,7 +102,8 @@ fn plan(detected: &[(Source, String)], chosen: &[Source]) -> Vec<(Source, String
         .collect()
 }
 
-fn detect(root: &Path, pint: &Path) -> Vec<(Source, String)> {
+/// The configs found in `root`, one per tool: (tool, file). `pun init` reads it too.
+pub(crate) fn detect(root: &Path, pint: &Path) -> Vec<(Source, String)> {
     let pint = pint.display().to_string();
     (Source::ALL.iter())
         .filter_map(|&s| {

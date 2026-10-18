@@ -27,6 +27,7 @@ Prebuilt binaries: Linux x64/arm64 (glibc and musl), macOS x64/arm64.
 
 ```sh
 pun migrate             # once: pick the detected configs to migrate -> pun.toml; --dry-run shows the diff
+pun init                # a new project: three questions (style, lint sets, analysis) -> pun.toml; --yes takes the defaults
 pun check --fix         # what `pint` did: format + the risky rules pint.json enabled
 pun format              # layout only (behaviour-safe; what format-on-save runs)
 pun format --test       # check only; exits 1 if anything would change
@@ -34,7 +35,7 @@ pun format app/Models   # specific paths; Pint's flags (--dirty, --diff=main, --
 pun lint [--fix]        # the [lint] rules (today: PHP-CS-Fixer's risky fixers)
 ```
 
-**Config.** Pun reads only `pun.toml`. Without one every command stops with "No pun.toml found. Run `pun migrate`."
+**Config.** Pun reads only `pun.toml`. Without one every command stops with "No pun.toml found. Run `pun migrate`, or `pun init` for a new project."
 (unless `--preset` or `--no-config` is given: both explicitly ask for a built-in preset, `--no-config` for laravel, as in
 Pint; `--preset` takes `laravel`, `psr12` or `empty`, and Pint's `per` and `symfony` exit 2 naming `empty` plus
 `[format.rules]`, which `pun migrate --preset per` writes). Rule names in `pun.toml` are Pun IDs (`<command>/<group>/<name>`, the command implied inside its own table); there are

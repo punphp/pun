@@ -391,7 +391,9 @@ fn errors() {
         assert_eq!(
             agent(&empty, &[cmd]),
             (
-                format!("pun {cmd}: error: No pun.toml found. Run `pun migrate`.\n"),
+                format!(
+                    "pun {cmd}: error: No pun.toml found. Run `pun migrate`, or `pun init` for a new project.\n"
+                ),
                 Some(2)
             )
         );

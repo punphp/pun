@@ -6,6 +6,7 @@ mod cache;
 mod console;
 mod fix_report;
 mod github;
+mod init;
 #[cfg(feature = "mago-lint")]
 mod lint;
 mod list_files;
@@ -60,6 +61,8 @@ enum Cmd {
     Check(Box<StageCmd>),
     /// Write pun.toml from pint.json (or .php-cs-fixer(.dist).php) and rewrite `@php-cs-fixer-ignore` comments.
     Migrate(migrate::MigrateArgs),
+    /// Write pun.toml for a new project: asks the code style, lint sets and analysis preset (`--yes` takes the defaults).
+    Init(init::InitArgs),
     /// Print the files a command would check with the current pun.toml.
     ListFiles(list_files::ListFilesArgs),
     /// Print the resolved configuration.
@@ -232,6 +235,7 @@ fn main() -> ExitCode {
         Cmd::Lint { .. } => "lint",
         Cmd::Check(_) => "check",
         Cmd::Migrate(_) => "migrate",
+        Cmd::Init(_) => "init",
         Cmd::ListFiles(_) => "list-files",
         Cmd::Config { .. } => "config",
         Cmd::Explain { .. } => "explain",
@@ -266,6 +270,7 @@ fn main() -> ExitCode {
         Cmd::Lint { cmd, .. } => stage(*cmd, Stage::Lint),
         Cmd::Check(cmd) => stage(*cmd, Stage::Check),
         Cmd::Migrate(a) => migrate::run(a),
+        Cmd::Init(a) => init::run(a),
         Cmd::ListFiles(a) => list_files::run(a),
         Cmd::Config {
             format,

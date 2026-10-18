@@ -620,7 +620,11 @@ fn pun_only_behaviour() {
         let (out, err, code) = pun(&dir, cmd);
         assert_eq!(
             (out.as_str(), err.as_str(), code),
-            ("", "x No pun.toml found. Run `pun migrate`.\n", Some(2)),
+            (
+                "",
+                "x No pun.toml found. Run `pun migrate`, or `pun init` for a new project.\n",
+                Some(2)
+            ),
             "{cmd:?}"
         );
     }

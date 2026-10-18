@@ -1290,7 +1290,7 @@ fn run_errors_exit_2() {
     };
     let red = |line: &str| format!("\x1b[31m{line}\x1b[0m\n");
     // No pun.toml: the config error, for each command.
-    let none = "✖ No pun.toml found. Run `pun migrate`.";
+    let none = "✖ No pun.toml found. Run `pun migrate`, or `pun init` for a new project.";
     for cmd in ["format", "lint", "check"] {
         assert_eq!(
             pun(&[cmd, "--color=never"]),

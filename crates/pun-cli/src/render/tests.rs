@@ -472,6 +472,18 @@ fn summary_singulars_and_warnings_only() {
     assert_eq!(plain().summary(&errors), "✖ 1 error · 1 file in 0.01s\n");
 }
 
+/// init.md §2's "✔ Wrote pun.toml": only the glyph is coloured, `ok` without Unicode.
+#[test]
+fn done_line() {
+    assert_eq!(plain().done("Wrote pun.toml"), "✔ Wrote pun.toml\n");
+    assert_eq!(
+        painted().done("Wrote pun.toml"),
+        format!("{OK}✔{Z} Wrote pun.toml\n")
+    );
+    let ascii = Renderer::new(ascii(), "/p");
+    assert_eq!(ascii.done("Wrote pun.toml"), "ok Wrote pun.toml\n");
+}
+
 #[test]
 fn run_error_sample() {
     let e = RunError {
