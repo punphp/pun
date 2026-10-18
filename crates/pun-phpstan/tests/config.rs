@@ -146,7 +146,8 @@ fn corpus_configs() {
             "needs corpus/{} (scripts/corpus.sh)",
             case["project"]
         );
-        let farm = std::env::temp_dir().join(format!("pun-phpstan-farm-{name}"));
+        let farm =
+            std::env::temp_dir().join(format!("pun-phpstan-farm-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&farm);
         std::fs::create_dir_all(&farm).unwrap();
         for entry in std::fs::read_dir(&project).unwrap() {

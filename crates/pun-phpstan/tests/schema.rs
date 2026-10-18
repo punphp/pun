@@ -10,7 +10,7 @@ use serde_json::json;
 
 #[test]
 fn container_factory_validate_parameters() {
-    let dir = std::env::temp_dir().join("pun-phpstan-schema");
+    let dir = std::env::temp_dir().join(format!("pun-phpstan-schema-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let file = dir.join("schema.neon").to_string_lossy().into_owned();
     let files = ProjectFiles::new("/pun-root/phpstan.phar");
@@ -48,6 +48,7 @@ fn container_factory_validate_parameters() {
             failures.push(format!("{}\n  want {want}\n  got  {got}", case["neon"]));
         }
     }
+    std::fs::remove_dir_all(&dir).unwrap();
     assert!(
         failures.is_empty(),
         "{} differ:\n{}",

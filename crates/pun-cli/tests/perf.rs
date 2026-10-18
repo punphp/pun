@@ -32,6 +32,8 @@ fn pun(dir: &Path, env: &[(&str, &str)], args: &[&str]) -> Output {
     Command::new(env!("CARGO_BIN_EXE_pun"))
         .current_dir(dir)
         .env("PUN_AGENT", "0")
+        // The cache under the project, not the user's ~/.cache/pun.
+        .env("XDG_CACHE_HOME", dir.join(".cache"))
         .envs(env.iter().copied())
         .arg("format")
         .args(args)

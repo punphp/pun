@@ -36,6 +36,8 @@ fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
         .env_clear()
         .env("PATH", std::env::var("PATH").unwrap_or_default())
         .env("HOME", std::env::var("HOME").unwrap_or_default())
+        // The cache under the run's own directory, not the user's ~/.cache/pun (one file per case otherwise).
+        .env("XDG_CACHE_HOME", dir.join(".cache"))
         .env("PUN_AGENT", "0")
         // Pun's own output: a UTF-8 locale gets ✖ rather than its ASCII fallback.
         .env("LANG", "en_US.UTF-8")

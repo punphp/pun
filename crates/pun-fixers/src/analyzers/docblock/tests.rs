@@ -44,11 +44,7 @@ fn ann(line: &[u8]) -> Annotation {
 }
 
 fn panics(f: impl FnOnce() + std::panic::UnwindSafe) -> String {
-    let prev = std::panic::take_hook();
-    std::panic::set_hook(Box::new(|_| {}));
-    let r = std::panic::catch_unwind(f);
-    std::panic::set_hook(prev);
-    match r {
+    match std::panic::catch_unwind(f) {
         Ok(()) => panic!("expected panic"),
         Err(e) => e
             .downcast_ref::<String>()
