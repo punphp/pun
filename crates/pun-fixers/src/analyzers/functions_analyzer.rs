@@ -3,7 +3,7 @@ use super::analysis::{ArgumentAnalysis, NamespaceUseAnalysis, TypeAnalysis};
 use super::arguments_analyzer::ArgumentsAnalyzer;
 use super::attribute_analyzer::AttributeAnalyzer;
 use super::namespace_uses_analyzer::NamespaceUsesAnalyzer;
-use super::namespaces_analyzer::NamespacesAnalyzer;
+use pun_tokens::NamespacesAnalyzer;
 use pun_tokens::{Kind, Kind::*, Tokens, php_compat, token::CLASSY_KINDS};
 use std::cell::RefCell;
 

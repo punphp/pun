@@ -2,13 +2,13 @@
 //! including the found-kinds registry and the block-edge cache, since both are observable
 //! by fixers. Not ported: the static code-hash cache (pure optimization) and JSON helpers.
 
-use std::any::Any;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
 use std::ops::Index;
 use std::sync::Arc;
 
 use crate::kind::Kind::{self, *};
+use crate::namespaces_analyzer::{NamespaceAnalysis, NamespacesAnalyzer};
 use crate::token::{FoundKey, Proto, Token};
 
 /// `Tokens::BLOCK_TYPE_*`; the discriminant is upstream's number.
@@ -66,8 +66,8 @@ pub struct Tokens {
     found_contents: HashMap<Vec<u8>, i64>,
     /// `blockStartCache` / `blockEndCache`; interior mutability so `find_block_end` takes `&self`.
     blocks: RefCell<BlockCache>,
-    /// `$namespaceDeclarations`: NamespacesAnalyzer's result (a pun-fixers type, hence `Any`), dropped on every change.
-    namespace_declarations: RefCell<Option<Arc<dyn Any + Send + Sync>>>,
+    /// `$namespaceDeclarations`: NamespacesAnalyzer's result, dropped on every change.
+    namespace_declarations: RefCell<Option<Arc<Vec<NamespaceAnalysis>>>>,
     changed: bool,
 }
 
@@ -324,21 +324,13 @@ impl Tokens {
         self.changed
     }
 
-    /// `getNamespaceDeclarations()`: `compute` (NamespacesAnalyzer::getDeclarations) runs once per token-list version;
+    /// `getNamespaceDeclarations()`: NamespacesAnalyzer::getDeclarations runs once per token-list version;
     /// every edit (set to a different token, insert, clear_empty_tokens, set_code) drops the cached value.
-    pub fn namespace_declarations<T: Any + Send + Sync>(
-        &self,
-        compute: impl FnOnce(&Tokens) -> T,
-    ) -> Arc<T> {
-        if let Some(v) = self
-            .namespace_declarations
-            .borrow()
-            .as_ref()
-            .and_then(|v| v.clone().downcast::<T>().ok())
-        {
-            return v;
+    pub fn namespace_declarations(&self) -> Arc<Vec<NamespaceAnalysis>> {
+        if let Some(v) = self.namespace_declarations.borrow().as_ref() {
+            return v.clone();
         }
-        let v = Arc::new(compute(self));
+        let v = Arc::new(NamespacesAnalyzer::compute(self));
         *self.namespace_declarations.borrow_mut() = Some(v.clone());
         v
     }
@@ -1026,21 +1018,16 @@ mod tests {
 
     #[test]
     fn namespace_declarations_cached_until_changed() {
-        // Like upstream's $namespaceDeclarations: computed once, recomputed after every edit that moves or changes tokens.
-        let runs = std::cell::Cell::new(0);
-        let count = |t: &Tokens| {
-            runs.set(runs.get() + 1);
-            t.count()
-        };
+        // Like upstream's $namespaceDeclarations: computed once, recomputed after every edit that moves or changes
+        // tokens. Without a namespace the global one spans the file, so its scope end is count - 1.
         let mut t = Tokens::from_code(b"<?php foo(1);");
+        let first = t.namespace_declarations();
         // token_get_all('<?php foo(1);') has 6 tokens.
-        assert_eq!(*t.namespace_declarations(count), 6);
-        assert_eq!(*t.namespace_declarations(count), 6);
-        assert_eq!(runs.get(), 1);
+        assert_eq!(first[0].scope_end_index, 5);
+        assert!(Arc::ptr_eq(&first, &t.namespace_declarations()));
         // Re-setting an identical token is not a change.
         t.set(1, t[1].clone());
-        t.namespace_declarations(count);
-        assert_eq!(runs.get(), 1);
+        assert!(Arc::ptr_eq(&first, &t.namespace_declarations()));
         type Edit = Box<dyn Fn(&mut Tokens)>;
         let mut edits: Vec<Edit> = vec![
             Box::new(|t| t.set(1, Token::new(T_STRING, "bar"))),
@@ -1048,17 +1035,19 @@ mod tests {
             Box::new(|t| {
                 t.clear_at(1);
                 // the clear above already dropped it; compute again so only clear_empty_tokens can drop it next
-                t.namespace_declarations(|t| t.count());
+                t.namespace_declarations();
                 t.clear_empty_tokens();
             }),
             Box::new(|t| t.set_code(b"<?php $a;")),
         ];
-        let expected = [6, 7, 6, 3];
-        for (edit, len) in edits.drain(..).zip(expected) {
-            let before = runs.get();
+        let expected = [5, 6, 5, 2];
+        let mut before = first;
+        for (edit, end) in edits.drain(..).zip(expected) {
             edit(&mut t);
-            assert_eq!(*t.namespace_declarations(count), len);
-            assert_eq!(runs.get(), before + 1);
+            let now = t.namespace_declarations();
+            assert!(!Arc::ptr_eq(&before, &now));
+            assert_eq!(now[0].scope_end_index, end);
+            before = now;
         }
     }
 }

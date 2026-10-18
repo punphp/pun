@@ -1,6 +1,7 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\NamespaceUsesAnalyzer`.
-use crate::analyzers::analysis::{NamespaceAnalysis, NamespaceUseAnalysis, NamespaceUseType};
+use crate::analyzers::analysis::{NamespaceUseAnalysis, NamespaceUseType};
 use pun_tokens::Kind::*;
+use pun_tokens::NamespaceAnalysis;
 use pun_tokens::{Proto, Tokens, TokensAnalyzer};
 
 pub struct NamespaceUsesAnalyzer;
@@ -186,7 +187,7 @@ impl NamespaceUsesAnalyzer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
+    use pun_tokens::NamespacesAnalyzer;
 
     #[test]
     fn declarations() {

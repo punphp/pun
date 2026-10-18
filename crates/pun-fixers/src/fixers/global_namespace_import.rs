@@ -7,7 +7,7 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use crate::analyzers::import_processor::{ImportProcessor, ImportType};
 use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
-use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
+use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::{PREG_OFFSET_CAPTURE, Preg};
 use anyhow::Result;
 use pun_format::{Fixer, WhitespacesFixerConfig};

@@ -3,7 +3,7 @@ use crate::analyzers::analysis::TypeAnalysis;
 use crate::analyzers::docblock::{Annotation, DocBlock, type_expression::REGEX_TYPES};
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
-use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
+use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::Preg;
 use anyhow::Result;
 use pun_format::Fixer;

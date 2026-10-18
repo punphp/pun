@@ -193,10 +193,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `detect_block_type` rebuilds up to 30 prototypes per call on per-token paths (`tokens_analyzer.rs:164`, `:245`).
   Replace Type Code with Enum (`#[repr(u8)]`, `BlockType::ALL`, keeping the `BLOCK_TYPE_*` consts) and match
   directly. Spans crates. Reproduced (`BlockType(0)` compiles and panics; the api cases' `blockEnd 0`/`16` throw). `BlockType` is now a `#[repr(u8)]` enum, `detect_block_type` matches the token directly, `blockEnd 0`/`16` in the api test index `BlockType::ALL` and still panic like upstream. Fixed in wf/audit-tokens.
-- [ ] 36. `crates/pun-tokens/src/tokens.rs:30-31`, `:244-261` keep a `dyn Any` cache that downcasts a pun-fixers
+- [x] 36. `crates/pun-tokens/src/tokens.rs:30-31`, `:244-261` keep a `dyn Any` cache that downcasts a pun-fixers
   type (`NamespaceAnalysis`), and a second user's failed downcast would be swallowed by `.ok()`. Move
   `NamespaceAnalysis` and `NamespacesAnalyzer::compute` (pun-tokens-only dependencies) into pun-tokens, where upstream
-  keeps them, and type the cache. Spans crates.
+  keeps them, and type the cache. Spans crates. Holds: the cache took any `T`, and a call with another type would recompute and overwrite it on every call. `NamespaceAnalysis` and `NamespacesAnalyzer` now live in `pun-tokens/src/namespaces_analyzer.rs` (tested against PHP-CS-Fixer's NamespacesAnalyzer), `Tokens::namespace_declarations()` returns a typed `Arc<Vec<NamespaceAnalysis>>`, and `get_namespace_at` clones only the match (the `namespaces_analyzer.rs` part of item 88). Fixed in wf/audit-tokens.
 - [x] 37. `crates/pun-format/src/php_parser.rs:440-442` copies the reduction's right-hand side with `.to_vec()` on
   every grammar reduction of every linted file; `values` is a local, so `&values[values.len() - len..]` works. Hot
   path; removes an allocation. Fixed in 2cb0bbf.

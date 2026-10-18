@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Casing\ClassReferenceNameCasingFixer`.
-use crate::analyzers::analysis::NamespaceAnalysis;
+use pun_tokens::NamespaceAnalysis;
 use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
-use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
+use pun_tokens::NamespacesAnalyzer;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::php_compat::strtolower;

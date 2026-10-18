@@ -5,23 +5,6 @@
 
 use pun_tokens::php_compat::{strtolower, trim};
 
-/// `NamespaceAnalysis`.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct NamespaceAnalysis {
-    pub full_name: Vec<u8>,
-    pub short_name: Vec<u8>,
-    pub start_index: usize,
-    pub end_index: usize,
-    pub scope_start_index: usize,
-    pub scope_end_index: usize,
-}
-
-impl NamespaceAnalysis {
-    pub fn is_global_namespace(&self) -> bool {
-        self.full_name.is_empty()
-    }
-}
-
 /// `NamespaceUseAnalysis::TYPE_*`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum NamespaceUseType {

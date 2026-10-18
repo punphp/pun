@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\ClassNotation\SelfAccessorFixer`.
-use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
+use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg};
 use pun_format::Fixer;
 use pun_tokens::{Kind, Proto, Token, Tokens, TokensAnalyzer};

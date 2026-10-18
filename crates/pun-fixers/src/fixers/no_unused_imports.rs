@@ -1,9 +1,10 @@
 //! Port of `PhpCsFixer\Fixer\Import\NoUnusedImportsFixer`.
-use crate::analyzers::analysis::{NamespaceAnalysis, NamespaceUseAnalysis, NamespaceUseType};
+use crate::analyzers::analysis::{NamespaceUseAnalysis, NamespaceUseType};
+use pun_tokens::NamespaceAnalysis;
 use crate::analyzers::constant_invocation::is_constant_invocation;
 use crate::analyzers::goto_label_analyzer::GotoLabelAnalyzer;
 use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
-use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
+use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
 use pun_tokens::php_compat::{ltrim_chars, rtrim_chars, strcasecmp};
