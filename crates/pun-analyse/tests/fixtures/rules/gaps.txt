@@ -17,12 +17,6 @@ Classes/LocalTypeTraitUseAliasesRuleTest::testRuleSpecific
 Properties/PropertyInClassRuleTest::testPhp84AndAbstractFinalHookedPropertiesParseError
 Properties/PropertyInClassRuleTest::testPhp84FinalPropertyHooks
 # exported after the first port (Methods, Properties, Namespaces, Variables...): triage in progress
-Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testIntersectionTypes#0
-Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testIntersectionTypes#1
-Functions/ExistingClassesInClosureTypehintsRuleTest::testIntersectionTypes#0
-Functions/ExistingClassesInClosureTypehintsRuleTest::testIntersectionTypes#1
-Functions/ExistingClassesInTypehintsRuleTest::testIntersectionTypes#0
-Functions/ExistingClassesInTypehintsRuleTest::testIntersectionTypes#1
 Methods/CallMethodsRuleTest::testClosureBind
 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 Methods/CallMethodsRuleTest::testBug3534
@@ -35,13 +29,10 @@ Methods/CallStaticMethodsRuleTest::testRequireExtends
 Methods/CallStaticMethodsRuleTest::testClosureBind
 Methods/CallStaticMethodsRuleTest::testDynamicCall
 Methods/CallStaticMethodsRuleTest::testPipeOperator
-Methods/ExistingClassesInTypehintsRuleTest::testSelfOut
 Methods/MethodCallableRuleTest::testRule
 Methods/StaticMethodCallableRuleTest::testRule
 Properties/AccessPropertiesRuleTest::testRequireExtends
 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
-Properties/ExistingClassesInPropertiesRuleTest::testPromotedProperties
-Properties/ExistingClassesInPropertyHookTypehintsRuleTest::testRule
 Properties/MissingReadOnlyPropertyAssignRuleTest::testRedeclaredReadonlyProperties
 Variables/DefinedVariableRuleTest::testDefinedVariables
 # PHPStan 2.2.7 at level 0 aborts this file with an internal error (MissingReturnRule, ShouldNotHappenException on a

@@ -1,0 +1,33 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $b follows optional parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $d follows optional parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $f follows optional parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 10,
+   "identifier": "return.missing",
+   "message": "Function SignatureVersions80\\intersection() should return *NEVER* but return statement is missing.",
+   "tip": null
+  }
+ ]
+}

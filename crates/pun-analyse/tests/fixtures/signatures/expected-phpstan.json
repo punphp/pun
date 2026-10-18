@@ -1,0 +1,733 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "hooks.php",
+   "line": 18,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of set hook for property SignatureHooks\\Holder::$plain has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 18,
+   "identifier": "propertySetHook.nativeParameterType",
+   "message": "Native type *NEVER* of set hook parameter $value is not contravariant with native type SignatureHooks\\F of property SignatureHooks\\Holder::$plain.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 30,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of set hook for property SignatureHooks\\Holder::$promoted has invalid type SignatureHooks\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 30,
+   "identifier": "propertySetHook.nativeParameterType",
+   "message": "Native type SignatureHooks\\Missing of set hook parameter $value is not contravariant with native type SignatureHooks\\F of property SignatureHooks\\Holder::$promoted.",
+   "tip": null
+  },
+  {
+   "file": "noparent.php",
+   "line": 9,
+   "identifier": "return.missing",
+   "message": "Method SignatureNoParent\\WithParent::native() should return SignatureNoParent\\Base but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "noparent.php",
+   "line": 14,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $p (parent) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "noparent.php",
+   "line": 16,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $p of method SignatureNoParent\\WithoutParent::variadic() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "noparent.php",
+   "line": 22,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $p of method SignatureNoParent\\WithoutParent::phpDocVariadic() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "noparent.php",
+   "line": 28,
+   "identifier": "return.missing",
+   "message": "Method SignatureNoParent\\WithoutParent::phpDocClass() should return SignatureNoParent\\Base but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "noparent.php",
+   "line": 31,
+   "identifier": "class.notFound",
+   "message": "Class SignatureNoParent\\UnknownParent extends unknown class SignatureNoParent\\NonexistentBase.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "noparent.php",
+   "line": 33,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $p of method SignatureNoParent\\UnknownParent::native() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 9,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $a (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 10,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #2 $b (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 14,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #6 $f (SignatureNullable\\A&SignatureNullable\\B|int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 16,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #8 $i (array) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 24,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.1: Required parameter $c follows optional parameter $b.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 26,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.3: Required parameter $e follows optional parameter $d.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 28,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #7 $g (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 29,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.3: Required parameter $h follows optional parameter $g.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 31,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.3: Required parameter $j follows optional parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 33,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.3: Required parameter $l follows optional parameter $k.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 35,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $n follows optional parameter $m.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 38,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $a (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 38,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $c follows optional parameter $b.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 39,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $a (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 39,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $c follows optional parameter $b.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 42,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $a (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "nullable.php",
+   "line": 42,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $c follows optional parameter $b.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 14,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::generic() has invalid @phpstan-self-out type SignatureSelfOut\\Nonexistent.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 17,
+   "identifier": "selfOut.trait",
+   "message": "Method SignatureSelfOut\\Foo::nullable() has invalid @phpstan-self-out type SignatureSelfOut\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 20,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::imported() has invalid @phpstan-self-out type SignatureSelfOut\\Sub\\Imported.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 20,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::imported() has invalid @phpstan-self-out type SignatureSelfOut\\Sub\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 23,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::qualified() has invalid @phpstan-self-out type SignatureSelfOut\\Gone.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 23,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::qualified() has invalid @phpstan-self-out type SignatureSelfOut\\Gone2.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 29,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::priority() has invalid @phpstan-self-out type SignatureSelfOut\\Stan.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 42,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::shapes() has invalid @phpstan-self-out type SignatureSelfOut\\InElse.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 42,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::shapes() has invalid @phpstan-self-out type SignatureSelfOut\\InIf.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 42,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::shapes() has invalid @phpstan-self-out type SignatureSelfOut\\InObject.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 42,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::shapes() has invalid @phpstan-self-out type SignatureSelfOut\\InShape.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 45,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::conditional() has invalid @phpstan-self-out type SignatureSelfOut\\CondElse.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 45,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::conditional() has invalid @phpstan-self-out type SignatureSelfOut\\CondIf.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 48,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::constants() has invalid @phpstan-self-out type SignatureSelfOut\\Gone3.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 51,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::callable() has invalid @phpstan-self-out type SignatureSelfOut\\Returned.",
+   "tip": null
+  },
+  {
+   "file": "selfout.php",
+   "line": 51,
+   "identifier": "class.notFound",
+   "message": "Method SignatureSelfOut\\Foo::callable() has invalid @phpstan-self-out type SignatureSelfOut\\Shapeless.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 30,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type U of function SignatureTemplates\\bounds() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 38,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\defaults() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 38,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type W of function SignatureTemplates\\defaults() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 51,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\nativeInt() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 63,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\superclass() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 75,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\objectBound() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 81,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\builtinBound() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 93,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\nullableNative() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 100,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\nullDefault() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 100,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $x (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 124,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\notInvokable() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 136,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\unsealedKey() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 181,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\conditionalNative() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 181,
+   "identifier": "return.missing",
+   "message": "Function SignatureTemplates\\conditionalNative() should return string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 187,
+   "identifier": "return.missing",
+   "message": "Function SignatureTemplates\\conditionalWithoutNative() should return string|T but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 193,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\unparsable() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 198,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\unreferenced() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 204,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\nullablePhpDoc() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 216,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\intersectionPhpDoc() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 228,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\disjointNative() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 234,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\dnfNative() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 240,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\intersectionNative() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 264,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\unknownCallable() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 276,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function SignatureTemplates\\shapeCallable() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 291,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type S of method SignatureTemplates\\Holder::method() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 16,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$finalUnrelated has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 20,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$trait has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 21,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$enum has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 23,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$builtinClasses has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 25,
+   "identifier": "class.notFound",
+   "message": "Property SignatureUnresolvable\\Holder::$unknown has unknown class SignatureUnresolvable\\Unknown as its type.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 27,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$allNever has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 30,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$iterable has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 31,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$threeMembers has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 34,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $promoted of method SignatureUnresolvable\\Holder::__construct() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 34,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$promoted has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 35,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $promotedNull of method SignatureUnresolvable\\Holder::__construct() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 35,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureUnresolvable\\Holder::$promotedNull has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 38,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $a of method SignatureUnresolvable\\Holder::params() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 38,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $b of method SignatureUnresolvable\\Holder::params() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 38,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $c of method SignatureUnresolvable\\Holder::params() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 38,
+   "identifier": "return.missing",
+   "message": "Method SignatureUnresolvable\\Holder::params() should return *NEVER* but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 38,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Method SignatureUnresolvable\\Holder::params() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 41,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $a of anonymous function has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 41,
+   "identifier": "return.missing",
+   "message": "Anonymous function should return *NEVER* but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 41,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Anonymous function has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 5,
+   "identifier": "return.missing",
+   "message": "Function SignatureVersions\\unions() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 7,
+   "identifier": "return.missing",
+   "message": "Function SignatureVersions\\returnUnion() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 9,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $b follows optional parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 9,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.1: Required parameter $d follows optional parameter $c.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 15,
+   "identifier": "return.missing",
+   "message": "Method SignatureVersions\\Holder::returns() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 18,
+   "identifier": "return.missing",
+   "message": "Anonymous function should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 19,
+   "identifier": "return.missing",
+   "message": "Anonymous function should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #7 $g (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $b follows optional parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.1: Required parameter $d follows optional parameter $c.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.3: Required parameter $f follows optional parameter $e.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 10,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $a of function SignatureVersions80\\intersection() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 10,
+   "identifier": "return.missing",
+   "message": "Function SignatureVersions80\\intersection() should return *NEVER* but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 10,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Function SignatureVersions80\\intersection() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 14,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureVersions80\\Holder::$property has unresolvable native type.",
+   "tip": null
+  }
+ ]
+}

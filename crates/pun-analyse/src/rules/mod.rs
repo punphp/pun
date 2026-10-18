@@ -14,6 +14,7 @@ mod names;
 mod params;
 mod properties;
 mod scope;
+mod signatures;
 mod statements;
 mod syntax;
 
@@ -254,6 +255,19 @@ pub const IDENTIFIERS: &[&str] = &[
     "sealed.onTrait",
     "property.callableType",
     "class.serializable",
+    "parameter.requiredAfterOptional",
+    "parameter.implicitlyNullable",
+    "parameter.unresolvableNativeType",
+    "return.unresolvableNativeType",
+    "property.unresolvableNativeType",
+    "parameter.noParent",
+    "return.noParent",
+    "parameter.unionTypeNotSupported",
+    "return.unionTypeNotSupported",
+    "return.neverTypeNotSupported",
+    "method.templateTypeNotInParameter",
+    "selfOut.trait",
+    "property.trait",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -338,6 +352,7 @@ pub struct Checker<'a, 'arena> {
     sources: &'a Sources,
     syntax: syntax::State,
     assign: assign::State,
+    signatures: signatures::State,
     errors: Vec<Error>,
 }
 
@@ -395,6 +410,7 @@ fn checker<'a, 'arena>(
         sources,
         syntax: syntax::State::default(),
         assign: assign::State::default(),
+        signatures: signatures::State::default(),
         errors: Vec::new(),
     }
 }
@@ -1219,6 +1235,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
             f.return_type_hint.as_ref(),
         );
+        signatures::check(
+            self,
+            names::FunctionKind::Function(&name),
+            f.span(),
+            &f.parameter_list,
+            f.return_type_hint.as_ref(),
+        );
         let docblock = self
             .codebase
             .get_function(name.as_bytes())
@@ -1272,6 +1295,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             .filter(|p| p.is_promoted_property())
         {
             names::property_type(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
+            signatures::property(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
+            if let Some(hooks) = &p.hooks {
+                signatures::hooks(self, p.variable.name, hooks);
+            }
         }
         // a trait method under its `as` alias
         let method = match &self.renamed {
@@ -1313,6 +1340,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             let class = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
             let kind = names::FunctionKind::Method(&class, &method);
             names::typehints(self, kind, &m.parameter_list, m.return_type_hint.as_ref());
+            signatures::check(
+                self,
+                kind,
+                m.span(),
+                &m.parameter_list,
+                m.return_type_hint.as_ref(),
+            );
             // PhpMethodFromParserNodeReflection's void methods
             let forced_void = m.name.value.eq_ignore_ascii_case(b"__construct")
                 || [
@@ -1335,6 +1369,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 forced_void,
                 docblock,
             );
+        }
+        if self.class_scope().is_none() {
+            // an anonymous class's method: the checks that don't print its class@anonymous name
+            signatures::parameter_defaults(self, &m.parameter_list);
         }
         syntax::function_like_types(self, Some(&m.parameter_list), m.return_type_hint.as_ref());
         if m.name.value.eq_ignore_ascii_case(b"__construct") {
@@ -1588,10 +1626,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_use(&mut self, u: &'ast Use<'arena>, _: &mut ()) {
         names::use_functions(self, u);
+        signatures::use_statement(self, u);
     }
     fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
         names::property_type(self, p.span(), p.hint(), &names);
+        signatures::property(self, p.span(), p.hint(), &names);
+        if let Property::Hooked(h) = p {
+            signatures::hooks(self, h.item.variable().name, &h.hook_list);
+        }
         properties::property(self, p);
         for v in p.variables() {
             hierarchy::callable_property(self, v.span(), v.name, p.hint());
@@ -1650,6 +1693,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
             f.return_type_hint.as_ref(),
         );
+        signatures::check(
+            self,
+            names::FunctionKind::Anonymous,
+            f.span(),
+            &f.parameter_list,
+            f.return_type_hint.as_ref(),
+        );
         names::no_discard(
             self,
             names::FunctionKind::Anonymous,
@@ -1683,6 +1733,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         functions::function_like(self, f, &f.parameter_list);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         syntax::arrow_function(self, f);
+        signatures::arrow_never(self, f);
         self.push_frame(FrameKind::Anonymous);
         if self.rebound.contains(&f.span()) {
             self.classes.push(ClassScope {
@@ -1693,6 +1744,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         names::typehints(
             self,
             names::FunctionKind::Anonymous,
+            &f.parameter_list,
+            f.return_type_hint.as_ref(),
+        );
+        signatures::check(
+            self,
+            names::FunctionKind::Anonymous,
+            f.span(),
             &f.parameter_list,
             f.return_type_hint.as_ref(),
         );
@@ -1735,9 +1793,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
         let name = n.name.as_ref().map(|id| self.resolved(id));
+        signatures::enter_namespace(self, name.as_deref());
         self.namespaces.push(name);
     }
     fn walk_out_namespace(&mut self, _: &'ast Namespace<'arena>, _: &mut ()) {
+        signatures::leave_namespace(self);
         self.namespaces.pop();
     }
     fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {

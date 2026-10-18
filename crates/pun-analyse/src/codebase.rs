@@ -15,7 +15,11 @@ use mago_database::file::{File, FileType};
 use mago_names::resolver::NameResolver;
 use mago_php_version::PHPVersion;
 use mago_prelude::Prelude;
+use mago_span::HasSpan;
+use mago_span::Span;
+use mago_syntax::cst::{Hint, IntersectionHint, Program};
 use mago_syntax::parser::parse_file;
+use mago_syntax::walker::MutWalker;
 use rayon::prelude::*;
 
 use crate::{Project, autoload};
@@ -80,15 +84,65 @@ fn scan(arena: &mut LocalArena, file: &File, version: PHPVersion) -> CodebaseMet
         let arena = &*arena;
         let program = parse_file(arena, file);
         let names = NameResolver::new(arena).resolve(program);
-        // ponytail: Mago's scanner trips a debug assertion on some hints (an empty TUnion::from_vec, debug builds
-        // only); the file's symbols are then unknown
+        // Mago's scanner trips a debug assertion (an empty TUnion::from_vec, debug builds only) on an intersection
+        // type naming a non-class type, which PHP rejects; scanning again with those types read as `mixed` keeps
+        // the file's symbols
         std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             scan_program(arena, file, program, &names, version)
         }))
+        .or_else(|_| {
+            let masked = File::new(
+                file.name.clone(),
+                file.file_type,
+                file.path.clone(),
+                Cow::Owned(mask_intersections(program, &file.contents)),
+            );
+            let program = parse_file(arena, &masked);
+            let names = NameResolver::new(arena).resolve(program);
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                scan_program(arena, &masked, program, &names, version)
+            }))
+        })
         .unwrap_or_default()
     };
     arena.reset();
     scanned
+}
+
+/// `contents` with each intersection type that names a non-class type overwritten by `mixed` (padded to its length).
+fn mask_intersections(program: &Program, contents: &[u8]) -> Vec<u8> {
+    struct Masks(Vec<Span>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Masks {
+        fn walk_in_intersection_hint(&mut self, hint: &'ast IntersectionHint<'arena>, _: &mut ()) {
+            fn classes(h: &Hint) -> bool {
+                match h {
+                    Hint::Intersection(i) => classes(i.left) && classes(i.right),
+                    h => matches!(
+                        h,
+                        Hint::Identifier(_) | Hint::Self_(_) | Hint::Static(_) | Hint::Parent(_)
+                    ),
+                }
+            }
+            let span = hint.span();
+            // an inner intersection of one already masked (the walk visits the outer one first)
+            let inside = self.0.last().is_some_and(|outer: &Span| {
+                outer.start.offset <= span.start.offset && span.end.offset <= outer.end.offset
+            });
+            if !inside && !(classes(hint.left) && classes(hint.right)) {
+                self.0.push(span);
+            }
+        }
+    }
+    let mut masks = Masks(Vec::new());
+    masks.walk_program(program, &mut ());
+    let mut contents = contents.to_vec();
+    for span in masks.0 {
+        let range = span.to_range_usize();
+        let mut replacement = b"mixed".to_vec();
+        replacement.resize(range.len(), b' ');
+        contents[range].copy_from_slice(&replacement);
+    }
+    contents
 }
 
 /// The prelude for one build: the first build of the process owns a fresh one (a single run keeps one copy, not a

@@ -378,6 +378,8 @@ fn hint_classes<'arena>(
             hint_classes(c, u.left, out);
             hint_classes(c, u.right, out);
         }
+        // an intersection that cannot be inhabited is `never`, with no classes
+        Hint::Intersection(_) if super::signatures::unresolvable(c, hint) => {}
         Hint::Intersection(i) => {
             hint_classes(c, i.left, out);
             hint_classes(c, i.right, out);
@@ -392,6 +394,8 @@ pub enum FunctionKind<'s> {
     Function(&'s str),
     Method(&'s str, &'s str),
     Anonymous,
+    /// class, property, hook name (`get`, `set`)
+    Hook(&'s str, &'s str, &'s str),
 }
 
 /// The class-existence part of FunctionDefinitionCheck for native parameter and return types.
@@ -401,20 +405,8 @@ pub fn typehints<'arena>(
     parameters: &FunctionLikeParameterList<'arena>,
     return_type: Option<&FunctionLikeReturnTypeHint<'arena>>,
 ) {
-    let (parameter_message, return_message) = match kind {
-        FunctionKind::Function(f) => (
-            format!("of function {f}()"),
-            format!("Function {f}() has invalid return type"),
-        ),
-        FunctionKind::Method(k, m) => (
-            format!("of method {k}::{m}()"),
-            format!("Method {k}::{m}() has invalid return type"),
-        ),
-        FunctionKind::Anonymous => (
-            "of anonymous function".to_string(),
-            "Anonymous function has invalid return type".to_string(),
-        ),
-    };
+    let parameter_message = format!("of {}", kind.named());
+    let return_message = format!("{} has invalid return type", kind.subject());
     let anonymous = matches!(kind, FunctionKind::Anonymous);
     for p in parameters.parameters.iter() {
         let Some(hint) = &p.hint else {
@@ -500,11 +492,7 @@ pub fn no_discard<'arena>(
     let Some(described) = described else {
         return;
     };
-    let message = match kind {
-        FunctionKind::Function(f) => format!("{described} function {f}()"),
-        FunctionKind::Method(k, m) => format!("{described} method {k}::{m}()"),
-        FunctionKind::Anonymous => format!("{described} anonymous function"),
-    };
+    let message = format!("{described} {}", kind.named());
     c.report(
         return_type.map_or(at, |r| r.hint.span()),
         "attribute.target",

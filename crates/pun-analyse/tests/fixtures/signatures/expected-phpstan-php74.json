@@ -1,0 +1,89 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "versions.php",
+   "line": 5,
+   "identifier": "parameter.unionTypeNotSupported",
+   "message": "Function SignatureVersions\\unions() uses native union types but they're supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 5,
+   "identifier": "return.missing",
+   "message": "Function SignatureVersions\\unions() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 7,
+   "identifier": "return.missing",
+   "message": "Function SignatureVersions\\returnUnion() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 7,
+   "identifier": "return.unionTypeNotSupported",
+   "message": "Function SignatureVersions\\returnUnion() uses native union types but they're supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 13,
+   "identifier": "parameter.unionTypeNotSupported",
+   "message": "Method SignatureVersions\\Holder::method() uses native union types but they're supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 15,
+   "identifier": "return.missing",
+   "message": "Method SignatureVersions\\Holder::returns() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 15,
+   "identifier": "return.unionTypeNotSupported",
+   "message": "Method SignatureVersions\\Holder::returns() uses native union types but they're supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 18,
+   "identifier": "parameter.unionTypeNotSupported",
+   "message": "Anonymous function uses native union types but they're supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 18,
+   "identifier": "return.missing",
+   "message": "Anonymous function should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 19,
+   "identifier": "return.missing",
+   "message": "Anonymous function should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 19,
+   "identifier": "return.unionTypeNotSupported",
+   "message": "Anonymous function uses native union types but they're supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 20,
+   "identifier": "return.unionTypeNotSupported",
+   "message": "Anonymous function uses native union types but they're supported only on PHP 8.0 and later.",
+   "tip": null
+  }
+ ]
+}

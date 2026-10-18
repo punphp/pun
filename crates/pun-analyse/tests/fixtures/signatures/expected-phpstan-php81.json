@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "arrow-never.php",
+   "line": 5,
+   "identifier": "return.neverTypeNotSupported",
+   "message": "Never return type in arrow function is supported only on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $b follows optional parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.0: Required parameter $f follows optional parameter $c.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 8,
+   "identifier": "parameter.requiredAfterOptional",
+   "message": "Deprecated in PHP 8.1: Required parameter $d follows optional parameter $c.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 10,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $a of function SignatureVersions80\\intersection() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 10,
+   "identifier": "return.missing",
+   "message": "Function SignatureVersions80\\intersection() should return *NEVER* but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 10,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Function SignatureVersions80\\intersection() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "versions80.php",
+   "line": 14,
+   "identifier": "property.unresolvableNativeType",
+   "message": "Property SignatureVersions80\\Holder::$property has unresolvable native type.",
+   "tip": null
+  }
+ ]
+}
