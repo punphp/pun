@@ -9,7 +9,7 @@
 | punphp-fixers | 25729 | 25729 | 100.00% | ok |
 | punphp-format | 940 | 940 | 100.00% | ok |
 | punphp-harness | 223 | 223 | 100.00% | ok |
-| punphp-lint | 516 | 516 | 100.00% | ok |
+| punphp-lint | 2104 | 2104 | 100.00% | ok |
 | punphp-phpstan | 7192 | 7163 | 99.60% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3433 | 3433 | 100.00% | ok |

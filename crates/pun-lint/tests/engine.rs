@@ -9,7 +9,7 @@ use pun_problem::{Edit, Fix, Level, Safety, Span};
 
 #[test]
 fn check_reports_each_problem_once_with_rule_path_span_and_fix() {
-    let linter = Linter::new(rules::all(), 80400);
+    let linter = Linter::new(spike_rules(), 80400);
     let code = "<?php\n$a = $a + 1;\ntry { } catch (A $e) { }\n";
     let problems = linter.check(Path::new("src/a.php"), code).unwrap();
     assert_eq!(problems.len(), 2);
@@ -43,13 +43,15 @@ fn check_reports_each_problem_once_with_rule_path_span_and_fix() {
 
 #[test]
 fn rules_below_their_php_version_do_not_run() {
-    // Of the ported rules only no-unused-catch-variable needs a PHP version (8.0).
-    let catch = "lint/php-8.0/no-unused-catch-variable";
-    let all: Vec<&str> = rules::all().iter().map(|r| r.id()).collect();
-    assert!(all.contains(&catch) && all.contains(&"lint/style/prefer-compound-assignment"));
-    assert_eq!(Linter::new(rules::all(), 80000).rule_ids(), all);
-    let below: Vec<&str> = all.iter().copied().filter(|&id| id != catch).collect();
-    assert_eq!(Linter::new(rules::all(), 70400).rule_ids(), below);
+    let all = vec![
+        "lint/php-8.0/no-unused-catch-variable",
+        "lint/style/prefer-compound-assignment",
+    ];
+    assert_eq!(Linter::new(spike_rules(), 80000).rule_ids(), all);
+    assert_eq!(
+        Linter::new(spike_rules(), 70400).rule_ids(),
+        vec!["lint/style/prefer-compound-assignment"]
+    );
 }
 
 #[test]
@@ -218,4 +220,12 @@ impl Rule for AlwaysAppend {
             });
         }
     }
+}
+
+/// The two rules of the lint spike, which these tests were written for.
+fn spike_rules() -> Vec<Box<dyn Rule>> {
+    vec![
+        Box::new(rules::NoUnusedCatchVariable),
+        Box::new(rules::PreferCompoundAssignment),
+    ]
 }

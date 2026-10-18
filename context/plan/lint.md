@@ -271,3 +271,24 @@ Lint spike (Build 1, 2026-10-17; report: ../reports/lint-spike.md):
 - **Assistant's call (lint 7 batch 2): `in_array($x, array_values($y))`.** Pun replaces only the argument's value, and
   leaves the call alone when either argument is spread or `array_values()` has none (Rector crashes or drops the
   spread).
+
+Lint 7 batch 1 (dead-code, 2026-10-18; 13 of 14 rules ported, parity on Pinkary and laravel-framework):
+
+- **Assistant's call: php-parser's view is shared code.** `rules/php_parser.rs` holds statement lists as php-parser
+  keeps them (its `Nop` for trailing comments, `;` dropped), and how Rector's printer removes, replaces or empties a
+  statement; `rules/used_variable.rs` holds `ExprUsedInNodeAnalyzer` and `isVariableUsedInNextStmt`. Rules call
+  them instead of each one copying them.
+- **Assistant's call: where Rector writes broken code, Pun writes the valid fix.** Rector's printer turns
+  `return (1);` in a constructor into `return ();` and stops on `public $a = (null);`; Pun writes `return;` and
+  `public $a;`. The meaning-over-bytes call above also covers `!($a ? $b : $c)`, `$x || ($b ?? $c)` and
+  `'a' . ($b ? 'x' : 'y')` and `if (($a = 1) !== $b)`, where Rector drops the parentheses.
+- **Known differences, left for later:** (1) Rector runs each rule once per file, and Pun's fix rounds run until no
+  rule has a fix, so a fix that leaves new dead code goes further in Pun (`if ($a) {} else {}` becomes
+  `if (!$a) {}` in Rector and nothing in Pun). (2) An alternative-syntax body (`while (...): ... endwhile;`) that a
+  rule empties: Rector's printer writes the statement again with braces; Pun does so only in
+  `no-useless-continue`, and elsewhere keeps the `:` form. (3) A heredoc that php-parser prints anew (a dynamic
+  `return <<<T` split in a constructor) gets php-parser's own indent in Rector and keeps its bytes in Pun.
+- **`lint/dead-code/no-empty-loop` (`RemoveDeadLoopRector`) waits for analyse:** its `SideEffectNodeDetector` asks
+  PHPStan's reflection whether a called function is pure (`count()` is, `array_shift()` is not) and whether a
+  static call's class is a `Throwable`, so it is type-aware (Build 8).
+

@@ -8,13 +8,13 @@ use std::path::{Path, PathBuf};
 
 use pun_format::Pipeline;
 use pun_lint::Linter;
+use pun_lint::rules::{self, NoUnusedCatchVariable, PreferCompoundAssignment};
 use pun_lint::rules::{
     NoAndAssignment, NoConcatAssignNewItem, NoDoubleNegation, NoNegatedAnd,
     NoNegatedBooleanLiteral, NoNegatedGroup, NoSingleArgumentSprintf, NoSingleItemInArray,
     NoTautologyTernary, NoUselessArrayValues, PreferArrayAppend, PreferEmptyArrayCompare,
     PreferFuncNumArgs, PreferNullCoalesce,
 };
-use pun_lint::rules::{NoUnusedCatchVariable, PreferCompoundAssignment};
 
 fn fixtures(dir: &str) -> Vec<(PathBuf, String, String)> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -293,4 +293,156 @@ fn every_rule_id_is_a_lint_rule_of_the_mapping() {
         let key = format!("\n\"{}\" = {{", rule.id().strip_prefix("lint/").unwrap());
         assert!(lint.contains(&key), "{} is not in [rules.lint]", rule.id());
     }
+}
+
+/// Like `run`, but for the fixtures named in `whitespace_only`, where Rector's printer writes different blanks than
+/// Pun's text edits (each entry says why): there the raw output must equal the expected one once whitespace is
+/// ignored, and format must make them equal.
+fn run_with_whitespace_exceptions(linter: &Linter, dir: &str, whitespace_only: &[&str]) {
+    let pipeline = laravel();
+    let squeeze = |s: &str| s.split_whitespace().collect::<String>();
+    for (path, input, expected) in fixtures(dir) {
+        let name = path.file_name().unwrap().to_string_lossy().into_owned();
+        let fixed = linter.fix(&path, &input).unwrap();
+        if whitespace_only.contains(&name.as_str()) {
+            assert_ne!(fixed.source, expected, "{name}: no longer an exception");
+            assert_eq!(
+                squeeze(&fixed.source),
+                squeeze(&expected),
+                "{name}: lint --fix"
+            );
+        } else {
+            assert_eq!(fixed.source, expected, "{name}: lint --fix");
+        }
+        assert_eq!(
+            format(&pipeline, &fixed.source),
+            format(&pipeline, &expected),
+            "{name}: format(lint --fix)"
+        );
+        assert_eq!(input != expected, !fixed.applied.is_empty(), "{name}");
+    }
+}
+
+fn only(rule: impl pun_lint::Rule + 'static, php_version: u32) -> Linter {
+    Linter::new(vec![Box::new(rule)], php_version)
+}
+
+#[test]
+fn remove_and_true() {
+    run(
+        &only(rules::NoAndTrue, 80400),
+        "RemoveAndTrueRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_concat_autocast() {
+    run(
+        &only(rules::NoCastInConcat, 80400),
+        "RemoveConcatAutocastRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_dead_continue() {
+    run(
+        &only(rules::NoUselessContinue, 80400),
+        "RemoveDeadContinueRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_dead_if_foreach_for() {
+    run(
+        &only(rules::NoEmptyBlock, 80400),
+        "RemoveDeadIfForeachForRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_dead_try_catch() {
+    run(
+        &only(rules::NoUselessCatch, 80400),
+        "RemoveDeadTryCatchRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_double_self_assign() {
+    run(
+        &only(rules::NoDoubleSelfAssignment, 80400),
+        "RemoveDoubleSelfAssignRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_duplicated_array_key() {
+    run(
+        &only(rules::NoDuplicateArrayKey, 80400),
+        "RemoveDuplicatedArrayKeyRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_final_from_const() {
+    // config/configured_rule.php: phpVersion(PhpVersionFeature::FINAL_CLASS_CONSTANTS).
+    run(
+        &only(rules::NoRedundantFinalConst, 80100),
+        "RemoveFinalFromConstRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_null_property_initialization() {
+    run(
+        &only(rules::NoNullPropertyInit, 80400),
+        "RemoveNullPropertyInitializationRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_null_property_initialization_skips_typed_properties() {
+    // config/typed_properties.php: phpVersion(PhpVersionFeature::TYPED_PROPERTIES).
+    run(
+        &only(rules::NoNullPropertyInit, 70400),
+        "RemoveNullPropertyInitializationRector/FixtureTypedProperties",
+    );
+}
+
+#[test]
+fn remove_unused_closure_variable_use() {
+    // The laravel preset's `lambda_not_used_import` makes the same change, so `run`'s check that format alone does
+    // not is left out.
+    run_with_whitespace_exceptions(
+        &only(rules::NoUnusedClosureVariable, 80400),
+        "RemoveUnusedClosureVariableUseRector/Fixture",
+        &[],
+    );
+}
+
+#[test]
+fn remove_unused_foreach_key() {
+    run(
+        &only(rules::NoUnusedForeachKey, 80400),
+        "RemoveUnusedForeachKeyRector/Fixture",
+    );
+}
+
+#[test]
+fn remove_useless_return_expr_in_construct() {
+    run(
+        &only(rules::NoReturnInConstructor, 80400),
+        "RemoveUselessReturnExprInConstructRector/Fixture",
+    );
+}
+
+#[test]
+fn replace_block_to_its_stmts() {
+    run_with_whitespace_exceptions(
+        &only(rules::NoUselessBlock, 80400),
+        "ReplaceBlockToItsStmtsRector/Fixture",
+        // The removed empty block is the namespace's first statement: Rector's printer drops the newline after it,
+        // Pun's removal the blanks before it (as for any other removed statement), so one blank line fewer stays.
+        &["no_stmts.php.inc"],
+    );
 }
