@@ -44,9 +44,7 @@ impl Fixer for NoSpacesAfterFunctionNameFixer {
         3
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        let mut kinds = vec![T_STRING];
-        kinds.extend_from_slice(FUNCTIONY_TOKEN_KINDS);
-        tokens.is_any_token_kinds_found(&kinds)
+        tokens.is_token_kind_found(T_STRING) || tokens.is_any_token_kinds_found(FUNCTIONY_TOKEN_KINDS)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {

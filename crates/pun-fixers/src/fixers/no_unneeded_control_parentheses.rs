@@ -8,21 +8,38 @@ use std::path::Path;
 
 #[derive(Default)]
 struct NoUnneededControlParenthesesFixer {
-    statements: Vec<String>,
+    statements: Vec<Statement>,
 }
 
-const CONFIG_OPTIONS: &[&str] = &[
-    "break",
-    "clone",
-    "continue",
-    "echo_print",
-    "negative_instanceof",
-    "others",
-    "return",
-    "switch_case",
-    "yield",
-    "yield_from",
+/// A `statements` value: the kind of statement whose parentheses may go.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Statement {
+    Break,
+    Clone,
+    Continue,
+    EchoPrint,
+    NegativeInstanceof,
+    Others,
+    Return,
+    SwitchCase,
+    Yield,
+    YieldFrom,
+}
+
+/// The allowed `statements` values (upstream's order, which the error message lists) and their variants.
+const CHOICES: &[(&str, Statement)] = &[
+    ("break", Statement::Break),
+    ("clone", Statement::Clone),
+    ("continue", Statement::Continue),
+    ("echo_print", Statement::EchoPrint),
+    ("negative_instanceof", Statement::NegativeInstanceof),
+    ("others", Statement::Others),
+    ("return", Statement::Return),
+    ("switch_case", Statement::SwitchCase),
+    ("yield", Statement::Yield),
+    ("yield_from", Statement::YieldFrom),
 ];
+
 const DEFAULT_STATEMENTS: &[&str] = &[
     "break",
     "clone",
@@ -34,7 +51,17 @@ const DEFAULT_STATEMENTS: &[&str] = &[
 ];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    crate::configured(NoUnneededControlParenthesesFixer::default())
+    crate::configured(NoUnneededControlParenthesesFixer {
+        statements: vec![
+            Statement::Break,
+            Statement::Clone,
+            Statement::Continue,
+            Statement::EchoPrint,
+            Statement::Return,
+            Statement::SwitchCase,
+            Statement::Yield,
+        ],
+    })
 }
 
 const BLOCK_TYPES: &[BlockType] = &[
@@ -68,15 +95,15 @@ const BEFORE_TYPES: &[Proto<'static>] = &[
     Proto::Kind(T_INCLUDE_ONCE),
 ];
 
-const TOKEN_TYPE_CONFIG_MAP: &[(Kind, &str)] = &[
-    (T_BREAK, "break"),
-    (T_CASE, "switch_case"),
-    (T_CONTINUE, "continue"),
-    (T_ECHO, "echo_print"),
-    (T_PRINT, "echo_print"),
-    (T_RETURN, "return"),
-    (T_YIELD, "yield"),
-    (T_YIELD_FROM, "yield_from"),
+const TOKEN_TYPE_CONFIG_MAP: &[(Kind, Statement)] = &[
+    (T_BREAK, Statement::Break),
+    (T_CASE, Statement::SwitchCase),
+    (T_CONTINUE, Statement::Continue),
+    (T_ECHO, Statement::EchoPrint),
+    (T_PRINT, Statement::EchoPrint),
+    (T_RETURN, Statement::Return),
+    (T_YIELD, Statement::Yield),
+    (T_YIELD_FROM, Statement::YieldFrom),
 ];
 
 // handled by the `include` rule
@@ -156,7 +183,7 @@ impl Fixer for NoUnneededControlParenthesesFixer {
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
         let c = resolve(self.name(), options, &["statements"])?;
-        self.statements = c.strings("statements", DEFAULT_STATEMENTS, CONFIG_OPTIONS)?;
+        self.statements = c.choices("statements", DEFAULT_STATEMENTS, CHOICES)?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -194,7 +221,7 @@ impl NoUnneededControlParenthesesFixer {
                     after_close_index,
                     open_index,
                     close_index,
-                    Some("others"),
+                    Some(Statement::Others),
                 );
             }
             return;
@@ -228,7 +255,7 @@ impl NoUnneededControlParenthesesFixer {
                     after_close_index,
                     open_index,
                     close_index,
-                    Some("clone"),
+                    Some(Statement::Clone),
                 );
             }
             return;
@@ -244,9 +271,9 @@ impl NoUnneededControlParenthesesFixer {
                 after_close_index,
             ) {
                 let t = if tokens[before_open_index].equals("!", true) {
-                    "negative_instanceof"
+                    Statement::NegativeInstanceof
                 } else {
-                    "others"
+                    Statement::Others
                 };
                 self.remove_useless_parenthesis_pair(
                     tokens,
@@ -403,9 +430,9 @@ impl NoUnneededControlParenthesesFixer {
         after: usize,
         open: usize,
         close: usize,
-        config_type: Option<&str>,
+        config_type: Option<Statement>,
     ) {
-        if !config_type.is_some_and(|c| self.statements.iter().any(|s| s == c)) {
+        if !config_type.is_some_and(|c| self.statements.contains(&c)) {
             return;
         }
         let needs_space_after = !is_access(tokens, after)
@@ -589,13 +616,13 @@ fn contains_operation(tokens: &Tokens, mut start: usize, end: usize) -> bool {
 }
 
 /// Upstream returns null for require/include(_once); those are KNOWN_NEGATIVE_PRE_TYPES, rejected before any call.
-fn get_config_type(tokens: &Tokens, before: usize) -> Option<&'static str> {
+fn get_config_type(tokens: &Tokens, before: usize) -> Option<Statement> {
     for &(k, item) in TOKEN_TYPE_CONFIG_MAP {
         if tokens[before].is_kind(k) {
             return Some(item);
         }
     }
-    Some("others")
+    Some(Statement::Others)
 }
 
 fn remove_brace(tokens: &mut Tokens, index: usize, mut needs_space: bool) {

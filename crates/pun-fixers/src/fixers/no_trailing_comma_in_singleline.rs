@@ -9,13 +9,30 @@ use std::path::Path;
 
 const ELEMENTS: &[&str] = &["arguments", "array", "array_destructuring", "group_import"];
 
-#[derive(Default)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Element {
+    Arguments,
+    Array,
+    ArrayDestructuring,
+    GroupImport,
+}
+
+/// ELEMENTS' variants, in the same order.
+const CHOICES: &[(&str, Element)] = &[
+    ("arguments", Element::Arguments),
+    ("array", Element::Array),
+    ("array_destructuring", Element::ArrayDestructuring),
+    ("group_import", Element::GroupImport),
+];
+
 struct NoTrailingCommaInSinglelineFixer {
-    elements: Vec<String>,
+    elements: Vec<Element>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    crate::configured(NoTrailingCommaInSinglelineFixer::default())
+    crate::configured(NoTrailingCommaInSinglelineFixer {
+        elements: CHOICES.iter().map(|&(_, e)| e).collect(),
+    })
 }
 
 impl Fixer for NoTrailingCommaInSinglelineFixer {
@@ -36,7 +53,7 @@ impl Fixer for NoTrailingCommaInSinglelineFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let o = resolve(self.name(), options, &["elements"])?;
-        self.elements = o.strings("elements", ELEMENTS, ELEMENTS)?;
+        self.elements = o.choices("elements", ELEMENTS, CHOICES)?;
         Ok(())
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
@@ -75,32 +92,32 @@ impl Fixer for NoTrailingCommaInSinglelineFixer {
 }
 
 impl NoTrailingCommaInSinglelineFixer {
-    fn has(&self, e: &str) -> bool {
-        self.elements.iter().any(|x| x == e)
+    fn has(&self, e: Element) -> bool {
+        self.elements.contains(&e)
     }
 
     fn should_be_cleared(&self, tokens: &Tokens, open_index: usize) -> bool {
         if tokens[open_index].is_kind(CT_ARRAY_BRACKET_OPEN) {
-            return self.has("array");
+            return self.has(Element::Array);
         }
         if tokens[open_index].is_kind(CT_DESTRUCTURING_BRACKET_OPEN) {
-            return self.has("array_destructuring");
+            return self.has(Element::ArrayDestructuring);
         }
         if tokens[open_index].is_kind(CT_GROUP_IMPORT_BRACE_OPEN) {
-            return self.has("group_import");
+            return self.has(Element::GroupImport);
         }
         let before_open = tokens.get_prev_meaningful_token(open_index).unwrap();
         if tokens[before_open].is_kind(T_ARRAY) {
-            return self.has("array");
+            return self.has(Element::Array);
         }
         if tokens[before_open].is_kind(T_LIST) {
-            return self.has("array_destructuring");
+            return self.has(Element::ArrayDestructuring);
         }
         if tokens[before_open].is_given_kind(&[T_UNSET, T_ISSET, T_VARIABLE, T_CLASS]) {
-            return self.has("arguments");
+            return self.has(Element::Arguments);
         }
         if tokens[before_open].is_kind(T_STRING) {
-            return !AttributeAnalyzer::is_attribute(tokens, before_open) && self.has("arguments");
+            return !AttributeAnalyzer::is_attribute(tokens, before_open) && self.has(Element::Arguments);
         }
         if tokens[before_open].equals_any(
             &[
@@ -116,7 +133,7 @@ impl NoTrailingCommaInSinglelineFixer {
                 || block_type == Tokens::BLOCK_TYPE_DYNAMIC_VAR_BRACE
                 || block_type == Tokens::BLOCK_TYPE_INDEX_BRACKET
                 || block_type == Tokens::BLOCK_TYPE_PARENTHESIS)
-                && self.has("arguments");
+                && self.has(Element::Arguments);
         }
         false
     }

@@ -6,15 +6,22 @@ use pun_tokens::{Kind::*, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
-#[derive(Default)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Position {
+    Inside,
+    Outside,
+}
+
 struct NoSpacesAroundOffsetFixer {
-    positions: Vec<String>,
+    positions: Vec<Position>,
 }
 
 const VALUES: &[&str] = &["inside", "outside"];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    crate::configured(NoSpacesAroundOffsetFixer::default())
+    crate::configured(NoSpacesAroundOffsetFixer {
+        positions: vec![Position::Inside, Position::Outside],
+    })
 }
 
 impl Fixer for NoSpacesAroundOffsetFixer {
@@ -26,15 +33,19 @@ impl Fixer for NoSpacesAroundOffsetFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let r = resolve(self.name(), options, &["positions"])?;
-        self.positions = r.strings("positions", VALUES, VALUES)?;
+        self.positions = r.choices(
+            "positions",
+            VALUES,
+            &[("inside", Position::Inside), ("outside", Position::Outside)],
+        )?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         tokens.is_token_kind_found("[") || tokens.is_token_kind_found(CT_ARRAY_INDEX_BRACE_OPEN)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        let inside = self.positions.iter().any(|p| p == "inside");
-        let outside = self.positions.iter().any(|p| p == "outside");
+        let inside = self.positions.contains(&Position::Inside);
+        let outside = self.positions.contains(&Position::Outside);
         for index in 0..tokens.count() {
             let token = &tokens[index];
             if !token.equals_any(&["[".into(), CT_ARRAY_INDEX_BRACE_OPEN.into()], true) {

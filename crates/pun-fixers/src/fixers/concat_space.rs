@@ -6,13 +6,20 @@ use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
-#[derive(Default)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Spacing {
+    One,
+    None,
+}
+
 struct ConcatSpaceFixer {
-    spacing: String,
+    spacing: Spacing,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    crate::configured(ConcatSpaceFixer::default())
+    crate::configured(ConcatSpaceFixer {
+        spacing: Spacing::None,
+    })
 }
 
 impl ConcatSpaceFixer {
@@ -67,7 +74,11 @@ impl Fixer for ConcatSpaceFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let r = resolve(self.name(), options, &["spacing"])?;
-        self.spacing = r.string("spacing", "none", &["one", "none"])?;
+        self.spacing = r.choice(
+            "spacing",
+            "none",
+            &[("one", Spacing::One), ("none", Spacing::None)],
+        )?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -76,7 +87,7 @@ impl Fixer for ConcatSpaceFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in (0..tokens.count()).rev() {
             if tokens[index].equals(".", true) {
-                if self.spacing == "one" {
+                if self.spacing == Spacing::One {
                     Self::fix_concatenation_to_single_space(tokens, index);
                 } else {
                     Self::fix_concatenation_to_no_space(tokens, index);

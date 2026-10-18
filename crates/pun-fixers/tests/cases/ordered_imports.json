@@ -49,5 +49,12 @@
             "pun_nope": 1
         },
         "error": "[ordered_imports] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"case_sensitive\", \"imports_order\", \"sort_algorithm\"."
+    },
+    {
+        "fixer": "ordered_imports",
+        "config": {
+            "sort_algorithm": "random"
+        },
+        "error": "[ordered_imports] Invalid configuration: The option \"sort_algorithm\" with value \"random\" is invalid. Accepted values are: \"alpha\", \"length\", \"none\"."
     }
 ]

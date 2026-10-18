@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "cast_spaces",
+        "config": {
+            "space": "double"
+        },
+        "error": "[cast_spaces] Invalid configuration: The option \"space\" with value \"double\" is invalid. Accepted values are: \"none\", \"single\"."
+    }
+]

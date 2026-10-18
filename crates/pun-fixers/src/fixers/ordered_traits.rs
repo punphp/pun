@@ -130,13 +130,14 @@ impl OrderedTraitsFixer {
             }
             ltrim_chars(&s, b"\\").to_vec()
         };
+        let names: Vec<Vec<u8>> = elements.iter().map(|e| to_trait_name(&e.1)).collect();
         let mut order: Vec<usize> = (0..elements.len()).collect();
         order.sort_by(|&a, &b| {
-            let (x, y) = (to_trait_name(&elements[a].1), to_trait_name(&elements[b].1));
+            let (x, y) = (&names[a], &names[b]);
             if self.case_sensitive {
-                x.cmp(&y)
+                x.cmp(y)
             } else {
-                strcasecmp(&x, &y).cmp(&0)
+                strcasecmp(x, y).cmp(&0)
             }
         });
         let before_override_count = tokens.count();

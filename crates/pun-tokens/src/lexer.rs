@@ -361,6 +361,8 @@ impl<'a> Lexer<'a> {
         let n = self.src.len();
         let mut seen = vec![i];
         let mut out = Vec::new();
+        // `out` as a set: a whitespace run of n bytes has n ends, so `out.contains` made this quadratic.
+        let mut found = std::collections::HashSet::new();
         while let Some(q) = seen.pop() {
             let mut next = Vec::new();
             let c = self.at(q);
@@ -402,7 +404,7 @@ impl<'a> Lexer<'a> {
                 }
             }
             for e in next {
-                if !out.contains(&e) {
+                if found.insert(e) {
                     out.push(e);
                     seen.push(e);
                 }

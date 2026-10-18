@@ -8,20 +8,35 @@ use pun_tokens::{Kind::*, Token, Tokens, php_compat::ltrim_chars};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum OnMultiline {
+    Ignore,
+    EnsureSingleLine,
+    EnsureFullyMultiline,
+    EnsureSingleLineForSingleArgument,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum AttributePlacement {
+    Ignore,
+    SameLine,
+    Standalone,
+}
+
 struct MethodArgumentSpaceFixer {
     keep_multiple_spaces_after_comma: bool,
-    on_multiline: String,
+    on_multiline: OnMultiline,
     after_heredoc: bool,
-    attribute_placement: String,
+    attribute_placement: AttributePlacement,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
     crate::configured(MethodArgumentSpaceFixer {
         keep_multiple_spaces_after_comma: false,
-        on_multiline: String::new(),
+        on_multiline: OnMultiline::Ignore,
         after_heredoc: false,
-        attribute_placement: String::new(),
+        attribute_placement: AttributePlacement::Ignore,
         whitespaces_config: Default::default(),
     })
 }
@@ -51,7 +66,7 @@ impl MethodArgumentSpaceFixer {
             if !Preg::r#match("/\\R/", tokens[index].get_content()) {
                 continue;
             }
-            if self.on_multiline != "ensure_single_line" {
+            if self.on_multiline != OnMultiline::EnsureSingleLine {
                 is_multiline = true;
                 continue;
             }
@@ -187,9 +202,9 @@ impl MethodArgumentSpaceFixer {
                 continue;
             }
             if token.is_kind(CT_ATTRIBUTE_CLOSE) {
-                if self.attribute_placement == "standalone" {
+                if self.attribute_placement == AttributePlacement::Standalone {
                     self.fix_newline(tokens, index, &indentation, true);
-                } else if self.attribute_placement == "same_line" {
+                } else if self.attribute_placement == AttributePlacement::SameLine {
                     Self::ensure_single_line(tokens, index + 1);
                     tokens.ensure_whitespace_at_index(index + 1, 0, b" ");
                 }
@@ -246,7 +261,7 @@ impl MethodArgumentSpaceFixer {
         //  2) no space after comma
         if next_token.is_whitespace(None) {
             let mut new_content = next_token.get_content().to_vec();
-            if self.on_multiline == "ensure_single_line" {
+            if self.on_multiline == OnMultiline::EnsureSingleLine {
                 new_content = Preg::replace("/\\R/", "", &new_content);
             }
             if (!self.keep_multiple_spaces_after_comma || Preg::r#match("/\\R/", &new_content))
@@ -365,22 +380,29 @@ impl Fixer for MethodArgumentSpaceFixer {
         )?;
         self.keep_multiple_spaces_after_comma =
             r.bool("keep_multiple_spaces_after_comma", false)?;
-        self.on_multiline = r.string(
+        self.on_multiline = r.choice(
             "on_multiline",
             "ensure_fully_multiline",
             &[
-                "ignore",
-                "ensure_single_line",
-                "ensure_fully_multiline",
-                "ensure_single_line_for_single_argument",
+                ("ignore", OnMultiline::Ignore),
+                ("ensure_single_line", OnMultiline::EnsureSingleLine),
+                ("ensure_fully_multiline", OnMultiline::EnsureFullyMultiline),
+                (
+                    "ensure_single_line_for_single_argument",
+                    OnMultiline::EnsureSingleLineForSingleArgument,
+                ),
             ],
         )?;
         // Future::getV4OrV3(true, false)
         self.after_heredoc = r.bool("after_heredoc", false)?;
-        self.attribute_placement = r.string(
+        self.attribute_placement = r.choice(
             "attribute_placement",
             "standalone",
-            &["ignore", "same_line", "standalone"],
+            &[
+                ("ignore", AttributePlacement::Ignore),
+                ("same_line", AttributePlacement::SameLine),
+                ("standalone", AttributePlacement::Standalone),
+            ],
         )?;
         Ok(())
     }
@@ -399,19 +421,23 @@ impl Fixer for MethodArgumentSpaceFixer {
                 continue;
             }
             let meaningful_token_before_parenthesis =
-                tokens[tokens.get_prev_meaningful_token(index).unwrap()].clone();
+                &tokens[tokens.get_prev_meaningful_token(index).unwrap()];
             if meaningful_token_before_parenthesis.is_keyword()
                 && !meaningful_token_before_parenthesis.is_given_kind(&expected_tokens)
             {
                 continue;
             }
+            let after_list = meaningful_token_before_parenthesis.is_kind(T_LIST);
             let is_multiline = self.fix_function(tokens, index);
             if is_multiline
-                && (self.on_multiline == "ensure_fully_multiline"
-                    || self.on_multiline == "ensure_single_line_for_single_argument")
-                && !meaningful_token_before_parenthesis.is_kind(T_LIST)
+                && matches!(
+                    self.on_multiline,
+                    OnMultiline::EnsureFullyMultiline
+                        | OnMultiline::EnsureSingleLineForSingleArgument
+                )
+                && !after_list
             {
-                if self.on_multiline == "ensure_single_line_for_single_argument" {
+                if self.on_multiline == OnMultiline::EnsureSingleLineForSingleArgument {
                     let end_function_index =
                         tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
                     if arguments_analyzer.count_arguments(tokens, index, end_function_index) == 1 {

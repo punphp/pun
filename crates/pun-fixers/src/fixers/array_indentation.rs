@@ -82,7 +82,7 @@ impl Fixer for ArrayIndentationFixer {
         let mut previous_line_new_indent: Vec<u8> = Vec::new();
         let mut index = 0;
         while index < tokens.count() {
-            let token = tokens[index].clone();
+            let token = &tokens[index];
             let i = index;
             index += 1;
             if token.is_comment() {
@@ -93,7 +93,7 @@ impl Fixer for ArrayIndentationFixer {
                     && tokens[tokens.get_prev_meaningful_token(i).unwrap()]
                         .is_given_kind(&[T_ARRAY, T_LIST]))
             {
-                let (block_type, _) = Tokens::detect_block_type(&token).unwrap();
+                let (block_type, _) = Tokens::detect_block_type(token).unwrap();
                 let end_index = tokens.find_block_end(block_type, i);
                 scopes.push(Scope {
                     is_array: true,

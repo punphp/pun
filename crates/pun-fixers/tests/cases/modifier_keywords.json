@@ -1,0 +1,11 @@
+[
+    {
+        "fixer": "modifier_keywords",
+        "config": {
+            "elements": [
+                "case"
+            ]
+        },
+        "error": "[modifier_keywords] Invalid configuration: The option \"elements\" with value array is invalid."
+    }
+]

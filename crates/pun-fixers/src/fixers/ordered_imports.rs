@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\Import\OrderedImportsFixer`.
+use crate::analyzers::analysis::NamespaceUseType;
 use crate::analyzers::docblock::replace_all;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
@@ -21,7 +22,7 @@ enum Sort {
 
 struct OrderedImportsFixer {
     sort_algorithm: Sort,
-    imports_order: Option<Vec<String>>,
+    imports_order: Option<Vec<NamespaceUseType>>,
     case_sensitive: bool,
     ws: WhitespacesFixerConfig,
 }
@@ -41,7 +42,7 @@ struct Item {
     namespace: Vec<u8>,
     start_index: usize,
     end_index: usize,
-    import_type: &'static str,
+    import_type: NamespaceUseType,
     group: bool,
 }
 
@@ -69,14 +70,15 @@ impl Fixer for OrderedImportsFixer {
             options,
             &["sort_algorithm", "imports_order", "case_sensitive"],
         )?;
-        self.sort_algorithm = match r
-            .string("sort_algorithm", "alpha", &["alpha", "length", "none"])?
-            .as_str()
-        {
-            "alpha" => Sort::Alpha,
-            "length" => Sort::Length,
-            _ => Sort::None,
-        };
+        self.sort_algorithm = r.choice(
+            "sort_algorithm",
+            "alpha",
+            &[
+                ("alpha", Sort::Alpha),
+                ("length", Sort::Length),
+                ("none", Sort::None),
+            ],
+        )?;
         self.imports_order = match r.get("imports_order") {
             None | Some(Value::Null) => None,
             Some(_) => {
@@ -105,7 +107,16 @@ impl Fixer for OrderedImportsFixer {
                         join(&unknown)
                     );
                 }
-                Some(v)
+                let types = [
+                    NamespaceUseType::Class,
+                    NamespaceUseType::Function,
+                    NamespaceUseType::Constant,
+                ];
+                Some(
+                    v.iter()
+                        .map(|x| *types.iter().find(|t| t.name() == x).unwrap())
+                        .collect(),
+                )
             }
         };
         self.case_sensitive = r.bool("case_sensitive", false)?;
@@ -160,37 +171,44 @@ impl OrderedImportsFixer {
         }
     }
 
-    fn sort_alphabetically(&self, first: &Item, second: &Item) -> Ordering {
-        let prep =
-            |ns: &[u8]| replace_all(&replace_all(&prepare_namespace(ns), b"\\", b" "), b"{", b"");
-        self.cmp_str(&prep(&first.namespace), &prep(&second.namespace))
+    /// sortAlphabetically's operand: the prepared namespace with `\\` as a space and `{` dropped.
+    fn alphabetical_key(item: &Item) -> Vec<u8> {
+        replace_all(&replace_all(&prepare_namespace(&item.namespace), b"\\", b" "), b"{", b"")
     }
 
-    fn sort_by_length(&self, first: &Item, second: &Item) -> Ordering {
-        let full = |i: &Item| {
-            let p = if i.import_type == "class" {
-                vec![]
-            } else {
-                [i.import_type.as_bytes(), b" "].concat()
-            };
-            [p, prepare_namespace(&i.namespace)].concat()
-        };
-        let (a, b) = (full(first), full(second));
-        if a.len() == b.len() {
-            self.cmp_str(&a, &b)
-        } else if a.len() > b.len() {
-            Ordering::Greater
+    /// sortByLength's operand: the import type (but `class`), a space, and the prepared namespace.
+    fn length_key(item: &Item) -> Vec<u8> {
+        let p = if item.import_type == NamespaceUseType::Class {
+            vec![]
         } else {
-            Ordering::Less
-        }
+            [item.import_type.name().as_bytes(), b" "].concat()
+        };
+        [p, prepare_namespace(&item.namespace)].concat()
     }
 
+    fn sort_by_length(&self, a: &[u8], b: &[u8]) -> Ordering {
+        a.len().cmp(&b.len()).then_with(|| self.cmp_str(a, b))
+    }
+
+    /// usort with the algorithm's comparison; each item's operand is computed once instead of per comparison.
     fn sort_by_algorithm(&self, indices: &mut [Item]) {
-        match self.sort_algorithm {
-            Sort::Alpha => indices.sort_by(|a, b| self.sort_alphabetically(a, b)),
-            Sort::Length => indices.sort_by(|a, b| self.sort_by_length(a, b)),
-            Sort::None => {}
-        }
+        let key = match self.sort_algorithm {
+            Sort::Alpha => Self::alphabetical_key,
+            Sort::Length => Self::length_key,
+            Sort::None => return,
+        };
+        let keys: Vec<Vec<u8>> = indices.iter().map(key).collect();
+        let mut order: Vec<usize> = (0..indices.len()).collect();
+        order.sort_by(|&a, &b| {
+            let (a, b) = (&keys[a], &keys[b]);
+            if self.sort_algorithm == Sort::Length {
+                self.sort_by_length(a, b)
+            } else {
+                self.cmp_str(a, b)
+            }
+        });
+        let sorted: Vec<Item> = order.iter().map(|&i| indices[i].clone()).collect();
+        indices.clone_from_slice(&sorted);
     }
 
     /// Returns `(original start index, item)` pairs in upstream's `$usesOrder` order.
@@ -209,16 +227,16 @@ impl OrderedImportsFixer {
             let group = tokens[previous].is_kind(Kind::CT_GROUP_IMPORT_BRACE_CLOSE);
             let (ty, mut index) = if tokens[start_index].is_kind(Kind::CT_CONST_IMPORT) {
                 (
-                    "const",
+                    NamespaceUseType::Constant,
                     tokens.get_next_non_whitespace(start_index, None).unwrap(),
                 )
             } else if tokens[start_index].is_kind(Kind::CT_FUNCTION_IMPORT) {
                 (
-                    "function",
+                    NamespaceUseType::Function,
                     tokens.get_next_non_whitespace(start_index, None).unwrap(),
                 )
             } else {
-                ("class", start_index)
+                (NamespaceUseType::Class, start_index)
             };
             let mut namespace_tokens: Vec<Token> = vec![];
             while index <= end_index {
@@ -262,7 +280,7 @@ impl OrderedImportsFixer {
 
         let indices: Vec<Item> = match &self.imports_order {
             Some(order) => {
-                let mut grouped: Vec<(&str, Vec<Item>)> = vec![];
+                let mut grouped: Vec<(NamespaceUseType, Vec<Item>)> = vec![];
                 for item in indices {
                     match grouped.iter_mut().find(|(t, _)| *t == item.import_type) {
                         Some((_, v)) => v.push(item),
@@ -380,17 +398,17 @@ impl OrderedImportsFixer {
             let index = *index;
             let code = [
                 &b"<?php use "[..],
-                &(if u.import_type == "class" {
+                &(if u.import_type == NamespaceUseType::Class {
                     vec![]
                 } else {
-                    [&b" "[..], u.import_type.as_bytes(), b" "].concat()
+                    [&b" "[..], u.import_type.name().as_bytes(), b" "].concat()
                 }),
                 &u.namespace,
                 b";",
             ]
             .concat();
             let mut n = 3;
-            if u.import_type != "class"
+            if u.import_type != NamespaceUseType::Class
                 && tokens[tokens.get_prev_meaningful_token(index).unwrap()].equals(",", true)
             {
                 n = 5;

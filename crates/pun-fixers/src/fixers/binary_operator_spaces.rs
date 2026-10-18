@@ -296,26 +296,29 @@ impl BinaryOperatorSpacesFixer {
         let mut new_line_found_since_last_placeholder = true;
         let mut index = start_at;
         while index < end_at {
-            let mut token = tokens[index].clone();
-            let content = token.get_content().to_vec();
+            // `tokens[index]` is upstream's `$token` below: nothing edits it before the checks.
+            let content = tokens[index].get_content();
             if content.contains(&b'\n') {
                 new_line_found_since_last_placeholder = true;
             }
-            if strtolower(&content) == token_content
+            // `token_content` is lowercase, so this is `strtolower($content) === $tokenContent`.
+            if content.eq_ignore_ascii_case(token_content)
                 && is_binary(analyzed, index)
                 && (content != b"="
                     || Self::is_equal_part_of_declare_statement(tokens, index).is_none())
                 && new_line_found_since_last_placeholder
             {
-                tokens.set(
-                    index,
-                    Token::char([align_placeholder(levels.current_level.get()), content].concat()),
-                );
+                let content = [
+                    align_placeholder(levels.current_level.get()),
+                    tokens[index].get_content().to_vec(),
+                ]
+                .concat();
+                tokens.set(index, Token::char(content));
                 new_line_found_since_last_placeholder = false;
                 index += 1;
                 continue;
             }
-            if token.is_kind(T_FN) {
+            if tokens[index].is_kind(T_FN) {
                 let from = tokens.get_next_meaningful_token(index).unwrap();
                 let until =
                     TokensAnalyzer::new(analyzed).get_last_token_index_of_arrow_function(index);
@@ -330,7 +333,7 @@ impl BinaryOperatorSpacesFixer {
                 index = until + 1;
                 continue;
             }
-            if token.is_given_kind(&[T_FUNCTION, T_CLASS]) {
+            if tokens[index].is_given_kind(&[T_FUNCTION, T_CLASS]) {
                 index = tokens
                     .get_next_token_of_kind(index, &["{".into(), ";".into(), "(".into()], true)
                     .unwrap();
@@ -341,10 +344,9 @@ impl BinaryOperatorSpacesFixer {
                 }
                 // (upstream's `;` arm is dead: `::class` is CT_CLASS_CONSTANT, and T_FUNCTION / T_CLASS always
                 // reach `(` or `{` before any `;`)
-                // Update the token to the `{` one in order to apply the following logic
-                token = tokens[index].clone();
+                // `index` is now the `{`, so the checks below look at it, like upstream's `$token = $tokens[$index]`
             }
-            if token.equals("{", true) {
+            if tokens[index].equals("{", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
                 Self::inject_alignment_placeholders(
                     levels,
@@ -357,7 +359,7 @@ impl BinaryOperatorSpacesFixer {
                 index = until + 1;
                 continue;
             }
-            if token.equals("(", true) {
+            if tokens[index].equals("(", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
                 Self::inject_alignment_placeholders(
                     levels,
@@ -370,11 +372,11 @@ impl BinaryOperatorSpacesFixer {
                 index = until + 1;
                 continue;
             }
-            if token.equals("[", true) {
+            if tokens[index].equals("[", true) {
                 index = tokens.find_block_end(Tokens::BLOCK_TYPE_INDEX_BRACKET, index) + 1;
                 continue;
             }
-            if token.is_kind(CT_ARRAY_BRACKET_OPEN) {
+            if tokens[index].is_kind(CT_ARRAY_BRACKET_OPEN) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, index);
                 Self::inject_alignment_placeholders(
                     levels,
@@ -427,15 +429,14 @@ impl BinaryOperatorSpacesFixer {
         let mut yield_found_since_last_placeholder = false;
         let mut index = start_at;
         while index < end_at {
-            let token = tokens[index].clone();
-            let content = token.get_content();
-            if content.contains(&b'\n') {
+            // `tokens[index]` is upstream's `$token`: nothing edits it before the checks.
+            if tokens[index].get_content().contains(&b'\n') {
                 new_line_found_since_last_placeholder = true;
             }
-            if token.is_kind(T_YIELD) {
+            if tokens[index].is_kind(T_YIELD) {
                 yield_found_since_last_placeholder = true;
             }
-            if token.is_kind(T_FN) {
+            if tokens[index].is_kind(T_FN) {
                 yield_found_since_last_placeholder = false;
                 let from = tokens.get_next_meaningful_token(index).unwrap();
                 let until =
@@ -450,7 +451,7 @@ impl BinaryOperatorSpacesFixer {
                 index = until + 1;
                 continue;
             }
-            if token.is_kind(T_ARRAY) {
+            if tokens[index].is_kind(T_ARRAY) {
                 // don't use "$tokens->isArray()" here, short arrays are handled in the next case
                 yield_found_since_last_placeholder = false;
                 let from = tokens.get_next_meaningful_token(index).unwrap();
@@ -466,7 +467,7 @@ impl BinaryOperatorSpacesFixer {
                 index += 1;
                 continue;
             }
-            if token.is_kind(CT_ARRAY_BRACKET_OPEN) {
+            if tokens[index].is_kind(CT_ARRAY_BRACKET_OPEN) {
                 yield_found_since_last_placeholder = false;
                 let from = index;
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, from);
@@ -483,14 +484,14 @@ impl BinaryOperatorSpacesFixer {
             }
             // no need to analyse for `isBinaryOperator` (always true), nor if part of declare statement (not valid PHP)
             // there is also no need to analyse the second arrow of a line
-            if token.is_kind(T_DOUBLE_ARROW) && new_line_found_since_last_placeholder {
+            if tokens[index].is_kind(T_DOUBLE_ARROW) && new_line_found_since_last_placeholder {
                 if yield_found_since_last_placeholder {
                     levels.deepest_level.set(levels.deepest_level.get() + 1);
                     levels.current_level.set(levels.deepest_level.get());
                 }
                 let mut token_content = [
                     align_placeholder(levels.current_level.get()),
-                    token.get_content().to_vec(),
+                    tokens[index].get_content().to_vec(),
                 ]
                 .concat();
                 let next_token = &tokens[index + 1];
@@ -505,13 +506,13 @@ impl BinaryOperatorSpacesFixer {
                 index += 1;
                 continue;
             }
-            if token.equals(";", true) {
+            if tokens[index].equals(";", true) {
                 levels.deepest_level.set(levels.deepest_level.get() + 1);
                 levels.current_level.set(levels.current_level.get() + 1);
                 index += 1;
                 continue;
             }
-            if token.equals(",", true) {
+            if tokens[index].equals(",", true) {
                 let mut i = index;
                 while i < end_at - 1 {
                     if tokens[i - 1].get_content().contains(&b'\n') {
@@ -538,7 +539,7 @@ impl BinaryOperatorSpacesFixer {
                     i += 1;
                 }
             }
-            if token.equals("{", true) {
+            if tokens[index].equals("{", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
                 Self::inject_array_alignment_placeholders(
                     levels,
@@ -550,7 +551,7 @@ impl BinaryOperatorSpacesFixer {
                 index = until + 1;
                 continue;
             }
-            if token.equals("(", true) {
+            if tokens[index].equals("(", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
                 Self::inject_array_alignment_placeholders(
                     levels,

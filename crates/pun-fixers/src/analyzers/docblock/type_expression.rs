@@ -11,6 +11,30 @@ static PARSE_PATTERN: LazyLock<String> =
     LazyLock::new(|| format!(r"{{\G{REGEX_TYPE}(?<glue_raw>\h*(?<glue>[|&])\h*(?!$)|$)}}"));
 static COMMA_SEPARATED_PATTERN: LazyLock<String> =
     LazyLock::new(|| format!(r"{{\G{REGEX_TYPES}(?:\h*,[\h\v*]*|$)}}"));
+/// parse_prefixed's whole-type check, built once.
+static FULL_TYPES_PATTERN: LazyLock<String> = LazyLock::new(|| format!(r"{{^{REGEX_TYPES}$}}"));
+
+/// One of parse_prefixed's three loops: the `\G` pattern that consumes an item, and its `_`-prefixed capture name.
+struct Prefixed {
+    pattern: String,
+    capture: String,
+}
+
+impl Prefixed {
+    fn new(group: &str, sep: &str) -> Prefixed {
+        Prefixed {
+            pattern: format!(r"{{\G(?:(?=1)0{REGEX_TYPES}|(?<_{group}>(?&{group})){sep})}}"),
+            capture: format!("_{group}"),
+        }
+    }
+}
+
+static CALLABLE_TEMPLATE_INNER: LazyLock<Prefixed> =
+    LazyLock::new(|| Prefixed::new("callable_template_inner", r"(?:\h*,\h*|$)"));
+static CALLABLE_ARGUMENT: LazyLock<Prefixed> =
+    LazyLock::new(|| Prefixed::new("callable_argument", r"(?:\h*,\h*|$)"));
+static ARRAY_SHAPE_INNER: LazyLock<Prefixed> =
+    LazyLock::new(|| Prefixed::new("array_shape_inner", r"(?:\h*,[\h\v*]*|$)"));
 
 #[derive(Debug)]
 pub struct ParseError(pub Vec<u8>);
@@ -254,32 +278,25 @@ impl TypeExpression {
     }
 
     /// Shared loop of parseCallableTemplateInnerTypes / parseCallableArgumentTypes / parseArrayShapeInnerTypes.
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "the three upstream loops differ only in these regex pieces"
-    )]
     fn parse_prefixed(
         &mut self,
         start_index: usize,
         value: &[u8],
-        group: &str,
-        sep: &str,
+        prefixed: &Prefixed,
         prefix: &[u8],
         suffix: &[u8],
         mut each: impl FnMut(&Captures, usize, &mut Vec<(usize, Vec<u8>)>),
     ) -> Result<(), ParseError> {
-        let pre = format!(r"{{\G(?:(?=1)0{REGEX_TYPES}|(?<_{group}>(?&{group})){sep})}}");
-        let full = format!(r"{{^{REGEX_TYPES}$}}");
         let mut index = 0;
         while value.len() != index {
-            let pm =
-                Preg::match_at(&pre, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
-            let consumed_value = pm.name_str(&format!("_{group}"));
+            let pm = Preg::match_at(&prefixed.pattern, value, index)
+                .ok_or_else(|| ParseError(value.to_vec()))?;
+            let consumed_value = pm.name_str(&prefixed.capture);
             let consumed_value_length = consumed_value.len();
             let consumed_comma_length = pm.str(0).len() - consumed_value_length;
             let subject = [prefix, consumed_value, suffix].concat();
-            let m =
-                Preg::match_groups(&full, &subject).ok_or_else(|| ParseError(value.to_vec()))?;
+            let m = Preg::match_groups(&*FULL_TYPES_PATTERN, &subject)
+                .ok_or_else(|| ParseError(value.to_vec()))?;
             let mut out = vec![];
             each(&m, start_index + index, &mut out);
             for (i, v) in out {
@@ -299,8 +316,7 @@ impl TypeExpression {
         self.parse_prefixed(
             start_index,
             value,
-            "callable_template_inner",
-            r"(?:\h*,\h*|$)",
+            &CALLABLE_TEMPLATE_INNER,
             b"Closure<",
             b">(): void",
             |m, base, out| {
@@ -330,8 +346,7 @@ impl TypeExpression {
         self.parse_prefixed(
             start_index,
             value,
-            "callable_argument",
-            r"(?:\h*,\h*|$)",
+            &CALLABLE_ARGUMENT,
             b"Closure(",
             b"): void",
             |m, base, out| {
@@ -349,8 +364,7 @@ impl TypeExpression {
         self.parse_prefixed(
             start_index,
             value,
-            "array_shape_inner",
-            r"(?:\h*,[\h\v*]*|$)",
+            &ARRAY_SHAPE_INNER,
             b"array{",
             b"}",
             |m, base, out| {

@@ -37,7 +37,7 @@ const EXPECTED_KINDS_GENERIC: &[Kind] = &[
 const ELEMENTS: &[&str] = &["const", "method", "property"];
 
 struct ModifierKeywordsFixer {
-    elements: Vec<String>,
+    elements: Vec<T>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
@@ -53,9 +53,17 @@ impl Fixer for ModifierKeywordsFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let r = resolve("modifier_keywords", options, &["elements"])?;
-        self.elements = r.strings("elements", ELEMENTS, ELEMENTS)?;
-        if self.elements.iter().any(|e| e == "property") {
-            self.elements.push("promoted_property".into());
+        self.elements = r.choices(
+            "elements",
+            ELEMENTS,
+            &[
+                ("const", T::Const),
+                ("method", T::Method),
+                ("property", T::Property),
+            ],
+        )?;
+        if self.elements.contains(&T::Property) {
+            self.elements.push(T::PromotedProperty);
         }
         Ok(())
     }
@@ -65,7 +73,7 @@ impl Fixer for ModifierKeywordsFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let elements = TokensAnalyzer::new(tokens).get_classy_elements();
         for (&index, element) in elements.iter().rev() {
-            if !self.elements.iter().any(|e| e == element.kind.as_str()) {
+            if !self.elements.contains(&element.kind) {
                 continue;
             }
             let mut index = index;

@@ -10,6 +10,11 @@ pub struct Resolved {
 }
 
 /// `Null` (rule enabled with `true`) means "all defaults". Unknown keys are rejected like upstream.
+/// The variant paired with `value`, which `string`/`strings` already checked against the names.
+fn variant<T: Copy>(choices: &[(&str, T)], value: &str) -> T {
+    choices.iter().find(|&&(name, _)| name == value).unwrap().1
+}
+
 pub fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) -> Result<Resolved> {
     // RuleSet / FixerFactory::useRuleSet checks, done before configure() upstream.
     let map = match options {
@@ -200,6 +205,26 @@ impl Resolved {
             Some(v) if allowed.is_empty() => Err(self.type_error(key, v, "\"string\"")),
             Some(v) => Err(self.invalid(key, v, allowed)),
         }
+    }
+
+    /// `string` for an option whose allowed values stand for enum variants: the variant paired with the value.
+    /// `choices` keeps upstream's order of allowed values, which the error message lists.
+    pub fn choice<T: Copy>(&self, key: &str, default: &str, choices: &[(&str, T)]) -> Result<T> {
+        let allowed: Vec<&str> = choices.iter().map(|&(name, _)| name).collect();
+        let value = self.string(key, default, &allowed)?;
+        Ok(variant(choices, &value))
+    }
+
+    /// `strings` restricted to `choices`: the variant of each configured value, in order.
+    pub fn choices<T: Copy>(
+        &self,
+        key: &str,
+        default: &[&str],
+        choices: &[(&str, T)],
+    ) -> Result<Vec<T>> {
+        let allowed: Vec<&str> = choices.iter().map(|&(name, _)| name).collect();
+        let values = self.strings(key, default, &allowed)?;
+        Ok(values.iter().map(|v| variant(choices, v)).collect())
     }
 
     /// `bool|null` options (e.g. yoda_style's `equal`).

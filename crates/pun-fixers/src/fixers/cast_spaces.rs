@@ -6,13 +6,20 @@ use pun_tokens::{Kind::*, Token, Tokens, token::CAST_KINDS};
 use serde_json::Value;
 use std::path::Path;
 
-#[derive(Default)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Space {
+    None,
+    Single,
+}
+
 struct CastSpacesFixer {
-    space: String,
+    space: Space,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    crate::configured(CastSpacesFixer::default())
+    crate::configured(CastSpacesFixer {
+        space: Space::Single,
+    })
 }
 
 impl Fixer for CastSpacesFixer {
@@ -25,7 +32,11 @@ impl Fixer for CastSpacesFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let r = resolve(self.name(), options, &["space"])?;
-        self.space = r.string("space", "single", &["none", "single"])?;
+        self.space = r.choice(
+            "space",
+            "single",
+            &[("none", Space::None), ("single", Space::Single)],
+        )?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -51,7 +62,7 @@ impl Fixer for CastSpacesFixer {
                 content,
             };
             tokens.set(index, t);
-            if self.space == "single" {
+            if self.space == Space::Single {
                 // force single whitespace after cast token:
                 if tokens[index + 1].is_whitespace(Some(b" \t")) {
                     // - if next token is whitespaces that contains only spaces and tabs - override next token with single space

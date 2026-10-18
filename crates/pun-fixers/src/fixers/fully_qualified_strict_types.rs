@@ -2,7 +2,7 @@
 //!
 //! Every `$importKind` upstream passes is `'class'` (uses are collected for class imports only), so the
 //! per-kind dimension of `$uses`, `$discoveredSymbols`, `$symbolsForImport` and the uses caches is dropped.
-use crate::analyzers::analysis::TypeAnalysis;
+use crate::analyzers::analysis::{NamespaceUseType, TypeAnalysis};
 use crate::analyzers::attribute_analyzer::AttributeAnalyzer;
 use crate::analyzers::docblock::{
     TypeExpression, type_expression::REGEX_IDENTIFIER, type_expression::REGEX_TYPES,
@@ -283,7 +283,7 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                     .collect();
                 ImportProcessor::new(self.whitespaces_config.clone()).insert_imports(
                     tokens,
-                    &[("class", names)],
+                    &[(NamespaceUseType::Class, names)],
                     at_index,
                 );
                 st.symbols_for_import = OMap::default();

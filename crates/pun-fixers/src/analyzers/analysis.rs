@@ -13,6 +13,17 @@ pub enum NamespaceUseType {
     Constant = 3,
 }
 
+impl NamespaceUseType {
+    /// The import type's name in configuration and in `use function` / `use const`: `class`, `function`, `const`.
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Class => "class",
+            Self::Function => "function",
+            Self::Constant => "const",
+        }
+    }
+}
+
 /// `NamespaceUseAnalysis`.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct NamespaceUseAnalysis {

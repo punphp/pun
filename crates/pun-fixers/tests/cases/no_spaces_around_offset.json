@@ -1,0 +1,11 @@
+[
+    {
+        "fixer": "no_spaces_around_offset",
+        "config": {
+            "positions": [
+                "middle"
+            ]
+        },
+        "error": "[no_spaces_around_offset] Invalid configuration: The option \"positions\" with value array is invalid."
+    }
+]

@@ -20,16 +20,16 @@ enum Spacing {
 #[derive(Default)]
 struct ClassAttributesSeparationFixer {
     /// `$classElementTypes`: element type => spacing, in configuration order.
-    class_element_types: Vec<(&'static str, Spacing)>,
+    class_element_types: Vec<(ClassyElementType, Spacing)>,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-const DEFAULT_ELEMENTS: [(&str, Spacing); 5] = [
-    ("const", Spacing::One),
-    ("method", Spacing::One),
-    ("property", Spacing::One),
-    ("trait_import", Spacing::None),
-    ("case", Spacing::None),
+const DEFAULT_ELEMENTS: [(ClassyElementType, Spacing); 5] = [
+    (ClassyElementType::Const, Spacing::One),
+    (ClassyElementType::Method, Spacing::One),
+    (ClassyElementType::Property, Spacing::One),
+    (ClassyElementType::TraitImport, Spacing::None),
+    (ClassyElementType::Case, Spacing::None),
 ];
 
 pub fn fixer() -> Box<dyn Fixer> {
@@ -59,7 +59,7 @@ const MODIFIER_TYPES: &[Kind] = &[
 ];
 
 struct Element {
-    type_: &'static str,
+    type_: ClassyElementType,
     start: usize,
     end: usize,
 }
@@ -92,10 +92,9 @@ impl Fixer for ClassAttributesSeparationFixer {
         let mut out = Vec::new();
         for (type_, spacing) in elements {
             let spacing = spacing.as_str().unwrap();
-            let supported = ["const", "method", "property", "trait_import", "case"];
-            let Some(&t) = supported
+            let Some(&(t, _)) = DEFAULT_ELEMENTS
                 .iter()
-                .find(|t| matches!(type_, PhpKey::Str(s) if s == **t))
+                .find(|(t, _)| matches!(type_, PhpKey::Str(s) if s == t.as_str()))
             else {
                 bail!(
                     "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"{}\".",
@@ -124,11 +123,11 @@ impl Fixer for ClassAttributesSeparationFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         // getElementsByClass is a generator: each class group's start/end/open/close is computed
         // after the previously yielded groups were fixed.
-        let all: Vec<(usize, usize, &'static str)> = TokensAnalyzer::new(tokens)
+        let all: Vec<(usize, usize, ClassyElementType)> = TokensAnalyzer::new(tokens)
             .get_classy_elements()
             .into_iter()
             .rev()
-            .map(|(index, e)| (index, e.class_index, type_name(e.kind)))
+            .map(|(index, e)| (index, e.class_index, e.kind))
             .collect();
         let mut pos = 0;
         while pos < all.len() {
@@ -155,12 +154,8 @@ impl Fixer for ClassAttributesSeparationFixer {
     }
 }
 
-fn type_name(kind: ClassyElementType) -> &'static str {
-    kind.as_str()
-}
-
 impl ClassAttributesSeparationFixer {
-    fn spacing(&self, type_: &str) -> Option<Spacing> {
+    fn spacing(&self, type_: ClassyElementType) -> Option<Spacing> {
         self.class_element_types
             .iter()
             .find(|(t, _)| *t == type_)
@@ -383,10 +378,10 @@ fn get_last_token_index_of_class_element(
     tokens: &Tokens,
     class_index: usize,
     element_index: usize,
-    element_type: &str,
+    element_type: ClassyElementType,
 ) -> usize {
     let mut element_end_index;
-    if element_type == "method" && !tokens[class_index].is_kind(T_INTERFACE) {
+    if element_type == ClassyElementType::Method && !tokens[class_index].is_kind(T_INTERFACE) {
         let attributes = TokensAnalyzer::new(tokens).get_method_attributes(element_index);
         if attributes.abstract_ {
             element_end_index = tokens
@@ -398,7 +393,7 @@ fn get_last_token_index_of_class_element(
                 .unwrap();
             element_end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
         }
-    } else if element_type == "trait_import" {
+    } else if element_type == ClassyElementType::TraitImport {
         element_end_index = element_index;
         loop {
             element_end_index = tokens.get_next_meaningful_token(element_end_index).unwrap();
@@ -414,7 +409,7 @@ fn get_last_token_index_of_class_element(
                 .unwrap();
             element_end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
         }
-    } else if element_type == "property" {
+    } else if element_type == ClassyElementType::Property {
         element_end_index = tokens
             .get_next_token_of_kind(
                 element_index,

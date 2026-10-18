@@ -2,7 +2,7 @@
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
-use pun_tokens::{Token, Tokens};
+use pun_tokens::{Kind, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
@@ -34,10 +34,11 @@ impl Fixer for NoAlternativeSyntaxFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in (0..tokens.count()).rev() {
-            let token = tokens[index].clone();
-            fix_elseif(index, &token, tokens);
-            fix_else(index, &token, tokens);
-            fix_open_close_controls(index, &token, tokens);
+            // The kind before any of the three edits, like upstream's `$token`.
+            let kind = tokens[index].id;
+            fix_elseif(index, kind, tokens);
+            fix_else(index, kind, tokens);
+            fix_open_close_controls(index, kind, tokens);
         }
     }
 }
@@ -50,8 +51,8 @@ fn find_parenthesis_end(tokens: &Tokens, structure_token_index: usize) -> usize 
     tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, next_index)
 }
 
-fn fix_open_close_controls(index: usize, token: &Token, tokens: &mut Tokens) {
-    if token.is_given_kind(&[T_IF, T_FOREACH, T_WHILE, T_FOR, T_SWITCH, T_DECLARE]) {
+fn fix_open_close_controls(index: usize, kind: Option<Kind>, tokens: &mut Tokens) {
+    if kind.is_some_and(|k| [T_IF, T_FOREACH, T_WHILE, T_FOR, T_SWITCH, T_DECLARE].contains(&k)) {
         let open_index = tokens
             .get_next_token_of_kind(index, &["(".into()], true)
             .unwrap();
@@ -71,14 +72,17 @@ fn fix_open_close_controls(index: usize, token: &Token, tokens: &mut Tokens) {
         tokens.clear_at(after_parenthesis_index);
         tokens.insert_at(after_parenthesis_index, items);
     }
-    if !token.is_given_kind(&[
-        T_ENDIF,
-        T_ENDFOREACH,
-        T_ENDWHILE,
-        T_ENDFOR,
-        T_ENDSWITCH,
-        T_ENDDECLARE,
-    ]) {
+    if !kind.is_some_and(|k| {
+        [
+            T_ENDIF,
+            T_ENDFOREACH,
+            T_ENDWHILE,
+            T_ENDFOR,
+            T_ENDSWITCH,
+            T_ENDDECLARE,
+        ]
+        .contains(&k)
+    }) {
         return;
     }
     let next_token_index = tokens.get_next_meaningful_token(index).unwrap();
@@ -89,8 +93,8 @@ fn fix_open_close_controls(index: usize, token: &Token, tokens: &mut Tokens) {
     }
 }
 
-fn fix_else(index: usize, token: &Token, tokens: &mut Tokens) {
-    if !token.is_kind(T_ELSE) {
+fn fix_else(index: usize, kind: Option<Kind>, tokens: &mut Tokens) {
+    if kind != Some(T_ELSE) {
         return;
     }
     let token_after_else_index = tokens.get_next_meaningful_token(index).unwrap();
@@ -105,8 +109,8 @@ fn fix_else(index: usize, token: &Token, tokens: &mut Tokens) {
     );
 }
 
-fn fix_elseif(index: usize, token: &Token, tokens: &mut Tokens) {
-    if !token.is_kind(T_ELSEIF) {
+fn fix_elseif(index: usize, kind: Option<Kind>, tokens: &mut Tokens) {
+    if kind != Some(T_ELSEIF) {
         return;
     }
     let parenthesis_end_index = find_parenthesis_end(tokens, index);

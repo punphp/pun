@@ -10,17 +10,40 @@ use std::path::Path;
 
 const NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END: &str = "next_line_unless_newline_at_signature_end";
 const SAME_LINE: &str = "same_line";
+const POSITIONS: &[(&str, Position)] = &[
+    (
+        NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END,
+        Position::NextLineUnlessNewlineAtSignatureEnd,
+    ),
+    (SAME_LINE, Position::SameLine),
+];
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Position {
+    NextLineUnlessNewlineAtSignatureEnd,
+    SameLine,
+}
+
+/// Which `*_opening_brace` option applies to a brace.
+#[derive(Clone, Copy)]
+enum Brace {
+    ControlStructures,
+    Functions,
+    AnonymousFunctions,
+    Classes,
+    AnonymousClasses,
+}
 const CONTROL_STRUCTURE_TOKENS: &[Kind] = &[
     T_DECLARE, T_DO, T_ELSE, T_ELSEIF, T_FINALLY, T_FOR, T_FOREACH, T_IF, T_WHILE, T_TRY, T_CATCH,
     T_SWITCH, T_MATCH,
 ];
 
 struct BracesPositionFixer {
-    control_structures_opening_brace: String,
-    functions_opening_brace: String,
-    anonymous_functions_opening_brace: String,
-    classes_opening_brace: String,
-    anonymous_classes_opening_brace: String,
+    control_structures_opening_brace: Position,
+    functions_opening_brace: Position,
+    anonymous_functions_opening_brace: Position,
+    classes_opening_brace: Position,
+    anonymous_classes_opening_brace: Position,
     allow_single_line_empty_anonymous_classes: bool,
     allow_single_line_anonymous_functions: bool,
     whitespaces_config: WhitespacesFixerConfig,
@@ -28,11 +51,11 @@ struct BracesPositionFixer {
 
 pub fn fixer() -> Box<dyn Fixer> {
     crate::configured(BracesPositionFixer {
-        control_structures_opening_brace: String::new(),
-        functions_opening_brace: String::new(),
-        anonymous_functions_opening_brace: String::new(),
-        classes_opening_brace: String::new(),
-        anonymous_classes_opening_brace: String::new(),
+        control_structures_opening_brace: Position::SameLine,
+        functions_opening_brace: Position::SameLine,
+        anonymous_functions_opening_brace: Position::SameLine,
+        classes_opening_brace: Position::SameLine,
+        anonymous_classes_opening_brace: Position::SameLine,
         allow_single_line_empty_anonymous_classes: true,
         allow_single_line_anonymous_functions: true,
         whitespaces_config: Default::default(),
@@ -71,13 +94,13 @@ impl BracesPositionFixer {
         token.is_comment()
     }
 
-    fn position(&self, option: &str) -> &str {
-        match option {
-            "control_structures_opening_brace" => &self.control_structures_opening_brace,
-            "functions_opening_brace" => &self.functions_opening_brace,
-            "anonymous_functions_opening_brace" => &self.anonymous_functions_opening_brace,
-            "classes_opening_brace" => &self.classes_opening_brace,
-            _ => &self.anonymous_classes_opening_brace,
+    fn position(&self, brace: Brace) -> Position {
+        match brace {
+            Brace::ControlStructures => self.control_structures_opening_brace,
+            Brace::Functions => self.functions_opening_brace,
+            Brace::AnonymousFunctions => self.anonymous_functions_opening_brace,
+            Brace::Classes => self.classes_opening_brace,
+            Brace::AnonymousClasses => self.anonymous_classes_opening_brace,
         }
     }
 }
@@ -105,23 +128,22 @@ impl Fixer for BracesPositionFixer {
                 "allow_single_line_anonymous_functions",
             ],
         )?;
-        let allowed = &[NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END, SAME_LINE];
         self.control_structures_opening_brace =
-            r.string("control_structures_opening_brace", SAME_LINE, allowed)?;
-        self.functions_opening_brace = r.string(
+            r.choice("control_structures_opening_brace", SAME_LINE, POSITIONS)?;
+        self.functions_opening_brace = r.choice(
             "functions_opening_brace",
             NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END,
-            allowed,
+            POSITIONS,
         )?;
         self.anonymous_functions_opening_brace =
-            r.string("anonymous_functions_opening_brace", SAME_LINE, allowed)?;
-        self.classes_opening_brace = r.string(
+            r.choice("anonymous_functions_opening_brace", SAME_LINE, POSITIONS)?;
+        self.classes_opening_brace = r.choice(
             "classes_opening_brace",
             NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END,
-            allowed,
+            POSITIONS,
         )?;
         self.anonymous_classes_opening_brace =
-            r.string("anonymous_classes_opening_brace", SAME_LINE, allowed)?;
+            r.choice("anonymous_classes_opening_brace", SAME_LINE, POSITIONS)?;
         self.allow_single_line_empty_anonymous_classes =
             r.bool("allow_single_line_empty_anonymous_classes", true)?;
         // Future::getV4OrV3(false, true)
@@ -142,22 +164,23 @@ impl Fixer for BracesPositionFixer {
         while foreach_index < tokens.count() {
             let mut index = foreach_index;
             foreach_index += 1;
-            let token = tokens[index].clone();
+            let kind = tokens[index].id;
+            let is = |kinds: &[Kind]| kind.is_some_and(|k| kinds.contains(&k));
             let mut allow_single_line = false;
             let mut allow_single_line_if_empty = false;
             let mut open_brace_index;
             let position_option;
-            if token.is_given_kind(CLASSY_KINDS) {
+            if is(CLASSY_KINDS) {
                 open_brace_index = tokens
                     .get_next_token_of_kind(index, &["{".into()], true)
                     .unwrap();
                 if TokensAnalyzer::new(tokens).is_anonymous_class(index) {
                     allow_single_line_if_empty = self.allow_single_line_empty_anonymous_classes;
-                    position_option = "anonymous_classes_opening_brace";
+                    position_option = Brace::AnonymousClasses;
                 } else {
-                    position_option = "classes_opening_brace";
+                    position_option = Brace::Classes;
                 }
-            } else if token.is_kind(T_FUNCTION) {
+            } else if kind == Some(T_FUNCTION) {
                 open_brace_index = tokens
                     .get_next_token_of_kind(
                         index,
@@ -170,11 +193,11 @@ impl Fixer for BracesPositionFixer {
                 }
                 if TokensAnalyzer::new(tokens).is_lambda(index) {
                     allow_single_line = self.allow_single_line_anonymous_functions;
-                    position_option = "anonymous_functions_opening_brace";
+                    position_option = Brace::AnonymousFunctions;
                 } else {
-                    position_option = "functions_opening_brace";
+                    position_option = Brace::Functions;
                 }
-            } else if token.is_given_kind(CONTROL_STRUCTURE_TOKENS) {
+            } else if is(CONTROL_STRUCTURE_TOKENS) {
                 let parenthesis_end_index = Self::find_parenthesis_end(tokens, index);
                 open_brace_index = tokens
                     .get_next_meaningful_token(parenthesis_end_index)
@@ -182,8 +205,8 @@ impl Fixer for BracesPositionFixer {
                 if !tokens[open_brace_index].equals("{", true) {
                     continue;
                 }
-                position_option = "control_structures_opening_brace";
-            } else if token.is_kind(T_VARIABLE) {
+                position_option = Brace::ControlStructures;
+            } else if kind == Some(T_VARIABLE) {
                 // handle default value - explicitly skip array as default value
                 let mut next_meaningful_index = tokens.get_next_meaningful_token(index).unwrap();
                 if tokens[next_meaningful_index].equals("=", true) {
@@ -228,8 +251,8 @@ impl Fixer for BracesPositionFixer {
                 if !tokens.is_partial_code_multiline(open_brace_index, close_brace_index) {
                     continue;
                 }
-                position_option = "control_structures_opening_brace";
-            } else if token.is_kind(T_STRING) {
+                position_option = Brace::ControlStructures;
+            } else if kind == Some(T_STRING) {
                 let parenthesis_end_index = Self::find_parenthesis_end(tokens, index);
                 open_brace_index = tokens
                     .get_next_meaningful_token(parenthesis_end_index)
@@ -250,7 +273,7 @@ impl Fixer for BracesPositionFixer {
                     continue;
                 }
                 allow_single_line = self.allow_single_line_anonymous_functions;
-                position_option = "control_structures_opening_brace";
+                position_option = Brace::ControlStructures;
             } else {
                 continue;
             }
@@ -295,7 +318,7 @@ impl Fixer for BracesPositionFixer {
             }
 
             let mut whitespace: Vec<u8> = b" ".to_vec();
-            if self.position(position_option) == NEXT_LINE_UNLESS_NEWLINE_AT_SIGNATURE_END {
+            if self.position(position_option) == Position::NextLineUnlessNewlineAtSignatureEnd {
                 whitespace = [line_ending, &get_line_indentation(tokens, index)].concat();
                 let mut previous_token_index = open_brace_index;
                 loop {

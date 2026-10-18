@@ -1,11 +1,11 @@
 //! Port of `PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer`.
-use crate::analyzers::analysis::NamespaceUseAnalysis;
+use crate::analyzers::analysis::{NamespaceUseAnalysis, NamespaceUseType};
 use crate::analyzers::classy_analyzer::ClassyAnalyzer;
 use crate::analyzers::constant_invocation::is_constant_invocation;
 use crate::analyzers::docblock::{DocBlock, TAGS_WITH_TYPES};
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
-use crate::analyzers::import_processor::{ImportProcessor, ImportType};
+use crate::analyzers::import_processor::ImportProcessor;
 use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
 use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::Preg;
@@ -540,17 +540,20 @@ impl Fixer for GlobalNamespaceImportFixer {
             return;
         }
         let use_declarations = NamespaceUsesAnalyzer.get_declarations_from_tokens(tokens, false);
-        let mut new_imports: Vec<(ImportType, Vec<Vec<u8>>)> = Vec::new();
+        let mut new_imports: Vec<(NamespaceUseType, Vec<Vec<u8>>)> = Vec::new();
         match self.import_constants {
             Some(true) => {
-                new_imports.push(("const", Self::import_constants(tokens, &use_declarations)))
+                new_imports.push((
+                    NamespaceUseType::Constant,
+                    Self::import_constants(tokens, &use_declarations),
+                ))
             }
             Some(false) => Self::fully_qualify_constants(tokens, &use_declarations),
             None => {}
         }
         match self.import_functions {
             Some(true) => new_imports.push((
-                "function",
+                NamespaceUseType::Function,
                 Self::import_functions(tokens, &use_declarations),
             )),
             Some(false) => Self::fully_qualify_functions(tokens, &use_declarations),
@@ -558,7 +561,10 @@ impl Fixer for GlobalNamespaceImportFixer {
         }
         match self.import_classes {
             Some(true) => {
-                new_imports.push(("class", Self::import_classes(tokens, &use_declarations)))
+                new_imports.push((
+                    NamespaceUseType::Class,
+                    Self::import_classes(tokens, &use_declarations),
+                ))
             }
             Some(false) => Self::fully_qualify_classes(tokens, &use_declarations),
             None => {}

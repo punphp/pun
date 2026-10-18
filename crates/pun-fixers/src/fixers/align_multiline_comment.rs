@@ -9,16 +9,23 @@ use pun_tokens::{Kind, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum CommentType {
+    PhpdocsOnly,
+    PhpdocsLike,
+    AllMultiline,
+}
+
 struct AlignMultilineCommentFixer {
-    comment_type: String,
+    comment_type: CommentType,
     token_kinds: Vec<Kind>,
     line_ending: Vec<u8>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
     crate::configured(AlignMultilineCommentFixer {
-        comment_type: String::new(),
-        token_kinds: vec![],
+        comment_type: CommentType::PhpdocsOnly,
+        token_kinds: vec![T_DOC_COMMENT],
         line_ending: b"\n".to_vec(),
     })
 }
@@ -35,13 +42,17 @@ impl Fixer for AlignMultilineCommentFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let c = resolve(self.name(), options, &["comment_type"])?;
-        self.comment_type = c.string(
+        self.comment_type = c.choice(
             "comment_type",
             "phpdocs_only",
-            &["phpdocs_only", "phpdocs_like", "all_multiline"],
+            &[
+                ("phpdocs_only", CommentType::PhpdocsOnly),
+                ("phpdocs_like", CommentType::PhpdocsLike),
+                ("all_multiline", CommentType::AllMultiline),
+            ],
         )?;
         self.token_kinds = vec![T_DOC_COMMENT];
-        if self.comment_type != "phpdocs_only" {
+        if self.comment_type != CommentType::PhpdocsOnly {
             self.token_kinds.push(T_COMMENT);
         }
         Ok(())
@@ -72,7 +83,7 @@ impl Fixer for AlignMultilineCommentFixer {
                 continue;
             };
             if token.is_kind(T_COMMENT)
-                && self.comment_type != "all_multiline"
+                && self.comment_type != CommentType::AllMultiline
                 && Preg::r#match(r"/\R(?:\R|\s*[^\s\*])/", &token.content)
             {
                 continue;

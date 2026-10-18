@@ -10,14 +10,22 @@ use std::path::Path;
 const STRATEGY_NO_MULTI_LINE: &str = "no_multi_line";
 const STRATEGY_NEW_LINE_FOR_CHAINED_CALLS: &str = "new_line_for_chained_calls";
 
-#[derive(Default)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Strategy {
+    NoMultiLine,
+    NewLineForChainedCalls,
+}
+
 struct MultilineWhitespaceBeforeSemicolonsFixer {
-    strategy: String,
+    strategy: Strategy,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    crate::configured(MultilineWhitespaceBeforeSemicolonsFixer::default())
+    crate::configured(MultilineWhitespaceBeforeSemicolonsFixer {
+        strategy: Strategy::NoMultiLine,
+        whitespaces_config: Default::default(),
+    })
 }
 
 impl MultilineWhitespaceBeforeSemicolonsFixer {
@@ -101,10 +109,13 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let r = resolve(self.name(), options, &["strategy"])?;
-        self.strategy = r.string(
+        self.strategy = r.choice(
             "strategy",
             STRATEGY_NO_MULTI_LINE,
-            &[STRATEGY_NO_MULTI_LINE, STRATEGY_NEW_LINE_FOR_CHAINED_CALLS],
+            &[
+                (STRATEGY_NO_MULTI_LINE, Strategy::NoMultiLine),
+                (STRATEGY_NEW_LINE_FOR_CHAINED_CALLS, Strategy::NewLineForChainedCalls),
+            ],
         )?;
         Ok(())
     }
@@ -131,10 +142,10 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
                 continue;
             }
             let previous_index = index - 1;
-            let previous = tokens[previous_index].clone();
-            let indent = Self::find_whitespace_before_first_call(index, tokens);
-            if self.strategy == STRATEGY_NEW_LINE_FOR_CHAINED_CALLS
-                && let Some(indent) = indent
+            let previous = &tokens[previous_index];
+            // The indent only matters (and is only computed) for chained calls; finding it reads the tokens only.
+            if self.strategy == Strategy::NewLineForChainedCalls
+                && let Some(indent) = Self::find_whitespace_before_first_call(index, tokens)
             {
                 let wanted = [line_ending, &indent].concat();
                 if previous.is_whitespace(None) && previous.get_content() == wanted.as_slice() {

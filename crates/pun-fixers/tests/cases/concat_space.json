@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "concat_space",
+        "config": {
+            "spacing": "two"
+        },
+        "error": "[concat_space] Invalid configuration: The option \"spacing\" with value \"two\" is invalid. Accepted values are: \"one\", \"none\"."
+    }
+]

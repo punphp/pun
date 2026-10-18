@@ -720,10 +720,17 @@ impl Tokens {
             );
             self.register_found_token(t);
         }
-        // Back to front so earlier indices stay valid.
-        for (index, slice) in slices.into_iter().rev() {
-            self.tokens.splice(index..index, slice);
+        // One pass: each old token moves once, however many slices there are.
+        let mut old = std::mem::take(&mut self.tokens).into_iter();
+        let mut tokens = Vec::with_capacity(old_size + count);
+        let mut at = 0;
+        for (index, slice) in slices {
+            tokens.extend(old.by_ref().take(index - at));
+            tokens.extend(slice);
+            at = index;
         }
+        tokens.extend(old);
+        self.tokens = tokens;
     }
 
     pub fn is_empty_at(&self, index: usize) -> bool {

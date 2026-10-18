@@ -15,11 +15,22 @@ const STRUCTURE_KINDS: &[Kind] = &[
 #[derive(Default)]
 struct NoBreakCommentFixer {
     comment_text: String,
+    /// isNoBreakComment's pattern for `comment_text`, built once per configuration.
+    comment_pattern: String,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    crate::configured(NoBreakCommentFixer::default())
+    crate::configured(NoBreakCommentFixer {
+        comment_text: "no break".into(),
+        comment_pattern: comment_pattern("no break"),
+        whitespaces_config: Default::default(),
+    })
+}
+
+fn comment_pattern(comment_text: &str) -> String {
+    let text = String::from_utf8(preg_quote(comment_text.as_bytes(), Some(b'~'))).unwrap();
+    format!("~^((//|#)\\s*{text}\\s*)|(/\\*\\*?\\s*{text}(\\s+.*)*\\*/)$~i")
 }
 
 impl Fixer for NoBreakCommentFixer {
@@ -44,6 +55,7 @@ impl Fixer for NoBreakCommentFixer {
         self.comment_text = text
             .trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0B'])
             .into();
+        self.comment_pattern = comment_pattern(&self.comment_text);
         Ok(())
     }
     fn set_whitespaces_config(&mut self, config: &WhitespacesFixerConfig) {
@@ -165,11 +177,7 @@ impl NoBreakCommentFixer {
         if !token.is_comment() {
             return false;
         }
-        let text = String::from_utf8(preg_quote(self.comment_text.as_bytes(), Some(b'~'))).unwrap();
-        Preg::r#match(
-            format!("~^((//|#)\\s*{text}\\s*)|(/\\*\\*?\\s*{text}(\\s+.*)*\\*/)$~i"),
-            token.get_content(),
-        )
+        Preg::r#match(&self.comment_pattern, token.get_content())
     }
 
     fn insert_comment_at(&self, tokens: &mut Tokens, case_position: usize) {
