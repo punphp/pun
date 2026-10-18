@@ -366,18 +366,21 @@ fn errors() {
     std::fs::write(d.join("app/D.php"), CLEAN).unwrap();
     let locked = d.join("app/A.php");
     std::fs::set_permissions(&locked, std::os::unix::fs::PermissionsExt::from_mode(0o000)).unwrap();
-    let got = agent(&d, &["format"]);
+    // Root reads a mode-000 file: there the run has no read error to report.
+    if std::fs::read(&locked).is_err() {
+        let got = agent(&d, &["format"]);
+        assert_eq!(
+            got,
+            (
+                format!(
+                    "pun format: error: Failed to read content from \"{}\".\n",
+                    locked.display()
+                ),
+                Some(2)
+            )
+        );
+    }
     std::fs::set_permissions(&locked, std::os::unix::fs::PermissionsExt::from_mode(0o644)).unwrap();
-    assert_eq!(
-        got,
-        (
-            format!(
-                "pun format: error: Failed to read content from \"{}\".\n",
-                locked.display()
-            ),
-            Some(2)
-        )
-    );
     assert_eq!(
         agent(&d, &["format", "app/nope.php"]),
         (

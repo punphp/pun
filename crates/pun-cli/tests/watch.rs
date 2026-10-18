@@ -221,13 +221,16 @@ fn watch_reformats_like_pint() {
         std::os::unix::fs::PermissionsExt::from_mode(0o000),
     )
     .unwrap();
-    wait_for("the read error", &err, |e| {
-        e.contains(&format!(
-            "Failed to read content from \"{}/app/U.php\".",
-            dir.display()
-        ))
-    });
-    assert_eq!(out.lock().unwrap().len(), printed);
+    // Root reads a mode-000 file: there no read error comes.
+    if std::fs::read(dir.join("app/U.php")).is_err() {
+        wait_for("the read error", &err, |e| {
+            e.contains(&format!(
+                "Failed to read content from \"{}/app/U.php\".",
+                dir.display()
+            ))
+        });
+        assert_eq!(out.lock().unwrap().len(), printed);
+    }
 
     // Removing the project ends the watch.
     std::fs::remove_dir_all(&dir).unwrap();
