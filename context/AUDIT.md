@@ -106,7 +106,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   so every failing namespaced type (`\Foo\Bar<`) prints differently. Add a byte-exact `var_export` to `php_compat`
   and assert the full message. Checked against the PHP source. Spans crates. Added `php_compat::var_export_string`.
   Fixed in 5a24bbc.
-- [ ] 16. Built-in symbols ignore the project's PHP version and disagree with each other:
+- [x] 16. Built-in symbols ignore the project's PHP version and disagree with each other:
   `crates/pun-phpstan/src/symbols.rs:236-248` (`class`, `function`) always read PHP 8.4, while
   `crates/pun-analyse/src/rules/mod.rs:1003-1005` (`builtins`) and `codebase.rs:64` use 8.5 and `members.rs:123` uses
   `symbols::class`. So 8.5-only methods (`Closure::getCurrent`) are missing, `phpVersion: 80400` still knows
@@ -117,14 +117,14 @@ items marked "not checked against Pint" still need one oracle run before the fix
   80500 all known, and Pun at 80500 wrongly reports `Closure::getCurrent()`, `Locale::isRightToLeft()` and
   `new IntlListFormatter('en')` (noConstructor). Deferred: the fix (`PhpVersion::of`, a `builtins` field on the
   Checker read by members.rs, a prelude per version) changes `crates/pun-analyse/src/rules/*`, which the analyse
-  tracks claim.
-- [ ] 17. `crates/pun-analyse/src/rules/names.rs:553` reports `property.trait`, which `IDENTIFIERS`
+  tracks claim. `reflection::builtins(php_version)` picks the data once per run; the prelude (per version), functions, classes and methods all read it (tests/fixtures/builtins, PHPStan run outside a Composer project). `symbols::class`/`function` stay 8.4 for the type system. Fixed in 52ec4f2.
+- [x] 17. `crates/pun-analyse/src/rules/names.rs:553` reports `property.trait`, which `IDENTIFIERS`
   (`rules/mod.rs:43-98`) lacks, so `tests/rules.rs:57-61` counts Pun's correct errors as extra, the
   `examples/analyse.rs` rule list is short, and `testPromotedProperties` sits in `gaps.txt`. Identifiers are also built
   with `format!` (`names.rs:514`), which grep can't check. Replace Type Code with Enum, or at least test that every
   reported identifier is listed. Still holds at ff31836 (`property.trait` at `names.rs:553`, missing from
   `IDENTIFIERS`, `rules/mod.rs:64-140`). Deferred: the fix is in `crates/pun-analyse/src/rules/*`, which the
-  analyse tracks claim.
+  analyse tracks claim. `Checker::report()` debug-asserts that every reported identifier is listed, so every test run checks it. Fixed in 52ec4f2.
 - [ ] 18. `crates/pun-cli/src/watch.rs:92-96` prints `{e}`, dropping anyhow's cause chain, so a broken pun.toml during
   `--watch` shows only "invalid /p/pun.toml" with no line or column, while the first run shows the chain. Errors are
   printed four ways (`main.rs:236-247`, `run.rs:53-60`, `pint_error.rs:12-14`, `watch.rs`). Extract one
@@ -280,16 +280,16 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `Resolved.parameters` by hand; `should_ignore` (`ignore.rs:276-283`) takes four `Option<String>`s rebuilt, with a
   fresh `FileExcluder` (two stats), for every (error, entry) pair. Parse each entry once into `IgnoreEntry` and add
   typed accessors on `Resolved`. Spans crates. Needs a decision.
-- [ ] 48. Two ports of `ReflectionProvider::getClass()` answer differently: `crates/pun-analyse/src/rules/mod.rs:995-1000`
+- [x] 48. Two ports of `ReflectionProvider::getClass()` answer differently: `crates/pun-analyse/src/rules/mod.rs:995-1000`
   (`class_like`, Mago's prelude) and `names.rs:51-65` (`known`, PHPStan's export, trims `\`). Keep `known` and move
   it with `function`/`builtins` into `reflection.rs`. Reproduced at ff31836: at `phpVersion: 80500`
   `new \Filter\FilterFailedException()`, `new \CurlSharePersistentHandle()` and `http\Client\Request`
   (`CallMethodsRuleTest::testBug5460`) are "not found" because Mago's prelude lacks them while PHPStan has them.
-  Deferred: the fix is in `crates/pun-analyse/src/rules/*`, which the analyse tracks claim.
-- [ ] 49. `crates/pun-analyse/src/rules/mod.rs` (1,005 lines) holds the identifier registry, 20 fields of checker
+  Deferred: the fix is in `crates/pun-analyse/src/rules/*`, which the analyse tracks claim. `known()`, `class_like()` (now a `Lookup`: not found, a built-in Mago lacks, or found) and `function()` live in rules/reflection.rs; testBug5460 passes. Fixed in 52ec4f2.
+- [x] 49. `crates/pun-analyse/src/rules/mod.rs` (1,005 lines) holds the identifier registry, 20 fields of checker
   state, the per-file driver, Mago type inference, guard bookkeeping (split with `scope.rs`) and reflection; the trait
   context is three fields that must change together (`:138-145`). Move Function into `driver.rs`, `infer.rs`,
-  `reflection.rs` and `scope.rs`, and replace the three fields with `Option<TraitContext>`.
+  `reflection.rs` and `scope.rs`, and replace the three fields with `Option<TraitContext>`. Split into rules/driver.rs (Checks, the per-file and trait-context walks), infer.rs, reflection.rs and scope.rs (guard bookkeeping); the trait context is one `Option<TraitContext>`. Fixed in 52ec4f2.
 - [x] 50. `rules/mapping.toml` is parsed by slicing its text in eight places (`crates/pun-config/src/lib.rs:146-151,
   339-341, 371-376`, `schema.rs:272-273`, `options.rs:61-63`, `explain.rs:53-55, 117-121, 126-127`), each depending on
   section order and on no value line starting with `[`. Extract Function `section(name)` with one lazily parsed value
@@ -375,12 +375,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   and private `php_compat::isspace`; `is_numeric` (`pun-phpstan/src/types.rs:982`, `value.rs:306`); `truncate`
   (`types.rs:1050`, `schema.rs:380`); the scheme test in `php.rs:136-142` vs `has_scheme` (`:184`); the PHPUnit
   method list twice in `ordered_class_elements.rs:121-132,360-374` (the second rebuilt per method). Keep one of each. Confirmed at d565ad2. One of each: `c`/`k`/`idx` in token.rs, `Token::is_classy`, `php_compat::isspace` (also Blade's `ctype_space`), `value::numeric` for `is_numeric`, schema.rs `truncate`, `is_scheme`, `PHPUNIT`. The types.rs `truncate` treated DEL as punctuation: PHPStan 2.2.7 describes `'aaaa bbbbbbbbbbbbbb\x7fcccc'` as `'aaaa…'`, Pun gave `'aaaa bbbbbbbbbbbbbb…'` (tests/types.rs). Fixed in 4d3f3c4.
-- [ ] 65. Analyse rules repeat message blocks: the private/protected wording (`calls.rs:174-185,344-355`,
+- [x] 65. Analyse rules repeat message blocks: the private/protected wording (`calls.rs:174-185,344-355`,
   `classes.rs:220-231`, `names.rs:212-223`), the `outOfClass.*` identifier (four copies), the parent lookup with
   `class.noParent` (three copies), and `String::from_utf8_lossy(x.original_name.as_bytes())` (15 copies); Mago's own
   `Argument::value()` and `ArrayElement::get_value()` are re-implemented in `scope.rs:131-155`,
   `laravel/schema.rs:70-75` and `pun-lint/src/rules/no_unused_catch_variable.rs:128-174`; the parse triple is copied
-  six times in pun-analyse. Extract Function and call Mago's methods.
+  six times in pun-analyse. Extract Function and call Mago's methods. One `reflection::display()`, `out_of_class()`, `restricted()`, `Checker::report_no_parent()` and `codebase::parse()`; scope.rs calls Mago's `Argument::value()`. laravel/ and pun-lint copies are other tracks'. Fixed in 52ec4f2.
 - [x] 66. Test helpers are copied across files and have drifted (some clear the environment, some don't; some
   `snapshot` copies skip different entries): `oracle()`, temp-dir builders, `snapshot()`, `reset()`, `migrate()` and
   `pun` spawners across `crates/pun-cli/tests/{cli,flags,output,watch,agent,perf,migrate,rules_e2e}.rs` and
@@ -451,8 +451,8 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `abstract_php_unit_fixer.rs:21-24` (use `checked_add_signed`/`checked_sub`). Name them with structs, enums and
   `Option`. The lint rule tuple is a `LintRule` map; `Captures::offset`/`name_offset` return `Option<usize>` (plus
   `start()` for group 0); `need_tokens` is `Option<u32>`; `step` uses `checked_add_signed`, the block walk and
-  `next_php_unit_class` count in `usize` (`before`, exclusive). pun-analyse's `params.rs` and `rules/mod.rs` are left
-  to the analyse track. Fixed in a8163a9.
+  `next_php_unit_class` count in `usize` (`before`, exclusive). pun-analyse's `params.rs` (`Counts`, `Unpacked`, `CallKind`) and `rules/mod.rs`
+  (`FunctionScopeKind`) followed in 52ec4f2. Fixed in a8163a9.
 - [ ] 76. `crates/pun-tokens/src/token.rs:8-11,202-208`: `Token` has public fields and getters for them (pun-fixers
   reads `.content` 213 times and `get_content()` 246 times), and struct literals skip `Token::new`'s check. Pick one.
   Needs a decision.

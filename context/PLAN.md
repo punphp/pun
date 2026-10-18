@@ -397,14 +397,12 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit-hygiene follow-up (item 66): pun-lint's examples repeat their file walkers; share one helper (left for the lint track) | todo |
 | audit-hygiene follow-up (item 87): `unreachable_pub` is still open in pun-cli run.rs, report.rs, pint_error.rs, fix_report.rs, watch.rs, main.rs, console.rs, render.rs, in pun-analyse/src/rules and in pun-lint (files owned by other tracks); without the item 28 lint gate the narrowing can regress | todo |
 | wf tooling: pun-fixers' build.rs registers fixers with absolute `#[path]`s, so a shared target slot can compile another worktree's src/fixers; emitting relative paths (a macro_rules list, mods declared in lib.rs) fixes it but breaks worktrees still on the old build.rs, so land it once every track has rebased | todo |
-| clippy: pun-cli tests/output.rs:467 (`iter().copied().collect()`), pun-analyse src/rules/calls.rs:348 (collapsible if) and src/rules/scope.rs:103 (`matches!`) warn on main | todo |
+| clippy: pun-cli tests/output.rs:467 (`iter().copied().collect()`) warns on main (the pun-analyse warnings were fixed in 52ec4f2) | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
-| audit items 16, 48 follow-up: apply /Users/pushpakchhajed/Projects/pun-wf/deferred/audit-analyse-16-48.patch (made at ff31836; add `.unwrap()` to the new check_in in tests/statements.rs since item 52 made run() return Result) once crates/pun-analyse/src/rules/* is no longer claimed by the analyse tracks; rerun the statements and rules tests (drop testBug5460 from gaps.txt) and tick 16 and 48 | todo |
 | audit item 17 follow-up: add property.trait to IDENTIFIERS, take identifiers as &'static str (no format! in names.rs), assert in tests/rules.rs that every reported identifier is listed, drop testPromotedProperties from gaps.txt; waits for the rules/* claim | todo |
 | oracle: .oracle/phpstan's Composer project has symfony/polyfill-php85, so PHPStan run from it knows array_first() and friends at phpVersion 80400; take built-in-symbol expectations from the standalone phar outside a Composer project | todo |
-| audit item 52 follow-up: pun_analyse::run, analyse and run_mago return Result<_, CouldNotReadFile> since the item 52 fix; parity-loop branches calling them need `?` or `.unwrap()` | todo |
 
 ## 4. Open questions
 
