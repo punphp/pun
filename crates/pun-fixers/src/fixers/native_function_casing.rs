@@ -29,10 +29,10 @@ impl Fixer for NativeFunctionCasingFixer {
             if !functions_analyzer.is_global_function_call(tokens, index) {
                 continue;
             }
-            if !is_internal_function(&tokens[index].content) {
+            if !is_internal_function(tokens[index].get_content()) {
                 continue;
             }
-            let lower = tokens[index].content.to_ascii_lowercase();
+            let lower = tokens[index].get_content().to_ascii_lowercase();
             tokens.set(index, Token::new(T_STRING, lower));
         }
     }

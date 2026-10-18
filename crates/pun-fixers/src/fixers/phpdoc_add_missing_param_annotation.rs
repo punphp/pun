@@ -57,7 +57,7 @@ impl Fixer for PhpdocAddMissingParamAnnotationFixer {
                 index += 1;
                 continue;
             }
-            let token_content = tokens[index].content.to_vec();
+            let token_content = tokens[index].get_content().to_vec();
             if contains(&strtolower(&token_content), b"inheritdoc") {
                 index += 1;
                 continue;
@@ -198,10 +198,10 @@ fn prepare_argument_information(tokens: &Tokens, start: usize, end: usize) -> Ar
         }
         if token.is_kind(T_VARIABLE) {
             saw_name = true;
-            info.name = token.content.to_vec();
+            info.name = token.get_content().to_vec();
         } else if token.equals("=", true) {
         } else if saw_name {
-            info.default.extend_from_slice(&token.content);
+            info.default.extend_from_slice(token.get_content());
         } else if !token.equals("&", true) {
             if token.is_kind(T_ELLIPSIS) {
                 if info.type_.is_empty() {
@@ -210,7 +210,7 @@ fn prepare_argument_information(tokens: &Tokens, start: usize, end: usize) -> Ar
                     info.type_.extend_from_slice(b"[]");
                 }
             } else {
-                info.type_.extend_from_slice(&token.content);
+                info.type_.extend_from_slice(token.get_content());
             }
         }
         index += 1;

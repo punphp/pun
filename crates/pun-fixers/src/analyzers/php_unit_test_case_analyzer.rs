@@ -44,7 +44,7 @@ impl PhpUnitTestCaseAnalyzer {
             if !tokens[i].is_kind(T_STRING) {
                 continue; // not part of extends nor part of implements; so continue
             }
-            if Preg::r#match("/(?:Test|TestCase)(?:Interface)?$/", &tokens[i].content) {
+            if Preg::r#match("/(?:Test|TestCase)(?:Interface)?$/", tokens[i].get_content()) {
                 return true;
             }
         }

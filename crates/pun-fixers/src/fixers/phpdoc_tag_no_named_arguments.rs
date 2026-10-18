@@ -88,7 +88,7 @@ impl Fixer for PhpdocTagNoNamedArgumentsFixer {
             let doc_block_index = tokens
                 .get_prev_token_of_kind(index + 2, &[T_DOC_COMMENT.into()], true)
                 .unwrap();
-            let content = tokens[doc_block_index].content.clone();
+            let content = tokens[doc_block_index].get_content().to_vec();
             let tag = format!("@no-named-arguments {}", self.description);
             let replacement = [tag.trim_end().as_bytes(), line_ending].concat();
             let new_content = Preg::replace(r"/@no-named-arguments.*\R/", &replacement, &content);
@@ -192,7 +192,7 @@ fn update_doc_block_if_needed(
     preventing_annotations: &[&str],
     line_end: &[u8],
 ) {
-    let mut doc = DocBlock::new(&tokens[doc_block_index].content);
+    let mut doc = DocBlock::new(tokens[doc_block_index].get_content());
     for preventing in preventing_annotations {
         if !doc.get_annotations_of_type(&[*preventing]).is_empty() {
             return;

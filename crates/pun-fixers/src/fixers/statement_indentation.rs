@@ -348,14 +348,14 @@ impl StatementIndentationFixer {
 
             if token.is_whitespace(None) || (index > 0 && tokens[index - 1].is_kind(T_OPEN_TAG)) {
                 let previous_open_tag_content = if tokens[index - 1].is_kind(T_OPEN_TAG) {
-                    Preg::replace("/\\S/", "", &tokens[index - 1].content)
+                    Preg::replace("/\\S/", "", tokens[index - 1].get_content())
                 } else {
                     Vec::new()
                 };
                 let mut content = [
                     &previous_open_tag_content[..],
                     if token.is_whitespace(None) {
-                        &token.content[..]
+                        token.get_content()
                     } else {
                         b""
                     },
@@ -389,7 +389,7 @@ impl StatementIndentationFixer {
                                 }
                                 continue;
                             }
-                            if Preg::r#match("/\\R/", &search_token.content) {
+                            if Preg::r#match("/\\R/", search_token.get_content()) {
                                 next_newline_index = Some(search_index);
                                 break;
                             }
@@ -494,14 +494,11 @@ impl StatementIndentationFixer {
                     let replaced = Preg::replace(
                         pattern,
                         [&b"$1"[..], &previous_line_new_indent, b"$2"].concat(),
-                        &next_token.content,
+                        next_token.get_content(),
                     );
                     tokens.set(
                         index + 1,
-                        Token {
-                            id: next_token.id,
-                            content: replaced,
-                        },
+                        Token::with_id(next_token.get_id(), replaced),
                     );
                 }
 

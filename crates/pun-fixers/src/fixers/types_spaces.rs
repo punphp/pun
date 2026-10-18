@@ -89,14 +89,14 @@ fn ensure_single_space(tokens: &mut Tokens, index: usize, offset: usize) -> usiz
         )]));
         return 1;
     }
-    if tokens[index].content != b" " && !Preg::r#match("/\\R/", &tokens[index].content) {
+    if tokens[index].get_content() != b" " && !Preg::r#match("/\\R/", tokens[index].get_content()) {
         tokens.set(index, Token::new(T_WHITESPACE, " "));
     }
     0
 }
 
 fn ensure_no_space(tokens: &mut Tokens, index: usize) {
-    if tokens[index].is_whitespace(None) && !Preg::r#match("/\\R/", &tokens[index].content) {
+    if tokens[index].is_whitespace(None) && !Preg::r#match("/\\R/", tokens[index].get_content()) {
         tokens.clear_at(index);
     }
 }

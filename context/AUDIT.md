@@ -463,7 +463,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   (`FunctionScopeKind`) followed in 52ec4f2. Fixed in a8163a9.
 - [ ] 76. `crates/pun-tokens/src/token.rs:8-11,202-208`: `Token` has public fields and getters for them (pun-fixers
   reads `.content` 213 times and `get_content()` 246 times), and struct literals skip `Token::new`'s check. Pick one.
-  Needs a decision.
+  Needs a decision. Getters (approved): pun-fixers and pun-format read `get_content()`/`get_id()` only, and their
+  struct literals are `Token::new`, `Token::char` or the new `Token::with_id` (`new Token($isArray ? [$id, $content] :
+  $content)`). The fields stay `pub` until the lint tracks' in-progress fixer files and pun-cli's migrate.rs move to
+  the getters (PLAN row); then they go private.
 - [x] 77. Three `Error` types in pun-phpstan (`neon::Error(pub String)` with no `Display`, `ignore::Error`,
   `baseline::Error<'a>` for the same PHPStan concept), and `trait Files` (`di.rs:257-262`) with one impl whose
   default `is_file` reads the whole file, so a large baseline is read about four times per resolve. The read-based

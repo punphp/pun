@@ -269,7 +269,7 @@ fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
                 e.readonly = true;
             }
             if token.is_given_kind(&[Kind::T_PROTECTED, Kind::T_PRIVATE]) {
-                e.visibility = if strtolower(&token.content) == b"protected" {
+                e.visibility = if strtolower(token.get_content()) == b"protected" {
                     "protected"
                 } else {
                     "private"
@@ -293,14 +293,14 @@ fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
                 e.name = n;
             }
             if ty == "property" {
-                e.name = tokens[i].content.clone();
+                e.name = tokens[i].get_content().to_vec();
             } else if ty == "constant" {
                 let eq = tokens
                     .get_next_token_of_kind(i, &["=".into()], true)
                     .unwrap();
                 e.name = tokens[tokens.get_prev_meaningful_token(eq).unwrap()]
-                    .content
-                    .clone();
+                    .get_content()
+                    .to_vec();
             } else if [
                 "use_trait",
                 "case",
@@ -312,8 +312,8 @@ fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
             .contains(&ty)
             {
                 e.name = tokens[tokens.get_next_meaningful_token(i).unwrap()]
-                    .content
-                    .clone();
+                    .get_content()
+                    .to_vec();
             }
             e.end = find_element_end(tokens, i);
             break;
@@ -344,12 +344,12 @@ fn detect_element_type(tokens: &Tokens, index: usize) -> (&'static str, Option<V
     if name.equals((Kind::T_STRING, "__destruct"), false) {
         return ("destruct", None);
     }
-    let lower = strtolower(&name.content);
+    let lower = strtolower(name.get_content());
     if name.is_kind(Kind::T_STRING) && PHPUNIT.iter().any(|n| n.as_bytes() == lower) {
         return ("phpunit", Some(lower));
     }
     (
-        if name.content.starts_with(b"__") {
+        if name.get_content().starts_with(b"__") {
             "magic"
         } else {
             "method"

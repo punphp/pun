@@ -147,7 +147,7 @@ fn collect_type_analysis(
         if tokens[i].is_whitespace(None) || tokens[i].is_comment() {
             continue;
         }
-        ty.extend_from_slice(&tokens[i].content);
+        ty.extend_from_slice(tokens[i].get_content());
         type_end_index = i;
     }
     (!ty.is_empty()).then(|| TypeAnalysis::new(&ty, Some(type_start_index), Some(type_end_index)))

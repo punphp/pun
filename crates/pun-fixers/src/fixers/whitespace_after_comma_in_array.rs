@@ -56,10 +56,10 @@ impl Fixer for WhitespaceAfterCommaInArrayFixer {
                     if !tokens[i + 1].is_whitespace(None) {
                         tokens_to_insert.insert(i + 1, vec![Token::new(T_WHITESPACE, " ")]);
                     } else if self.ensure_single_space
-                        && tokens[i + 1].content != b" "
-                        && Preg::r#match("/^\\h+$/", &tokens[i + 1].content)
+                        && tokens[i + 1].get_content() != b" "
+                        && Preg::r#match("/^\\h+$/", tokens[i + 1].get_content())
                         && (!tokens[i + 2].is_comment()
-                            || Preg::r#match("/^\\h+$/", &tokens[i + 3].content))
+                            || Preg::r#match("/^\\h+$/", tokens[i + 3].get_content()))
                     {
                         tokens.set(i + 1, Token::new(T_WHITESPACE, " "));
                     }

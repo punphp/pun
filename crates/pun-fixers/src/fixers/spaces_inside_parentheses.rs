@@ -64,7 +64,7 @@ impl Fixer for SpacesInsideParenthesesFixer {
                 let end_parenthesis_index = tokens.find_block_end(block_type, index);
 
                 // if not other content than spaces in block remove spaces
-                if end_parenthesis_index == index + 2 && tokens[index + 1].content == b" " {
+                if end_parenthesis_index == index + 2 && tokens[index + 1].get_content() == b" " {
                     remove_space_around_token(tokens, index + 1);
                     index += 1;
                     continue;
@@ -72,7 +72,7 @@ impl Fixer for SpacesInsideParenthesesFixer {
 
                 // don't process if the next token is `)`
                 let next_meaningful_token_index = tokens.get_next_meaningful_token(index).unwrap();
-                if tokens[next_meaningful_token_index].content == b")" {
+                if tokens[next_meaningful_token_index].get_content() == b")" {
                     index += 1;
                     continue;
                 }
@@ -98,14 +98,14 @@ impl Fixer for SpacesInsideParenthesesFixer {
 
 fn remove_space_around_token(tokens: &mut Tokens, index: usize) {
     let token = &tokens[index];
-    if token.is_whitespace(None) && !token.content.contains(&b'\n') {
+    if token.is_whitespace(None) && !token.get_content().contains(&b'\n') {
         tokens.clear_at(index);
     }
 }
 
 fn fix_parenthesis_inner_edge(tokens: &mut Tokens, start: usize, end: usize) {
     if tokens[end - 1].is_whitespace(None) {
-        let content = &tokens[end - 1].content;
+        let content = tokens[end - 1].get_content();
         if content != b" "
             && !content.contains(&b'\n')
             && !tokens[tokens.get_prev_non_whitespace(end - 1, None).unwrap()].is_comment()
@@ -117,7 +117,7 @@ fn fix_parenthesis_inner_edge(tokens: &mut Tokens, start: usize, end: usize) {
     }
 
     if tokens[start + 1].is_whitespace(None) {
-        let content = &tokens[start + 1].content;
+        let content = tokens[start + 1].get_content();
         if content != b" "
             && !content.contains(&b'\n')
             && !tokens[tokens.get_next_non_whitespace(start + 1, None).unwrap()].is_comment()

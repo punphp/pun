@@ -38,7 +38,7 @@ impl Fixer for MultilineCommentOpeningClosingFixer {
             // Fix closing
             new_content = Preg::replace(r"/(?<!\/)\*{2,}\/$/", "*/", &new_content);
             if new_content != original_content {
-                let id = token.id.unwrap();
+                let id = token.get_id().unwrap();
                 tokens.set(index, Token::new(id, new_content));
             }
         }

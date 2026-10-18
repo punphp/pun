@@ -27,7 +27,7 @@ impl Fixer for ShortScalarCastFixer {
             if !tokens[index].is_cast() {
                 continue;
             }
-            let content = &tokens[index].content;
+            let content = tokens[index].get_content();
             let cast_from = trim(&content[1..content.len() - 1]);
             let cast_to: &[u8] = match &strtolower(cast_from)[..] {
                 b"boolean" => b"bool",
@@ -37,7 +37,7 @@ impl Fixer for ShortScalarCastFixer {
                 _ => continue,
             };
             let new = Token::new(
-                tokens[index].id.unwrap(),
+                tokens[index].get_id().unwrap(),
                 str_replace(cast_from, cast_to, content),
             );
             tokens.set(index, new);

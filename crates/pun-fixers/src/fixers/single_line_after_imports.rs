@@ -42,7 +42,7 @@ impl Fixer for SingleLineAfterImportsFixer {
             // if previous line ends with comment and current line starts with whitespace, use current indent
             if tokens[index - 1].is_whitespace(Some(b" \t")) && tokens[index - 2].is_kind(T_COMMENT)
             {
-                indent = tokens[index - 1].content.clone();
+                indent = tokens[index - 1].get_content().to_vec();
             } else if tokens[index - 1].is_whitespace(None) {
                 indent = Utils::calculate_trailing_whitespace_indent(&tokens[index - 1]);
             }
@@ -86,7 +86,7 @@ impl Fixer for SingleLineAfterImportsFixer {
 
                 if tokens[insert_index].is_whitespace(None) {
                     let next_token = tokens[insert_index].clone();
-                    if php_compat::substr_count(&next_token.content, b"\n") == 2 {
+                    if php_compat::substr_count(next_token.get_content(), b"\n") == 2 {
                         continue;
                     }
                     let new = Token::new(
@@ -94,14 +94,14 @@ impl Fixer for SingleLineAfterImportsFixer {
                         [
                             &newline[..],
                             &indent,
-                            php_compat::ltrim_chars(&next_token.content, php_compat::TRIM_CHARS),
+                            php_compat::ltrim_chars(next_token.get_content(), php_compat::TRIM_CHARS),
                         ]
                         .concat(),
                     );
                     let next_meaningful_after_use_index =
                         tokens.get_next_meaningful_token(insert_index);
                     if next_meaningful_after_use_index.is_some_and(|n| tokens[n].is_kind(T_USE)) {
-                        if php_compat::substr_count(&next_token.content, b"\n") < 1 {
+                        if php_compat::substr_count(next_token.get_content(), b"\n") < 1 {
                             tokens.set(insert_index, new);
                         }
                     } else {

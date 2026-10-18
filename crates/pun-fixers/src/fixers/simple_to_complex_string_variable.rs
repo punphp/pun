@@ -36,10 +36,10 @@ impl Fixer for SimpleToComplexStringVariableFixer {
 }
 
 fn fix_variable(tokens: &mut Tokens, index: usize) {
-    let varname = tokens[index + 1].content.clone();
+    let varname = tokens[index + 1].get_content().to_vec();
     let dollar_close_token =
         tokens.find_block_end(Tokens::BLOCK_TYPE_COMPLEX_STRING_VARIABLE, index);
-    let prev_token_content = &tokens[index - 1].content;
+    let prev_token_content = tokens[index - 1].get_content();
     if prev_token_content.ends_with(b"$") && !prev_token_content.ends_with(b"\\$") {
         let mut content = prev_token_content[..prev_token_content.len() - 1].to_vec();
         content.extend_from_slice(b"\\$");

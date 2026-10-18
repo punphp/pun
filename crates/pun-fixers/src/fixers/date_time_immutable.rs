@@ -46,7 +46,7 @@ impl Fixer for DateTimeImmutableFixer {
             }
             if is_in_namespace && token.is_kind(T_USE) {
                 let next_index = tokens.get_next_meaningful_token(index).unwrap();
-                if php_compat::strtolower(&tokens[next_index].content) != b"datetime" {
+                if php_compat::strtolower(tokens[next_index].get_content()) != b"datetime" {
                     index += 1;
                     continue;
                 }
@@ -66,7 +66,7 @@ impl Fixer for DateTimeImmutableFixer {
                 index += 1;
                 continue;
             }
-            let lowercase_content = php_compat::strtolower(&token.content);
+            let lowercase_content = php_compat::strtolower(token.get_content());
             if lowercase_content == b"datetime" {
                 fix_class_usage(tokens, index, is_in_namespace, is_imported);
                 limit = tokens.count(); // update limit, as fixing class usage may insert new token

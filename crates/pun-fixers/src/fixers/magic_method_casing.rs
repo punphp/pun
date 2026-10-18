@@ -74,7 +74,7 @@ impl Fixer for MagicMethodCasingFixer {
             if !tokens[i].is_kind(T_STRING) {
                 continue;
             }
-            let content = &tokens[i].content;
+            let content = tokens[i].get_content();
             if !content.starts_with(b"__") {
                 continue;
             }
@@ -84,7 +84,7 @@ impl Fixer for MagicMethodCasingFixer {
             else {
                 continue; // method name is not one of the magic ones we can fix
             };
-            if name_in_correct_casing.as_bytes() == &content[..] {
+            if name_in_correct_casing.as_bytes() == content {
                 continue;
             }
             if is_function_signature(tokens, i) {

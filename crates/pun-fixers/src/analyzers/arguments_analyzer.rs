@@ -99,7 +99,7 @@ impl ArgumentsAnalyzer {
                 if !saw_name {
                     saw_name = true;
                     name_index = Some(index);
-                    name = Some(token.content.clone());
+                    name = Some(token.get_content().to_vec());
                 }
                 index += 1;
                 continue;
@@ -111,13 +111,13 @@ impl ArgumentsAnalyzer {
             if saw_name {
                 default
                     .get_or_insert_with(Vec::new)
-                    .extend_from_slice(&token.content);
+                    .extend_from_slice(token.get_content());
             } else {
                 type_index_start = Some(type_index_start.filter(|&s| s > 0).unwrap_or(index));
                 type_index_end = Some(index);
                 type_
                     .get_or_insert_with(Vec::new)
-                    .extend_from_slice(&token.content);
+                    .extend_from_slice(token.get_content());
             }
             index += 1;
         }

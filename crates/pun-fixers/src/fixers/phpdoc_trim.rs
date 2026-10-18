@@ -25,7 +25,7 @@ impl Fixer for PhpdocTrimFixer {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let content = fix_start(&tokens[index].content);
+            let content = fix_start(tokens[index].get_content());
             let content = fix_end(&content);
             tokens.set(index, Token::new(Kind::T_DOC_COMMENT, content));
         }

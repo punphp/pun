@@ -33,7 +33,7 @@ impl Fixer for PhpdocSummaryFixer {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[index].content);
+            let doc = DocBlock::new(tokens[index].get_content());
             let Some(end) = ShortDescription::new(&doc).get_end() else {
                 continue;
             };

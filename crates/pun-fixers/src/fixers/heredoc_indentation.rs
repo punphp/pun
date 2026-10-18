@@ -101,7 +101,7 @@ impl HeredocIndentationFixer {
                 };
                 let pattern = [&b"/(?<=\\v)"[..], &current_indent, regex_end, b"/"].concat();
                 content = Preg::replace_limit_uncached(pattern, &indent, content, -1).0;
-                let id = tokens[index].id.unwrap();
+                let id = tokens[index].get_id().unwrap();
                 tokens.set(index, Token::new(id, content));
             }
             index -= 1;

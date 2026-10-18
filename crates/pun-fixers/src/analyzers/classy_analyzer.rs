@@ -14,7 +14,7 @@ impl ClassyAnalyzer {
             "No T_STRING at given index {index}, got \"{}\".",
             token.get_name().unwrap_or_default()
         );
-        if TypeAnalysis::new(&token.content, None, None).is_reserved_type() {
+        if TypeAnalysis::new(token.get_content(), None, None).is_reserved_type() {
             return false;
         }
         let next = tokens.get_next_meaningful_token(index).unwrap();

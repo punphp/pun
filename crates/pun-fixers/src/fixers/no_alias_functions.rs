@@ -85,7 +85,7 @@ impl Fixer for NoAliasFunctionsFixer {
         let functions_analyzer = FunctionsAnalyzer::new();
         let arguments_analyzer = ArgumentsAnalyzer;
         for index in tokens.find_given_kind(T_STRING, 0, None) {
-            let token_content = &tokens[index].content;
+            let token_content = tokens[index].get_content();
             let Some(&(_, alias, number_of_arguments)) = self
                 .aliases
                 .iter()

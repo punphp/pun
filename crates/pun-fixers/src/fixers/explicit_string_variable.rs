@@ -82,7 +82,7 @@ fn fix_variables(tokens: &mut Tokens, index: usize) {
 
     for set in variable_tokens.into_values().rev() {
         if let [single_variable_index] = set.tokens[..] {
-            let content = tokens[single_variable_index].content.clone();
+            let content = tokens[single_variable_index].get_content().to_vec();
             tokens.override_range(
                 single_variable_index,
                 single_variable_index,
@@ -97,10 +97,10 @@ fn fix_variables(tokens: &mut Tokens, index: usize) {
         for &variable_part_index in &set.tokens {
             let part = &tokens[variable_part_index];
             if part.is_kind(T_NUM_STRING) {
-                let content = part.content.clone();
+                let content = part.get_content().to_vec();
                 tokens.set(variable_part_index, Token::new(T_LNUMBER, content));
             } else if part.is_kind(T_STRING) && tokens[variable_part_index + 1].equals("]", true) {
-                let content = [b"'", &part.content[..], b"'"].concat();
+                let content = [b"'", part.get_content(), b"'"].concat();
                 tokens.set(
                     variable_part_index,
                     Token::new(T_CONSTANT_ENCAPSED_STRING, content),
@@ -118,6 +118,6 @@ fn fix_variables(tokens: &mut Tokens, index: usize) {
 fn is_string_part_token(token: &Token) -> bool {
     token.is_kind(T_ENCAPSED_AND_WHITESPACE)
         || token.is_kind(T_START_HEREDOC)
-        || token.content == b"\""
-        || strtolower(&token.content) == b"b\""
+        || token.get_content() == b"\""
+        || strtolower(token.get_content()) == b"b\""
 }

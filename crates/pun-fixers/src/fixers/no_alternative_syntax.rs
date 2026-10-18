@@ -35,7 +35,7 @@ impl Fixer for NoAlternativeSyntaxFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in (0..tokens.count()).rev() {
             // The kind before any of the three edits, like upstream's `$token`.
-            let kind = tokens[index].id;
+            let kind = tokens[index].get_id();
             fix_elseif(index, kind, tokens);
             fix_else(index, kind, tokens);
             fix_open_close_controls(index, kind, tokens);

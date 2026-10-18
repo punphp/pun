@@ -26,7 +26,7 @@ impl Fixer for NoTrailingWhitespaceFixer {
             index -= 1;
             if !tokens[index].is_kind(T_OPEN_TAG)
                 && !(tokens[index].is_whitespace(None)
-                    && may_change(&tokens[index].content, index + 1 >= tokens.count()))
+                    && may_change(tokens[index].get_content(), index + 1 >= tokens.count()))
             {
                 continue;
             }
@@ -34,9 +34,9 @@ impl Fixer for NoTrailingWhitespaceFixer {
             if token.is_kind(T_OPEN_TAG)
                 && index + 1 < tokens.count()
                 && tokens[index + 1].is_whitespace(None)
-                && let Some(open_tag_matches) = Preg::match_groups("/(.*)\\h$/", &token.content)
+                && let Some(open_tag_matches) = Preg::match_groups("/(.*)\\h$/", token.get_content())
             {
-                let next = tokens[index + 1].content.clone();
+                let next = tokens[index + 1].get_content().to_vec();
                 if let Some(whitespace_matches) = Preg::match_groups("/^(\\R)(.*)$/s", &next) {
                     let content = [open_tag_matches.str(1), whitespace_matches.str(1)].concat();
                     let rest = whitespace_matches.str(2).to_vec();
@@ -51,7 +51,7 @@ impl Fixer for NoTrailingWhitespaceFixer {
             }
 
             let mut lines: Vec<Vec<u8>> =
-                Preg::split("/(\\R+)/", &token.content, -1, PREG_SPLIT_DELIM_CAPTURE)
+                Preg::split("/(\\R+)/", token.get_content(), -1, PREG_SPLIT_DELIM_CAPTURE)
                     .into_iter()
                     .map(|p| p.text)
                     .collect();
@@ -60,7 +60,7 @@ impl Fixer for NoTrailingWhitespaceFixer {
             // fix only multiline whitespaces or singleline whitespaces at the end of file: may_change() lets no other through
             debug_assert!(lines_size > 1 || index + 1 >= tokens.count());
             if !tokens[index - 1].is_kind(T_OPEN_TAG)
-                || !Preg::r#match("/(.*)\\R$/", &tokens[index - 1].content)
+                || !Preg::r#match("/(.*)\\R$/", tokens[index - 1].get_content())
             {
                 lines[0] = rtrim_chars(&lines[0], b" \t").to_vec();
             }
@@ -74,10 +74,7 @@ impl Fixer for NoTrailingWhitespaceFixer {
             if !content.is_empty() {
                 tokens.set(
                     index,
-                    Token {
-                        id: token.id,
-                        content,
-                    },
+                    Token::with_id(token.get_id(), content),
                 );
             } else {
                 tokens.clear_at(index);

@@ -41,7 +41,7 @@ struct ClassyDefinitionInfo {
 }
 
 fn has_nl(t: &Token) -> bool {
-    t.content.contains(&b'\n')
+    t.get_content().contains(&b'\n')
 }
 
 impl Fixer for ClassDefinitionFixer {
@@ -275,9 +275,9 @@ impl ClassDefinitionFixer {
                     {
                         continue;
                     }
-                    if (tokens[iu - 1].is_comment() && tokens[iu - 1].content.ends_with(b"]"))
+                    if (tokens[iu - 1].is_comment() && tokens[iu - 1].get_content().ends_with(b"]"))
                         || (tokens[iu + 1].is_comment()
-                            && tokens[iu + 1].content.starts_with(b"#["))
+                            && tokens[iu + 1].get_content().starts_with(b"#["))
                     {
                         continue;
                     }
@@ -288,14 +288,14 @@ impl ClassDefinitionFixer {
                     }
                 }
                 if tokens[iu - 1].is_comment() {
-                    let content = &tokens[iu - 1].content;
+                    let content = tokens[iu - 1].get_content();
                     if !content.starts_with(b"//") && !content.starts_with(b"#") {
                         tokens.set(iu, ws());
                     }
                     continue;
                 }
                 if tokens[iu + 1].is_comment() {
-                    if !tokens[iu + 1].content.starts_with(b"//") {
+                    if !tokens[iu + 1].get_content().starts_with(b"//") {
                         tokens.set(iu, ws());
                     }
                     continue;

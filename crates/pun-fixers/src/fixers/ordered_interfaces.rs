@@ -80,16 +80,16 @@ impl Fixer for OrderedInterfacesFixer {
                         .iter()
                         .position(|t| {
                             !matches!(
-                                t.id,
+                                t.get_id(),
                                 Some(Kind::T_WHITESPACE | Kind::T_COMMENT | Kind::T_DOC_COMMENT)
-                            ) && !t.content.is_empty()
+                            ) && !t.get_content().is_empty()
                         })
                         .unwrap();
                     for t in &interface[start..] {
                         if t.is_comment() || t.is_whitespace(None) {
                             break;
                         }
-                        normalized.extend(str_replace(b"\\", b" ", &t.content));
+                        normalized.extend(str_replace(b"\\", b" ", t.get_content()));
                     }
                     I {
                         tokens: interface,

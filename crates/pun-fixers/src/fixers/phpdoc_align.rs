@@ -165,11 +165,11 @@ impl Fixer for PhpdocAlignFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
             // Only a line with `@` can start an aligned group; without one the docblock is left as is.
-            if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !tokens[index].content.contains(&b'@')
+            if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !tokens[index].get_content().contains(&b'@')
             {
                 continue;
             }
-            let content = tokens[index].content.clone();
+            let content = tokens[index].get_content().to_vec();
             let doc = DocBlock::new(&content);
             self.fix_doc_block(&doc);
             let new = doc.get_content();

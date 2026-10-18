@@ -164,7 +164,7 @@ impl Fixer for BracesPositionFixer {
         while foreach_index < tokens.count() {
             let mut index = foreach_index;
             foreach_index += 1;
-            let kind = tokens[index].id;
+            let kind = tokens[index].get_id();
             let is = |kinds: &[Kind]| kind.is_some_and(|k| kinds.contains(&k));
             let mut allow_single_line = false;
             let mut allow_single_line_if_empty = false;

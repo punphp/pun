@@ -42,7 +42,7 @@ impl NoWhitespaceInBlankLineFixer {
     /// "\r" (a "\r\n" is rejoined with "\n") or a selected line made only of spaces and tabs (`^\h+$`). Otherwise
     /// the lines rejoin to the same content, and setting an identical token is a no-op.
     fn may_change(&self, tokens: &Tokens, index: usize) -> bool {
-        let c = &tokens[index].content;
+        let c = tokens[index].get_content();
         if self.whitespaces_config.get_line_ending() != "\n" || c.contains(&b'\r') {
             return true;
         }
@@ -53,7 +53,7 @@ impl NoWhitespaceInBlankLineFixer {
             return false;
         }
         let l_max = if has_next { line_count - 1 } else { line_count };
-        let l_start = usize::from(!(prev.is_kind(T_OPEN_TAG) && prev.content.ends_with(b"\n")));
+        let l_start = usize::from(!(prev.is_kind(T_OPEN_TAG) && prev.get_content().ends_with(b"\n")));
         c.split(|&b| b == b'\n')
             .take(l_max)
             .skip(l_start)
@@ -61,7 +61,7 @@ impl NoWhitespaceInBlankLineFixer {
     }
 
     fn fix_whitespace_token(&self, tokens: &mut Tokens, index: usize) {
-        let content = tokens[index].content.clone();
+        let content = tokens[index].get_content().to_vec();
         let mut lines = Preg::split_str("/(\r\n|\n)/", &content);
         let line_count = lines.len();
         let has_next = index + 1 < tokens.count();
@@ -73,7 +73,7 @@ impl NoWhitespaceInBlankLineFixer {
         {
             let l_max = if has_next { line_count - 1 } else { line_count };
             let mut l_start = 1;
-            if tokens[index - 1].is_kind(T_OPEN_TAG) && tokens[index - 1].content.ends_with(b"\n") {
+            if tokens[index - 1].is_kind(T_OPEN_TAG) && tokens[index - 1].get_content().ends_with(b"\n") {
                 l_start = 0;
             }
             for line in lines.iter_mut().take(l_max).skip(l_start) {

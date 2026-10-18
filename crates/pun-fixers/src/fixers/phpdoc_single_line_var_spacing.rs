@@ -25,7 +25,7 @@ impl Fixer for PhpdocSingleLineVarSpacingFixer {
             if !tokens[index].is_comment() {
                 continue;
             }
-            let content = &tokens[index].content;
+            let content = tokens[index].get_content();
             let fixed_content = fix_token_content(content);
             if *content != fixed_content {
                 tokens.set(index, Token::new(T_DOC_COMMENT, fixed_content));

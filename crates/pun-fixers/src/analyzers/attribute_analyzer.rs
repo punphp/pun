@@ -137,7 +137,7 @@ impl AttributeAnalyzer {
         // End last element at newline if it exists and there's no trailing comma
         index -= 1;
         while tokens[index].is_whitespace(None) {
-            if Preg::r#match("/\\R/", &tokens[index].content) {
+            if Preg::r#match("/\\R/", tokens[index].get_content()) {
                 elements.last_mut().unwrap().end = index - 1;
                 break;
             }

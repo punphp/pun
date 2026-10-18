@@ -68,7 +68,7 @@ impl Fixer for TernaryOperatorSpacesFixer {
 
 fn ensure_whitespace_existence(tokens: &mut Tokens, mut index: usize, after: bool) {
     if tokens[index].is_whitespace(None) {
-        if !tokens[index].content.contains(&b'\n') && !tokens[index - 1].is_comment() {
+        if !tokens[index].get_content().contains(&b'\n') && !tokens[index - 1].is_comment() {
             tokens.set(index, Token::new(T_WHITESPACE, " "));
         }
         return;

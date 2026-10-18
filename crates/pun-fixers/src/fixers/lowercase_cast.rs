@@ -22,11 +22,11 @@ impl Fixer for LowercaseCastFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
-            if !tokens[index].is_cast() || !tokens[index].content.iter().any(u8::is_ascii_uppercase) {
+            if !tokens[index].is_cast() || !tokens[index].get_content().iter().any(u8::is_ascii_uppercase) {
                 continue;
             }
             let t = &tokens[index];
-            let new = Token::new(t.id.unwrap(), t.content.to_ascii_lowercase());
+            let new = Token::new(t.get_id().unwrap(), t.get_content().to_ascii_lowercase());
             tokens.set(index, new);
         }
     }

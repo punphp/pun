@@ -67,14 +67,14 @@ fn get_group_declaration(tokens: &Tokens, index: usize) -> (Vec<u8>, usize, usiz
             break i;
         }
         if t.is_comment() {
-            comment.extend_from_slice(&t.content);
+            comment.extend_from_slice(t.get_content());
             if !tokens[i - 1].is_whitespace(None) && !tokens[i + 1].is_whitespace(None) {
                 group_prefix.push(b' ');
             }
         } else if t.is_whitespace(None) {
             group_prefix.push(b' ');
         } else {
-            group_prefix.extend_from_slice(&t.content);
+            group_prefix.extend_from_slice(t.get_content());
         }
         i += 1;
     };
@@ -123,12 +123,12 @@ fn get_group_statements(
                 statement = [&b" const"[..], &statement].concat();
                 i += 2;
             }
-            if token.is_whitespace(Some(b" \t")) || !tokens[i - 1].content.starts_with(b"//") {
+            if token.is_whitespace(Some(b" \t")) || !tokens[i - 1].get_content().starts_with(b"//") {
                 i += 1;
                 continue;
             }
         }
-        statement.extend_from_slice(&token.content);
+        statement.extend_from_slice(token.get_content());
         i += 1;
     }
     if !comment.is_empty() {
@@ -196,7 +196,7 @@ impl SingleImportPerStatementFixer {
             let indent = WhitespacesAnalyzer::detect_indent(tokens, index);
             if tokens[i - 1].is_whitespace(None) {
                 tokens.set(i - 1, Token::new(T_WHITESPACE, [ending, &indent].concat()));
-            } else if !tokens[i - 1].content.contains(&b'\n') {
+            } else if !tokens[i - 1].get_content().contains(&b'\n') {
                 tokens.insert_at(
                     i,
                     vec![Token::new(T_WHITESPACE, [ending, &indent].concat())],

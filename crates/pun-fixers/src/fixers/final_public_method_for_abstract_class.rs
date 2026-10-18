@@ -83,7 +83,7 @@ fn fix_class(tokens: &mut Tokens, class_open_index: usize, class_close_index: us
             continue;
         }
         next_index = tokens.get_next_meaningful_token(next_index).unwrap();
-        if MAGIC_METHODS.contains(&&strtolower(&tokens[next_index].content)[..]) {
+        if MAGIC_METHODS.contains(&&strtolower(tokens[next_index].get_content())[..]) {
             index -= 1;
             continue;
         }

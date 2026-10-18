@@ -125,7 +125,7 @@ impl Fixer for PhpdocTagTypeFixer {
             }
             let mut parts: Vec<Vec<u8>> = Preg::split(
                 &regular_expression,
-                &tokens[index].content,
+                tokens[index].get_content(),
                 -1,
                 PREG_SPLIT_DELIM_CAPTURE,
             )

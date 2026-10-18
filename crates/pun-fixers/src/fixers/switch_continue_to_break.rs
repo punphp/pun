@@ -141,7 +141,7 @@ impl Run<'_> {
             return after_index; // e.g. `continue 1 ?><?php + $a;`
         }
         let jump: Vec<u8> = following
-            .content
+            .get_content()
             .iter()
             .copied()
             .filter(|&c| c != b'_')

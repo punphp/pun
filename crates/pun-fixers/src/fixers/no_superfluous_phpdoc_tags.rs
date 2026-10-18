@@ -128,8 +128,8 @@ impl Fixer for NoSuperfluousPhpdocTagsFixer {
             if token.is_given_kind(SYMBOL_KINDS) {
                 current_symbol = Some(
                     tokens[tokens.get_next_meaningful_token(index).unwrap()]
-                        .content
-                        .clone(),
+                        .get_content()
+                        .to_vec(),
                 );
                 let open = tokens
                     .get_next_token_of_kind(index, &["{".into()], true)
@@ -144,7 +144,7 @@ impl Fixer for NoSuperfluousPhpdocTagsFixer {
             let Some(element) = find_documented_element(tokens, index) else {
                 continue;
             };
-            let initial_content = tokens[index].content.clone();
+            let initial_content = tokens[index].get_content().to_vec();
             let mut content = initial_content.clone();
             if self.remove_inheritdoc {
                 content = remove_superfluous_inherit_doc(&content);
@@ -221,7 +221,7 @@ fn find_documented_element(tokens: &Tokens, doc_comment_index: usize) -> Option<
             return Some(element);
         }
         if t.is_given_kind(MODIFIER_KINDS) {
-            element.modifiers.push(t.id.unwrap());
+            element.modifiers.push(t.get_id().unwrap());
         } else if t.is_given_kind(TYPE_KINDS) {
             element.first_type_index.get_or_insert(i);
         } else {
@@ -329,7 +329,7 @@ impl NoSuperfluousPhpdocTagsFixer {
                     info.allows_null = true;
                 }
             }
-            arguments_info.insert(token.content.clone(), info);
+            arguments_info.insert(token.get_content().to_vec(), info);
         }
         // virtualise "hidden params" as if they would be regular ones
         if self.allow_hidden_params {
@@ -449,7 +449,7 @@ fn parse_type_hint(tokens: &Tokens, mut index: usize) -> TypeInfo {
             CT_ARRAY_TYPEHINT,
             T_CALLABLE,
         ]) {
-            type_.extend_from_slice(&tokens[index].content);
+            type_.extend_from_slice(tokens[index].get_content());
             index = tokens.get_next_meaningful_token(index).unwrap();
         }
         if type_.is_empty() {

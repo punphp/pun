@@ -126,7 +126,7 @@ fn remove_single_use_statements(statements: &[NamespaceUseAnalysis], tokens: &mu
 }
 
 fn is_cleared(token: &Token) -> bool {
-    token.id.is_none() && token.get_content().is_empty()
+    token.get_id().is_none() && token.get_content().is_empty()
 }
 
 fn add_group_use_statements(statements: &[NamespaceUseAnalysis], tokens: &mut Tokens) {

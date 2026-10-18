@@ -118,7 +118,7 @@ impl PhpdocReturnSelfReferenceFixer {
         if !tokens[doc_index].is_kind(T_DOC_COMMENT) {
             return;
         }
-        let doc_block = DocBlock::new(&tokens[doc_index].content);
+        let doc_block = DocBlock::new(tokens[doc_index].get_content());
         let Some(returns_block) = doc_block
             .get_annotations_of_type(&["return"])
             .into_iter()

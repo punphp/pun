@@ -24,7 +24,7 @@ impl Fixer for HeredocToNowdocFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
             let token = &tokens[index];
-            if !token.is_kind(Kind::T_START_HEREDOC) || token.content.contains(&b'\'') {
+            if !token.is_kind(Kind::T_START_HEREDOC) || token.get_content().contains(&b'\'') {
                 continue;
             }
             if tokens[index + 1].is_kind(Kind::T_END_HEREDOC) {
@@ -37,14 +37,14 @@ impl Fixer for HeredocToNowdocFixer {
             {
                 continue;
             }
-            let content = tokens[index + 1].content.clone();
+            let content = tokens[index + 1].get_content().to_vec();
             if Preg::r#match(r"/(?<!\\)(?:\\{2})*\\(?![$\\])/", &content) {
                 continue;
             }
             let t = convert_to_nowdoc(&tokens[index]);
             tokens.set(index, t);
             let content = str_replace(br"\$", b"$", &str_replace(br"\\", br"\", &content));
-            let id = tokens[index + 1].id.unwrap();
+            let id = tokens[index + 1].get_id().unwrap();
             tokens.set(index + 1, Token::new(id, content));
         }
     }
@@ -52,11 +52,11 @@ impl Fixer for HeredocToNowdocFixer {
 
 fn convert_to_nowdoc(token: &Token) -> Token {
     Token::new(
-        token.id.unwrap(),
+        token.get_id().unwrap(),
         Preg::replace(
             r#"/^([Bb]?<<<)(\h*)"?([^\s"]+)"?/"#,
             "$1$2'$3'",
-            &token.content,
+            token.get_content(),
         ),
     )
 }

@@ -26,7 +26,7 @@ impl Fixer for PhpdocNoEmptyReturnFixer {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[index].content);
+            let doc = DocBlock::new(tokens[index].get_content());
             let annotations = doc.get_annotations_of_type(&["return"]);
             if annotations.is_empty() {
                 continue;
@@ -39,7 +39,7 @@ impl Fixer for PhpdocNoEmptyReturnFixer {
                 }
             }
             let content = doc.get_content();
-            if content == tokens[index].content {
+            if content == tokens[index].get_content() {
                 continue;
             }
             if content.is_empty() {

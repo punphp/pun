@@ -167,17 +167,9 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                 let mut index = namespace.scope_start_index;
                 while (index as isize) < namespace.scope_end_index as isize + index_diff {
                     let orig_size = tokens.count();
-                    // Only comment branches read the content after edits; other tokens need just their kind.
                     let t = &tokens[index];
                     let (open, close) = (t.equals("{", true), t.equals("}", true));
-                    let token = if t.is_comment() {
-                        t.clone()
-                    } else {
-                        Token {
-                            id: t.id,
-                            content: Vec::new(),
-                        }
-                    };
+                    let token = t.clone();
                     if open {
                         opened_curly_brackets += 1;
                     } else if close {
@@ -219,13 +211,13 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                     ]) {
                         self.fix_next_name(&st, tokens, index, &uses, &namespace_name);
                     } else if let Some(m) = (discover_symbols_phase && token.is_kind(T_COMMENT))
-                        .then(|| Preg::match_groups(&regex_comment_attribute, &token.content))
+                        .then(|| Preg::match_groups(&regex_comment_attribute, token.get_content()))
                         .flatten()
                     {
                         // @TODO: drop when PHP 8.0+ is required
                         self.determine_short_type(&st, m.str(1), &uses, &namespace_name);
                     } else if token.is_kind(T_DOC_COMMENT) {
-                        for m in Preg::match_all(&regex_reserved, &token.content) {
+                        for m in Preg::match_all(&regex_reserved, token.get_content()) {
                             st.reserved_identifiers_by_level
                                 .entry(opened_curly_brackets + 1)
                                 .or_default()
@@ -581,7 +573,7 @@ impl FullyQualifiedStrictTypesFixer {
         if allowed_tags.is_empty() {
             return;
         }
-        let php_doc_content = tokens[index].content.clone();
+        let php_doc_content = tokens[index].get_content().to_vec();
         static DOC_TAG: LazyLock<String> =
             LazyLock::new(|| format!(r"/([*{{]\h*@)(\S+)(\h+)({REGEX_TYPES})(?!(?!\}})\S)/"));
         static SEE_TAG: LazyLock<String> = LazyLock::new(|| {
@@ -645,7 +637,7 @@ impl FullyQualifiedStrictTypesFixer {
             };
             let new_type_value: Vec<u8> = short_tokens
                 .iter()
-                .flat_map(|t| t.content.iter().copied())
+                .flat_map(|t| t.get_content().iter().copied())
                 .collect();
             // upstream keeps `$type` when the value is unchanged, but determineShortType returns null then
             TypeExpression::new(&new_type_value)

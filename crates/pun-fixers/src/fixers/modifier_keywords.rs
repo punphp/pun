@@ -170,7 +170,7 @@ fn is_keyword_placed_properly(
     keyword_index: usize,
     compared_index: usize,
 ) -> bool {
-    tokens[keyword_index + 1].content == b" "
+    tokens[keyword_index + 1].get_content() == b" "
         && (keyword_index + 2 == compared_index
             || (keyword_index + 3 == compared_index && tokens[keyword_index + 2].equals("&", true)))
 }

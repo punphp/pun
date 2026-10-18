@@ -202,6 +202,14 @@ impl Token {
         }
     }
 
+    /// `new Token($isArray ? [$id, $content] : $content)`: `Token::new` for an id, else `Token::char`.
+    pub fn with_id(id: Option<Kind>, content: impl Into<Vec<u8>>) -> Token {
+        match id {
+            Some(id) => Token::new(id, content),
+            None => Token::char(content),
+        }
+    }
+
     /// `new Token($content)` (non-array token).
     pub fn char(content: impl Into<Vec<u8>>) -> Token {
         Token {
@@ -319,6 +327,15 @@ impl Token {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // `new Token([T_STRING, 'a'])` is an array token; `new Token('(')` is not, and has no id.
+    #[test]
+    fn with_id_builds_array_or_char_tokens() {
+        let a = Token::with_id(Some(T_STRING), "a");
+        assert!(a.is_array() && a.get_id() == Some(T_STRING) && a.get_content() == b"a");
+        let c = Token::with_id(None, "(");
+        assert!(!c.is_array() && c.get_id().is_none() && c.get_content() == b"(");
+    }
 
     #[test]
     fn equals_semantics() {

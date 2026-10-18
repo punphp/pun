@@ -20,7 +20,7 @@ impl GeneralPhpdocAnnotationRemove {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[index].content);
+            let doc = DocBlock::new(tokens[index].get_content());
             let annotations = doc.get_annotations_of_type(self.annotations);
             if annotations.is_empty() {
                 continue;

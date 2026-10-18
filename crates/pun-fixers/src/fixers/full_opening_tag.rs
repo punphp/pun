@@ -81,10 +81,7 @@ impl Fixer for FullOpeningTagFixer {
                 len = token_content.len();
                 new_tokens.set(
                     index,
-                    Token {
-                        id: token.get_id(),
-                        content: token_content,
-                    },
+                    Token::with_id(token.get_id(), token_content),
                 );
             }
             tokens_old_content_length += len;

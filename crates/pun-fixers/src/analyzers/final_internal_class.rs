@@ -182,7 +182,7 @@ impl FinalInternalClassFixer {
     }
 
     fn is_class_candidate_based_on_php_doc(&self, tokens: &Tokens, index: usize) -> Option<bool> {
-        let doc = DocBlock::new(&tokens[index].content);
+        let doc = DocBlock::new(tokens[index].get_content());
         let mut tags = BTreeMap::new();
         for annotation in doc.get_annotations() {
             let content = annotation.get_content();
@@ -219,7 +219,7 @@ impl FinalInternalClassFixer {
                 }
                 continue;
             }
-            attribute_string.extend(tokens[ci].content.to_ascii_lowercase());
+            attribute_string.extend(tokens[ci].get_content().to_ascii_lowercase());
         }
         if intersects(&self.exclude, &attribute_candidates) {
             return Some(false);

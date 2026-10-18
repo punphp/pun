@@ -23,7 +23,7 @@ impl Fixer for NoAliasLanguageConstructCallFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.len() {
             let token = &tokens[index];
-            if !token.is_kind(T_EXIT) || token.content.eq_ignore_ascii_case(b"exit") {
+            if !token.is_kind(T_EXIT) || token.get_content().eq_ignore_ascii_case(b"exit") {
                 continue;
             }
             tokens.set(index, Token::new(T_EXIT, "exit"));

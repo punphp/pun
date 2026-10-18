@@ -41,7 +41,7 @@ impl Fixer for SelfAccessorFixer {
                     .get_next_token_of_kind(name_index, &["{".into()], true)
                     .unwrap();
                 let end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, start_index);
-                let name = tokens[name_index].content.clone();
+                let name = tokens[name_index].get_content().to_vec();
                 replace_name_occurrences(
                     tokens,
                     &namespace.full_name,

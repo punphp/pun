@@ -28,10 +28,10 @@ pub(crate) fn apply_fix(
     normalize: &dyn Fn(&[u8]) -> Vec<u8>,
 ) {
     for index in 0..tokens.count() {
-        if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !may_change(&tokens[index].content) {
+        if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !may_change(tokens[index].get_content()) {
             continue;
         }
-        let doc = DocBlock::new(&tokens[index].content);
+        let doc = DocBlock::new(tokens[index].get_content());
         let annotations = doc.get_annotations_of_type(TAGS_WITH_TYPES);
         if annotations.is_empty() {
             continue;

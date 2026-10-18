@@ -49,7 +49,7 @@ fn convert_elseif_to_if(tokens: &mut Tokens, index: usize) {
     for previous in (1..index).rev() {
         let token = &tokens[previous];
         if token.is_whitespace(None)
-            && let Some(m) = Preg::match_groups("/(\\R\\N*)$/", &token.content)
+            && let Some(m) = Preg::match_groups("/(\\R\\N*)$/", token.get_content())
         {
             whitespace = m.str(1).to_vec();
             break;
@@ -61,7 +61,7 @@ fn convert_elseif_to_if(tokens: &mut Tokens, index: usize) {
     let previous_token = &tokens[index - 1];
     if !previous_token.is_whitespace(None) {
         tokens.insert_at(index, vec![Token::new(T_WHITESPACE, whitespace)]);
-    } else if !Preg::r#match("/\\R/", &previous_token.content) {
+    } else if !Preg::r#match("/\\R/", previous_token.get_content()) {
         tokens.set(index - 1, Token::new(T_WHITESPACE, whitespace));
     }
 }

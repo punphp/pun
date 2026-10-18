@@ -38,15 +38,12 @@ impl Fixer for LineEndingFixer {
         };
         for index in 0..tokens.count() {
             let token = &tokens[index];
-            if only_lf(&token.content) {
+            if only_lf(token.get_content()) {
                 continue;
             }
             if token.is_kind(T_ENCAPSED_AND_WHITESPACE) {
                 if tokens[tokens.get_next_meaningful_token(index).unwrap()].is_kind(T_END_HEREDOC) {
-                    let t = Token {
-                        id: token.get_id(),
-                        content: Preg::replace("#\\R#", ending, token.get_content()),
-                    };
+                    let t = Token::with_id(token.get_id(), Preg::replace("#\\R#", ending, token.get_content()));
                     tokens.set(index, t);
                 }
                 continue;
@@ -59,10 +56,7 @@ impl Fixer for LineEndingFixer {
                 T_START_HEREDOC,
                 T_WHITESPACE,
             ]) {
-                let t = Token {
-                    id: token.get_id(),
-                    content: Preg::replace("#\\R#", ending, token.get_content()),
-                };
+                let t = Token::with_id(token.get_id(), Preg::replace("#\\R#", ending, token.get_content()));
                 tokens.set(index, t);
             }
         }

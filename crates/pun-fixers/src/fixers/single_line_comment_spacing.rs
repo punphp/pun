@@ -25,7 +25,7 @@ impl Fixer for SingleLineCommentSpacingFixer {
             if !tokens[index].is_kind(T_COMMENT) {
                 continue;
             }
-            let content = tokens[index].content.clone();
+            let content = tokens[index].get_content().to_vec();
             let content_length = content.len();
             let new_content;
             if content[0] == b'/' {

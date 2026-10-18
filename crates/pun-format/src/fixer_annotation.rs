@@ -51,7 +51,7 @@ pub(crate) fn find(tokens: &Tokens) -> Result<Annotations, FindError> {
             continue;
         }
         if token.is_comment() {
-            comments.push(&token.content);
+            comments.push(token.get_content());
             index += 1;
             continue;
         }
@@ -64,7 +64,7 @@ pub(crate) fn find(tokens: &Tokens) -> Result<Annotations, FindError> {
         if !token.is_comment() {
             break;
         }
-        comments.push(&token.content);
+        comments.push(token.get_content());
     }
 
     let subject = comments.join(&b'\n');

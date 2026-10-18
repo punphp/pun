@@ -85,10 +85,10 @@ impl Fixer for PhpdocOrderByValueFixer {
 
 fn fix_annotation(tokens: &mut Tokens, index: usize, r#type: &str, type_lower_case: &str) {
     let find_pattern = format!("/@{type}\\s.+@{type}\\s/s");
-    if !Preg::r#match(&find_pattern, &tokens[index].content) {
+    if !Preg::r#match(&find_pattern, tokens[index].get_content()) {
         return;
     }
-    let doc_block = DocBlock::new(&tokens[index].content);
+    let doc_block = DocBlock::new(tokens[index].get_content());
     let annotations = doc_block.get_annotations_of_type(&[r#type]);
 
     let (replace_pattern, replacement) =

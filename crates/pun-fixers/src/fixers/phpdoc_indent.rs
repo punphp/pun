@@ -50,11 +50,11 @@ impl Fixer for PhpdocIndentFixer {
                 Vec::new()
             };
 
-            let new_prev_content = fix_whitespace_before_docblock(&prev_token.content, &indent);
+            let new_prev_content = fix_whitespace_before_docblock(prev_token.get_content(), &indent);
 
             tokens.set(
                 index,
-                Token::new(T_DOC_COMMENT, fix_doc_block(&token.content, &indent)),
+                Token::new(T_DOC_COMMENT, fix_doc_block(token.get_content(), &indent)),
             );
 
             if !prev_token.is_whitespace(None) {
@@ -64,10 +64,7 @@ impl Fixer for PhpdocIndentFixer {
             } else if !new_prev_content.is_empty() {
                 tokens.set(
                     prev_index,
-                    Token {
-                        id: prev_token.id,
-                        content: new_prev_content,
-                    },
+                    Token::with_id(prev_token.get_id(), new_prev_content),
                 );
             } else {
                 tokens.clear_at(prev_index);

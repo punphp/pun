@@ -85,7 +85,7 @@ impl Fixer for PhpdocSeparationFixer {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[index].content);
+            let doc = DocBlock::new(tokens[index].get_content());
             fix_description(&doc);
             self.fix_annotations(&doc);
             tokens.set(index, Token::new(Kind::T_DOC_COMMENT, doc.get_content()));

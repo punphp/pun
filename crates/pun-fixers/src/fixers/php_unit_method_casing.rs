@@ -59,14 +59,14 @@ impl PhpUnitMethodCasingFixer {
             }
             let function_name_index = tokens.get_next_meaningful_token(index).unwrap();
             existing_function_names_lowercase
-                .insert(tokens[function_name_index].content.to_ascii_lowercase());
+                .insert(tokens[function_name_index].get_content().to_ascii_lowercase());
         }
         for index in (start_index + 1..end_index).rev() {
             if !self.is_test_method(tokens, index) {
                 continue;
             }
             let function_name_index = tokens.get_next_meaningful_token(index).unwrap();
-            let function_name = tokens[function_name_index].content.clone();
+            let function_name = tokens[function_name_index].get_content().to_vec();
             let function_name_lowercase = function_name.to_ascii_lowercase();
             let new_function_name = self.update_method_casing(&function_name);
             let new_function_name_lowercase = new_function_name.to_ascii_lowercase();
@@ -119,7 +119,7 @@ impl PhpUnitMethodCasingFixer {
             return false;
         }
         let function_name_index = tokens.get_next_meaningful_token(index).unwrap();
-        if tokens[function_name_index].content.starts_with(b"test") {
+        if tokens[function_name_index].get_content().starts_with(b"test") {
             return true;
         }
         if is_test_attribute_present(tokens, index) {
@@ -128,13 +128,13 @@ impl PhpUnitMethodCasingFixer {
         let doc_block_index = get_doc_block_index(tokens, index);
         tokens[doc_block_index].is_kind(T_DOC_COMMENT)
             && tokens[doc_block_index]
-                .content
+                .get_content()
                 .windows(5)
                 .any(|w| w == b"@test")
     }
 
     fn update_doc_block(&self, tokens: &mut Tokens, doc_block_index: usize) {
-        let doc = DocBlock::new(&tokens[doc_block_index].content);
+        let doc = DocBlock::new(tokens[doc_block_index].get_content());
         let mut lines: Vec<Vec<u8>> = doc
             .get_lines()
             .iter()

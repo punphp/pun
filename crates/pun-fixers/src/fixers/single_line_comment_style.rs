@@ -44,7 +44,7 @@ impl Fixer for SingleLineCommentStyleFixer {
                 continue;
             }
             let token = tokens[index].clone();
-            let content = &token.content;
+            let content = token.get_content();
             // substr($content, 2, -2) ?: ''
             let comment_content: &[u8] = if content.len() > 4 {
                 &content[2..content.len() - 2]
@@ -56,10 +56,7 @@ impl Fixer for SingleLineCommentStyleFixer {
                 // upstream skips `#[` (an attribute before PHP 8); PHP 8 never lexes it as a comment
                 tokens.set(
                     index,
-                    Token {
-                        id: token.id,
-                        content: [&b"//"[..], &content[1..]].concat(),
-                    },
+                    Token::with_id(token.get_id(), [&b"//"[..], &content[1..]].concat()),
                 );
                 continue;
             }
@@ -75,15 +72,12 @@ impl Fixer for SingleLineCommentStyleFixer {
             let next_token_index = index + 1;
             if next_token_index < tokens.count() {
                 let next_token = tokens[next_token_index].clone();
-                if !next_token.is_whitespace(None) || !Preg::r#match("/\\R/", &next_token.content) {
+                if !next_token.is_whitespace(None) || !Preg::r#match("/\\R/", next_token.get_content()) {
                     continue;
                 }
                 tokens.set(
                     next_token_index,
-                    Token {
-                        id: next_token.id,
-                        content: php_compat::ltrim_chars(&next_token.content, b" \t").to_vec(),
-                    },
+                    Token::with_id(next_token.get_id(), php_compat::ltrim_chars(next_token.get_content(), b" \t").to_vec()),
                 );
             }
 
@@ -101,10 +95,7 @@ impl Fixer for SingleLineCommentStyleFixer {
             }
             tokens.set(
                 index,
-                Token {
-                    id: token.id,
-                    content: new_content,
-                },
+                Token::with_id(token.get_id(), new_content),
             );
         }
     }

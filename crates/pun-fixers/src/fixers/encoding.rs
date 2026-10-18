@@ -28,10 +28,7 @@ impl Fixer for EncodingFixer {
             if new_content.is_empty() {
                 tokens.clear_at(0);
             } else {
-                let t = Token {
-                    id: tokens[0].get_id(),
-                    content: new_content.to_vec(),
-                };
+                let t = Token::with_id(tokens[0].get_id(), new_content.to_vec());
                 tokens.set(0, t);
             }
         }

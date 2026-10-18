@@ -31,10 +31,7 @@ impl IndentationTypeFixer {
             |m| Self::get_expected_indent(m.str(0), indent),
             &content,
         );
-        Token {
-            id: tokens[index].get_id(),
-            content,
-        }
+        Token::with_id(tokens[index].get_id(), content)
     }
 
     fn fix_indent_token(&self, tokens: &Tokens, index: usize) -> Token {
@@ -88,7 +85,7 @@ impl Fixer for IndentationTypeFixer {
         let spaces = self.whitespaces_config.get_indent() != "\t";
         for index in 0..tokens.count() {
             let token = &tokens[index];
-            if spaces && !token.content.contains(&b'\t') {
+            if spaces && !token.get_content().contains(&b'\t') {
                 continue;
             }
             if token.is_comment() {

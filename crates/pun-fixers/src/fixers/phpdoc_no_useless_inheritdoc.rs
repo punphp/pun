@@ -85,7 +85,7 @@ fn fix_token(tokens: &mut Tokens, token_index: usize) {
     let (content, count) = Preg::replace_callback_limit(
         r"#(\h*(?:@{*|{*\h*@)\h*inheritdoc\h*)([^}]*)((?:}*)\h*)#i",
         |m| [&b" "[..], m.str(2)].concat(),
-        &tokens[token_index].content,
+        tokens[token_index].get_content(),
         -1,
     );
     if count > 0 {

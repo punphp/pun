@@ -134,7 +134,7 @@ impl Fixer for PsrAutoloadingFixer {
                     return;
                 }
                 let classy_index = tokens.get_next_meaningful_token(index).unwrap();
-                classy = Some((tokens[classy_index].content.to_vec(), classy_index));
+                classy = Some((tokens[classy_index].get_content().to_vec(), classy_index));
             }
         }
         let Some((classy_name, classy_index)) = classy else {

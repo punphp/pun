@@ -127,7 +127,7 @@ fn get_interfaces(
             interfaces.push(strtolower(&interface));
             interface.clear();
         } else {
-            interface.extend_from_slice(&tokens[index].content);
+            interface.extend_from_slice(tokens[index].get_content());
         }
         index = tokens.get_next_meaningful_token(index).unwrap();
     }

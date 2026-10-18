@@ -164,12 +164,12 @@ impl NamespaceUsesAnalyzer {
         while let Some(i) = index.filter(|&i| !tokens[i].equals_any(&ends, true)) {
             let token = &tokens[i];
             if token.is_kind(T_STRING) {
-                short_name = token.content.clone();
+                short_name = token.get_content().to_vec();
                 if !aliased {
                     full_name.extend_from_slice(&short_name);
                 }
             } else if token.is_kind(T_NS_SEPARATOR) {
-                full_name.extend_from_slice(&token.content);
+                full_name.extend_from_slice(token.get_content());
             } else if token.is_kind(T_AS) {
                 aliased = true;
             }

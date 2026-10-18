@@ -170,9 +170,9 @@ impl Fixer for SingleSpaceAroundConstructFixer {
             if tokens[index].is_given_kind(&self.contain) {
                 let token = &tokens[index];
                 if token.is_kind(T_YIELD_FROM)
-                    && php_compat::strtolower(&token.content) != b"yield from"
+                    && php_compat::strtolower(token.get_content()) != b"yield from"
                 {
-                    let content = Preg::replace("/\\s+/", " ", &token.content);
+                    let content = Preg::replace("/\\s+/", " ", token.get_content());
                     tokens.set(index, Token::new(T_YIELD_FROM, content));
                 }
             }
@@ -224,8 +224,8 @@ impl Fixer for SingleSpaceAroundConstructFixer {
             if token.is_kind(T_OPEN_TAG) {
                 let ws = &tokens[whitespace_token_index];
                 if ws.is_kind(T_WHITESPACE)
-                    && !ws.content.contains(&b'\n')
-                    && !token.content.contains(&b'\n')
+                    && !ws.get_content().contains(&b'\n')
+                    && !token.get_content().contains(&b'\n')
                 {
                     tokens.clear_at(whitespace_token_index);
                 }
@@ -249,16 +249,16 @@ impl Fixer for SingleSpaceAroundConstructFixer {
             }
             if token.is_comment() || token.is_kind(CT_ATTRIBUTE_CLOSE) {
                 let ws = &tokens[whitespace_token_index];
-                if ws.is_kind(T_WHITESPACE) && ws.content.contains(&b'\n') {
+                if ws.is_kind(T_WHITESPACE) && ws.get_content().contains(&b'\n') {
                     continue;
                 }
             }
             if tokens[whitespace_token_index].is_whitespace(None)
-                && tokens[whitespace_token_index].content.contains(&b'\n')
+                && tokens[whitespace_token_index].get_content().contains(&b'\n')
             {
                 let next_next_token = &tokens[whitespace_token_index + 1];
                 if next_next_token.is_kind(T_ATTRIBUTE)
-                    || (next_next_token.is_comment() && next_next_token.content.starts_with(b"#["))
+                    || (next_next_token.is_comment() && next_next_token.get_content().starts_with(b"#["))
                 {
                     continue;
                 }
@@ -275,7 +275,7 @@ fn is_multi_line_return(tokens: &Tokens, mut index: usize) -> bool {
     index += 1;
     let token_following_return = &tokens[index];
     if !token_following_return.is_kind(T_WHITESPACE)
-        || !token_following_return.content.contains(&b'\n')
+        || !token_following_return.get_content().contains(&b'\n')
     {
         return false;
     }
@@ -283,7 +283,7 @@ fn is_multi_line_return(tokens: &Tokens, mut index: usize) -> bool {
     let index_end = tokens.count() - 1;
     index += 1;
     while index < index_end {
-        if tokens[index].content.contains(&b'\n') {
+        if tokens[index].get_content().contains(&b'\n') {
             return true;
         }
         if tokens[index].equals("{", true) {
@@ -315,7 +315,7 @@ fn is_multiline_extends_or_implements_with_more_than_one_ancestor(
         if token.equals("{", true) {
             return false;
         }
-        if has_more_than_one_ancestor && token.content.contains(&b'\n') {
+        if has_more_than_one_ancestor && token.get_content().contains(&b'\n') {
             return true;
         }
     }
@@ -327,7 +327,7 @@ fn is_multiline_comma_separated_constant(tokens: &Tokens, constant_index: usize)
     let mut index = constant_index;
     while !tokens[index].equals_any(&[";".into(), T_CLOSE_TAG.into()], true) {
         index += 1;
-        is_multiline_constant = is_multiline_constant || tokens[index].content.contains(&b'\n');
+        is_multiline_constant = is_multiline_constant || tokens[index].get_content().contains(&b'\n');
         if tokens[index].equals(",", true) {
             has_more_than_one_constant = true;
         }
@@ -343,6 +343,6 @@ fn is_full_line_comment_before(tokens: &Tokens, index: usize) -> bool {
     if !tokens[before_index].is_kind(T_COMMENT) {
         return false;
     }
-    let content = &tokens[before_index].content;
+    let content = tokens[before_index].get_content();
     content.starts_with(b"#") || content.starts_with(b"//")
 }

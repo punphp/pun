@@ -42,7 +42,7 @@ impl Fixer for SingleQuoteFixer {
             if !tokens[index].is_kind(T_CONSTANT_ENCAPSED_STRING) {
                 continue;
             }
-            let mut content = &tokens[index].content[..];
+            let mut content = tokens[index].get_content();
             let mut prefix: &[u8] = b"";
             if content[0].eq_ignore_ascii_case(&b'b') {
                 prefix = &content[..1];

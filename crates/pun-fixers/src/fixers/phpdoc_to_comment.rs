@@ -62,12 +62,12 @@ impl Fixer for PhpdocToCommentFixer {
             if is_before_structural_element(tokens, index) {
                 continue;
             }
-            for m in Preg::match_all(r"~\@([a-zA-Z0-9_\\\-]+)\b~", &tokens[index].content) {
+            for m in Preg::match_all(r"~\@([a-zA-Z0-9_\\\-]+)\b~", tokens[index].get_content()) {
                 if self.ignored_tags.contains(&strtolower(m.str(1))) {
                     continue 'tokens;
                 }
             }
-            let content = &tokens[index].content;
+            let content = tokens[index].get_content();
             let trimmed = &content[content
                 .iter()
                 .take_while(|&&c| c == b'/' || c == b'*')
@@ -129,7 +129,7 @@ fn is_before_structural_element(tokens: &Tokens, index: usize) -> bool {
     if tokens[next_index].equals("}", true) {
         return false;
     }
-    let docs = &tokens[index].content;
+    let docs = tokens[index].get_content();
     is_structural_element(tokens, next_index)
         || is_valid_control(tokens, docs, next_index)
         || is_valid_variable(tokens, next_index)
@@ -150,7 +150,7 @@ fn is_structural_element(tokens: &Tokens, index: usize) -> bool {
         return true;
     }
     if token.is_kind(T_STRING) {
-        let content = strtolower(&token.content);
+        let content = strtolower(token.get_content());
         return content == b"get" || content == b"set";
     }
     if token.is_kind(T_CASE) {
@@ -178,7 +178,7 @@ fn is_valid_control(tokens: &Tokens, docs_content: &[u8], control_index: usize) 
     let close_parenthesis_index =
         tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_parenthesis_index);
     (open_parenthesis_index + 1..close_parenthesis_index)
-        .any(|i| tokens[i].is_kind(T_VARIABLE) && contains(docs_content, &tokens[i].content))
+        .any(|i| tokens[i].is_kind(T_VARIABLE) && contains(docs_content, tokens[i].get_content()))
 }
 
 fn is_valid_variable_assignment(
@@ -204,7 +204,7 @@ fn is_valid_variable_assignment(
         .get_next_token_of_kind(language_construct_index, &[end_kind], true)
         .unwrap();
     (language_construct_index + 1..end_index)
-        .any(|i| tokens[i].is_kind(T_VARIABLE) && contains(docs_content, &tokens[i].content))
+        .any(|i| tokens[i].is_kind(T_VARIABLE) && contains(docs_content, tokens[i].get_content()))
 }
 
 fn is_valid_variable(tokens: &Tokens, index: usize) -> bool {

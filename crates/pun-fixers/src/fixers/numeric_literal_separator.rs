@@ -51,7 +51,7 @@ impl Fixer for NumericLiteralSeparatorFixer {
             if token.get_content() == new_content {
                 continue;
             }
-            let id = token.id.unwrap();
+            let id = token.get_id().unwrap();
             tokens.set(index, Token::new(id, new_content));
         }
     }
@@ -135,7 +135,7 @@ fn insert_every_left(mut value: Vec<u8>, length: usize, offset: usize) -> Vec<u8
     let mut position = length;
     while position < value.len() {
         let end = (position + offset).min(value.len());
-        value.splice(position..end, [b'_']);
+        value.splice(position..end, *b"_");
         position += length + 1;
     }
     value

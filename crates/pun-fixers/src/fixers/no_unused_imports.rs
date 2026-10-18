@@ -89,7 +89,7 @@ fn is_import_used(
             continue;
         }
         if token.is_kind(Kind::T_STRING) {
-            if strcasecmp(&import.short_name, &token.content) != 0 {
+            if strcasecmp(&import.short_name, token.get_content()) != 0 {
                 index += 1;
                 continue;
             }
@@ -141,8 +141,8 @@ fn is_import_used(
             continue;
         }
         if token.is_comment()
-            && may_mention(&token.content, &import.short_name)
-            && Preg::r#match(&comment_pattern, &token.content)
+            && may_mention(token.get_content(), &import.short_name)
+            && Preg::r#match(&comment_pattern, token.get_content())
         {
             return true;
         }
@@ -173,13 +173,13 @@ fn remove_use_declaration(
         if tokens[i].is_comment() {
             continue;
         }
-        if !tokens[i].is_whitespace(None) || !tokens[i].content.contains(&b'\n') {
+        if !tokens[i].is_whitespace(None) || !tokens[i].get_content().contains(&b'\n') {
             tokens.clear_at(i);
             continue;
         }
         let prev = tokens.get_prev_non_whitespace(i, None).unwrap();
         if tokens[prev].is_comment() {
-            let content = &tokens[i].content;
+            let content = tokens[i].get_content();
             let at = content.iter().rposition(|&c| c == b'\n').unwrap();
             let t = Token::new(Kind::T_WHITESPACE, content[at..].to_vec());
             tokens.set(i, t);
@@ -240,7 +240,7 @@ fn clean_up_after_import_chunk_removal(tokens: &mut Tokens, u: &NamespaceUseAnal
         clear(tokens, before);
     }
     for index in before..=after {
-        if tokens[index].id.is_none() || !tokens[index].is_whitespace(Some(b" ")) {
+        if tokens[index].get_id().is_none() || !tokens[index].is_whitespace(Some(b" ")) {
             continue;
         }
         let next = tokens.get_next_meaningful_token(index).unwrap();
@@ -264,7 +264,7 @@ fn clean_up_after_import_chunk_removal(tokens: &mut Tokens, u: &NamespaceUseAnal
 fn clean_up_surrounding_new_lines(tokens: &mut Tokens, u: &NamespaceUseAnalysis) {
     let prev_index = u.start_index - 1;
     if tokens[prev_index].is_whitespace(None) {
-        let content = rtrim_chars(&tokens[prev_index].content, b" \t").to_vec();
+        let content = rtrim_chars(tokens[prev_index].get_content(), b" \t").to_vec();
         tokens.ensure_whitespace_at_index(prev_index, 0, &content);
     }
     // upstream returns separately for no token after the statement and for only empty ones
@@ -280,14 +280,14 @@ fn clean_up_surrounding_new_lines(tokens: &mut Tokens, u: &NamespaceUseAnalysis)
         let content = Preg::replace_limit(
             "#^\r\n|^\n#",
             "",
-            ltrim_chars(&tokens[next_index].content, b" \t"),
+            ltrim_chars(tokens[next_index].get_content(), b" \t"),
             1,
         )
         .0;
         tokens.ensure_whitespace_at_index(next_index, 0, &content);
     }
     if tokens[prev_index].is_whitespace(None) && tokens[next_index].is_whitespace(None) {
-        let content = [&tokens[prev_index].content[..], &tokens[next_index].content].concat();
+        let content = [tokens[prev_index].get_content(), tokens[next_index].get_content()].concat();
         tokens.ensure_whitespace_at_index(next_index, 0, &content);
         tokens.clear_at(prev_index);
     }
@@ -307,7 +307,7 @@ fn remove_import_statement_if_empty(tokens: &mut Tokens, u: &NamespaceUseAnalysi
     }
     let before_semicolon = tokens.get_prev_meaningful_token(u.end_index).unwrap();
     let t = &tokens[before_semicolon];
-    if t.is_kind(Kind::T_USE) || t.content == b"function" || t.content == b"const" {
+    if t.is_kind(Kind::T_USE) || t.get_content() == b"function" || t.get_content() == b"const" {
         remove_use_declaration(tokens, u, true);
     }
 }
@@ -333,12 +333,12 @@ fn scan_for_non_empty_tokens_until_new_line_found(
     while let Some(i) = index {
         index = tokens.get_non_empty_sibling(i, direction);
         let Some(i) = index else { continue };
-        if tokens[i].id.is_none() {
+        if tokens[i].get_id().is_none() {
             continue;
         }
         if !tokens[i].is_whitespace(None) {
             has_non_empty = true;
-        } else if tokens[i].content.starts_with(b"\n") {
+        } else if tokens[i].get_content().starts_with(b"\n") {
             return (Some(i), has_non_empty);
         }
     }

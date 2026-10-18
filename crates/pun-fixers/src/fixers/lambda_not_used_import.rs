@@ -90,7 +90,7 @@ fn find_not_used_lambda_imports(
             continue;
         }
         if token.is_kind(Kind::T_STRING)
-            && strtolower(&token.content) == b"compact"
+            && strtolower(token.get_content()) == b"compact"
             && functions.is_global_function_call(tokens, index)
         {
             return Imports::new();
@@ -111,13 +111,13 @@ fn find_not_used_lambda_imports(
             return Imports::new();
         }
         if token.is_kind(Kind::T_VARIABLE)
-            && unset(&mut imports, &token.content)
+            && unset(&mut imports, token.get_content())
             && imports.is_empty()
         {
             return imports;
         }
         if token.is_kind(Kind::T_STRING_VARNAME)
-            && unset(&mut imports, &[b"$", &token.content[..]].concat())
+            && unset(&mut imports, &[b"$", token.get_content()].concat())
             && imports.is_empty()
         {
             return imports;
@@ -205,12 +205,12 @@ fn filter_arguments(tokens: &Tokens, arguments: &BTreeMap<usize, usize>) -> Impo
         if tokens[tokens.get_prev_meaningful_token(argument).unwrap()].equals("&", true) {
             continue;
         }
-        let content = &tokens[argument].content;
+        let content = tokens[argument].get_content();
         if content == b"$this" || a.is_super_global(argument) {
             continue;
         }
         // PHP array assignment keeps the first key's position
-        imports.insert(content.clone(), argument);
+        imports.insert(content.to_vec(), argument);
     }
     imports
 }

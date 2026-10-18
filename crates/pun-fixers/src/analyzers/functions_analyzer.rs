@@ -98,7 +98,7 @@ impl FunctionsAnalyzer {
             if tokens[i].is_whitespace(None) || tokens[i].is_comment() {
                 continue;
             }
-            type_.extend_from_slice(&tokens[i].content);
+            type_.extend_from_slice(tokens[i].get_content());
             type_end_index = i;
         }
         Some(TypeAnalysis::new(
@@ -142,7 +142,7 @@ impl FunctionsAnalyzer {
             return true;
         }
 
-        let function_name = php_compat::strtolower(&tokens[index].content);
+        let function_name = php_compat::strtolower(tokens[index].get_content());
 
         if function_name == b"set" {
             if !tokens[prev_index].equals_any(
@@ -188,7 +188,7 @@ impl FunctionsAnalyzer {
                 {
                     continue;
                 }
-                if php_compat::strtolower(&tokens[function_name_index].content) == function_name {
+                if php_compat::strtolower(tokens[function_name_index].get_content()) == function_name {
                     return false;
                 }
             }

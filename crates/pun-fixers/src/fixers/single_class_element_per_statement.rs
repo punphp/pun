@@ -80,7 +80,7 @@ fn fix_element(tokens: &mut Tokens, ty: &str, index: usize) {
 fn expand_element(tokens: &mut Tokens, ty: &str, start_index: usize, end_index: usize) {
     let mut division_content: Option<Vec<u8>> = None;
     if tokens[start_index - 1].is_whitespace(None) {
-        let mut d = tokens[start_index - 1].content.clone();
+        let mut d = tokens[start_index - 1].get_content().to_vec();
         if let Some(m) = Preg::match_groups("#(\\n|\\r\\n)#", &d) {
             d = [
                 m.str(0),

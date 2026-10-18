@@ -201,7 +201,7 @@ impl DeclareStrictTypesFixer {
             if token.is_kind(T_STRING) {
                 tokens.set(
                     *index,
-                    Token::new(T_STRING, php_compat::strtolower(&token.content)),
+                    Token::new(T_STRING, php_compat::strtolower(token.get_content())),
                 );
                 continue;
             }
@@ -225,15 +225,12 @@ impl DeclareStrictTypesFixer {
         let next_index = open_tag_index + sequence.len() + 1;
         tokens.insert_at(open_tag_index + 1, sequence);
 
-        let content = tokens[open_tag_index].content.clone();
+        let content = tokens[open_tag_index].get_content().to_vec();
         if !content.contains(&b' ') || content.contains(&b'\n') {
-            let id = tokens[open_tag_index].id;
+            let id = tokens[open_tag_index].get_id();
             tokens.set(
                 open_tag_index,
-                Token {
-                    id,
-                    content: [php_compat::trim(&content), b" "].concat(),
-                },
+                Token::with_id(id, [php_compat::trim(&content), b" "].concat()),
             );
         }
 
@@ -243,7 +240,7 @@ impl DeclareStrictTypesFixer {
 
         let line_ending = self.whitespaces_config.get_line_ending().as_bytes();
         if tokens[next_index].is_whitespace(None) {
-            let content = php_compat::ltrim_chars(&tokens[next_index].content, b" \t").to_vec();
+            let content = php_compat::ltrim_chars(tokens[next_index].get_content(), b" \t").to_vec();
             tokens.set(
                 next_index,
                 Token::new(T_WHITESPACE, [line_ending, &content].concat()),

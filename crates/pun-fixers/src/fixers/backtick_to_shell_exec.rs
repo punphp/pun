@@ -61,7 +61,7 @@ fn fix_backticks(tokens: &mut Tokens, backtick_tokens: BTreeMap<usize, Token>) {
             new_tokens.push(token);
             continue;
         }
-        let mut content = token.content.clone();
+        let mut content = token.get_content().to_vec();
         // Escaping special chars depends on the context: too tricky
         if Preg::r#match("/[`\"']/u", &content) {
             return;

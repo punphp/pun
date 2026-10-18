@@ -57,7 +57,7 @@ impl Fixer for DeclareEqualNormalizeFixer {
 
 fn ensure_whitespace_around_token(tokens: &mut Tokens, index: usize) {
     if tokens[index + 1].is_whitespace(None) {
-        if tokens[index + 1].content != b" " {
+        if tokens[index + 1].get_content() != b" " {
             tokens.set(index + 1, Token::new(T_WHITESPACE, " "));
         }
     } else {
@@ -65,7 +65,7 @@ fn ensure_whitespace_around_token(tokens: &mut Tokens, index: usize) {
     }
     if tokens[index - 1].is_whitespace(None) {
         let prev = tokens.get_prev_non_whitespace(index - 1, None).unwrap();
-        if tokens[index - 1].content != b" " && !tokens[prev].is_comment() {
+        if tokens[index - 1].get_content() != b" " && !tokens[prev].is_comment() {
             tokens.set(index - 1, Token::new(T_WHITESPACE, " "));
         }
     } else {

@@ -68,7 +68,7 @@ impl Fixer for PhpdocOrderFixer {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let mut content = tokens[index].content.clone();
+            let mut content = tokens[index].get_content().to_vec();
             let mut successors: Vec<&str> = self
                 .configuration_order
                 .iter()

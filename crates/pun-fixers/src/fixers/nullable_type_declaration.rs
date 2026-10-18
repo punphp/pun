@@ -99,7 +99,7 @@ fn collect_type_analysis(
         if tokens[i].is_whitespace(None) || tokens[i].is_comment() {
             continue;
         }
-        type_.extend_from_slice(&tokens[i].content);
+        type_.extend_from_slice(tokens[i].get_content());
         type_end_index = i;
     }
     (!type_.is_empty())

@@ -30,7 +30,7 @@ impl Fixer for NoUnneededImportAliasFixer {
             }
             let mut import_index = tokens.get_prev_meaningful_token(index).unwrap();
             if !tokens[import_index].is_kind(Kind::T_STRING)
-                || tokens[import_index].content != tokens[alias_index].content
+                || tokens[import_index].get_content() != tokens[alias_index].get_content()
             {
                 continue;
             }

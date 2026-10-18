@@ -57,10 +57,7 @@ impl Fixer for CastSpacesFixer {
                 .copied()
                 .filter(|b| !b" \t\n\r\0\x0B".contains(b))
                 .collect();
-            let t = Token {
-                id: token.get_id(),
-                content,
-            };
+            let t = Token::with_id(token.get_id(), content);
             tokens.set(index, t);
             if self.space == Space::Single {
                 // force single whitespace after cast token:

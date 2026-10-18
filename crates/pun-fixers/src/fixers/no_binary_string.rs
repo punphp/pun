@@ -26,8 +26,8 @@ impl Fixer for NoBinaryStringFixer {
         while index < tokens.len() {
             let token = &tokens[index];
             if token.is_given_kind(&[T_CONSTANT_ENCAPSED_STRING, T_START_HEREDOC]) {
-                if token.content[0].eq_ignore_ascii_case(&b'b') {
-                    let new = Token::new(token.id.unwrap(), &token.content[1..]);
+                if token.get_content()[0].eq_ignore_ascii_case(&b'b') {
+                    let new = Token::new(token.get_id().unwrap(), &token.get_content()[1..]);
                     tokens.set(index, new);
                 }
             } else if token.equals("b\"", true) {

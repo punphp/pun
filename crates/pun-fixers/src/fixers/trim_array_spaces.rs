@@ -59,7 +59,7 @@ fn fix_array(tokens: &mut Tokens, index: usize) {
         && (!next_non_whitespace_token.is_comment()
             || next_non_whitespace_index == prev_non_whitespace_index
             || tokens[next_non_whitespace_index + 1].is_whitespace(Some(b" \t"))
-            || next_non_whitespace_token.content.starts_with(b"/*"))
+            || next_non_whitespace_token.get_content().starts_with(b"/*"))
     {
         tokens.clear_at(next_index);
     }

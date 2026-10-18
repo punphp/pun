@@ -39,14 +39,14 @@ impl Fixer for LowercaseStaticReferenceFixer {
             let token = &tokens[index];
             tokens.set(
                 index,
-                Token::new(token.id.unwrap(), token.content.to_ascii_lowercase()),
+                Token::new(token.get_id().unwrap(), token.get_content().to_ascii_lowercase()),
             );
         }
     }
 }
 
 fn is_token_to_fix(tokens: &Tokens, index: usize) -> bool {
-    if tokens[index].content == tokens[index].content.to_ascii_lowercase() {
+    if tokens[index].get_content() == tokens[index].get_content().to_ascii_lowercase() {
         return false;
     }
     let next_index = tokens.get_next_meaningful_token(index).unwrap();
@@ -80,7 +80,7 @@ fn is_token_to_fix(tokens: &Tokens, index: usize) -> bool {
     if tokens[prev_index].equals("(", true) && tokens[next_index].equals(")", true) {
         return false;
     }
-    if tokens[index].content.eq_ignore_ascii_case(b"static")
+    if tokens[index].get_content().eq_ignore_ascii_case(b"static")
         && tokens[next_index].is_kind(T_VARIABLE)
     {
         return false;

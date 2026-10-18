@@ -37,7 +37,7 @@ impl Fixer for ModernSerializationMethodsFixer {
                 .entry(element.class_index)
                 .or_default()
                 .insert(
-                    tokens[function_name_index].content.to_vec(),
+                    tokens[function_name_index].get_content().to_vec(),
                     function_name_index,
                 );
         }

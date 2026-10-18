@@ -24,23 +24,23 @@ impl Fixer for NoEmptyPhpdocFixer {
         let mut index = 0;
         while index < tokens.count() {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT)
-                || !Preg::r#match(r"#^/\*\*[\s\*]*\*/$#", &tokens[index].content)
+                || !Preg::r#match(r"#^/\*\*[\s\*]*\*/$#", tokens[index].get_content())
             {
                 index += 1;
                 continue;
             }
             if tokens[index - 1].is_given_kind(&[Kind::T_OPEN_TAG, Kind::T_WHITESPACE])
-                && tokens[index - 1].content.contains(&b'\n')
+                && tokens[index - 1].get_content().contains(&b'\n')
                 && tokens[index + 1].is_kind(Kind::T_WHITESPACE)
-                && Preg::r#match(r"/^\R/", &tokens[index + 1].content)
+                && Preg::r#match(r"/^\R/", tokens[index + 1].get_content())
             {
                 let prev = &tokens[index - 1];
                 let t = Token::new(
-                    prev.id.unwrap(),
-                    Preg::replace(r"/\h*$/", "", &prev.content),
+                    prev.get_id().unwrap(),
+                    Preg::replace(r"/\h*$/", "", prev.get_content()),
                 );
                 tokens.set(index - 1, t);
-                let new_content = Preg::replace(r"/^\R/", "", &tokens[index + 1].content);
+                let new_content = Preg::replace(r"/^\R/", "", tokens[index + 1].get_content());
                 if new_content.is_empty() {
                     tokens.clear_at(index + 1);
                 } else {

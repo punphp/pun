@@ -71,7 +71,7 @@ impl Fixer for PhpdocTypesOrderFixer {
             if !tokens[index].is_kind(T_DOC_COMMENT) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[index].content);
+            let doc = DocBlock::new(tokens[index].get_content());
             let annotations = doc.get_annotations_of_type(TAGS_WITH_TYPES);
             if annotations.is_empty() {
                 continue;

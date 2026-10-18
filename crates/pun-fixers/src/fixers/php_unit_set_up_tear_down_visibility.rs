@@ -47,7 +47,7 @@ fn apply_php_unit_class_fix(tokens: &mut Tokens, start_index: usize, end_index: 
             continue;
         }
         let function_name_index = tokens.get_next_meaningful_token(index).unwrap();
-        let function_name = strtolower(&tokens[function_name_index].content);
+        let function_name = strtolower(tokens[function_name_index].get_content());
         if function_name != b"setup" && function_name != b"teardown" {
             index += 1;
             continue;

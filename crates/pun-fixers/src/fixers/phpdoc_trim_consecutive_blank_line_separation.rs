@@ -25,7 +25,7 @@ impl Fixer for PhpdocTrimConsecutiveBlankLineSeparationFixer {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[index].content);
+            let doc = DocBlock::new(tokens[index].get_content());
             if let Some(summary_end) = ShortDescription::new(&doc).get_end() {
                 fix_summary(&doc, summary_end);
                 fix_description(&doc, summary_end);

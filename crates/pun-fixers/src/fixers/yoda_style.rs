@@ -270,7 +270,7 @@ impl YodaStyleFixer {
             .iter()
             .find(|(c, _)| match c {
                 Candidate::Kind(k) => op.is_kind(*k),
-                Candidate::Char(s) => op.id.is_none() && op.content == s.as_bytes(),
+                Candidate::Char(s) => op.get_id().is_none() && op.get_content() == s.as_bytes(),
             })
             .map(|(_, t)| t.clone());
         if let Some(t) = replacement {

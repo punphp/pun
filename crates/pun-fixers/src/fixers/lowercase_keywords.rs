@@ -25,9 +25,9 @@ impl Fixer for LowercaseKeywordsFixer {
             let token = &tokens[index];
             if token.is_keyword()
                 && !token.is_kind(T_HALT_COMPILER)
-                && token.content.iter().any(u8::is_ascii_uppercase)
+                && token.get_content().iter().any(u8::is_ascii_uppercase)
             {
-                let new = Token::new(token.id.unwrap(), token.content.to_ascii_lowercase());
+                let new = Token::new(token.get_id().unwrap(), token.get_content().to_ascii_lowercase());
                 tokens.set(index, new);
             }
         }

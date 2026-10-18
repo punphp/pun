@@ -69,12 +69,12 @@ impl Fixer for AlignMultilineCommentFixer {
             let mut whitespace = vec![];
             let mut previous_index = index - 1;
             if tokens[previous_index].is_whitespace(None) {
-                whitespace = tokens[previous_index].content.clone();
+                whitespace = tokens[previous_index].get_content().to_vec();
                 previous_index -= 1;
             }
             if tokens[previous_index].is_kind(T_OPEN_TAG) {
                 whitespace = [
-                    Preg::replace(r"/\S/", "", &tokens[previous_index].content),
+                    Preg::replace(r"/\S/", "", tokens[previous_index].get_content()),
                     whitespace,
                 ]
                 .concat();
@@ -84,12 +84,12 @@ impl Fixer for AlignMultilineCommentFixer {
             };
             if token.is_kind(T_COMMENT)
                 && self.comment_type != CommentType::AllMultiline
-                && Preg::r#match(r"/\R(?:\R|\s*[^\s\*])/", &token.content)
+                && Preg::r#match(r"/\R(?:\R|\s*[^\s\*])/", token.get_content())
             {
                 continue;
             }
             let indentation = m.str(1).to_vec();
-            let mut lines = Preg::split_str(r"/\R/u", &token.content);
+            let mut lines = Preg::split_str(r"/\R/u", token.get_content());
             for line in lines.iter_mut().skip(1) {
                 let trimmed = ltrim_chars(line, TRIM_CHARS);
                 if token.is_kind(T_COMMENT) && trimmed.first() != Some(&b'*') {
@@ -102,7 +102,7 @@ impl Fixer for AlignMultilineCommentFixer {
                 };
                 *line = [&indentation[..], b" ", &trimmed].concat();
             }
-            let id = token.id.unwrap();
+            let id = token.get_id().unwrap();
             tokens.set(index, Token::new(id, lines.join(&self.line_ending[..])));
         }
     }

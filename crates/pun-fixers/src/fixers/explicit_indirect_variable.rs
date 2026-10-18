@@ -42,7 +42,7 @@ fn fix_variable(tokens: &mut Tokens, index: usize) {
     } else {
         (CT_DYNAMIC_VAR_BRACE_OPEN, CT_DYNAMIC_VAR_BRACE_CLOSE)
     };
-    let content = tokens[index].content.clone();
+    let content = tokens[index].get_content().to_vec();
     tokens.override_range(
         index,
         index,

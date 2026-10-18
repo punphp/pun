@@ -240,7 +240,7 @@ impl OrderedImportsFixer {
                     } else {
                         namespace_tokens
                             .iter()
-                            .flat_map(|t| t.content.clone())
+                            .flat_map(|t| t.get_content().iter().copied())
                             .collect()
                     };
                     indices.push(Item {
@@ -307,7 +307,7 @@ impl OrderedImportsFixer {
                 namespace.push(b'{');
                 break;
             }
-            namespace.extend_from_slice(&t.content);
+            namespace.extend_from_slice(t.get_content());
             k += 1;
         }
         let mut parts: Vec<Vec<u8>> = vec![];
@@ -329,13 +329,13 @@ impl OrderedImportsFixer {
                     break;
                 }
                 if t.is_comment() {
-                    comment.extend_from_slice(&t.content);
+                    comment.extend_from_slice(t.get_content());
                     k2 += 1;
                     continue;
                 }
                 if first_indent.is_empty()
                     && t.is_whitespace(None)
-                    && t.content
+                    && t.get_content()
                         .windows(line_ending.len())
                         .any(|w| w == line_ending)
                 {
@@ -343,7 +343,7 @@ impl OrderedImportsFixer {
                     first_indent = [line_ending, self.ws.get_indent().as_bytes()].concat();
                     separator = [&b","[..], &first_indent].concat();
                 }
-                part.extend_from_slice(&t.content);
+                part.extend_from_slice(t.get_content());
                 k2 += 1;
             }
             let part = trim(&part).to_vec();
@@ -366,7 +366,7 @@ impl OrderedImportsFixer {
         if before == parts {
             return namespace_tokens
                 .iter()
-                .flat_map(|t| t.content.clone())
+                .flat_map(|t| t.get_content().iter().copied())
                 .collect();
         }
         namespace.extend(first_indent);

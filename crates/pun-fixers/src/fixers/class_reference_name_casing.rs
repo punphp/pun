@@ -59,10 +59,10 @@ impl Fixer for ClassReferenceNameCasingFixer {
                 .map(|u| strtolower(&u.short_name))
                 .collect();
             for reference in get_class_reference(tokens, &namespace) {
-                let current = &tokens[reference].content;
+                let current = tokens[reference].get_content();
                 let lower = strtolower(current);
                 if let Some(&name) = CLASS_NAMES.get(&lower)
-                    && current.as_slice() != name.as_bytes()
+                    && current != name.as_bytes()
                     && !uses.contains(&lower)
                 {
                     tokens.set(reference, Token::new(T_STRING, name));

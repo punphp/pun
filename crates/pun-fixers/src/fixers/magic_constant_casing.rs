@@ -36,7 +36,7 @@ impl Fixer for MagicConstantCasingFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
-            let Some(id) = tokens[index].id else { continue };
+            let Some(id) = tokens[index].get_id() else { continue };
             let Some((_, c)) = MAGIC_CONSTANTS.iter().find(|(k, _)| *k == id) else {
                 continue;
             };

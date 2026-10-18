@@ -51,7 +51,7 @@ impl Fixer for PhpdocVarWithoutNameFixer {
             if !tokens[next_index].is_given_kind(PROPERTY_MODIFIER_KINDS) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[index].content);
+            let doc = DocBlock::new(tokens[index].get_content());
             let first_level_lines = get_first_level_lines(&doc);
             for annotation in doc.get_annotations_of_type(&["type", "var"]) {
                 if let Some(line) = first_level_lines.get(&annotation.get_start()) {

@@ -109,7 +109,7 @@ impl Fixer for StringImplicitBackslashesFixer {
                 ),
             };
             if new_content != content {
-                let id = token.id.unwrap();
+                let id = token.get_id().unwrap();
                 tokens.set(index, Token::new(id, new_content));
             }
         }

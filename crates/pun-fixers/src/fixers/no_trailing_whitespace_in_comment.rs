@@ -32,15 +32,15 @@ impl Fixer for NoTrailingWhitespaceInCommentFixer {
             let block_kind = if token.is_kind(T_DOC_COMMENT) {
                 Some(T_DOC_COMMENT)
             } else {
-                token.content.starts_with(b"/*").then_some(T_COMMENT)
+                token.get_content().starts_with(b"/*").then_some(T_COMMENT)
             };
             if let Some(kind) = block_kind {
-                if may_have_trailing_h(&token.content) {
-                    let content = Preg::replace("/(*ANY)[\\h]+$/m", "", &token.content);
+                if may_have_trailing_h(token.get_content()) {
+                    let content = Preg::replace("/(*ANY)[\\h]+$/m", "", token.get_content());
                     tokens.set(index, Token::new(kind, content));
                 }
             } else if index + 1 < tokens.count() && tokens[index + 1].is_whitespace(None) {
-                let trimmed_content = ltrim_chars(&tokens[index + 1].content, b" \t").to_vec();
+                let trimmed_content = ltrim_chars(tokens[index + 1].get_content(), b" \t").to_vec();
                 tokens.ensure_whitespace_at_index(index + 1, 0, &trimmed_content);
             }
             index += 1;

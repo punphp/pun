@@ -189,7 +189,7 @@ impl Fixer for NoHomoglyphNamesFixer {
                 -1,
             );
             if count > 0 {
-                let id = token.id.unwrap();
+                let id = token.get_id().unwrap();
                 tokens.set(index, Token::new(id, replaced));
             }
         }

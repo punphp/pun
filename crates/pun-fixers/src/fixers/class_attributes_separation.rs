@@ -191,16 +191,16 @@ impl ClassAttributesSeparationFixer {
             }
             // more than one line break, always bring it back to 2 line breaks between the element start and what is above it
             if tokens[non_white_above + 1].is_whitespace(None)
-                && substr_count(&tokens[non_white_above + 1].content, b"\n") > 1
+                && substr_count(tokens[non_white_above + 1].get_content(), b"\n") > 1
             {
                 self.correct_line_breaks(tokens, non_white_above, element.start, 2);
                 return;
             }
             if element.start - non_white_above == 1
                 || (tokens[non_white_above - 1].is_whitespace(None)
-                    && substr_count(&tokens[non_white_above - 1].content, b"\n") > 0)
+                    && substr_count(tokens[non_white_above - 1].get_content(), b"\n") > 0)
                 || (tokens[non_white_above + 1].is_whitespace(None)
-                    && substr_count(&tokens[non_white_above + 1].content, b"\n") > 0)
+                    && substr_count(tokens[non_white_above + 1].get_content(), b"\n") > 0)
             {
                 // 1. The comment is meant for the element (although not a PHPDoc),
                 //    make sure there is one line break between the element and the comment...
@@ -213,7 +213,7 @@ impl ClassAttributesSeparationFixer {
                     .unwrap();
                 if non_white_above_comment == class.open {
                     if tokens[non_white_above_comment - 1].is_whitespace(None)
-                        && substr_count(&tokens[non_white_above_comment - 1].content, b"\n") > 0
+                        && substr_count(tokens[non_white_above_comment - 1].get_content(), b"\n") > 0
                     {
                         self.correct_line_breaks(
                             tokens,
@@ -311,7 +311,7 @@ impl ClassAttributesSeparationFixer {
         if line_break_count < req_line_count {
             let content = [
                 &line_ending.repeat(req_line_count - line_break_count)[..],
-                &tokens[start_index].content,
+                tokens[start_index].get_content(),
             ]
             .concat();
             tokens.set(start_index, Token::new(T_WHITESPACE, content));
@@ -322,7 +322,7 @@ impl ClassAttributesSeparationFixer {
             let (content, _) = Preg::replace_limit(
                 "/\\r\\n|\\n/",
                 "",
-                &tokens[start_index].content,
+                tokens[start_index].get_content(),
                 (line_break_count - req_line_count) as isize,
             );
             tokens.set(start_index, Token::new(T_WHITESPACE, content));
@@ -332,7 +332,7 @@ impl ClassAttributesSeparationFixer {
 
 fn get_line_break_count(tokens: &Tokens, start_index: usize, end_index: usize) -> usize {
     (start_index..end_index)
-        .map(|i| substr_count(&tokens[i].content, b"\n"))
+        .map(|i| substr_count(tokens[i].get_content(), b"\n"))
         .sum()
 }
 
@@ -425,12 +425,12 @@ fn get_last_token_index_of_class_element(
             .unwrap();
     }
     let single_line_element =
-        !(element_index + 1..element_end_index).any(|i| tokens[i].content.contains(&b'\n'));
+        !(element_index + 1..element_end_index).any(|i| tokens[i].get_content().contains(&b'\n'));
     if single_line_element {
         loop {
             let next_token = &tokens[element_end_index + 1];
             if (next_token.is_comment() || next_token.is_whitespace(None))
-                && !next_token.content.contains(&b'\n')
+                && !next_token.get_content().contains(&b'\n')
             {
                 element_end_index += 1;
             } else {

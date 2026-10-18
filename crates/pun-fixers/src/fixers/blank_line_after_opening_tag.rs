@@ -42,10 +42,7 @@ impl Fixer for BlankLineAfterOpeningTagFixer {
         };
         let token = &tokens[open_tag_index];
         if !token.get_content().contains(&b'\n') {
-            let t = Token {
-                id: token.get_id(),
-                content: [rtrim(token.get_content()), line_ending].concat(),
-            };
+            let t = Token::with_id(token.get_id(), [rtrim(token.get_content()), line_ending].concat());
             tokens.set(open_tag_index, t);
         }
         let new_line_index = open_tag_index + 1;

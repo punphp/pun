@@ -70,11 +70,11 @@ impl Fixer for ConstantCaseFixer {
             }
             let token = &tokens[index];
             let content = if self.upper {
-                token.content.to_ascii_uppercase()
+                token.get_content().to_ascii_uppercase()
             } else {
-                token.content.to_ascii_lowercase()
+                token.get_content().to_ascii_lowercase()
             };
-            tokens.set(index, Token::new(token.id.unwrap(), content));
+            tokens.set(index, Token::new(token.get_id().unwrap(), content));
         }
     }
 }

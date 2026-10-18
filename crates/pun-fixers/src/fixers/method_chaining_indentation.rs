@@ -171,10 +171,7 @@ impl Fixer for MethodChainingIndentationFixer {
                     continue;
                 }
                 let content = Preg::replace(&pattern, &replacement, content);
-                let t = Token {
-                    id: search_token.get_id(),
-                    content,
-                };
+                let t = Token::with_id(search_token.get_id(), content);
                 tokens.set(search_index, t);
             }
             index += 1;

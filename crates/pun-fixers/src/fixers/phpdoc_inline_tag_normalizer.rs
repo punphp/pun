@@ -73,7 +73,7 @@ impl Fixer for PhpdocInlineTagNormalizerFixer {
                     }
                     [&b"{@"[..], m.str(1), b" ", doc, b"}"].concat()
                 },
-                &tokens[index].content,
+                tokens[index].get_content(),
             );
             tokens.set(index, Token::new(T_DOC_COMMENT, content));
         }

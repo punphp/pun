@@ -37,7 +37,7 @@ fn apply_php_unit_class_fix(tokens: &mut Tokens, start_index: usize, end_index: 
             let content = Preg::replace(
                 r"~^(\s*\*\s*@(?:expectedException|covers|coversDefaultClass|uses)\h+)(?!(?:self|static)::)(\w.*)$~m",
                 r"$1\\$2",
-                &tokens[index].content,
+                tokens[index].get_content(),
             );
             tokens.set(index, Token::new(T_DOC_COMMENT, content));
         }

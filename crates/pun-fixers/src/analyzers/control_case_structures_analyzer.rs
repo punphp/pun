@@ -83,7 +83,7 @@ impl ControlCaseStructuresAnalyzer {
         while index < tokens.count() {
             let token = &tokens[index];
             if token.is_given_kind(SUPPORTED_TYPES_WITH_CASE_OR_DEFAULT) {
-                let kind = token.id.unwrap();
+                let kind = token.get_id().unwrap();
                 let mut frame = Frame {
                     kind,
                     brace_count: 0,

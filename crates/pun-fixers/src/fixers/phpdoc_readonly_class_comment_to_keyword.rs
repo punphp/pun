@@ -34,7 +34,7 @@ impl Fixer for PhpdocReadonlyClassCommentToKeywordFixer {
             if !tokens[current].is_kind(T_DOC_COMMENT) {
                 continue;
             }
-            let doc = DocBlock::new(&tokens[current].content);
+            let doc = DocBlock::new(tokens[current].get_content());
             let annotations = doc.get_annotations_of_type(&["readonly"]);
             if annotations.is_empty() {
                 continue;

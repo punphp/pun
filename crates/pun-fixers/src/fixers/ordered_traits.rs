@@ -125,7 +125,7 @@ impl OrderedTraitsFixer {
                     break;
                 }
                 if t.is_given_kind(&[Kind::T_NS_SEPARATOR, Kind::T_STRING]) {
-                    s.extend_from_slice(&t.content);
+                    s.extend_from_slice(t.get_content());
                 }
             }
             ltrim_chars(&s, b"\\").to_vec()
