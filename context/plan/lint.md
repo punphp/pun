@@ -265,8 +265,9 @@ Lint spike (Build 1, 2026-10-17; report: ../reports/lint-spike.md):
   (`'x' . sprintf($a . $b)` is `'x' . $a . $b`, as Rector prints it).
 - **Assistant's call (lint 7 batch 2): one statement into several.** In a single-statement body (`if ($a) stmt;`)
   Pun puts braces around the new statements, as Rector's reprint of the `if` does. In a colon body (`if ($a): ...
-  endif;`) Pun keeps the colon syntax, where Rector reprints the whole `if` with braces. A statement ending in `?>`
-  is left alone there.
+  endif;`) Pun keeps the colon syntax, where Rector reprints the whole `if` with braces; the laravel preset's
+  `no_alternative_syntax` turns both into the same braces, so format() agrees (checked with Pint on `if`/`elseif`/
+  `foreach` colon bodies). A statement ending in `?>` is left alone there.
 - **Assistant's call (lint 7 batch 2): `in_array($x, array_values($y))`.** Pun replaces only the argument's value, and
   leaves the call alone when either argument is spread or `array_values()` has none (Rector crashes or drops the
   spread).
