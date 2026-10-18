@@ -18,9 +18,9 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 1. `crates/pun-workspace/tests/finder.rs:107`: `pun_config::migrate::from_pint(&pint, None)` no longer compiles
   since fb790c3 added the `runs` parameter (`crates/pun-config/src/migrate.rs:25`), so `cargo test --workspace` and
   the CI test and coverage jobs fail before running anything. Pass `&|_| true` (or the `pun_fixers::all` check `pun
-  migrate` uses). Reproduced (clippy compile error E0061). Spans crates.
+  migrate` uses). Reproduced (clippy compile error E0061). Spans crates. Fixed in 0c5bd30.
 - [x] 2. `crates/pun-cli/tests/output.rs:591` and `:605` are not rustfmt-clean (last touched in 4e5a182), so CI's
-  `cargo fmt --all --check` (`.github/workflows/ci.yml:29`) is red. Run `cargo fmt -p punphp`. Reproduced.
+  `cargo fmt --all --check` (`.github/workflows/ci.yml:29`) is red. Run `cargo fmt -p punphp`. Reproduced. Fixed in 0c5bd30.
 - [ ] 3. `crates/pun-config/src/options.rs:358-367` (`rejected`'s `entry` closure) and `:411-416` unwrap a bad entry
   that isn't there when a map or list option holds `null`, so `pun migrate` panics on
   `{"rules":{"class_attributes_separation":{"elements":{"method":null}}}}`,
@@ -30,16 +30,16 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 4. `crates/pun-phpstan/src/php.rs:134`: `normalize_path` slices `&original[1..3]` on a `&str`, so an
   `excludePaths` or `ignoreErrors.path` entry like `*/€uro/*` or `*€/a.php` panics ("byte index 3 is not a char
   boundary") in `FileExcluder::new` and `IgnoredErrors`. Compare bytes: `original.as_bytes().get(1..3) ==
-  Some(b":\\")`. Reproduced. Fixed in wf/audit-phpstan.
+  Some(b":\\")`. Reproduced. Fixed in 9c85148.
 - [x] 5. `crates/pun-phpstan/src/phpfile.rs:33-36` (`eat`): `rest[..t.len()]` cuts a `&str` mid-character, so any
   included `.php` config holding non-ASCII text (`<?php return ["a€"];`) panics instead of returning "Unsupported
   PHP config". Use `rest.as_bytes().get(..t.len()).is_some_and(|p| p.eq_ignore_ascii_case(t.as_bytes()))`.
-  Reproduced. Fixed in wf/audit-phpstan.
+  Reproduced. Fixed in fdebef0.
 - [x] 6. `crates/pun-phpstan/src/php.rs:94-95`: `preg` wraps an `A`-modifier pattern as `\G(?:body)` and
   `expect("compiles unanchored")`, but `#\Qfoo#A` (an unclosed `\Q` swallows the `)`) and `#(*ANYCRLF)a#A` (a verb
   must stay at offset 0) fail to compile, so an `ignoreErrors` message regex panics `config::resolve`. PHP compiles
   both. Return the error with `?`, close a trailing `\Q` with `\E`, and keep leading `(*VERB)`s before `\G`.
-  Reproduced (PHP and Pun). Fixed in wf/audit-phpstan.
+  Reproduced (PHP and Pun). Fixed in 9c85148 and c28d355.
 - [ ] 7. `crates/pun-fixers/src/fixers/pun_prefer_first_class_callable.rs:106-111`, `:155-163`: the arrow-function
   branch never checks the receiver against the parameters, so `fn ($x) => $x->equals($x)` becomes
   `$x->equals(...)`, which reads an undefined outer `$x`. Return `None` when `callee` is one of `params`, and add the
@@ -368,7 +368,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `baseline::Error<'a>` for the same PHPStan concept), and `trait Files` (`di.rs:257-262`) with one impl whose
   default `is_file` reads the whole file, so a large baseline is read about four times per resolve. The read-based
   `is_file` also skipped an unreadable `phpstan.neon` for `phpstan.neon.dist`, where PHPStan fails to read it. Fixed in
-  wf/audit-phpstan.
+  fa5a93c.
 - [ ] 78. `crates/pun-fixers/src/analyzers/classy_analyzer.rs:14`, `constant_invocation.rs:10`, `utils.rs:21` format
   `Option` with `{:?}`, printing `got "Some("T_OPEN_TAG")"` where upstream prints `got "T_OPEN_TAG"`, and the test at
   `classy_analyzer.rs:122` locks it in.

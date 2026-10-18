@@ -288,6 +288,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | Work | Status |
 | --- | --- |
 | CI: get CI on main green (coverage red; runs cancelled by the next push) | todo |
+| tests: crates/pun-phpstan/tests/php.rs `php_helpers` fails on macOS on two error offsets (`/a)/` gives 2, PHP 1; `/(?<1a>x)/` gives 4, PHP 3); the linked pcre2 likely differs from PHP's PCRE2 | todo |
+| tests: crates/pun-phpstan/tests/config.rs `corpus_configs` fails in a wf worktree because `.oracle` is a symlink, so phar paths resolve to the main checkout instead of {repo}/.oracle | todo |
+| pun-phpstan: clippy collapsible_if at src/schema.rs:754 | todo |
 | pun-harness: the comment in src/main.rs about the starter's `preset = "recommended"` is stale (migrate no longer writes it) | todo |
 | tests: crates/pun-cli/tests/watch.rs `watch_reformats_like_pint` fails on macOS (FSEvents re-reports the first run's own writes, which are not recorded in `done`) | todo |
 | CI: clippy gate (`-D warnings`); clippy is at 0 warnings | todo |
