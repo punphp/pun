@@ -20,7 +20,7 @@ use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::ttype::union::TUnion;
-use mago_database::file::{File, FileType};
+use mago_database::file::File;
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
 use mago_span::{HasSpan, Span};
@@ -34,12 +34,11 @@ use pun_phpstan::ignore::{
 };
 
 use crate::Project;
-use crate::codebase::{Sources, read};
+use crate::codebase::Sources;
 use mago_codex::symbol::SymbolKind;
 use mago_database::file::FileId;
 use scope::{Guard, falsy, statements_terminate, terminates, truthy};
 use std::path::PathBuf;
-use std::sync::Arc;
 
 /// What the rules read of the project (its `ignoreErrors` stay on the calling thread).
 #[derive(Clone, Copy)]
@@ -171,11 +170,23 @@ pub struct Checker<'a, 'arena> {
     context_trait: Option<String>,
     /// Inside the trait `context_trait` (in a context walk, nothing else reports).
     in_target: bool,
-    /// (class, trait) for each `use T;` in a class body, to analyse T in the class's context.
-    trait_uses: Vec<(String, String)>,
+    /// Each `use T;` in a class body, to analyse T in the class's context.
+    trait_uses: Vec<TraitUse>,
+    /// In a context walk, the trait's methods `use T { foo as bar; }` renames, by lowercase name.
+    renames: HashMap<String, String>,
+    /// The trait method being walked under its alias (span, alias).
+    renamed: Option<(Span, String)>,
+    php_version: u32,
     /// Line ranges of the traits declared in this file (their ignores are never unmatched here).
     trait_lines: Vec<(i64, i64)>,
     errors: Vec<Error>,
+}
+
+/// `use T { ... }` in class `class`: the aliases with a new name that apply to T (`foo as bar`, `T::foo as bar`).
+struct TraitUse {
+    class: String,
+    trait_name: String,
+    renames: HashMap<String, String>,
 }
 
 /// A checker for one walk of `file`.
@@ -207,6 +218,9 @@ fn checker<'a, 'arena>(
         context_trait: None,
         in_target: false,
         trait_uses: Vec::new(),
+        renames: HashMap::new(),
+        renamed: None,
+        php_version,
         trait_lines: Vec::new(),
         errors: Vec::new(),
     }
@@ -252,50 +266,44 @@ pub fn check_file(
     }
     let mut pending = std::mem::take(&mut checker.trait_uses);
     let mut seen = HashSet::new();
-    while let Some((class, trait_name)) = pending.pop() {
-        if !seen.insert((class.to_ascii_lowercase(), trait_name.to_ascii_lowercase())) {
+    while let Some(u) = pending.pop() {
+        if !seen.insert((
+            u.class.to_ascii_lowercase(),
+            u.trait_name.to_ascii_lowercase(),
+        )) {
             continue;
         }
-        let (errors, uses) = in_trait_context(
-            &name,
-            &class,
-            &trait_name,
-            codebase,
-            project,
-            files,
-            sources,
-        );
+        let (errors, uses) = in_trait_context(&name, &u, codebase, project, files, sources);
         out.extend(errors);
         pending.extend(uses);
     }
     out
 }
 
-/// InTraitNode: trait `trait_name` walked in the context of `class` (declared in `class_file`), its errors labelled
-/// `T.php (in context of class C)` and matched against the trait's own `@phpstan-ignore` comments. Also returns the
-/// traits it uses.
+/// NodeScopeResolver::processTraitUse() and InTraitNode: the trait of `u` walked in the context of its class
+/// (declared in `class_file`), its errors labelled `T.php (in context of class C)` and matched against the trait's
+/// own `@phpstan-ignore` comments. Also returns the traits it uses. Only a trait in an analysed file is walked: one
+/// PHPStan only scans (scanDirectories, vendor) reports nothing.
 fn in_trait_context(
     class_file: &str,
-    class: &str,
-    trait_name: &str,
+    u: &TraitUse,
     codebase: &CodebaseMetadata,
     project: &Checks,
     files: &HashMap<FileId, PathBuf>,
     sources: &Sources,
-) -> (Vec<Error>, Vec<(String, String)>) {
+) -> (Vec<Error>, Vec<TraitUse>) {
+    let class = u.class.as_str();
     let Some(t) = codebase
-        .get_class_like(trait_name.as_bytes())
+        .get_class_like(u.trait_name.as_bytes())
         .filter(|t| t.kind == SymbolKind::Trait)
     else {
         return (Vec::new(), Vec::new());
     };
-    // an analysed trait as the scan read it, a scanned one from disk
-    let Some(file) = files.get(&t.span.file_id).and_then(|p| {
-        sources
-            .get(p)
-            .cloned()
-            .or_else(|| read(p, FileType::Host).map(Arc::new))
-    }) else {
+    // the analysed files are the ones the scan kept the sources of
+    let Some(file) = files
+        .get(&t.span.file_id)
+        .and_then(|p| sources.get(p).cloned())
+    else {
         return (Vec::new(), Vec::new());
     };
     let arena = LocalArena::new();
@@ -316,6 +324,7 @@ fn in_trait_context(
     checker.label = format!("{} (in context of class {display})", checker.file_name());
     checker.context = Some((class_file.to_string(), class.to_string()));
     checker.context_trait = Some(String::from_utf8_lossy(t.name.as_bytes()).into_owned());
+    checker.renames = u.renames.clone();
     checker.walk_program(program, &mut ());
     let label = checker.label.clone();
     let (mut lines, _) = lines_to_ignore(&file.contents);
@@ -526,13 +535,82 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     fn trait_uses_of(&mut self, class: &str, members: &[ClassLikeMember<'arena>]) {
         for m in members {
-            if let ClassLikeMember::TraitUse(u) = m {
-                for id in u.trait_names.iter() {
-                    let t = self.resolved(id);
-                    self.trait_uses.push((class.to_string(), t));
+            let ClassLikeMember::TraitUse(u) = m else {
+                continue;
+            };
+            let adaptations = match &u.specification {
+                TraitUseSpecification::Concrete(s) => s.adaptations.as_slice(),
+                TraitUseSpecification::Abstract(_) => &[],
+            };
+            for id in u.trait_names.iter() {
+                let trait_name = self.resolved(id);
+                let mut renames = HashMap::new();
+                for a in adaptations {
+                    let TraitUseAdaptation::Alias(a) = a else {
+                        continue;
+                    };
+                    let Some(alias) = &a.alias else {
+                        continue;
+                    };
+                    let method = match &a.method_reference {
+                        TraitUseMethodReference::Identifier(m) => m,
+                        // Mago resolves only the `use` list's names: the one written the same is this trait
+                        TraitUseMethodReference::Absolute(r) => {
+                            if !self
+                                .written(r.trait_name.span())
+                                .eq_ignore_ascii_case(&self.written(id.span()))
+                            {
+                                continue;
+                            }
+                            &r.method_name
+                        }
+                    };
+                    renames.insert(
+                        String::from_utf8_lossy(method.value).to_ascii_lowercase(),
+                        String::from_utf8_lossy(alias.value).into_owned(),
+                    );
                 }
+                self.trait_uses.push(TraitUse {
+                    class: class.to_string(),
+                    trait_name,
+                    renames,
+                });
             }
         }
+    }
+
+    /// processStmtNode() of a trait method in a context walk: skipped when the class's method of that name (after
+    /// `as` renames) is not this trait's, as when the class or another trait shadows it.
+    fn shadowed(&self, class: &str, name: &str, trait_span: Span) -> bool {
+        let this_trait = |f: &mago_codex::metadata::function_like::FunctionLikeMetadata| {
+            f.span.file_id == trait_span.file_id
+                && trait_span.start.offset <= f.span.start.offset
+                && f.span.end.offset <= trait_span.end.offset
+        };
+        self.codebase
+            .get_class_like(class.as_bytes())
+            .and_then(|k| members::method(self.codebase, k, name.as_bytes()))
+            .is_some_and(|m| !matches!(m, members::Method::User { f, .. } if this_trait(f)))
+    }
+
+    /// `$this` is `never` here: after `if ($this instanceof Foo) { return; }` in a class that is a Foo (a trait is
+    /// never an instanceof's match).
+    fn this_is_never(&self, class: &ClassLikeMetadata) -> bool {
+        self.guards.iter().any(|g| match g {
+            Guard::ThisNotInstanceOf(x) => {
+                self.codebase.get_class_like(x.as_bytes()).is_some_and(|x| {
+                    x.kind != SymbolKind::Trait
+                        && self
+                            .codebase
+                            .is_instance_of(class.name.as_bytes(), x.name.as_bytes())
+                })
+            }
+            _ => false,
+        })
+    }
+
+    fn written(&self, span: Span) -> String {
+        String::from_utf8_lossy(&self.file.contents[span.to_range_usize()]).into_owned()
     }
 
     fn resolved_span(&self, span: Span) -> String {
@@ -581,7 +659,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && b.else_clause.is_none()
                 && terminates(b.statement)
             {
-                guards.extend(self.falsy(i.condition));
+                // a `$this` check holds in the constructor alone
+                guards.extend(
+                    self.falsy(i.condition)
+                        .into_iter()
+                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_))),
+                );
             }
         }
         guards
@@ -754,9 +837,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.trait_uses_of(&class, t.members.as_slice());
         let saved = self.classes.len();
         self.enter_class(None, t.members.as_slice());
-        self.classes[saved].name = Some(class);
+        self.classes[saved].name = Some(class.clone());
         self.in_target = true;
         for member in t.members.iter() {
+            if let ClassLikeMember::Method(m) = member {
+                let original = String::from_utf8_lossy(m.name.value).into_owned();
+                let name = self
+                    .renames
+                    .get(&original.to_ascii_lowercase())
+                    .cloned()
+                    .unwrap_or(original);
+                if self.shadowed(&class, &name, t.span()) {
+                    continue;
+                }
+                self.renamed = Some((m.span(), name));
+            }
             self.walk_class_like_member(member, c);
         }
         self.in_target = false;
@@ -802,9 +897,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         {
             names::property_type(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
         }
+        // a trait method under its `as` alias
+        let method = match &self.renamed {
+            Some((span, alias)) if *span == m.span() => alias.clone(),
+            _ => String::from_utf8_lossy(m.name.value).into_owned(),
+        };
         if let Some(class) = self.class_scope() {
             let class = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
-            let method = String::from_utf8_lossy(m.name.value).into_owned();
             names::typehints(
                 self,
                 names::FunctionKind::Method(&class, &method),
@@ -822,7 +921,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         };
         self.enter_function(guards);
         self.functions.push(FunctionScope {
-            name: String::from_utf8_lossy(m.name.value).into_owned(),
+            name: method,
             method_static: Some(m.modifiers.iter().any(|m| matches!(m, Modifier::Static(_)))),
         });
     }

@@ -113,6 +113,52 @@ pub fn method<'a>(
         .find_map(|i| declared(codebase, i, &lower))
 }
 
+/// AnnotationsMethodsClassReflectionExtension: a `@method` tag of the class, its traits (declared by the class), its
+/// parents or its interfaces, which `getMethod()` falls back to when the class has no such native method.
+pub fn annotation_method<'a>(
+    codebase: &'a CodebaseMetadata,
+    class: &'a ClassLikeMetadata,
+    name: &[u8],
+) -> Option<Method<'a>> {
+    let lower = word(name.to_ascii_lowercase());
+    tagged(codebase, class, class, &lower, 0)
+}
+
+/// findClassReflectionWithMethod().
+fn tagged<'a>(
+    codebase: &'a CodebaseMetadata,
+    k: &'a ClassLikeMetadata,
+    declaring: &'a ClassLikeMetadata,
+    lower: &mago_word::Word,
+    depth: usize,
+) -> Option<Method<'a>> {
+    // a cyclic hierarchy is PHPStan's error elsewhere
+    (depth <= 64).then_some(())?;
+    if (k.pseudo_methods.contains(lower) || k.static_pseudo_methods.contains(lower))
+        && let Some(f) = codebase
+            .function_likes
+            .get(&(k.name, *lower))
+            .map(Box::as_ref)
+    {
+        return Some(Method::User { declaring, f });
+    }
+    let get = |n: &mago_word::Word| codebase.get_class_like(n.as_bytes());
+    k.used_traits
+        .iter()
+        .filter_map(get)
+        .find_map(|t| tagged(codebase, t, declaring, lower, depth + 1))
+        .or_else(|| {
+            let p = k.direct_parent_class.as_ref().and_then(get)?;
+            tagged(codebase, p, p, lower, depth + 1)
+        })
+        .or_else(|| {
+            k.all_parent_interfaces
+                .iter()
+                .filter_map(get)
+                .find_map(|i| tagged(codebase, i, i, lower, depth + 1))
+        })
+}
+
 /// A method `k` itself declares or takes from a trait (private ones of parents count, as in PHP's reflection).
 fn declared<'a>(
     codebase: &'a CodebaseMetadata,
@@ -154,9 +200,13 @@ fn declared<'a>(
     {
         return Some(Method::User { declaring: k, f });
     }
-    // a trait's methods are declared by the class using it, for PHPStan
+    // a trait's methods are declared by the class using it, for PHPStan; of two traits with the method, the one
+    // `insteadof` keeps (the method PHP's reflection declares)
+    let declaring = codebase.get_declaring_method(k.name.as_bytes(), lower.as_bytes());
     traits().find_map(|t| match declared(codebase, t, lower)? {
-        Method::User { f, .. } => Some(Method::User { declaring: k, f }),
+        Method::User { f, .. } => declaring
+            .is_none_or(|d| d.span == f.span)
+            .then_some(Method::User { declaring: k, f }),
         builtin => Some(builtin),
     })
 }

@@ -15,6 +15,8 @@ pub enum Guard {
     ClassConstant(String),
     /// `method_exists(Foo::class, 'bar')`, lowercase `foo::bar` (`static`/`self` for those `::class`).
     Method(String),
+    /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
+    ThisNotInstanceOf(String),
 }
 
 /// Guards from `expr` being true. `var` looks a variable's remembered guards up.
@@ -84,6 +86,14 @@ pub fn falsy(
             BinaryOperator::And(_) | BinaryOperator::LowAnd(_) => {
                 both(falsy(b.lhs, var, resolve), falsy(b.rhs, var, resolve))
             }
+            BinaryOperator::Instanceof(_) => match (b.lhs, b.rhs) {
+                (Expression::Variable(Variable::Direct(v)), Expression::Identifier(id))
+                    if v.name == b"$this" =>
+                {
+                    vec![Guard::ThisNotInstanceOf(resolve(id))]
+                }
+                _ => Vec::new(),
+            },
             BinaryOperator::Identical(_)
             | BinaryOperator::Equal(_)
             | BinaryOperator::NotIdentical(_)

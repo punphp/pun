@@ -43,10 +43,3 @@ Properties/ExistingClassesInPropertiesRuleTest::testPromotedProperties
 Properties/ExistingClassesInPropertyHookTypehintsRuleTest::testRule
 Properties/MissingReadOnlyPropertyAssignRuleTest::testRedeclaredReadonlyProperties
 Variables/DefinedVariableRuleTest::testDefinedVariables
-# failing at 915534e, after 138dab1 checked traits in the using class's context: new.static and arguments.count
-# reported per using class, a method the class shadows not found from the trait, a variadic @method's arity unchecked
-Classes/NewStaticRuleTest::testBug9654
-Methods/CallMethodsRuleTest::testCallMethods
-Methods/CallMethodsRuleTest::testCallMethodsOnThisOnly
-Methods/CallMethodsRuleTest::testShadowedTraitMethod
-Methods/CallMethodsRuleTest::testBug8888

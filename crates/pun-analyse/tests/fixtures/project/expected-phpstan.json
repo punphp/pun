@@ -56,6 +56,90 @@
    "identifier": "function.notFound",
    "message": "Function inc_missing not found.",
    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 9,
+   "identifier": "function.notFound",
+   "message": "Function missing_in_hello not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 10,
+   "identifier": "instanceof.trait",
+   "message": "Instanceof between $this(TraitContext\\Child) and trait TraitContext\\Greets will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 13,
+   "identifier": "function.notFound",
+   "message": "Function missing_after_trait_check not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 14,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method TraitContext\\Child::undefinedAfterTraitCheck().",
+   "tip": null
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 21,
+   "identifier": "class.notFound",
+   "message": "Parameter $x of method TraitContext\\Child::aliased() has invalid type TraitContext\\MissingInRenamed.",
+   "tip": null
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 25,
+   "identifier": "class.notFound",
+   "message": "Parameter $x of method TraitContext\\Child::hidden() has invalid type TraitContext\\MissingInHidden.",
+   "tip": null
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 32,
+   "identifier": "class.notFound",
+   "message": "Parameter $x of method TraitContext\\Child::otherAlias() has invalid type TraitContext\\MissingInOther.",
+   "tip": null
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
+   "line": 37,
+   "identifier": "function.notFound",
+   "message": "Function missing_after_base_check not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Lone)",
+   "line": 32,
+   "identifier": "class.notFound",
+   "message": "Parameter $x of method TraitContext\\Lone::other() has invalid type TraitContext\\MissingInOther.",
+   "tip": null
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Lone)",
+   "line": 37,
+   "identifier": "function.notFound",
+   "message": "Function missing_after_base_check not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Lone)",
+   "line": 38,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method TraitContext\\Lone::undefinedAfterBaseCheck().",
+   "tip": null
+  },
+  {
+   "file": "src/TraitContext.php (in context of class TraitContext\\Lone)",
+   "line": 43,
+   "identifier": "function.notFound",
+   "message": "Function missing_in_other_hello not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
   }
  ]
 }

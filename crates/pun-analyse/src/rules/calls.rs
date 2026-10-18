@@ -145,8 +145,17 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
     let Some(class) = c.class_scope() else {
         return;
     };
+    // a call on `never` reports nothing
+    if c.this_is_never(class) {
+        return;
+    }
     let method_name = String::from_utf8_lossy(name.value).into_owned();
     let Some(method) = members::method(c.codebase, class, name.value) else {
+        if let Some(method) = members::annotation_method(c.codebase, class, name.value) {
+            // an annotation method is public: only its arguments are checked
+            arguments(c, call, name, &method);
+            return;
+        }
         // reportMagicMethods is off at level 0: a native __call() answers every name
         let guard =
             super::scope::Guard::Method(format!("$this::{method_name}").to_ascii_lowercase());
@@ -190,7 +199,17 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
             None,
         );
     }
-    let subject = format!("{declaring}::{}()", method.name());
+    arguments(c, call, name, &method);
+}
+
+/// CallMethodsRule's FunctionCallParametersCheck.
+fn arguments<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    call: &MethodCall<'arena>,
+    name: &LocalIdentifier<'arena>,
+    method: &members::Method,
+) {
+    let subject = format!("{}::{}()", method.declaring_display(), method.name());
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
     params::check(

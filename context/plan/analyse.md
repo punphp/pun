@@ -33,11 +33,12 @@ file, line and rule; messages may be reworded), so CI can switch.
   4. It drops what ignores and the baseline cover.
 - **Level 0 is in progress.** It reports 54 PHPStan identifiers so far (undefined functions, classes, methods,
   properties and constants, `new`, typehints, `use`). It is checked against 142 of PHPStan's own rule test classes,
-  with 40 known differing cases in `tests/fixtures/rules/gaps.txt`. On the corpus, the differences from PHPStan level 0
+  with 37 known differing cases in `tests/fixtures/rules/gaps.txt`. On the corpus, the differences from PHPStan level 0
   are pinkary 1, larastan 6, pest 5 and laravel-framework 15, and Pun runs 5 to 25 times faster.
 - **Not wired up yet.** There is no `pun analyse` command. The only entry point is
   `cargo run --example analyse <dir> <phpstan.neon>`, which reads phpstan.neon, used by `scripts/analyse-corpus.py`.
-  The analyse agent stopped at 43d9857, with Larastan facade aliases and a trait fix uncommitted.
+  The analyse agent stopped at 43d9857, with Larastan facade aliases uncommitted (left to analyse 6). The trait fix
+  was redone in analyse 3a.
 - **No type inference yet.** Level 0 mostly needs symbols, not types. Levels 2 and up need type inference (Mago's
   analyser, §7): the type of every expression, narrowing after `if`, `instanceof` and `is_*`, and generics from
   PHPDoc. Mago's analyser is a dependency but isn't used.
@@ -117,8 +118,9 @@ descriptions; 54 level-0 identifiers; parallel scanning. The steps, after config
 2. **Pun's own baseline:** `pun analyse --generate-baseline` writes `pun-baseline.toml` (mago-reporting baseline,
    loose by default); a run reads it and reports fixed entries.
 3. **Finish level 0** (after step 0). The remaining ~100 level-0 rules, an empty `tests/fixtures/rules/gaps.txt`, and corpus diffs at
-   0 (pinkary 1, larastan 6, pest 5, laravel-framework 15 today). Commit or redo the uncommitted trait-method and
-   facade-alias work first.
+   0 (pinkary 1, larastan 6, pest 5, laravel-framework 15 today). The trait-method work is redone (3a: traits in
+   their class's context as NodeScopeResolver::processTraitUse() does, only for traits in analysed files); the
+   facade-alias work belongs to Larastan (step 6).
 4. **Type inference on Mago's analyser** (§7): expression types, narrowing, PHPDoc generics, mapped to PHPStan's type
    descriptions. Everything from `essential` up depends on it.
 5. **Levels 1 to 10 as rules,** with the four switches, grouped into the presets basic, essential, recommended, strict,
@@ -277,3 +279,6 @@ Assistant's calls in the engine spike (Build 0, 2026-10-17; the plan was silent)
   the same file within 10 lines, or a code reviewed by hand as the same check (`SAME_CHECK` in scripts/analyse-spike.py).
 - tests/fixtures/rules/gaps.txt was out of date at 915534e (3 listed cases pass, 5 unlisted fail since 138dab1's
   trait-context change). The spike updates the list so the suite is green, with the reason; fixing them is Build 3.
+  Analyse 3a fixed the 5 (assistant's calls, where the port stops short of PHPStan: `@method` tags count only for
+  `$this->` calls (CallMethodsRule), not static calls yet; `$this instanceof X` narrows `$this` to `never` only for
+  those calls; a trait alias's new visibility (`foo as protected`) is not applied to the walked method).

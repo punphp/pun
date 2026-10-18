@@ -290,6 +290,16 @@ fn new_static(c: &mut Checker, new: &Instantiation) {
     if class.flags.is_final() || consistent_constructor(c, class) {
         return;
     }
+    // in a trait (PHP 8.0+ has abstract trait methods) that declares an abstract constructor
+    if has_constructor(c, class)
+        && c.php_version >= 80000
+        && c.in_target
+        && let Some(t) = c.context_trait.as_deref()
+        && let Some(t) = c.codebase.get_class_like(t.as_bytes())
+        && members::method(c.codebase, t, b"__construct").is_some_and(|m| m.is_abstract())
+    {
+        return;
+    }
     c.report(
         new,
         "new.static",
