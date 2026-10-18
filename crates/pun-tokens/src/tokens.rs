@@ -20,7 +20,7 @@ struct BlockCache {
     end: HashMap<usize, usize>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct Tokens {
     tokens: Vec<Token>,
     found_kinds: Vec<i64>,
@@ -30,6 +30,20 @@ pub struct Tokens {
     /// `$namespaceDeclarations`: NamespacesAnalyzer's result (a pun-fixers type, hence `Any`), dropped on every change.
     namespace_declarations: RefCell<Option<Arc<dyn Any + Send + Sync>>>,
     changed: bool,
+}
+
+impl Default for Tokens {
+    /// `new Tokens()`: empty, with a found-kinds slot for every kind.
+    fn default() -> Self {
+        Tokens {
+            tokens: Vec::new(),
+            found_kinds: vec![0; Kind::ALL.len()],
+            found_contents: HashMap::new(),
+            blocks: RefCell::default(),
+            namespace_declarations: RefCell::default(),
+            changed: false,
+        }
+    }
 }
 
 impl Index<usize> for Tokens {
@@ -145,10 +159,7 @@ impl Tokens {
     }
 
     pub fn from_array(tokens: Vec<Token>) -> Tokens {
-        let mut t = Tokens {
-            found_kinds: vec![0; Kind::ALL.len()],
-            ..Default::default()
-        };
+        let mut t = Tokens::default();
         for tok in &tokens {
             t.register_found_token(tok);
         }
@@ -159,10 +170,7 @@ impl Tokens {
 
     /// `Tokens::fromCode`: `token_get_all($code, TOKEN_PARSE)` + transformers.
     pub fn from_code(code: &[u8]) -> Tokens {
-        let mut t = Tokens {
-            found_kinds: vec![0; Kind::ALL.len()],
-            ..Default::default()
-        };
+        let mut t = Tokens::default();
         t.set_code(code);
         t.clear_changed();
         t
@@ -921,6 +929,16 @@ mod tests {
             t.find_sequence(&[T_STRING.into(), "(".into()], 0, None, |_| true),
             Some(vec![1, 2])
         );
+    }
+
+    #[test]
+    fn default_is_an_empty_collection() {
+        // Upstream's `new Tokens()`: no kind found, and inserting registers the new tokens.
+        let mut t = Tokens::default();
+        assert!(!t.is_token_kind_found(T_OPEN_TAG));
+        t.insert_at(0, vec![Token::new(T_OPEN_TAG, "<?php ")]);
+        assert_eq!(t.generate_code(), b"<?php ");
+        assert_eq!(t.count_token_kind(T_OPEN_TAG), 1);
     }
 
     #[test]

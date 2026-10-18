@@ -122,9 +122,9 @@ items marked "not checked against Pint" still need one oracle run before the fix
   truncate each other's file and one `rename` fails, reporting a Blade file as errored. The guard also checks only
   `worker.cjs`. Build the files once per process in a `OnceLock`. Likely; not reproduced. Reproduced at 0c5bd30: 16
   threads on a fresh dir fail the rename with ENOENT. Fixed in e48bd81.
-- [ ] 21. `crates/pun-tokens/src/tokens.rs:23-27`: the derived public `Default` leaves `found_kinds` empty, so
+- [x] 21. `crates/pun-tokens/src/tokens.rs:23-27`: the derived public `Default` leaves `found_kinds` empty, so
   `Tokens::default().is_token_kind_found(..)` and `insert_at` index out of bounds (`:681`, `:860`). No caller today.
-  Implement `Default` as `from_array(Vec::new())`, or make `found_kinds` a fixed-size array.
+  Implement `Default` as `from_array(Vec::new())`, or make `found_kinds` a fixed-size array. Reproduced (index 134 out of bounds); `Default` now sizes `found_kinds`. Fixed in wf/audit-tokens.
 
 ## P2: Inconsistent or costly to change
 
