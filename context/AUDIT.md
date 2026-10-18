@@ -310,7 +310,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   reproduced (`run()` on a directory as the analysed file returned no errors); PHPStan stops with "Could not read
   file: <path>" (chmod 000 file). `codebase::read` now skips only `NotFound` and `run`, `analyse` and `run_mago`
   return `CouldNotReadFile`, so `check_file` (`rules/mod.rs`) only misses a file deleted mid-run. Fixed in
-  wf/audit-analyse.
+  9793248.
 - [ ] 53. The PHP target version has six representations: `Config.php: String`, `(u64, u64)` in
   `pun-config/src/schema.rs:220,264`, `composer::Version`, `constraint::V` (bridged by `From`), and `u32` ids in
   `pun-lint/src/lib.rs:28,136` and `pun-analyse/src/project.rs:21`. One `PhpVersion` in pun-config with `FromStr`,

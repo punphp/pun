@@ -351,7 +351,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit items 10, 18, 29, 74 (pun-cli report.rs, watch.rs, main.rs, run.rs, pint_error.rs): validated and still open, deferred to the platform/format tracks that own those files; item 10's fix pads the prettier-plugin-tailwindcss version with `.chain([0; 3]).take(3)` and adds a same_abort case to output.rs `prettier_preflight_like_pint` | todo |
 | tests: crates/pun-cli/tests/cli.rs:327 and output.rs:816 fake read errors with mode 000 like audit item 34 did; assert the error only when std::fs::read really fails | todo |
 | tests: crates/pun-tokens/tests/api.rs:317 swaps the process panic hook (as docblock tests did, audit item 80); use catch_unwind alone | todo |
-| audit item 52 follow-up: pun-analyse part (codebase.rs:36, rules/mod.rs:204-206) treats unreadable files as missing; tick item 52 once it lands (pun-config part done in afe5778) | todo |
 | coverage: pun-config lib.rs:389,395,397 (options(): Boolean and bail arms) are uncovered; its only caller (schema.rs:449) always passes a Table, so delete the dead arms | todo |
 | tests: crates/pun-cli/tests/cli.rs `blade_like_pint` fails on the Pint oracle's own output (expected substring missing), likely a change in the installed oracle's Blade plugin | todo |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
@@ -392,6 +391,10 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
+| audit items 16, 48 follow-up: apply /Users/pushpakchhajed/Projects/pun-wf/deferred/audit-analyse-16-48.patch (made at ff31836; add `.unwrap()` to the new check_in in tests/statements.rs since item 52 made run() return Result) once crates/pun-analyse/src/rules/* is no longer claimed by the analyse tracks; rerun the statements and rules tests (drop testBug5460 from gaps.txt) and tick 16 and 48 | todo |
+| audit item 17 follow-up: add property.trait to IDENTIFIERS, take identifiers as &'static str (no format! in names.rs), assert in tests/rules.rs that every reported identifier is listed, drop testPromotedProperties from gaps.txt; waits for the rules/* claim | todo |
+| oracle: .oracle/phpstan's Composer project has symfony/polyfill-php85, so PHPStan run from it knows array_first() and friends at phpVersion 80400; take built-in-symbol expectations from the standalone phar outside a Composer project | todo |
+| audit item 52 follow-up: pun_analyse::run, analyse and run_mago return Result<_, CouldNotReadFile> since the item 52 fix; parity-loop branches calling them need `?` or `.unwrap()` | todo |
 
 ## 4. Open questions
 
