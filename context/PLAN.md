@@ -188,10 +188,8 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| output 3: `pun format` on the renderer; Pint's human screen removed | todo |
-| output 3 follow-up: wire `--color` (`render::ColorChoice`), `Renderer` and `Spinner` into `pun format`; remove the `dead_code`/`unused_imports` allow in crates/pun-cli/src/render/mod.rs | todo |
 | output follow-up: add a warning text token to design/tokens.json that reads on a light ground (light terminals fall back to SGR 33) | todo |
-| output follow-up: decide the rule docs base URL so `Renderer::with_rule_docs` links rule IDs, and switch `pun explain`'s docs row from the mapping.toml#L<line> link (`pun_config::MAPPING_URL`) to the rule page | todo |
+| output follow-up: decide the rule docs base URL so `Renderer::with_rule_docs` (now `#[cfg(test)]`, drop that) links rule IDs, and switch `pun explain`'s docs row from the mapping.toml#L<line> link (`pun_config::MAPPING_URL`) to the rule page | todo |
 | output 4-6: GitHub annotations, `pun check` grouped view, exit code 2 | todo |
 
 **Gate:** every human output sample in the plan files is pinned by a test; machine formats and exit codes still pass
@@ -293,13 +291,13 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | tests: crates/pun-phpstan/tests/config.rs `corpus_configs` fails in a wf worktree because `.oracle` is a symlink, so phar paths resolve to the main checkout instead of {repo}/.oracle | todo |
 | pun-phpstan: clippy collapsible_if at src/schema.rs:754 | todo |
 | pun-harness: the comment in src/main.rs about the starter's `preset = "recommended"` is stale (migrate no longer writes it) | todo |
-| tests: crates/pun-cli/tests/watch.rs `watch_reformats_like_pint` fails on macOS (FSEvents re-reports the first run's own writes, which are not recorded in `done`) | todo |
 | CI: clippy gate (`-D warnings`); clippy is at 0 warnings | todo |
 | CI: pun-analyse coverage to 100% (97.59% in CI); regenerate reports/COVERAGE.md | todo |
 | CI: confirm punphp (pun-cli) line coverage at 100% on Linux after format 1 (run.rs preset branch and report.rs PER/Symfony labels removed; macOS runs miss lines behind the 5 environment-failing tests) | todo |
 | CI: one branch and PR per thread; rewrite AGENTS.md "Work with other agents" (§4 Q1) | todo |
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
 | tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
+| CI: after output 3, confirm punphp line coverage at 100% (98.49% on macOS; gaps in cache.rs, report.rs, run.rs, list_files.rs, migrate.rs sit behind the environment-failing tests) | todo |
 | tests: crates/pun-cli/tests/migrate.rs pty tests use a `script` invocation that works on macOS (BSD `script` has no `-qec`) | todo |
 | tests: crates/pun-cli/tests/output.rs `ignore_annotations_like_pint` expects the `assert()` message, so it fails on a PHP with `zend.assertions` off (got "Undefined array key 1"); run the oracle with `-d zend.assertions=1` | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
