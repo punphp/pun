@@ -4,6 +4,7 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use pun_format::Fixer;
 use pun_tokens::Kind::{self, *};
+use pun_tokens::php_compat::substr_count;
 use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
@@ -156,7 +157,7 @@ impl NullableTypeDeclarationForDefaultNullValueFixer {
                     tokens.clear_token_and_merge_surrounding_whitespace(index);
                 }
             }
-            if name.contains(&b'&') && name.iter().filter(|&&c| c == b'|').count() == 1 {
+            if name.contains(&b'&') && substr_count(name, b"|") == 1 {
                 let index = tokens
                     .get_next_token_of_kind(
                         start_index - 1,

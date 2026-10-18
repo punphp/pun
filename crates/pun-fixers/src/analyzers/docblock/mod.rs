@@ -129,22 +129,6 @@ impl DocBlock {
     }
 }
 
-/// PHP `str_replace` for one needle.
-pub fn replace_all(s: &[u8], from: &[u8], to: &[u8]) -> Vec<u8> {
-    let mut out = Vec::with_capacity(s.len());
-    let mut i = 0;
-    while i < s.len() {
-        if s[i..].starts_with(from) {
-            out.extend_from_slice(to);
-            i += from.len();
-        } else {
-            out.push(s[i]);
-            i += 1;
-        }
-    }
-    out
-}
-
 /// `preg_split('/([^\n\r]+\R*)/', ..., NO_EMPTY | DELIM_CAPTURE)` for ASCII content not starting with CR/LF:
 /// each piece is a run without CR/LF (VT and FF included) plus the run of CR, LF, VT and FF after it.
 fn split_lines_ascii(content: &[u8]) -> Option<Vec<Vec<u8>>> {

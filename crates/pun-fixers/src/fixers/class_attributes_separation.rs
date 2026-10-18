@@ -5,6 +5,7 @@ use anyhow::bail;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::Kind::{self, *};
 use pun_tokens::token::CLASSY_KINDS;
+use pun_tokens::php_compat::substr_count;
 use pun_tokens::tokens_analyzer::ClassyElementType;
 use pun_tokens::{Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
@@ -69,10 +70,6 @@ struct Class {
     open: usize,
     close: usize,
     elements: Vec<Element>,
-}
-
-fn substr_count_nl(t: &Token) -> usize {
-    t.content.iter().filter(|&&c| c == b'\n').count()
 }
 
 impl Fixer for ClassAttributesSeparationFixer {
@@ -194,16 +191,16 @@ impl ClassAttributesSeparationFixer {
             }
             // more than one line break, always bring it back to 2 line breaks between the element start and what is above it
             if tokens[non_white_above + 1].is_whitespace(None)
-                && substr_count_nl(&tokens[non_white_above + 1]) > 1
+                && substr_count(&tokens[non_white_above + 1].content, b"\n") > 1
             {
                 self.correct_line_breaks(tokens, non_white_above, element.start, 2);
                 return;
             }
             if element.start - non_white_above == 1
                 || (tokens[non_white_above - 1].is_whitespace(None)
-                    && substr_count_nl(&tokens[non_white_above - 1]) > 0)
+                    && substr_count(&tokens[non_white_above - 1].content, b"\n") > 0)
                 || (tokens[non_white_above + 1].is_whitespace(None)
-                    && substr_count_nl(&tokens[non_white_above + 1]) > 0)
+                    && substr_count(&tokens[non_white_above + 1].content, b"\n") > 0)
             {
                 // 1. The comment is meant for the element (although not a PHPDoc),
                 //    make sure there is one line break between the element and the comment...
@@ -216,7 +213,7 @@ impl ClassAttributesSeparationFixer {
                     .unwrap();
                 if non_white_above_comment == class.open {
                     if tokens[non_white_above_comment - 1].is_whitespace(None)
-                        && substr_count_nl(&tokens[non_white_above_comment - 1]) > 0
+                        && substr_count(&tokens[non_white_above_comment - 1].content, b"\n") > 0
                     {
                         self.correct_line_breaks(
                             tokens,
@@ -335,7 +332,7 @@ impl ClassAttributesSeparationFixer {
 
 fn get_line_break_count(tokens: &Tokens, start_index: usize, end_index: usize) -> usize {
     (start_index..end_index)
-        .map(|i| substr_count_nl(&tokens[i]))
+        .map(|i| substr_count(&tokens[i].content, b"\n"))
         .sum()
 }
 

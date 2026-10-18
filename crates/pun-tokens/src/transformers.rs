@@ -7,7 +7,7 @@
 //! braces) for code it cannot handle; these ports panic at the same points.
 
 use crate::kind::Kind::{self, *};
-use crate::token::{Proto, Token};
+use crate::token::{Proto, Token, c, idx, k};
 use crate::tokens::Tokens;
 
 type Process = fn(&mut Tokens, usize);
@@ -48,24 +48,12 @@ pub fn transform(tokens: &mut Tokens) {
     }
 }
 
-fn idx(i: Option<usize>) -> usize {
-    i.expect("Cannot access offset of type null on SplFixedArray")
-}
-
 fn prev(tokens: &Tokens, i: usize) -> usize {
     idx(tokens.get_prev_meaningful_token(i))
 }
 
 fn next(tokens: &Tokens, i: usize) -> usize {
     idx(tokens.get_next_meaningful_token(i))
-}
-
-const fn c(s: &'static str) -> Proto<'static> {
-    Proto::Char(s.as_bytes())
-}
-
-const fn k(kind: Kind) -> Proto<'static> {
-    Proto::Kind(kind)
 }
 
 fn set(tokens: &mut Tokens, i: usize, kind: Kind, content: &[u8]) {

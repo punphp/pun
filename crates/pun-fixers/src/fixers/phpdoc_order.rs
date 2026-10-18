@@ -1,6 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocOrderFixer`.
 use crate::analyzers::docblock::DocBlock;
 use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::utils::natural_language_join;
 use anyhow::{Result, bail};
 use pun_format::Fixer;
 use pun_tokens::{Kind, Token, Tokens};
@@ -39,11 +40,7 @@ impl Fixer for PhpdocOrderFixer {
             }
         }
         if !dups.is_empty() {
-            let names: Vec<String> = dups.iter().map(|d| format!("\"{d}\"")).collect();
-            let joined = match names.split_last() {
-                Some((last, rest)) if !rest.is_empty() => format!("{} and {last}", rest.join(", ")),
-                _ => names[0].clone(),
-            };
+            let joined = natural_language_join(&dups);
             let many = dups.len() > 1;
             bail!(
                 "[phpdoc_order] Invalid configuration: The option \"order\" value is invalid. Tag{} {joined} {} duplicated.",

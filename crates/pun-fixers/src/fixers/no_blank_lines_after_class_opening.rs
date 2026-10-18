@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\ClassNotation\NoBlankLinesAfterClassOpeningFixer`.
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::{Kind::*, Token, Tokens, token::CLASSY_KINDS};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat::substr_count, token::CLASSY_KINDS};
 use std::path::Path;
 
 #[derive(Default)]
@@ -15,7 +15,7 @@ pub fn fixer() -> Box<dyn Fixer> {
 impl NoBlankLinesAfterClassOpeningFixer {
     fn fix_whitespace(&self, tokens: &mut Tokens, index: usize) {
         let content = tokens[index].get_content();
-        if content.iter().filter(|&&b| b == b'\n').count() > 1 {
+        if substr_count(content, b"\n") > 1 {
             // the final bit of the whitespace must be the next statement's indentation
             let last = content.iter().rposition(|&b| b == b'\n').unwrap();
             let new = [

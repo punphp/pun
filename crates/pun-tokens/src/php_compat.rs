@@ -1,6 +1,6 @@
-//! PHP string semantics fixers rely on: byte length, ASCII-only case mapping, and the
-//! comparison functions with PHP 8's normalized -1/0/1 results. Exact ports of
-//! ext/standard (string.c, strnatcmp.c) in the "C" locale PHP 8 uses.
+//! PHP's string functions as Pun's crates need them: byte length, ASCII-only case mapping, the comparison functions
+//! with PHP 8's normalized -1/0/1 results, searching and splitting, `fnmatch`, `preg_quote` and compiling a `preg_*`
+//! pattern. Exact ports of ext/standard (string.c, strnatcmp.c) and ext/pcre in the "C" locale PHP 8 uses.
 
 use std::cmp::Ordering;
 
@@ -78,8 +78,11 @@ pub fn ltrim_chars<'a>(s: &'a [u8], chars: &[u8]) -> &'a [u8] {
     &s[start..]
 }
 
-/// `str_replace($search, $replace, $subject)` for one non-empty needle.
+/// `str_replace($search, $replace, $subject)` for one needle; an empty needle leaves the subject as it is, as in PHP.
 pub fn str_replace(search: &[u8], replace: &[u8], subject: &[u8]) -> Vec<u8> {
+    if search.is_empty() {
+        return subject.to_vec();
+    }
     let mut out = Vec::with_capacity(subject.len());
     let mut i = 0;
     while i < subject.len() {
@@ -94,11 +97,85 @@ pub fn str_replace(search: &[u8], replace: &[u8], subject: &[u8]) -> Vec<u8> {
     out
 }
 
+/// `strpos($haystack, $needle, $offset)`, `None` for `false`. An empty needle is found at `offset`; callers pass
+/// `offset <= strlen($haystack)` (PHP throws a `ValueError` past it).
+pub fn strpos(haystack: &[u8], needle: &[u8], offset: usize) -> Option<usize> {
+    let Some((&first, tail)) = needle.split_first() else {
+        return Some(offset);
+    };
+    // the needle's first byte, then the rest
+    let mut at = offset;
+    loop {
+        at += haystack[at..].iter().position(|&c| c == first)?;
+        if haystack[at + 1..].starts_with(tail) {
+            return Some(at);
+        }
+        at += 1;
+    }
+}
+
+/// `stripos($haystack, $needle, $offset)`: `strpos` with ASCII case folding.
+pub fn stripos(haystack: &[u8], needle: &[u8], offset: usize) -> Option<usize> {
+    if needle.is_empty() {
+        return Some(offset);
+    }
+    haystack[offset..]
+        .windows(needle.len())
+        .position(|w| w.eq_ignore_ascii_case(needle))
+        .map(|p| p + offset)
+}
+
+/// `strrpos($haystack, $needle)`.
+pub fn strrpos(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    let last = haystack.len().checked_sub(needle.len())?;
+    (0..=last)
+        .rev()
+        .find(|&i| haystack[i..].starts_with(needle))
+}
+
+/// `substr($s, $start, $length)` for a non-negative start and length (`None` = to the end).
+pub fn substr(s: &[u8], start: usize, length: Option<usize>) -> &[u8] {
+    let start = start.min(s.len());
+    let end = length.map_or(s.len(), |l| start.saturating_add(l).min(s.len()));
+    &s[start..end]
+}
+
+/// `substr_count($haystack, $needle)`: non-overlapping occurrences. PHP throws a `ValueError` for an empty needle.
+pub fn substr_count(haystack: &[u8], needle: &[u8]) -> usize {
+    assert!(
+        !needle.is_empty(),
+        "substr_count(): Argument #2 ($needle) cannot be empty"
+    );
+    let (mut n, mut i) = (0, 0);
+    while let Some(p) = strpos(haystack, needle, i) {
+        n += 1;
+        i = p + needle.len();
+    }
+    n
+}
+
+/// `explode($separator, $s)` without a limit. PHP throws a `ValueError` for an empty separator.
+pub fn explode<'a>(separator: &[u8], s: &'a [u8]) -> Vec<&'a [u8]> {
+    assert!(
+        !separator.is_empty(),
+        "explode(): Argument #1 ($separator) cannot be empty"
+    );
+    let mut parts = Vec::new();
+    let mut start = 0;
+    while let Some(p) = strpos(s, separator, start) {
+        parts.push(&s[start..p]);
+        start = p + separator.len();
+    }
+    parts.push(&s[start..]);
+    parts
+}
+
 pub fn trim(s: &[u8]) -> &[u8] {
     ltrim_chars(rtrim(s), TRIM_CHARS)
 }
 
-fn isspace(c: u8) -> bool {
+/// C `isspace()` in the "C" locale, which is also PCRE's `\s`: space, `\t`, `\n`, `\v`, `\f` and `\r`.
+pub fn isspace(c: u8) -> bool {
     matches!(c, b' ' | b'\t' | b'\n' | b'\x0b' | b'\x0c' | b'\r')
 }
 
@@ -215,6 +292,205 @@ fn compare_left(a: &[u8], ap: &mut usize, b: &[u8], bp: &mut usize) -> i32 {
     }
 }
 
+/// `preg_quote($s, $delimiter)`.
+pub fn preg_quote(s: &[u8], delimiter: Option<u8>) -> Vec<u8> {
+    let mut out = Vec::with_capacity(s.len());
+    for &b in s {
+        match b {
+            0 => out.extend_from_slice(b"\\000"),
+            b'.' | b'\\' | b'+' | b'*' | b'?' | b'[' | b'^' | b']' | b'$' | b'(' | b')' | b'{'
+            | b'}' | b'=' | b'!' | b'>' | b'<' | b'|' | b':' | b'-' | b'#' => {
+                out.extend([b'\\', b])
+            }
+            _ if Some(b) == delimiter => out.extend([b'\\', b]),
+            _ => out.push(b),
+        }
+    }
+    out
+}
+
+/// `fnmatch($pattern, $string)` with no flags: the C library's `fnmatch`, which PHP calls. Nothing matches a
+/// pattern or string holding a NUL byte (PHP refuses those).
+pub fn fnmatch(pattern: &[u8], string: &[u8]) -> bool {
+    use std::ffi::CString;
+    CString::new(pattern)
+        .ok()
+        .zip(CString::new(string).ok())
+        // SAFETY: both are valid NUL-terminated C strings for the duration of the call.
+        .is_some_and(|(p, s)| unsafe { libc::fnmatch(p.as_ptr(), s.as_ptr(), 0) == 0 })
+}
+
+/// The modifiers after a `preg_*` pattern's closing delimiter.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct PregModifiers {
+    /// `i`
+    pub caseless: bool,
+    /// `m`
+    pub multi_line: bool,
+    /// `s`
+    pub dotall: bool,
+    /// `x`
+    pub extended: bool,
+    /// `A`
+    pub anchored: bool,
+    /// `D`
+    pub dollar_end_only: bool,
+    /// `U`
+    pub ungreedy: bool,
+    /// `u`
+    pub utf: bool,
+    /// `J`
+    pub dup_names: bool,
+    /// `n`
+    pub no_auto_capture: bool,
+}
+
+/// `pcre_get_compiled_regex_cache` up to the compile: the pattern's body between its delimiters (a bracket pair
+/// nests) and its modifiers. `Err` is PHP's warning without its `preg_*(): ` prefix.
+pub fn preg_parse(pattern: &[u8]) -> Result<(&[u8], PregModifiers), String> {
+    let start = pattern.iter().position(|&c| !isspace(c));
+    let Some(start) = start else {
+        return Err("Empty regular expression".into());
+    };
+    let delimiter = pattern[start];
+    if delimiter.is_ascii_alphanumeric() || delimiter == b'\\' || delimiter == 0 {
+        return Err("Delimiter must not be alphanumeric, backslash, or NUL byte".into());
+    }
+    let end_delimiter = match delimiter {
+        b'(' => b')',
+        b'[' => b']',
+        b'{' => b'}',
+        b'<' => b'>',
+        d => d,
+    };
+    let (mut p, mut depth) = (start + 1, 1);
+    while p < pattern.len() {
+        let c = pattern[p];
+        if c == b'\\' && p + 1 < pattern.len() {
+            p += 1;
+        } else if c == end_delimiter {
+            depth -= 1;
+            if depth == 0 {
+                break;
+            }
+        } else if c == delimiter {
+            depth += 1;
+        }
+        p += 1;
+    }
+    if p >= pattern.len() {
+        let end = String::from_utf8_lossy(&[end_delimiter]).into_owned();
+        return Err(if end_delimiter == delimiter {
+            format!("No ending delimiter '{end}' found")
+        } else {
+            format!("No ending matching delimiter '{end}' found")
+        });
+    }
+    let mut m = PregModifiers::default();
+    for &c in &pattern[p + 1..] {
+        match c {
+            b'i' => m.caseless = true,
+            b'm' => m.multi_line = true,
+            b's' => m.dotall = true,
+            b'x' => m.extended = true,
+            b'A' => m.anchored = true,
+            b'D' => m.dollar_end_only = true,
+            b'U' => m.ungreedy = true,
+            b'u' => m.utf = true,
+            b'J' => m.dup_names = true,
+            b'n' => m.no_auto_capture = true,
+            // `S` and `X` are no-ops since PCRE2; `r` (PCRE2_EXTRA_CASELESS_RESTRICT) has no PCRE2 crate option.
+            b'S' | b'X' | b'r' | b' ' | b'\n' | b'\r' => {}
+            0 => return Err("NUL byte is not a valid modifier".into()),
+            c => {
+                let c = String::from_utf8_lossy(&[c]).into_owned();
+                return Err(format!("Unknown modifier '{c}'"));
+            }
+        }
+    }
+    Ok((&pattern[start + 1..p], m))
+}
+
+/// Compile a `preg_*` pattern (delimiters and modifiers) with PCRE2. `Err` is PHP's warning without its
+/// `preg_*(): ` prefix.
+pub fn preg_compile(pattern: &str) -> Result<pcre2::bytes::Regex, String> {
+    let (body, m) = preg_parse(pattern.as_bytes())?;
+    // (A body is whole UTF-8 characters: a non-ASCII delimiter fails on the modifier after its first byte.)
+    let body = String::from_utf8_lossy(body);
+    let mut b = pcre2::bytes::RegexBuilder::new();
+    b.caseless(m.caseless)
+        .multi_line(m.multi_line)
+        .dotall(m.dotall)
+        .extended(m.extended);
+    if m.utf {
+        b.utf(true).ucp(true);
+    }
+    // ponytail: D (dollar end-only) isn't exposed by the pcre2 crate.
+    let flags = [
+        (m.ungreedy, "(?U)"),
+        (m.dup_names, "(?J)"),
+        (m.no_auto_capture, "(?n)"),
+    ]
+    .iter()
+    .filter(|f| f.0)
+    .map(|f| f.1)
+    .collect::<String>();
+    // PCRE2 accepts `(*VERB)` settings only at the very start, before the inline flags and the `A` wrapper.
+    // Backtracking verbs (`(*FAIL)|a`) belong to the first branch, so they stay inside it.
+    let mut verbs = 0;
+    while let Some(rest) = body[verbs..].strip_prefix("(*")
+        && let Some(end) = rest.find(')')
+        && rest[..end]
+            .bytes()
+            .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || b"_=".contains(&c))
+        && !["ACCEPT", "FAIL", "F", "COMMIT", "PRUNE", "SKIP", "THEN"].contains(&&rest[..end])
+    {
+        verbs += end + 3;
+    }
+    let (verbs, body) = body.split_at(verbs);
+    let build = |pattern: String| {
+        b.build(&pattern).map_err(|e| {
+            // (An offset inside the leading verbs comes before the moved flags.)
+            let at = e.offset().unwrap_or(0);
+            let at = if at <= verbs.len() {
+                at
+            } else {
+                at - flags.len()
+            };
+            let text = e.to_string();
+            let msg = text
+                .split_once("pattern at offset ")
+                .and_then(|(_, r)| r.split_once(": "))
+                .map_or(text.as_str(), |(_, m)| m);
+            format!("Compilation failed: {msg} at offset {at}")
+        })
+    };
+    // Compiled as written first, so error offsets are PHP's; `A` (PCRE2_ANCHORED) then wraps it after `\G`.
+    let re = build(format!("{verbs}{flags}{body}"))?;
+    if !m.anchored {
+        return Ok(re);
+    }
+    // An unclosed `\Q` would quote the closing parenthesis, and a newline ends an `x`-mode comment before it.
+    let unquote = if open_quote(body) { "\\E" } else { "" };
+    let close = if m.extended { "\n)" } else { ")" };
+    build(format!("{verbs}{flags}\\G(?:{body}{unquote}{close}"))
+}
+
+/// Whether `body` ends inside a `\Q...` quote that no `\E` closes (inside one, only `\E` is special).
+fn open_quote(body: &str) -> bool {
+    let (mut quoted, mut rest) = (false, body.as_bytes());
+    while let Some((&c, tail)) = rest.split_first() {
+        rest = tail;
+        match (c, quoted, tail.first()) {
+            (b'\\', true, Some(b'E')) => quoted = false,
+            (b'\\', false, next) => quoted = next == Some(&b'Q'),
+            _ => continue,
+        }
+        rest = &tail[1..];
+    }
+    quoted
+}
+
 /// `var_export($s, true)` of a string: single-quoted, with `\\` and `'` backslash-escaped and each NUL byte spliced
 /// in as `' . "\0" . '`. Other bytes, invalid UTF-8 included, are copied as they are.
 pub fn var_export_string(s: &[u8]) -> Vec<u8> {
@@ -231,9 +507,14 @@ pub fn var_export_string(s: &[u8]) -> Vec<u8> {
     out
 }
 
-/// PHP's `(string) $float` (`precision` = 14, `%.14G` with PHP's `.0` and `E+` exponent spelling) for finite
-/// floats (the ones JSON can hold).
+/// PHP's `(string) $float` (`precision` = 14, `%.14G` with PHP's `.0` and `E+` exponent spelling).
 pub fn float_to_string(f: f64) -> String {
+    if f.is_nan() {
+        return "NAN".into();
+    }
+    if f.is_infinite() {
+        return if f > 0.0 { "INF" } else { "-INF" }.into();
+    }
     if f == 0.0 {
         return if f.is_sign_negative() { "-0" } else { "0" }.into();
     }

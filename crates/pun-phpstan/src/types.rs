@@ -514,7 +514,7 @@ impl Type {
     fn is_numeric_string(&self) -> Tri {
         self.query(&|t| match t {
             Type::Accessory(Accessory::NumericString) => Tri::Yes,
-            Type::ConstString(s) => Tri::from(is_numeric(s)),
+            Type::ConstString(s) => Tri::from(crate::value::numeric(s).is_some()),
             Type::ClassString(_) => Tri::No,
             Type::String
             | Type::StringAcceptingStringable
@@ -683,7 +683,7 @@ impl Type {
                     if symbols::class(s).is_some_and(|c| c.name == *s) {
                         export_string(s)
                     } else {
-                        export_string(&truncate(s, 20))
+                        export_string(&crate::schema::truncate(s, 20, "…"))
                     }
                 },
                 || export_string(s),
@@ -974,23 +974,6 @@ fn canonical_class(class: &str) -> String {
     symbols::class(class).map_or_else(|| class.to_string(), |c| c.name.clone())
 }
 
-/// PHP's `is_numeric()` on a string.
-fn is_numeric(s: &str) -> bool {
-    let t = s
-        .trim_start_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c'])
-        .trim_end_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
-    let t = t.strip_prefix(['+', '-']).unwrap_or(t);
-    if t.is_empty()
-        || !t
-            .bytes()
-            .next()
-            .is_some_and(|b| b.is_ascii_digit() || b == b'.')
-    {
-        return false;
-    }
-    t.parse::<f64>().is_ok() && !t.contains(['x', 'X', 'i', 'I', 'n', 'N', '_'])
-}
-
 /// `ConstantFloatType::castFloatToString()` (precision -1).
 pub fn float_to_string(f: f64) -> String {
     if f.is_nan() {
@@ -1040,23 +1023,6 @@ fn export_string(value: &str) -> String {
         return out;
     }
     format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'"))
-}
-
-/// Nette `Strings::truncate($s, $maxLen)` with the default `…`.
-fn truncate(s: &str, max_len: usize) -> String {
-    let chars: Vec<char> = s.chars().collect();
-    if chars.len() <= max_len {
-        return s.to_string();
-    }
-    let max_len = max_len - 1;
-    // '#^.{1,N}(?=[\s\x00-/:-@\[-`{-~])#us': the longest prefix up to N followed by a space or ASCII punctuation
-    for len in (1..=max_len).rev() {
-        let next = chars[len];
-        if next.is_whitespace() || (next.is_ascii() && !next.is_ascii_alphanumeric()) {
-            return chars[..len].iter().collect::<String>() + "…";
-        }
-    }
-    chars[..max_len].iter().collect::<String>() + "…"
 }
 
 /// `UnionTypeHelper::sortTypes()`

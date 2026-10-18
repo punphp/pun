@@ -204,6 +204,9 @@ fn finder_matches_pint() {
         &json(r#","notName":"[ab].php","notPath":"/^SRC/i","exclude":"app""#),
     );
     check(&root, None, &[]);
+    // A PHP regex that ends at its first unescaped delimiter: `/a/b/` has the unknown modifier `b`, which stops Pint.
+    let root = tree(COMMON, &json(r#","notPath":["/a/b/"]"#));
+    check(&root, None, &[]);
 
     // Glob features (Symfony Glob::toRegex) and PHP regexes with every delimiter pair and modifier.
     let files = [
@@ -283,7 +286,7 @@ fn stdin_exclusion_matches_pint() {
     let root = tree(
         &[],
         &json(
-            r#","exclude":["legacy","app/Old"],"notName":["*Stub.php","{x,y}.php"],"notPath":["gen/*","s/?.php","t/[!x]*.php","u/[a-c].php","v/\\*.php","w/[\\].php"]"#,
+            r#","exclude":["legacy","app/Old"],"notName":["*Stub.php","{x,y}.php"],"notPath":["gen/*","s/?.php","t/[!x]*.php","u/[a-c].php","v/\\*.php","w/[\\].php","y/[\\]]*.php"]"#,
         ),
     );
     let cfg = load(&root, None).unwrap();
@@ -321,6 +324,8 @@ fn stdin_exclusion_matches_pint() {
         "v/a.php",
         "w/\\.php",
         "w/a.php",
+        "y/].php",
+        "y/a.php",
     ] {
         let out = cmd(Path::new("php"), &root)
             .arg(oracle().unwrap())

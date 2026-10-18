@@ -66,7 +66,7 @@ fn matches_php() {
         $in = json_decode(stream_get_contents(STDIN));
         foreach ($in as $a) foreach ($in as $b)
             echo strcmp($a,$b) <=> 0, ' ', strcasecmp($a,$b), ' ', strnatcmp($a,$b), ' ', strnatcasecmp($a,$b), "\n";
-        foreach ($in as $a) echo json_encode([ltrim($a, " \t0a"), rtrim($a, " \t7"), rtrim($a), trim($a), str_replace("a", "XY", $a), str_replace("00", "0", $a)]), "\n";
+        foreach ($in as $a) echo json_encode([ltrim($a, " \t0a"), rtrim($a, " \t7"), rtrim($a), trim($a), str_replace("a", "XY", $a), str_replace("00", "0", $a), str_replace("", "Z", $a)]), "\n";
     "#;
     let json = format!(
         "[{}]",
@@ -114,6 +114,7 @@ fn matches_php() {
             trim(a),
             &str_replace(b"a", b"XY", a),
             &str_replace(b"00", b"0", a),
+            &str_replace(b"", b"Z", a),
         ]
         .map(|x| String::from_utf8(x.to_vec()).unwrap());
         assert_eq!(got.to_vec(), want, "{a:?}");
@@ -159,4 +160,215 @@ fn float_to_string_matches_php() {
     let want = String::from_utf8(out.stdout).unwrap();
     let got: String = floats.iter().map(|&f| float_to_string(f) + "\n").collect();
     assert_eq!(got, want);
+}
+
+/// `php` run on `script` with `input` on stdin; one JSON value per output line.
+fn php_lines(script: &str, input: &serde_json::Value) -> Vec<serde_json::Value> {
+    let mut child = common::php()
+        .args(["-r", script])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let json = serde_json::to_vec(input).unwrap();
+    child.stdin.take().unwrap().write_all(&json).unwrap();
+    let out = String::from_utf8(child.wait_with_output().unwrap().stdout).unwrap();
+    out.lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect()
+}
+
+/// `false` or the offset, as PHP's search functions return it.
+fn pos(p: Option<usize>) -> serde_json::Value {
+    p.map_or(serde_json::Value::Bool(false), |p| p.into())
+}
+
+fn utf8(b: &[u8]) -> String {
+    String::from_utf8(b.to_vec()).unwrap()
+}
+
+/// strpos, stripos, strrpos, substr, substr_count, explode and preg_quote on every haystack and needle.
+#[test]
+fn search_split_and_quote_match_php() {
+    let haystacks = [
+        "",
+        "a",
+        "abcabc",
+        "aaaa",
+        "AbC aBc",
+        "x::y::",
+        "::",
+        "a.b/c#d\0e",
+    ];
+    let needles = ["", "a", "bc", "aa", "B", "::", "abcabcd", "/", "\0"];
+    let script = r#"
+        $in = json_decode(stream_get_contents(STDIN), true);
+        foreach ($in['h'] as $h) foreach ($in['n'] as $n) {
+            $r = [];
+            foreach ([0, 1, strlen($h)] as $o) if ($o <= strlen($h)) { $r[] = strpos($h, $n, $o); $r[] = stripos($h, $n, $o); }
+            $r[] = strrpos($h, $n);
+            if ($n !== '') { $r[] = substr_count($h, $n); $r[] = explode($n, $h); }
+            echo json_encode($r), "\n";
+        }
+        foreach ($in['h'] as $h) foreach ([0, 2, 9] as $s) foreach ([null, 0, 2, 50] as $l) echo json_encode(substr($h, $s, $l)), "\n";
+        foreach ($in['h'] as $h) foreach ([null, '/', '#', 'a'] as $d) echo json_encode(preg_quote($h, $d)), "\n";
+    "#;
+    let want = php_lines(script, &serde_json::json!({"h": haystacks, "n": needles}));
+    let mut got = Vec::new();
+    for h in haystacks.map(str::as_bytes) {
+        for n in needles.map(str::as_bytes) {
+            let mut r = Vec::new();
+            for o in [0, 1, h.len()] {
+                if o <= h.len() {
+                    r.push(pos(strpos(h, n, o)));
+                    r.push(pos(stripos(h, n, o)));
+                }
+            }
+            r.push(pos(strrpos(h, n)));
+            if !n.is_empty() {
+                r.push(substr_count(h, n).into());
+                r.push(explode(n, h).into_iter().map(utf8).collect());
+            }
+            got.push(serde_json::Value::Array(r));
+        }
+    }
+    for h in haystacks.map(str::as_bytes) {
+        for s in [0, 2, 9] {
+            for l in [None, Some(0), Some(2), Some(50)] {
+                got.push(utf8(substr(h, s, l)).into());
+            }
+        }
+    }
+    for h in haystacks.map(str::as_bytes) {
+        for d in [None, Some(b'/'), Some(b'#'), Some(b'a')] {
+            got.push(utf8(&preg_quote(h, d)).into());
+        }
+    }
+    assert_eq!(got.len(), want.len());
+    for (g, w) in got.iter().zip(&want) {
+        assert_eq!(g, w);
+    }
+}
+
+#[test]
+#[should_panic(expected = "substr_count(): Argument #2 ($needle) cannot be empty")]
+fn substr_count_refuses_an_empty_needle() {
+    substr_count(b"a", b"");
+}
+
+#[test]
+#[should_panic(expected = "explode(): Argument #1 ($separator) cannot be empty")]
+fn explode_refuses_an_empty_separator() {
+    explode(b"", b"a");
+}
+
+/// fnmatch() with no flags, against the same C library PHP calls.
+#[test]
+fn fnmatch_matches_php() {
+    let cases = [
+        ("*.php", "a.php"),
+        ("*", "/a/.b"),
+        ("/a/*", "/a/b/c"),
+        ("[ab]?", "bc"),
+        ("a\\*", "a*"),
+        ("a\\*", "ab"),
+        ("a[", "a["),
+        ("[]a]", "]"),
+        ("[!]a]", "b"),
+        ("[a-]", "-"),
+        ("[\\]]", "]"),
+        ("[a\\]", "\\"),
+        ("\\", "\\"),
+        ("[[:alpha:]]", "a"),
+        ("[b-a]", "a"),
+        ("[!a]", "/"),
+    ];
+    let want = php_lines(
+        r#"foreach (json_decode(stream_get_contents(STDIN)) as [$p, $s]) echo json_encode(@fnmatch($p, $s) === true), "\n";"#,
+        &serde_json::json!(cases.as_slice()),
+    );
+    let got: Vec<serde_json::Value> = cases
+        .iter()
+        .map(|(p, s)| fnmatch(p.as_bytes(), s.as_bytes()).into())
+        .collect();
+    assert_eq!(got, want);
+    // PHP throws a ValueError for a NUL byte; nothing matches here.
+    assert!(!fnmatch(b"a\0", b"a\0"));
+}
+
+/// preg_match() of each pattern: whether it matched, or PHP's warning.
+#[test]
+fn preg_compile_matches_php() {
+    let cases = [
+        ("#^Foo$#", "Foo"),
+        ("#^Foo$#", "foo"),
+        ("#^foo$#i", "FOO"),
+        ("/a.c/s", "a\nc"),
+        ("/a.c/", "a\nc"),
+        ("/^b$/m", "a\nb"),
+        ("/a b/x", "ab"),
+        ("/^.$/u", "é"),
+        ("/^.$/", "é"),
+        ("/b/A", "ab"),
+        ("/a+?$/U", "aaa"),
+        ("/(?<n>a)|(?<n>b)/J", "b"),
+        ("/(a)/n", "a"),
+        ("/a/SXr", "a"),
+        ("  \n/a/ \n\r", "a"),
+        ("(a(b)c)", "abc"),
+        ("[a]i", "A"),
+        ("{a{1}}", "a"),
+        ("<a>", "a"),
+        ("#a\\#b#", "a#b"),
+        ("/a/b/", "a"),
+        ("", "a"),
+        ("   ", "a"),
+        ("abc", "a"),
+        ("\\a\\", "a"),
+        ("/abc", "a"),
+        ("(abc", "a"),
+        ("/a/Z", "a"),
+        ("/a/\0", "a"),
+        ("/a(/", "a"),
+        ("/a(/A", "a"),
+        ("/x(/i", "a"),
+        ("/a #c/xA", "a"),
+        ("/a #c/xA", "ba"),
+        ("#\\Qa)#A", "a)"),
+        ("#\\Qa\\Eb#A", "ab"),
+        ("#\\\\Qa#A", "\\Qa"),
+        ("#(*ANYCRLF)a#A", "ba"),
+        ("#(*ANYCRLF)(*UCP)a#AU", "a"),
+        ("#(*FOO)a#U", "a"),
+        ("#(*CR)a(#U", "a"),
+        ("#(*FAIL)|a#A", "a"),
+        ("#(*COMMIT)a|b#A", "b"),
+    ];
+    let want = php_lines(
+        r#"foreach (json_decode(stream_get_contents(STDIN)) as [$p, $s]) {
+            $m = @preg_match($p, $s);
+            echo json_encode($m === false ? substr(error_get_last()['message'], strlen('preg_match(): ')) : $m === 1), "\n";
+        }"#,
+        &serde_json::json!(cases.as_slice()),
+    );
+    let got: Vec<serde_json::Value> = cases
+        .iter()
+        .map(|(p, s)| match preg_compile(p) {
+            Ok(re) => re.is_match(s.as_bytes()).unwrap().into(),
+            Err(e) => e.into(),
+        })
+        .collect();
+    for ((g, w), c) in got.iter().zip(&want).zip(&cases) {
+        assert_eq!(g, w, "{c:?}");
+    }
+    // PHP accepts `D` (PCRE2_DOLLAR_ENDONLY); the pcre2 crate can't set it, so only the parse is checked.
+    assert!(preg_parse(b"/a$/D").unwrap().1.dollar_end_only);
+}
+
+/// INF, -INF and NAN, which JSON cannot carry to PHP: `(string) INF` etc. on PHP 8.5.
+#[test]
+fn float_to_string_of_specials() {
+    assert_eq!(float_to_string(f64::INFINITY), "INF");
+    assert_eq!(float_to_string(f64::NEG_INFINITY), "-INF");
+    assert_eq!(float_to_string(f64::NAN), "NAN");
 }

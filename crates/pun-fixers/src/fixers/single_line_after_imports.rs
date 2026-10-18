@@ -13,10 +13,6 @@ pub fn fixer() -> Box<dyn Fixer> {
     Box::new(SingleLineAfterImportsFixer::default())
 }
 
-fn count_nl(s: &[u8]) -> usize {
-    s.iter().filter(|&&b| b == b'\n').count()
-}
-
 impl Fixer for SingleLineAfterImportsFixer {
     fn name(&self) -> &'static str {
         "single_line_after_imports"
@@ -90,7 +86,7 @@ impl Fixer for SingleLineAfterImportsFixer {
 
                 if tokens[insert_index].is_whitespace(None) {
                     let next_token = tokens[insert_index].clone();
-                    if count_nl(&next_token.content) == 2 {
+                    if php_compat::substr_count(&next_token.content, b"\n") == 2 {
                         continue;
                     }
                     let new = Token::new(
@@ -105,7 +101,7 @@ impl Fixer for SingleLineAfterImportsFixer {
                     let next_meaningful_after_use_index =
                         tokens.get_next_meaningful_token(insert_index);
                     if next_meaningful_after_use_index.is_some_and(|n| tokens[n].is_kind(T_USE)) {
-                        if count_nl(&next_token.content) < 1 {
+                        if php_compat::substr_count(&next_token.content, b"\n") < 1 {
                             tokens.set(insert_index, new);
                         }
                     } else {

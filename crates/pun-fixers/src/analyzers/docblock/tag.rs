@@ -2,6 +2,7 @@
 
 use super::line::LineRef;
 use crate::analyzers::preg::Preg;
+use pun_tokens::php_compat::isspace;
 use std::cell::OnceCell;
 
 #[derive(Clone, Debug)]
@@ -81,7 +82,7 @@ pub(super) fn tag_name_ascii(content: &[u8]) -> Option<Vec<u8>> {
             .take_while(|b| name_byte(b))
             .count();
         let next = content.get(at + 1 + len);
-        if len > 0 && next.is_none_or(|b| matches!(b, b' ' | b'\t' | b'\n' | 0x0b | 0x0c | b'\r')) {
+        if len > 0 && next.is_none_or(|&b| isspace(b)) {
             return Some(content[at + 1..at + 1 + len].to_vec());
         }
     }

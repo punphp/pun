@@ -1,6 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocReturnSelfReferenceFixer`.
 use crate::analyzers::docblock::DocBlock;
 use crate::analyzers::fixer_configuration_resolver::{PhpKey, resolve};
+use crate::analyzers::utils::natural_language_join;
 use anyhow::{Result, bail};
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -28,13 +29,6 @@ struct PhpdocReturnSelfReferenceFixer {
 
 pub fn fixer() -> Box<dyn Fixer> {
     crate::configured(PhpdocReturnSelfReferenceFixer::default())
-}
-
-/// `Utils::naturalLanguageJoin`: `"a", "b" and "c"`.
-fn join(items: &[&str]) -> String {
-    let quoted: Vec<String> = items.iter().map(|s| format!("\"{s}\"")).collect();
-    let (last, rest) = quoted.split_last().unwrap();
-    format!("{} and {last}", rest.join(", "))
 }
 
 impl Fixer for PhpdocReturnSelfReferenceFixer {
@@ -70,14 +64,14 @@ impl Fixer for PhpdocReturnSelfReferenceFixer {
                 bail!(
                     "[{}] Invalid configuration: Unknown key \"{from}\", expected any of {}.",
                     self.name(),
-                    join(&defaults)
+                    natural_language_join(&defaults)
                 );
             };
             if !TO_TYPES.contains(&to) {
                 bail!(
                     "[{}] Invalid configuration: Unknown value \"string#{to}\", expected any of {}.",
                     self.name(),
-                    join(&TO_TYPES)
+                    natural_language_join(TO_TYPES)
                 );
             }
             replacements.retain(|(f, _)| f != key.as_bytes());

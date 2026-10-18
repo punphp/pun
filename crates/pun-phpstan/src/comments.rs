@@ -5,6 +5,7 @@
 use indexmap::IndexMap;
 use pcre2::bytes::Regex;
 use pun_tokens::Kind;
+use pun_tokens::php_compat::{strpos, substr_count};
 use std::sync::LazyLock;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -176,19 +177,7 @@ fn parse_identifiers(text: &[u8], ignore_pos: usize) -> Result<Vec<Identifier>, 
 }
 
 fn newlines(s: &[u8]) -> i64 {
-    s.iter().filter(|&&c| c == b'\n').count() as i64
-}
-
-fn find(haystack: &[u8], needle: &[u8], from: usize) -> Option<usize> {
-    // the needle's first byte, then the rest: lines_to_ignore searches every file
-    let mut at = from;
-    loop {
-        at += haystack.get(at..)?.iter().position(|&c| c == needle[0])?;
-        if haystack[at..].starts_with(needle) {
-            return Some(at);
-        }
-        at += 1;
-    }
+    substr_count(s, b"\n") as i64
 }
 
 /// `$lines += [$line => null]`
@@ -213,7 +202,7 @@ fn by_ignore_comment(
     next_line: bool,
 ) {
     let mut offset = 0;
-    while let Some(pos) = find(text, comment.as_bytes(), offset) {
+    while let Some(pos) = strpos(text, comment.as_bytes(), offset) {
         add_null(lines, line + newlines(&text[..pos]) + i64::from(next_line));
         offset = pos + 1;
     }
@@ -222,7 +211,7 @@ fn by_ignore_comment(
 /// The ignore comments of a PHP file that parsed (PHPStan only reads them from a successful parse).
 pub fn lines_to_ignore(code: &[u8]) -> (LinesToIgnore, ParseErrors) {
     // every line and error below comes from an `@phpstan-ignore` in a comment; most files have none and skip the lexer
-    if find(code, b"@phpstan-ignore", 0).is_none() {
+    if strpos(code, b"@phpstan-ignore", 0).is_none() {
         return (LinesToIgnore::new(), ParseErrors::new());
     }
     let mut tokens: Vec<(Option<Kind>, &[u8], i64)> = pun_tokens::tokenize(code)
@@ -263,8 +252,8 @@ pub fn lines_to_ignore(code: &[u8]) -> (LinesToIgnore, ParseErrors) {
         }
 
         let mut text = text;
-        let is_next_line = find(text, b"@phpstan-ignore-next-line", 0).is_some();
-        let is_current_line = find(text, b"@phpstan-ignore-line", 0).is_some();
+        let is_next_line = strpos(text, b"@phpstan-ignore-next-line", 0).is_some();
+        let is_current_line = strpos(text, b"@phpstan-ignore-line", 0).is_some();
         if kind == Some(Kind::T_DOC_COMMENT) {
             by_ignore_comment(&mut lines, text, line, "@phpstan-ignore-line", false);
             if is_next_line {
@@ -291,7 +280,7 @@ pub fn lines_to_ignore(code: &[u8]) -> (LinesToIgnore, ParseErrors) {
             }
         }
 
-        let Some(ignore_pos) = find(text, b"@phpstan-ignore", 0) else {
+        let Some(ignore_pos) = strpos(text, b"@phpstan-ignore", 0) else {
             continue;
         };
         let ignore_line = newlines(&text[..ignore_pos]) - 1;

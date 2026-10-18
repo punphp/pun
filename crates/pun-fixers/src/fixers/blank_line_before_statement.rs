@@ -2,7 +2,7 @@
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use anyhow::Result;
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::{Kind, Kind::*, Token, Tokens, TokensAnalyzer, php_compat::rtrim_chars};
+use pun_tokens::{Kind, Kind::*, Token, Tokens, TokensAnalyzer, php_compat::{rtrim_chars, substr_count}};
 use serde_json::Value;
 use std::path::Path;
 
@@ -44,15 +44,11 @@ pub fn fixer() -> Box<dyn Fixer> {
     })
 }
 
-fn newlines(s: &[u8]) -> usize {
-    s.iter().filter(|&&b| b == b'\n').count()
-}
-
 impl BlankLineBeforeStatementFixer {
     fn get_insert_blank_line_index(tokens: &Tokens, mut index: usize) -> usize {
         while index > 0 {
             if tokens[index - 1].is_whitespace(None)
-                && newlines(tokens[index - 1].get_content()) > 1
+                && substr_count(tokens[index - 1].get_content(), b"\n") > 1
             {
                 break;
             }
@@ -63,7 +59,7 @@ impl BlankLineBeforeStatementFixer {
             if !tokens[prev_index - 1].is_whitespace(None) {
                 break;
             }
-            if newlines(tokens[prev_index - 1].get_content()) != 1 {
+            if substr_count(tokens[prev_index - 1].get_content(), b"\n") != 1 {
                 break;
             }
             index = prev_index;
@@ -92,7 +88,7 @@ impl BlankLineBeforeStatementFixer {
         let prev_token = &tokens[prev_index];
         let line_ending = self.whitespaces_config.get_line_ending().as_bytes();
         if prev_token.is_whitespace(None) {
-            let newlines_count = newlines(prev_token.get_content());
+            let newlines_count = substr_count(prev_token.get_content(), b"\n");
             if newlines_count == 0 {
                 let t = Token::new(
                     T_WHITESPACE,

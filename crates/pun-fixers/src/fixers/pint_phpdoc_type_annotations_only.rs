@@ -1,7 +1,7 @@
 //! Port of Pint's `App\Fixers\TypeAnnotationsOnlyFixer` (`Pint/phpdoc_type_annotations_only`).
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
-use pun_tokens::php_compat::{TRIM_CHARS, ltrim_chars, trim};
+use pun_tokens::php_compat::{TRIM_CHARS, ltrim_chars, substr_count, trim};
 use pun_tokens::{Token, Tokens};
 use std::path::Path;
 
@@ -74,7 +74,7 @@ fn process_doc_comment(tokens: &mut Tokens, index: usize) {
     for line in lines {
         if depth > 0 || line.contains(&b'@') {
             kept.push(line);
-            depth += count(line, b'{') - count(line, b'}');
+            depth += substr_count(line, b"{") as i64 - substr_count(line, b"}") as i64;
         }
     }
     if kept.is_empty() {
@@ -93,16 +93,12 @@ fn process_doc_comment(tokens: &mut Tokens, index: usize) {
     }
 }
 
-fn count(s: &[u8], c: u8) -> i64 {
-    s.iter().filter(|&&b| b == c).count() as i64
-}
-
 fn clear_and_clean_whitespace(tokens: &mut Tokens, index: usize) {
     let prev = tokens.get_prev_non_whitespace(index, None);
     let next = tokens.get_next_non_whitespace(index, None);
     let had_blank_line_before = prev.is_some_and(|p| {
         (p + 1..index)
-            .any(|i| tokens[i].is_whitespace(None) && count(tokens[i].get_content(), b'\n') >= 2)
+            .any(|i| tokens[i].is_whitespace(None) && substr_count(tokens[i].get_content(), b"\n") >= 2)
     });
     tokens.clear_token_and_merge_surrounding_whitespace(index);
     let (Some(prev), Some(next)) = (prev, next) else {
@@ -113,7 +109,7 @@ fn clear_and_clean_whitespace(tokens: &mut Tokens, index: usize) {
         .find(|&i| tokens[i].is_whitespace(None))
         .unwrap();
     let ws = tokens[i].get_content();
-    if count(ws, b'\n') > 1 {
+    if substr_count(ws, b"\n") > 1 {
         let last_newline = ws.iter().rposition(|&c| c == b'\n').unwrap();
         let mut new = if had_blank_line_before {
             b"\n".to_vec()

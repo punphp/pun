@@ -1,8 +1,8 @@
 //! Port of `PhpCsFixer\Fixer\Operator\BinaryOperatorSpacesFixer`.
-use pun_tokens::php_compat::str_replace;
+use pun_tokens::php_compat::{str_replace, strpos};
 use crate::analyzers::fixer_configuration_resolver::{PhpKey, resolve};
 use crate::analyzers::preg::Preg;
-use crate::analyzers::utils::mb_strwidth;
+use crate::analyzers::utils::{mb_strwidth, natural_language_join};
 use anyhow::{Result, bail};
 use pun_format::Fixer;
 use pun_tokens::{
@@ -64,13 +64,6 @@ pub fn fixer() -> Box<dyn Fixer> {
     })
 }
 
-/// `Utils::naturalLanguageJoin` of already-wrapped names: `a, b and c`.
-fn natural_language_join(names: impl Iterator<Item = String>) -> String {
-    let mut names: Vec<String> = names.collect();
-    let last = names.pop().unwrap();
-    format!("{} and {last}", names.join(", "))
-}
-
 /// `gettype($value).'#'.$value` for a decoded JSON value other than null, as the "operators" validator prints it.
 fn typed_value(v: &Value) -> String {
     match v {
@@ -97,10 +90,6 @@ struct Levels {
 
 fn is_binary(tokens: &Tokens, index: usize) -> bool {
     TokensAnalyzer::new(tokens).is_binary_operator(index)
-}
-
-fn strpos(haystack: &[u8], needle: &[u8]) -> Option<usize> {
-    haystack.windows(needle.len()).position(|w| w == needle)
 }
 
 impl BinaryOperatorSpacesFixer {
@@ -607,7 +596,7 @@ impl BinaryOperatorSpacesFixer {
         let mut tmp_code = tokens.generate_code();
         for j in 0..=levels.deepest_level.get() {
             let placeholder = align_placeholder(j);
-            if strpos(&tmp_code, &placeholder).is_none() {
+            if strpos(&tmp_code, &placeholder, 0).is_none() {
                 continue;
             }
             let mut lines: Vec<Vec<u8>> = tmp_code
@@ -622,7 +611,7 @@ impl BinaryOperatorSpacesFixer {
             ]
             .contains(&align_strategy);
             for (index, line) in lines.iter().enumerate() {
-                if strpos(line, &placeholder).is_some() {
+                if strpos(line, &placeholder, 0).is_some() {
                     groups.last_mut().unwrap().push(index);
                 } else if !by_scope {
                     groups.push(Vec::new());
@@ -634,7 +623,7 @@ impl BinaryOperatorSpacesFixer {
                 }
                 if align_strategy != ALIGN {
                     for &index in group {
-                        let current_position = strpos(&lines[index], &placeholder).unwrap();
+                        let current_position = strpos(&lines[index], &placeholder, 0).unwrap();
                         let mut before = lines[index][..current_position].to_vec();
                         if align_strategy == ALIGN_SINGLE_SPACE
                             || align_strategy == ALIGN_SINGLE_SPACE_BY_SCOPE
@@ -652,7 +641,7 @@ impl BinaryOperatorSpacesFixer {
                         lines[index] = [&before[..], &lines[index][current_position..]].concat();
                     }
                 }
-                let width = |line: &[u8]| mb_strwidth(&line[..strpos(line, &placeholder).unwrap()]);
+                let width = |line: &[u8]| mb_strwidth(&line[..strpos(line, &placeholder, 0).unwrap()]);
                 let rightmost_symbol = group.iter().map(|&i| width(&lines[i])).max().unwrap_or(0);
                 for &index in group {
                     let current_symbol = width(&lines[index]);
@@ -694,7 +683,7 @@ impl Fixer for BinaryOperatorSpacesFixer {
             if !matches!(operator, PhpKey::Str(o) if SUPPORTED_OPERATORS.contains(&o)) {
                 bail!(
                     "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of {}, got \"{}\".",
-                    natural_language_join(SUPPORTED_OPERATORS.iter().map(|o| format!("\"{o}\""))),
+                    natural_language_join(SUPPORTED_OPERATORS),
                     operator.typed()
                 );
             }
@@ -708,8 +697,8 @@ impl Fixer for BinaryOperatorSpacesFixer {
                     natural_language_join(
                         ALLOWED_VALUES
                             .iter()
-                            .map(|a| format!("\"'{a}'\""))
-                            .chain(["\"null\"".to_string()])
+                            .map(|a| format!("'{a}'"))
+                            .chain(["null".to_string()])
                     ),
                     typed_value(v)
                 ),

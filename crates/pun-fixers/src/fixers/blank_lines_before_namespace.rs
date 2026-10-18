@@ -2,7 +2,7 @@
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use anyhow::{Result, bail};
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::{Kind::*, Token, Tokens, php_compat::rtrim};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat::{rtrim, substr_count}};
 use serde_json::Value;
 use std::path::Path;
 
@@ -46,7 +46,7 @@ impl BlankLinesBeforeNamespaceFixer {
             if !token.is_kind(T_WHITESPACE) {
                 break;
             }
-            preceding_newlines += token.get_content().iter().filter(|&&b| b == b'\n').count();
+            preceding_newlines += substr_count(token.get_content(), b"\n");
         }
         if preceding_newlines >= expected_min && preceding_newlines <= expected_max {
             return;

@@ -3,6 +3,7 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg};
 use crate::analyzers::switch_analyzer::SwitchAnalyzer;
 use anyhow::Result;
+use indexmap::IndexMap;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::{Kind, Kind::*, Token, Tokens, TokensAnalyzer, php_compat::rtrim_chars};
 use serde_json::Value;
@@ -38,7 +39,7 @@ enum Callback {
 
 struct NoExtraBlankLinesFixer {
     tokens_config: Vec<String>,
-    token_kind_callback_map: Vec<(Kind, Callback)>,
+    token_kind_callback_map: IndexMap<Kind, Callback>,
     token_equals_map: Vec<(&'static str, Callback)>,
     whitespaces_config: WhitespacesFixerConfig,
 }
@@ -46,7 +47,7 @@ struct NoExtraBlankLinesFixer {
 pub fn fixer() -> Box<dyn Fixer> {
     crate::configured(NoExtraBlankLinesFixer {
         tokens_config: Vec::new(),
-        token_kind_callback_map: Vec::new(),
+        token_kind_callback_map: IndexMap::new(),
         token_equals_map: Vec::new(),
         whitespaces_config: Default::default(),
     })
@@ -73,7 +74,7 @@ impl Run<'_> {
 
     fn fix_by_token(&mut self, index: usize) {
         let token = &self.tokens[index];
-        for &(kind, callback) in &self.fixer.token_kind_callback_map {
+        for (&kind, &callback) in &self.fixer.token_kind_callback_map {
             if token.is_kind(kind) {
                 self.call(callback, index);
                 return;
@@ -293,15 +294,8 @@ impl Fixer for NoExtraBlankLinesFixer {
                 _ => return None,
             })
         };
-        let mut token_kind_callback_map: Vec<(Kind, Callback)> = Vec::new();
-        for config in &tokens_configuration {
-            if let Some((k, cb)) = config_map(config) {
-                match token_kind_callback_map.iter_mut().find(|(kk, _)| *kk == k) {
-                    Some(e) => e.1 = cb,
-                    None => token_kind_callback_map.push((k, cb)),
-                }
-            }
-        }
+        // PHP array assignment: a repeated kind keeps its first position
+        let token_kind_callback_map = tokens_configuration.iter().filter_map(|c| config_map(c)).collect();
         self.tokens_config = tokens_configuration;
         self.token_kind_callback_map = token_kind_callback_map;
         self.token_equals_map = token_equals_map;

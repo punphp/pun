@@ -4,7 +4,7 @@ use anyhow::Result;
 use pun_format::Fixer;
 use pun_tokens::php_compat::{strcasecmp, strtolower};
 use pun_tokens::token::CLASSY_KINDS;
-use pun_tokens::{Kind, Proto, Tokens};
+use pun_tokens::{Kind, Tokens};
 use serde_json::Value;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -182,27 +182,18 @@ impl Fixer for OrderedClassElementsFixer {
         self.sort_alpha = r.string("sort_algorithm", "none", &["none", "alpha"])? == "alpha";
         self.case_sensitive = r.bool("case_sensitive", false)?;
 
-        // insertion-ordered map with nullable values, like upstream's array
-        let mut pos: Vec<(String, Option<i64>)> = vec![];
-        let set = |pos: &mut Vec<(String, Option<i64>)>, k: &str, v: Option<i64>| match pos
-            .iter_mut()
-            .find(|(x, _)| x == k)
-        {
-            Some(e) => e.1 = v,
-            None => pos.push((k.to_string(), v)),
-        };
-        let isset = |pos: &Vec<(String, Option<i64>)>, k: &str| {
-            pos.iter().find(|(x, _)| x == k).and_then(|e| e.1)
-        };
+        // upstream's array with nullable values (its order doesn't matter: only lookups follow)
+        let mut pos: HashMap<String, Option<i64>> = HashMap::new();
+        let isset = |pos: &HashMap<String, Option<i64>>, k: &str| pos.get(k).copied().flatten();
         for (i, t) in order.iter().enumerate() {
-            set(&mut pos, t, Some(i as i64));
+            pos.insert(t.clone(), Some(i as i64));
         }
         for (t, parents) in TYPE_HIERARCHY {
             if isset(&pos, t).is_some() {
                 continue;
             }
             let v = parents.and_then(|ps| ps.iter().find_map(|p| isset(&pos, p)));
-            set(&mut pos, t, v);
+            pos.insert(t.to_string(), v);
         }
         let last = order.len() as i64;
         self.type_position = pos
@@ -353,23 +344,9 @@ fn detect_element_type(tokens: &Tokens, index: usize) -> (&'static str, Option<V
     if name.equals((Kind::T_STRING, "__destruct"), false) {
         return ("destruct", None);
     }
-    let phpunit: Vec<Proto> = [
-        "setUpBeforeClass",
-        "doSetUpBeforeClass",
-        "tearDownAfterClass",
-        "doTearDownAfterClass",
-        "setUp",
-        "doSetUp",
-        "assertPreConditions",
-        "assertPostConditions",
-        "tearDown",
-        "doTearDown",
-    ]
-    .iter()
-    .map(|n| (Kind::T_STRING, *n).into())
-    .collect();
-    if name.equals_any(&phpunit, false) {
-        return ("phpunit", Some(strtolower(&name.content)));
+    let lower = strtolower(&name.content);
+    if name.is_kind(Kind::T_STRING) && PHPUNIT.iter().any(|n| n.as_bytes() == lower) {
+        return ("phpunit", Some(lower));
     }
     (
         if name.content.starts_with(b"__") {

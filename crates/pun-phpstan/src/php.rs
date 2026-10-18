@@ -2,134 +2,12 @@
 //! modifiers and PHP's error text, as Nette's `Strings::match` reports it), `preg_quote`, `fnmatch`, and
 //! `PHPStan\File\FileHelper` / `FileExcluder`.
 
-use pcre2::bytes::{Regex, RegexBuilder};
+use pcre2::bytes::Regex;
+use pun_tokens::php_compat;
 
 /// Compile a PHP regex (`#...#flags`). `Err` is Nette's `RegexpException` message.
 pub fn preg(pattern: &str) -> Result<Regex, String> {
-    compile(pattern).map_err(|m| format!("{m} in pattern: {pattern}"))
-}
-
-fn compile(pattern: &str) -> Result<Regex, String> {
-    let p = pattern.trim_start_matches([' ', '\t', '\n', '\r', '\x0B', '\x0C']);
-    let Some(delimiter) = p.chars().next() else {
-        return Err("Empty regular expression".into());
-    };
-    if delimiter.is_ascii_alphanumeric() || delimiter == '\\' || delimiter == '\0' {
-        return Err("Delimiter must not be alphanumeric, backslash, or NUL byte".into());
-    }
-    let rest = &p[delimiter.len_utf8()..];
-    let close = match delimiter {
-        '(' => ')',
-        '[' => ']',
-        '{' => '}',
-        '<' => '>',
-        d => d,
-    };
-    let mut depth = 1;
-    let mut end = None;
-    let mut chars = rest.char_indices();
-    while let Some((i, c)) = chars.next() {
-        if c == '\\' {
-            chars.next();
-        } else if c == close && close != delimiter {
-            depth -= 1;
-            if depth == 0 {
-                end = Some(i);
-                break;
-            }
-        } else if c == close {
-            end = Some(i);
-            break;
-        } else if c == delimiter {
-            depth += 1;
-        }
-    }
-    let Some(end) = end else {
-        return Err(if close == delimiter {
-            format!("No ending delimiter '{delimiter}' found")
-        } else {
-            format!("No ending matching delimiter '{close}' found")
-        });
-    };
-    let (body, modifiers) = (&rest[..end], &rest[end + close.len_utf8()..]);
-    let mut b = RegexBuilder::new();
-    let mut flags = String::new();
-    let mut anchored = false;
-    let mut extended = false;
-    for m in modifiers.chars() {
-        match m {
-            'i' => _ = b.caseless(true),
-            'm' => _ = b.multi_line(true),
-            's' => _ = b.dotall(true),
-            'x' => {
-                b.extended(true);
-                extended = true;
-            }
-            'u' => _ = b.utf(true).ucp(true),
-            'A' => anchored = true,
-            'U' => flags.push_str("(?U)"),
-            'J' => flags.push_str("(?J)"),
-            'n' => flags.push_str("(?n)"),
-            // ponytail: D (dollar end-only) and r (caseless-restrict) aren't exposed by the pcre2 crate; S/X are no-ops.
-            'D' | 'S' | 'X' | 'r' | ' ' | '\n' | '\r' => {}
-            '\0' => return Err("NUL byte is not a valid modifier".into()),
-            m => return Err(format!("Unknown modifier '{m}'")),
-        }
-    }
-    // PCRE2 accepts `(*VERB)` settings only at the very start, before the inline flags and the `A` wrapper.
-    // Backtracking verbs (`(*FAIL)|a`) belong to the first branch, so they stay inside it.
-    let mut verbs = 0;
-    while let Some(rest) = body[verbs..].strip_prefix("(*")
-        && let Some(end) = rest.find(')')
-        && rest[..end]
-            .bytes()
-            .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || b"_=".contains(&c))
-        && !["ACCEPT", "FAIL", "F", "COMMIT", "PRUNE", "SKIP", "THEN"].contains(&&rest[..end])
-    {
-        verbs += end + 3;
-    }
-    let (verbs, body) = body.split_at(verbs);
-    let build = |pattern: String| {
-        b.build(&pattern).map_err(|e| {
-            // (An offset inside the leading verbs comes before the moved flags.)
-            let at = e.offset().unwrap_or(0);
-            let at = if at <= verbs.len() {
-                at
-            } else {
-                at - flags.len()
-            };
-            let text = e.to_string();
-            let msg = text
-                .split_once("pattern at offset ")
-                .and_then(|(_, r)| r.split_once(": "))
-                .map_or(text.as_str(), |(_, m)| m);
-            format!("Compilation failed: {msg} at offset {at}")
-        })
-    };
-    // Compiled as written first, so error offsets are PHP's; `A` (PCRE2_ANCHORED) then wraps it after `\G`.
-    let re = build(format!("{verbs}{flags}{body}"))?;
-    if !anchored {
-        return Ok(re);
-    }
-    // An unclosed `\Q` would quote the closing parenthesis, and a newline ends an `x`-mode comment before it.
-    let unquote = if open_quote(body) { "\\E" } else { "" };
-    let close = if extended { "\n)" } else { ")" };
-    build(format!("{verbs}{flags}\\G(?:{body}{unquote}{close}"))
-}
-
-/// Whether `body` ends inside a `\Q...` quote that no `\E` closes (inside one, only `\E` is special).
-fn open_quote(body: &str) -> bool {
-    let (mut quoted, mut rest) = (false, body.as_bytes());
-    while let Some((&c, tail)) = rest.split_first() {
-        rest = tail;
-        match (c, quoted, tail.first()) {
-            (b'\\', true, Some(b'E')) => quoted = false,
-            (b'\\', false, next) => quoted = next == Some(&b'Q'),
-            _ => continue,
-        }
-        rest = &tail[1..];
-    }
-    quoted
+    php_compat::preg_compile(pattern).map_err(|m| format!("{m} in pattern: {pattern}"))
 }
 
 /// `preg_match($pattern, $subject) === 1` once compiled; matching errors (e.g. invalid UTF-8 under `/u`) count as no match.
@@ -137,46 +15,22 @@ pub fn is_match(re: &Regex, subject: &str) -> bool {
     re.is_match(subject.as_bytes()).unwrap_or(false)
 }
 
-/// `preg_quote($s, $delimiter)`.
+/// `preg_quote($s, $delimiter)` (the delimiter's first byte, as PHP reads it).
 pub fn preg_quote(s: &str, delimiter: Option<char>) -> String {
-    let mut out = String::with_capacity(s.len());
-    for c in s.chars() {
-        if c == '\0' {
-            out.push_str("\\000");
-            continue;
-        }
-        if ".\\+*?[^]$(){}=!<>|:-#/".contains(c) && (c != '/' || delimiter == Some('/'))
-            || Some(c) == delimiter
-        {
-            out.push('\\');
-        }
-        out.push(c);
-    }
-    out
+    let d = delimiter.map(|d| d.to_string().as_bytes()[0]);
+    String::from_utf8_lossy(&php_compat::preg_quote(s.as_bytes(), d)).into_owned()
 }
 
-/// PHP `fnmatch($pattern, $string, 0)`: the C library's fnmatch.
+/// PHP `fnmatch($pattern, $string, 0)`.
 pub fn fnmatch(pattern: &str, string: &str) -> bool {
-    use std::ffi::CString;
-    // (PHP refuses NUL bytes; nothing matches them here)
-    CString::new(pattern)
-        .ok()
-        .zip(CString::new(string).ok())
-        // SAFETY: both are valid NUL-terminated C strings for the duration of the call.
-        .is_some_and(|(p, s)| unsafe { libc::fnmatch(p.as_ptr(), s.as_ptr(), 0) == 0 })
+    php_compat::fnmatch(pattern.as_bytes(), string.as_bytes())
 }
 
 /// `FileHelper::normalizePath()` with `/` as the directory separator.
 pub fn normalize_path(original: &str) -> String {
     let local = original.starts_with('/') || original.as_bytes().get(1..3) == Some(b":\\");
     let (mut scheme, path) = match original.split_once("://") {
-        Some((s, p))
-            if !local
-                && !s.is_empty()
-                && !p.is_empty()
-                && s.bytes()
-                    .all(|c| c.is_ascii_alphanumeric() || b"+-.".contains(&c)) =>
-        {
+        Some((s, p)) if !local && !p.is_empty() && is_scheme(s) => {
             (Some(s.to_ascii_lowercase()), p)
         }
         _ => (None, original),
@@ -219,11 +73,14 @@ pub fn absolutize_path(cwd: &str, path: &str) -> String {
 
 /// `~^[a-z0-9+\-.]+://~i`
 fn has_scheme(path: &str) -> bool {
-    path.split_once("://").is_some_and(|(s, _)| {
-        !s.is_empty()
-            && s.bytes()
-                .all(|c| c.is_ascii_alphanumeric() || b"+-.".contains(&c))
-    })
+    path.split_once("://").is_some_and(|(s, _)| is_scheme(s))
+}
+
+/// `[a-z0-9+\-.]+` (case-insensitive): a URL scheme before `://`.
+fn is_scheme(s: &str) -> bool {
+    !s.is_empty()
+        && s.bytes()
+            .all(|c| c.is_ascii_alphanumeric() || b"+-.".contains(&c))
 }
 
 /// `FileExcluder::isFnmatchPattern()`.

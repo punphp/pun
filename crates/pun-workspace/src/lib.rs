@@ -12,10 +12,11 @@
 //! the project root. For `format` a plain entry keeps Symfony's `exclude()` meaning above; for every other file set a
 //! plain entry is Mago's root-relative path prefix. See [`files`].
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use mago_database::matcher::{ExclusionMatcher, contains_glob_metacharacters};
-use pcre2::bytes::{Regex, RegexBuilder};
+use pcre2::bytes::Regex;
 use pun_config::Config;
+use pun_tokens::php_compat::{fnmatch, preg_compile, preg_quote};
 use std::path::{Path, PathBuf};
 
 const PINT_NOT_NAME: [&str; 4] = [
@@ -126,7 +127,7 @@ impl Finder {
         for d in dirs {
             let d = d.trim_end_matches('/');
             if d.contains('/') {
-                pats.push(format!("(?:^|/)(?:{})(?:/|$)", preg_quote(d)));
+                pats.push(format!("(?:^|/)(?:{})(?:/|$)", quote(d)));
             } else {
                 self.excluded_names.push(d.to_string());
             }
@@ -449,13 +450,17 @@ pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
         .iter()
         .copied()
         .chain(cfg.finder.not_name.iter().map(String::as_str))
-        .any(|p| fnmatch(p, &name))
+        .any(|p| fnmatch(p.as_bytes(), name.as_bytes()))
         || PINT_EXCLUDE
             .iter()
             .copied()
             .chain(cfg.finder.exclude.iter().map(String::as_str))
             .any(under)
-        || cfg.finder.not_path.iter().any(|p| fnmatch(p, &rel))
+        || cfg
+            .finder
+            .not_path
+            .iter()
+            .any(|p| fnmatch(p.as_bytes(), rel.as_bytes()))
         || (cfg.finder.exclude.iter())
             .any(|e| contains_glob_metacharacters(e) && glob_matches(e, &rel))
 }
@@ -463,44 +468,6 @@ pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
 /// One pun.toml glob exclude against a root-relative path, as Mago matches it.
 fn glob_matches(glob: &str, rel: &str) -> bool {
     ExclusionMatcher::compile([glob], Default::default()).is_ok_and(|m| m.is_match(rel))
-}
-
-/// PHP fnmatch() with no flags: `*` and `?` also match `/`, `[...]` classes, `\\` escapes.
-fn fnmatch(pat: &str, s: &str) -> bool {
-    let mut re = String::from("^");
-    let mut chars = pat.chars().peekable();
-    while let Some(c) = chars.next() {
-        match c {
-            '*' => re.push_str("(?s:.*)"),
-            '?' => re.push_str("(?s:.)"),
-            '[' => {
-                let mut class = String::from("[");
-                if chars.peek() == Some(&'!') {
-                    chars.next();
-                    class.push('^');
-                }
-                for c in chars.by_ref() {
-                    if c == '\\' {
-                        class.push_str("\\\\")
-                    } else {
-                        class.push(c)
-                    }
-                    if c == ']' {
-                        break;
-                    }
-                }
-                re.push_str(&class);
-            }
-            '\\' => re.push_str(&preg_quote(
-                &chars.next().map(String::from).unwrap_or_default(),
-            )),
-            c => re.push_str(&preg_quote(&c.to_string())),
-        }
-    }
-    re.push('$');
-    Regex::new(&re)
-        .and_then(|r| r.is_match(s.as_bytes()))
-        .unwrap_or(false)
 }
 
 fn git(root: &Path, args: &[&str]) -> Option<String> {
@@ -532,33 +499,9 @@ fn is_regex(s: &str) -> bool {
     )
 }
 
-/// Compile a PHP `preg_*` pattern (delimiters + modifiers) with PCRE2.
+/// Compile a PHP `preg_*` pattern; PHP's warning stops Pint (Laravel turns it into an exception).
 fn php_regex(p: &str) -> Result<Regex> {
-    let open = p.chars().next().context("empty regex")?;
-    let close = match open {
-        '(' => ')',
-        '{' => '}',
-        '[' => ']',
-        '<' => '>',
-        c => c,
-    };
-    let end = p
-        .rfind(close)
-        .filter(|&i| i > 0)
-        .with_context(|| format!("no ending delimiter in {p}"))?;
-    let (body, mods) = (&p[1..end], &p[end + 1..]);
-    let mut b = RegexBuilder::new();
-    for m in mods.chars() {
-        match m {
-            'i' => b.caseless(true),
-            'm' => b.multi_line(true),
-            's' => b.dotall(true),
-            'x' => b.extended(true),
-            'u' => b.utf(true).ucp(true),
-            _ => &mut b,
-        };
-    }
-    Ok(b.build(body)?)
+    preg_compile(p).map_err(|m| anyhow::anyhow!("preg_match(): {m}"))
 }
 
 /// Symfony PathFilterIterator::toRegex.
@@ -566,19 +509,13 @@ fn path_regex(s: &str) -> Result<Regex> {
     if is_regex(s) {
         php_regex(s)
     } else {
-        Ok(Regex::new(&preg_quote(s))?)
+        Ok(Regex::new(&quote(s))?)
     }
 }
 
-fn preg_quote(s: &str) -> String {
-    let mut o = String::with_capacity(s.len());
-    for c in s.chars() {
-        if ".\\+*?[^]$(){}=!<>|:-#/".contains(c) {
-            o.push('\\');
-        }
-        o.push(c);
-    }
-    o
+/// `preg_quote($s, '/')` as a pattern string (`$s` is UTF-8, so the result is too).
+fn quote(s: &str) -> String {
+    String::from_utf8_lossy(&preg_quote(s.as_bytes(), Some(b'/'))).into_owned()
 }
 
 /// Symfony `Glob::toRegex($glob)` with defaults (strict leading dot, strict wildcard slash, `#` delimiter).

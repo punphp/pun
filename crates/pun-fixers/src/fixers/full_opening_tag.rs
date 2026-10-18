@@ -1,30 +1,13 @@
 //! Port of `PhpCsFixer\Fixer\PhpTag\FullOpeningTagFixer`.
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
-use pun_tokens::{Kind::*, Token, Tokens, php_compat::strtolower};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat::{explode, strtolower, substr}};
 use std::path::Path;
 
 struct FullOpeningTagFixer;
 
 pub fn fixer() -> Box<dyn Fixer> {
     Box::new(FullOpeningTagFixer)
-}
-
-/// `explode($delimiter, $s)`.
-fn explode<'a>(delimiter: &[u8], s: &'a [u8]) -> Vec<&'a [u8]> {
-    let mut parts = Vec::new();
-    let mut rest = s;
-    while let Some(p) = rest.windows(delimiter.len()).position(|w| w == delimiter) {
-        parts.push(&rest[..p]);
-        rest = &rest[p + delimiter.len()..];
-    }
-    parts.push(rest);
-    parts
-}
-
-/// `substr($s, $start, $len)` for non-negative arguments.
-fn substr(s: &[u8], start: usize, len: usize) -> &[u8] {
-    &s[start.min(s.len())..(start + len).min(s.len())]
 }
 
 impl Fixer for FullOpeningTagFixer {
@@ -58,7 +41,7 @@ impl Fixer for FullOpeningTagFixer {
             let token = new_tokens[index].clone();
             if token.is_kind(T_OPEN_TAG) {
                 let mut token_content = token.get_content().to_vec();
-                let possible_open_content = substr(&content, tokens_old_content_length, 5);
+                let possible_open_content = substr(&content, tokens_old_content_length, Some(5));
                 if strtolower(possible_open_content) != b"<?php" {
                     token_content = b"<? ".to_vec();
                 }
@@ -84,7 +67,7 @@ impl Fixer for FullOpeningTagFixer {
                         let original_token_content = substr(
                             &content,
                             tokens_old_content_length + token_content_length,
-                            5,
+                            Some(5),
                         );
                         if strtolower(original_token_content) == b"<?php" {
                             token_content.extend_from_slice(original_token_content);

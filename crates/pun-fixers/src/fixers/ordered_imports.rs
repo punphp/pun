@@ -1,11 +1,12 @@
 //! Port of `PhpCsFixer\Fixer\Import\OrderedImportsFixer`.
 use crate::analyzers::analysis::NamespaceUseType;
-use crate::analyzers::docblock::replace_all;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
+use crate::analyzers::utils::natural_language_join;
 use anyhow::{Result, bail};
+use indexmap::IndexMap;
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::php_compat::{strcasecmp, trim};
+use pun_tokens::php_compat::{str_replace, strcasecmp, trim};
 use pun_tokens::{Kind, Proto, Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::cmp::Ordering;
@@ -46,14 +47,6 @@ struct Item {
     group: bool,
 }
 
-fn join(names: &[&str]) -> String {
-    let n: Vec<String> = names.iter().map(|s| format!("\"{s}\"")).collect();
-    match n.split_last() {
-        Some((last, rest)) if !rest.is_empty() => format!("{} and {last}", rest.join(", ")),
-        _ => n[0].clone(),
-    }
-}
-
 impl Fixer for OrderedImportsFixer {
     fn name(&self) -> &'static str {
         "ordered_imports"
@@ -92,7 +85,7 @@ impl Fixer for OrderedImportsFixer {
                     bail!(
                         "[ordered_imports] Invalid configuration: Missing sort {} {}.",
                         if missing.len() == 1 { "type" } else { "types" },
-                        join(&missing)
+                        natural_language_join(&missing)
                     );
                 }
                 let unknown: Vec<&str> = v
@@ -104,7 +97,7 @@ impl Fixer for OrderedImportsFixer {
                     bail!(
                         "[ordered_imports] Invalid configuration: Unknown sort {} {}.",
                         if unknown.len() == 1 { "type" } else { "types" },
-                        join(&unknown)
+                        natural_language_join(&unknown)
                     );
                 }
                 let types = [
@@ -173,7 +166,7 @@ impl OrderedImportsFixer {
 
     /// sortAlphabetically's operand: the prepared namespace with `\\` as a space and `{` dropped.
     fn alphabetical_key(item: &Item) -> Vec<u8> {
-        replace_all(&replace_all(&prepare_namespace(&item.namespace), b"\\", b" "), b"{", b"")
+        str_replace(b"{", b"", &str_replace(b"\\", b" ", &prepare_namespace(&item.namespace)))
     }
 
     /// sortByLength's operand: the import type (but `class`), a space, and the prepared namespace.
@@ -280,19 +273,16 @@ impl OrderedImportsFixer {
 
         let indices: Vec<Item> = match &self.imports_order {
             Some(order) => {
-                let mut grouped: Vec<(NamespaceUseType, Vec<Item>)> = vec![];
+                let mut grouped: IndexMap<NamespaceUseType, Vec<Item>> = IndexMap::new();
                 for item in indices {
-                    match grouped.iter_mut().find(|(t, _)| *t == item.import_type) {
-                        Some((_, v)) => v.push(item),
-                        None => grouped.push((item.import_type, vec![item])),
-                    }
+                    grouped.entry(item.import_type).or_default().push(item);
                 }
-                for (_, v) in &mut grouped {
+                for v in grouped.values_mut() {
                     self.sort_by_algorithm(v);
                 }
                 let mut sorted = vec![];
                 for t in order {
-                    if let Some((_, v)) = grouped.iter().find(|(x, _)| x == t) {
+                    if let Some(v) = grouped.get(t) {
                         sorted.extend(v.iter().cloned());
                     }
                 }

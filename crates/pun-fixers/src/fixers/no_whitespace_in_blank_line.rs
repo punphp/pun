@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Whitespace\NoWhitespaceInBlankLineFixer`.
 use crate::analyzers::preg::Preg;
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::{Kind::*, Tokens};
+use pun_tokens::{Kind::*, Tokens, php_compat::substr_count};
 use std::path::Path;
 
 #[derive(Default)]
@@ -46,7 +46,7 @@ impl NoWhitespaceInBlankLineFixer {
         if self.whitespaces_config.get_line_ending() != "\n" || c.contains(&b'\r') {
             return true;
         }
-        let line_count = c.iter().filter(|&&b| b == b'\n').count() + 1;
+        let line_count = substr_count(c, b"\n") + 1;
         let has_next = index + 1 < tokens.count();
         let prev = &tokens[index - 1];
         if !(line_count > 2 || !has_next || prev.is_kind(T_OPEN_TAG)) {

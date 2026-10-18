@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\StringNotation\HeredocToNowdocFixer`.
-use crate::analyzers::docblock::replace_all;
+use pun_tokens::php_compat::str_replace;
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
 use pun_tokens::{Kind, Token, Tokens};
@@ -43,7 +43,7 @@ impl Fixer for HeredocToNowdocFixer {
             }
             let t = convert_to_nowdoc(&tokens[index]);
             tokens.set(index, t);
-            let content = replace_all(&replace_all(&content, br"\\", br"\"), br"\$", b"$");
+            let content = str_replace(br"\$", b"$", &str_replace(br"\\", br"\", &content));
             let id = tokens[index + 1].id.unwrap();
             tokens.set(index + 1, Token::new(id, content));
         }

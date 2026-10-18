@@ -10,6 +10,7 @@ keywords = ["php", "formatter", "pint", "laravel", "php-cs-fixer"]
 categories = ["development-tools"]
 
 [dependencies]
+indexmap.workspace = true
 anyhow.workspace = true
 serde_json.workspace = true
 pcre2 = "0.2"

@@ -328,33 +328,33 @@ items marked "not checked against Pint" still need one oracle run before the fix
 
 ### Duplicates to remove
 
-- [ ] 56. Newline counting (`substr_count($s, "\n")`) is written out 14 times (clippy `naive_bytecount`):
+- [x] 56. Newline counting (`substr_count($s, "\n")`) is written out 14 times (clippy `naive_bytecount`):
   `blank_line_before_statement.rs:49-51`, `class_attributes_separation.rs:76-78`, `blank_lines_before_namespace.rs:52`,
   `single_line_after_imports.rs:13-17`, `no_whitespace_in_blank_line.rs:49`, `no_blank_lines_after_class_opening.rs:18`,
   `no_blank_lines_after_phpdoc.rs:14`, `fully_qualified_strict_types.rs:428,432,501`, `nullable_type_declaration.rs:120`,
   `nullable_type_declaration_for_default_null_value.rs:160`, `pint_phpdoc_type_annotations_only.rs:90-97`,
   `embedded_blade_masker.rs:41`, plus `pun-tokens/src/parse_lexer.rs:44` and `pun-phpstan/src/comments.rs:178`. Add
-  `php_compat::substr_count`. Spans crates.
-- [ ] 57. Other PHP functions have several ports, some already disagreeing: `strpos` (`binary_operator_spaces.rs:83`,
+  `php_compat::substr_count`. Spans crates. Confirmed at d565ad2. `php_compat::substr_count` replaces the fixer, Blade and pun-phpstan copies; `parse_lexer.rs` `newlines` stays, it counts a lone CR too (not `substr_count`). Fixed in wf/audit-php-compat.
+- [x] 57. Other PHP functions have several ports, some already disagreeing: `strpos` (`binary_operator_spaces.rs:83`,
   `pint_laravel_blade/php.rs:6`, `pun-phpstan/src/comments.rs:182`), `explode` (`full_opening_tag.rs:14`,
   `php_unit_method_casing.rs:164`), `substr`, `preg_quote` (`pun-workspace/src/lib.rs:552-561`,
   `pun-phpstan/src/php.rs:104-119`, `pun-fixers/src/analyzers/preg.rs:672-689`), `fnmatch`
   (`pun-workspace/src/lib.rs:448-483` builds a regex and rejects `a[`, `pun-phpstan/src/php.rs:122-130` uses libc and
   matches it literally), PHP-delimited regex compile (`php.rs:8-96` vs `pun-workspace/src/lib.rs:515`), and
   `float_to_string` (`pun-phpstan/src/value.rs:280` vs `pun-tokens/src/php_compat.rs:208`, which panics on INF). Move
-  each into `pun_tokens::php_compat` once; `pint_laravel_blade/php.rs` becomes re-exports. Spans crates.
-- [ ] 58. `Utils::naturalLanguageJoin` is hand-written six times and the copies differ on one item:
+  each into `pun_tokens::php_compat` once; `pint_laravel_blade/php.rs` becomes re-exports. Spans crates. Reproduced at d565ad2: notPath `/a/b/` stops Pint (`preg_match(): Unknown modifier 'b'`) while Pun matched `a/b` (`rfind` for the end delimiter); notPath `y/[\]]*.php` excludes `y/].php` in PHP's fnmatch, not in the regex port; `float_to_string(INF)` panicked. `php_compat` now holds strpos, stripos, strrpos, substr, substr_count, explode, preg_quote, fnmatch (libc, as PHP), `preg_parse` (delimiters and modifiers, used by Preg's raw compile) and `preg_compile` (PHPStan's, used by pun-workspace), and prints INF/-INF/NAN; pint_laravel_blade/php.rs re-exports them. pun-tokens gains the pcre2 and libc dependencies. finder.rs and tests/php_compat.rs check against Pint and PHP. Fixed in wf/audit-php-compat.
+- [x] 58. `Utils::naturalLanguageJoin` is hand-written six times and the copies differ on one item:
   `binary_operator_spaces.rs:679-686`, `final_internal_class.rs:131-142`, `phpdoc_return_self_reference.rs:36-41`
   (gives ` and "a"`), `ordered_imports.rs:47-53`, `phpdoc_order.rs:44-48`, `pun-config/src/options.rs:313-320`; PHP's
   int-key test is in `general_phpdoc_tag_rename.rs:32-34` and `class_attributes_separation.rs:105` but missing from
-  `binary_operator_spaces.rs:685`. Extract into `analyzers/utils.rs`. Spans crates.
-- [ ] 59. `crates/pun-fixers/src/analyzers/docblock/mod.rs:128-142` (`replace_all`) is `php_compat::str_replace`
+  `binary_operator_spaces.rs:685`. Extract into `analyzers/utils.rs`. Spans crates. Confirmed at d565ad2. One `pun_config::options::natural_language_join` (pun-config cannot depend on pun-fixers), re-exported from `analyzers/utils.rs`; tested on upstream's `UtilsTest` cases. The one-name difference was unreachable (every caller passes a fixed list of three or more names), and the int-key test was already fixed by item 63 (`PhpKey::typed`, oracle case `integer#7`). Fixed in wf/audit-php-compat.
+- [x] 59. `crates/pun-fixers/src/analyzers/docblock/mod.rs:128-142` (`replace_all`) is `php_compat::str_replace`
   (`pun-tokens/src/php_compat.rs:69-83`) with arguments reordered; five callers. Both loop forever on an empty
-  needle, where PHP returns the subject. Delete the copy and add the empty-needle guard. Spans crates.
-- [ ] 60. Insertion-ordered PHP arrays are emulated by hand six times: `fully_qualified_strict_types.rs:54-71`
+  needle, where PHP returns the subject. Delete the copy and add the empty-needle guard. Spans crates. Confirmed at d565ad2 by reading (`i += search.len()` adds 0); every fixer caller passes a non-empty needle. The copy is gone and `str_replace` returns the subject for an empty needle (PHP 8.5), checked in tests/php_compat.rs. Fixed in wf/audit-php-compat.
+- [x] 60. Insertion-ordered PHP arrays are emulated by hand six times: `fully_qualified_strict_types.rs:54-71`
   (`OMap`), `global_namespace_import.rs:43-63`, `lambda_not_used_import.rs:10-21`, `ordered_class_elements.rs:189-200`,
   `no_extra_blank_lines.rs:299-305`, `ordered_imports.rs:268-273`. `indexmap` is already a workspace dependency; keep
-  order-sensitive equality with `iter().eq`.
+  order-sensitive equality with `iter().eq`. Confirmed at d565ad2. `IndexMap` in fully_qualified_strict_types (`shift_remove` for `unset`, `iter().eq` for the uses-cache key), global_namespace_import (`extend` for `array_merge`), lambda_not_used_import, no_extra_blank_lines and ordered_imports; ordered_class_elements only looks keys up, so a `HashMap`. Pinkary and pinkary-dirty: 0 differing files. Fixed in wf/audit-php-compat.
 - [x] 61. `Preg` and `RawPreg` repeat the match, match-all and replace loops (`preg.rs:550-555` vs `829-834`,
   `566-572` vs `845-851`, `632-646` vs `862-874`). Extract Method on `Regex`. Confirmed at 74e2937. `Regex::captures_at`, `captures_all` and `replace_with` hold the loops; both `Preg` and `RawPreg` call them. Fixed in cf5f3d8.
 - [x] 62. Option defaults are written in both `fixer()` and `configure()` in about 24 fixers (for example
@@ -369,12 +369,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `phpdoc_tag_type.rs:84-93`. Add `Resolved::php_array(key)`. `php_array` also reads int-like object keys as PHP int
   keys, which fixed phpdoc_return_self_reference (`string#7` for `integer#7`) and phpdoc_tag_type (no TypeError for
   `{"0": ...}`); class_attributes_separation uses it too. Fixed in c9adf6f.
-- [ ] 64. Small helpers copied inside crates: `c`/`k`/`idx` in `pun-tokens/src/transformers.rs:51-69` and
+- [x] 64. Small helpers copied inside crates: `c`/`k`/`idx` in `pun-tokens/src/transformers.rs:51-69` and
   `tokens_analyzer.rs:9-14,66-81`; `CLASSY_KINDS` in `fully_qualified_strict_types.rs:26` and
   `pun-tokens/src/token.rs:82`; the PCRE `\s` byte set in `docblock/line.rs:52`, `tag.rs:50`, `annotation.rs:209`
   and private `php_compat::isspace`; `is_numeric` (`pun-phpstan/src/types.rs:982`, `value.rs:306`); `truncate`
   (`types.rs:1050`, `schema.rs:380`); the scheme test in `php.rs:136-142` vs `has_scheme` (`:184`); the PHPUnit
-  method list twice in `ordered_class_elements.rs:121-132,360-374` (the second rebuilt per method). Keep one of each.
+  method list twice in `ordered_class_elements.rs:121-132,360-374` (the second rebuilt per method). Keep one of each. Confirmed at d565ad2. One of each: `c`/`k`/`idx` in token.rs, `Token::is_classy`, `php_compat::isspace` (also Blade's `ctype_space`), `value::numeric` for `is_numeric`, schema.rs `truncate`, `is_scheme`, `PHPUNIT`. The types.rs `truncate` treated DEL as punctuation: PHPStan 2.2.7 describes `'aaaa bbbbbbbbbbbbbb\x7fcccc'` as `'aaaa…'`, Pun gave `'aaaa bbbbbbbbbbbbbb…'` (tests/types.rs). Fixed in wf/audit-php-compat.
 - [ ] 65. Analyse rules repeat message blocks: the private/protected wording (`calls.rs:174-185,344-355`,
   `classes.rs:220-231`, `names.rs:212-223`), the `outOfClass.*` identifier (four copies), the parent lookup with
   `class.noParent` (three copies), and `String::from_utf8_lossy(x.original_name.as_bytes())` (15 copies); Mago's own

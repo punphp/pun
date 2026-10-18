@@ -1455,3 +1455,15 @@ not-path = ["y"]
 }
 
 mod options;
+
+/// PHP-CS-Fixer's `UtilsTest::provideNaturalLanguageJoinCases` (default wrapper): one name is not joined.
+#[test]
+fn natural_language_join_matches_upstream() {
+    use crate::options::natural_language_join;
+    assert_eq!(natural_language_join(["a"]), r#""a""#);
+    assert_eq!(natural_language_join(["a", "b"]), r#""a" and "b""#);
+    assert_eq!(
+        natural_language_join(["a", "b", "c"]),
+        r#""a", "b" and "c""#
+    );
+}

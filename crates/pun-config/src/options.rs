@@ -306,10 +306,13 @@ pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value> {
     })
 }
 
-/// PHP-CS-Fixer's `Utils::naturalLanguageJoin`: `"a", "b" and "c"`.
-fn natural<'a>(names: impl Iterator<Item = &'a str>) -> String {
-    let mut names: Vec<String> = names.map(|n| format!("\"{n}\"")).collect();
-    let last = names.pop().unwrap();
+/// PHP-CS-Fixer's `Utils::naturalLanguageJoin($names)`: `"a", "b" and "c"`, or `"a"` alone. Like upstream, it
+/// refuses an empty list.
+pub fn natural_language_join<S: AsRef<str>>(names: impl IntoIterator<Item = S>) -> String {
+    let mut names: Vec<String> = (names.into_iter())
+        .map(|n| format!("\"{}\"", n.as_ref()))
+        .collect();
+    let last = names.pop().expect("Array of names cannot be empty.");
     match names.is_empty() {
         true => last,
         false => format!("{} and {last}", names.join(", ")),
@@ -340,7 +343,7 @@ fn sort_types(fixer: &str, option: &str, v: &Value) -> Option<String> {
     let types = if list.len() == 1 { "type" } else { "types" };
     Some(format!(
         "{what} sort {types} {}.",
-        natural(list.iter().copied())
+        natural_language_join(list.iter())
     ))
 }
 
@@ -419,7 +422,7 @@ fn element_types(o: &RuleOption, v: &Value) -> Option<String> {
 /// or a value outside a closed list, the fixer's own where it checks a table's or a list's entries itself.
 fn rejected(fixer: &str, o: &RuleOption, v: &Value) -> String {
     let k = &o.upstream;
-    let ups = |l: &[(String, String)]| natural(l.iter().map(|(_, u)| u.as_str()));
+    let ups = |l: &[(String, String)]| natural_language_join(l.iter().map(|(_, u)| u));
     let bad = |l: &[(String, String)], s: &str| !l.iter().any(|(_, u)| u == s);
     // The table entry upstream's check stops at: its key when outside `keys`, else its string value.
     let entry = v.as_object().and_then(|m| {
@@ -459,7 +462,7 @@ fn rejected(fixer: &str, o: &RuleOption, v: &Value) -> String {
                 .collect();
             format!(
                 "Unexpected value for operator \"{e}\", expected any of {}, got \"string#{s}\".",
-                natural(values.iter().map(String::as_str))
+                natural_language_join(&values)
             )
         }
         ("phpdoc_tag_type", _, Some((_, Some(s))), _) => format!("Unknown tag type \"{s}\"."),

@@ -3,6 +3,7 @@
 use crate::analyzers::docblock::DocBlock;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
+use crate::analyzers::utils::natural_language_join;
 use anyhow::bail;
 use pun_tokens::Kind::{self, *};
 use pun_tokens::{Token, Tokens, TokensAnalyzer};
@@ -115,15 +116,10 @@ impl FinalInternalClassFixer {
         let dup: Vec<String> = include
             .iter()
             .filter(|k| exclude.contains(k))
-            .map(|k| format!("\"{}\"", String::from_utf8_lossy(k)))
+            .map(|k| String::from_utf8_lossy(k).into_owned())
             .collect();
-        if let Some((last, rest)) = dup.split_last() {
-            // Utils::naturalLanguageJoin
-            let joined = if rest.is_empty() {
-                last.clone()
-            } else {
-                format!("{} and {last}", rest.join(", "))
-            };
+        if !dup.is_empty() {
+            let joined = natural_language_join(&dup);
             bail!(
                 "[final_internal_class] Annotation cannot be used in both \"include\" and \"exclude\" list, got duplicates: {joined}."
             );

@@ -3,15 +3,8 @@
 use std::collections::BTreeMap;
 
 use crate::kind::Kind::{self, *};
-use crate::token::Proto;
+use crate::token::{c, idx, k};
 use crate::tokens::Tokens;
-
-fn c(s: &'static str) -> Proto<'static> {
-    Proto::Char(s.as_bytes())
-}
-fn k(kind: Kind) -> Proto<'static> {
-    Proto::Kind(kind)
-}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ClassyElementType {
@@ -61,10 +54,6 @@ pub struct MethodAttributes {
 
 pub struct TokensAnalyzer<'a> {
     tokens: &'a Tokens,
-}
-
-fn idx(i: Option<usize>) -> usize {
-    i.expect("Cannot access offset of type null on SplFixedArray")
 }
 
 impl<'a> TokensAnalyzer<'a> {

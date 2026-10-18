@@ -218,3 +218,11 @@ fn super_types() {
     );
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// Nette's `Strings::truncate` cuts before whitespace or ASCII punctuation, DEL not included: PHPStan 2.2.7's
+/// `(new ConstantStringType("aaaa bbbbbbbbbbbbbb\x7fcccc"))->describe(VerbosityLevel::value())`.
+#[test]
+fn long_constant_string_truncates_before_punctuation() {
+    let ty = resolve_str("'aaaa bbbbbbbbbbbbbb\u{7f}cccc'", None);
+    assert_eq!(ty.describe(Level::Value), "'aaaa…'");
+}

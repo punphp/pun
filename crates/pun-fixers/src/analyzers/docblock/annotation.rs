@@ -4,6 +4,7 @@ use super::line::LineRef;
 use super::tag::Tag;
 use super::type_expression::{REGEX_IDENTIFIER, REGEX_TYPES, TypeExpression};
 use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg, preg_quote};
+use pun_tokens::php_compat::isspace;
 use std::cell::{OnceCell, RefCell};
 
 pub const TAGS_WITH_TYPES: &[&str] = &[
@@ -210,11 +211,7 @@ fn variable_name_ascii(content: &[u8], tag: &[u8], types: &[u8]) -> Option<Vec<u
     if !content.is_ascii() {
         return None;
     }
-    let ws = |s: &[u8]| {
-        s.iter()
-            .take_while(|b| matches!(b, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c))
-            .count()
-    };
+    let ws = |s: &[u8]| s.iter().take_while(|&&b| isspace(b)).count();
     let at = content
         .windows(tag.len() + 1)
         .position(|w| w[0] == b'@' && &w[1..] == tag)?;

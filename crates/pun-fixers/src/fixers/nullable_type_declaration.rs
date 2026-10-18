@@ -5,6 +5,7 @@ use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
 use pun_tokens::Kind::{self, *};
+use pun_tokens::php_compat::substr_count;
 use pun_tokens::tokens_analyzer::ClassyElementType;
 use pun_tokens::{Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
@@ -116,7 +117,7 @@ fn is_type_normalizable(type_analysis: &TypeAnalysis) -> bool {
     if !type_.contains(&b'|') {
         return true;
     }
-    type_.iter().filter(|&&c| c == b'|').count() == 1
+    substr_count(type_, b"|") == 1
         && Preg::r#match("/(?:\\|null$|^null\\|)/i", type_)
 }
 

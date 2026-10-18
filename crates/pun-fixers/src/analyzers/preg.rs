@@ -144,90 +144,23 @@ fn compile(pattern: &[u8]) -> Option<Rc<Regex>> {
 
 /// `Err` is PHP's warning without its `preg_*(): ` prefix.
 fn compile_uncached(pattern: &[u8]) -> Result<Regex, String> {
-    let mut p = 0;
-    while p < pattern.len()
-        && matches!(pattern[p], b' ' | b'\t' | b'\n' | b'\r' | b'\x0B' | b'\x0C')
-    {
-        p += 1;
-    }
-    if p >= pattern.len() {
-        return Err("Empty regular expression".into());
-    }
-    let delimiter = pattern[p];
-    if delimiter.is_ascii_alphanumeric() || delimiter == b'\\' || delimiter == 0 {
-        return Err("Delimiter must not be alphanumeric, backslash, or NUL byte".into());
-    }
-    p += 1;
-    let start = p;
-    let end_delimiter = match delimiter {
-        b'(' => b')',
-        b'[' => b']',
-        b'{' => b'}',
-        b'<' => b'>',
-        d => d,
-    };
-    if end_delimiter == delimiter {
-        while p < pattern.len() {
-            if pattern[p] == b'\\' && p + 1 < pattern.len() {
-                p += 1;
-            } else if pattern[p] == delimiter {
-                break;
-            }
-            p += 1;
-        }
-    } else {
-        // Bracket-style: track nesting.
-        let mut brackets = 1;
-        while p < pattern.len() {
-            if pattern[p] == b'\\' && p + 1 < pattern.len() {
-                p += 1;
-            } else if pattern[p] == end_delimiter {
-                brackets -= 1;
-                if brackets == 0 {
-                    break;
-                }
-            } else if pattern[p] == delimiter {
-                brackets += 1;
-            }
-            p += 1;
-        }
-    }
-    if p >= pattern.len() {
-        let end = String::from_utf8_lossy(&[end_delimiter]).into_owned();
-        return Err(if end_delimiter == delimiter {
-            format!("No ending delimiter '{end}' found")
-        } else {
-            format!("No ending matching delimiter '{end}' found")
-        });
-    }
-    let body = &pattern[start..p];
-    let mut options = 0u32;
-    let mut utf = false;
-    for &m in &pattern[p + 1..] {
-        match m {
-            b'i' => options |= PCRE2_CASELESS,
-            b'm' => options |= PCRE2_MULTILINE,
-            b'n' => options |= PCRE2_NO_AUTO_CAPTURE,
-            b's' => options |= PCRE2_DOTALL,
-            b'x' => options |= PCRE2_EXTENDED,
-            b'A' => options |= PCRE2_ANCHORED,
-            b'D' => options |= PCRE2_DOLLAR_ENDONLY,
-            b'S' | b'X' => {}
-            b'U' => options |= PCRE2_UNGREEDY,
-            b'u' => {
-                options |= PCRE2_UTF | PCRE2_UCP;
-                utf = true;
-            }
-            b'J' => options |= PCRE2_DUPNAMES,
-            b' ' | b'\n' | b'\r' => {}
-            // 'e' and 'r' are not used by upstream
-            0 => return Err("NUL byte is not a valid modifier".into()),
-            m => {
-                let m = String::from_utf8_lossy(&[m]).into_owned();
-                return Err(format!("Unknown modifier '{m}'"));
-            }
-        }
-    }
+    let (body, m) = pun_tokens::php_compat::preg_parse(pattern)?;
+    let options = [
+        (m.caseless, PCRE2_CASELESS),
+        (m.multi_line, PCRE2_MULTILINE),
+        (m.no_auto_capture, PCRE2_NO_AUTO_CAPTURE),
+        (m.dotall, PCRE2_DOTALL),
+        (m.extended, PCRE2_EXTENDED),
+        (m.anchored, PCRE2_ANCHORED),
+        (m.dollar_end_only, PCRE2_DOLLAR_ENDONLY),
+        (m.ungreedy, PCRE2_UNGREEDY),
+        (m.utf, PCRE2_UTF | PCRE2_UCP),
+        (m.dup_names, PCRE2_DUPNAMES),
+    ]
+    .iter()
+    .filter(|o| o.0)
+    .fold(0u32, |all, o| all | o.1);
+    let utf = m.utf;
     let mut err: libc::c_int = 0;
     let mut erroff: usize = 0;
     // SAFETY: `body` is a live slice of `body.len()` bytes, which PCRE2 reads during the call and does not keep; the
@@ -831,26 +764,7 @@ impl Preg {
     }
 }
 
-/// `preg_quote($str, $delimiter)`.
-pub fn preg_quote(s: &[u8], delimiter: Option<u8>) -> Vec<u8> {
-    let mut out = Vec::with_capacity(s.len());
-    for &b in s {
-        match b {
-            b'.' | b'\\' | b'+' | b'*' | b'?' | b'[' | b'^' | b']' | b'$' | b'(' | b')' | b'{'
-            | b'}' | b'=' | b'!' | b'>' | b'<' | b'|' | b':' | b'-' | b'#' => {
-                out.push(b'\\');
-                out.push(b);
-            }
-            0 => out.extend_from_slice(b"\\000"),
-            _ if Some(b) == delimiter => {
-                out.push(b'\\');
-                out.push(b);
-            }
-            _ => out.push(b),
-        }
-    }
-    out
-}
+pub use pun_tokens::php_compat::preg_quote;
 
 /// php_pcre_split_impl.
 fn split_impl(re: &Regex, subject: &[u8], limit: isize, flags: u32) -> Result<Vec<Piece>, i32> {

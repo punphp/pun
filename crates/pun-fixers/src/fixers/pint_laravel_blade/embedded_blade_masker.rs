@@ -1,6 +1,6 @@
 //! Port of `App\PrettierFormatters\EmbeddedBladeMasker`: masks Blade constructs inside
 //! `<style>`/`<script>` before prettier, restores them after.
-use pun_tokens::php_compat::str_replace;
+use pun_tokens::php_compat::{str_replace, substr_count};
 use super::php::{contains, ctype_alnum, stripos, strpos};
 use crate::analyzers::preg::RawPreg;
 use std::cell::RefCell;
@@ -36,15 +36,6 @@ pub struct EmbeddedBladeMasker {
 
 fn is_word(c: u8) -> bool {
     c == b'_' || ctype_alnum(c)
-}
-
-fn substr_count(haystack: &[u8], needle: &[u8]) -> usize {
-    let (mut n, mut i) = (0, 0);
-    while let Some(p) = strpos(haystack, needle, i) {
-        n += 1;
-        i = p + needle.len();
-    }
-    n
 }
 
 impl EmbeddedBladeMasker {

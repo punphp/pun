@@ -1,9 +1,10 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocVarWithoutNameFixer`.
 use crate::analyzers::docblock::{
-    DocBlock, LineRef, replace_all, type_expression::REGEX_IDENTIFIER,
+    DocBlock, LineRef, type_expression::REGEX_IDENTIFIER,
 };
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
+use pun_tokens::php_compat::str_replace;
 use pun_tokens::{Kind, Token, Tokens};
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -70,7 +71,7 @@ fn fix_line(line: &LineRef) {
             .map(|m| m.str(0).to_vec())
             .collect();
     for m in matches {
-        let new = replace_all(line.borrow().get_content(), &m, b"");
+        let new = str_replace(&m, b"", line.borrow().get_content());
         line.borrow_mut().set_content(new);
     }
 }

@@ -377,7 +377,7 @@ fn object_class(v: &Value) -> &'static str {
 }
 
 /// `Nette\Utils\Strings::truncate($s, $maxLen, $append)`.
-fn truncate(s: &str, max: usize, append: &str) -> String {
+pub(crate) fn truncate(s: &str, max: usize, append: &str) -> String {
     let chars: Vec<char> = s.chars().collect();
     if chars.len() <= max {
         return s.to_string();

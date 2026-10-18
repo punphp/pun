@@ -8,6 +8,7 @@ use crate::analyzers::preg::Preg;
 use crate::analyzers::utils::Utils;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
+use pun_tokens::php_compat::explode;
 use pun_tokens::{Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::collections::HashSet;
@@ -86,7 +87,7 @@ impl PhpUnitMethodCasingFixer {
     }
 
     fn update_method_casing(&self, function_name: &[u8]) -> Vec<u8> {
-        let mut parts: Vec<&[u8]> = split(function_name, b"::");
+        let mut parts: Vec<&[u8]> = explode(b"::", function_name);
         let function_name_part = parts.pop().unwrap();
         let new_part = if self.camel_case {
             // ucwords($s, '_'), str_replace('_', ''), lcfirst
@@ -158,22 +159,4 @@ impl PhpUnitMethodCasingFixer {
             tokens.set(doc_block_index, Token::new(T_DOC_COMMENT, lines.concat()));
         }
     }
-}
-
-/// PHP `explode($sep, $s)`.
-fn split<'a>(s: &'a [u8], sep: &[u8]) -> Vec<&'a [u8]> {
-    let mut out = Vec::new();
-    let mut start = 0;
-    let mut i = 0;
-    while i + sep.len() <= s.len() {
-        if &s[i..i + sep.len()] == sep {
-            out.push(&s[start..i]);
-            i += sep.len();
-            start = i;
-        } else {
-            i += 1;
-        }
-    }
-    out.push(&s[start..]);
-    out
 }

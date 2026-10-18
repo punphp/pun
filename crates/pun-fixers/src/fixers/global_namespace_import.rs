@@ -10,6 +10,7 @@ use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
 use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::Preg;
 use anyhow::Result;
+use indexmap::IndexMap;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::{
     Kind::*,
@@ -36,27 +37,8 @@ pub fn fixer() -> Box<dyn Fixer> {
 type Global = BTreeMap<Vec<u8>, Option<Vec<u8>>>;
 type Other = BTreeSet<Vec<u8>>;
 
-/// Ordered `array<string, string>` with PHP assignment semantics (existing key keeps its position).
-#[derive(Default)]
-struct Imports(Vec<(Vec<u8>, Vec<u8>)>);
-
-impl Imports {
-    fn set(&mut self, k: Vec<u8>, v: Vec<u8>) {
-        match self.0.iter_mut().find(|(kk, _)| *kk == k) {
-            Some(e) => e.1 = v,
-            None => self.0.push((k, v)),
-        }
-    }
-    fn merge(mut self, other: Imports) -> Imports {
-        for (k, v) in other.0 {
-            self.set(k, v);
-        }
-        self
-    }
-    fn values(self) -> Vec<Vec<u8>> {
-        self.0.into_iter().map(|(_, v)| v).collect()
-    }
-}
+/// Ordered `array<string, string>` with PHP assignment semantics (an existing key keeps its position).
+type Imports = IndexMap<Vec<u8>, Vec<u8>>;
 
 fn lower(s: &[u8], case_sensitive: bool) -> Vec<u8> {
     if case_sensitive {
@@ -120,7 +102,7 @@ impl GlobalNamespaceImportFixer {
             }
             indices.push(index);
         }
-        Self::prepare_imports(tokens, &indices, &global, &other, true).values()
+        (Self::prepare_imports(tokens, &indices, &global, &other, true).into_values()).collect()
     }
 
     fn import_functions(
@@ -157,7 +139,7 @@ impl GlobalNamespaceImportFixer {
             }
             indices.push(index);
         }
-        Self::prepare_imports(tokens, &indices, &global, &other, false).values()
+        (Self::prepare_imports(tokens, &indices, &global, &other, false).into_values()).collect()
     }
 
     fn import_classes(
@@ -239,18 +221,18 @@ impl GlobalNamespaceImportFixer {
                 if let Some(g) = global.get(&check_name) {
                     return Some(g.clone().unwrap_or(name));
                 }
-                imports.set(check_name, name.clone());
+                imports.insert(check_name, name.clone());
                 Some(name)
             });
             if changed {
                 tokens.set(*index, Token::new(T_DOC_COMMENT, doc_block.get_content()));
             }
         }
-        imports
-            .merge(Self::prepare_imports(
-                tokens, &indices, &global, &other, false,
-            ))
-            .values()
+        // array_merge: a later value replaces an earlier one in its place
+        imports.extend(Self::prepare_imports(
+            tokens, &indices, &global, &other, false,
+        ));
+        imports.into_values().collect()
     }
 
     /// Removes the leading slash at the given indices (when the name is not already used).
@@ -269,7 +251,9 @@ impl GlobalNamespaceImportFixer {
                 continue;
             }
             match global.get(&check_name) {
-                None => imports.set(check_name, name),
+                None => {
+                    imports.insert(check_name, name);
+                }
                 Some(Some(alias)) => tokens.set(index, Token::new(T_STRING, alias.clone())),
                 Some(None) => {}
             }

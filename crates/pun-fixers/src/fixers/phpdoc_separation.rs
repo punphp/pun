@@ -1,5 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocSeparationFixer`.
-use crate::analyzers::docblock::{Annotation, DocBlock, replace_all};
+use crate::analyzers::docblock::{Annotation, DocBlock};
+use pun_tokens::php_compat::str_replace;
 use crate::analyzers::fixer_configuration_resolver::{php_array, resolve};
 use crate::analyzers::preg::{Preg, preg_quote};
 use anyhow::{Result, bail};
@@ -170,9 +171,9 @@ fn tag_name(a: &Annotation) -> Option<Vec<u8>> {
 
 fn is_in_group(tag: &[u8], group: &[String]) -> bool {
     group.iter().any(|t| {
-        let t = replace_all(t.as_bytes(), b"*", br"\*");
+        let t = str_replace(b"*", br"\*", t.as_bytes());
         let t = preg_quote(&t, Some(b'/'));
-        let t = replace_all(&t, br"\\\*", b".*?");
+        let t = str_replace(br"\\\*", b".*?", &t);
         Preg::r#match([&b"/^"[..], &t, b"$/"].concat(), tag)
     })
 }

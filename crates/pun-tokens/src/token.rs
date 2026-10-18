@@ -42,6 +42,21 @@ impl<'a> From<&'a Token> for Proto<'a> {
     }
 }
 
+/// A content prototype, PHP-CS-Fixer's `'x'`.
+pub(crate) const fn c(s: &'static str) -> Proto<'static> {
+    Proto::Char(s.as_bytes())
+}
+
+/// A token-kind prototype, PHP-CS-Fixer's `[T_X]`.
+pub(crate) const fn k(kind: Kind) -> Proto<'static> {
+    Proto::Kind(kind)
+}
+
+/// An index the token walk must have found: upstream reads the missing (`null`) offset of its `SplFixedArray`.
+pub(crate) fn idx(i: Option<usize>) -> usize {
+    i.expect("Cannot access offset of type null on SplFixedArray")
+}
+
 impl Proto<'_> {
     /// `Tokens::extractTokenKind`: the key used by `isTokenKindFound`.
     pub fn found_key(&self) -> FoundKey<'_> {

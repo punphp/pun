@@ -1,9 +1,8 @@
 //! Port of `PhpCsFixer\Fixer\ClassNotation\OrderedInterfacesFixer`.
-use crate::analyzers::docblock::replace_all;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use anyhow::Result;
 use pun_format::Fixer;
-use pun_tokens::php_compat::strcasecmp;
+use pun_tokens::php_compat::{str_replace, strcasecmp};
 use pun_tokens::{Kind, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
@@ -90,7 +89,7 @@ impl Fixer for OrderedInterfacesFixer {
                         if t.is_comment() || t.is_whitespace(None) {
                             break;
                         }
-                        normalized.extend(replace_all(&t.content, b"\\", b" "));
+                        normalized.extend(str_replace(b"\\", b" ", &t.content));
                     }
                     I {
                         tokens: interface,

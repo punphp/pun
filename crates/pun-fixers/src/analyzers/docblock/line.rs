@@ -1,7 +1,7 @@
 //! `PhpCsFixer\DocBlock\Line`.
 
 use crate::analyzers::preg::Preg;
-use pun_tokens::php_compat::trim;
+use pun_tokens::php_compat::{isspace, trim};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -46,11 +46,7 @@ impl Line {
         }
         // ASCII `\s`: space, TAB, LF, VT, FF, CR.
         self.content.iter().enumerate().any(|(i, &b)| {
-            b == b'*'
-                && self.content[i + 1..]
-                    .iter()
-                    .find(|c| !matches!(c, b' ' | b'\t' | b'\n' | 0x0b | 0x0c | b'\r'))
-                    == Some(&b'@')
+            b == b'*' && self.content[i + 1..].iter().find(|&&c| !isspace(c)) == Some(&b'@')
         })
     }
 

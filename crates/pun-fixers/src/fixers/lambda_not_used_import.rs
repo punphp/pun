@@ -4,20 +4,16 @@ use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use pun_format::Fixer;
 use pun_tokens::php_compat::strtolower;
 use pun_tokens::{Kind, Tokens, TokensAnalyzer};
+use indexmap::IndexMap;
 use std::collections::BTreeMap;
 use std::path::Path;
 
 /// Insertion-ordered `array<string, int>`.
-type Imports = Vec<(Vec<u8>, usize)>;
+type Imports = IndexMap<Vec<u8>, usize>;
 
+/// `unset($imports[$key])`, true when it was set.
 fn unset(imports: &mut Imports, key: &[u8]) -> bool {
-    match imports.iter().position(|(k, _)| k == key) {
-        Some(p) => {
-            imports.remove(p);
-            true
-        }
-        None => false,
-    }
+    imports.shift_remove(key).is_some()
 }
 
 struct LambdaNotUsedImportFixer;
@@ -97,7 +93,7 @@ fn find_not_used_lambda_imports(
             && strtolower(&token.content) == b"compact"
             && functions.is_global_function_call(tokens, index)
         {
-            return vec![];
+            return Imports::new();
         }
         if token.is_given_kind(&[
             Kind::CT_DYNAMIC_VAR_BRACE_OPEN,
@@ -107,12 +103,12 @@ fn find_not_used_lambda_imports(
             Kind::T_REQUIRE,
             Kind::T_REQUIRE_ONCE,
         ]) {
-            return vec![];
+            return Imports::new();
         }
         if token.equals("$", true)
             && tokens[tokens.get_next_meaningful_token(index).unwrap()].is_kind(Kind::T_VARIABLE)
         {
-            return vec![];
+            return Imports::new();
         }
         if token.is_kind(Kind::T_VARIABLE)
             && unset(&mut imports, &token.content)
@@ -201,7 +197,7 @@ fn get_lambda_use_index(tokens: &Tokens, index: usize) -> Option<usize> {
 }
 
 fn filter_arguments(tokens: &Tokens, arguments: &BTreeMap<usize, usize>) -> Imports {
-    let mut imports: Imports = vec![];
+    let mut imports = Imports::new();
     let a = TokensAnalyzer::new(tokens);
     for (&start, &end) in arguments {
         let info = ArgumentsAnalyzer.get_argument_info(tokens, start, end);
@@ -214,10 +210,7 @@ fn filter_arguments(tokens: &Tokens, arguments: &BTreeMap<usize, usize>) -> Impo
             continue;
         }
         // PHP array assignment keeps the first key's position
-        match imports.iter_mut().find(|(k, _)| k == content) {
-            Some(e) => e.1 = argument,
-            None => imports.push((content.clone(), argument)),
-        }
+        imports.insert(content.clone(), argument);
     }
     imports
 }

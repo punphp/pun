@@ -14,16 +14,16 @@ use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
 use pun_tokens::NamespacesAnalyzer;
 use crate::analyzers::preg::Preg;
 use anyhow::Result;
+use indexmap::IndexMap;
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::php_compat::{ltrim_chars, strnatcmp, strtolower};
-use pun_tokens::{Kind, Kind::*, Token, Tokens};
+use pun_tokens::php_compat::{ltrim_chars, strnatcmp, strtolower, substr_count};
+use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
 use std::sync::LazyLock;
 
-const CLASSY_KINDS: &[Kind] = &[T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM];
 const PHPDOC_TAGS: &[&str] = &[
     "param",
     "phpstan-param",
@@ -52,23 +52,7 @@ fn regex_class() -> String {
 }
 
 /// A PHP array with string keys: insertion-ordered, assigning an existing key keeps its position.
-#[derive(Clone, Default, PartialEq)]
-struct OMap(Vec<(Vec<u8>, Vec<u8>)>);
-
-impl OMap {
-    fn get(&self, k: &[u8]) -> Option<&Vec<u8>> {
-        self.0.iter().find(|(key, _)| key == k).map(|(_, v)| v)
-    }
-    fn set(&mut self, k: Vec<u8>, v: Vec<u8>) {
-        match self.0.iter_mut().find(|(key, _)| *key == k) {
-            Some(slot) => slot.1 = v,
-            None => self.0.push((k, v)),
-        }
-    }
-    fn remove(&mut self, k: &[u8]) {
-        self.0.retain(|(key, _)| key != k);
-    }
-}
+type OMap = IndexMap<Vec<u8>, Vec<u8>>;
 
 #[derive(Default)]
 struct FullyQualifiedStrictTypesFixer {
@@ -165,7 +149,7 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                     continue;
                 }
                 let full_name = ltrim_chars(&u.full_name, b"\\").to_vec();
-                uses.set(full_name, u.short_name.clone());
+                uses.insert(full_name, u.short_name.clone());
                 last_use = Some(u);
             }
 
@@ -223,7 +207,7 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                         self.fix_attribute(&st, tokens, index, &uses, &namespace_name);
                     } else if token.is_kind(T_CATCH) {
                         self.fix_catch(&st, tokens, index, &uses, &namespace_name);
-                    } else if discover_symbols_phase && token.is_given_kind(CLASSY_KINDS) {
+                    } else if discover_symbols_phase && token.is_classy() {
                         self.fix_next_name(&st, tokens, index, &uses, &namespace_name);
                     } else if token.is_given_kind(&[T_EXTENDS, T_IMPLEMENTS]) {
                         self.fix_extends_implements(&st, tokens, index, &uses, &namespace_name);
@@ -259,7 +243,7 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                 }
             }
 
-            if !st.symbols_for_import.0.is_empty() {
+            if !st.symbols_for_import.is_empty() {
                 let at_index = if let Some(last_use) = &last_use {
                     last_use.end_index + 1
                 } else if namespace.end_index != 0 {
@@ -277,9 +261,8 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                 };
                 let names = st
                     .symbols_for_import
-                    .0
-                    .iter()
-                    .map(|(_, fqcn)| fqcn.clone())
+                    .values()
+                    .cloned()
                     .collect();
                 ImportProcessor::new(self.whitespaces_config.clone()).insert_imports(
                     tokens,
@@ -294,7 +277,7 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
 
 fn refresh_uses_cache(st: &State, uses: &OMap) -> std::rc::Rc<UsesCache> {
     if let Some((last, c)) = &*st.uses_cache.borrow()
-        && last == uses
+        && last.iter().eq(uses)
     {
         return c.clone();
     }
@@ -309,7 +292,7 @@ fn build_uses_cache(uses: &OMap) -> UsesCache {
         use_short_name_by_name: HashMap::new(),
         use_short_name_by_normalized_name: HashMap::new(),
     };
-    for (use_long_name, use_short_name) in &uses.0 {
+    for (use_long_name, use_short_name) in uses {
         c.use_name_by_short_name_lower
             .insert(strtolower(use_short_name), use_long_name.clone());
         c.use_short_name_by_name
@@ -421,11 +404,11 @@ impl FullyQualifiedStrictTypesFixer {
             && !self.is_reserved_identifier(st, tmp_res)
         {
             res = Some(tmp_res.to_vec());
-            i_min = namespace_name.iter().filter(|&&c| c == b'\\').count() + 1;
+            i_min = substr_count(namespace_name, b"\\") + 1;
         }
 
         let mut tmp = fqcn;
-        let mut i = fqcn.iter().filter(|&&c| c == b'\\').count() as isize;
+        let mut i = substr_count(fqcn, b"\\") as isize;
         while i >= i_min as isize {
             if let Some(short) = cache.use_short_name_by_name.get(tmp) {
                 let tmp_res = [&short[..], &fqcn[tmp.len()..]].concat();
@@ -481,24 +464,23 @@ impl FullyQualifiedStrictTypesFixer {
                 if !symbol.starts_with(b"\\") {
                     let short_start_name = first_part(ltrim_chars(symbol, b"\\"));
                     let resolved = self.resolve_symbol(st, short_start_name, uses, namespace_name);
-                    discovered_fqcn_by_short_name_lower.set(strtolower(short_start_name), resolved);
+                    discovered_fqcn_by_short_name_lower.insert(strtolower(short_start_name), resolved);
                 }
             }
         }
 
-        for (use_long_name, use_short_name) in &uses.0 {
+        for (use_long_name, use_short_name) in uses.iter() {
             discovered_fqcn_by_short_name_lower
-                .set(strtolower(use_short_name), use_long_name.clone());
+                .insert(strtolower(use_short_name), use_long_name.clone());
         }
 
         let use_by_short_name_lower: HashSet<Vec<u8>> =
-            uses.0.iter().map(|(_, short)| strtolower(short)).collect();
+            uses.iter().map(|(_, short)| strtolower(short)).collect();
 
-        let count = |s: &[u8]| s.iter().filter(|&&c| c == b'\\').count();
-        discovered_symbols.sort_by(|a, b| {
+                discovered_symbols.sort_by(|a, b| {
             a.starts_with(b"\\")
                 .cmp(&b.starts_with(b"\\"))
-                .then(count(a).cmp(&count(b)))
+                .then(substr_count(a, b"\\").cmp(&substr_count(b, b"\\")))
         });
         for symbol in &discovered_symbols {
             let mut symbol = &symbol[..];
@@ -518,7 +500,7 @@ impl FullyQualifiedStrictTypesFixer {
                         || !symbol.contains(&b'\\')
                     {
                         let resolved = self.resolve_symbol(st, symbol, uses, namespace_name);
-                        discovered_fqcn_by_short_name_lower.set(short_end_name_lower, resolved);
+                        discovered_fqcn_by_short_name_lower.insert(short_end_name_lower, resolved);
                         break;
                     }
                 }
@@ -534,33 +516,32 @@ impl FullyQualifiedStrictTypesFixer {
             }
         }
 
-        for (use_long_name, use_short_name) in &uses.0 {
+        for (use_long_name, use_short_name) in uses.iter() {
             let key = strtolower(use_short_name);
             let discovered_long_name = discovered_fqcn_by_short_name_lower
                 .get(&key)
                 .cloned()
                 .unwrap_or_default();
             if strtolower(&discovered_long_name) == strtolower(use_long_name) {
-                discovered_fqcn_by_short_name_lower.remove(&key);
+                discovered_fqcn_by_short_name_lower.shift_remove(&key);
             }
         }
 
-        for (_, fqcn) in &discovered_fqcn_by_short_name_lower.0 {
+        for (_, fqcn) in &discovered_fqcn_by_short_name_lower {
             let shortened = self.shorten_symbol(st, fqcn, &OMap::default(), namespace_name);
             let shortened_name = ltrim_chars(&shortened, b"\\");
             if shortened_name.contains(&b'\\') {
                 // prevent importing non-namespaced names in global namespace
                 // (the shortened name is a suffix of the FQCN, so the FQCN has a backslash too)
                 let short_end_name = fqcn[last_backslash(fqcn).unwrap() + 1..].to_vec();
-                uses.set(fqcn.clone(), short_end_name.clone());
-                st.symbols_for_import.set(short_end_name, fqcn.clone());
+                uses.insert(fqcn.clone(), short_end_name.clone());
+                st.symbols_for_import.insert(short_end_name, fqcn.clone());
             }
         }
 
         // ksort(SORT_NATURAL), stable like PHP's sort
         st.symbols_for_import
-            .0
-            .sort_by(|a, b| strnatcmp(&a.0, &b.0).cmp(&0));
+            .sort_by(|a, _, b, _| strnatcmp(a, b).cmp(&0));
     }
 
     fn fix_function(
