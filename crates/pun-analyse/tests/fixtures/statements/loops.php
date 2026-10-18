@@ -80,3 +80,8 @@ function scoped(): void
 	global $a, $this, $$a;
 	static $b = 1, $this;
 }
+
+class Several
+{
+	public int|void $first, $second;
+}

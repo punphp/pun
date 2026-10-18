@@ -430,6 +430,64 @@ fn named_class<'a>(
     }
 }
 
+/// `$normalizedExpr->getArgs()[i]->value`: the argument at position `i`, or the one named for that parameter.
+fn normalized_arg<'e, 'arena>(
+    args: &'e ArgumentList<'arena>,
+    i: usize,
+    name: &[u8],
+) -> Option<&'e Expression<'arena>> {
+    args.arguments
+        .iter()
+        .enumerate()
+        .find_map(|(j, a)| match a {
+            Argument::Positional(p) if j == i => Some(p.value),
+            Argument::Named(n) if n.name.value == name => Some(n.value),
+            _ => None,
+        })
+}
+
+/// FuncCallHandler's processVirtualAssign() of a built-in's array argument after processArgs() (array_walk with a
+/// by-reference closure, array_pop, sort and the rest).
+pub fn function_virtual_assign(c: &mut Checker, call: &FunctionCall) {
+    let Expression::Identifier(id) = call.function else {
+        return;
+    };
+    let fallback = match id {
+        Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
+        _ => None,
+    };
+    let Some((name, _)) = std::iter::once(c.names.get(&id.span()))
+        .chain(fallback)
+        .find_map(|n| c.function(n))
+    else {
+        return;
+    };
+    let args = &call.argument_list;
+    let min = match name.as_str() {
+        "array_walk" => {
+            let by_ref_closure = matches!(
+                normalized_arg(args, 1, b"callback"),
+                Some(Expression::Closure(k))
+                    if k.parameter_list.parameters.first().is_some_and(|p| p.ampersand.is_some())
+            );
+            if !by_ref_closure {
+                return;
+            }
+            2
+        }
+        "array_push" | "array_unshift" | "array_splice" => 2,
+        "array_pop" | "array_shift" | "shuffle" | "sort" | "rsort" | "usort" | "natcasesort"
+        | "natsort" | "arsort" | "asort" | "ksort" | "krsort" | "uasort" | "uksort" => 1,
+        _ => return,
+    };
+    if args.arguments.len() < min {
+        return;
+    }
+    if let Some(array) = normalized_arg(args, 0, b"array") {
+        assign_var(c, array, true);
+    }
+}
+
 /// processArgs() for arguments passed by reference to a parameter that creates a new variable: a `[]` argument is
 /// visited inside `enterExpressionAssign()`, and any argument but `$this` is assigned virtually.
 pub fn arguments(c: &mut Checker, call: Callee) {

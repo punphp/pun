@@ -1328,6 +1328,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         calls::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
+        assign::function_virtual_assign(self, call);
         self.in_exists_call += usize::from(calls::is_class_exists_family(self, call));
     }
     fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
@@ -1403,8 +1404,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
         names::property_type(self, p.span(), p.hint(), &names);
         properties::property(self, p);
+        // one ClassPropertyNode per property of the declaration
         if let Some(hint) = p.hint() {
-            syntax::complex_type(self, hint);
+            for _ in &names {
+                syntax::complex_type(self, hint);
+            }
         }
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
