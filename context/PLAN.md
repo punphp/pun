@@ -321,12 +321,13 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf lint 5 follow-up: Mago's parser is about 80% of lint check CPU; further gains need upstream Mago parser work | todo |
 | perf lint 5 follow-up: macOS `open` (10.5 us on one thread, 15 us on three) is an environment floor; com.apple.provenance cannot be removed with `xattr -d`, so whether it causes the cost is still open | todo |
 | perf lint 6 follow-up: ask upstream Mago to make mago-database's `notify` dependency optional (or use the kqueue backend); its FSEvents backend links CoreFoundation and CoreServices, about 1.0 ms and 4.1 MB per process (15% of pinkary's lint time); pun-cli's `--watch` would then need a notify backend that does not link CF, or load it lazily | todo |
-| perf analyse 1 follow-up: discover vendor symbols on demand (PSR-4/classmap lookup from referenced names, as PHPStan does) instead of scanning every Composer-autoloadable file; cuts the 8-18k opens and Mago's metadata for them; needs its own parity plan because the visible symbol set changes | todo |
 | perf analyse 1 follow-up: scripts/bench.py polls `ps -A` every 20 ms, which slows the measured process (pinkary 0.53-0.86 s in the bench vs 0.48-0.60 s under /usr/bin/time); a waiter thread with wait4's ru_maxrss would be cheaper and exact | todo |
 | perf analyse 2 follow-up: pun-cli: consider mimalloc as the global allocator once `pun analyse` lands; in the analyse example it gave wall -4 to -5% and rss -6% on pinkary and laravel-framework, +7% rss on laravel-pint | todo |
-| perf analyse 2 follow-up: on-demand vendor symbol discovery (the perf analyse 1 row above) is the only big lever left: open() is about 30% of analyse CPU and Mago's parse and scan of about 17k vendor files about 35% | todo |
 | perf analyse 2 follow-up: bench.py 3-run analyse medians vary 5-10% between calls; the wait4 ru_maxrss waiter (perf analyse 1 row above) would cut the noise | todo |
 | perf analyse 2 follow-up: Mago's populate (15-20% of analyse wall) and its parser memory are upstream Mago costs; raise them upstream rather than in pun-analyse | todo |
+| perf analyse 3 follow-up: scan PHPStan's API stub (phpstan-api.php, about 60 ms serial on larastan and pest) off the critical path; `rayon::join` beside the scan rounds gave -20% wall but 2 of 14 runs stalled for 600-1000 s, so find the cause (Mago interner or rayon) before retrying | todo |
+| perf analyse 3 follow-up: walk psr-4 and psr-0 directories lazily, reading only the directories a class lookup needs (the directory walk is about 18% of samples; about half the directories hold a loaded file) | todo |
+| perf analyse 3 follow-up: a lexer-aware name scan (code names plus docblocks only) would load about 8% fewer files on Pinkary; skipping vendor method bodies would load about 17% fewer, but Mago infers assertions from single-return bodies, so it needs a parity plan | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
