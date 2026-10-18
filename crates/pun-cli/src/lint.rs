@@ -1,6 +1,6 @@
 //! `pun lint --mago`: runs Mago 1.57's lint-only Laravel rules (no auto-fix in Mago) and reports, never edits.
 //! Only built with `--features mago-lint`.
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use mago_allocator::LocalArena;
 use mago_database::file::File;
 use mago_linter::Linter;
@@ -47,7 +47,10 @@ pub fn run(paths: Vec<PathBuf>, config: Option<PathBuf>) -> Result<u8> {
         }
         let file = File::ephemeral(
             Cow::Owned(rel.clone().into_bytes()),
-            Cow::Owned(std::fs::read(path)?),
+            // Its own message, as a lint run error prints no cause chain.
+            Cow::Owned(
+                std::fs::read(path).map_err(|e| anyhow!("can't read {}: {e}", path.display()))?,
+            ),
         );
         let arena = LocalArena::new();
         let program = mago_syntax::parser::parse_file(&arena, &file);

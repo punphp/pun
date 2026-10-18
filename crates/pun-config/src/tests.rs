@@ -1387,6 +1387,19 @@ not-path = ["y"]
             "Pint configuration cannot extend from more than 1 file."
         );
         assert!(e(&[("pint.json", "1")]).ends_with("pint.json] is not valid JSON."));
+        // An unreadable pint.json names the file (a directory, which root can't read either).
+        let d = dir(&[]);
+        std::fs::create_dir(d.join("pint.json")).unwrap();
+        let err = from_pint(&d.join("pint.json"), None, &|_| true)
+            .err()
+            .unwrap();
+        assert_eq!(
+            format!("{err:#}"),
+            format!(
+                "can't read {}: Is a directory (os error 21)",
+                d.join("pint.json").display()
+            )
+        );
         assert!(e(&[("pint.json", "{")]).ends_with("pint.json] is not valid JSON."));
         assert_eq!(
             e(&[("pint.json", r#"{"rules":{"final_class":null}}"#)]),

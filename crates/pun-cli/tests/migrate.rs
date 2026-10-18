@@ -266,6 +266,61 @@ pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 fil
     assert_eq!(err, "x --from pint: no nope.json found\n");
 }
 
+/// An I/O error names its file, and a PHP fatal error in the old config shows PHP's message (stderr, as stdout is
+/// empty). Directories stand in for unreadable and unwritable files, as root can read a mode-000 file.
+#[test]
+fn errors_name_the_file() {
+    let d = project("unreadable", &[]);
+    std::fs::create_dir(d.join("pint.json")).unwrap();
+    let (_, err, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(
+        (err.as_str(), code),
+        (
+            format!(
+                "x can't read {}: Is a directory (os error 21)\n",
+                d.join("pint.json").display()
+            )
+            .as_str(),
+            Some(2)
+        )
+    );
+    let d = project("unwritable", &[("pint.json", PINT)]);
+    std::fs::create_dir(d.join("pun.toml")).unwrap();
+    let (_, err, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(
+        (err.as_str(), code),
+        (
+            format!(
+                "x can't write {}: Is a directory (os error 21)\n",
+                d.join("pun.toml").display()
+            )
+            .as_str(),
+            Some(2)
+        )
+    );
+    let d = project(
+        "php-fatal",
+        &[
+            ("vendor/friendsofphp/php-cs-fixer/.keep", ""),
+            (
+                "vendor/autoload.php",
+                "<?php\nfunction f() {}\nfunction f() {}\n",
+            ),
+            (".php-cs-fixer.php", "<?php\nreturn 1;\n"),
+        ],
+    );
+    let (_, err, code) = pun(&d, &["migrate", "--yes"]);
+    let autoload = d.join("vendor/autoload.php");
+    let autoload = autoload.display();
+    assert_eq!(
+        (err.as_str(), code),
+        (
+            format!("x Fatal error: Cannot redeclare function f() (previously declared in {autoload}:2) in {autoload} on line 3\n").as_str(),
+            Some(2)
+        )
+    );
+}
+
 /// PHPStan alone: nothing gives [format], so pun.toml is the starter, and it says why.
 #[test]
 fn starter_beside_unsupported_configs() {

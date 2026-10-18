@@ -1065,3 +1065,33 @@ docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mappin
         )
     );
 }
+
+/// `pun lint --mago` names the file it can't read (hand-derived: Pun's own wording for a read error).
+#[cfg(feature = "mago-lint")]
+#[test]
+fn mago_lint_read_error_names_the_file() {
+    let dir = tmp("mago-unreadable");
+    reset(
+        &dir,
+        &[
+            ("pun.toml", "[format]\npreset = \"empty\"\n"),
+            ("a.php", "<?php\necho 1;\n"),
+        ],
+    );
+    let locked = dir.join("a.php");
+    std::fs::set_permissions(&locked, std::os::unix::fs::PermissionsExt::from_mode(0o000)).unwrap();
+    // Root reads a mode-000 file: there is no read error to report.
+    if std::fs::read(&locked).is_err() {
+        let (_, err, code) = pun(&dir, &["lint", "--mago"]);
+        assert_eq!(
+            (err, code),
+            (
+                format!(
+                    "x can't read {}: Permission denied (os error 13)\n",
+                    locked.display()
+                ),
+                Some(2)
+            )
+        );
+    }
+}

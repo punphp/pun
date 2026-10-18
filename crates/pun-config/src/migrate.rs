@@ -117,7 +117,8 @@ fn read_pint_json(path: &Path) -> Result<Map<String, Value>> {
             path.display()
         )
     };
-    let mut v: Value = serde_json::from_slice(&std::fs::read(path)?).with_context(invalid)?;
+    let raw = std::fs::read(path).with_context(|| format!("can't read {}", path.display()))?;
+    let mut v: Value = serde_json::from_slice(&raw).with_context(invalid)?;
     if let Some(ext) = v.get("extend").and_then(Value::as_str) {
         let ext_path = path.parent().unwrap().join(ext);
         // file_get_contents(realpath(...)): a missing file is realpath's `false`.

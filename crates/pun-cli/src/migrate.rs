@@ -350,7 +350,7 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
             let (old, new) = (String::from_utf8_lossy(old), String::from_utf8_lossy(new));
             diffs += &report::diff(&old, &new, Path::new(&rel(&root, f)));
         } else {
-            std::fs::write(f, new)?;
+            std::fs::write(f, new).with_context(|| format!("can't write {}", f.display()))?;
         }
     }
     let (toml, from) = match &from {
@@ -456,6 +456,10 @@ fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
         .output()
         .context("reading .php-cs-fixer.php needs `php` on PATH")?;
     if !out.status.success() {
+        // A caught exception's message is on stdout; a fatal error (uncatchable) only on stderr.
+        if out.stdout.is_empty() {
+            bail!("{}", String::from_utf8_lossy(&out.stderr).trim());
+        }
         bail!("{}", String::from_utf8_lossy(&out.stdout));
     }
     let mut v: Object = serde_json::from_slice(&out.stdout)?;
