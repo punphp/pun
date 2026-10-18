@@ -99,12 +99,13 @@ fn compile(pattern: &[u8]) -> Option<Rc<Regex>> {
     if let Some(r) = CACHE.with(|c| c.borrow().get(pattern).cloned()) {
         return r;
     }
-    let r = compile_uncached(pattern).map(Rc::new);
+    let r = compile_uncached(pattern).ok().map(Rc::new);
     CACHE.with(|c| c.borrow_mut().insert(pattern.to_vec(), r.clone()));
     r
 }
 
-fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
+/// `Err` is PHP's warning without its `preg_*(): ` prefix.
+fn compile_uncached(pattern: &[u8]) -> Result<Regex, String> {
     let mut p = 0;
     while p < pattern.len()
         && matches!(pattern[p], b' ' | b'\t' | b'\n' | b'\r' | b'\x0B' | b'\x0C')
@@ -112,11 +113,11 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
         p += 1;
     }
     if p >= pattern.len() {
-        return None;
+        return Err("Empty regular expression".into());
     }
     let delimiter = pattern[p];
     if delimiter.is_ascii_alphanumeric() || delimiter == b'\\' || delimiter == 0 {
-        return None;
+        return Err("Delimiter must not be alphanumeric, backslash, or NUL byte".into());
     }
     p += 1;
     let start = p;
@@ -154,7 +155,12 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
         }
     }
     if p >= pattern.len() {
-        return None; // no ending delimiter
+        let end = String::from_utf8_lossy(&[end_delimiter]).into_owned();
+        return Err(if end_delimiter == delimiter {
+            format!("No ending delimiter '{end}' found")
+        } else {
+            format!("No ending matching delimiter '{end}' found")
+        });
     }
     let body = &pattern[start..p];
     let mut options = 0u32;
@@ -176,7 +182,12 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
             }
             b'J' => options |= PCRE2_DUPNAMES,
             b' ' | b'\n' | b'\r' => {}
-            _ => return None, // 'e' and 'r' are not used by upstream; unknown modifier
+            // 'e' and 'r' are not used by upstream
+            0 => return Err("NUL byte is not a valid modifier".into()),
+            m => {
+                let m = String::from_utf8_lossy(&[m]).into_owned();
+                return Err(format!("Unknown modifier '{m}'"));
+            }
         }
     }
     unsafe {
@@ -191,7 +202,10 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
             std::ptr::null_mut(),
         );
         if code.is_null() {
-            return None;
+            let mut message = [0u8; 256];
+            let n = pcre2_get_error_message_8(err, message.as_mut_ptr(), message.len());
+            let message = String::from_utf8_lossy(&message[..n as usize]);
+            return Err(format!("Compilation failed: {message} at offset {erroff}"));
         }
         pcre2_jit_compile_8(code, PCRE2_JIT_COMPLETE);
         let mut capture_count: u32 = 0;
@@ -229,7 +243,7 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
         }
         let matcher = Matcher::new(code);
         debug_assert!(names.is_sorted_by(|a, b| a.0 <= b.0));
-        Some(Regex {
+        Ok(Regex {
             code,
             utf,
             capture_count: capture_count as usize,
@@ -501,22 +515,61 @@ fn with_fallback<T>(
             VARIANTS.with(|m| m.borrow_mut().insert(pattern.to_vec(), v.clone()));
             v
         });
+    // The last attempt's pcre2_match error; `None` when its pattern did not compile (PHP's PREG_INTERNAL_ERROR).
+    let mut error = None;
     for re in variants {
-        let Some(re) = re else { continue };
+        let Some(re) = re else {
+            error = None;
+            continue;
+        };
         if re.utf
             && (std::str::from_utf8(subject).is_err()
                 || (offset < subject.len() && (subject[offset] & 0xC0) == 0x80))
         {
             continue;
         }
-        if let Ok(r) = f(&re) {
-            return r;
+        match f(&re) {
+            Ok(r) => return r,
+            Err(rc) => error = Some(rc),
         }
     }
-    panic!(
-        "PregException: error occurred when calling {method} with pattern {:?}",
-        String::from_utf8_lossy(pattern)
-    );
+    panic!("{}", preg_exception(error, method, pattern));
+}
+
+/// `preg_last_error_msg()` after php_pcre.c's pcre_handle_exec_error. The subject is never matched as UTF-8 unless it
+/// is valid there, so the UTF-8 errors cannot occur; and every pattern is JIT-compiled, so a deep match exhausts the
+/// JIT stack (PHP's default `pcre.jit=1`) instead of the recursion limit.
+fn preg_last_error_msg(error: Option<i32>) -> &'static str {
+    match error {
+        Some(PCRE2_ERROR_MATCHLIMIT) => "Backtrack limit exhausted",
+        Some(PCRE2_ERROR_JIT_STACKLIMIT) => "JIT stack limit exhausted",
+        _ => "Internal error",
+    }
+}
+
+/// `Preg::newPregException`'s message: a pattern that compiles failed at match time; one that does not is reported
+/// with PHP's compile warning and the PCRE version.
+fn preg_exception(error: Option<i32>, method: &str, pattern: &[u8]) -> String {
+    match compile_uncached(pattern) {
+        Ok(_) => format!(
+            "Unknown error occurred when calling {method}: {}.",
+            preg_last_error_msg(error)
+        ),
+        // code 1: PREG_INTERNAL_ERROR, set by the failed compile
+        Err(warning) => format!(
+            "{method}(): Invalid PCRE pattern \"{}\": (code: 1) {warning} (version: {})",
+            String::from_utf8_lossy(pattern),
+            pcre_version()
+        ),
+    }
+}
+
+/// `PCRE_VERSION`: the linked PCRE2's version and date, e.g. `10.45 2025-02-05`.
+fn pcre_version() -> String {
+    let mut buf = [0u8; 64];
+    // Returns the length including the terminating NUL.
+    let n = unsafe { pcre2_config_8(PCRE2_CONFIG_VERSION, buf.as_mut_ptr() as *mut libc::c_void) };
+    String::from_utf8_lossy(&buf[..n as usize - 1]).into_owned()
 }
 
 impl Preg {
@@ -1008,23 +1061,101 @@ mod tests {
             ),
             (2, &b"a"[..], true, false)
         );
-        for p in ["", "  ", "abc", "\\a\\", "/abc", "{abc", "/a/e", "/(/"] {
-            assert!(
-                std::panic::catch_unwind(|| Preg::r#match(p, "a")).is_err(),
-                "{p:?} must throw PregException"
+        let message = |f: &dyn Fn()| -> String {
+            let e = std::panic::catch_unwind(std::panic::AssertUnwindSafe(f)).unwrap_err();
+            e.downcast_ref::<String>().unwrap().clone()
+        };
+        // Preg::newPregException's message, with PHP's warning (its "preg_match(): " prefix removed).
+        for (p, warning) in [
+            ("", "Empty regular expression"),
+            ("  ", "Empty regular expression"),
+            (
+                "abc",
+                "Delimiter must not be alphanumeric, backslash, or NUL byte",
+            ),
+            (
+                "\\a\\",
+                "Delimiter must not be alphanumeric, backslash, or NUL byte",
+            ),
+            ("/abc", "No ending delimiter '/' found"),
+            ("{abc", "No ending matching delimiter '}' found"),
+            ("(abc", "No ending matching delimiter ')' found"),
+            ("/a/e", "Unknown modifier 'e'"),
+            ("/a/\0", "NUL byte is not a valid modifier"),
+            (
+                "/(/",
+                "Compilation failed: missing closing parenthesis at offset 1",
+            ),
+            (
+                "/(?<n>a)(?<n>b)/",
+                "Compilation failed: two named subpatterns have the same name (PCRE2_DUPNAMES not set) at offset 12",
+            ),
+        ] {
+            let m = message(&|| {
+                Preg::r#match(p, "a");
+            });
+            let prefix = format!(
+                "PhpCsFixer\\Preg::match(): Invalid PCRE pattern \"{p}\": (code: 1) {warning} (version: 10."
             );
+            assert!(m.starts_with(&prefix) && m.ends_with(')'), "{p:?}: {m}");
         }
-        assert!(
-            std::panic::catch_unwind(|| Preg::match_at("/a/", b"abc", 0, 5)).is_err(),
-            "offset past the end throws"
+        let unknown = |method: &str, error: &str| {
+            format!("Unknown error occurred when calling PhpCsFixer\\Preg::{method}: {error}.")
+        };
+        assert_eq!(
+            message(&|| {
+                Preg::match_at("/a/", b"abc", 0, 5);
+            }),
+            unknown("match", "Internal error")
         );
-        // "Backtrack limit exhausted" in PHP
-        assert!(
-            std::panic::catch_unwind(|| Preg::r#match(
-                "/(a*)*[bc]/",
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!"
-            ))
-            .is_err()
+        let backtrack = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!";
+        // The `u` attempt hits the backtrack limit, then the pattern without `u` does not compile.
+        assert_eq!(
+            message(&|| {
+                Preg::r#match("/(a*)*[bc\\x{100}]/u", backtrack);
+            }),
+            unknown("match", "Internal error")
+        );
+        let m = message(&|| {
+            Preg::r#match("/(a*)*[bc\\x{100}]/", backtrack);
+        });
+        assert!(m.starts_with("PhpCsFixer\\Preg::match(): Invalid PCRE pattern \"/(a*)*[bc\\x{100}]/\": (code: 1) Compilation failed: character code point value in \\x{} or \\o{} is too large at offset 14 (version: 10."), "{m}");
+        // PHP with its default pcre.jit=1
+        assert_eq!(
+            message(&|| {
+                Preg::r#match("/(.)*/", "x".repeat(200_000));
+            }),
+            unknown("match", "JIT stack limit exhausted")
+        );
+        assert_eq!(
+            message(&|| {
+                Preg::r#match("/(a*)*[bc]/", backtrack);
+            }),
+            unknown("match", "Backtrack limit exhausted")
+        );
+        assert_eq!(
+            message(&|| {
+                Preg::match_all("/(a*)*[bc]/", backtrack.as_bytes(), 0);
+            }),
+            unknown("matchAll", "Backtrack limit exhausted")
+        );
+        assert_eq!(
+            message(&|| {
+                Preg::replace("/(a*)*[bc]/", "x", backtrack);
+            }),
+            unknown("replace", "Backtrack limit exhausted")
+        );
+        assert_eq!(
+            message(&|| {
+                Preg::replace_callback("/(a*)*[bc]/", |_| b"x".to_vec(), backtrack);
+            }),
+            unknown("replaceCallback", "Backtrack limit exhausted")
+        );
+        assert_eq!(
+            message(&|| {
+                Preg::split("/(a*)*[bc]/", backtrack, -1, 0);
+            }),
+            unknown("split", "Backtrack limit exhausted")
         );
         let s = |v: Vec<Piece>| {
             v.into_iter()

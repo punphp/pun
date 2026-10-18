@@ -1,25 +1,25 @@
 //! Port of `PhpCsFixer\Utils` (the parts fixers use; `sortFixers` lives in pun_format::Pipeline).
 use super::preg::Preg;
 use pun_tokens::Token;
+use pun_tokens::php_compat::mb_strtolower;
 
 pub struct Utils;
 
 impl Utils {
-    pub fn camel_case_to_underscore(string: &str) -> String {
-        let replaced = Preg::replace(
+    pub fn camel_case_to_underscore(string: &[u8]) -> Vec<u8> {
+        mb_strtolower(&Preg::replace(
             "/(?<!^)(?<!_)((?=[\\p{Lu}][^\\p{Lu}])|(?<![\\p{Lu}])(?=[\\p{Lu}]))/",
             "_",
             string,
-        );
-        String::from_utf8_lossy(&replaced).to_lowercase() // mb_strtolower
+        ))
     }
 
     /// Everything after the final newline of a whitespace token.
     pub fn calculate_trailing_whitespace_indent(token: &Token) -> Vec<u8> {
         assert!(
             token.is_whitespace(None),
-            "The given token must be whitespace, got \"{:?}\".",
-            token.get_name()
+            "The given token must be whitespace, got \"{}\".",
+            token.get_name().unwrap_or_default()
         );
         let content = token.get_content();
         let mut s = Vec::with_capacity(content.len());
@@ -85,14 +85,20 @@ mod tests {
     #[test]
     fn php_values() {
         for (i, o) in [
-            ("testFooBar", "test_foo_bar"),
-            ("TestFooBAR", "test_foo_bar"),
-            ("test_FooBar", "test_foo_bar"),
-            ("HTMLParser", "html_parser"),
-            ("ÉcoleÜber", "école_über"),
-            ("a", "a"),
+            (&b"testFooBar"[..], &b"test_foo_bar"[..]),
+            (b"TestFooBAR", b"test_foo_bar"),
+            (b"test_FooBar", b"test_foo_bar"),
+            (b"HTMLParser", b"html_parser"),
+            ("ÉcoleÜber".as_bytes(), "école_über".as_bytes()),
+            (b"a", b"a"),
+            // Not UTF-8: Preg drops `u` (0xC9 is Latin-1 `É`, an uppercase letter), then mb_strtolower writes `?`.
+            (b"test\xc9cole", b"test_?cole"),
+            (b"test\xc9Cole", b"test_?_cole"),
+            (b"testFoo\xffBar", b"test_foo?_bar"),
+            (b"test\xe2\x82Bar", b"test?_bar"),
+            (b"fooBar\xc9", b"foo_bar_?"),
         ] {
-            assert_eq!(Utils::camel_case_to_underscore(i), o, "{i}");
+            assert_eq!(Utils::camel_case_to_underscore(i), o, "{i:?}");
         }
         for (i, o) in [
             ("\n    ", "    "),
@@ -119,7 +125,7 @@ mod tests {
 
     // PHP: InvalidArgumentException "The given token must be whitespace, got "T_STRING"."
     #[test]
-    #[should_panic(expected = "must be whitespace")]
+    #[should_panic(expected = "The given token must be whitespace, got \"T_STRING\".")]
     fn trailing_indent_rejects_non_whitespace() {
         Utils::calculate_trailing_whitespace_indent(&Token::new(T_STRING, "x"));
     }

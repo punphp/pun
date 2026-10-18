@@ -105,8 +105,7 @@ impl PhpUnitMethodCasingFixer {
             }
             out
         } else {
-            Utils::camel_case_to_underscore(&String::from_utf8_lossy(function_name_part))
-                .into_bytes()
+            Utils::camel_case_to_underscore(function_name_part)
         };
         let mut parts: Vec<Vec<u8>> = parts.into_iter().map(<[u8]>::to_vec).collect();
         parts.push(new_part);

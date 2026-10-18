@@ -16,6 +16,18 @@ pub fn strtoupper(s: &[u8]) -> Vec<u8> {
     s.to_ascii_uppercase()
 }
 
+/// `mb_strtolower($s)` (UTF-8): full Unicode lowercasing, with each maximal invalid UTF-8 subpart replaced by `?`.
+pub fn mb_strtolower(s: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(s.len());
+    for chunk in s.utf8_chunks() {
+        out.extend_from_slice(chunk.valid().to_lowercase().as_bytes());
+        if !chunk.invalid().is_empty() {
+            out.push(b'?');
+        }
+    }
+    out
+}
+
 fn sign(o: Ordering) -> i32 {
     o as i32
 }
@@ -201,6 +213,22 @@ fn compare_left(a: &[u8], ap: &mut usize, b: &[u8], bp: &mut usize) -> i32 {
         *ap += 1;
         *bp += 1;
     }
+}
+
+/// `var_export($s, true)` of a string: single-quoted, with `\\` and `'` backslash-escaped and each NUL byte spliced
+/// in as `' . "\0" . '`. Other bytes, invalid UTF-8 included, are copied as they are.
+pub fn var_export_string(s: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(s.len() + 2);
+    out.push(b'\'');
+    for &b in s {
+        match b {
+            b'\'' | b'\\' => out.extend([b'\\', b]),
+            0 => out.extend_from_slice(b"' . \"\\0\" . '"),
+            _ => out.push(b),
+        }
+    }
+    out.push(b'\'');
+    out
 }
 
 /// PHP's `(string) $float` (`precision` = 14, `%.14G` with PHP's `.0` and `E+` exponent spelling) for finite
@@ -422,6 +450,39 @@ mod tests {
         assert_eq!(strtoupper(b"a\xff"), b"A\xff");
         assert_eq!(strlen("é".as_bytes()), 2);
         assert_eq!(rtrim(b"x \n\0"), b"x");
+    }
+
+    // mb_strtolower($s) on PHP 8.5.
+    #[test]
+    fn mb_strtolower_matches_php() {
+        let cases: &[(&[u8], &[u8])] = &[
+            (b"\xc3\x89COLE\xff", b"\xc3\xa9cole?"),
+            (b"A\xe2\x82B", b"a?b"),
+            (b"\xff\xfeX", b"??x"),
+            ("ΣΑΣ".as_bytes(), "σας".as_bytes()),
+            ("İ".as_bytes(), b"i\xcc\x87"),
+            (b"\xc3", b"?"),
+            (b"AB\xf0\x9f\x98", b"ab?"),
+        ];
+        for (input, expected) in cases {
+            assert_eq!(mb_strtolower(input), *expected, "{input:?}");
+        }
+    }
+
+    // var_export($s, true) on PHP 8.5.
+    #[test]
+    fn var_export_string_matches_php() {
+        let cases: &[(&[u8], &[u8])] = &[
+            (b"", b"''"),
+            (b"a'b\\c", b"'a\\'b\\\\c'"),
+            (b"x\0y", b"'x' . \"\\0\" . 'y'"),
+            (b"\0", b"'' . \"\\0\" . ''"),
+            (b"\xff\xc3\xa9", b"'\xff\xc3\xa9'"),
+            (b"\\Foo\\Bar<", b"'\\\\Foo\\\\Bar<'"),
+        ];
+        for (input, expected) in cases {
+            assert_eq!(var_export_string(input), *expected, "{input:?}");
+        }
     }
 
     #[test]

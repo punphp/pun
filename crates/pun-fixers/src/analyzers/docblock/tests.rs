@@ -342,6 +342,36 @@ fn type_expression_parse_invalid() {
     }
 }
 
+// The full message, from `new TypeExpression($value, null, [])` on PHP-CS-Fixer 3.95 (var_export escapes `\` and `'`).
+#[test]
+fn type_expression_parse_error_message() {
+    for (value, message) in [
+        (
+            "class cannot contain space",
+            "Unable to parse phpdoc type 'class cannot contain space'",
+        ),
+        (
+            "\\Foo\\Bar<",
+            "Unable to parse phpdoc type '\\\\Foo\\\\Bar<'",
+        ),
+        (
+            "' unclosed string",
+            "Unable to parse phpdoc type '\\' unclosed string'",
+        ),
+        (
+            "array{'a': int",
+            "Unable to parse phpdoc type 'array{\\'a\\': int'",
+        ),
+        (
+            "Foo<\0>",
+            "Unable to parse phpdoc type 'Foo<' . \"\\0\" . '>'",
+        ),
+    ] {
+        let e = TypeExpression::try_new(value.as_bytes()).unwrap_err();
+        assert_eq!(e.to_string(), message, "{value:?}");
+    }
+}
+
 #[test]
 fn type_expression_huge_type() {
     let types: Vec<Vec<u8>> = (0..2000)

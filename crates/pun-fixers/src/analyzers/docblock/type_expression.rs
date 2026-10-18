@@ -17,10 +17,11 @@ pub struct ParseError(pub Vec<u8>);
 
 impl std::fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        // `'Unable to parse phpdoc type '.var_export($this->value, true)`
         write!(
             f,
-            "Unable to parse phpdoc type '{}'",
-            String::from_utf8_lossy(&self.0)
+            "Unable to parse phpdoc type {}",
+            String::from_utf8_lossy(&pun_tokens::php_compat::var_export_string(&self.0))
         )
     }
 }

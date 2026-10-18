@@ -74,19 +74,25 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `fixer_annotation.rs:99-106` build parse-error and annotation messages with `from_utf8_lossy`, so a token cut at
   byte 30 inside `é`, or any Latin-1 byte, prints `�` where PHP prints the raw bytes. Keep messages as `Vec<u8>`
   until pun-cli writes them. Not checked against Pint. Spans crates.
-- [ ] 13. `crates/pun-fixers/src/analyzers/utils.rs:8-15` (`camel_case_to_underscore(&str)`), called with
+- [x] 13. `crates/pun-fixers/src/analyzers/utils.rs:8-15` (`camel_case_to_underscore(&str)`), called with
   `from_utf8_lossy` from `php_unit_method_casing.rs:108`, writes U+FFFD into a renamed test method where upstream
   keeps PHP's byte semantics (`mb_strtolower` gives `?`). Take `&[u8]` and port the substitution into `php_compat`.
-  Not checked against PHP. Spans crates.
-- [ ] 14. `crates/pun-fixers/src/analyzers/preg.rs:487-520` panics with "PregException: error occurred when calling
+  Not checked against PHP. Spans crates. Reproduced with PHP-CS-Fixer: `testÉcole` in Latin-1 (`test\xC9cole`) gives
+  `test_?cole` (Preg drops `u`, so 0xC9 is an uppercase letter); Pun wrote U+FFFD. Added
+  `php_compat::mb_strtolower`. Fixed in wf/audit-fixers-messages.
+- [x] 14. `crates/pun-fixers/src/analyzers/preg.rs:487-520` panics with "PregException: error occurred when calling
   {method} with pattern ...", and drops `exec`'s error code (`:282-284`, `:512`). Upstream `Preg::newPregException`
   (`.oracle/php-cs-fixer/src/Preg.php:191-216`) prints "Unknown error occurred when calling {method}: {msg}." or the
-  "Invalid PCRE pattern" form, so a file that hits the match or JIT-stack limit reports a different message. Carry the
-  code out and format it like upstream. Checked against the PHP source.
-- [ ] 15. `crates/pun-fixers/src/analyzers/docblock/type_expression.rs:15-26` formats "Unable to parse phpdoc type
-  '{}'" with `from_utf8_lossy`; upstream (`DocBlock/TypeExpression.php:486`) uses `var_export`, which escapes `\` and
-  `'`, so every failing namespaced type (`\Foo\Bar<`) prints differently. Add a byte-exact `var_export` to `php_compat`
-  and assert the full message. Checked against the PHP source. Spans crates.
+  "Invalid PCRE pattern" form, so a file that hits the match or JIT-stack limit reports a different message. Carry
+  the code out and format it like upstream. Checked against the PHP source. The messages now come from
+  `preg_last_error_msg()` (backtrack, JIT stack, internal) or PHP's compile warning with `PCRE_VERSION`; the UTF-8
+  and recursion codes cannot occur in Pun (UTF-8 is never matched unchecked, every pattern is JIT-compiled). Fixed
+  in wf/audit-fixers-messages.
+- [x] 15. `crates/pun-fixers/src/analyzers/docblock/type_expression.rs:15-26` formats "Unable to parse phpdoc type '{}'"
+  with `from_utf8_lossy`; upstream (`DocBlock/TypeExpression.php:486`) uses `var_export`, which escapes `\` and `'`,
+  so every failing namespaced type (`\Foo\Bar<`) prints differently. Add a byte-exact `var_export` to `php_compat`
+  and assert the full message. Checked against the PHP source. Spans crates. Added `php_compat::var_export_string`.
+  Fixed in wf/audit-fixers-messages.
 - [ ] 16. Built-in symbols ignore the project's PHP version and disagree with each other:
   `crates/pun-phpstan/src/symbols.rs:236-248` (`class`, `function`) always read PHP 8.4, while
   `crates/pun-analyse/src/rules/mod.rs:1003-1005` (`builtins`) and `codebase.rs:64` use 8.5 and `members.rs:123` uses
@@ -387,9 +393,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   default `is_file` reads the whole file, so a large baseline is read about four times per resolve. The read-based
   `is_file` also skipped an unreadable `phpstan.neon` for `phpstan.neon.dist`, where PHPStan fails to read it. Fixed in
   fa5a93c.
-- [ ] 78. `crates/pun-fixers/src/analyzers/classy_analyzer.rs:14`, `constant_invocation.rs:10`, `utils.rs:21` format
-  `Option` with `{:?}`, printing `got "Some("T_OPEN_TAG")"` where upstream prints `got "T_OPEN_TAG"`, and the test at
-  `classy_analyzer.rs:122` locks it in.
+- [x] 78. `crates/pun-fixers/src/analyzers/classy_analyzer.rs:14`, `constant_invocation.rs:10`, `utils.rs:21` format
+  `Option` with `{:?}`, printing `got "Some("T_OPEN_TAG")"` where upstream prints `got "T_OPEN_TAG"`, and the test
+  at `classy_analyzer.rs:122` locks it in. A token without an id now prints `""`, as upstream's null name does. Fixed
+  in wf/audit-fixers-messages.
 
 ### Errors and tests
 

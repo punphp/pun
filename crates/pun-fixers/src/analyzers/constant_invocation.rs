@@ -7,8 +7,8 @@ use pun_tokens::{Kind::*, Tokens, token::CLASSY_KINDS};
 pub fn is_constant_invocation(tokens: &Tokens, index: usize) -> bool {
     assert!(
         tokens[index].is_kind(T_STRING),
-        "No T_STRING at given index {index}, got \"{:?}\".",
-        tokens[index].get_name()
+        "No T_STRING at given index {index}, got \"{}\".",
+        tokens[index].get_name().unwrap_or_default()
     );
     let prev = |i: usize| tokens.get_prev_meaningful_token(i).unwrap();
     let next_index = tokens.get_next_meaningful_token(index).unwrap();
@@ -291,9 +291,10 @@ use X1, X2;
         assert_eq!(got, expected);
     }
 
+    // PHP: LogicException 'No T_STRING at given index 4, got "".' (a token without an id has a null name).
     #[test]
-    #[should_panic(expected = "No T_STRING at given index 0")]
+    #[should_panic(expected = "No T_STRING at given index 4, got \"\".")]
     fn rejects_non_string() {
-        is_constant_invocation(&Tokens::from_code(CODE.as_bytes()), 0);
+        is_constant_invocation(&Tokens::from_code(b"<?php new Foo;"), 4);
     }
 }
