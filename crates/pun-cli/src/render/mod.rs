@@ -435,7 +435,7 @@ impl Renderer {
         format!("{}\n", parts.join(&format!(" {separator} ")))
     }
 
-    /// A run error: one red line (`path:line  message`), then the hint indented under it.
+    /// A run error: one red line (`path:line  message`), then the hint indented under it, line by line.
     pub fn run_error(&self, e: &RunError) -> String {
         let glyph = self.look.glyph("✖", "x");
         let line = match &e.path {
@@ -450,7 +450,9 @@ impl Renderer {
         };
         let mut out = format!("{}\n", self.look.paint(Role::Error, &line));
         if let Some(hint) = &e.hint {
-            out.push_str(&format!("  {hint}\n"));
+            for line in hint.lines() {
+                out.push_str(&format!("  {line}\n"));
+            }
         }
         out
     }

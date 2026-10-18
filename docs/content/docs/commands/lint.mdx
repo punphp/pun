@@ -33,6 +33,8 @@ sets = ["dead-code", "modernize"]
 
 `--fix` applies the fix of every enabled rule. `pun lint --fix` lists what it did not apply (rules with `fix = "off"`) as remaining, like `pun lint` reports it, and exits 1 when anything remains.
 
+`pun lint` exits 0 when clean, 1 on any `error`, and 2 when Pun couldn't run (a bad `pun.toml`, an unported rule, an unreadable path, a rule that failed on a file); see [exit codes](/docs/commands/format#exit-codes). Under GitHub Actions (`GITHUB_ACTIONS=true`), or with `--format=github`, each file a rule can fix gets an annotation (`::error file=app/L.php,line=3,col=0,title=lint/style/no-alias-function::lint/style/no-alias-function can fix this file`).
+
 Options for a rule go in the same table. Rule names are Pun IDs, `<group>/<name>` inside `[lint.rules]` (`lint/<group>/<name>` in full); an earlier Pun name or a PHP-CS-Fixer name gets an error that names its Pun ID.
 
 Which rules run comes from your [lint sets](/docs/configuration/presets#lint-sets), `[lint.groups]` and `[lint.rules]` ([pun.toml](/docs/configuration/pun-toml#lint)). `pun migrate` moves the risky and code-deleting rules your `pint.json` enabled here at `"error"`, so `pun check --fix` applies them as Pint did.

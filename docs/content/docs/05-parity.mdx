@@ -31,6 +31,8 @@ For each project the harness runs Pint on one copy, and `pun migrate` then `pun 
 | pinkary | 799 | 799 | 0 |
 | pinkary (unformatted copy) | 799 | 799 | 0 |
 
+Exit codes and the machine formats (`--format=json`, `checkstyle`, ...) are compared with Pint's by `scripts/cli-parity.sh`. They match, with one deliberate difference: when Pun couldn't run (a bad `--format`, a report it can't write, a missing path), it exits 2 where Pint exits 1.
+
 Pinkary runs twice: as committed, and as a deliberately unformatted copy where Pint changes 346 files. The same holds with `--preset psr12` on every run.
 
 ## Fuzzing

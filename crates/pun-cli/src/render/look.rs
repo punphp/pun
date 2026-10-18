@@ -77,6 +77,13 @@ impl Look {
         })
     }
 
+    /// The look for stderr (run errors) under `--color=<choice>`.
+    pub fn stderr(choice: ColorChoice) -> Look {
+        Look::detect(choice, std::io::stderr().is_terminal(), &|k| {
+            std::env::var(k).ok()
+        })
+    }
+
     /// `--color=always|never` win; then `NO_COLOR` (non-empty) and `TERM=dumb` turn colour off; otherwise colour is
     /// on for a terminal and off for a pipe. Links need a terminal (or `always`) that is known to support them.
     pub fn detect(choice: ColorChoice, tty: bool, env: &dyn Fn(&str) -> Option<String>) -> Look {

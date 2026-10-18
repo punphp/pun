@@ -362,7 +362,7 @@ fn errors() {
             Some(1)
         )
     );
-    // Errors that abort the run (Pint's boxes) are one line, with no progress before them.
+    // Errors that abort the run (Pint's boxes) are one line, with no progress before them, and exit 2.
     std::fs::write(d.join("app/D.php"), CLEAN).unwrap();
     let locked = d.join("app/A.php");
     std::fs::set_permissions(&locked, std::os::unix::fs::PermissionsExt::from_mode(0o000)).unwrap();
@@ -375,14 +375,14 @@ fn errors() {
                 "pun format: error: Failed to read content from \"{}\".\n",
                 locked.display()
             ),
-            Some(1)
+            Some(2)
         )
     );
     assert_eq!(
         agent(&d, &["format", "app/nope.php"]),
         (
             "pun format: error: The path \"app/nope.php\" is not readable.\n".into(),
-            Some(1)
+            Some(2)
         )
     );
     // Config errors too, for every command.
@@ -392,7 +392,7 @@ fn errors() {
             agent(&empty, &[cmd]),
             (
                 format!("pun {cmd}: error: No pun.toml found. Run `pun migrate`.\n"),
-                Some(1)
+                Some(2)
             )
         );
     }
@@ -507,7 +507,7 @@ fn migrate() {
         agent(&d, &["migrate"]),
         (
             "pun migrate: error: pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)\n".into(),
-            Some(1)
+            Some(2)
         )
     );
     // Unsupported rules: each one a line, skipped; the rest is written.
@@ -580,7 +580,7 @@ fn prettier_preflight() {
         agent(&d, &["format", "--blade"]),
         (
             "pun format: error: The rules enabled in your pint configuration require the following prettier dependencies to be installed: prettier, prettier-plugin-blade, prettier-plugin-tailwindcss.\n".into(),
-            Some(1)
+            Some(2)
         )
     );
 }

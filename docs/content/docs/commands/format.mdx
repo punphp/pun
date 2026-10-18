@@ -90,14 +90,43 @@ A file PHP can't parse gets a code frame at the line PHP names. It counts as an 
 
 On a terminal the output is coloured, and a spinner with a file count shows once a run takes longer than a second. In a pipe there is no colour and no spinner. Terminals without UTF-8 get ASCII symbols (`ok`, `x`).
 
-Exit codes and the machine formats stay Pint's: `--format=json`, `txt`, `checkstyle`, `junit`, `xml`, `gitlab` and `agent` print exactly what Pint prints, so CI integrations keep working. `-q` prints nothing on success.
+The machine formats stay Pint's: `--format=json`, `txt`, `checkstyle`, `junit`, `xml`, `gitlab` and `agent` print exactly what Pint prints, so CI integrations keep working. `--format=github` prints [GitHub annotations](#github-actions). `-q` prints nothing on success.
+
+## Exit codes
+
+| Code | When |
+| --- | --- |
+| 0 | Nothing to fix, or everything fixed |
+| 1 | A file needs formatting (`--test`, `--repair`), or a file PHP can't parse. Same as Pint. |
+| 2 | Pun couldn't run: a bad `pun.toml`, `--format` or `--output-format`, an unported rule, an unreadable path or file, a report it can't write (`--output-to-file`), Node or prettier missing for Blade, or a rule that failed on a file. Pint exits 1 here. |
+
+A run error is one red line with a hint under it, on stderr:
+
+```
+✖ pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`
+  remove it from pun.toml to run the other rules
+```
+
+With `--format` or `-q`, the error is Pint's error box on stdout, as Pint prints it, and the exit code is still 2.
+
+## GitHub Actions
+
+Under GitHub Actions (`GITHUB_ACTIONS=true`), the human output is followed by one annotation per file that needs formatting, at its first changed line, so the pull request shows it inline. `--format=github` prints only the annotations, anywhere. The lines have PHPStan's `github` shape:
+
+```
+::error file=app/Models/User.php,line=12,col=0,title=format/arrays/syntax::File needs formatting
+::error file=app/Broken.php,line=3,col=1,title=syntax-error::Unclosed '(' on line 2
+```
+
+A run error is `::error ::<message>`. Files `pun format` fixed get no annotation.
 
 Without a `pun.toml`, every command stops with `No pun.toml found. Run pun migrate.`, unless you pass `--preset` or `--no-config`.
 
 Pun never runs PHP for a rule it lacks. If `pun.toml` enables a rule Pun hasn't ported, `pun format`, `pun lint` and `pun check` stop before touching any file and exit 2, naming the rule:
 
 ```
-pun: /path/to/pun.toml: rule not supported by Pun yet: `format/strings/explicit-variable`
+✖ pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`
+  remove it from pun.toml to run the other rules
 ```
 
 Remove the rule from `pun.toml`, or send a PR to [punphp/pun](https://github.com/punphp/pun).

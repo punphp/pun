@@ -4,8 +4,10 @@
 
 use crate::console::{self, escape, format as fmt};
 use crate::fix_report::{self, Change};
-use crate::pint_error;
-use crate::render::{FileLine, FileStatus, FormatSummary, Look, Renderer, RunError, Summary};
+use crate::render::{
+    ColorChoice, FileLine, FileStatus, FormatSummary, Look, Renderer, RunError, Summary,
+};
+use crate::{github, pint_error};
 use anyhow::{Result, bail};
 use pun_problem::{Level, LineIndex, Problem, Span};
 use std::fmt::Write as _;
@@ -34,6 +36,8 @@ pub struct FileResult {
     pub applied: Vec<&'static str>,
     pub diff: String,
     pub message: String,
+    /// The first line the fix changes (its GitHub annotation's line); 0 when nothing changes.
+    pub line: usize,
 }
 
 impl FileResult {
@@ -58,6 +62,108 @@ pub struct Ctx<'a> {
     /// The project root: file lines link their paths under it.
     pub root: &'a Path,
     pub elapsed: Duration,
+    /// Human output under GitHub Actions (`GITHUB_ACTIONS=true`): the annotations follow it.
+    pub github: bool,
+}
+
+/// A run error: Pun couldn't run (exit 2). Humans get [`RunError`]; Pint's box is kept for `--format` and `-q` runs
+/// when Pint aborts the same way.
+#[derive(Debug)]
+pub struct Abort {
+    /// The message on one line: agent mode's error, the `::error ::` annotation and Pint's box.
+    pub message: String,
+    /// Pint aborts with `message` too; `before` is what it prints ahead of the box.
+    pub pint: bool,
+    pub before: String,
+    pub error: RunError,
+}
+
+impl Abort {
+    /// An abort Pint has too, with Pint's message. A message of several lines shows its first as the run error and
+    /// the rest (without blank lines) as the hint, unless a hint is given.
+    pub fn pint(message: impl Into<String>, hint: Option<String>) -> Abort {
+        let message = message.into();
+        let (first, rest) = message.split_once('\n').unwrap_or((&message, ""));
+        let rest: Vec<&str> = rest.lines().filter(|l| !l.trim().is_empty()).collect();
+        Abort {
+            error: RunError {
+                path: None,
+                line: None,
+                message: first.to_string(),
+                hint: hint.or_else(|| (!rest.is_empty()).then(|| rest.join("\n"))),
+            },
+            message,
+            pint: true,
+            before: String::new(),
+        }
+    }
+
+    /// Pun's own run error (pun.toml, `pun migrate`, ...), which Pint doesn't have.
+    pub fn pun(message: impl Into<String>, error: RunError) -> Abort {
+        Abort {
+            message: message.into(),
+            pint: false,
+            before: String::new(),
+            error,
+        }
+    }
+}
+
+impl std::fmt::Display for Abort {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        f.write_str(&self.message)
+    }
+}
+
+impl std::error::Error for Abort {}
+
+/// How a failed run shows its error.
+pub struct Failure {
+    /// `pun format`, `lint` and `check`: a plain error is Pint's message (its box), not Pun's own.
+    pub pint: bool,
+    /// A `--format` or `-q` run: Pint's box on stdout for the errors Pint has too.
+    pub machine: bool,
+    /// `--format=github`: the error as an annotation, and nothing else.
+    pub github_format: bool,
+    /// Human output under GitHub Actions: the annotation follows the error.
+    pub annotate: bool,
+    pub color: ColorChoice,
+}
+
+/// Print a run's error the way the run prints (agent line, annotation, Pint's box or Pun's run error on stderr);
+/// the exit code is 2, Pun couldn't run.
+pub fn fail(e: anyhow::Error, f: &Failure) -> u8 {
+    let abort = match e.downcast::<Abort>() {
+        Ok(a) => a,
+        Err(e) if f.pint => Abort::pint(e.to_string(), None),
+        Err(e) => {
+            let message = format!("{e:#}");
+            Abort::pun(
+                message.clone(),
+                RunError {
+                    path: None,
+                    line: None,
+                    message,
+                    hint: None,
+                },
+            )
+        }
+    };
+    if crate::agent::enabled() {
+        print!("{}", crate::agent::error(&abort.to_string()));
+    } else if f.github_format {
+        print!("{}", github::run_error(&abort.message));
+    } else if f.machine && abort.pint {
+        print!("{}{}", abort.before, pint_error::render(&abort.message));
+    } else {
+        let root = std::env::current_dir().unwrap_or_default();
+        let r = Renderer::new(Look::stderr(f.color), root);
+        eprint!("{}", r.run_error(&abort.error));
+        if f.annotate {
+            print!("{}", github::run_error(&abort.message));
+        }
+    }
+    2
 }
 
 pub const ABOUT: &str =
@@ -113,9 +219,9 @@ pub fn abort_box(title: Option<&str>, message: &str, decorated: bool) -> String 
 
 /// EnsurePrettierIsConfigured, run before anything else when pint.json sets `"Pint/laravel_blade": true` (or
 /// `--blade`): Node must exist and prettier, prettier-plugin-blade and prettier-plugin-tailwindcss must resolve
-/// from the project at the required versions. Returns Pint's output when it would abort.
+/// from the project at the required versions. Returns the abort (Pint's message and box) when it would abort.
 /// ponytail: Pint offers to install missing packages when interactive; Pun always takes the non-interactive "no".
-pub fn ensure_prettier(root: &Path, enabled: bool) -> Option<String> {
+pub fn ensure_prettier(root: &Path, enabled: bool) -> Option<Abort> {
     use std::process::{Command, Stdio};
     if !enabled {
         return None;
@@ -148,9 +254,13 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
         .filter(|o| o.status.success())
         .and_then(|o| serde_json::from_slice::<Vec<Option<String>>>(&o.stdout).ok());
     let Some(probes) = probes else {
-        return Some(pint_error::render(
+        let mut abort = Abort::pint(
             "The rules enabled in your pint configuration require Node.js to be installed.",
-        ));
+            Some("install Node.js, or turn `format/laravel/blade` off in pun.toml".into()),
+        );
+        abort.error.message =
+            "`format/laravel/blade` needs Node.js, and there is none on PATH".into();
+        return Some(abort);
     };
     let manager = if root.join("bun.lock").exists() || root.join("bun.lockb").exists() {
         ("bun", "add -d")
@@ -186,7 +296,19 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
             "The rules enabled in your pint configuration require the following prettier dependencies to be installed: {}.",
             missing.join(", ")
         );
-        return Some(warning + &pint_error::render(&msg));
+        let install = format!(
+            "install them: {} {} {}",
+            manager.0,
+            manager.1,
+            missing.join(" ")
+        );
+        let mut abort = Abort::pint(msg, Some(install));
+        abort.before = warning;
+        abort.error.message = format!(
+            "`format/laravel/blade` needs {} in the project",
+            missing.join(", ")
+        );
+        return Some(abort);
     }
     if !outdated.is_empty() {
         let list: Vec<String> = outdated
@@ -205,7 +327,23 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
             manager.1,
             specs.join(" ")
         );
-        return Some(pint_error::render(&msg));
+        let have: Vec<String> = (outdated.iter())
+            .map(|(p, v, c)| format!("{p} {v} (needs {c})"))
+            .collect();
+        let mut abort = Abort::pint(
+            msg,
+            Some(format!(
+                "update them: {} {} {}",
+                manager.0,
+                manager.1,
+                specs.join(" ")
+            )),
+        );
+        abort.error.message = format!(
+            "`format/laravel/blade` needs newer prettier packages: {}",
+            have.join(", ")
+        );
+        return Some(abort);
     }
     None
 }
@@ -234,7 +372,8 @@ fn error_line(message: &str) -> usize {
         .unwrap_or(0)
 }
 
-/// ElaborateSummary::execute (output part). Errors (bad `--format`) are Pint aborts.
+/// ElaborateSummary::execute (output part). Errors (bad `--format`, an unwritable `--output-to-file`) are Pint's
+/// aborts, run errors for Pun.
 pub fn emit(
     ctx: &Ctx,
     results: &[FileResult],
@@ -242,32 +381,21 @@ pub fn emit(
     quiet: bool,
     to_file: Option<&Path>,
     file_format: Option<&str>,
-) -> u8 {
+) -> Result<()> {
     let out_dec = console::decorated(1, ctx.ansi, ctx.no_ansi);
-    match emit_inner(ctx, results, format, quiet, to_file, file_format, out_dec) {
-        Ok(code) => code,
-        Err(e) => {
-            print!("{}", pint_error::render(&e.to_string()));
-            1
-        }
-    }
-}
-
-fn emit_inner(
-    ctx: &Ctx,
-    results: &[FileResult],
-    format: Option<&str>,
-    quiet: bool,
-    to_file: Option<&Path>,
-    file_format: Option<&str>,
-    out_dec: bool,
-) -> Result<u8> {
+    let unsupported = |e: anyhow::Error| {
+        let hint = "use json, txt, agent, checkstyle, junit, xml, gitlab or github";
+        anyhow::Error::new(Abort::pint(e.to_string(), Some(hint.into())))
+    };
     let err_dec = console::decorated(2, ctx.ansi, ctx.no_ansi);
     let mut out = String::new();
     if crate::agent::enabled() && format.is_none() {
         out = agent(ctx, results);
+    } else if format == Some("github") {
+        // Not formatter markup: printed as is.
+        print!("{}", annotations(ctx, results));
     } else if let Some(f) = format {
-        out = reporter(ctx, results, f, out_dec)?;
+        out = reporter(ctx, results, f, out_dec).map_err(unsupported)?;
     } else if quiet {
         for i in issues(results) {
             eprintln!(
@@ -285,21 +413,33 @@ fn emit_inner(
         }
     } else {
         print!("{}", human(ctx, results));
+        if ctx.github {
+            print!("{}", annotations(ctx, results));
+        }
     }
     print!("{}", fmt(&out, out_dec));
     std::io::Write::flush(&mut std::io::stdout())?;
     if let (Some(path), Some(f)) = (to_file, file_format.or(format))
-        && let Err(e) = std::fs::write(path, reporter(ctx, results, f, out_dec)?)
+        && let Err(e) = std::fs::write(
+            path,
+            reporter(ctx, results, f, out_dec).map_err(unsupported)?,
+        )
     {
         // PHP's warning, rendered as an uncaught ErrorException. Rust adds " (os error N)" after the same strerror.
         let e = e.to_string();
+        let e = e.split(" (os error").next().unwrap_or(&e);
         let msg = format!(
-            "file_put_contents({}): Failed to open stream: {}",
+            "file_put_contents({}): Failed to open stream: {e}",
             path.display(),
-            e.split(" (os error").next().unwrap_or(&e)
         );
-        print!("{}", pint_error::render(&msg));
-        return Ok(1);
+        let mut abort = Abort::pint(msg, None);
+        abort.error = RunError {
+            path: None,
+            line: None,
+            message: format!("can't write the report to {}: {e}", path.display()),
+            hint: None,
+        };
+        return Err(abort.into());
     }
     if format.is_some() {
         for r in errors(results) {
@@ -312,7 +452,47 @@ fn emit_inner(
             );
         }
     }
-    Ok(0)
+    Ok(())
+}
+
+/// GitHub annotations (output.md Build 4): under `--test` (and `pun lint`/`pun check` without `--fix`) each file
+/// that needs changes, at its first changed line, titled with the rule IDs; syntax errors at their place; a fixer's
+/// failure at the file. Fixed files print nothing, nothing is left to do in CI.
+fn annotations(ctx: &Ctx, results: &[FileResult]) -> String {
+    let file = |f: &FileResult| {
+        let ids: Vec<String> = (f.applied.iter())
+            .map(|n| pun_config::rule_of(n).unwrap_or(n).to_string())
+            .collect();
+        let lint: Vec<&str> = (ids.iter().map(String::as_str))
+            .filter(|id| !id.starts_with("format/"))
+            .collect();
+        let message = match lint.is_empty() {
+            true => "File needs formatting".to_string(),
+            false => format!("{} can fix this file", lint.join(", ")),
+        };
+        github::file(&f.rel, f.line, &ids, &message)
+    };
+    let mut lines: Vec<(&str, String)> = vec![];
+    for f in results {
+        let line = match f.status {
+            Status::Fixed if ctx.dry_run => file(f),
+            Status::Invalid => {
+                let (problem, _, index) = syntax_error(f);
+                github::problem(&problem, &index)
+            }
+            Status::Exception | Status::Lint => github::file(
+                &f.rel,
+                error_line(&f.message).max(1),
+                &["fixer-error".into()],
+                &f.message,
+            ),
+            _ => continue,
+        };
+        lines.push((&f.rel, line));
+    }
+    lines.extend(ctx.remaining.iter().map(|f| (f.rel.as_str(), file(f))));
+    lines.sort_by(|a, b| a.0.cmp(b.0));
+    lines.into_iter().map(|l| l.1).collect()
 }
 
 /// Pun's own output: one file line per changed file (`-v`: and per unchanged one, dim, and each change's diff),
@@ -755,6 +935,7 @@ fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) ->
         "junit" => fix_report::junit(&changes, ctx.verbose, decorated),
         "xml" => fix_report::xml_report(&changes, ctx.verbose, decorated),
         "gitlab" => fix_report::gitlab(&changes, decorated),
+        "github" => annotations(ctx, results),
         _ => bail!("Format [{format}] is not supported."),
     })
 }

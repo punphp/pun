@@ -214,14 +214,18 @@ impl Ctx {
         }
         assert_eq!(got, want, "{pre:?} {args:?} {env:?} (our stderr: {err})");
     }
-    /// Both fail with exit 1 and the same Symfony error box on stdout.
-    fn same_error(&self, dir: &Path, tree: &[(&str, &str)], args: &[&str]) {
+    /// Pint aborts with exit 1 and its error box (on stdout) naming `message`; Pun, a run error (output.md §1),
+    /// prints `message` as one line on stderr and exits 2, and the files are the same.
+    fn same_error(&self, dir: &Path, tree: &[(&str, &str)], args: &[&str], message: &str) {
         reset(dir, tree);
-        let (want, werr) = self.pint(dir, args, &[], b"");
+        let (mut want, werr) = self.pint(dir, args, &[], b"");
         reset(dir, tree);
         let (got, err) = pun_format(dir, args, &[], b"");
         assert_eq!(want.code, Some(1), "{args:?}: {werr}");
-        assert_eq!(got, want, "{args:?}: our stderr {err}");
+        assert!(want.stdout.contains(message), "{}", want.stdout);
+        assert_eq!(err, format!("x {message}\n"), "{args:?}");
+        (want.stdout, want.code) = (String::new(), Some(2));
+        assert_eq!(got, want, "{args:?}");
     }
 }
 
@@ -300,13 +304,23 @@ fn matches_pint() {
     cx.same(&dir, &tree, &[], &["--diff=main", "--test"], &[], b"");
 
     // Errors: unknown reporter, missing path, missing `in` dir, unreadable / unwritable files.
-    cx.same_error(&dir, &tree, &["nope"]);
+    cx.same_error(
+        &dir,
+        &tree,
+        &["nope"],
+        r#"The path "nope" is not readable."#,
+    );
     let mut bad_in = tree.clone();
     bad_in[1] = (
         "pint.json",
         r#"{"preset":"empty","rules":{"array_syntax":true},"in":["nodir"]}"#,
     );
-    cx.same_error(&dir, &bad_in, &[]);
+    cx.same_error(
+        &dir,
+        &bad_in,
+        &[],
+        r#"The "nodir" directory does not exist."#,
+    );
     // Unreadable / unwritable files: same box (see output.rs error_boxes_like_pint for the byte-exact cases).
     // Under an agent Pint drops the progress; Pun prints one error line instead (tests/agent.rs).
     let env: &[(&str, &str)] = &[];
@@ -322,11 +336,23 @@ fn matches_pint() {
         locked();
         let (want, _) = cx.pint(&dir, args, env, b"");
         locked();
-        let (got, _) = pun_format(&dir, args, env, b"");
-        // Pint prints the progress symbols of the files before the aborting one, then the box; Pun only the box.
+        let (got, err) = pun_format(&dir, args, env, b"");
+        // Pint prints the progress symbols of the files before the aborting one, then the box (exit 1); Pun its
+        // run error alone, on stderr (exit 2).
+        let fix = dir.join("app/Fix.php");
+        let message = match mode {
+            0o444 => format!(
+                r#"Cannot write to file "{}" as it is not writable."#,
+                fix.display()
+            ),
+            _ => format!(r#"Failed to read content from "{}"."#, fix.display()),
+        };
         assert!(want.stdout.starts_with("\n  "), "{}", want.stdout);
-        assert!(want.stdout.ends_with(&got.stdout), "{}", got.stdout);
-        assert_eq!(got.code, want.code);
+        assert_eq!(want.code, Some(1));
+        assert_eq!(
+            (got.stdout, err, got.code),
+            (String::new(), format!("x {message}\n"), Some(2))
+        );
     }
     std::fs::set_permissions(
         dir.join("app/Fix.php"),
@@ -379,6 +405,10 @@ fn matches_pint() {
 fn blade_like_pint() {
     let Some(oracle) = oracle() else { return };
     let modules = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-fixers/node_modules");
+    if !modules.join("prettier").exists() {
+        eprintln!("skipping: no prettier in crates/pun-fixers/node_modules (bun install there)");
+        return;
+    }
     let dir = tmp("blade");
     for (preset, blade, check) in [
         (
@@ -555,16 +585,16 @@ fn list_files() {
         pun(&dir, &["list-files", "--format=txt"]),
         (
             String::new(),
-            "pun: --format=txt: expected `json`\n".into(),
-            Some(1)
+            "x --format=txt: expected `json`\n".into(),
+            Some(2)
         )
     );
     assert_eq!(
         pun(&dir, &["list-files", "nope"]),
         (
             String::new(),
-            "pun: The path \"nope\" is not readable.\n".into(),
-            Some(1)
+            "x The path \"nope\" is not readable.\n".into(),
+            Some(2)
         )
     );
     // The hidden `pun format --list-files` flag is gone.
@@ -587,7 +617,7 @@ fn pun_only_behaviour() {
         let (out, err, code) = pun(&dir, cmd);
         assert_eq!(
             (out.as_str(), err.as_str(), code),
-            ("", "pun: No pun.toml found. Run `pun migrate`.\n", Some(1)),
+            ("", "x No pun.toml found. Run `pun migrate`.\n", Some(2)),
             "{cmd:?}"
         );
     }
@@ -650,10 +680,7 @@ fn pun_only_behaviour() {
             (out.as_str(), err, code),
             (
                 "",
-                format!(
-                    "pun: {}: rule not supported by Pun yet: `format/strings/explicit-variable`\n",
-                    toml.display()
-                ),
+                "x pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`\n  remove it from pun.toml to run the other rules\n".to_string(),
                 Some(2)
             ),
             "{cmd:?}"
@@ -669,10 +696,7 @@ fn pun_only_behaviour() {
     assert_eq!(
         (err, code),
         (
-            format!(
-                "pun: {}: rules not supported by Pun yet: `format/strings/explicit-variable`, `lint/security/no-homoglyph-names`\n",
-                toml.display()
-            ),
+            "x pun.toml  rules not supported by Pun yet: `format/strings/explicit-variable`, `lint/security/no-homoglyph-names`\n  remove them from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );
@@ -699,10 +723,7 @@ fn pun_only_behaviour() {
     assert_eq!(
         (err, code),
         (
-            format!(
-                "pun: {}: rule not supported by Pun yet: `lint/style/prefer-early-return`\n",
-                toml.display()
-            ),
+            "x pun.toml  rule not supported by Pun yet: `lint/style/prefer-early-return`\n  remove it from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );
@@ -733,7 +754,7 @@ fn pun_only_behaviour() {
             (
                 "",
                 format!(
-                    "pun: --preset {p} was removed: use --preset empty with its rules under [format.rules] in pun.toml (`pun migrate --preset {p}` expands it)\n"
+                    "x --preset {p} was removed: use --preset empty with its rules under [format.rules] in pun.toml (`pun migrate --preset {p}` expands it)\n"
                 ),
                 Some(2)
             ),
@@ -748,12 +769,9 @@ fn pun_only_behaviour() {
     // A broken pun.toml is a one-line error.
     std::fs::write(dir.join("pun.toml"), "[format]\nnope = 1\n").unwrap();
     let (out, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
-    assert_eq!((out.as_str(), code), ("", Some(1)));
+    assert_eq!((out.as_str(), code), ("", Some(2)));
     assert!(
-        err.starts_with(&format!(
-            "pun: invalid {}: ",
-            dir.join("pun.toml").display()
-        )),
+        err.starts_with(&format!("x invalid {}: ", dir.join("pun.toml").display())),
         "{err}"
     );
 
@@ -775,7 +793,7 @@ fn pun_only_behaviour() {
     let t: toml::Value = toml::from_str(&out).unwrap();
     assert_eq!(t["format"]["preset"].as_str(), Some("psr12"));
     let (_, err, code) = pun(&dir, &["config", "--preset=nope"]);
-    assert_eq!((err.as_str(), code), ("pun: Preset not found.\n", Some(1)));
+    assert_eq!((err.as_str(), code), ("x Preset not found.\n", Some(2)));
 }
 
 /// `pun migrate` reads a .php-cs-fixer.php and its Finder through PHP-CS-Fixer itself: a project fixer class, which
@@ -812,7 +830,7 @@ fn migrates_php_cs_fixer_config() {
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["migrate"]);
-    assert_eq!(code, Some(1));
+    assert_eq!(code, Some(2));
     assert!(err.contains("bad config"), "{err}");
     assert!(!dir.join("pun.toml").exists());
     // Without PHP-CS-Fixer installed the config can't be read.
@@ -822,8 +840,8 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(
         (err.as_str(), code),
         (
-            "pun: no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can read the config\n",
-            Some(1)
+            "x no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can read the config\n",
+            Some(2)
         )
     );
     // The custom fixer is named and skipped; the rest migrates, the Finder's `in` to [files] paths.
@@ -1035,8 +1053,8 @@ docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mappin
         pun(&dir, &["explain", "nope"]),
         (
             String::new(),
-            "pun: `nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)\n".into(),
-            Some(1)
+            "x `nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)\n".into(),
+            Some(2)
         )
     );
 }

@@ -229,16 +229,36 @@ impl Cx {
     fn same(&self, script: &str, sub: &str, args: &[&str]) -> Run {
         self.same_as(script, sub, args, args, b"")
     }
-    /// Same Symfony error box on stdout (exit 1), and it carries `message`.
-    fn same_error(&self, script: &str, args: &[&str], message: &str) {
-        let r = self.same(script, "", args);
+    /// Pint aborts (exit 1) with its error box carrying `message`; Pun exits 2 (output.md §2). A `--format` or `-q`
+    /// run prints the same box; a human run prints `pun` (Pun's run error, ASCII without a UTF-8 locale) on stderr
+    /// instead, after its usual output. The files are the same.
+    fn same_error(&self, script: &str, args: &[&str], message: &str, pun: &str) {
+        let mut want = self.pint(script, "", args, b"");
+        let mut got = self.ours(script, "", args, b"");
         let squash = |s: &str| s.split_whitespace().collect::<String>();
-        assert_eq!(r.code, Some(1), "{args:?}: {r:?}");
+        assert_eq!(want.code, Some(1), "{args:?}: {want:?}");
         assert!(
-            squash(&r.stdout).contains(&squash(message)),
+            squash(&want.stdout).contains(&squash(message)),
             "{args:?}: pint said {}",
-            r.stdout
+            want.stdout
         );
+        assert_eq!(got.code, Some(2), "{args:?}: {got:?}");
+        if common::human(args) {
+            (want.stdout, got.stdout) = common::human_pair(
+                &want.stdout,
+                &got.stdout,
+                want.files.keys(),
+                got.files.keys(),
+            );
+            assert_eq!(common::strip_sgr(&got.stderr), pun, "{args:?}");
+            // Without a summary (an abort before any file), Pint's stdout is the box alone.
+            if !want.stdout.starts_with("named: ") {
+                want.stdout = String::new();
+            }
+            got.stderr = want.stderr.clone();
+        }
+        got.code = want.code;
+        assert_eq!(got, want, "{args:?}");
     }
 }
 
@@ -329,6 +349,7 @@ fn git_selection_resolves_symlinks_like_pint() {
         "ln -s Missing.php app/Dangling.php",
         &["--dirty"],
         r#"The path "ROOT/app/Dangling.php" is not readable."#,
+        "x The path \"ROOT/app/Dangling.php\" is not readable.\n",
     );
 }
 
@@ -405,10 +426,10 @@ printf '{"preset":"empty","rules":{"array_syntax":true},"notName":["Keep.php"]}'
         b"",
         None,
     );
-    assert_eq!(r.code, Some(1));
+    assert_eq!(r.code, Some(2));
     assert!(
         r.stderr
-            .starts_with("pun: The configuration file [ROOT/bad.json] is not valid JSON."),
+            .starts_with("x The configuration file [ROOT/bad.json] is not valid JSON."),
         "{}",
         r.stderr
     );
@@ -431,7 +452,6 @@ fn output_to_file_matches_pint() {
             "--output-format=checkstyle",
         ],
         &["--test", "--output-to-file=r.x", "--output-format=gitlab"],
-        &["--test", "--output-to-file=r.x", "--output-format=nope"],
         &[
             "--test",
             "-q",
@@ -439,19 +459,54 @@ fn output_to_file_matches_pint() {
             "--output-format=junit",
         ],
         &["--dirty", "--output-to-file=r.json", "--output-format=json"],
-        &[
-            "--test",
-            "--output-to-file=nodir/r.json",
-            "--output-format=json",
-        ],
-        &[
-            "--test",
-            "--output-to-file=app",
-            "--output-format=json",
-            "--ansi",
-        ],
     ] {
         cx.same("bad app/New.php", "", args);
+    }
+    // Run errors: exit 2 for Pun (output.md §2), Pint's box kept for -q and --format runs.
+    let formats = "use json, txt, agent, checkstyle, junit, xml, gitlab or github";
+    for (args, message, pun) in [
+        (
+            &["--test", "--output-to-file=r.x", "--output-format=nope"][..],
+            "Format [nope] is not supported.".to_string(),
+            format!("x Format [nope] is not supported.\n  {formats}\n"),
+        ),
+        (
+            &[
+                "--test",
+                "-q",
+                "--output-to-file=r.x",
+                "--output-format=nope",
+            ],
+            "Format [nope] is not supported.".into(),
+            String::new(),
+        ),
+        (
+            &[
+                "--test",
+                "--output-to-file=nodir/r.json",
+                "--output-format=json",
+            ],
+            "file_put_contents(nodir/r.json): Failed to open stream: No such file or directory"
+                .into(),
+            "x can't write the report to nodir/r.json: No such file or directory\n".into(),
+        ),
+        (
+            &[
+                "--test",
+                "--output-to-file=app",
+                "--output-format=json",
+                "--ansi",
+            ],
+            "file_put_contents(app): Failed to open stream: Is a directory".into(),
+            "x can't write the report to app: Is a directory\n".into(),
+        ),
+        (
+            &["--test", "--format=json", "--output-to-file=app"],
+            "file_put_contents(app): Failed to open stream: Is a directory".into(),
+            String::new(),
+        ),
+    ] {
+        cx.same_error("bad app/New.php", args, &message, &pun);
     }
 }
 

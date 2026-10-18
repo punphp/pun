@@ -70,7 +70,22 @@ delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, .
 what they would change, `pun lint --fix` applies every enabled rule but those with `fix = "off"`. `pun check` runs format and lint in one pass
 (fixers in PHP-CS-Fixer's priority order, as Pint runs them), so `pun check --fix` on a migrated project writes exactly
 what `pint` wrote; `pun analyse` joins it once it exists. The human output is Pun's own (one line per changed file,
-one summary line); exit codes and the `--format` reporters are Pint's.
+one summary line); the `--format` reporters are Pint's.
+
+**Exit codes.** 0 when nothing needs changing, 1 for findings (a file needs formatting, a lint error, a syntax error
+in the input), as in Pint. 2 when Pun couldn't run, in every command: a bad `pun.toml` or `--format`, a rule Pun
+hasn't ported, a path it can't read, a report it can't write, Node or prettier missing for Blade, or a rule that
+failed on a file. Pint exits 1 there; Pun prints one red line and a hint on stderr (`--format` and `-q` runs keep
+Pint's error box on stdout).
+
+**GitHub Actions.** Under GitHub Actions (`GITHUB_ACTIONS=true`) `pun format`, `pun lint` and `pun check` follow
+their human output with one annotation per finding, so the pull request shows them inline; `--format=github` prints
+only the annotations. They have PHPStan's shape:
+
+```
+::error file=app/Models/User.php,line=12,col=0,title=format/arrays/syntax::File needs formatting
+::error file=app/Broken.php,line=3,col=1,title=syntax-error::Unclosed '(' on line 2
+```
 
 **Coding agents.** Under a coding agent (detected from the agent's environment variables with
 [laravel/agent-detector](https://github.com/laravel/agent-detector)'s list, then the
@@ -92,7 +107,7 @@ A clean run prints only the summary line (`pun format: pass (412 checked, 0.21s)
 `PAO_DISABLE` / `PAO_FORCE`, then detection. Without an agent the output is unchanged.
 
 **Rules Pun hasn't ported.** Pun never runs PHP for a rule it lacks. A `pun.toml` that enables one stops `pun format`,
-`pun lint` and `pun check` with exit code 2 and a line naming the rule (`rule not supported by Pun yet: ...`). Remove
+`pun lint` and `pun check` with exit code 2 and a line naming the rule (`pun.toml  rule not supported by Pun yet: ...`). Remove
 it, or send a PR.
 
 **Extra rules.** Opt-in `Pun/` rules ported from Mago (Laravel and Pest idioms, redundant code, ...) are

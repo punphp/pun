@@ -508,6 +508,14 @@ fn run_error_sample() {
         Renderer::new(ascii(), "/p").run_error(&no_path),
         "x cannot read the file\n"
     );
+    let two_lines = RunError {
+        hint: Some("first\nsecond".into()),
+        ..no_path
+    };
+    assert_eq!(
+        plain().run_error(&two_lines),
+        "✖ cannot read the file\n  first\n  second\n"
+    );
 }
 
 #[test]

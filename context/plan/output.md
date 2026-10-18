@@ -197,3 +197,35 @@ silent:
 - **`pun format --watch`** records every file's content after the first run, so FSEvents reporting the first run's own
   writes late doesn't start a second run.
 
+
+Assistant's calls while building Build 4 and 6 (GitHub annotations, exit code 2; wf/platform-2, 2026-10-18), where
+the plan is silent:
+
+- **Annotation shape:** PHPStan's GithubErrorFormatter, ported in `crates/pun-cli/src/github.rs`:
+  `::error file=<path>,line=<n>,col=<c>,title=<rule IDs>::<message>`, `::warning …` for a lint `warning`, and
+  `::error ::<message>` for a run error. PHPStan always writes `col=0`; Pun writes the problem's column and keeps
+  `col=0` for a whole file. `title=` (the rule IDs, `, ` joined) is Pun's addition. The message is escaped as
+  formatMessage does (newlines, `@mentions` in backticks) plus `%` and `\r` (GitHub's escapeData), and property
+  values for `%`, `\r`, `\n`, `:` and `,` (escapeProperty), which PHPStan leaves out, so a path with `,` or `:` and a
+  message with `%` survive.
+- **What is annotated:** under `--test` (and `pun lint` / `pun check` without `--fix`) each file that needs changes,
+  at its first changed line (GitlabReporter::getLines' `begin`: the line of the first byte that differs), with the
+  message `File needs formatting` when only format rules change it and `<lint rule IDs> can fix this file`
+  otherwise; `--fix`'s remaining fixes the same way; syntax errors at the problem block's place (rule
+  `syntax-error`, PHP's message as the block prints it); a fixer's failure at its file, rule `fixer-error`. Fixed
+  files print nothing.
+- **Automatic mode:** only `GITHUB_ACTIONS=true` (what GitHub sets), only for human output (no `--format`, `-q` or
+  agent mode); the annotations follow the human output on stdout. A run error there is Pun's run error on stderr
+  plus `::error ::<message>` on stdout. `--format=github` (also `--output-format=github`) prints only the
+  annotations, not through Symfony's formatter markup.
+- **Run errors (exit 2)** are: config load errors, an unported rule, a bad `--format` / `--output-format`, Node or
+  prettier missing for Blade, an `--output-to-file` that can't be written, an unreadable path or file, a malformed
+  `@php-cs-fixer-ignore`, a fixer that threw or produced invalid code, and every error of `migrate`, `list-files`,
+  `config` and `explain`. Findings stay 1: a file needing formatting, a lint error, a syntax error in the input.
+- **Where run errors print:** on stderr through `Renderer::run_error`. A message of several lines (Pint's) shows its
+  first line as the error and the rest as the hint; hints are indented line by line. Prettier and Node errors get
+  Pun's own wording naming `format/laravel/blade` and the install command for the project's package manager.
+  `--format=<machine>` and `-q` runs keep Pint's box (and Pint's yellow prettier warning) on stdout, with exit 2;
+  config errors, which Pint has no box for, are Pun's run error there too. Agent mode keeps `agent::error`.
+- **Pint parity:** `scripts/cli-parity.sh` expects Pint 1 and Pun 2 for the argument sets in its `ABORTS`
+  allow-list, and still compares their machine stdout byte for byte.

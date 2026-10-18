@@ -180,7 +180,18 @@ impl Cx {
         let php = which("php");
         reset(&self.dir, tree);
         let want = run(
-            &[&[php.as_str(), self.oracle.to_str().unwrap()][..], args].concat(),
+            // Production PHP (php.ini-production) compiles assertions out: without a php.ini, FixerAnnotationAnalyzer's
+            // assert() would fail before the "Undefined array key 1" users see.
+            &[
+                &[
+                    php.as_str(),
+                    "-d",
+                    "zend.assertions=-1",
+                    self.oracle.to_str().unwrap(),
+                ][..],
+                args,
+            ]
+            .concat(),
             &self.dir,
             o,
         );
@@ -190,10 +201,12 @@ impl Cx {
         (want, got)
     }
 
-    /// `same` for `-v` error boxes: in Pint's exception trace the PHAR's absolute path becomes `phar://pint/` and
+    /// `same_abort` for `-v` error boxes in a `--format` run: in Pint's exception trace the PHAR's absolute path becomes `phar://pint/` and
     /// the PHP call frames under the throw site are dropped (Pun prints only the throw site).
     fn same_trace(&self, tree: &[(&str, &str)], args: &[&str]) -> Run {
         let (mut want, got) = self.pair(tree, args, PLAIN);
+        assert_eq!((want.code, got.code), (Some(1), Some(2)), "{args:?}");
+        want.code = Some(2);
         assert!(
             want.stdout.contains("Exception trace:"),
             "{args:?}: {}",
@@ -209,7 +222,23 @@ impl Cx {
     }
 
     fn same_cmd(&self, pun: &[&str], tree: &[(&str, &str)], args: &[&str], o: Opts) -> Run {
+        self.same_exit(pun, tree, args, o, None)
+    }
+
+    /// `same_cmd`, where Pint exits 1 and Pun `code` (2: a fixer failed, Pun couldn't run; output.md §2).
+    fn same_exit(
+        &self,
+        pun: &[&str],
+        tree: &[(&str, &str)],
+        args: &[&str],
+        o: Opts,
+        code: Option<i32>,
+    ) -> Run {
         let (mut want, mut got) = self.pair_cmd(pun, tree, args, o);
+        if code.is_some() {
+            assert_eq!(want.code, Some(1), "{args:?}");
+            want.code = code;
+        }
         if common::human(args) {
             (want.stdout, got.stdout) = common::human_pair(
                 &want.stdout,
@@ -217,6 +246,40 @@ impl Cx {
                 want.files.keys(),
                 got.files.keys(),
             );
+        }
+        assert_eq!(got, want, "{args:?} env={:?} tty={:?}", o.env, o.tty);
+        got
+    }
+}
+
+impl Cx {
+    /// A run error: Pint aborts with its box (exit 1), Pun exits 2 (output.md §2). A `--format` or `-q` run prints
+    /// Pint's box byte for byte; a human run prints `human` (Pun's run error, output.md §1) on stderr instead,
+    /// after its usual output. The files are the same either way.
+    fn same_abort(&self, tree: &[(&str, &str)], args: &[&str], o: Opts, human: &str) -> Run {
+        let (mut want, mut got) = self.pair(tree, args, o);
+        assert_eq!(
+            (want.code, got.code),
+            (Some(1), Some(2)),
+            "{args:?}: {got:?}"
+        );
+        want.code = Some(2);
+        if common::human(args) {
+            assert!(
+                want.stdout.ends_with("\n\n") && got.stderr == human,
+                "{args:?}: pint {want:?}, pun {got:?}"
+            );
+            (want.stdout, got.stdout) = common::human_pair(
+                &want.stdout,
+                &got.stdout,
+                want.files.keys(),
+                got.files.keys(),
+            );
+            // Without a summary (an abort before any file), Pint's stdout is the box alone.
+            if !want.stdout.starts_with("named: ") {
+                want.stdout = String::new();
+            }
+            want.stderr = got.stderr.clone();
         }
         assert_eq!(got, want, "{args:?} env={:?} tty={:?}", o.env, o.tty);
         got
@@ -329,27 +392,21 @@ fn terminal_like_pint() {
     let Some(cx) = Cx::new("tty") else { return };
     let t = tree();
     // An abort box wraps at the width `stty -a` reports (no COLUMNS on a terminal).
-    for args in [
-        &["--format=txt", "--test", "-v"][..],
-        &["-q", "--test"],
-        &["--format=a-format-name-long-enough-to-wrap-in-a-fifty-column-terminal"],
-    ] {
-        cx.same(
-            &t,
-            args,
-            Opts {
-                tty: Some(50),
-                ..PLAIN
-            },
-        );
-    } // A pty of 0 columns: Symfony falls back to 80.
-    cx.same(
+    let tty = |cols| Opts {
+        tty: Some(cols),
+        ..PLAIN
+    };
+    for args in [&["--format=txt", "--test", "-v"][..], &["-q", "--test"]] {
+        cx.same(&t, args, tty(50));
+    }
+    let wide = "--format=a-format-name-long-enough-to-wrap-in-a-fifty-column-terminal";
+    cx.same_abort(&t, &[wide], tty(50), "");
+    // A pty of 0 columns: Symfony falls back to 80.
+    cx.same_abort(
         &t,
         &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped"],
-        Opts {
-            tty: Some(0),
-            ..PLAIN
-        },
+        tty(0),
+        "",
     );
 }
 
@@ -655,28 +712,29 @@ fn ignore_annotations_like_pint() {
                 format!("<?php\n// @php-cs-fixer-ignore{bad}\n$a = \"x\";\n").into_boxed_str(),
             ),
         ));
-        let r = cx.same(&t, &["--test"], PLAIN);
-        assert_eq!(r.code, Some(1), "{bad}");
-        cx.same_trace(&t, &["--test", "-v", "--ansi"]);
+        cx.same_abort(&t, &["--test", "--format=json"], PLAIN, "");
+        cx.same_trace(&t, &["--test", "-v", "--ansi", "--format=txt"]);
     }
 }
 
-/// Bad `--format`: Pint's abort box (stdout), wrapped to the terminal, red with --ansi; files are still fixed.
+/// Bad `--format`: Pint's abort box (stdout), wrapped to the terminal, red with --ansi; files are still fixed; Pun
+/// exits 2.
 #[test]
 fn abort_box_like_pint() {
     let Some(cx) = Cx::new("abort") else { return };
     let t = tree();
-    cx.same(&t, &["--format=nope"], PLAIN);
-    cx.same(&t, &["--format=nope", "--ansi", "--test"], PLAIN);
-    cx.same(
+    cx.same_abort(&t, &["--format=nope"], PLAIN, "");
+    cx.same_abort(&t, &["--format=nope", "--ansi", "--test"], PLAIN, "");
+    cx.same_abort(
         &t,
         &["--format=a-format-name-long-enough-to-wrap-in-a-narrow-terminal"],
         Opts {
             env: &[("COLUMNS", "30")],
             ..PLAIN
         },
+        "",
     );
-    cx.same(
+    cx.same_abort(
         &t,
         &[
             "--test",
@@ -685,40 +743,65 @@ fn abort_box_like_pint() {
             "--format=json",
         ],
         PLAIN,
+        "",
     );
     // COLUMNS=0: Symfony doesn't wrap at all.
-    cx.same(&t, &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped-at-all"], Opts { env: &[("COLUMNS", "0")], ..PLAIN });
+    cx.same_abort(&t, &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped-at-all"], Opts { env: &[("COLUMNS", "0")], ..PLAIN }, "");
 }
 
-/// Run errors (with the PHP exception's "In X.php line N:" header) as Pint's box on stdout, exit 1, coloured by a raw
-/// `--ansi`. pint.json's own errors are `pun migrate`'s (pun-config's tests have Pint's messages).
+/// Run errors exit 2 (output.md §2). Human runs print Pun's run error (output.md §1) on stderr, red with `--ansi`
+/// or `--color=always`; `--format` and `-q` runs keep Pint's box (with the PHP exception's "In X.php line N:"
+/// header) on stdout, coloured by a raw `--ansi`. pint.json's own errors are `pun migrate`'s (pun-config's tests
+/// have Pint's messages).
 #[test]
 fn error_boxes_like_pint() {
     let Some(cx) = Cx::new("errors") else { return };
     let t = tree();
-    for args in [&["app/Missing.php"][..], &["--ansi", "app/Missing.php"]] {
-        let r = cx.same(&t, args, PLAIN);
-        assert_eq!(r.code, Some(1), "{args:?}");
+    let missing = "The path \"app/Missing.php\" is not readable.";
+    for (args, human) in [
+        (&["app/Missing.php"][..], format!("✖ {missing}\n")),
+        (&["--no-ansi", "app/Missing.php"], format!("✖ {missing}\n")),
+        (
+            &["--ansi", "app/Missing.php"],
+            format!("\x1b[31m✖ {missing}\x1b[0m\n"),
+        ),
+        (&["--format=json", "app/Missing.php"], String::new()),
+    ] {
+        cx.same_abort(&t, args, PLAIN, &human);
+    }
+    let pun_only = |args: &[&str]| run(&[&PUN[..], args].concat(), &cx.dir, PLAIN);
+    for (color, human) in [
+        ("--color=never", format!("✖ {missing}\n")),
+        ("--color=always", format!("\x1b[31m✖ {missing}\x1b[0m\n")),
+    ] {
+        let r = pun_only(&[color, "app/Missing.php"]);
+        assert_eq!((r.stdout.as_str(), r.stderr, r.code), ("", human, Some(2)));
     }
     // A top-level list is an empty config (not invalid JSON).
-    for cfg in [r#"{"in":["nope"]}"#, "[1]", r#"[{"preset":"empty"}]"#] {
+    let nope = "The \"nope\" directory does not exist.";
+    for (cfg, human) in [
+        (r#"{"in":["nope"]}"#, format!("✖ {nope}\n")),
+        ("[1]", String::new()),
+        (r#"[{"preset":"empty"}]"#, String::new()),
+    ] {
         let mut t = tree();
         t[1] = ("pint.json", cfg);
-        let r = cx.same(&t, &["--test"], PLAIN);
-        assert_eq!(r.code, Some(1), "{cfg}");
-        if !cfg.starts_with('[') {
-            cx.same_trace(&t, &["--test", "-v"]);
+        if human.is_empty() {
+            cx.same(&t, &["--test"], PLAIN);
+            continue;
         }
+        cx.same_abort(&t, &["--test"], PLAIN, &human);
+        cx.same_trace(&t, &["--test", "-v", "--format=json"]);
     }
     // -v: the exception class in the box and the throw site under it; -q wins over -v.
     for args in [
         &["--format=nope", "-v"][..],
-        &["app/Missing.php", "-v"],
+        &["app/Missing.php", "-v", "--format=txt"],
         &["--test", "-v", "--format=json", "--output-to-file=app"],
     ] {
         cx.same_trace(&t, args);
     }
-    cx.same(&t, &["-qv", "app/Missing.php"], PLAIN);
+    cx.same_abort(&t, &["-qv", "app/Missing.php"], PLAIN, "");
     let h = run(&[&PUN[..], &["--help"]].concat(), &cx.dir, PLAIN);
     assert!(
         h.code == Some(0)
@@ -737,7 +820,7 @@ fn error_boxes_like_pint() {
     ] {
         let pair = |cmd: &[&str]| {
             reset(&cx.dir, &t);
-            if cmd == PUN {
+            if cmd[0] == PUN[0] {
                 migrate(&cx.dir);
             }
             std::fs::write(&outside, "<?php\n$a = array( 1,2 );\n").unwrap();
@@ -761,15 +844,34 @@ fn error_boxes_like_pint() {
             want.stdout.contains("\nIn ") && want.code == Some(1),
             "{want:?}"
         );
-        // Pint prints the progress of the files before the aborting one, then the box; Pun only the box.
-        let mut got = pair(&PUN);
-        assert!(
-            want.stdout.ends_with(&got.stdout),
-            "mode {mode:o}: {}",
-            got.stdout
+        // Pint prints the progress of the files before the aborting one, then the box; Pun its run error alone,
+        // on stderr, and exits 2.
+        let got = pair(&PUN);
+        // A `--format` run keeps Pint's box (no progress there), and exits 2.
+        fn json<'a>(cmd: &[&'a str]) -> Vec<&'a str> {
+            [cmd, &["--format=json"]].concat()
+        }
+        let mut want_box = pair(&json(&[&which("php"), cx.oracle.to_str().unwrap()]));
+        want_box.stdout = normalise_trace(&want_box.stdout, &cx.oracle);
+        let got_box = pair(&json(&PUN));
+        assert_eq!(
+            (got_box.stdout, got_box.code),
+            (want_box.stdout, Some(2)),
+            "mode {mode:o}"
         );
-        got.stdout = want.stdout.clone();
-        assert_eq!(got, want, "mode {mode:o}");
+        let message = match mode {
+            0o444 => format!(
+                "Cannot write to file \"{}\" as it is not writable.",
+                outside.display()
+            ),
+            _ => format!("Failed to read content from \"{}\".", outside.display()),
+        };
+        assert!(want.stdout.contains(&message[..40]), "{}", want.stdout);
+        assert_eq!(
+            (got.stdout.as_str(), got.stderr, got.code, got.files),
+            ("", format!("✖ {message}\n"), Some(2), want.files),
+            "mode {mode:o}"
+        );
     }
 }
 
@@ -818,22 +920,49 @@ fn prettier_preflight_like_pint() {
         "pint.json",
         r#"{"preset":"laravel","rules":{"Pint/laravel_blade":true}}"#,
     );
-    // Missing packages (npm, then pnpm by lock file), with and without colours, and via --blade.
-    let r = cx.same(&t, &["--test"], PLAIN);
+    // Missing packages (npm, then pnpm by lock file), with and without colours, and via --blade. Pun names the
+    // rule and how to install them (hand-derived from Pint's message and its package-manager choice).
+    let packages = "prettier, prettier-plugin-blade, prettier-plugin-tailwindcss";
+    let needs = format!("✖ `format/laravel/blade` needs {packages} in the project");
+    let install = |m: &str| {
+        format!("  install them: {m} prettier prettier-plugin-blade prettier-plugin-tailwindcss\n")
+    };
+    let r = cx.same_abort(
+        &t,
+        &["--test"],
+        PLAIN,
+        &format!("{needs}\n{}", install("npm install -D")),
+    );
+    assert!(r.files.contains_key("app/Fix.php"));
+    cx.same_abort(
+        &t,
+        &["--ansi"],
+        PLAIN,
+        &format!("\x1b[31m{needs}\x1b[0m\n{}", install("npm install -D")),
+    );
+    let r = cx.same_abort(&t, &["--test", "--format=json"], PLAIN, "");
     assert!(
         r.stdout
-            .contains("prettier dependencies to be installed using [npm]")
-            && r.code == Some(1),
+            .contains("prettier dependencies to be installed using [npm]"),
         "{r:?}"
     );
-    cx.same(&t, &["--ansi"], PLAIN);
-    cx.same_trace(&t, &["--test", "-v"]);
+    cx.same_trace(&t, &["--test", "-v", "--format=json"]);
     let mut pnpm = t.clone();
     pnpm.push(("pnpm-lock.yaml", ""));
-    cx.same(&pnpm, &["--test"], PLAIN);
+    cx.same_abort(
+        &pnpm,
+        &["--test"],
+        PLAIN,
+        &format!("{needs}\n{}", install("pnpm add -D")),
+    );
     let mut flag = tree();
     flag.push(("bun.lock", ""));
-    cx.same(&flag, &["--blade", "--test"], PLAIN);
+    cx.same_abort(
+        &flag,
+        &["--blade", "--test"],
+        PLAIN,
+        &format!("{needs}\n{}", install("bun add -d")),
+    );
     // Options instead of `true` don't trigger the check: the rule is not configurable, so Pint stops on the options
     // before it, and `pun migrate` stops with the same message.
     let mut opts = tree();
@@ -886,20 +1015,20 @@ fn prettier_preflight_like_pint() {
     .collect();
     old.extend(manifests.iter().map(|(a, b)| (a.as_str(), b.as_str())));
     old.push(("yarn.lock", ""));
-    cx.same(&old, &["--test"], PLAIN);
+    // ^3.2.2 takes 3.2.9; ^0.8.0 stops before 0.9.0.
+    cx.same_abort(&old, &["--test"], PLAIN, "✖ `format/laravel/blade` needs newer prettier packages: prettier 2.1.0 (needs ^3.8.4), prettier-plugin-tailwindcss 0.9.1 (needs ^0.8.0)\n  update them: yarn add -D prettier@^3.8.4 prettier-plugin-tailwindcss@^0.8.0\n");
+    cx.same_abort(&old, &["--test", "--format=json"], PLAIN, "");
     // No Node.js on PATH.
     let bin = tmp("nonode");
     for b in ["php", "sh"] {
         std::os::unix::fs::symlink(which(b), bin.join(b)).unwrap();
     }
-    cx.same(
-        &t,
-        &["--test"],
-        Opts {
-            path: Some(bin.to_str().unwrap()),
-            ..PLAIN
-        },
-    );
+    let no_node = Opts {
+        path: Some(bin.to_str().unwrap()),
+        ..PLAIN
+    };
+    cx.same_abort(&t, &["--test"], no_node, "✖ `format/laravel/blade` needs Node.js, and there is none on PATH\n  install Node.js, or turn `format/laravel/blade` off in pun.toml\n");
+    cx.same_abort(&t, &["--test", "--format=json"], no_node, "");
 }
 
 /// Without a `php` on PATH Pun can't ask PHP for its wording: it falls back to its own parser's message (and
@@ -942,7 +1071,7 @@ fn syntax_error_without_php() {
 }
 
 /// A fixer exception (combine_consecutive_unsets' "Must not add empty token", a panic in Pun) fails only that file:
-/// the message, the other files still fixed, exit 1, no panic output. With a syntax error too, the reports agree.
+/// the message, the other files still fixed, exit 2 (Pint: 1; Pun failed, output.md §2), no panic output. With a syntax error too, the reports agree.
 #[test]
 fn fixer_exception_like_pint() {
     let Some(cx) = Cx::new("exception") else {
@@ -970,9 +1099,280 @@ fn fixer_exception_like_pint() {
         &["--format=agent"],
         &["--test", "-q"],
     ] {
-        let r = cx.same_cmd(&CHECK_FIX, &t, args, PLAIN);
-        assert_eq!(r.code, Some(1), "{args:?}");
+        let r = cx.same_exit(&CHECK_FIX, &t, args, PLAIN, Some(2));
+        assert_eq!(r.code, Some(2), "{args:?}");
     }
     t.push(("app/Bad.php", "<?php\nfunction (\n"));
-    cx.same_cmd(&CHECK_FIX, &t, &["--format=txt", "--test"], PLAIN);
+    cx.same_exit(&CHECK_FIX, &t, &["--format=txt", "--test"], PLAIN, Some(2));
+}
+
+/// GitHub annotations (output.md Build 4), one workflow command per line in PHPStan's GithubErrorFormatter shape
+/// (`::error file=…,line=…,col=…::message`), hand-derived: the path's `,` and `:` escaped as GitHub's escapeProperty
+/// does (`%2C`, `%3A`), the first changed line of each file, `col=0` for a whole file, the rule IDs as the title;
+/// syntax errors at PHP's line and the first column; fixed files print nothing.
+#[test]
+fn github_annotations() {
+    let dir = tmp("github");
+    reset(
+        &dir,
+        &[
+            (
+                "pun.toml",
+                "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n[lint.rules]\n\"style/no-alias-function\" = \"error\"\n\"dead-code/no-self-assignment\" = { fix = \"off\" }\n",
+            ),
+            ("app/a,b:c.php", "<?php\n\n$a = array(1);\n"),
+            ("app/Clean.php", "<?php\n\n$a = [1];\n"),
+            ("app/Bad.php", "<?php\nfunction (\n"),
+            ("app/L.php", "<?php\n$x = 1;\n$n = sizeof([]);\n$x = $x;\n"),
+        ],
+    );
+    let pun = |args: &[&str], env: &[(&str, &str)]| {
+        let r = run(
+            &[&[env!("CARGO_BIN_EXE_pun")][..], args].concat(),
+            &dir,
+            Opts { env, ..PLAIN },
+        );
+        (r.stdout, r.code)
+    };
+    let bad = "::error file=app/Bad.php,line=3,col=1,title=syntax-error::Unclosed '(' on line 2\n";
+    let format = "::error file=app/a%2Cb%3Ac.php,line=3,col=0,title=format/arrays/syntax::File needs formatting\n";
+    let both = "lint/style/no-alias-function, lint/dead-code/no-self-assignment";
+    let lint = format!(
+        "::error file=app/L.php,line=3,col=0,title={}::{both} can fix this file\n",
+        both.replace(',', "%2C")
+    );
+    assert_eq!(
+        pun(&["format", "--test", "--format=github"], &[]),
+        (format!("{bad}{format}"), Some(1))
+    );
+    assert_eq!(
+        pun(&["lint", "--format=github"], &[]),
+        (format!("{bad}{lint}"), Some(1))
+    );
+    assert_eq!(
+        pun(&["check", "--format=github"], &[]),
+        (format!("{bad}{lint}{format}"), Some(1))
+    );
+    // `--fix`: what it applied prints nothing, the fix it leaves (`fix = "off"`) is an error at its line.
+    let left = "::error file=app/L.php,line=4,col=0,title=lint/dead-code/no-self-assignment::lint/dead-code/no-self-assignment can fix this file\n";
+    let (out, code) = pun(&["lint", "--fix", "--format=github"], &[]);
+    assert_eq!((out, code), (format!("{bad}{left}"), Some(1)));
+    // Written fixes need nothing in CI: only the syntax error is left.
+    assert_eq!(
+        pun(&["format", "--format=github"], &[]),
+        (bad.to_string(), Some(1))
+    );
+    // Under GitHub Actions the human output comes first, then the same lines; not for other values, `-q` or a
+    // `--format`.
+    let (out, code) = pun(
+        &["format", "--test", "app/Bad.php"],
+        &[("GITHUB_ACTIONS", "true")],
+    );
+    assert!(
+        out.starts_with("\n ✖ syntax-error") || out.starts_with(" ✖ syntax-error"),
+        "{out}"
+    );
+    assert!(out.ends_with(&format!("s\n{bad}")), "{out}");
+    assert_eq!(code, Some(1));
+    for (args, env) in [
+        (&["format", "--test", "app/Bad.php"][..], &[][..]),
+        (
+            &["format", "--test", "app/Bad.php"],
+            &[("GITHUB_ACTIONS", "1")],
+        ),
+        (
+            &["format", "--test", "-q", "app/Bad.php"],
+            &[("GITHUB_ACTIONS", "true")],
+        ),
+        (
+            &["format", "--test", "--format=json", "app/Bad.php"],
+            &[("GITHUB_ACTIONS", "true")],
+        ),
+    ] {
+        let (out, code) = pun(args, env);
+        assert!(!out.contains("::error"), "{args:?} {env:?}: {out}");
+        assert_eq!(code, Some(1));
+    }
+    // A run error is `::error ::<message>`: alone under `--format=github`, after Pun's run error (stderr) under
+    // GitHub Actions.
+    let missing = "The path \"app/Missing.php\" is not readable.";
+    assert_eq!(
+        pun(&["lint", "--format=github", "app/Missing.php"], &[]),
+        (format!("::error ::{missing}\n"), Some(2))
+    );
+    let r = run(
+        &[env!("CARGO_BIN_EXE_pun"), "format", "app/Missing.php"],
+        &dir,
+        Opts {
+            env: &[("GITHUB_ACTIONS", "true")],
+            ..PLAIN
+        },
+    );
+    assert_eq!(
+        (r.stdout, r.stderr, r.code),
+        (
+            format!("::error ::{missing}\n"),
+            format!("✖ {missing}\n"),
+            Some(2)
+        )
+    );
+}
+
+/// A fixer that throws (combine_consecutive_unsets' Tokens::insertSlices "Must not add empty token to collection.", a
+/// panic in Pun) is annotated at
+/// its file as `fixer-error`, and Pun exits 2.
+#[test]
+fn github_fixer_error() {
+    let dir = tmp("github-crash");
+    reset(
+        &dir,
+        &[
+            (
+                "pun.toml",
+                "[format]\npreset = \"empty\"\n[lint.rules]\n\"control-flow/prefer-combined-unset\" = \"error\"\n",
+            ),
+            (
+                "app/U.php",
+                "<?php unset($a ); unset( $b );\nunset($x, ); unset( $y);",
+            ),
+        ],
+    );
+    let r = run(
+        &[
+            env!("CARGO_BIN_EXE_pun"),
+            "check",
+            "--fix",
+            "--format=github",
+        ],
+        &dir,
+        PLAIN,
+    );
+    assert_eq!(
+        (r.stdout.as_str(), r.code),
+        (
+            "::error file=app/U.php,line=1,col=0,title=fixer-error::Must not add empty token to collection.\n",
+            Some(2)
+        ),
+        "{}",
+        r.stderr
+    );
+    // Agent mode names it the same way, at the file.
+    let r = run(
+        &[env!("CARGO_BIN_EXE_pun"), "check", "--fix"],
+        &dir,
+        Opts {
+            env: &[("PUN_AGENT", "1")],
+            ..PLAIN
+        },
+    );
+    assert!(
+        r.stdout
+            .ends_with("\napp/U.php fixer-error Must not add empty token to collection.\n"),
+        "{}",
+        r.stdout
+    );
+    assert_eq!(r.code, Some(2));
+}
+
+/// Run errors exit 2 in every command (output.md §2) and print Pun's run error (output.md §1: one red line, the
+/// hint under it) on stderr, with and without colour; findings still exit 1 and a clean run 0.
+#[test]
+fn run_errors_exit_2() {
+    let dir = tmp("runerr");
+    reset(&dir, &[("app/A.php", "<?php\n$a = array(1);\n")]);
+    let pun = |args: &[&str]| {
+        let r = run(
+            &[&[env!("CARGO_BIN_EXE_pun")][..], args].concat(),
+            &dir,
+            PLAIN,
+        );
+        (r.stdout, r.stderr, r.code)
+    };
+    let red = |line: &str| format!("\x1b[31m{line}\x1b[0m\n");
+    // No pun.toml: the config error, for each command.
+    let none = "✖ No pun.toml found. Run `pun migrate`.";
+    for cmd in ["format", "lint", "check"] {
+        assert_eq!(
+            pun(&[cmd, "--color=never"]),
+            (String::new(), format!("{none}\n"), Some(2)),
+            "{cmd}"
+        );
+        assert_eq!(
+            pun(&[cmd, "--color=always"]),
+            (String::new(), red(none), Some(2)),
+            "{cmd}"
+        );
+    }
+    for args in [&["config"][..], &["list-files"]] {
+        assert_eq!(pun(args), (String::new(), format!("{none}\n"), Some(2)));
+    }
+    // An unported rule names pun.toml, the rule and the way out.
+    std::fs::write(
+        dir.join("pun.toml"),
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/explicit-variable\" = true\n",
+    )
+    .unwrap();
+    let line = "✖ pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`";
+    let hint = "  remove it from pun.toml to run the other rules\n";
+    assert_eq!(
+        pun(&["check", "--color=never"]),
+        (String::new(), format!("{line}\n{hint}"), Some(2))
+    );
+    assert_eq!(
+        pun(&["format", "--color=always"]),
+        (String::new(), format!("{}{hint}", red(line)), Some(2))
+    );
+    // A bad `--format` (Pint's box, kept for machine formats) and `--output-format`: the files are still checked.
+    std::fs::write(
+        dir.join("pun.toml"),
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n",
+    )
+    .unwrap();
+    let (out, err, code) = pun(&["format", "--test", "--format=nope"]);
+    assert!(
+        out.contains("  Format [nope] is not supported.  \n"),
+        "{out}"
+    );
+    assert_eq!((err.as_str(), code), ("", Some(2)));
+    let formats = "  use json, txt, agent, checkstyle, junit, xml, gitlab or github\n";
+    let (out, err, code) = pun(&[
+        "format",
+        "--test",
+        "--output-format=nope",
+        "--output-to-file=r",
+        "--color=never",
+    ]);
+    assert!(out.starts_with(" ✖ app/A.php"), "{out}");
+    assert_eq!(
+        (err, code),
+        (
+            format!("✖ Format [nope] is not supported.\n{formats}"),
+            Some(2)
+        )
+    );
+    // Findings exit 1, a clean run 0.
+    assert_eq!(pun(&["format", "--test"]).2, Some(1));
+    assert_eq!(pun(&["format"]).2, Some(0));
+    assert_eq!(pun(&["format", "--test"]).2, Some(0));
+    // Other commands: migrate (nothing to migrate from), list-files (a bad `--format`), explain (an unknown rule).
+    assert_eq!(
+        pun(&["migrate", "--from=pint"]),
+        (
+            String::new(),
+            "✖ --from pint: no pint.json found\n".into(),
+            Some(2)
+        )
+    );
+    assert_eq!(
+        pun(&["list-files", "--format=txt"]),
+        (
+            String::new(),
+            "✖ --format=txt: expected `json`\n".into(),
+            Some(2)
+        )
+    );
+    assert_eq!(
+        pun(&["explain", "nope"]),
+        (String::new(), "✖ `nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)\n".into(), Some(2))
+    );
 }

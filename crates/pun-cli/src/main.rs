@@ -5,6 +5,7 @@ mod agent;
 mod cache;
 mod console;
 mod fix_report;
+mod github;
 #[cfg(feature = "mago-lint")]
 mod lint;
 mod list_files;
@@ -130,7 +131,7 @@ pub struct FormatArgs {
     /// Only fix files that have uncommitted changes.
     #[arg(long)]
     dirty: bool,
-    /// The output format that should be used (json, txt, agent).
+    /// The output format that should be used (json, txt, agent, checkstyle, junit, xml, gitlab, github).
     #[arg(long)]
     format: Option<String>,
     /// Output the test results to a file at this path.
@@ -168,6 +169,35 @@ pub struct FormatArgs {
     no_interaction: bool,
     #[command(flatten)]
     pun: PunArgs,
+    /// `GITHUB_ACTIONS=true`, read once in `main`: human output gets GitHub annotations after it.
+    #[arg(skip)]
+    github_actions: bool,
+}
+
+impl FormatArgs {
+    /// `--color`, or Pint's `--ansi` (which wins over `--no-ansi`, as in Symfony's configureIO).
+    fn color(&self) -> render::ColorChoice {
+        use render::ColorChoice;
+        self.color.unwrap_or(if self.ansi {
+            ColorChoice::Always
+        } else if self.no_ansi {
+            ColorChoice::Never
+        } else {
+            ColorChoice::Auto
+        })
+    }
+
+    /// How a failed run of `pun format`, `lint` or `check` shows its error.
+    fn failure(&self) -> report::Failure {
+        let human = self.format.is_none() && !self.quiet && !agent::enabled();
+        report::Failure {
+            pint: true,
+            machine: !human,
+            github_format: self.format.as_deref() == Some("github"),
+            annotate: human && self.github_actions,
+            color: self.color(),
+        }
+    }
 }
 
 /// `pun format`'s flags that Pint doesn't have.
@@ -208,57 +238,52 @@ fn main() -> ExitCode {
     };
     let flag = (cli.agent || cli.no_agent).then_some(cli.agent);
     agent::init(flag, name);
-    let (result, pint_errors) = match cli.cmd {
-        Cmd::Format(a) if a.pun.watch => (watch::run(*a), true),
-        Cmd::Format(a) => (format(*a, Stage::Format), true),
+    let github_actions = std::env::var_os("GITHUB_ACTIONS").is_some_and(|v| v == "true");
+    let mut cmd = cli.cmd;
+    match &mut cmd {
+        Cmd::Format(a) => a.github_actions = github_actions,
+        Cmd::Lint { cmd, .. } | Cmd::Check(cmd) => cmd.args.github_actions = github_actions,
+        _ => {}
+    }
+    // Other commands' errors are Pun's own run errors.
+    let other = report::Failure {
+        pint: false,
+        machine: false,
+        github_format: false,
+        annotate: false,
+        color: render::ColorChoice::Auto,
+    };
+    let failure = match &cmd {
+        Cmd::Format(a) => a.failure(),
+        Cmd::Lint { cmd, .. } | Cmd::Check(cmd) => cmd.args.failure(),
+        _ => other,
+    };
+    let result = match cmd {
+        Cmd::Format(a) if a.pun.watch => watch::run(*a),
+        Cmd::Format(a) => format(*a, Stage::Format),
         #[cfg(feature = "mago-lint")]
-        Cmd::Lint { cmd, mago: true } => (lint::run(cmd.args.paths, cmd.args.config), false),
-        Cmd::Lint { cmd, .. } => (stage(*cmd, Stage::Lint), true),
-        Cmd::Check(cmd) => (stage(*cmd, Stage::Check), true),
-        Cmd::Migrate(a) => (migrate::run(a), false),
-        Cmd::ListFiles(a) => (list_files::run(a), false),
+        Cmd::Lint { cmd, mago: true } => lint::run(cmd.args.paths, cmd.args.config),
+        Cmd::Lint { cmd, .. } => stage(*cmd, Stage::Lint),
+        Cmd::Check(cmd) => stage(*cmd, Stage::Check),
+        Cmd::Migrate(a) => migrate::run(a),
+        Cmd::ListFiles(a) => list_files::run(a),
         Cmd::Config {
             format,
             config,
             preset,
             ..
-        } => (show_config(format, config, preset), false),
-        Cmd::Explain { rule } => (
-            pun_config::explain(&rule).map(|t| {
-                print!("{t}");
-                0
-            }),
-            false,
-        ),
+        } => show_config(format, config, preset),
+        Cmd::Explain { rule } => pun_config::explain(&rule).map(|t| {
+            print!("{t}");
+            0
+        }),
     };
     #[cfg(feature = "pprof")]
     if let Some(s) = sampler {
         s.report();
     }
-    match result {
-        Ok(code) => ExitCode::from(code),
-        // A run's errors are Pint's error boxes, like the rest of its output.
-        Err(e) if pint_errors => {
-            print!("{}", pint_error::render(&e.to_string()));
-            ExitCode::FAILURE
-        }
-        Err(e) => {
-            match agent::enabled() {
-                true => print!("{}", agent::error(&format!("{e:#}"))),
-                false => eprintln!("pun: {e:#}"),
-            }
-            ExitCode::from(config_exit(&e))
-        }
-    }
-}
-
-/// A config error's exit code: 2 for a removed format preset (`--preset per`, `[format] preset = "symfony"`), 1 otherwise.
-pub(crate) fn config_exit(e: &anyhow::Error) -> u8 {
-    if e.is::<pun_config::RemovedPreset>() {
-        2
-    } else {
-        1
-    }
+    // Exit 2: Pun couldn't run (output.md §2).
+    ExitCode::from(result.unwrap_or_else(|e| report::fail(e, &failure)))
 }
 
 /// `pun lint` / `pun check`: a `pun format` run over other rules; without `--fix` nothing is written.

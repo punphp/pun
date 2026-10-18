@@ -125,8 +125,8 @@ fn writes_pun_toml_and_rewrites_ignores() {
     assert_eq!(
         (err.as_str(), code),
         (
-            "pun: pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)\n",
-            Some(1)
+            "x pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)\n",
+            Some(2)
         )
     );
     assert_eq!(read(&d, "pun.toml"), "# mine\n");
@@ -169,10 +169,10 @@ fn skips_unsupported_rules() {
         (err, code),
         (
             format!(
-                "pun: The configuration file [{}] is not valid JSON.: EOF while parsing an object at line 1 column 1\n",
+                "x The configuration file [{}] is not valid JSON.: EOF while parsing an object at line 1 column 1\n",
                 d.join("pint.json").display()
             ),
-            Some(1)
+            Some(2)
         )
     );
 }
@@ -294,12 +294,12 @@ pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 fil
         (out.as_str(), err.as_str(), code),
         (
             "",
-            "pun: --from php-cs-fixer: no .php-cs-fixer.php or .php-cs-fixer.dist.php found\n",
-            Some(1)
+            "x --from php-cs-fixer: no .php-cs-fixer.php or .php-cs-fixer.dist.php found\n",
+            Some(2)
         )
     );
     let (_, err, _) = pun(&d, &["migrate", "--from=pint", "--config=nope.json"]);
-    assert_eq!(err, "pun: --from pint: no nope.json found\n");
+    assert_eq!(err, "x --from pint: no nope.json found\n");
 }
 
 /// PHPStan alone: nothing gives [format], so pun.toml is the starter, and it says why.

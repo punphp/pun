@@ -78,7 +78,7 @@ fn named<'a>(text: &str, files: impl IntoIterator<Item = &'a String>) -> String 
 }
 
 /// `text` without SGR sequences (`ESC [ … m`).
-fn strip_sgr(text: &str) -> String {
+pub fn strip_sgr(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut rest = text;
     while let Some(i) = rest.find("\x1b[") {

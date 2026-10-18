@@ -14,6 +14,13 @@
 # --env      extra environment (both tools run under `env -i PATH HOME`, so agent detection stays off).
 # Exit 1 if any argument set differs. `-vvv`: Pint's PHAR prints a "Box Requirements Checker" block that is not
 # part of Pint; it is stripped before comparing.
+#
+# Exit-2 allow-list (context/plan/output.md §2 and Decisions: exit 2 means Pun couldn't run): the argument sets in
+# ABORTS make Pint abort with exit 1 (a bad --format, an unwritable --output-to-file, a missing path); Pun exits 2
+# there, so for exactly those sets the script expects Pint 1 and Pun 2. Their machine-format stdout (Pint's box) is
+# still compared byte for byte.
+ABORTS=("--format=nope" "--test --format=json nope.php" "--test nope.php"
+  "--test --output-to-file=nodir/r.json --output-format=json" "--test --format=txt --output-to-file=nodir/r.txt")
 set -u
 R=$(cd "$(dirname "$0")/.." && pwd)
 project="" tty=0 cols="" envs=(COLUMNS=80)
@@ -60,7 +67,7 @@ if [ $# -eq 0 ]; then
   set -- "" "--test" "-v" "--test -v" "--repair" "--bail" \
     "--format=json" "--test --format=json -v" "--test --format=txt -v" "--test --format=checkstyle" \
     "--test --format=junit -v" "--test --format=xml -v" "--test --format=gitlab" "--test --format=agent" \
-    "--test --output-to-file=r.json --output-format=json"
+    "--test --output-to-file=r.json --output-format=json" "${ABORTS[@]}"
 fi
 for args in "$@"; do
   read -ra a <<< "$args"
@@ -69,6 +76,11 @@ for args in "$@"; do
   case " $args " in *" --format"*) keys="out err code files" ;; esac
   run pint php "$R/.oracle/pint/builds/pint" ${a[@]+"${a[@]}"}
   run pun "$W/bin/pint" ${a[@]+"${a[@]}"}
+  for abort in "${ABORTS[@]}"; do
+    if [ "$args" = "$abort" ] && [ "$(cat "$W/pint.code")" = "exit=1" ] && [ "$(cat "$W/pun.code")" = "exit=2" ]; then
+      echo "exit=1" > "$W/pun.code"
+    fi
+  done
   same=1
   for k in $keys; do
     if ! cmp -s "$W/pint.$k" "$W/pun.$k"; then

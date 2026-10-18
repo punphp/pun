@@ -13,5 +13,7 @@ pun check --fix    # format and apply lint fixes
 - It reports everything and exits non-zero on any format diff, any lint `error` or any analyse `error`.
 - `--fix` applies format, plus the fixes of every enabled lint rule. It never edits based on analysis. The findings of lint rules with `fix = "off"` are listed as remaining (`✖`, or `[remaining]` under a coding agent) and the run exits 1.
 - It takes the same flags as `pun format`: paths, `--staged`, `--dirty`, `--format=agent`.
+- It exits 0 when clean, 1 on findings, and 2 when Pun couldn't run (a bad `pun.toml`, an unported rule, an unreadable path, a rule that failed on a file). See [exit codes](/docs/commands/format#exit-codes).
+- Under GitHub Actions (`GITHUB_ACTIONS=true`) the output is followed by one annotation per file to fix, titled with its rule IDs; `--format=github` prints only the annotations. See [GitHub Actions](/docs/commands/format#github-actions).
 
 The single commands stay for editors, for running one stage, and for exact PHPStan output.

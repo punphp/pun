@@ -1,6 +1,6 @@
 //! `pun format` / `lint` / `check`: load the config, pick the engine, fix the files, report.
-use crate::render::{ColorChoice, Look, Spinner};
-use crate::report::{self, FileResult, Status};
+use crate::render::{Look, RunError, Spinner};
+use crate::report::{self, Abort, FileResult, Status};
 use crate::{FormatArgs, cache, root};
 use anyhow::{Context, Result};
 use pun_config::{Config, Options};
@@ -51,19 +51,17 @@ pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
 pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     let started = std::time::Instant::now();
     let root = root()?;
-    // Config errors are one line (on stderr), not a Pint box: Pint never reads pun.toml.
-    let config_error = |e: &str, code: u8| -> Result<u8> {
-        if crate::agent::enabled() {
-            print!("{}", crate::agent::error(e));
-        } else {
-            eprintln!("pun: {e}");
-        }
-        Ok(code)
-    };
-    let mut cfg = match load_config(&a, &root) {
-        Ok(cfg) => cfg,
-        Err(e) => return config_error(&format!("{e:#}"), crate::config_exit(&e)),
-    };
+    // Config errors are Pun's own run errors, never a Pint box: Pint never reads pun.toml.
+    let mut cfg = load_config(&a, &root).map_err(|e| {
+        let message = format!("{e:#}");
+        let error = RunError {
+            path: None,
+            line: None,
+            message: message.clone(),
+            hint: None,
+        };
+        Abort::pun(message, error)
+    })?;
     // No PHP fallback: a rule without a native fixer, format or named lint rule, stops every command (exit 2, Pun
     // can't run). A set or a group skips the rules Pun can't run yet.
     let named_without_fixer: Vec<String> = (cfg.lint.rules.iter())
@@ -95,7 +93,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         .chain(named_without_fixer)
         .collect();
     if !unported.is_empty() {
-        return config_error(&unported_error(&a, &cfg, &unported), 2);
+        return Err(unported_error(&a, &cfg, &unported).into());
     }
     let lint: Vec<(pun_config::Rule, bool)> = (lint_fixers.into_iter())
         .filter(|(r, _, _)| !not_ported.contains(&r.name))
@@ -125,9 +123,8 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         .rules
         .iter()
         .any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
-    if let Some(out) = report::ensure_prettier(&root, blade_on) {
-        print!("{out}");
-        return Ok(1);
+    if let Some(abort) = report::ensure_prettier(&root, blade_on) {
+        return Err(abort.into());
     }
     let pending_engine = (!pending.is_empty())
         .then(|| {
@@ -182,15 +179,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     // Besides the result: the content hash when the file is clean (for the cache), whether the cache said so, and
     // the pending rules' fixes (`--fix`).
     type Processed = (FileResult, Option<String>, bool, Option<FileResult>);
-    // `--color`, or Pint's `--ansi` (which wins over `--no-ansi`, as in Symfony's configureIO).
-    let color = a.color.unwrap_or(if a.ansi {
-        ColorChoice::Always
-    } else if a.no_ansi {
-        ColorChoice::Never
-    } else {
-        ColorChoice::Auto
-    });
-    let look = Look::stdout(color);
+    let look = Look::stdout(a.color());
     // The progress line, for humans on a terminal (output.md §1); dropped before anything is printed.
     let human = a.format.is_none() && !a.quiet && !crate::agent::enabled();
     let spinner = human
@@ -209,6 +198,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             applied: vec![],
             diff: String::new(),
             message: String::new(),
+            line: 0,
         };
         // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
         if path.is_symlink() {
@@ -268,6 +258,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             }
             Ok(Some((new, applied))) => {
                 r.diff = diff(&code, &new);
+                r.line = crate::github::first_changed_line(&code, &new);
                 r.applied = applied;
                 r.status = Status::Fixed;
                 if !dry_run {
@@ -292,6 +283,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         };
         let left = left.map(|(new, applied)| FileResult {
             diff: diff(result.as_deref().unwrap(), &new),
+            line: crate::github::first_changed_line(result.as_deref().unwrap(), &new),
             applied,
             status: Status::Fixed,
             message: String::new(),
@@ -369,21 +361,24 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         look,
         root: &root,
         elapsed: started.elapsed(),
+        github: a.github_actions && human,
     };
-    let code = report::emit(
+    report::emit(
         &ctx,
         &results,
         a.format.as_deref(),
         a.quiet,
         a.output_to_file.as_deref(),
         a.output_format.as_deref(),
-    );
+    )?;
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
         || results.iter().any(FileResult::is_error)
         || !remaining.is_empty();
+    // A fixer that threw or produced invalid code is Pun failing, not the file (exit 2).
+    let crashed = (results.iter()).any(|r| matches!(r.status, Status::Exception | Status::Lint));
 
     eprint!("{}", engine.profile_report());
-    Ok(code.max(u8::from(failed)))
+    Ok(if crashed { 2 } else { u8::from(failed) })
 }
 
 fn pipeline(cfg: &Config) -> Result<Pipeline> {
@@ -398,20 +393,26 @@ fn pipeline(cfg: &Config) -> Result<Pipeline> {
 
 /// The rules a run can't apply, under their Pun IDs (upstream names for sets the preset doesn't expand), and where
 /// they come from: pun.toml, or the `--preset` / `--no-config` run's preset.
-fn unported_error(a: &FormatArgs, cfg: &Config, names: &[String]) -> String {
+fn unported_error(a: &FormatArgs, cfg: &Config, names: &[String]) -> Abort {
     let ids: Vec<String> = (names.iter())
         .map(|n| format!("`{}`", pun_config::rule_of(n).unwrap_or(n)))
         .collect();
     // Every rule of the laravel, psr12 and empty presets runs natively, so an unported rule comes from pun.toml.
-    let from = (cfg.root)
-        .join(a.config.as_deref().unwrap_or(Path::new("pun.toml")))
-        .display()
-        .to_string();
+    let file = (cfg.root).join(a.config.as_deref().unwrap_or(Path::new("pun.toml")));
     let rules = if ids.len() == 1 { "rule" } else { "rules" };
-    format!(
-        "{from}: {rules} not supported by Pun yet: {}",
-        ids.join(", ")
-    )
+    let what = format!("{rules} not supported by Pun yet: {}", ids.join(", "));
+    let rel = file.strip_prefix(&cfg.root).unwrap_or(&file).to_path_buf();
+    let them = if ids.len() == 1 { "it" } else { "them" };
+    let error = RunError {
+        hint: Some(format!(
+            "remove {them} from {} to run the other rules",
+            rel.display()
+        )),
+        path: Some(rel),
+        line: None,
+        message: what.clone(),
+    };
+    Abort::pun(format!("{}: {what}", file.display()), error)
 }
 
 /// `--explain`: the run's fixers in priority order, on stderr.

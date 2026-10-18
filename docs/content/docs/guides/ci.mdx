@@ -21,7 +21,9 @@ jobs:
         run: pun check
 ```
 
-For annotations on the pull request, write a report in a format your CI understands:
+On GitHub Actions, Pun sees `GITHUB_ACTIONS=true` and adds an annotation for each finding after its normal output, so the pull request shows them inline with no extra step. `--format=github` prints only the annotations.
+
+On other CIs, write a report in a format your CI understands:
 
 ```bash
 pun format --test --output-to-file=pun.xml --output-format=checkstyle

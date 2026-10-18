@@ -34,4 +34,4 @@ Given an upstream name or a name from an earlier Pun version, `pun explain` firs
 `method.notFound` is `analyse/undefined/method` in Pun.
 ```
 
-A name with no Pun rule is an error that says why, such as a PHP-CS-Fixer rule deprecated upstream or a PHPStan parameter that is a setting rather than a rule. The exit code is 1.
+A name with no Pun rule is an error that says why, such as a PHP-CS-Fixer rule deprecated upstream or a PHPStan parameter that is a setting rather than a rule. It is one red line on stderr, and the exit code is 2.

@@ -10,7 +10,7 @@ Read these for more:
 
 ## Match the upstream tool
 
-Pun's machine formats (`--format=...`), messages, and exit codes must match the pinned upstream tool: Pint, PHP-CS-Fixer, or PHPStan. The human output is Pun's own (`context/plan/output.md`), so it does not copy upstream's screen. If you are unsure what upstream does, run it. `scripts/oracle.sh` installs the pinned tools into `.oracle/`. They run on the system PHP 8.5, with no Docker.
+Pun's machine formats (`--format=...`), messages, and exit codes must match the pinned upstream tool: Pint, PHP-CS-Fixer, or PHPStan, except that a run error (Pun couldn't run) exits 2 where Pint exits 1 (`context/plan/output.md`). The human output is Pun's own (`context/plan/output.md`), so it does not copy upstream's screen. If you are unsure what upstream does, run it. `scripts/oracle.sh` installs the pinned tools into `.oracle/`. They run on the system PHP 8.5, with no Docker.
 
 - Pint: `php .oracle/pint/builds/pint`
 - PHP-CS-Fixer: `.oracle/php-cs-fixer`

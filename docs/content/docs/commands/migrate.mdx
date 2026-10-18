@@ -55,7 +55,7 @@ Pun reads only `pun.toml`, so `pun migrate` is the one place the old configs are
 <Steps>
   <Step title="Read and report">
 
-Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.php-cs-fixer.php` through PHP-CS-Fixer itself. Every rule Pun can't run yet (a custom fixer, a deprecated rule, a rule not ported) and every Finder setting pun.toml has no key for is named on its own line and skipped; the rest is written, and migrate exits 0. Rule options are written under their [Pun names](/docs/configuration/pun-toml#format-rule-options); an option PHP-CS-Fixer would reject stops the migration with PHP-CS-Fixer's own message, as it stops Pint. Planned: `phpstan.neon` with its baseline, and `rector.php`.
+Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.php-cs-fixer.php` through PHP-CS-Fixer itself. Every rule Pun can't run yet (a custom fixer, a deprecated rule, a rule not ported) and every Finder setting pun.toml has no key for is named on its own line and skipped; the rest is written, and migrate exits 0. Rule options are written under their [Pun names](/docs/configuration/pun-toml#format-rule-options); an option PHP-CS-Fixer would reject stops the migration with PHP-CS-Fixer's own message, as it stops Pint. An error that stops the migration (no config to read, a `pun.toml` that differs, a config PHP-CS-Fixer can't load) exits 2. Planned: `phpstan.neon` with its baseline, and `rector.php`.
 
   </Step>
   <Step title="Write pun.toml">
