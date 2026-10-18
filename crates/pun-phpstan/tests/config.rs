@@ -161,7 +161,19 @@ fn corpus_configs() {
         // What `vendor/bin/phpstan` finds in a project (no extension-installer in .oracle/phpstan).
         let o = options(&farm, &case, Options::for_project(&cwd));
         let repo = root.to_string_lossy();
-        let got = got(&o, &[(&cwd, "{cwd}"), (&repo, "{repo}"), (TMP, "{tmp}")]);
+        // In a git worktree .oracle links to the main checkout's, so the phar paths resolve there: map that
+        // directory to {repo}/.oracle like the fixtures (recorded from the main checkout) spell it.
+        let oracle = root.join(".oracle").canonicalize().unwrap();
+        let oracle = oracle.to_string_lossy();
+        let got = got(
+            &o,
+            &[
+                (&cwd, "{cwd}"),
+                (&oracle, "{repo}/.oracle"),
+                (&repo, "{repo}"),
+                (TMP, "{tmp}"),
+            ],
+        );
         if let Some(d) = diff(&case["expected"], &got) {
             failures.push(format!("{name}:\n{d}"));
         }

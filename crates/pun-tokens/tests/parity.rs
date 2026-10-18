@@ -1,4 +1,4 @@
-//! Edge-case fixtures must tokenize identically to PHP in all four modes (needs `php`; the fixer and
+//! Edge-case fixtures must tokenize identically to PHP in all four modes (needs PHP 8.5, tests/common; the fixer and
 //! classy modes also need .oracle/php-cs-fixer or PUN_PHP_CS_FIXER).
 
 mod common;
@@ -9,10 +9,10 @@ mod parity;
 
 #[test]
 fn fixtures_match_php() {
-    common::php();
+    let php = common::php_path();
     common::require_php_cs_fixer();
     let fixtures = vec![concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures").to_string()];
     for mode in ["raw", "parse", "fixer", "classy"] {
-        assert_eq!(parity::run(mode, &fixtures, false), 0, "mode {mode}");
+        assert_eq!(parity::run(&php, mode, &fixtures, false), 0, "mode {mode}");
     }
 }

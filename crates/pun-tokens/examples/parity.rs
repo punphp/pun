@@ -139,13 +139,15 @@ fn main() {
     }
     let verbose = args.iter().any(|a| a == "-v");
     args.retain(|a| a != "-v");
-    if run(&mode, &args, verbose) > 0 {
+    let php = std::env::var_os("PUN_PHP").unwrap_or_else(|| "php".into());
+    if run(Path::new(&php), &mode, &args, verbose) > 0 {
         std::process::exit(1);
     }
 }
 
-/// Compare every .php file under `paths`; prints a report, returns the number of mismatched files.
-pub fn run(mode: &str, paths: &[String], verbose: bool) -> usize {
+/// Compare every .php file under `paths` with the dump of `php`; prints a report, returns the number of mismatched
+/// files.
+pub fn run(php: &Path, mode: &str, paths: &[String], verbose: bool) -> usize {
     let mut files = Vec::new();
     for a in paths {
         collect(Path::new(a), &mut files);
@@ -153,7 +155,7 @@ pub fn run(mode: &str, paths: &[String], verbose: bool) -> usize {
 
     let dumper = Path::new(env!("CARGO_MANIFEST_DIR")).join("tools/dump.php");
     let t0 = Instant::now();
-    let mut child = Command::new("php")
+    let mut child = Command::new(php)
         .args(["-d", "short_open_tag=0", "-d", "memory_limit=-1"])
         .arg(&dumper)
         .arg(mode)
