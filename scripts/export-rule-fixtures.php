@@ -15,10 +15,12 @@ declare(strict_types=1);
  * Writes crates/pun-analyse/tests/fixtures/rules/<Dir>/<TestClass>.json and copies the PHP files used into
  * crates/pun-analyse/tests/fixtures/rules/data/ (same paths as under tests/PHPStan/Rules).
  *
- *   php scripts/export-rule-fixtures.php [--resume] [--budget=SECONDS] [TestClassShortName...]
+ *   php scripts/export-rule-fixtures.php [--resume] [--budget=SECONDS] [--level=N] [TestClassShortName...]
  *
  * --resume skips test classes whose JSON exists; --budget stops starting new classes after that many seconds (the
- * full export is a few thousand PHPStan runs, so it is run in chunks).
+ * full export is a few thousand PHPStan runs, so it is run in chunks). --level=N (default 0) exports the tests of
+ * the rules registered at level N, run at level N, to crates/pun-analyse/tests/fixtures/levels/<N>/ instead (the PHP
+ * files still go to rules/data/).
  */
 
 $root = dirname(__DIR__);
@@ -40,13 +42,13 @@ file_put_contents($work.'/ini/pun.ini', "max_memory_limit = -1\n"); // php.ini's
 // PHPStan 2.2 switches to its agent output format when it sees one of these (src/Internal/AgentDetector.php).
 const AGENT_UNSET = '-u AUGMENT_AGENT -u AMP_CURRENT_THREAD_ID -u AI_AGENT -u CURSOR_TRACE_ID -u CURSOR_AGENT -u GEMINI_CLI -u CODEX_SANDBOX -u CODEX_THREAD_ID -u OPENCODE_CLIENT -u OPENCODE -u CLAUDECODE -u CLAUDE_CODE -u REPL_ID';
 
-/** @return list<string> test files of level-0 rules */
-function level0Tests(string $src): array
+/** @return list<string> test files of the rules registered at $level */
+function levelTests(string $src, int $level): array
 {
     $tests = [];
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($src.'/src/Rules'));
     foreach ($it as $f) {
-        if (! str_ends_with($f->getFilename(), 'Rule.php') || ! str_contains(file_get_contents($f->getPathname()), '#[RegisteredRule(level: 0)]')) {
+        if (! str_ends_with($f->getFilename(), 'Rule.php') || ! str_contains(file_get_contents($f->getPathname()), '#[RegisteredRule(level: '.$level.')]')) {
             continue;
         }
         $test = str_replace([$src.'/src/Rules', '.php'], [$src.'/tests/PHPStan/Rules', 'Test.php'], $f->getPathname());
@@ -67,10 +69,24 @@ foreach ($args as $a) {
         $budget = (int) substr($a, 9);
     }
 }
+$level = 0;
+foreach ($args as $a) {
+    if (str_starts_with($a, '--level=')) {
+        $level = (int) substr($a, 8);
+    }
+}
+$data = $out.'/data';
+if ($level > 0) {
+    $out = dirname($out).'/levels/'.$level;
+    $work .= '-level'.$level;
+    @mkdir($work.'/cache', 0777, true);
+    @mkdir($work.'/ini', 0777, true);
+    file_put_contents($work.'/ini/pun.ini', "max_memory_limit = -1\n");
+}
 $only = array_values(array_filter($args, fn ($a) => ! str_starts_with($a, '--')));
 $started = time();
 $cases = [];
-foreach (level0Tests($src) as $test) {
+foreach (levelTests($src, $level) as $test) {
     $short = basename($test, '.php');
     if ($only !== [] && ! in_array($short, $only, true)) {
         continue;
@@ -88,10 +104,10 @@ foreach (level0Tests($src) as $test) {
     $cases[$rel.'/'.$short] = $collected;
 }
 
-/** Real PHPStan, level 0, on $files with $scan as scanFiles. */
-function oracle(string $phar, string $work, array $files, array $scan): array
+/** Real PHPStan, at $level, on $files with $scan as scanFiles. */
+function oracle(string $phar, string $work, array $files, array $scan, int $level): array
 {
-    $neon = "parameters:\n\tlevel: 0\n\ttmpDir: $work/cache\n\tparallel:\n\t\tmaximumNumberOfProcesses: 1\n";
+    $neon = "parameters:\n\tlevel: $level\n\ttmpDir: $work/cache\n\tparallel:\n\t\tmaximumNumberOfProcesses: 1\n";
     if ($scan !== []) {
         $neon .= "\tscanFiles:\n".implode('', array_map(fn ($f) => "\t\t- '$f'\n", $scan));
     }
@@ -113,15 +129,15 @@ function oracle(string $phar, string $work, array $files, array $scan): array
 }
 
 $copied = [];
-$copy = function (string $file) use ($rulesTests, $out, &$copied): ?string {
+$copy = function (string $file) use ($rulesTests, $data, &$copied): ?string {
     $real = realpath($file);
     if ($real === false || ! str_starts_with($real, $rulesTests.'/')) {
         return null;
     }
     $rel = substr($real, strlen($rulesTests) + 1);
     if (! isset($copied[$rel])) {
-        @mkdir(dirname($out.'/data/'.$rel), 0777, true);
-        copy($real, $out.'/data/'.$rel);
+        @mkdir(dirname($data.'/'.$rel), 0777, true);
+        copy($real, $data.'/'.$rel);
         $copied[$rel] = true;
     }
 
@@ -141,7 +157,7 @@ foreach ($cases as $name => $collected) {
         if ($files === [] || count($files) !== count($case['files'])) {
             continue; // files outside tests/PHPStan/Rules (or missing): not a portable case
         }
-        $r = oracle($phar, $work, array_map(fn ($f) => $rulesTests.'/'.$f, $files), array_map(fn ($f) => $rulesTests.'/'.$f, $scan));
+        $r = oracle($phar, $work, array_map(fn ($f) => $rulesTests.'/'.$f, $files), array_map(fn ($f) => $rulesTests.'/'.$f, $scan), $level);
         $runs++;
         if (isset($r['crashed'])) {
             fwrite(STDERR, "$name::{$case['method']}: phpstan crashed\n");
@@ -192,6 +208,13 @@ function collect(string $testFile): void
         // sibling test classes (shared bases) live next to the test
         $f = dirname($testFile).'/'.substr($class, strrpos($class, '\\') + 1).'.php';
         if (is_file($f)) {
+            require_once $f;
+        }
+    });
+    // PHPStan's own classes the expectations name (MissingTypehintCheck::MISSING_ITERABLE_VALUE_TYPE_TIP)
+    spl_autoload_register(function (string $class): void {
+        $f = dirname(__DIR__).'/.oracle/phpstan-src/src/'.str_replace('\\', '/', substr($class, 8)).'.php';
+        if (str_starts_with($class, 'PHPStan\\') && is_file($f)) {
             require_once $f;
         }
     });

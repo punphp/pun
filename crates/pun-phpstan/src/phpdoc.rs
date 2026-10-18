@@ -199,6 +199,8 @@ type R<T> = Result<T, ParseError>;
 struct Tokens {
     tokens: Vec<(Tok, String)>,
     index: usize,
+    /// Pun's `*NEVER*` / `*ERROR*` (symbol data only; a PHPDoc in code never has them)
+    stars: bool,
 }
 
 impl Tokens {
@@ -206,6 +208,7 @@ impl Tokens {
         let mut t = Tokens {
             tokens: lex(input),
             index: 0,
+            stars: true,
         };
         t.skip_ws();
         t
@@ -261,6 +264,16 @@ pub fn parse(input: &str) -> R<Node> {
     let node = parse_type(&mut t)?;
     t.consume(Tok::End)?;
     Ok(node)
+}
+
+/// phpdoc-parser's `TypeParser::parse()` at the start of a PHPDoc tag's value: the type and the byte offset where
+/// the rest of the value starts. Pun's `*NEVER*` / `*ERROR*` extension is not accepted.
+pub fn parse_prefix(input: &str) -> R<(Node, usize)> {
+    let mut t = Tokens::new(input);
+    t.stars = false;
+    let node = parse_type(&mut t)?;
+    let offset = t.tokens[..t.index].iter().map(|(_, v)| v.len()).sum();
+    Ok((node, offset))
 }
 
 fn parse_type(t: &mut Tokens) -> R<Node> {
@@ -356,7 +369,7 @@ fn parse_atomic(t: &mut Tokens) -> R<Node> {
         return Ok(array_or_offset(t, Node::This));
     }
     // `*NEVER*` / `*ERROR*`: how reflection prints those types (never a PHPDoc type)
-    if t.try_consume(Tok::Wildcard) {
+    if t.stars && t.try_consume(Tok::Wildcard) {
         let name = t.value().to_string();
         t.consume(Tok::Ident)?;
         t.consume(Tok::Wildcard)?;

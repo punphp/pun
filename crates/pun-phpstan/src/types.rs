@@ -375,7 +375,7 @@ impl Type {
             Type::String | Type::StringAcceptingStringable | Type::StringNotAcceptingStringable => {
                 Tri::Maybe
             }
-            Type::ConstString(s) => Tri::from(symbols::class(s).is_some()),
+            Type::ConstString(s) => Tri::from(symbols::lookup(s).is_some()),
             Type::Accessory(
                 Accessory::NonEmptyString | Accessory::NonFalsyString | Accessory::LiteralString,
             ) => Tri::Maybe,
@@ -562,7 +562,7 @@ impl Type {
         })
     }
 
-    fn is_callable(&self) -> Tri {
+    pub fn is_callable(&self) -> Tri {
         self.query(&|t| match t {
             Type::Callable(_) | Type::Closure(_) => Tri::Yes,
             Type::Accessory(Accessory::NumericString) => Tri::No,
@@ -578,8 +578,8 @@ impl Type {
             Type::Array(_, item) => Tri::Maybe.and(item.is_string()),
             Type::ConstArray(a) => a.is_callable(),
             Type::Object(class, _) | Type::Static(class) | Type::This(class) => {
-                match symbols::class(class) {
-                    Some(c) if has_method(c, "__invoke") => Tri::Yes,
+                match symbols::lookup(class) {
+                    Some(c) if has_method(&c, "__invoke") => Tri::Yes,
                     Some(c) if c.is_final => Tri::No,
                     _ => Tri::Maybe,
                 }
@@ -680,7 +680,7 @@ impl Type {
             Type::ConstString(s) => level.handle3(
                 || "string".into(),
                 || {
-                    if symbols::class(s).is_some_and(|c| c.name == *s) {
+                    if symbols::lookup(s).is_some_and(|c| c.name == *s) {
                         export_string(s)
                     } else {
                         export_string(&crate::schema::truncate(s, 20, "…"))
@@ -903,7 +903,7 @@ impl Accessory {
 /// `StaticType::getStaticObjectType()`: the class, with its own templates as arguments when it is generic.
 fn static_object(class: &str) -> Type {
     // the resolver makes `static` / `$this` of built-in classes only
-    let c = symbols::class(class).expect("a built-in class");
+    let c = symbols::lookup(class).expect("a built-in class");
     let args = c
         .templates
         .iter()
@@ -926,14 +926,14 @@ fn static_object(class: &str) -> Type {
 /// `getIterableKeyType()` (`key`) or `getIterableValueType()` of a class with these template arguments (an error
 /// for a class that is not `Traversable`).
 fn iterable_arg(class: &str, args: &[Type], key: bool) -> Type {
-    symbols::class(class)
-        .and_then(|c| {
-            c.iterable
-                .as_ref()
-                .map(|(k, v)| (c, if key { k } else { v }))
-        })
-        .map_or(Type::Error, |(c, s)| {
-            with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), c, args)
+    let Some(c) = symbols::lookup(class) else {
+        return Type::Error;
+    };
+    c.iterable
+        .as_ref()
+        .map(|(k, v)| if key { k } else { v })
+        .map_or(Type::Error, |s| {
+            with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), &c, args)
         })
 }
 
@@ -955,7 +955,7 @@ fn with_class_args(t: &Type, c: &symbols::Class, args: &[Type]) -> Type {
 
 /// `ObjectType::isInstanceOf()`
 fn is_instance_of(class: &str, target: &str) -> Tri {
-    match symbols::class(class) {
+    match symbols::lookup(class) {
         Some(c) if c.name == target || c.ancestors.iter().any(|a| a == target) => Tri::Yes,
         Some(c) if c.is_interface => Tri::Maybe,
         Some(_) => Tri::No,
@@ -967,11 +967,11 @@ fn is_instance_of(class: &str, target: &str) -> Tri {
 fn has_method(c: &symbols::Class, name: &str) -> bool {
     std::iter::once(c.name.as_str())
         .chain(c.ancestors.iter().map(String::as_str))
-        .any(|n| symbols::class(n).is_some_and(|a| a.methods.contains_key(name)))
+        .any(|n| symbols::lookup(n).is_some_and(|a| a.methods.contains_key(name)))
 }
 
 fn canonical_class(class: &str) -> String {
-    symbols::class(class).map_or_else(|| class.to_string(), |c| c.name.clone())
+    symbols::lookup(class).map_or_else(|| class.to_string(), |c| c.name.clone())
 }
 
 /// `ConstantFloatType::castFloatToString()` (precision -1).
@@ -1933,7 +1933,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 };
                 if r.yes() { Tri::Maybe } else { Tri::No }
             }
-            T::ClassString(None) => Tri::from(symbols::class(x).is_some())
+            T::ClassString(None) => Tri::from(symbols::lookup(x).is_some())
                 .and(Tri::Maybe)
                 .or(Tri::No),
             T::ConstString(y) => Tri::from(x == y),
@@ -1979,7 +1979,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             T::ObjectWithoutClass => Tri::Maybe,
             T::Object(c, _) => {
                 let r = is_super_type_of(&static_object(class), b);
-                if r.yes() && symbols::class(c).is_some_and(|c| c.is_final) {
+                if r.yes() && symbols::lookup(c).is_some_and(|c| c.is_final) {
                     r
                 } else {
                     r.and(Tri::Maybe)
@@ -2034,7 +2034,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             // a final class without a required property; ponytail: otherwise maybe, the property types are not
             // compared
             _ if b.object_class_names().iter().any(|c| {
-                symbols::class(c).is_some_and(|c| {
+                symbols::lookup(c).is_some_and(|c| {
                     c.is_final
                         && props
                             .iter()
@@ -2237,7 +2237,7 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
         return Tri::Maybe;
     }
     let that = &names[0];
-    let result = match (symbols::class(class), symbols::class(that)) {
+    let result = match (symbols::lookup(class), symbols::lookup(that)) {
         (Some(this), Some(other)) => {
             if this.name == other.name || other.ancestors.contains(&this.name) {
                 Tri::Yes
@@ -2265,7 +2265,7 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     let Type::Object(b_class, b_args) = b else {
         return result;
     };
-    let (Some(c), class) = (symbols::class(b_class), canonical_class(class)) else {
+    let (Some(c), class) = (symbols::lookup(b_class), canonical_class(class)) else {
         return result;
     };
     let ancestor: Vec<Type> = if c.name == class {
@@ -2281,7 +2281,7 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
             .get(&class)
             .expect("a generic ancestor's arguments")
             .iter()
-            .map(|s| with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), c, b_args))
+            .map(|s| with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), &c, b_args))
             .collect()
     } else {
         return result;
@@ -3336,4 +3336,137 @@ fn range_try_intersect(min: Option<i64>, max: Option<i64>, other: &Type) -> Opti
         bound(min, omin, i64::max),
         bound(max, omax, i64::min),
     ))
+}
+
+/// The `Type` queries and `TypeCombinator` helpers that declared types need (TypehintHelper::decideType()).
+impl Type {
+    /// `isNull()`
+    pub fn is_null(&self) -> Tri {
+        self.query(&|t| Tri::from(matches!(t, Type::Null)))
+    }
+
+    /// `isVoid()`
+    pub fn is_void(&self) -> Tri {
+        self.query(&|t| Tri::from(matches!(t, Type::Void)))
+    }
+
+    /// `$type instanceof MixedType && !$type->isExplicitMixed()`
+    pub fn is_implicit_mixed(&self) -> bool {
+        matches!(self, Type::Mixed { explicit: false })
+    }
+
+    /// `TypeCombinator::containsNull()`
+    pub fn contains_null(&self) -> bool {
+        match self {
+            Type::Union(types) | Type::Benevolent(types) => {
+                types.iter().any(|t| matches!(t, Type::Null))
+            }
+            t => matches!(t, Type::Null),
+        }
+    }
+
+    /// `TypeCombinator::addNull()`
+    pub fn add_null(self) -> Type {
+        if self.contains_null() {
+            return self;
+        }
+        union(vec![self, Type::Null])
+    }
+
+    /// `TypeCombinator::removeNull()`
+    pub fn remove_null(self) -> Type {
+        match self {
+            Type::Null => Type::Never(NeverKind::Implicit),
+            Type::Union(types) if types.iter().any(|t| matches!(t, Type::Null)) => union(
+                types
+                    .into_iter()
+                    .filter(|t| !matches!(t, Type::Null))
+                    .collect(),
+            ),
+            Type::Benevolent(types) if types.iter().any(|t| matches!(t, Type::Null)) => {
+                match union(
+                    types
+                        .into_iter()
+                        .filter(|t| !matches!(t, Type::Null))
+                        .collect(),
+                ) {
+                    Type::Union(types) => Type::Benevolent(types),
+                    t => t,
+                }
+            }
+            t => t,
+        }
+    }
+
+    /// `TemplateTypeHelper::resolveToBounds()`
+    pub fn resolve_to_bounds(&self) -> Type {
+        match self {
+            Type::Template(t) => t.bound.resolve_to_bounds(),
+            t => t.traverse(&Type::resolve_to_bounds),
+        }
+    }
+}
+
+/// `TypehintHelper::decideType()`: the PHPDoc type where it narrows the native one.
+pub fn decide_type(ty: Type, phpdoc: Option<Type>) -> Type {
+    let phpdoc = phpdoc.map(|p| {
+        if ty.is_null().no() {
+            p.remove_null()
+        } else {
+            p
+        }
+    });
+    if matches!(ty, Type::Benevolent(_)) {
+        return ty;
+    }
+    let Some(mut doc) = phpdoc.filter(|p| !matches!(p, Type::Error)) else {
+        return ty;
+    };
+    if matches!(
+        doc,
+        Type::Never(NeverKind::Explicit | NeverKind::NonAccepting)
+    ) {
+        return doc;
+    }
+    if ty.is_implicit_mixed() && doc.is_void().yes() {
+        return doc;
+    }
+    let mixed_key_array = |t: &Type| match t {
+        Type::Array(key, item) if key.describe(Level::TypeOnly) == "mixed" => {
+            Some(Type::Iterable(key.clone(), item.clone()))
+        }
+        _ => None,
+    };
+    if matches!(ty.clone().remove_null(), Type::Iterable(..)) {
+        if let Type::Union(members) = &doc {
+            doc = Type::Union(
+                members
+                    .iter()
+                    .map(|m| mixed_key_array(m).unwrap_or_else(|| m.clone()))
+                    .collect(),
+            );
+        } else if let Some(iterable) = mixed_key_array(&doc) {
+            doc = iterable;
+        }
+    }
+    let narrows = (ty.is_callable().yes() && doc.is_callable().yes())
+        || ((!matches!(doc, Type::Never(_)) || ty.is_implicit_mixed())
+            && is_super_type_of(&ty, &doc.resolve_to_bounds()).yes());
+    let result = if narrows { doc } else { ty.clone() };
+    match &ty {
+        Type::Union(members) => {
+            let add: Vec<Type> = members
+                .iter()
+                .filter(|m| is_super_type_of(m, &result).no())
+                .cloned()
+                .collect();
+            if add.is_empty() {
+                result
+            } else {
+                union(std::iter::once(result).chain(add).collect())
+            }
+        }
+        t if t.contains_null() => result.add_null(),
+        _ => result,
+    }
 }

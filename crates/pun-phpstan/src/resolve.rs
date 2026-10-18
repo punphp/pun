@@ -28,11 +28,50 @@ fn accessory(base: Type, accessories: &[Accessory]) -> Type {
     Type::Intersection(types)
 }
 
+/// PHPStan's `NameScope`: what a PHPDoc type is resolved in.
+pub trait Scope {
+    /// `getClassName()`: what `self`, `static` and `$this` are.
+    fn class(&self) -> Option<&str> {
+        None
+    }
+    /// The parent class of [`Scope::class()`], for `parent`.
+    fn parent(&self) -> Option<String> {
+        None
+    }
+    /// `resolveStringName()`: a written class name to its full name.
+    fn resolve_name(&self, name: &str) -> String {
+        name.trim_start_matches('\\').to_string()
+    }
+    /// `resolveTemplateTypeName()`: a template type in scope.
+    fn template(&self, _name: &str) -> Option<Type> {
+        None
+    }
+    /// `TypeAliasResolver::resolveTypeAlias()`: a local or imported type alias.
+    fn alias(&self, _name: &str) -> Option<Type> {
+        None
+    }
+}
+
+/// A scope with only a class (built-in signatures).
+struct ClassOnly<'a>(Option<&'a str>);
+
+impl Scope for ClassOnly<'_> {
+    fn class(&self) -> Option<&str> {
+        self.0
+    }
+}
+
 pub fn resolve(node: &Node, class: Option<&str>) -> Type {
-    let r = |n: &Node| resolve(n, class);
+    resolve_in(node, &ClassOnly(class))
+}
+
+/// `TypeNodeResolver::resolve($node, $nameScope)`.
+pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
+    let r = |n: &Node| resolve_in(n, scope);
+    let class = scope.class();
     match node {
-        Node::Ident(name) => identifier(name, class),
-        Node::This => match class.and_then(symbols::class) {
+        Node::Ident(name) => identifier(name, scope),
+        Node::This => match class.and_then(symbols::lookup) {
             Some(c) => Type::This(c.name.clone()),
             None => Type::Error,
         },
@@ -113,9 +152,9 @@ pub fn resolve(node: &Node, class: Option<&str>) -> Type {
             negated: *negated,
         })),
         Node::Array(item) => Type::array(mixed(), r(item)),
-        Node::Generic { base, args } => generic(base, args, class),
+        Node::Generic { base, args } => generic(base, args, scope),
         Node::Callable { ident, params, ret } => {
-            let main = identifier(ident, class);
+            let main = identifier(ident, scope);
             let params: Vec<Param> = params
                 .iter()
                 .map(|p| Param {
@@ -209,7 +248,7 @@ pub fn resolve(node: &Node, class: Option<&str>) -> Type {
                 .map(|(name, optional, ty)| (name.clone(), r(ty), *optional))
                 .collect(),
         ),
-        Node::Const(c) => constant(c, class),
+        Node::Const(c) => constant(c, scope),
     }
 }
 
@@ -256,7 +295,7 @@ fn to_array_key(t: &Type) -> Type {
     }
 }
 
-fn identifier(name: &str, class: Option<&str>) -> Type {
+fn identifier(name: &str, scope: &dyn Scope) -> Type {
     use Accessory as A;
     let string = || Type::String;
     match name.to_ascii_lowercase().as_str() {
@@ -336,11 +375,18 @@ fn identifier(name: &str, class: Option<&str>) -> Type {
         "__stringnotstringable" => return Type::StringNotAcceptingStringable,
         _ => {}
     }
-    if let Some(class) = class {
+    if let Some(class) = scope.class() {
         match name.to_ascii_lowercase().as_str() {
             "self" => return Type::Object(class.to_string(), vec![]),
+            "parent" => {
+                return match scope.parent() {
+                    Some(parent) => Type::Object(parent, vec![]),
+                    // NonexistentParentClassType
+                    None => Type::Error,
+                };
+            }
             "static" => {
-                return match symbols::class(class) {
+                return match symbols::lookup(class) {
                     Some(c) => Type::Static(c.name.clone()),
                     None => Type::Error,
                 };
@@ -348,12 +394,20 @@ fn identifier(name: &str, class: Option<&str>) -> Type {
             _ => {}
         }
     }
-    let name = name.trim_start_matches('\\');
+    if let Some(alias) = scope.alias(name) {
+        return alias;
+    }
+    if let Some(template) = scope.template(name) {
+        return template;
+    }
+    let written = name;
+    let resolved = scope.resolve_name(name);
+    let name = resolved.as_str();
     if name.contains('-') && !name.starts_with("OCI-") {
         return Type::Error;
     }
-    if might_be_constant(name)
-        && symbols::class(name).is_none()
+    if might_be_constant(written)
+        && symbols::lookup(name).is_none()
         && let Some(ty) = symbols::symbols(symbols::PhpVersion::Php84)
             .constants
             .get(name)
@@ -385,26 +439,26 @@ fn might_be_constant(name: &str) -> bool {
         && bytes.all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'_')
 }
 
-fn generic(base: &str, args: &[Node], class: Option<&str>) -> Type {
+fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
     let lower = base.to_ascii_lowercase();
     // Pun's template serialization (`__template<T, 'scope', bound, default>`)
     if lower == "__template"
         && let [
             Node::Ident(name),
-            Node::Const(ConstExpr::Str(scope)),
+            Node::Const(ConstExpr::Str(described)),
             bound,
             rest @ ..,
         ] = args
     {
         return Type::Template(Box::new(Template {
             name: name.clone(),
-            scope: scope.clone(),
-            bound: resolve(bound, class),
-            default: rest.first().map(|d| resolve(d, class)),
+            scope: described.clone(),
+            bound: resolve_in(bound, scope),
+            default: rest.first().map(|d| resolve_in(d, scope)),
             argument: false,
         }));
     }
-    let types: Vec<Type> = args.iter().map(|a| resolve(a, class)).collect();
+    let types: Vec<Type> = args.iter().map(|a| resolve_in(a, scope)).collect();
     match lower.as_str() {
         "array" | "non-empty-array" => {
             let array = match types.as_slice() {
@@ -473,7 +527,7 @@ fn generic(base: &str, args: &[Node], class: Option<&str>) -> Type {
             [t] => to_benevolent(t.clone()),
             _ => Type::Error,
         },
-        _ => generic_object(base, types, class),
+        _ => generic_object(base, types, scope),
     }
 }
 
@@ -499,13 +553,13 @@ impl Type {
     }
 }
 
-fn generic_object(base: &str, mut types: Vec<Type>, class: Option<&str>) -> Type {
-    let main = identifier(base, class);
+fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
+    let main = identifier(base, scope);
     let class_name = match &main {
         Type::Object(name, _) => name.clone(),
         _ => return Type::Error,
     };
-    let Some(reflection) = symbols::class(&class_name) else {
+    let Some(reflection) = symbols::lookup(&class_name) else {
         return Type::Object(class_name, types);
     };
     let iterable = main.is_iterable().yes();
@@ -592,7 +646,8 @@ fn int_mask(t: Type) -> Option<Type> {
     Some(union(values.into_iter().map(Type::ConstInt).collect()))
 }
 
-fn constant(c: &ConstExpr, class: Option<&str>) -> Type {
+fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
+    let class = scope.class();
     match c {
         ConstExpr::Int(i) => Type::ConstInt(int_value(i)),
         ConstExpr::Float(f) => Type::ConstFloat(f.replace('_', "").parse().unwrap_or(0.0)),
@@ -601,9 +656,9 @@ fn constant(c: &ConstExpr, class: Option<&str>) -> Type {
             let is_static = class.is_some() && class_name.eq_ignore_ascii_case("static");
             let class_name = match (class, class_name.to_ascii_lowercase().as_str()) {
                 (Some(c), "self" | "static") => c,
-                _ => class_name.trim_start_matches('\\'),
+                _ => &scope.resolve_name(class_name),
             };
-            let Some(reflection) = symbols::class(class_name) else {
+            let Some(reflection) = symbols::lookup(class_name) else {
                 return Type::Error;
             };
             if name.eq_ignore_ascii_case("class") {
@@ -625,13 +680,16 @@ fn constant(c: &ConstExpr, class: Option<&str>) -> Type {
                 .map(|c| Type::EnumCase(reflection.name.clone(), c.clone()));
             // declared, then inherited (as PHP's reflection lists them)
             let mut seen = Vec::new();
-            let constants = std::iter::once(reflection)
+            let classes: Vec<_> = std::iter::once(reflection.clone())
                 .chain(
                     reflection
                         .ancestors
                         .iter()
-                        .filter_map(|a| symbols::class(a)),
+                        .filter_map(|a| symbols::lookup(a)),
                 )
+                .collect();
+            let constants = classes
+                .iter()
                 .flat_map(|c| c.constants.iter().map(move |(n, t)| (c, n, t)))
                 .filter(|(_, n, _)| {
                     let new = !seen.contains(n);

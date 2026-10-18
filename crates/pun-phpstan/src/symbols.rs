@@ -2,8 +2,10 @@
 //! `scripts/export-phpstan-symbols.php`). Types are kept as the strings PHPStan's `toPhpDocNode()` printed, in
 //! the syntax [`crate::resolve`] reads back.
 
+use std::cell::Cell;
 use std::collections::HashMap;
-use std::sync::OnceLock;
+use std::ops::Deref;
+use std::sync::{Arc, OnceLock};
 
 use std::fmt;
 use std::marker::PhantomData;
@@ -66,6 +68,8 @@ pub struct Class {
     pub templates: Vec<Template>,
     pub cases: Vec<String>,
     pub is_interface: bool,
+    pub is_trait: bool,
+    pub is_enum: bool,
     /// `isFinalByKeyword()`
     pub is_final: bool,
     /// public instance properties, declared or inherited
@@ -226,8 +230,10 @@ fn read_class(v: RawClass) -> Class {
                 default,
             })
             .collect(),
+        is_enum: !v.cases.is_empty(),
         cases: v.cases,
         is_interface: v.interface,
+        is_trait: false,
         is_final: v.is_final,
         properties: v.properties,
         constants: v.constants.0,
@@ -296,6 +302,57 @@ pub fn class(name: &str) -> Option<&'static Class> {
     symbols(PhpVersion::Php84)
         .classes
         .get(&name.trim_start_matches('\\').to_ascii_lowercase())
+}
+
+/// A class [`lookup()`] found: a built-in one, or one the [`with_classes()`] provider gave.
+#[derive(Clone)]
+pub enum ClassRef {
+    Builtin(&'static Class),
+    User(Arc<Class>),
+}
+
+impl Deref for ClassRef {
+    type Target = Class;
+    fn deref(&self) -> &Class {
+        match self {
+            ClassRef::Builtin(c) => c,
+            ClassRef::User(c) => c,
+        }
+    }
+}
+
+type Provider = dyn Fn(&str) -> Option<Arc<Class>>;
+
+thread_local! {
+    static PROVIDER: Cell<Option<*const Provider>> = const { Cell::new(None) };
+}
+
+/// Runs `f` with `provider` answering [`lookup()`] for the classes PHP does not define (the analysed project's and
+/// its dependencies'), as PHPStan's ReflectionProvider knows them, on this thread.
+pub fn with_classes<R>(provider: &dyn Fn(&str) -> Option<Arc<Class>>, f: impl FnOnce() -> R) -> R {
+    struct Restore(Option<*const Provider>);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            PROVIDER.with(|p| p.set(self.0));
+        }
+    }
+    let ptr: *const (dyn Fn(&str) -> Option<Arc<Class>> + '_) = provider;
+    // SAFETY: only the lifetime is erased. `lookup()` dereferences the pointer while `f` runs, within the borrow of
+    // `provider`; `Restore` puts the previous provider back before this function returns, also on unwinding.
+    let ptr: *const Provider = unsafe { std::mem::transmute(ptr) };
+    let _restore = Restore(PROVIDER.with(|p| p.replace(Some(ptr))));
+    f()
+}
+
+/// `ReflectionProvider::getClass()`: a built-in class, else one of the [`with_classes()`] provider.
+pub fn lookup(name: &str) -> Option<ClassRef> {
+    if let Some(c) = class(name) {
+        return Some(ClassRef::Builtin(c));
+    }
+    let provider = PROVIDER.with(Cell::get)?;
+    // SAFETY: set by `with_classes()`, whose borrow outlives every call made while it is set.
+    let provider = unsafe { &*provider };
+    provider(name.trim_start_matches('\\')).map(ClassRef::User)
 }
 
 pub fn function(name: &str) -> Option<&'static Function> {
