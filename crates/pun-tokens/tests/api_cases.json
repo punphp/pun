@@ -189,5 +189,7 @@
 {"code":"<?php","ops":[["fromArray",[["T_OPEN_TAG","<?php "],["T_VARIABLE","$a"],["T_OBJECT_OPERATOR","->"],"{",["CT::T_CURLY_CLOSE","}"],";"]],["transform"]]},
 {"code":"<?php $a ; $b;","ops":[["clearMerge",3],["code"],["contents"]]},
 {"code":"<?php $a;","ops":[["clearAt",2],["clearMerge",1],["code"],["contents"]]},
-{"code":"<?php $a = [1]; f(...);","ops":[["found","["],["found",["CT::T_ARRAY_BRACKET_OPEN"]],["found",["CT::T_FIRST_CLASS_CALLABLE"]],["countKind","="],["each","equalsProto",3]]}
+{"code":"<?php $a = [1]; f(...);","ops":[["found","["],["found",["CT::T_ARRAY_BRACKET_OPEN"]],["found",["CT::T_FIRST_CLASS_CALLABLE"]],["countKind","="],["each","equalsProto",3]]},
+{"code":"<?php (new Foo())->bar();","ops":[["each","blocks"],["each","detect"]]},
+{"code":"<?php","ops":[["fromArray",[["T_OPEN_TAG","<?php "],["T_VARIABLE","$a"],["CT::T_ARRAY_INDEX_BRACE_OPEN","{"],["T_LNUMBER","1"],["CT::T_ARRAY_INDEX_BRACE_CLOSE","}"],";"]],["each","blocks"],["each","detect"]]}
 ]
