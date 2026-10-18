@@ -155,6 +155,13 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
   level 0 waits for the analyse spike; the shared problem type is a Step 1 row; migrate 1 (format part on the new
   names) moves into Step 1; `pun init` 1-3 and 5 land in Track A, init 4 after analyse Build 1-2.
 
+- **Audit decisions** (2026-10-18, context/AUDIT.md): a shared `[workspace.lints]` as the audit proposes, with
+  clippy `--all-features -D warnings` gating CI (item 28); delete pun-phpstan's unused type model (69); fixers skip
+  input PHP rejects instead of panicking (23, 24); run settings passed explicitly instead of process globals and env
+  reads (26, 27), one `PhpVersion` type (53), `Token` fields private behind getters (76). Assistant's defaults, same
+  spirit: typed `IgnoreEntry` (47), delete code with no production caller (71), the `md-5` crate instead of the
+  hand-written md5 (88).
+
 - **Tests:** 100% line coverage per crate; expected values from the real tools or derived by hand; no tautological
   tests (AGENTS.md).
 
