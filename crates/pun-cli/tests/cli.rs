@@ -187,7 +187,10 @@ impl Ctx {
         self.same_as(dir, tree, pre, args, args, env, stdin);
     }
     /// Like `same`, but Pint gets `pint_args` (for pun-only spellings such as `--check`).
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "`same` plus the arguments Pint gets"
+    )]
     fn same_as(
         &self,
         dir: &Path,

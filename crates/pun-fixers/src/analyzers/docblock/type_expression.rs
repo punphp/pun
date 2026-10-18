@@ -254,7 +254,10 @@ impl TypeExpression {
     }
 
     /// Shared loop of parseCallableTemplateInnerTypes / parseCallableArgumentTypes / parseArrayShapeInnerTypes.
-    #[allow(clippy::too_many_arguments)] // the three upstream loops differ only in these regex pieces
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the three upstream loops differ only in these regex pieces"
+    )]
     fn parse_prefixed(
         &mut self,
         start_index: usize,

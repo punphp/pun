@@ -3,7 +3,7 @@
 
 macro_rules! kinds {
     (php: [$($php:ident),* $(,)?] ct: [$($ct:ident = $ctname:literal),* $(,)?]) => {
-        #[allow(non_camel_case_types)]
+        #[expect(non_camel_case_types, reason = "variants keep PHP's `T_*` names")]
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
         #[repr(u16)]
         pub enum Kind { $($php,)* $($ct,)* }
@@ -231,7 +231,6 @@ ct: [
 }
 
 /// Upstream aliases (`T_PAAMAYIM_NEKUDOTAYIM`, deprecated `CT::` names still used by fixers).
-#[allow(non_upper_case_globals)]
 impl Kind {
     pub const T_PAAMAYIM_NEKUDOTAYIM: Kind = Kind::T_DOUBLE_COLON;
     pub const CT_ARRAY_INDEX_CURLY_BRACE_CLOSE: Kind = Kind::CT_ARRAY_INDEX_BRACE_CLOSE;

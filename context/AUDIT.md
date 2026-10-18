@@ -445,9 +445,13 @@ items marked "not checked against Pint" still need one oracle run before the fix
   (`ordered_imports.rs:166-189`, `ordered_traits.rs:265-285`); a regex rebuilt per comment (`no_break_comment.rs:166-175`)
   and per parse (`type_expression.rs:267-273`); `insert_slices` splicing back to front (`tokens.rs:625-628`); and
   `woc_ends` quadratic in a whitespace run (`lexer.rs:360-412`). Borrow the token, copy its id, or compute once.
-- [ ] 86. `crates/pun-tokens/src/tokens.rs:42`, `kind.rs:234` and `pun-fixers/src/analyzers/preg.rs:14` carry
+- [x] 86. `crates/pun-tokens/src/tokens.rs:42`, `kind.rs:234` and `pun-fixers/src/analyzers/preg.rs:14` carry
   `allow(non_upper_case_globals)` that suppresses nothing; nine `allow`s have no reason (clippy
-  `allow_attributes_without_reason`). Delete them or switch to `#[expect(.., reason = ..)]`.
+  `allow_attributes_without_reason`). Delete them or switch to `#[expect(.., reason = ..)]`. Reproduced: the three
+  `non_upper_case_globals` allows and `preg.rs`'s `len_without_is_empty` (an unfulfilled `expect` showed it) suppress
+  nothing and are gone; the rest are `#[expect(.., reason)]`, or `allow` with a reason where a lint fires in only some
+  builds (shared test modules, the generated grammar and its generator). `cargo clippy --workspace --all-targets -- -W
+  clippy::allow_attributes_without_reason` reports none. Fixed in wf/audit-tokens.
 - [ ] 87. Visibility: 570 `unreachable_pub` hits, mostly the `pub fn fixer()`/`pub struct` items inside private
   fixer modules and pun-cli/pun-analyse internals; `pun-phpstan` makes every module `pub` (`di`, `schema`, `phpfile`
   internals have no outside caller); `docblock/regex.rs:4,13,187` exports three macros as the crate's public API;

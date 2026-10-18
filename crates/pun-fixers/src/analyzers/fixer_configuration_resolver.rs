@@ -272,8 +272,10 @@ fn verify_types(type_: &str, v: &Value, invalid: &mut Vec<&'static str>, level: 
         _ => None,
     };
     if let (Some(inner), Some(items)) = (type_.strip_suffix("[]"), items) {
-        // No short-circuit: every element records its invalid type.
-        #[allow(clippy::unnecessary_fold)]
+        #[expect(
+            clippy::unnecessary_fold,
+            reason = "no short-circuit: every element records its invalid type"
+        )]
         return items.into_iter().fold(true, |valid, item| {
             verify_types(inner, item, invalid, level + 1) && valid
         });

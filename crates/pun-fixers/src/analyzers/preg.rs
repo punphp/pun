@@ -11,8 +11,6 @@
 //! let m = Preg::match_groups("/(a)(b)?/", s, 0).unwrap(); m.str(1); m.exists(2);
 //! let out = Preg::replace("/\\R/", "\n", s);
 //! ```
-#![allow(non_upper_case_globals)]
-
 use pcre2_sys::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -416,7 +414,6 @@ impl<'s> Captures<'s> {
     }
 
     /// Number of numeric entries in `$matches` (never 0: group 0 always matched).
-    #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         self.len
     }
