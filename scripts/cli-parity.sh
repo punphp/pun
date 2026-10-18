@@ -1,9 +1,12 @@
 #!/bin/bash
-# Byte-compare `pint` (the pinned PHAR) with `pun migrate` + `pun format`: stdout, stderr, exit code and resulting files,
-# for each argument set, run in the same directory (so absolute paths in diffs / ERROR lines agree).
+# Compare `pint` (the pinned PHAR) with `pun migrate` + `pun format`: exit code and resulting files for each argument
+# set, and stdout/stderr byte for byte when the set picks a machine format (`--format=...`). Human output is Pun's own
+# (context/plan/output.md), so it is not compared. Both run in the same directory (so absolute paths in diffs / ERROR
+# lines agree).
 #
-#   scripts/cli-parity.sh [--project DIR] [--tty] [--env K=V]... "ARGS" ["ARGS"...]
+#   scripts/cli-parity.sh [--project DIR] [--tty] [--env K=V]... ["ARGS"...]
 #
+# Without argument sets it runs the default ones below (human runs, every machine format, -v diffs).
 # --project  copy of this project is used (default: a small sample with a fixable, a clean and a broken file).
 #            node_modules (for Pint/laravel_blade) is symlinked, .git is dropped.
 # --tty      run both under `script` so stdout/stderr are a terminal (colours, stty width); output is merged.
@@ -53,12 +56,21 @@ run() { # name cmd...
   perl -0pi -e 's/\A\r?\nBox Requirements Checker\r?\n.*?\[OK\] Your system is ready[^\n]*\n *\r?\n\r?\n//s' "$out.out" "$out.err"
   (cd "$P" && find . -path ./node_modules -prune -o -type f ! -name pun.toml -print0 | sort -z | xargs -0 md5sum) > "$out.files"
 }
+if [ $# -eq 0 ]; then
+  set -- "" "--test" "-v" "--test -v" "--repair" "--bail" \
+    "--format=json" "--test --format=json -v" "--test --format=txt -v" "--test --format=checkstyle" \
+    "--test --format=junit -v" "--test --format=xml -v" "--test --format=gitlab" "--test --format=agent" \
+    "--test --output-to-file=r.json --output-format=json"
+fi
 for args in "$@"; do
   read -ra a <<< "$args"
-  run pint php "$R/.oracle/pint/builds/pint" "${a[@]}"
-  run pun "$W/bin/pint" "${a[@]}"
+  # Machine formats are compared byte for byte; human stdout/stderr are Pun's own.
+  keys="code files"
+  case " $args " in *" --format"*) keys="out err code files" ;; esac
+  run pint php "$R/.oracle/pint/builds/pint" ${a[@]+"${a[@]}"}
+  run pun "$W/bin/pint" ${a[@]+"${a[@]}"}
   same=1
-  for k in out err code files; do
+  for k in $keys; do
     if ! cmp -s "$W/pint.$k" "$W/pun.$k"; then
       [ $same = 1 ] && echo "##### $args: DIFFERS"
       same=0

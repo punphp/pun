@@ -34,9 +34,15 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
         },
         ..a.clone()
     };
-    // The content each file had when Pun last finished with it: events that leave it so (Pun's own writes) are no change.
-    let mut done: HashMap<PathBuf, u64> = HashMap::new();
+    // The content each file had when Pun last finished with it: events that leave it so (Pun's own writes, which
+    // FSEvents may report after the first run) are no change.
     let hash = |p: &PathBuf| std::fs::read(p).ok().map(|c| xxh3_64(&c));
+    let mut done: HashMap<PathBuf, u64> = load_config(&a, &root)
+        .and_then(|cfg| pun_workspace::discover(&cfg, &a.paths))
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(|f| Some((f.clone(), hash(&f)?)))
+        .collect();
     loop {
         // Polls for a dead parent (the editor or shell that started the watch): the watch ends with it.
         let first = loop {

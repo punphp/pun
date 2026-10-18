@@ -1,7 +1,9 @@
-//! `pun format --watch` on a live directory: the first run and every re-run print what the real Pint prints for
-//! the same files (`php .oracle/pint/builds/pint <files>` on a copy), files end up as Pint leaves them, excluded
-//! files are left alone, Pun's own writes don't trigger runs, errors don't stop the watch, and removing the
-//! project ends it with exit 0. Skipped without the oracle.
+//! `pun format --watch` on a live directory: the first run and every re-run report the files the real Pint reports
+//! for the same files (`php .oracle/pint/builds/pint <files>` on a copy; the output itself is Pun's own, compared as
+//! in tests/common), files end up as Pint leaves them, excluded files are left alone, Pun's own writes don't trigger
+//! runs, errors don't stop the watch, and removing the project ends it with exit 0. Skipped without the oracle.
+mod common;
+
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -84,6 +86,7 @@ fn watcher(dir: &Path, home: &Path) -> Command {
         .env("PATH", std::env::var("PATH").unwrap())
         .env("HOME", home)
         .env("PUN_AGENT", "0")
+        .env("LANG", "en_US.UTF-8")
         .env("COLUMNS", "80");
     if let Ok(v) = std::env::var("LLVM_PROFILE_FILE") {
         c.env("LLVM_PROFILE_FILE", v);
@@ -144,10 +147,29 @@ fn watch_reformats_like_pint() {
     let out = collect(Box::new(child_out));
     let err = collect(Box::new(child_err));
 
-    // The first run is a normal run.
+    // The first run is a normal run. Each run ends with Pun's summary line, the only line ending in its time.
+    let runs = |o: &str| -> Vec<String> {
+        let mut runs = vec![String::new()];
+        for line in o.split_inclusive('\n') {
+            runs.last_mut().unwrap().push_str(line);
+            if line.ends_with("s\n") && line.contains(" · ") {
+                runs.push(String::new());
+            }
+        }
+        runs.pop();
+        runs
+    };
+    let names =
+        |files: &[(&str, &str)]| -> Vec<String> { files.iter().map(|f| f.0.to_string()).collect() };
     let (first, _) = pint(&[("pint.json", CFG)], &start[1..], false);
-    wait_for("the first run", &out, |o| o.len() >= first.len());
-    assert_eq!(*out.lock().unwrap(), first);
+    wait_for("the first run", &out, |o| !runs(o).is_empty());
+    let (want, got) = common::human_pair(
+        &first,
+        &runs(&out.lock().unwrap())[0],
+        &names(&start[1..]),
+        &names(&start[1..]),
+    );
+    assert_eq!(got, want);
     std::thread::sleep(Duration::from_millis(500));
 
     // A new file and an edited one are re-run together; excluded files (notName, vendor) are not touched.
@@ -168,10 +190,14 @@ fn watch_reformats_like_pint() {
     write(&dir, &edits);
     let (second, after) = pint(&fixed, &edits, true);
     assert!(second.contains("2 files"), "{second}");
-    wait_for("the re-run", &out, |o| {
-        o.len() >= first.len() + second.len()
-    });
-    assert_eq!(out.lock().unwrap()[first.len()..], second);
+    wait_for("the re-run", &out, |o| runs(o).len() >= 2);
+    let rerun = runs(&out.lock().unwrap())[1].clone();
+    let (want, got) = common::human_pair(&second, &rerun, &names(&edits), &names(&edits));
+    assert_eq!(got, want);
+    assert!(
+        rerun.contains("Formatted 2 files, 0 unchanged · 2 files in "),
+        "{rerun}"
+    );
     for ((f, _), want) in edits.iter().zip(&after) {
         assert_eq!(std::fs::read_to_string(dir.join(f)).unwrap(), *want, "{f}");
     }
@@ -180,7 +206,8 @@ fn watch_reformats_like_pint() {
     }
     // Pun's own writes are not changes: nothing more runs.
     std::thread::sleep(Duration::from_millis(1500));
-    assert_eq!(out.lock().unwrap().len(), first.len() + second.len());
+    let printed = out.lock().unwrap().len();
+    assert_eq!(runs(&out.lock().unwrap()).len(), 2);
 
     // A broken pun.toml, then an unreadable file: reported on stderr, and the watch goes on.
     let toml = std::fs::read_to_string(dir.join("pun.toml")).unwrap();
@@ -200,7 +227,7 @@ fn watch_reformats_like_pint() {
             dir.display()
         ))
     });
-    assert_eq!(out.lock().unwrap().len(), first.len() + second.len());
+    assert_eq!(out.lock().unwrap().len(), printed);
 
     // Removing the project ends the watch.
     std::fs::remove_dir_all(&dir).unwrap();

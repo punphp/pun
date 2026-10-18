@@ -2,7 +2,8 @@
 //! rule, a one-file project enabling only that rule (pint.json, or pun.toml for Pun/ rules) and what real Pint does
 //! to it: the file it writes and `pint --test`'s stdout and exit code. Pun/ rules have no Pint; their expectation
 //! is the first Mago-derived case of the fixer's own tests. After `pun migrate` (risky fixers become lint rules),
-//! `pun check --fix` must write the same file and `pun check` must print the same and exit the same.
+//! `pun check --fix` must write the same file, and `pun check` must exit the same and name the same rule (in Pun's
+//! own output, under its Pun ID) or the same syntax error.
 
 use serde_json::Value;
 use std::path::{Path, PathBuf};
@@ -36,6 +37,8 @@ fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
         .env("PATH", std::env::var("PATH").unwrap_or_default())
         .env("HOME", std::env::var("HOME").unwrap_or_default())
         .env("PUN_AGENT", "0")
+        // Pun's own output: a UTF-8 locale gets ✖ rather than its ASCII fallback.
+        .env("LANG", "en_US.UTF-8")
         .output()
         .unwrap();
     (
@@ -73,17 +76,27 @@ fn every_rule_matches_pint() {
                 case["test_exit"]
             ));
         }
-        if let Some(want) = case.get("test_stdout").and_then(Value::as_str) {
-            // `pun migrate` folds the deprecated visibility_required into modifier_keywords.
-            let want = want.replace("visibility_required", "  modifier_keywords");
-            if stdout != want {
-                failures.push(format!(
-                    "{rule}: `--test` output\n--- pint\n{want}\n--- pun\n{stdout}"
-                ));
-            }
-        } else if !stdout.contains(rule) {
+        // Pun's own output (output.md §1): a fixable file is a ✖ file line naming the rule's Pun ID; Pint's `!` (a
+        // syntax error) is a problem block at the file.
+        let pint_error =
+            (case.get("test_stdout").and_then(Value::as_str)).is_some_and(|s| s.contains("\n  ! "));
+        // `pun migrate` folds the deprecated visibility_required into modifier_keywords.
+        let fixer = if rule == "visibility_required" {
+            "modifier_keywords"
+        } else {
+            rule
+        };
+        let id = pun_config::rule_of(fixer).unwrap_or(rule);
+        let named = if pint_error {
+            stdout.contains(" ✖ syntax-error  ")
+                && stdout.contains(&format!("╭─ {}:", case["file"].as_str().unwrap()))
+        } else {
+            let line = format!(" ✖ {} ", case["file"].as_str().unwrap());
+            (stdout.lines()).any(|l| l.starts_with(&line) && l.split([' ', ',']).any(|w| w == id))
+        };
+        if !named {
             failures.push(format!(
-                "{rule}: `--test` output does not name the rule\n{stdout}"
+                "{rule}: `check` output does not name `{id}`\n{stdout}"
             ));
         }
         let file = dir.join(case["file"].as_str().unwrap());

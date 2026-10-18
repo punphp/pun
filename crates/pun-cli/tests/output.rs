@@ -1,7 +1,11 @@
-//! Byte-for-byte output parity with the real Pint (`php .oracle/pint/builds/pint`): stdout, stderr, exit code and
-//! resulting files for syntax errors (PHP's message, `-v` snippets), colours (`--ansi`, TTY via `script`, NO_COLOR),
-//! every `--format` reporter, Termwind truncation, abort boxes and the prettier pre-flight check. Each case runs
-//! Pint, resets the tree, runs `pun migrate` and `pun format` in the same directory. Skipped without the oracle.
+//! Output. Pun's own human output (format.md §9, output.md §1) against the plan's samples, derived by hand, with and
+//! without colour, piped and on a terminal. Byte-for-byte parity with the real Pint (`php .oracle/pint/builds/pint`)
+//! for what stays Pint's: exit codes, resulting files, every `--format` reporter (with `--ansi`), `-q`, abort boxes
+//! and the prettier pre-flight check. Each Pint case runs Pint, resets the tree, runs `pun migrate` and `pun format`
+//! in the same directory; human runs there compare the files each tool names (tests/common). The Pint cases are
+//! skipped without the oracle.
+mod common;
+
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -84,12 +88,14 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
                 .iter()
                 .map(|a| format!("'{}'", a.replace('\'', "'\\''")))
                 .collect();
+            let line = format!("stty cols {cols} rows 40; {}", quoted.join(" "));
             let mut c = Command::new("script");
-            c.args([
-                "-qefc",
-                &format!("stty cols {cols} rows 40; {}", quoted.join(" ")),
-                "/dev/null",
-            ]);
+            // util-linux's script takes the command with -c; BSD's (macOS) after the typescript file.
+            if cfg!(target_os = "macos") {
+                c.args(["-q", "/dev/null", "sh", "-c", &line]);
+            } else {
+                c.args(["-qefc", &line, "/dev/null"]);
+            }
             c
         }
     };
@@ -110,6 +116,8 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
     } else {
         c.env("COLUMNS", "80");
     }
+    // Pun's own output: a UTF-8 locale gets ✔ and ✖ rather than their ASCII fallbacks.
+    c.env("LANG", "en_US.UTF-8");
     let out = c
         .envs(o.env.iter().copied())
         .stdin(std::process::Stdio::null())
@@ -117,7 +125,12 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
         .unwrap();
     let mut files = BTreeMap::new();
     snapshot(dir, "", &mut files);
-    let text = |b: &[u8]| String::from_utf8_lossy(b).into_owned();
+    // A pty turns `\n` into `\r\n`; BSD's script echoes the closed stdin as `^D` and two backspaces first.
+    let text = |b: &[u8]| {
+        let t = String::from_utf8_lossy(b).replace("\r\n", "\n");
+        t.strip_prefix("^D\x08\x08")
+            .map_or(t.clone(), str::to_string)
+    };
     Run {
         stdout: text(&out.stdout),
         stderr: text(&out.stderr),
@@ -196,7 +209,15 @@ impl Cx {
     }
 
     fn same_cmd(&self, pun: &[&str], tree: &[(&str, &str)], args: &[&str], o: Opts) -> Run {
-        let (want, got) = self.pair_cmd(pun, tree, args, o);
+        let (mut want, mut got) = self.pair_cmd(pun, tree, args, o);
+        if common::human(args) {
+            (want.stdout, got.stdout) = common::human_pair(
+                &want.stdout,
+                &got.stdout,
+                want.files.keys(),
+                got.files.keys(),
+            );
+        }
         assert_eq!(got, want, "{args:?} env={:?} tty={:?}", o.env, o.tty);
         got
     }
@@ -241,8 +262,8 @@ fn tree() -> Vec<(&'static str, &'static str)> {
     ]
 }
 
-/// The whole matrix on one tree: a fixable file (with XML/formatter-hostile content and name), a clean one and a
-/// syntax error (PHP's message, `-v` snippet with tag-like comments).
+/// What stays Pint's, on one tree: a fixable file (with XML/formatter-hostile content and name), a clean one and a
+/// syntax error. Exit codes and files for the human modes, `-q` byte for byte, and every `--format` reporter.
 #[test]
 fn every_mode_like_pint() {
     let Some(cx) = Cx::new("modes") else { return };
@@ -255,11 +276,8 @@ fn every_mode_like_pint() {
         &["-q"],
         &["--test", "-q"],
         &["--bail", "-v"],
-        &["--ansi"],
         &["--ansi", "--test", "-v"],
-        &["--ansi", "-v"],
         &["--ansi", "-q", "--test"],
-        &["--ansi", "--no-ansi", "--test"],
         &["--no-ansi", "--test", "-v"],
     ] {
         cx.same(&t, args, PLAIN);
@@ -294,81 +312,301 @@ fn every_mode_like_pint() {
             PLAIN,
         );
     }
-    // Colour switches from the environment.
+    // Symfony's colour switch from the environment still decorates the reports.
     cx.same(
         &t,
-        &["--test"],
+        &["--test", "--format=txt", "-v"],
         Opts {
             env: &[("FORCE_COLOR", "1")],
             ..PLAIN
         },
     );
-    cx.same(
-        &t,
-        &["--test", "-v"],
-        Opts {
-            env: &[("COLLISION_FORCE_COLORS", "1")],
-            ..PLAIN
-        },
-    );
-    // Termwind: truncation (`…`), clipping under -v, and a path wider than the box, across widths.
-    for cols in ["40", "45", "52", "53", "54", "55", "75", "81", "120"] {
-        cx.same(
-            &t,
-            &["--test"],
-            Opts {
-                env: &[("COLUMNS", cols)],
-                ..PLAIN
-            },
-        );
-        cx.same(
-            &t,
-            &["--test", "-v"],
-            Opts {
-                env: &[("COLUMNS", cols)],
-                ..PLAIN
-            },
-        );
-    }
 }
 
-/// A real terminal: Symfony decorates, Collision highlights `-v` code, the width comes from `stty -a`.
+/// A real terminal: the reports, `-q` and the abort box stay Pint's, decorated as Symfony decides.
 #[test]
 fn terminal_like_pint() {
     let Some(cx) = Cx::new("tty") else { return };
     let t = tree();
-    for (args, cols) in [
-        (&["--test"][..], 80),
-        (&["-v"], 80),
-        (&["--test", "-v"], 50),
-        (&["--test"], 0),
-        (&["--no-ansi", "--test", "-v"], 80),
-        (&["--format=txt", "--test", "-v"], 80),
-        (&["-q", "--test"], 80),
+    // An abort box wraps at the width `stty -a` reports (no COLUMNS on a terminal).
+    for args in [
+        &["--format=txt", "--test", "-v"][..],
+        &["-q", "--test"],
+        &["--format=a-format-name-long-enough-to-wrap-in-a-fifty-column-terminal"],
     ] {
         cx.same(
             &t,
             args,
             Opts {
-                tty: Some(cols),
+                tty: Some(50),
                 ..PLAIN
             },
         );
+    } // A pty of 0 columns: Symfony falls back to 80.
+    cx.same(
+        &t,
+        &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped"],
+        Opts {
+            tty: Some(0),
+            ..PLAIN
+        },
+    );
+}
+
+/// The tree of the human-output samples: two files `format/arrays/syntax` fixes, a clean one and, with `broken`, a
+/// syntax error on its line 5 (format.md §9's sample, at its own line).
+fn sample_tree(broken: bool) -> Vec<(&'static str, &'static str)> {
+    let mut t = vec![
+        (
+            "pun.toml",
+            "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n",
+        ),
+        ("app/Models/User.php", "<?php\n$a = array(1);\n"),
+        ("app/Http/Kernel.php", "<?php\n$b = array(2);\n"),
+        ("app/Clean.php", "<?php\n$c = [3];\n"),
+    ];
+    if broken {
+        t.push((
+            "app/Broken.php",
+            "<?php\nfunction f()\n{\n    return $x\n}\n",
+        ));
     }
-    for env in [
-        &[("NO_COLOR", "1")][..],
-        &[("TERM", "dumb")],
-        &[("TERM", "dumb"), ("COLORTERM", "truecolor")],
-        &[("COLUMNS", "60")],
-    ] {
-        cx.same(
+    t
+}
+
+/// `pun <args>` on a fresh copy of `tree`: stdout (the time in the summary as `T`) and the exit code.
+fn sample(tree: &[(&str, &str)], args: &[&str], o: Opts) -> (String, Option<i32>) {
+    let dir = tmp("sample");
+    reset(&dir, tree);
+    let r = run(&[&[env!("CARGO_BIN_EXE_pun")][..], args].concat(), &dir, o);
+    (timeless(&r.stdout), r.code)
+}
+
+/// The run's time (`0.12s`, at the end of the summary, the last line) as `T`.
+fn timeless(out: &str) -> String {
+    let body = out.strip_suffix('\n').unwrap_or(out);
+    let reset = if body.ends_with(Z) { Z } else { "" };
+    let Some(head) = body.strip_suffix(reset).and_then(|b| b.strip_suffix('s')) else {
+        return out.to_string();
+    };
+    let head = head.trim_end_matches(|c: char| c.is_ascii_digit() || c == '.');
+    format!("{head}T{reset}\n")
+}
+
+/// SGR codes of the 16-colour look (`--color=always` without `COLORTERM`/`TERM`): error, ok, rule, dim, reset.
+const E: &str = "\x1b[31m";
+const OK: &str = "\x1b[32m";
+const R: &str = "\x1b[36m";
+const D: &str = "\x1b[2m";
+const Z: &str = "\x1b[0m";
+
+/// format.md §9's samples: `pun format` (✔ and the rule IDs from the 27th column, "Formatted N files, M unchanged")
+/// and `pun format --test` (✖, "N of T files need formatting · run `pun format` to fix"), exits 0 and 1.
+#[test]
+fn format_samples() {
+    let t = sample_tree(false);
+    let never = ["format", "--color=never"];
+    assert_eq!(
+        sample(&t, &[&never[..], &["--test"]].concat(), PLAIN),
+        (
+            concat!(
+                " ✖ app/Http/Kernel.php        format/arrays/syntax\n",
+                " ✖ app/Models/User.php        format/arrays/syntax\n",
+                "2 of 3 files need formatting · run `pun format` to fix · T\n",
+            )
+            .to_string(),
+            Some(1)
+        )
+    );
+    assert_eq!(
+        sample(&t, &never, PLAIN),
+        (
+            concat!(
+                " ✔ app/Http/Kernel.php        format/arrays/syntax\n",
+                " ✔ app/Models/User.php        format/arrays/syntax\n",
+                "Formatted 2 files, 1 unchanged · 3 files in T\n",
+            )
+            .to_string(),
+            Some(0)
+        )
+    );
+    let dot = format!(" {D}·{Z} ");
+    assert_eq!(
+        sample(&t, &["format", "--color=always", "--test"], PLAIN),
+        (
+            format!(
+                " {E}✖{Z} app/Http/Kernel.php        {R}format/arrays/syntax{Z}\n {E}✖{Z} app/Models/User.php        {R}format/arrays/syntax{Z}\n2 of 3 files need formatting{dot}run `pun format` to fix{dot}{D}T{Z}\n"
+            ),
+            Some(1)
+        )
+    );
+    assert_eq!(
+        sample(&t, &["format", "--color=always"], PLAIN),
+        (
+            format!(
+                " {OK}✔{Z} app/Http/Kernel.php        {R}format/arrays/syntax{Z}\n {OK}✔{Z} app/Models/User.php        {R}format/arrays/syntax{Z}\nFormatted 2 files, 1 unchanged{dot}{D}3 files in T{Z}\n"
+            ),
+            Some(0)
+        )
+    );
+    // Clean files print nothing; a clean `--test` run is one line. One file is singular.
+    let clean = &t[..1].iter().chain(&t[3..]).copied().collect::<Vec<_>>();
+    assert_eq!(
+        sample(clean, &[&never[..], &["--test"]].concat(), PLAIN),
+        ("All 1 file formatted · T\n".to_string(), Some(0))
+    );
+    assert_eq!(
+        sample(clean, &never, PLAIN),
+        (
+            "Formatted 0 files, 1 unchanged · 1 file in T\n".to_string(),
+            Some(0)
+        )
+    );
+    let one = &t[..2].iter().copied().collect::<Vec<_>>();
+    assert_eq!(
+        sample(one, &[&never[..], &["--test"]].concat(), PLAIN),
+        (
+            " ✖ app/Models/User.php        format/arrays/syntax\n1 of 1 file needs formatting · run `pun format` to fix · T\n"
+                .to_string(),
+            Some(1)
+        )
+    );
+    // `-q` prints nothing on success.
+    assert_eq!(
+        sample(&t, &["format", "-q"], PLAIN),
+        (String::new(), Some(0))
+    );
+}
+
+/// `-v`: a dim line per unchanged file, and under each changed file its diff with old and new line numbers (removed
+/// red, added green, context dim).
+#[test]
+fn verbose_sample() {
+    let t = sample_tree(false);
+    let lines = concat!(
+        " ✔ app/Clean.php\n",
+        " ✖ app/Http/Kernel.php        format/arrays/syntax\n",
+        "   1 1 │  <?php\n",
+        "   2   │ -$b = array(2);\n",
+        "     2 │ +$b = [2];\n",
+        " ✖ app/Models/User.php        format/arrays/syntax\n",
+        "   1 1 │  <?php\n",
+        "   2   │ -$a = array(1);\n",
+        "     2 │ +$a = [1];\n",
+    );
+    assert_eq!(
+        sample(&t, &["format", "--color=never", "--test", "-v"], PLAIN),
+        (
+            format!("{lines}2 of 3 files need formatting · run `pun format` to fix · T\n"),
+            Some(1)
+        )
+    );
+    let bar = format!("{D}│{Z}");
+    let diff = |n: &str, old: &str, new: &str| {
+        format!(
+            "   {D}1 1{Z} {bar}  {D}<?php{Z}\n   {D}2  {Z} {bar} {E}-${n} = array({old});{Z}\n   {D}  2{Z} {bar} {OK}+${n} = [{new}];{Z}\n"
+        )
+    };
+    let dot = format!(" {D}·{Z} ");
+    assert_eq!(
+        sample(&t, &["format", "--color=always", "-v"], PLAIN),
+        (
+            format!(
+                " {D}✔{Z} {D}app/Clean.php{Z}\n {OK}✔{Z} app/Http/Kernel.php        {R}format/arrays/syntax{Z}\n{} {OK}✔{Z} app/Models/User.php        {R}format/arrays/syntax{Z}\n{}Formatted 2 files, 1 unchanged{dot}{D}3 files in T{Z}\n",
+                diff("b", "2", "2"),
+                diff("a", "1", "1"),
+            ),
+            Some(0)
+        )
+    );
+}
+
+/// A syntax error: a problem block with a code frame at the line PHP names (format.md §9's sample in output.md §1's
+/// block), after the file lines; it counts in the summary and fails the run, with and without `--test`.
+#[test]
+fn syntax_error_sample() {
+    let t = sample_tree(true);
+    let frame = concat!(
+        " ✖ syntax-error  syntax error, unexpected token \"}\", expecting \";\"\n",
+        "  ╭─ app/Broken.php:5:1\n",
+        " 4│     return $x\n",
+        " 5│ }\n",
+        "  │ ━\n",
+        "  ╰─\n",
+    );
+    assert_eq!(
+        sample(&t, &["format", "--color=never", "--test"], PLAIN),
+        (
+            format!(
+                " ✖ app/Http/Kernel.php        format/arrays/syntax\n ✖ app/Models/User.php        format/arrays/syntax\n\n{frame}2 of 4 files need formatting · 1 error · run `pun format` to fix · T\n"
+            ),
+            Some(1)
+        )
+    );
+    assert_eq!(
+        sample(&t, &["format", "--color=never", "app/Broken.php"], PLAIN),
+        (
+            format!("{frame}Formatted 0 files, 0 unchanged · 1 error · 1 file in T\n"),
+            Some(1)
+        )
+    );
+    let dot = format!(" {D}·{Z} ");
+    assert_eq!(
+        sample(
             &t,
-            &["--test", "-v"],
+            &["format", "--color=always", "--test", "app/Broken.php"],
+            PLAIN
+        ),
+        (
+            format!(
+                " {E}✖{Z} {R}syntax-error{Z}  syntax error, unexpected token \"}}\", expecting \";\"\n  {D}╭─{Z} app/Broken.php:5:1\n {D}4{Z}{D}│{Z}     return $x\n {D}5{Z}{D}│{Z} }}\n  {D}│{Z} {E}━{Z}\n  {D}╰─{Z}\n{E}1 error{Z}{dot}{D}1 file in T{Z}\n"
+            ),
+            Some(1)
+        )
+    );
+}
+
+/// output.md §1: colour is on for a terminal and off when piped; `NO_COLOR` turns it off and `--color` (or Pint's
+/// `--ansi` / `--no-ansi`) overrides both. A short run shows no spinner.
+#[test]
+fn colour_follows_the_terminal() {
+    let t = sample_tree(false);
+    let plain = " ✖ app/Http/Kernel.php        format/arrays/syntax\n ✖ app/Models/User.php        format/arrays/syntax\n2 of 3 files need formatting · run `pun format` to fix · T\n";
+    let dot = format!(" {D}·{Z} ");
+    let painted = format!(
+        " {E}✖{Z} app/Http/Kernel.php        {R}format/arrays/syntax{Z}\n {E}✖{Z} app/Models/User.php        {R}format/arrays/syntax{Z}\n2 of 3 files need formatting{dot}run `pun format` to fix{dot}{D}T{Z}\n"
+    );
+    let tty = Opts {
+        tty: Some(80),
+        ..PLAIN
+    };
+    let no_color = Opts {
+        env: &[("NO_COLOR", "1")],
+        ..PLAIN
+    };
+    for (args, o, want) in [
+        (&["--test"][..], PLAIN, plain),
+        (&["--test", "--ansi"], PLAIN, painted.as_str()),
+        (&["--test", "--color=always"], no_color, &painted),
+        (&["--test"], tty, &painted),
+        (
+            &["--test"],
             Opts {
                 tty: Some(80),
-                env,
-                ..PLAIN
+                ..no_color
             },
+            plain,
+        ),
+        (&["--test", "--color=never"], tty, plain),
+        (&["--test", "--no-ansi"], tty, plain),
+        (&["--test", "--ansi", "--no-ansi"], PLAIN, &painted),
+    ] {
+        assert_eq!(
+            sample(&t, &[&["format"][..], args].concat(), o),
+            (want.to_string(), Some(1)),
+            "{args:?} tty={:?} env={:?}",
+            o.tty,
+            o.env
         );
     }
 }
@@ -387,7 +625,13 @@ fn ignore_annotations_like_pint() {
     ));
     // `pun migrate` rewrote the annotation (hand-derived from the mapping); the rest is Pint's.
     for args in [&[][..], &["--test"], &["-v"]] {
-        let (mut want, got) = cx.pair(&t, args, PLAIN);
+        let (mut want, mut got) = cx.pair(&t, args, PLAIN);
+        (want.stdout, got.stdout) = common::human_pair(
+            &want.stdout,
+            &got.stdout,
+            want.files.keys(),
+            got.files.keys(),
+        );
         let ignored = want.files.get_mut("app/Ignored.php").unwrap();
         *ignored = String::from_utf8_lossy(ignored)
             .replace(
@@ -484,7 +728,7 @@ fn error_boxes_like_pint() {
     );
     // Unreadable / unwritable files abort the run (kept outside the snapshotted tree).
     let outside = tmp("perm").join("Fix.php");
-    // --bail stops there too, after the progress of the files before it.
+    // --bail stops there too.
     for (mode, before, args) in [
         (0o000, &[][..], &["--test"][..]),
         (0o444, &[], &[]),
@@ -517,7 +761,15 @@ fn error_boxes_like_pint() {
             want.stdout.contains("\nIn ") && want.code == Some(1),
             "{want:?}"
         );
-        assert_eq!(pair(&PUN), want, "mode {mode:o}");
+        // Pint prints the progress of the files before the aborting one, then the box; Pun only the box.
+        let mut got = pair(&PUN);
+        assert!(
+            want.stdout.ends_with(&got.stdout),
+            "mode {mode:o}: {}",
+            got.stdout
+        );
+        got.stdout = want.stdout.clone();
+        assert_eq!(got, want, "mode {mode:o}");
     }
 }
 
@@ -651,7 +903,7 @@ fn prettier_preflight_like_pint() {
 }
 
 /// Without a `php` on PATH Pun can't ask PHP for its wording: it falls back to its own parser's message (and
-/// line), keeping Pint's layout. Hand-derived: Pint itself always has PHP.
+/// line), in the same problem block. Hand-derived: Pint itself always has PHP.
 #[test]
 fn syntax_error_without_php() {
     let dir = tmp("nophp");
@@ -673,26 +925,24 @@ fn syntax_error_without_php() {
             ..PLAIN
         },
     );
-    let line = r
-        .stdout
-        .lines()
-        .find(|l| l.starts_with("  ! a.php "))
-        .unwrap_or_default();
-    assert!(
-        line.contains(" Parse error: ") && line.ends_with(" on line 3.  "),
+    // PHP's own wording ("Unclosed '(' on line 2" on line 3) without the "Parse error: " and the final "on line 3.";
+    // line 3 is the empty line after the last line break, so the frame marks its first column.
+    let (head, frame) = r.stdout.split_once('\n').unwrap();
+    assert_eq!(
+        head, " ✖ syntax-error  Unclosed '(' on line 2",
         "{}",
         r.stdout
     );
     assert!(
-        r.stdout.contains("\n      2▕ function (\n  ➜   3▕\n"),
+        frame.starts_with("  ╭─ a.php:3:1\n 2│ function (\n 3│\n  │ ━\n  ╰─\n"),
         "{}",
         r.stdout
     );
+    assert_eq!(r.code, Some(1));
 }
 
 /// A fixer exception (combine_consecutive_unsets' "Must not add empty token", a panic in Pun) fails only that file:
-/// `!` with the message, the other files still fixed, exit 1, no panic output. With a syntax error too, the summary's
-/// `invalid + exception` array union drops the exception.
+/// the message, the other files still fixed, exit 1, no panic output. With a syntax error too, the reports agree.
 #[test]
 fn fixer_exception_like_pint() {
     let Some(cx) = Cx::new("exception") else {
@@ -724,6 +974,5 @@ fn fixer_exception_like_pint() {
         assert_eq!(r.code, Some(1), "{args:?}");
     }
     t.push(("app/Bad.php", "<?php\nfunction (\n"));
-    cx.same_cmd(&CHECK_FIX, &t, &["--test"], PLAIN);
     cx.same_cmd(&CHECK_FIX, &t, &["--format=txt", "--test"], PLAIN);
 }

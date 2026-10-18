@@ -1,10 +1,13 @@
 //! Git selection and run-mode flags against the real Pint (`php .oracle/pint/builds/pint`). Every scenario is a bash
 //! script that builds a throwaway git repo; it runs twice (one copy per tool, so readdir order agrees) and both tools
-//! must print the same stdout/stderr (repo paths normalised), exit the same and leave the same files. Pun runs
+//! must print the same stdout/stderr (repo paths normalised; human runs: the same files named, tests/common), exit the
+//! same and leave the same files. Pun runs
 //! `pun migrate` on the config Pint reads (pint.json in the cwd, `--config`, `--preset`), then `pun format`. Pun-only
 //! flags (`--stdin`, `--staged`, `--since`) are compared with Pint run on the same content or the same explicit file
 //! list.
 //! Skipped without the oracle.
+mod common;
+
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -210,31 +213,15 @@ impl Cx {
         stdin: &[u8],
     ) -> Run {
         let want = self.pint(script, sub, pint_args, stdin);
+        let mut want = want;
         let mut got = self.ours(script, sub, args, stdin);
-        if args.iter().any(|a| *a == "--parallel" || *a == "-p") {
-            // Pint prints progress in worker completion order; only the multiset is stable.
-            let sorted = |s: &str| {
-                s.split('\n')
-                    .map(|l| {
-                        if l.starts_with("  ")
-                            && !l.trim().is_empty()
-                            && l.trim().chars().all(|c| ".⨯✓!".contains(c))
-                        {
-                            let mut c: Vec<char> = l.chars().collect();
-                            c.sort();
-                            c.into_iter().collect()
-                        } else {
-                            l.to_string()
-                        }
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            };
-            got.stdout = if sorted(&got.stdout) == sorted(&want.stdout) {
-                want.stdout.clone()
-            } else {
-                got.stdout
-            };
+        if common::human(args) {
+            (want.stdout, got.stdout) = common::human_pair(
+                &want.stdout,
+                &got.stdout,
+                want.files.keys(),
+                got.files.keys(),
+            );
         }
         assert_eq!(got, want, "{sub:?} {args:?}");
         want

@@ -32,7 +32,7 @@ Pint's flags work the same way.
 | `--output-to-file=<path>` | Also write results to a file, in `--output-format`. |
 | `--stdin-filename=<path>` | Path context for code read from stdin (`-` as the path). |
 | `--cache-file=<path>` | Cache location (default: a per-project file under `~/.cache/pun`). |
-| `-v`, `-q` | More or less output. |
+| `-v`, `-q` | More or less output: `-v` adds unchanged files and each change's diff, `-q` prints nothing on success. |
 | `--parallel` | Accepted. Pun always runs in parallel, one thread per core. |
 | `--max-processes=N` | Caps the threads at `N`, and the Prettier workers with them. A value that isn't a positive number keeps the default. |
 
@@ -46,10 +46,51 @@ Pint's flags work the same way.
 | `--stdin` | Read code from stdin; `--stdin-filename` gives it a path for exclusion rules. |
 | `--no-cache` | Check every file, ignoring and not writing the cache. |
 | `--explain` | Print the fixers the run applies, in priority order. |
+| `--color=auto\|always\|never` | Colour the output. `auto` (the default) colours a terminal and not a pipe, and `NO_COLOR` turns it off. Pint's `--ansi` and `--no-ansi` still work as `always` and `never`. |
 
 ## Output
 
-Pun prints what Pint prints: the summary, `-v` diffs, syntax-error snippets, colours, terminal width and the JSON, txt, checkstyle, JUnit, XML and GitLab reporters.
+Pun prints its own output, not Pint's screen. Each changed file gets one line with the rules that changed it, and one summary line comes last:
+
+```
+$ pun format
+ ✔ app/Models/User.php        format/imports/ordered, format/imports/no-unused
+ ✔ app/Http/Kernel.php        format/whitespace/no-trailing
+Formatted 2 files, 482 unchanged · 484 files in 0.21s
+```
+
+`--test` lists the files that need formatting, and exits 1 if there are any:
+
+```
+$ pun format --test
+ ✖ app/Models/User.php        format/imports/ordered
+ ✖ app/Http/Kernel.php        format/whitespace/no-trailing
+2 of 484 files need formatting · run `pun format` to fix · 0.18s
+```
+
+Unchanged files print nothing. With `-v`, each unchanged file gets a dim line, and each changed file is followed by its diff, with the old and new line numbers:
+
+```
+ ✖ app/Http/Kernel.php        format/arrays/syntax
+   1 1 │  <?php
+   2   │ -$b = array(2);
+     2 │ +$b = [2];
+```
+
+A file PHP can't parse gets a code frame at the line PHP names. It counts as an error in the summary, and the run exits 1:
+
+```
+ ✖ syntax-error  syntax error, unexpected token "}", expecting ";"
+  ╭─ app/Broken.php:12:1
+ 11│     return $x
+ 12│ }
+   │ ━
+   ╰─
+```
+
+On a terminal the output is coloured, and a spinner with a file count shows once a run takes longer than a second. In a pipe there is no colour and no spinner. Terminals without UTF-8 get ASCII symbols (`ok`, `x`).
+
+Exit codes and the machine formats stay Pint's: `--format=json`, `txt`, `checkstyle`, `junit`, `xml`, `gitlab` and `agent` print exactly what Pint prints, so CI integrations keep working. `-q` prints nothing on success.
 
 Without a `pun.toml`, every command stops with `No pun.toml found. Run pun migrate.`, unless you pass `--preset` or `--no-config`.
 

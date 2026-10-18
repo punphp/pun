@@ -2,17 +2,17 @@
 //!
 //! Four pieces: file lines, problem blocks (rustc-style code frames from a `pun_problem` span, or one line each under
 //! `--concise`), the summary line, and run errors with a hint. Each returns its text with a trailing newline; the
-//! caller writes it. [`Look`] decides colour, glyphs and links; [`Spinner`] is the progress line.
-//!
-//! No command calls this yet: `pun format` moves onto it in output.md Build 3, which removes the `dead_code` and `unused_imports` allow.
-#![allow(dead_code, unused_imports)]
+//! caller writes it. [`Look`] decides colour, glyphs and links; [`Spinner`] is the progress line. `pun format`'s
+//! own pieces (format.md §9) are its summary wording and the `-v` diff.
 
 mod look;
 mod spinner;
 #[cfg(test)]
 mod tests;
 
-pub use look::{ColorChoice, Depth, Look, Role, Theme, nearest_256};
+pub use look::{ColorChoice, Look, Role};
+#[cfg(test)]
+pub use look::{Depth, Theme, nearest_256};
 pub use spinner::Spinner;
 
 use pun_problem::{Level, LineIndex, Problem, Safety};
@@ -60,6 +60,17 @@ pub struct Summary<'a> {
     pub elapsed: Duration,
 }
 
+/// `pun format`'s counts: files formatted (or needing it, under `--test`), unchanged, failed, and in all.
+#[derive(Clone, Debug)]
+pub struct FormatSummary {
+    pub formatted: usize,
+    pub unchanged: usize,
+    pub errors: usize,
+    pub files: usize,
+    pub test: bool,
+    pub elapsed: Duration,
+}
+
 /// A run error: where (`pun.toml:7`, a path relative to the root, with an optional line), what, and a hint.
 #[derive(Clone, Debug)]
 pub struct RunError {
@@ -89,37 +100,111 @@ impl Renderer {
         }
     }
 
-    /// Link each rule ID to `base` followed by the ID.
+    /// Link each rule ID to `base` followed by the ID. Test-only until the docs site has rule pages (the docs-base
+    /// row in PLAN.md §3 passes the base).
+    #[cfg(test)]
     pub fn with_rule_docs(mut self, base: impl Into<String>) -> Renderer {
         self.rule_docs = Some(base.into());
         self
     }
 
-    /// One line per file, the rule IDs in one column after the longest path.
-    pub fn file_lines(&self, files: &[FileLine]) -> String {
+    /// One line per file, the rule IDs in one column after the longest path. Each line is its own string, so a
+    /// caller can put a diff under it.
+    pub fn file_lines(&self, files: &[FileLine]) -> Vec<String> {
         let width = files
             .iter()
             .map(|f| f.path.display().to_string().chars().count() + 2)
             .fold(PATH_COLUMN, usize::max);
-        let mut out = String::new();
-        for file in files {
-            let (glyph, role) = match file.status {
-                FileStatus::Fixed => (self.look.glyph("✔", "ok"), Role::Ok),
-                FileStatus::NeedsFix => (self.look.glyph("✖", "x"), Role::Error),
-                FileStatus::Unchanged => (self.look.glyph("✔", "ok"), Role::Dim),
+        files.iter().map(|f| self.file_line(f, width)).collect()
+    }
+
+    /// One file line, its rule IDs starting at `width`.
+    fn file_line(&self, file: &FileLine, width: usize) -> String {
+        let (glyph, role) = match file.status {
+            FileStatus::Fixed => (self.look.glyph("✔", "ok"), Role::Ok),
+            FileStatus::NeedsFix => (self.look.glyph("✖", "x"), Role::Error),
+            FileStatus::Unchanged => (self.look.glyph("✔", "ok"), Role::Dim),
+        };
+        let shown = file.path.display().to_string();
+        let mut path = self.path_link(&file.path, &shown);
+        if file.status == FileStatus::Unchanged {
+            path = self.look.paint(Role::Dim, &path);
+        }
+        let mut out = format!(" {} {path}", self.look.paint(role, glyph));
+        if !file.rules.is_empty() {
+            let rules: Vec<String> = file.rules.iter().map(|r| self.rule(r)).collect();
+            let pad = width - shown.chars().count();
+            out.push_str(&format!("{}{}", " ".repeat(pad), rules.join(", ")));
+        }
+        out.push('\n');
+        out
+    }
+
+    /// `-v`'s diff under a file line (format.md §9), from a unified diff: each hunk's lines with their old and new
+    /// line numbers, removed lines red, added lines green, context dim; `…` between hunks. The `---`/`+++` header
+    /// and `\ No newline` markers are left out.
+    pub fn diff(&self, unified: &str) -> String {
+        enum Row<'a> {
+            Gap,
+            Line(Option<usize>, Option<usize>, char, &'a str),
+        }
+        let mut rows = vec![];
+        let (mut old, mut new, mut hunks) = (0, 0, 0);
+        for line in unified.split('\n') {
+            let line = line.strip_suffix('\r').unwrap_or(line);
+            if let Some(header) = line.strip_prefix("@@ -") {
+                let start = |s: &str| s.split([',', ' ']).next().and_then(|n| n.parse().ok());
+                old = start(header).unwrap_or(1);
+                new = header
+                    .split_once(" +")
+                    .and_then(|(_, n)| start(n))
+                    .unwrap_or(1);
+                if hunks > 0 {
+                    rows.push(Row::Gap);
+                }
+                hunks += 1;
+                continue;
+            }
+            if hunks == 0 {
+                continue;
+            }
+            let (sign, text) = match line.chars().next() {
+                Some(c @ ('+' | '-' | ' ')) => (c, &line[1..]),
+                _ => continue,
             };
-            let shown = file.path.display().to_string();
-            let mut path = self.path_link(&file.path, &shown);
-            if file.status == FileStatus::Unchanged {
-                path = self.look.paint(Role::Dim, &path);
-            }
-            out.push_str(&format!(" {} {path}", self.look.paint(role, glyph)));
-            if !file.rules.is_empty() {
-                let rules: Vec<String> = file.rules.iter().map(|r| self.rule(r)).collect();
-                let pad = width - shown.chars().count();
-                out.push_str(&format!("{}{}", " ".repeat(pad), rules.join(", ")));
-            }
-            out.push('\n');
+            let (o, n) = match sign {
+                '-' => (Some(old), None),
+                '+' => (None, Some(new)),
+                _ => (Some(old), Some(new)),
+            };
+            old += usize::from(sign != '+');
+            new += usize::from(sign != '-');
+            rows.push(Row::Line(o, n, sign, text));
+        }
+        let width = old.max(new).saturating_sub(1).max(1).to_string().len();
+        let number = |n: Option<usize>| match n {
+            Some(n) => format!("{n:>width$}"),
+            None => " ".repeat(width),
+        };
+        let bar = self.look.paint(Role::Dim, self.look.glyph("│", "|"));
+        let mut out = String::new();
+        for row in rows {
+            let Row::Line(o, n, sign, text) = row else {
+                let gap = self.look.glyph("…", "...");
+                out.push_str(&format!("   {}\n", self.look.paint(Role::Dim, gap)));
+                continue;
+            };
+            let numbers = self
+                .look
+                .paint(Role::Dim, &format!("{} {}", number(o), number(n)));
+            let code = match sign {
+                '-' => self.look.paint(Role::Error, &format!("-{text}")),
+                '+' => self.look.paint(Role::Ok, &format!("+{text}")),
+                _ if text.is_empty() => String::new(),
+                _ => format!(" {}", self.look.paint(Role::Dim, text)),
+            };
+            let space = if code.is_empty() { "" } else { " " };
+            out.push_str(&format!("   {numbers} {bar}{space}{code}\n"));
         }
         out
     }
@@ -310,6 +395,44 @@ impl Renderer {
             self.look.paint(role, glyph),
             parts.join(&format!(" {separator} "))
         )
+    }
+
+    /// `pun format`'s last line (format.md §9): `Formatted N files, M unchanged · T files in Xs`, or under `--test`
+    /// `N of T files need formatting · run \`pun format\` to fix · Xs` (`All T files formatted · Xs` when none
+    /// does). Files that failed add a red `E errors` before the time.
+    pub fn format_summary(&self, s: &FormatSummary) -> String {
+        let plural =
+            |n: usize, one: &str, many: &str| format!("{n} {}", if n == 1 { one } else { many });
+        let time = format!("{:.2}s", s.elapsed.as_secs_f64());
+        let files = plural(s.files, "file", "files");
+        let mut parts = vec![];
+        let mut timing = format!("{files} in {time}");
+        if !s.test {
+            parts.push(format!(
+                "Formatted {}, {} unchanged",
+                plural(s.formatted, "file", "files"),
+                s.unchanged
+            ));
+        } else if s.formatted > 0 {
+            let need = if s.formatted == 1 { "needs" } else { "need" };
+            parts.push(format!("{} of {files} {need} formatting", s.formatted));
+            timing = time;
+        } else if s.errors == 0 {
+            parts.push(format!("All {files} formatted"));
+            timing = time;
+        }
+        if s.errors > 0 {
+            parts.push(
+                self.look
+                    .paint(Role::Error, &plural(s.errors, "error", "errors")),
+            );
+        }
+        if s.test && s.formatted > 0 {
+            parts.push("run `pun format` to fix".into());
+        }
+        parts.push(self.look.paint(Role::Dim, &timing));
+        let separator = self.look.paint(Role::Dim, self.look.glyph("·", "-"));
+        format!("{}\n", parts.join(&format!(" {separator} ")))
     }
 
     /// A run error: one red line (`path:line  message`), then the hint indented under it.

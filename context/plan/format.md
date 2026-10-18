@@ -411,7 +411,7 @@ exactly these names.
 
 ## 9. Pun's own terminal output (approved)
 
-Today `pun format` prints Pint's screen exactly. The proposal replaces that for humans with the style of current Rust
+Built in output.md Build 3 (its assistant's calls record where the build differs from the samples below). It replaced Pint's screen for humans with the style of current Rust
 tools: Biome and oxfmt (summary line with a time, coloured diffs, code frames for errors) and Ruff (one line per file,
 an exact count at the end). This section is my design, based on how those tools behave; I haven't copied any of their
 output byte for byte.

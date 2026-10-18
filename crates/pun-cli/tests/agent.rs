@@ -164,14 +164,19 @@ fn detection_priority() {
         run(&d, &["format", "--agent", "--no-agent"], &[]).1,
         Some(2)
     );
-    // --no-agent under an agent is the human output byte for byte.
+    // --no-agent under an agent is the human output byte for byte, but for the run's time at the end.
+    let timeless = |(out, code): (String, Option<i32>)| {
+        let head = out.strip_suffix("s\n").unwrap_or(&out);
+        let head = head.trim_end_matches(|c: char| c.is_ascii_digit() || c == '.');
+        (head.to_string(), code)
+    };
     assert_eq!(
-        run(
+        timeless(run(
             &d,
             &["format", "--test", "--no-agent"],
             &[("CLAUDECODE", "1")]
-        ),
-        run(&d, &["format", "--test"], &[])
+        )),
+        timeless(run(&d, &["format", "--test"], &[]))
     );
 }
 
@@ -318,20 +323,17 @@ fn lint_and_check() {
             Some(1)
         )
     );
-    // Humans get Pint's summary: FAIL, the fixed files (✓), then the remaining ones (⨯), as `--test` lists them.
-    let (out, code) = run(&d, &["lint", "--fix"], &[]);
-    let lines: Vec<&str> = out.lines().map(str::trim).collect();
+    // Humans get Pun's own output (output.md §1): the remaining fix as a ✖ file line under its Pun ID, then the
+    // summary counting it as an error (hand-derived from the renderer's samples; the time varies).
+    let (out, code) = run(&d, &["lint", "--fix"], &[("LANG", "en_US.UTF-8")]);
     assert_eq!(code, Some(1), "{out}");
-    assert!(
-        lines
-            .iter()
-            .any(|l| l.starts_with("FAIL") && l.ends_with(" 3 files, 1 style issue remaining")),
-        "{out}"
+    let (lines, summary) = out.trim_end().rsplit_once('\n').unwrap();
+    assert_eq!(
+        lines,
+        " ✖ app/S.php                  lint/dead-code/no-self-assignment"
     );
     assert!(
-        lines
-            .iter()
-            .any(|l| l.starts_with("⨯ app/S.php ") && l.ends_with(" Pun/no_self_assignment")),
+        summary.starts_with("✖ 1 error · 3 files in ") && summary.ends_with('s'),
         "{out}"
     );
     // Without remaining rules --fix passes as before.

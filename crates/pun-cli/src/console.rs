@@ -52,11 +52,6 @@ fn has_color_support(tty: bool, env: &dyn Fn(&str) -> Option<String>) -> bool {
     TERM_RE.is_match(term.as_bytes()).unwrap_or(false)
 }
 
-/// Collision's ConsoleColor::isSupported: code snippets are coloured when stdout is a TTY, whatever `--ansi` says.
-pub fn collision_colors() -> bool {
-    std::env::var_os("COLLISION_FORCE_COLORS").is_some() || std::io::stdout().is_terminal()
-}
-
 /// Terminal::getWidth: `COLUMNS` (as PHP's `(int)`), else `stty -a` on the inherited stdin, else 80.
 pub fn width() -> usize {
     if let Ok(c) = std::env::var("COLUMNS") {

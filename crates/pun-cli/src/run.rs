@@ -1,11 +1,12 @@
 //! `pun format` / `lint` / `check`: load the config, pick the engine, fix the files, report.
+use crate::render::{ColorChoice, Look, Spinner};
 use crate::report::{self, FileResult, Status};
-use crate::{FormatArgs, cache, pint_error, root};
+use crate::{FormatArgs, cache, root};
 use anyhow::{Context, Result};
 use pun_config::{Config, Options};
 use pun_format::{LintError, Pipeline};
 use rayon::prelude::*;
-use std::io::{Read, Write};
+use std::io::{IsTerminal, Read, Write};
 use std::path::{Path, PathBuf};
 
 /// Which rules a run applies. `bool`: `--fix` (every enabled lint rule's fix but those with `fix = "off"`; without
@@ -48,6 +49,7 @@ pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
 }
 
 pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
+    let started = std::time::Instant::now();
     let root = root()?;
     // Config errors are one line (on stderr), not a Pint box: Pint never reads pun.toml.
     let config_error = |e: &str, code: u8| -> Result<u8> {
@@ -180,7 +182,21 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     // Besides the result: the content hash when the file is clean (for the cache), whether the cache said so, and
     // the pending rules' fixes (`--fix`).
     type Processed = (FileResult, Option<String>, bool, Option<FileResult>);
-    let process = |path: &PathBuf| -> Result<Processed> {
+    // `--color`, or Pint's `--ansi` (which wins over `--no-ansi`, as in Symfony's configureIO).
+    let color = a.color.unwrap_or(if a.ansi {
+        ColorChoice::Always
+    } else if a.no_ansi {
+        ColorChoice::Never
+    } else {
+        ColorChoice::Auto
+    });
+    let look = Look::stdout(color);
+    // The progress line, for humans on a terminal (output.md §1); dropped before anything is printed.
+    let human = a.format.is_none() && !a.quiet && !crate::agent::enabled();
+    let spinner = human
+        .then(|| Spinner::stderr(files.len(), &look, std::io::stderr().is_terminal()))
+        .flatten();
+    let process_file = |path: &PathBuf| -> Result<Processed> {
         let rel = path
             .strip_prefix(&root)
             .unwrap_or(path)
@@ -287,6 +303,13 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         }
         Ok((r, clean, false, left))
     };
+    let process = |path: &PathBuf| -> Result<Processed> {
+        let r = process_file(path);
+        if let Some(s) = &spinner {
+            s.tick();
+        }
+        r
+    };
 
     let all: Vec<Result<_>> = if a.bail {
         // --bail is PHP-CS-Fixer's stop-on-violation: sequential, stop at the first fixable file (lint errors don't
@@ -314,9 +337,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             .build()?
             .install(|| files.par_iter().map(process).collect())
     };
-    if a.format.is_none() && !a.quiet && !a.parallel {
-        pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
-    }
+    drop(spinner);
     let results: Vec<Processed> = all.into_iter().collect::<Result<_>>()?;
 
     let hits = results.iter().filter(|r| r.2).count();
@@ -339,13 +360,15 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     }
 
     let ctx = report::Ctx {
-        preset: &cfg.preset,
         total: files.len(),
         dry_run,
         remaining: &remaining,
         verbose: a.verbose > 0,
         ansi: a.ansi,
         no_ansi: a.no_ansi,
+        look,
+        root: &root,
+        elapsed: started.elapsed(),
     };
     let code = report::emit(
         &ctx,

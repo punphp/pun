@@ -1,13 +1,16 @@
-//! Pint's output: progress dots, Termwind summary, `-v` diffs and error snippets, `-q`, and every `--format`
-//! reporter. Everything is written as Symfony formatter markup and rendered by `console::format`, so colours
-//! (`--ansi`, TTY) and their absence come from one code path.
+//! A run's report. Humans get Pun's own output (output.md §1-§2, format.md §9) from [`crate::render`]; `-q`, the
+//! abort boxes and every `--format` reporter stay Pint's, written as Symfony formatter markup and rendered by
+//! `console::format`, so their colours (`--ansi`, TTY) come from one code path.
 
 use crate::console::{self, escape, format as fmt};
 use crate::fix_report::{self, Change};
-use crate::{highlight, pint_error};
+use crate::pint_error;
+use crate::render::{FileLine, FileStatus, FormatSummary, Look, Renderer, RunError, Summary};
 use anyhow::{Result, bail};
+use pun_problem::{Level, LineIndex, Problem, Span};
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Status {
@@ -43,7 +46,6 @@ impl FileResult {
 }
 
 pub struct Ctx<'a> {
-    pub preset: &'a str,
     pub total: usize,
     pub dry_run: bool,
     /// `--fix`: the fixes of the lint rules it doesn't apply, one result per file (status Fixed).
@@ -51,6 +53,11 @@ pub struct Ctx<'a> {
     pub verbose: bool,
     pub ansi: bool,
     pub no_ansi: bool,
+    /// The human output's colours, glyphs and links (`--color`).
+    pub look: Look,
+    /// The project root: file lines link their paths under it.
+    pub root: &'a Path,
+    pub elapsed: Duration,
 }
 
 pub const ABOUT: &str =
@@ -277,7 +284,7 @@ fn emit_inner(
             );
         }
     } else {
-        out = summary(ctx, results, out_dec);
+        print!("{}", human(ctx, results));
     }
     print!("{}", fmt(&out, out_dec));
     std::io::Write::flush(&mut std::io::stdout())?;
@@ -306,6 +313,160 @@ fn emit_inner(
         }
     }
     Ok(0)
+}
+
+/// Pun's own output: one file line per changed file (`-v`: and per unchanged one, dim, and each change's diff),
+/// the files that failed, then the summary. `pun format` words its summary as format.md §9 does; `pun lint` and
+/// `pun check` count each lint fix as an error (fixable without `--fix`) and each file needing format rules as
+/// needing formatting (output.md §1).
+fn human(ctx: &Ctx, results: &[FileResult]) -> String {
+    let r = Renderer::new(ctx.look, ctx.root);
+    let cmd = crate::agent::cmd();
+    let ids = |f: &FileResult| -> Vec<String> {
+        (f.applied.iter())
+            .map(|n| pun_config::rule_of(n).unwrap_or(n).to_string())
+            .collect()
+    };
+    let changed = if ctx.dry_run {
+        FileStatus::NeedsFix
+    } else {
+        FileStatus::Fixed
+    };
+    let mut lines: Vec<(FileLine, &str)> = vec![];
+    for f in results {
+        let status = match f.status {
+            Status::Fixed => changed,
+            Status::NoChanges | Status::Skipped if ctx.verbose => FileStatus::Unchanged,
+            _ => continue,
+        };
+        lines.push((
+            FileLine {
+                path: f.rel.clone().into(),
+                status,
+                rules: ids(f),
+            },
+            &f.diff,
+        ));
+    }
+    // `--fix`: the fixes it doesn't apply, after the file's own line.
+    for f in ctx.remaining {
+        let line = FileLine {
+            path: f.rel.clone().into(),
+            status: FileStatus::NeedsFix,
+            rules: ids(f),
+        };
+        lines.push((line, &f.diff));
+    }
+    lines.sort_by(|a, b| a.0.path.cmp(&b.0.path));
+    let (lines, diffs): (Vec<FileLine>, Vec<&str>) = lines.into_iter().unzip();
+    let mut out = String::new();
+    for (line, diff) in r.file_lines(&lines).into_iter().zip(diffs) {
+        out.push_str(&line);
+        if ctx.verbose && !diff.is_empty() {
+            out.push_str(&r.diff(diff));
+        }
+    }
+    let mut failed: Vec<&FileResult> = results.iter().filter(|f| f.is_error()).collect();
+    failed.sort_by(|a, b| a.rel.cmp(&b.rel));
+    let syntax: Vec<(Problem, String, LineIndex)> = (failed.iter())
+        .filter(|f| f.status == Status::Invalid)
+        .map(|f| syntax_error(f))
+        .collect();
+    let mut blocks: Vec<String> = vec![];
+    if !syntax.is_empty() {
+        blocks.push(r.problems(syntax.iter().map(|(p, s, i)| (p, s.as_str(), i))));
+    }
+    blocks.extend(
+        (failed.iter())
+            .filter(|f| f.status != Status::Invalid)
+            .map(|f| fixer_error(&r, f)),
+    );
+    if !out.is_empty() && !blocks.is_empty() {
+        out.push('\n');
+    }
+    out.push_str(&blocks.join("\n"));
+    let formatted = results.iter().filter(|f| f.status == Status::Fixed).count();
+    if cmd == "format" {
+        let unchanged = (results.iter())
+            .filter(|f| matches!(f.status, Status::NoChanges | Status::Skipped))
+            .count();
+        out.push_str(&r.format_summary(&FormatSummary {
+            formatted,
+            unchanged,
+            errors: failed.len(),
+            files: ctx.total,
+            test: ctx.dry_run,
+            elapsed: ctx.elapsed,
+        }));
+        return out;
+    }
+    let lint = |f: &FileResult| {
+        ids(f)
+            .iter()
+            .filter(|id| !id.starts_with("format/"))
+            .count()
+    };
+    let (mut errors, mut fixable, mut need_formatting) = (failed.len(), 0, 0);
+    if ctx.dry_run {
+        for f in results.iter().filter(|f| f.status == Status::Fixed) {
+            errors += lint(f);
+            fixable += lint(f);
+            need_formatting += usize::from(lint(f) < f.applied.len());
+        }
+    }
+    errors += ctx.remaining.iter().map(lint).sum::<usize>();
+    let fix_command = format!("pun {cmd} --fix");
+    out.push_str(&r.summary(&Summary {
+        errors,
+        warnings: 0,
+        fixable,
+        fix_command: &fix_command,
+        need_formatting,
+        files: ctx.total,
+        elapsed: ctx.elapsed,
+    }));
+    out
+}
+
+/// A syntax error in the input, as a problem with a code frame: at the line PHP names, its first non-blank column
+/// (the last line when PHP names the line after it).
+fn syntax_error(f: &FileResult) -> (Problem, String, LineIndex) {
+    let source = String::from_utf8_lossy(&std::fs::read(&f.path).unwrap_or_default()).into_owned();
+    let index = LineIndex::new(&source);
+    let last = index.line_col(source.len()).line;
+    let range = index
+        .line_range(error_line(&f.message).clamp(1, last))
+        .expect("a line of the file");
+    let line = &source[range.clone()];
+    let at = range.start + line.len() - line.trim_start().len();
+    let message = f
+        .message
+        .strip_prefix("Parse error: ")
+        .unwrap_or(&f.message);
+    let message = message.rsplit_once(" on line ").map_or(message, |m| m.0);
+    let problem = Problem {
+        rule: "syntax-error".into(),
+        path: f.rel.clone().into(),
+        span: Span::new(at, at),
+        message: message.to_string(),
+        help: None,
+        level: Level::Error,
+        fix: None,
+    };
+    (problem, source, index)
+}
+
+/// Invalid code from a fixer, or a fixer's exception: a run error naming the file and the message, with a hint.
+fn fixer_error(r: &Renderer, f: &FileResult) -> String {
+    r.run_error(&RunError {
+        path: Some(f.rel.clone().into()),
+        line: None,
+        message: f.message.clone(),
+        hint: Some(
+            "a rule failed on this file; please report it at https://github.com/punphp/pun/issues"
+                .into(),
+        ),
+    })
 }
 
 /// Agent mode: the summary line, then per file its format rule IDs on one line and each lint rule on its own line
@@ -404,13 +565,13 @@ fn lint_rule(id: &str) -> (&'static str, String) {
     (fix, summary.map_or(String::new(), |s| format!(" {s}")))
 }
 
-/// InteractsWithSymbols::getSymbol: markup when stdout is decorated, the bare symbol otherwise.
+/// InteractsWithSymbols::getSymbol for `-q`'s issues (changes and errors): markup when stdout is decorated, the
+/// bare symbol otherwise.
 fn symbol(s: Status, testing: bool, decorated: bool) -> String {
     let (sym, style) = match s {
         Status::Fixed if testing => ("⨯", "options=bold;fg=red"),
         Status::Fixed => ("✓", "options=bold;fg=green"),
-        Status::Invalid | Status::Exception | Status::Lint => ("!", "options=bold;fg=red"),
-        _ => (".", "fg=gray"),
+        _ => ("!", "options=bold;fg=red"),
     };
     if decorated {
         format!("<{style}>{sym}</>")
@@ -456,152 +617,6 @@ fn issues(results: &[FileResult]) -> Vec<&FileResult> {
     };
     v.sort_by(|a, b| key(a).as_bytes().cmp(key(b).as_bytes()));
     v
-}
-
-/// ProgressOutput: one symbol per processed file, `width - 4` per line.
-pub fn progress<'a>(
-    results: impl Iterator<Item = &'a FileResult>,
-    width: usize,
-    dry_run: bool,
-    decorated: bool,
-) -> String {
-    let per_line = width.saturating_sub(4).max(1);
-    let mut o = String::new();
-    for (n, r) in results.filter(|r| r.status != Status::Link).enumerate() {
-        if n % per_line == 0 {
-            o.push_str("\n  ");
-        }
-        o.push_str(&symbol(r.status, dry_run, decorated));
-    }
-    o
-}
-
-fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
-    let w = console::width();
-    let inner = w.saturating_sub(4);
-    let mut o = progress(results.iter(), w, ctx.dry_run, decorated);
-
-    let issues = issues(results);
-    let errors = issues.iter().filter(|i| i.is_error()).count();
-    let fixable = issues.len() - errors;
-    let label = match ctx.preset {
-        "psr12" => "PSR 12",
-        "laravel" => "Laravel",
-        // pun-config only resolves laravel, psr12 and empty.
-        _ => "Empty",
-    };
-    let _ = writeln!(
-        o,
-        "\n\n  <fg=gray>{}</> <fg=gray>{label}</>  ",
-        "─".repeat(inner.saturating_sub(1 + label.chars().count()))
-    );
-
-    let left = ctx.remaining.len();
-    let (status, style) = if issues.is_empty() && left == 0 {
-        ("  PASS  ", "bg=green;fg=gray")
-    } else if errors == 0 && left == 0 && !ctx.dry_run {
-        ("  FIXED  ", "bg=green;fg=gray")
-    } else {
-        ("  FAIL  ", "bg=red;fg=white")
-    };
-    let plural = |n: usize, s: &str| {
-        if n == 1 {
-            s.to_string()
-        } else {
-            format!("{s}s")
-        }
-    };
-    let mut right = format!("{} {}", ctx.total, plural(ctx.total, "file"));
-    if errors > 0 {
-        let _ = write!(right, ", {errors} {}", plural(errors, "error"));
-    }
-    if fixable > 0 {
-        let _ = write!(
-            right,
-            ", {fixable} style {}{}",
-            plural(fixable, "issue"),
-            if ctx.dry_run { "" } else { " fixed" }
-        );
-    }
-    if left > 0 {
-        let _ = write!(right, ", {left} style {} remaining", plural(left, "issue"));
-    }
-    let dots = inner.saturating_sub(status.len() + 2 + right.chars().count());
-    let _ = writeln!(
-        o,
-        "  <{style};options=bold>{status}</> <fg=gray>{}</> {right}  ",
-        ".".repeat(dots)
-    );
-
-    let colors = console::collision_colors();
-    // `--fix`'s remaining fixes are listed after the rest, as `--test` lists them.
-    let mut remaining: Vec<&FileResult> = ctx.remaining.iter().collect();
-    remaining.sort_by(|a, b| a.rel.cmp(&b.rel));
-    let listed =
-        (issues.iter().map(|i| (*i, ctx.dry_run))).chain(remaining.into_iter().map(|i| (i, true)));
-    for (i, testing) in listed {
-        let left = format!("{} {}", symbol(i.status, testing, decorated), i.rel);
-        let left_len = 2 + tw_len(&i.rel);
-        let room = inner.saturating_sub(left_len + 1);
-        let mut desc = description(i);
-        let mut pad = room;
-        // A path wider than the box leaves no room (width 0): Termwind prints the description whole.
-        // ponytail: lengths are chars, Termwind's are mb_strwidth (East Asian wide = 2); messages are ASCII.
-        if room > 0 {
-            let cut =
-                |s: &str, n: usize| s.chars().take(n).collect::<String>().trim_end().to_string();
-            // Styles::truncate (not with -v): anything over room-1 is cut to room-1, right-trimmed, plus "…".
-            if !ctx.verbose && tw_len(&desc) > room - 1 {
-                desc = cut(&desc, room - 1) + "…";
-            }
-            // Styles::applyWidth: pad to the box, or clip (right-trimmed, not padded back) when still too wide.
-            if tw_len(&desc) > room {
-                desc = cut(&desc, room);
-                pad = 0;
-            }
-        }
-        let _ = writeln!(
-            o,
-            "  {left} <fg=gray>{}{desc}</>  ",
-            " ".repeat(pad.saturating_sub(tw_len(&desc)))
-        );
-        if ctx.verbose {
-            // Issue::code() highlights the exception's line, for a fixer's exception a line of PHP-CS-Fixer's source.
-            // ponytail: taken as past the end of the file (no snippet); files longer than that line would show one.
-            let code = if i.status == Status::Exception {
-                String::new()
-            } else if i.is_error() {
-                // Issue::code(): the file as it is on disk, around the exception's line.
-                let content = std::fs::read(&i.path).unwrap_or_default();
-                highlight::snippet(
-                    &String::from_utf8_lossy(&content),
-                    error_line(&i.message),
-                    colors,
-                )
-            } else {
-                highlight::diff(&i.diff, colors)
-            };
-            if !code.is_empty() {
-                let _ = writeln!(o, "{code}");
-            }
-        }
-    }
-    o.push('\n');
-    o
-}
-
-/// Termwind's getLength: width without anything STYLING_REGEX takes for a tag (`<x>`, `</a>`, `\e[1m`).
-/// ponytail: Termwind's trimText puts such tags back after cutting; we cut them like text (paths with `<…>`).
-fn tw_len(s: &str) -> usize {
-    static RE: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
-        pcre2::bytes::Regex::new(r"<[\w=#/;,:.&,%?-]+>|\e\[\d+m").unwrap()
-    });
-    let stripped: usize = RE
-        .find_iter(s.as_bytes())
-        .flatten()
-        .map(|m| String::from_utf8_lossy(m.as_bytes()).chars().count())
-        .sum();
-    s.chars().count() - stripped
 }
 
 /// DiffConsoleFormatter with TextReporter's begin/end template; lines split on PCRE's `\R`.

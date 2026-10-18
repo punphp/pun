@@ -1,8 +1,11 @@
 //! `pun migrate` + `pun format` against the real Pint (`php .oracle/pint/builds/pint`) on the same pint.json: same
-//! stdout, exit code and resulting files for every flag combination below, run in the same directory (so diff headers
-//! and absolute paths agree). Rules: only fully ported ones, so the output must be byte-identical. Skipped without the
+//! exit code, resulting files and machine-format stdout for every flag combination below, run in the same directory
+//! (so diff headers and absolute paths agree). Human output is Pun's own: those runs compare the files each tool
+//! names (tests/common). Rules: only fully ported ones, so the output must be byte-identical. Skipped without the
 //! oracle. Pun-only behaviour (`--explain`, `config`, unported rules, no pun.toml) is checked by hand-derived
 //! expectations at the end.
+mod common;
+
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -201,27 +204,13 @@ impl Ctx {
         migrate(dir);
         let pre = if pre.is_empty() { &["format"][..] } else { pre };
         let (mut got, err) = run(Path::new(PUN), pre, dir, args, env, stdin);
-        if args.contains(&"--parallel") {
-            // Pint prints progress in worker completion order; only the multiset is stable.
-            for r in [&mut want, &mut got] {
-                r.stdout = r
-                    .stdout
-                    .split('\n')
-                    .map(|l| {
-                        if l.starts_with("  ")
-                            && l.trim().chars().all(|c| ".⨯✓!".contains(c))
-                            && !l.trim().is_empty()
-                        {
-                            let mut c: Vec<char> = l.chars().collect();
-                            c.sort();
-                            c.into_iter().collect()
-                        } else {
-                            l.to_string()
-                        }
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n");
-            }
+        if common::human(args) {
+            (want.stdout, got.stdout) = common::human_pair(
+                &want.stdout,
+                &got.stdout,
+                want.files.keys(),
+                got.files.keys(),
+            );
         }
         assert_eq!(got, want, "{pre:?} {args:?} {env:?} (our stderr: {err})");
     }
@@ -283,16 +272,6 @@ fn matches_pint() {
     }
     // A coding agent in the environment switches Pint to its JSON agent reporter; Pun prints its own agent format
     // there (tests/agent.rs), and that reporter only with --format=agent (above).
-    // Narrow terminals: progress wraps, descriptions are truncated (unless -v).
-    cx.same(&dir, &tree, &[], &["--test"], &[("COLUMNS", "40")], b"");
-    cx.same(
-        &dir,
-        &tree,
-        &[],
-        &["--test", "-v"],
-        &[("COLUMNS", "40")],
-        b"",
-    );
     // `pun check` is `pun format --test` here (no lint rules); `--check` is `--test`.
     cx.same_as(&dir, &tree, &["check"], &[], &["--test"], &[], b"");
     cx.same_as(
@@ -344,9 +323,10 @@ fn matches_pint() {
         let (want, _) = cx.pint(&dir, args, env, b"");
         locked();
         let (got, _) = pun_format(&dir, args, env, b"");
-        // Progress symbols of the files before the aborting one, then the box.
+        // Pint prints the progress symbols of the files before the aborting one, then the box; Pun only the box.
         assert!(want.stdout.starts_with("\n  "), "{}", want.stdout);
-        assert_eq!((got.code, got.stdout), (want.code, want.stdout));
+        assert!(want.stdout.ends_with(&got.stdout), "{}", got.stdout);
+        assert_eq!(got.code, want.code);
     }
     std::fs::set_permissions(
         dir.join("app/Fix.php"),
@@ -446,7 +426,7 @@ fn blade_like_pint() {
     }
 }
 
-/// `-v` diffs pair up lines exactly like PHP-CS-Fixer's sebastian/diff (LCS + strict unified builder): reordered
+/// `-v` diffs (here in the txt report, which prints them as Pint does) pair up lines exactly like PHP-CS-Fixer's sebastian/diff (LCS + strict unified builder): reordered
 /// imports (fixtures/dirty_imports.php, from pinkary-dirty: a Myers diff pairs other lines), a missing final newline, mixed line endings (warning line), and
 /// a file big enough for the memory-efficient LCS (> 853 differing lines).
 #[test]
@@ -470,7 +450,14 @@ fn diffs_like_pint() {
         ("app/Crlf.php", "<?php\r\n\r\n$a = array(1);\n"),
         ("app/Big.php", &big),
     ];
-    cx.same(&dir, &tree, &[], &["--test", "-v"], &[], b"");
+    cx.same(
+        &dir,
+        &tree,
+        &[],
+        &["--test", "-v", "--format=txt"],
+        &[],
+        b"",
+    );
 }
 
 fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {

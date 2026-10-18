@@ -112,11 +112,11 @@ fn file_line_sample() {
         ],
     }];
     assert_eq!(
-        plain().file_lines(&files),
+        plain().file_lines(&files).concat(),
         " ✔ app/Models/User.php        format/imports/ordered, lint/dead-code/no-unused-private-method\n"
     );
     assert_eq!(
-        painted().file_lines(&files),
+        painted().file_lines(&files).concat(),
         format!(
             " {OK}✔{Z} app/Models/User.php        {R}format/imports/ordered{Z}, {R}lint/dead-code/no-unused-private-method{Z}\n"
         )
@@ -143,7 +143,7 @@ fn file_lines_align_rules_after_the_longest_path() {
         },
     ];
     assert_eq!(
-        plain().file_lines(&files),
+        plain().file_lines(&files).concat(),
         concat!(
             " ✖ app/Http/Controllers/PostController.php  format/imports/ordered\n",
             " ✖ app/Kernel.php                           format/whitespace/no-trailing\n",
@@ -151,11 +151,13 @@ fn file_lines_align_rules_after_the_longest_path() {
         )
     );
     assert_eq!(
-        painted().file_lines(&files[2..]),
+        painted().file_lines(&files[2..]).concat(),
         format!(" {D}✔{Z} {D}app/Clean.php{Z}\n")
     );
     assert_eq!(
-        Renderer::new(ascii(), "/p").file_lines(&files[1..]),
+        Renderer::new(ascii(), "/p")
+            .file_lines(&files[1..])
+            .concat(),
         " x app/Kernel.php             format/whitespace/no-trailing\n ok app/Clean.php\n"
     );
 }
@@ -523,7 +525,7 @@ fn links_wrap_paths_and_rule_ids() {
     let path = "\x1b]8;;file:///my%20project/a.php\x1b\\a.php\x1b]8;;\x1b\\";
     let rule = "\x1b]8;;https://docs.example/rules/format/x/y\x1b\\format/x/y\x1b]8;;\x1b\\";
     assert_eq!(
-        r.file_lines(&files),
+        r.file_lines(&files).concat(),
         format!(" ✔ {path}{}{rule}\n", " ".repeat(22))
     );
     let e = RunError {
@@ -539,7 +541,7 @@ fn links_wrap_paths_and_rule_ids() {
     // Without links the docs base changes nothing.
     let unlinked = Renderer::new(Look::plain(), "/p").with_rule_docs("https://docs.example/rules/");
     assert_eq!(
-        unlinked.file_lines(&files),
+        unlinked.file_lines(&files).concat(),
         " ✔ a.php                      format/x/y\n"
     );
 }
@@ -776,4 +778,91 @@ fn spinner_counts_files_then_clears_its_line() {
         assert!(text.contains(" 4/10 files"), "{text:?}");
         assert!(text.ends_with("\r\x1b[2K"), "{text:?}");
     }
+}
+
+/// format.md §9's `-v` diff, hand-derived from a two-hunk unified diff: the header and `\ No newline` markers are
+/// left out, each line carries its old and new number (blank where the line doesn't exist on that side), a blank
+/// context line ends at the bar, and `…` separates the hunks.
+#[test]
+fn diff_numbers_both_sides_and_separates_hunks() {
+    let unified = "--- /p/a.php\n+++ /p/a.php\n@@ -1,3 +1,3 @@\n <?php\n-$a = array(1);\n+$a = [1];\n \n@@ -9,2 +9,2 @@\n x\r\n-y\n+z\n\\ No newline at end of file\n";
+    assert_eq!(
+        plain().diff(unified),
+        concat!(
+            "    1  1 │  <?php\n",
+            "    2    │ -$a = array(1);\n",
+            "       2 │ +$a = [1];\n",
+            "    3  3 │\n",
+            "   …\n",
+            "    9  9 │  x\n",
+            "   10    │ -y\n",
+            "      10 │ +z\n",
+        )
+    );
+    assert_eq!(
+        Renderer::new(ascii(), "/p").diff("@@ -1 +1 @@\n-a\n+b\n"),
+        "   1   | -a\n     1 | +b\n"
+    );
+    assert_eq!(
+        painted().diff("@@ -1,2 +1,2 @@\n x\n-a\n+b\n"),
+        format!(
+            "   {D}1 1{Z} {D}│{Z}  {D}x{Z}\n   {D}2  {Z} {D}│{Z} {E}-a{Z}\n   {D}  2{Z} {D}│{Z} {OK}+b{Z}\n"
+        )
+    );
+}
+
+/// format.md §9's summary wording, hand-derived: fixing, `--test` with and without files to format, errors in red,
+/// singulars, ASCII.
+#[test]
+fn format_summary_samples() {
+    let fixed = FormatSummary {
+        formatted: 2,
+        unchanged: 482,
+        errors: 0,
+        files: 484,
+        test: false,
+        elapsed: Duration::from_millis(210),
+    };
+    assert_eq!(
+        plain().format_summary(&fixed),
+        "Formatted 2 files, 482 unchanged · 484 files in 0.21s\n"
+    );
+    let test = FormatSummary {
+        test: true,
+        elapsed: Duration::from_millis(180),
+        ..fixed.clone()
+    };
+    assert_eq!(
+        plain().format_summary(&test),
+        "2 of 484 files need formatting · run `pun format` to fix · 0.18s\n"
+    );
+    let failing = FormatSummary {
+        formatted: 0,
+        errors: 1,
+        files: 1,
+        ..test.clone()
+    };
+    assert_eq!(
+        painted().format_summary(&failing),
+        format!("{E}1 error{Z} {D}·{Z} {D}1 file in 0.18s{Z}\n")
+    );
+    let clean = FormatSummary {
+        formatted: 0,
+        ..test
+    };
+    assert_eq!(
+        Renderer::new(ascii(), "/p").format_summary(&clean),
+        "All 484 files formatted - 0.18s\n"
+    );
+    let one = FormatSummary {
+        formatted: 1,
+        unchanged: 0,
+        errors: 2,
+        files: 3,
+        ..fixed
+    };
+    assert_eq!(
+        plain().format_summary(&one),
+        "Formatted 1 file, 0 unchanged · 2 errors · 3 files in 0.21s\n"
+    );
 }

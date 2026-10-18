@@ -59,7 +59,8 @@ pub struct Look {
 }
 
 impl Look {
-    /// No colour, no links, Unicode glyphs: what a pipe gets.
+    /// No colour, no links, Unicode glyphs: what a pipe gets with a UTF-8 locale.
+    #[cfg(test)]
     pub fn plain() -> Look {
         Look {
             depth: Depth::None,

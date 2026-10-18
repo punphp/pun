@@ -118,27 +118,3 @@ fn origin(m: &str, nested: bool) -> (&'static str, u32, &'static str, bool) {
         )
     }
 }
-
-/// A run that aborts on a file (unreadable, unwritable) has already printed the progress of the files before it.
-pub fn progress_before_abort<T, U>(
-    results: &[anyhow::Result<(report::FileResult, T, bool, U)>],
-    dry_run: bool,
-    ansi: bool,
-    no_ansi: bool,
-) {
-    let Some(i) = results.iter().position(Result::is_err) else {
-        return;
-    };
-    if crate::agent::enabled() {
-        return;
-    }
-    let decorated = console::decorated(1, ansi, no_ansi);
-    let done = results[..i].iter().flatten().map(|r| &r.0);
-    print!(
-        "{}",
-        console::format(
-            &report::progress(done, console::width(), dry_run, decorated),
-            decorated
-        )
-    );
-}

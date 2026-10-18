@@ -106,9 +106,16 @@ fn cache_skips_clean_unchanged_files() {
         (Some((0, 3)), Some(1))
     );
     let second = run(&[]);
+    // The report but for the run's time, the summary's last word.
+    let report = |out: &Output| {
+        let text = String::from_utf8_lossy(&out.stdout).into_owned();
+        text.trim_end()
+            .rsplit_once(' ')
+            .map(|(head, _)| head.to_string())
+    };
     assert_eq!(
-        (cache_stat(&second), second.stdout.clone()),
-        (Some((1, 3)), first.stdout.clone()),
+        (cache_stat(&second), report(&second)),
+        (Some((1, 3)), report(&first)),
         "same report, cached or not"
     );
     // Changed content is checked again.

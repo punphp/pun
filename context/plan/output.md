@@ -165,5 +165,35 @@ silent:
   to `<docs base><rule ID>` once a docs base is passed in; the site has no rule pages yet, so none is set.
 - **Spinner:** on stderr, braille frames (`|/-\` in ASCII), `⠋ 120/412 files` every 80 ms after one second; dropping
   it clears the line.
-- **`--color` is not a flag yet:** `ColorChoice` is a clap `ValueEnum` ready for output 3, which wires it in when
-  `pun format` moves onto the renderer; Pint's `--ansi`/`--no-ansi` screen is untouched until then.
+- **`--color`:** a clap `ValueEnum` on `pun format`, `pun lint` and `pun check` since Build 3 (below).
+
+Assistant's calls while building Build 3 (`pun format` on the renderer, wf/platform-1, 2026-10-18), where the plan is
+silent:
+
+- **Rule IDs in file lines** are full IDs (`format/arrays/syntax`), as §1's sample and agent mode print them, not
+  format.md §9's short `arrays/syntax`. They come in the order the rules ran.
+- **`pun format`'s summary** follows format.md §9's wording and has no glyph: `Formatted N files, M unchanged · T files
+  in Xs`; under `--test`, `N of T files need formatting · run \`pun format\` to fix · Xs` (`needs` for one), or `All T
+  files formatted · Xs` when none does. Failed files add a red `E errors` before the `run` hint or the time, and a
+  `--test` run with only errors reads `E errors · T files in Xs`. The time is dim, the error count red.
+- **Syntax errors** use §1's problem block (rule `syntax-error`, as agent mode names it) rather than format.md §9's
+  older `>`-marker frame, so format and lint errors look alike. The message is PHP's without `Parse error: ` and the
+  final ` on line N.`; the span is empty at the first non-blank column of the line PHP names (the last line when PHP
+  names the one after it). A fixer that produced invalid code, or threw, is a run error naming the file, with the hint
+  "a rule failed on this file; please report it at https://github.com/punphp/pun/issues".
+- **Layout:** file lines (sorted by path, `--fix`'s remaining fixes as ✖ lines), a blank line, the error blocks, then
+  the summary. `-v` adds a dim ✔ line per unchanged (or empty) file.
+- **`-v` diff** under each changed file: `   <old> <new> │ <sign><line>`, both numbers right-aligned to the widest one
+  shown, blank on the side a line doesn't exist; removed lines red, added green, context dim; `…` between hunks; the
+  `---`/`+++` header and `\ No newline` markers left out.
+- **`pun lint` and `pun check`** use the same file lines and §1's summary until lint has problem spans: each lint fix
+  on a file is an error (and fixable without `--fix`), each file with format fixes needs formatting, and each
+  remaining fix after `--fix` is an error.
+- **`--ansi` / `--no-ansi`** stay hidden aliases of `--color=always|never` (`--ansi` wins when both are given, as in
+  Symfony's configureIO), and they still decorate the machine reports as in Pint. `-q` keeps Pint's stderr lines.
+- **Pint's progress before an abort** (an unreadable file) is gone: the abort box prints alone.
+- **The spinner** runs during the file walk for human output only (no `--format`, no `-q`, no agent), and is dropped
+  before the report prints.
+- **`pun format --watch`** records every file's content after the first run, so FSEvents reporting the first run's own
+  writes late doesn't start a second run.
+

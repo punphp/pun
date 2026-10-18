@@ -1,10 +1,10 @@
-//! `pun` binary. `pun format` takes Pint's flags and mimics its output and exit codes; every command reads pun.toml.
+//! `pun` binary. `pun format` takes Pint's flags and keeps its exit codes and machine formats; the human output is
+//! Pun's own (crate::render). Every command reads pun.toml.
 
 mod agent;
 mod cache;
 mod console;
 mod fix_report;
-mod highlight;
 #[cfg(feature = "mago-lint")]
 mod lint;
 mod list_files;
@@ -155,8 +155,13 @@ pub struct FormatArgs {
     verbose: u8,
     #[arg(short, long)]
     quiet: bool,
+    /// Colour the output: auto (on for a terminal, off when piped or with NO_COLOR), always or never.
+    #[arg(long, value_enum, value_name = "WHEN")]
+    color: Option<render::ColorChoice>,
+    /// `--color=always` (Pint's spelling); also decorates the `--format` reports as Pint does.
     #[arg(long, hide = true)]
     ansi: bool,
+    /// `--color=never` (Pint's spelling).
     #[arg(long, hide = true)]
     no_ansi: bool,
     #[arg(short = 'n', long, hide = true)]

@@ -10,7 +10,7 @@ Read these for more:
 
 ## Match the upstream tool
 
-Pun's output, messages, and exit codes must match the pinned upstream tool: Pint, PHP-CS-Fixer, or PHPStan. If you are unsure what upstream does, run it. `scripts/oracle.sh` installs the pinned tools into `.oracle/`. They run on the system PHP 8.5, with no Docker.
+Pun's machine formats (`--format=...`), messages, and exit codes must match the pinned upstream tool: Pint, PHP-CS-Fixer, or PHPStan. The human output is Pun's own (`context/plan/output.md`), so it does not copy upstream's screen. If you are unsure what upstream does, run it. `scripts/oracle.sh` installs the pinned tools into `.oracle/`. They run on the system PHP 8.5, with no Docker.
 
 - Pint: `php .oracle/pint/builds/pint`
 - PHP-CS-Fixer: `.oracle/php-cs-fixer`
@@ -35,7 +35,7 @@ scripts/coverage.sh punphp-tokens
 - Package `punphp-<x>` lives in `crates/pun-<x>` and is imported as `pun_<x>`.
 - `PUN_FIXERS_ONLY=a,b` makes `build.rs` compile only fixers `a` and `b`.
 - `pun-harness` compares Pint with `pun migrate` followed by `pun check --fix`. Add `--fixer <name>` to test one rule.
-- `scripts/cli-parity.sh` compares the output and exit code of Pint and `pun` byte for byte.
+- `scripts/cli-parity.sh` compares the exit codes, machine formats, and resulting files of Pint and `pun` byte for byte.
 - `scripts/fuzz-parity.sh` is a mutation fuzzer that compares Pun with Pint. It needs a freshly built `target/debug/pun`.
 - `scripts/coverage.sh` reports line coverage for the crates you name. Without arguments, it covers every crate.
 
