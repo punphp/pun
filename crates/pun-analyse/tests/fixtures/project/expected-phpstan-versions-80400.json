@@ -161,6 +161,27 @@
    "identifier": "enum.duplicateValue",
    "message": "Enum Versions\\Values has duplicate value 1 for cases A, B.",
    "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 192,
+   "identifier": "enum.missingCase",
+   "message": "Enum case Versions\\Cased::A does not have a value but the enum is backed with the \"int\" type.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 195,
+   "identifier": "enum.backingType",
+   "message": "Backed enum Versions\\CasedClass can have only \"int\" or \"string\" type.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 197,
+   "identifier": "enum.missingCase",
+   "message": "Enum case Versions\\CasedClass::A does not have a value but the enum is backed with the \"Features\" type.",
+   "tip": null
   }
  ]
 }

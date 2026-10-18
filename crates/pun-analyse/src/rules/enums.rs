@@ -44,10 +44,15 @@ pub fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
         .last()
         .and_then(|d| d.display.clone())
         .expect("an enum's Decl");
-    let scalar = e
-        .backing_type_hint
-        .as_ref()
-        .map(|b| (c.written(b.hint.span()), b.hint.span()));
+    // php-parser lowercases a built-in type's name (`Int` is `int`)
+    let scalar = e.backing_type_hint.as_ref().map(|b| {
+        let written = c.written(b.hint.span());
+        let written = match b.hint {
+            Hint::Identifier(_) => written,
+            _ => written.to_ascii_lowercase(),
+        };
+        (written, b.hint.span())
+    });
     for m in e.members.iter() {
         let ClassLikeMember::Method(m) = m else {
             continue;

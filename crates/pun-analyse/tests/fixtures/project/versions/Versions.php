@@ -186,3 +186,13 @@ enum Values: int
     case A = 1;
     case B = Values::A->value;
 }
+
+enum Cased: Int
+{
+    case A;
+}
+
+enum CasedClass: Features
+{
+    case A;
+}
