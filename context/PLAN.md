@@ -334,7 +334,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | fixers: binary_operator_spaces with an array in `operators` prints PHP's 'Warning: Array to string conversion' before the configure error upstream; Pun prints only the error | todo |
 | audit fixers-messages follow-up: run scripts/cli-parity.sh on a bad fixer config to confirm the reworded configure errors end to end | todo |
 | perf (from bench): analyse is slower than a warm PHPStan result cache (pun 0.5-1.8 s vs 0.4-0.8 s) and 1.5-2.2x slower than Mago's analyser; targets for the perf rounds (reports/scoreboard.md "Analyse benchmark") | todo |
-| audit item 9 (decision): on a `<style>`/`<script>` regex backtrack failure Pint writes an empty Blade file and Pun matches it; choose parity or keep the input / report the file as errored | todo |
 | coverage: method_argument_space.rs:337 and yoda_style.rs:426 are uncovered (already on 0c5bd30); regenerate reports/COVERAGE.md | todo |
 | coverage: the php_block_formatting.rs:221 exclusion in reports/COVERAGE.md is keyed by line number and moves with any edit above it; key it by something stable | todo |
 | audit item 46 follow-up: Pun/use_specific_expectations (like its sibling Pest rules) now skips `namespace\expect(..)`, which Mago 1.57.0 fixes in the global namespace; decide whether all Pest rules should accept it | todo |

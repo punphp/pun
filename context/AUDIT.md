@@ -48,7 +48,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 8. `crates/pun-fixers/src/fixers/pun_prefer_dedicated_status_assertion.rs:58-67` parses `0404` as decimal 404,
   so `assertStatus(0404)` (octal 260 in PHP) becomes `assertNotFound()` and changes what the test asserts. Skip
   literals with a leading `0`, or decode them like `switch_continue_to_break::base_dec`. Reproduced (PHP gives 260). Fixed in 250c5f1.
-- [ ] 9. `crates/pun-fixers/src/fixers/pint_laravel_blade/embedded_blade_masker.rs:56-70` returns
+- [x] 9. `crates/pun-fixers/src/fixers/pint_laravel_blade/embedded_blade_masker.rs:56-70` returns
   `result.unwrap_or_default()` when the `<style|script>` regex fails, and `pint_laravel_blade.rs:65-71` then clears
   every token, so `pun format` empties the file. The pattern's `(?:"[^"]*"|'[^']*'|[^>])*` is ambiguous: a
   `<script>` tag with 8 quoted attributes and no closing tag in a 34 KB template exhausts the backtrack limit (PHP
@@ -57,7 +57,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   the empty write is read from the code. Checked at 0c5bd30: Pint (`.oracle/pint`) empties the same 34 KB file too
   (`(string) preg_replace_callback(..)` is `""`), and Pun's `RawPreg` fails on the same input, so Pun matches Pint
   today; keeping the input would break parity on purpose. `:255`/`:478` (`/;$/`, `/^<\?php\s*\n/`) cannot exhaust
-  the limit. Needs a decision.
+  the limit. Needs a decision. Decided (2026-10-18): report the file as errored, like a PrettierException. The masker
+  now fails the file with `preg_replace_callback(): Backtrack limit exhausted` and leaves it untouched (Pint empties
+  it), a PrettierException fails the file too (it used to print to stderr and pass), and the two `php_block_formatting`
+  patterns panic, failing only the file, if they ever fail. Fixed in f4e297f.
 - [ ] 10. `crates/pun-cli/src/report.rs:208-219` (`caret_satisfies`): with base `0.8.0` (`first == 1`) an installed
   `prettier-plugin-tailwindcss` version string `"1"` gives `v = [1]`, `v >= b` holds, and `v[..=1]` panics on the
   main thread outside `isolated`. Pad both to three parts before comparing. Traced by hand; the trigger is a
