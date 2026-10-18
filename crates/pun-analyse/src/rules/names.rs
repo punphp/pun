@@ -479,7 +479,7 @@ pub fn no_discard<'arena>(
     );
 }
 
-/// ExistingClassInClassExtendsRule andExistingClassesInClassImplementsRule (class), ExistingClassesInInterfaceExtendsRule
+/// ExistingClassInClassExtendsRule and ExistingClassesInClassImplementsRule (class), ExistingClassesInInterfaceExtendsRule
 /// (interface) and ExistingClassesInEnumImplementsRule (enum): `current` is e.g. `Class Foo`, `None` for an
 /// anonymous class.
 pub fn class_hierarchy<'arena>(
