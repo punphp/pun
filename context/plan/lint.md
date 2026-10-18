@@ -317,3 +317,33 @@ Lint 7 batch 3 (statement rules, 2026-10-18; 11 of 14 rules ported):
   reflection) are left for step 8.
 - **Assistant's call (lint 7 batch 3): the spike's `lint/php-8.0/no-unused-catch-variable` is gone.** The engine
   tests use test-local rules for the PHP-version gate and the fix rounds.
+
+Lint 7 batch 4 (code quality, 2026-10-18; 10 of 13 rules ported, parity on Pinkary (no changes from either tool) and
+laravel-framework (identical files)):
+
+- **Assistant's call: the shared helpers live in `rules/rector_conditions.rs`**: `BinaryOpManipulator`'s
+  first-and-second match, `IfManipulator::matchIfNotNullReturnValue`, the parts of an `if`, and php-parser's
+  `getTokenCode` indent shift and `pComments` (with `getReformattedText`) for moved statements. Rules call them instead
+  of copying them.
+- **Assistant's call: where Rector stops with an error, Pun leaves the code.** `SingularSwitchToIfRector` throws
+  "Array of nodes cannot be empty" on a `switch` whose only `default` has nothing but `break`; Pun leaves that `switch`
+  alone. Likewise `array_merge([, $a])` (php-parser rejects the empty item) gets no fix.
+- **Assistant's call: meaning over bytes, again.** `$v ? $a = 1 : $a = $w ? 1 : 2;` becomes
+  `$a = $v ? 1 : ($w ? 1 : 2);` (Rector drops the parentheses, which PHP 8 rejects), and `switch ($value = 1)` becomes
+  `if (($value = 1) === 1)`.
+- **Matched Rector, though it loses text:** the comments after the last statement of a `case` go with the `switch`;
+  the comments before an `if`+`return null` pair and between them go with the removed statements. When that pair is a
+  whole function, method or closure body, Pun prints the function again as php-parser does: attributes, modifiers in
+  their fixed order, parameters on one line (one per line, without a trailing comma, when one has comments).
+- **Known difference, left for later:** a `switch` with only a `default` that is a whole function body, or an
+  `if`+`return null` pair that is a whole `if`/loop body, makes php-parser print the parent anew. Pun does that for
+  the function bodies of `no-redundant-null-check` only and keeps the rest of the layout, so a signature split over
+  several lines stays split there.
+- **Assistant's call: `prefer-absolute-include` leaves a path that is not UTF-8 alone**, where php-parser escapes its
+  bytes one by one.
+- **Wait for analyse (type-aware, Build 8):** `lint/control-flow/prefer-returned-condition` (`SimplifyIfReturnBoolRector`:
+  `ExprBoolCaster` asks the expression's type whether it needs a `(bool)` cast);
+  `lint/dead-code/no-useless-variable` (`SimplifyUselessVariableRector`: `CallAnalyzer::isNewInstance` reads the
+  constructor through reflection, and the `@var` check reads PHPDoc types); `lint/complexity/prefer-inline-array-return`
+  (`InlineArrayReturnAssignRector`: `ValueResolver::getValue` resolves class constants used as keys through
+  reflection).

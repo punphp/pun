@@ -567,3 +567,101 @@ fn repeated_and_not_equal_to_not_in_array() {
     // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
     run(&linter, "RepeatedAndNotEqualToNotInArrayRector/Oracle");
 }
+
+#[test]
+fn simplify_if_not_null_return() {
+    let linter = only(rules::NoRedundantNullCheck, 80400);
+    run(&linter, "SimplifyIfNotNullReturnRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "SimplifyIfNotNullReturnRector/Oracle");
+}
+
+#[test]
+fn simplify_conditions() {
+    let linter = only(rules::PreferSimpleCondition, 80400);
+    run(&linter, "SimplifyConditionsRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "SimplifyConditionsRector/Oracle");
+    // Where Rector cannot run, stops with an error or escapes bytes; the expected code is derived by hand.
+    run(&linter, "SimplifyConditionsRector/Pun");
+}
+
+#[test]
+fn simplify_array_search() {
+    let linter = only(rules::PreferInArrayOverSearch, 80400);
+    run(&linter, "SimplifyArraySearchRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "SimplifyArraySearchRector/Oracle");
+}
+
+#[test]
+fn ternary_condition_variable_assignment() {
+    let linter = only(rules::NoAssignInTernaryBranch, 80400);
+    run(&linter, "TernaryConditionVariableAssignmentRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "TernaryConditionVariableAssignmentRector/Oracle");
+    // Where Rector drops parentheses the meaning needs, or cannot run; the expected code is derived by hand.
+    run(&linter, "TernaryConditionVariableAssignmentRector/Pun");
+}
+
+#[test]
+fn singular_switch_to_if() {
+    let linter = only(rules::NoSingleCaseSwitch, 80400);
+    run(&linter, "SingularSwitchToIfRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "SingularSwitchToIfRector/Oracle");
+    // Where Rector drops parentheses the meaning needs, or cannot run; the expected code is derived by hand.
+    run(&linter, "SingularSwitchToIfRector/Pun");
+}
+
+#[test]
+fn ternary_implode_to_implode() {
+    let linter = only(rules::NoImplodeTernary, 80400);
+    run(&linter, "TernaryImplodeToImplodeRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "TernaryImplodeToImplodeRector/Oracle");
+}
+
+#[test]
+fn new_static_to_new_self() {
+    // The laravel preset's `self_static_accessor` makes the same change, so `run`'s check that format alone does not
+    // is left out.
+    let linter = only(rules::PreferNewSelf, 80400);
+    run_with_whitespace_exceptions(&linter, "NewStaticToNewSelfRector/Fixture", &[]);
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run_with_whitespace_exceptions(&linter, "NewStaticToNewSelfRector/Oracle", &[]);
+}
+
+#[test]
+fn array_merge_of_non_arrays_to_simple_array() {
+    let linter = only(rules::PreferArrayLiteral, 80400);
+    run(&linter, "ArrayMergeOfNonArraysToSimpleArrayRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "ArrayMergeOfNonArraysToSimpleArrayRector/Oracle");
+    // Where Rector cannot run, stops with an error or escapes bytes; the expected code is derived by hand.
+    run(&linter, "ArrayMergeOfNonArraysToSimpleArrayRector/Pun");
+}
+
+#[test]
+fn remove_readonly_property_visibility_on_readonly_class() {
+    let linter = only(rules::NoRedundantReadonlyProperty, 80400);
+    run(
+        &linter,
+        "RemoveReadonlyPropertyVisibilityOnReadonlyClassRector/Fixture",
+    );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(
+        &linter,
+        "RemoveReadonlyPropertyVisibilityOnReadonlyClassRector/Oracle",
+    );
+}
+
+#[test]
+fn absolutize_require_and_include_path() {
+    let linter = only(rules::PreferAbsoluteInclude, 80400);
+    run(&linter, "AbsolutizeRequireAndIncludePathRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "AbsolutizeRequireAndIncludePathRector/Oracle");
+    // Where Rector cannot run, stops with an error or escapes bytes; the expected code is derived by hand.
+    run(&linter, "AbsolutizeRequireAndIncludePathRector/Pun");
+}

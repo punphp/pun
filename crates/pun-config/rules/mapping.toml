@@ -263,11 +263,11 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/no-protected-method-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided" }
 "classes/no-protected-property-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided" }
 "classes/no-redundant-readonly" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes redundant readonly from properties in readonly classes." }
-"classes/no-redundant-readonly-property" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
+"classes/no-redundant-readonly-property" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "In a readonly class, drop `readonly` from properties and promoted parameters" }
 "classes/no-static-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided" }
 "classes/no-underscore-class" = { fix = "none", sets = ["modernize"], ported = false, origin = "mago", status = "decided", summary = "Detects class, interface, trait, or enum declarations named `_`." }
 "classes/no-unset-on-property" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Properties should be set to `null` instead of using `unset`." }
-"classes/prefer-new-self" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
+"classes/prefer-new-self" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `new static()` to `new self()` in a final class" }
 "classes/prefer-self-in-final" = { fix = "safe", sets = ["modernize", "code-quality"], ported = true, status = "decided", summary = "Inside an enum or `final`/anonymous class, `self` should be preferred over `static`." }
 "classes/prefer-self-over-static" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "classes/prefer-serialize-method" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided" }
@@ -303,18 +303,18 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-phpdoc-class-case-mismatch" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Fix a misspelled class name casing in a @var docblock to match the real class name" }
 "complexity/no-redundant-isset" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided" }
 "complexity/no-redundant-literal-return" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided" }
-"complexity/no-redundant-null-check" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Return the value directly instead of checking it for null first." }
+"complexity/no-redundant-null-check" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Return the value directly instead of checking it for null first." }
 "complexity/no-redundant-nullable-check" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "complexity/no-redundant-nullsafe" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", note = "merges Mago no-redundant-nullsafe (null already checked) and Rector CleanupUnneededNullsafeOperator (type is non-null)" }
 "complexity/no-redundant-write-visibility" = { fix = "none", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects redundant write visibility modifiers on properties." }
-"complexity/no-single-case-switch" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change `switch` with only 1 check to `if`" }
+"complexity/no-single-case-switch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `switch` with only 1 check to `if`" }
 "complexity/no-single-item-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes in_array() with single element to ===" }
 "complexity/no-sole-value-sprintf" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove `sprintf()` wrapper if not needed" }
 "complexity/no-unused-label" = { fix = "none", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects redundant `goto` labels that are declared but not used." }
 "complexity/no-useless-array-values" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes unneeded array_values() in in_array() call" }
 "complexity/no-useless-block" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `{ }` blocks that do not belong to a control structure." }
-"complexity/prefer-absolute-include" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Migrate include/require to absolute path. This Rector might introduce backwards incompatible code, when the include/require being changed depends on the current working directory." }
-"complexity/prefer-array-literal" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change array_merge of non arrays to array directly" }
+"complexity/prefer-absolute-include" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Migrate include/require to absolute path. This Rector might introduce backwards incompatible code, when the include/require being changed depends on the current working directory." }
+"complexity/prefer-array-literal" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change array_merge of non arrays to array directly" }
 "complexity/prefer-coalesce-chain" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "complexity/prefer-coalesce-over-empty-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "complexity/prefer-coalesce-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
@@ -323,7 +323,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-func-num-args" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify count of func_get_args() to func_num_args()" }
 "complexity/prefer-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use in_array() instead of repeated `||`/`&&` comparisons, array_search() checks and foreach loops." }
 "complexity/prefer-in-array-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
-"complexity/prefer-in-array-over-search" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
+"complexity/prefer-in-array-over-search" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `array_search()` compared with `false` to `in_array()`" }
 "complexity/prefer-inline-array-return" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Inline just in time array dim fetch assigns to direct return" }
 "complexity/prefer-instance-method" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change static method and local-only calls to non-static" }
 "complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change ternary number compare to `max()` call" }
@@ -332,7 +332,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-null-coalesce" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups." }
 "complexity/prefer-property-default" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move property default from constructor to property default" }
 "complexity/prefer-property-exists" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Use property_exists() instead of array_key_exists() or isset() on object properties." }
-"complexity/prefer-simple-condition" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
+"complexity/prefer-simple-condition" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify a negated comparison or a comparison with a boolean" }
 "complexity/require-attribute-argument-order" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "complexity/require-consistent-return" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add explicit return null to method/function that returns a value, but missed main return" }
 "complexity/require-is-a-allow-string" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Complete missing 3rd argument in case is_a() function in case of strings" }
@@ -374,7 +374,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-false-ternary" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "dead-code/no-future-php-version-check" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "dead-code/no-identical-branches" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if/else if they have same content" }
-"dead-code/no-implode-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
+"dead-code/no-implode-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Drop an empty-array ternary around `implode()`" }
 "dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
 "dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes non-existing @var annotations above the code" }
 "dead-code/no-mirror-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `$value = $value` assignments." }
@@ -788,7 +788,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-ambiguous-function" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Enforces that all function calls made from within a namespace are explicit." }
 "style/no-array-accumulation-in-loop" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects O(n²) array accumulation patterns inside loops." }
 "style/no-array-push" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Converts simple usages of `array_push($x, $y);` to `$x[] = $y;`." }
-"style/no-assign-in-ternary-branch" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Assign outcome of ternary condition to variable, where applicable" }
+"style/no-assign-in-ternary-branch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Assign outcome of ternary condition to variable, where applicable" }
 "style/no-call-user-func" = { fix = "unsafe", sets = ["code-quality", "coding-style"], ported = false, status = "decided", summary = "Call callables directly instead of through call_user_func()." }
 "style/no-dynamic-method-call" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
 "style/no-dynamic-method-callable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
