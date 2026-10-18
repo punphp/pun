@@ -313,3 +313,12 @@ Assistant's calls in analyse 3c (class-member declaration rules, 2026-10-18; the
 - `isImmutable()` reads a parent class's PHPDoc from its file (an analysed one's source, otherwise from disk).
 - php-parser's modifier errors (`abstract final` property) are not emulated: Mago parses them, so PropertyInClassRule
   reports where PHPStan reports only `phpstan.parse` (2 fixture cases in gaps.txt).
+
+Assistant's calls in analyse 3d (syntax-only level-0 rules, 2026-10-18; the plan was silent):
+- `[...]` inside `list()` is an array literal, not a nested destructuring, as php-parser parses it (oracle: `list($a[], [$a[]])`
+  reports `assign.invalidExpr` and `offsetAccess.noDim`).
+- `break N` with an N that does not fit a PHP int counts as level 1, because php-parser parses it as a float (oracle-confirmed).
+- InvalidTypesInUnionRule prints built-in type names lowercased, as php-parser lowercases them (oracle: `int|VOID` gives `Type void`).
+- A promoted constructor property with an invalid type is reported twice (parameter and ClassPropertyNode), as PHPStan does.
+- To find by-reference callees, TypedExpressions also asks Mago for the type of method-call objects and static-call class
+  expressions, only when an argument is a `[]` fetch or a dim fetch on `$this`.
