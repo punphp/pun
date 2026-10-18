@@ -1254,10 +1254,10 @@ fn run_errors_exit_2() {
     // An unported rule names pun.toml, the rule and the way out.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/explicit-variable\" = true\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/heredoc-closing-marker\" = true\n",
     )
     .unwrap();
-    let line = "✖ pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`";
+    let line = "✖ pun.toml  rule not supported by Pun yet: `format/strings/heredoc-closing-marker`";
     let hint = "  remove it from pun.toml to run the other rules\n";
     assert_eq!(
         pun(&["check", "--color=never"]),

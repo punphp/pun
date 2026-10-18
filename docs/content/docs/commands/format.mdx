@@ -103,7 +103,7 @@ The machine formats stay Pint's: `--format=json`, `txt`, `checkstyle`, `junit`, 
 A run error is one red line with a hint under it, on stderr:
 
 ```
-✖ pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`
+✖ pun.toml  rule not supported by Pun yet: `format/strings/heredoc-closing-marker`
   remove it from pun.toml to run the other rules
 ```
 
@@ -125,7 +125,7 @@ Without a `pun.toml`, every command stops with `No pun.toml found. Run pun migra
 Pun never runs PHP for a rule it lacks. If `pun.toml` enables a rule Pun hasn't ported, `pun format`, `pun lint` and `pun check` stop before touching any file and exit 2, naming the rule:
 
 ```
-✖ pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`
+✖ pun.toml  rule not supported by Pun yet: `format/strings/heredoc-closing-marker`
   remove it from pun.toml to run the other rules
 ```
 

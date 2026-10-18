@@ -613,7 +613,7 @@ fn pun_only_behaviour() {
     // No PHP fallback: a rule Pun hasn't ported stops every command, named under its Pun ID (exit 2).
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n\"strings/explicit-variable\" = true\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n\"strings/heredoc-closing-marker\" = true\n",
     )
     .unwrap();
     let toml = dir.join("pun.toml");
@@ -623,7 +623,7 @@ fn pun_only_behaviour() {
             (out.as_str(), err, code),
             (
                 "",
-                "x pun.toml  rule not supported by Pun yet: `format/strings/explicit-variable`\n  remove it from pun.toml to run the other rules\n".to_string(),
+                "x pun.toml  rule not supported by Pun yet: `format/strings/heredoc-closing-marker`\n  remove it from pun.toml to run the other rules\n".to_string(),
                 Some(2)
             ),
             "{cmd:?}"
@@ -632,14 +632,14 @@ fn pun_only_behaviour() {
     // Lint rules count too, even for `pun format`; several are listed together.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/explicit-variable\" = true\n[lint.rules]\n\"security/no-homoglyph-names\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/heredoc-closing-marker\" = true\n[lint.rules]\n\"security/no-homoglyph-names\" = \"error\"\n",
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["format", "--test"]);
     assert_eq!(
         (err, code),
         (
-            "x pun.toml  rules not supported by Pun yet: `format/strings/explicit-variable`, `lint/security/no-homoglyph-names`\n  remove them from pun.toml to run the other rules\n".to_string(),
+            "x pun.toml  rules not supported by Pun yet: `format/strings/heredoc-closing-marker`, `lint/security/no-homoglyph-names`\n  remove them from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );
@@ -649,7 +649,7 @@ fn pun_only_behaviour() {
         (out, code),
         (
             format!(
-                "pun lint: error: {}: rules not supported by Pun yet: `format/strings/explicit-variable`, `lint/security/no-homoglyph-names`\n",
+                "pun lint: error: {}: rules not supported by Pun yet: `format/strings/heredoc-closing-marker`, `lint/security/no-homoglyph-names`\n",
                 toml.display()
             ),
             Some(2)
