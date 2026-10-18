@@ -468,7 +468,10 @@ fn remove_useless_assign_from_property_promotion() {
         "RemoveUselessAssignFromPropertyPromotionRector/Fixture",
     );
     // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
-    run(&linter, "RemoveUselessAssignFromPropertyPromotionRector/Oracle");
+    run(
+        &linter,
+        "RemoveUselessAssignFromPropertyPromotionRector/Oracle",
+    );
 }
 
 #[test]

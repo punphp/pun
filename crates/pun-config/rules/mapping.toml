@@ -328,7 +328,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-instance-method" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change static method and local-only calls to non-static" }
 "complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change ternary number compare to `max()` call" }
 "complexity/prefer-named-literal-argument" = { fix = "safe", ported = false, origin = "mago", later = true, status = "decided", summary = "Name literal arguments (true, false, null, numbers) in calls." }
-"complexity/prefer-not-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided" }
+"complexity/prefer-not-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `! in_array()` instead of repeated `!==`/`!=` comparisons of one value joined by `&&`." }
 "complexity/prefer-null-coalesce" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups." }
 "complexity/prefer-property-default" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move property default from constructor to property default" }
 "complexity/prefer-property-exists" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Use property_exists() instead of array_key_exists() or isset() on object properties." }
@@ -339,7 +339,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/require-named-argument-order" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Order named arguments as the parameters are declared." }
 "complexity/require-previous-exception" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "When throwing into a catch block, checks that the previous exception is passed to the new throw clause" }
 "control-flow/no-assign-in-condition" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects assignments in conditions which can lead to unexpected behavior and make the code harder" }
-"control-flow/no-else-after-return" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided" }
+"control-flow/no-else-after-return" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Drop the else after a branch that always returns, throws or exits, and move its body after the if." }
 "control-flow/no-empty-catch" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "" }
 "control-flow/no-for-init-overwrite" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided" }
 "control-flow/no-loop-variable-overwrite" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided" }
@@ -377,7 +377,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-implode-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
 "dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes non-existing @var annotations above the code" }
-"dead-code/no-mirror-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided" }
+"dead-code/no-mirror-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `$value = $value` assignments." }
 "dead-code/no-null-default-argument" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "dead-code/no-null-default-named-argument" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "dead-code/no-null-tag-value" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
@@ -837,8 +837,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-dirname-levels" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Replace nested dirname() calls with one call and a `$levels` argument." }
 "style/prefer-early-continue" = { fix = "safe", sets = ["early-return"], ported = false, origin = "mago", status = "decided", summary = "Continue early instead of nesting the loop body in an if." }
 "style/prefer-early-return" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return early instead of nesting the rest of the function in an if or else." }
-"style/prefer-early-return-of-variable" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided" }
-"style/prefer-early-return-over-prepared-value" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided" }
+"style/prefer-early-return-of-variable" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return the value directly where an if overrides a variable that is returned right after." }
+"style/prefer-early-return-over-prepared-value" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return early from each if instead of preparing a variable that is returned at the end." }
 "style/prefer-empty-string-compare" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Compare with `''` instead of strlen() === 0." }
 "style/prefer-generic-array-phpdoc" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "PHPDoc `array<T>` type must be used instead of `T[]`." }
 "style/prefer-instanceof-stringable" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects the legacy pattern `is_object($x) && method_exists($x, '__toString')` and suggests" }

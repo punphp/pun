@@ -75,8 +75,7 @@ impl Rule for NoRedundantPromotedAssign {
             let is_this =
                 variable_name(fetch.object).is_some_and(|n| n.eq_ignore_ascii_case(b"this"));
             let promoted = names.iter().any(|n| n.eq_ignore_ascii_case(property));
-            let same =
-                variable_name(assign.rhs).is_some_and(|n| n.eq_ignore_ascii_case(property));
+            let same = variable_name(assign.rhs).is_some_and(|n| n.eq_ignore_ascii_case(property));
             if !(is_this && promoted && same) {
                 return;
             }
