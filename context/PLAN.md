@@ -195,7 +195,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | output 5: `pun check` grouped view (deferred, Pushpak 2026-10-18: parity starts without it; when built, add a row to put the analyse step in the view) | deferred |
 | output follow-up: when lint and analyse emit `pun_problem::Problem` values, annotate them through `github::problem` (`::warning` for lint warnings); analyse decides whether to drop `title=` for byte parity with PHPStan's `--error-format=github` | todo |
 | output follow-up (decision): under agent mode with `--format=github`, should run errors print `::error ::<message>` instead of the agent line | todo |
-| output follow-up: re-run scripts/coverage.sh punphp after output 4 and 6 once the gpgsign test row lands (also confirms crates/pun-cli/src/init.rs at 100%), and refresh reports/COVERAGE.md (its 2302-line baseline is stale) | todo |
 
 **Gate:** every human output sample in the plan files is pinned by a test; machine formats and exit codes still pass
 `scripts/cli-parity.sh`.
@@ -328,14 +327,12 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | CI: confirm punphp (pun-cli) line coverage at 100% on Linux after format 1 (run.rs preset branch and report.rs PER/Symfony labels removed; macOS runs miss lines behind the 5 environment-failing tests) | todo |
 | CI: one branch and PR per thread; rewrite AGENTS.md "Work with other agents" (§4 Q1) | todo |
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
-| tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
-| CI: after output 3, confirm punphp line coverage at 100% (98.49% on macOS; gaps in cache.rs, report.rs, run.rs, list_files.rs, migrate.rs sit behind the environment-failing tests) | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
 | design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
-| wf tooling: link crates/pun-fixers/node_modules into worktrees (blade_like_pint needs it) | todo |
 | wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
+| request (pun-fixers owner): crates/pun-fixers/tests/blade.rs `oracle_blade_fixtures` asserts instead of skipping when crates/pun-fixers/node_modules is missing (as in a wf worktree); reuse the main-checkout lookup from crates/pun-cli/tests/common/prettier.rs (`git rev-parse --path-format=absolute --git-common-dir`) | todo |
 | tests: crates/pun-tokens tests/api.rs and tests/parity.rs fail on PHP 8.5 (tools/api.php: 'Cannot use the final modifier on a parameter' on one case), so scripts/coverage.sh punphp-tokens reports FAILED | todo |
 | pun-fixers Preg: compile rejects the `r` modifier (PCRE2_EXTRA_CASELESS_RESTRICT) that PHP 8.4+ accepts (`preg_match('/a/r', 'a')` panics); no upstream pattern uses it yet | todo |
 | oracle: the local PHP (Herd ini) runs with pcre.jit=Off, so preg limit errors read 'Recursion limit exhausted' where PHP's default (and Pun) give 'JIT stack limit exhausted'; run preg oracles with `-d pcre.jit=1` | todo |
@@ -352,7 +349,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | tests: crates/pun-cli/tests/cli.rs:327 and output.rs:816 fake read errors with mode 000 like audit item 34 did; assert the error only when std::fs::read really fails | todo |
 | tests: crates/pun-tokens/tests/api.rs:317 swaps the process panic hook (as docblock tests did, audit item 80); use catch_unwind alone | todo |
 | coverage: pun-config lib.rs:389,395,397 (options(): Boolean and bail arms) are uncovered; its only caller (schema.rs:449) always passes a Table, so delete the dead arms | todo |
-| tests: crates/pun-cli/tests/cli.rs `blade_like_pint` fails on the Pint oracle's own output (expected substring missing), likely a change in the installed oracle's Blade plugin | todo |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
 | tests: since audit item 81 the pun-tokens oracle tests (api, parity, php_compat) fail when php or .oracle/php-cs-fixer is missing; on macOS the default `php` (Herd 8.4) fails tools/api.php ('Cannot use the final modifier on a parameter'), so put PHP 8.5 first on PATH or point the helper at it | todo |
