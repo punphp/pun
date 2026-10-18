@@ -2,6 +2,286 @@
  "general": [],
  "errors": [
   {
+   "file": "assign.php",
+   "line": 11,
+   "identifier": "nullsafe.assign",
+   "message": "Nullsafe operator cannot be on left side of assignment.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 12,
+   "identifier": "nullsafe.byRef",
+   "message": "Nullsafe operator cannot be on right side of assignment by reference.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 14,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 15,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 16,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 17,
+   "identifier": "nullsafe.assign",
+   "message": "Nullsafe operator cannot be on left side of assignment.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 18,
+   "identifier": "nullsafe.assign",
+   "message": "Nullsafe operator cannot be on left side of assignment.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 19,
+   "identifier": "assign.invalidExpr",
+   "message": "Expression on left side of assignment is not assignable.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 19,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 21,
+   "identifier": "nullsafe.assign",
+   "message": "Nullsafe operator cannot be on left side of assignment.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 22,
+   "identifier": "assign.invalidExpr",
+   "message": "Expression on left side of assignment is not assignable.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 23,
+   "identifier": "nullsafe.assign",
+   "message": "Nullsafe operator cannot be on left side of assignment.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 25,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 25,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on $this(AssignEdge\\Plain).",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 26,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 27,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 28,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 30,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 31,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 32,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 32,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 34,
+   "identifier": "nullsafe.assign",
+   "message": "Nullsafe operator cannot be on left side of assignment.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 48,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 51,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 53,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 60,
+   "identifier": "function.notFound",
+   "message": "Function unknownFunction not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "assign.php",
+   "line": 60,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 61,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 62,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 65,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 67,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 69,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 70,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 71,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 72,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 73,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 75,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 77,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 136,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
+   "file": "assign.php",
+   "line": 139,
+   "identifier": "assign.this",
+   "message": "Cannot re-assign $this.",
+   "tip": null
+  },
+  {
    "file": "casts.php",
    "line": 6,
    "identifier": "cast.deprecated",
@@ -86,6 +366,104 @@
    "tip": null
   },
   {
+   "file": "loops.php",
+   "line": 22,
+   "identifier": "continue.outOfLoop",
+   "message": "Keyword continue used outside of a loop or a switch statement.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 29,
+   "identifier": "break.outOfLoop",
+   "message": "Keyword break used outside of a loop or a switch statement.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 56,
+   "identifier": "nullsafe.byRef",
+   "message": "Nullsafe cannot be returned by reference.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 62,
+   "identifier": "nullableType.mixed",
+   "message": "Type mixed cannot be part of a nullable type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 62,
+   "identifier": "nullableType.mixed",
+   "message": "Type mixed cannot be part of a nullable type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 63,
+   "identifier": "unionType.void",
+   "message": "Type void cannot be part of a union type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 63,
+   "identifier": "unionType.void",
+   "message": "Type void cannot be part of a union type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 64,
+   "identifier": "nullableType.never",
+   "message": "Type never cannot be part of a nullable type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 69,
+   "identifier": "nullableType.mixed",
+   "message": "Type mixed cannot be part of a nullable type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 73,
+   "identifier": "return.missing",
+   "message": "Method Loops\\Types::dnf() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 73,
+   "identifier": "unionType.mixed",
+   "message": "Type mixed cannot be part of a union type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 73,
+   "identifier": "unionType.never",
+   "message": "Type never cannot be part of a union type declaration.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 80,
+   "identifier": "global.this",
+   "message": "Cannot use $this as global variable.",
+   "tip": null
+  },
+  {
+   "file": "loops.php",
+   "line": 81,
+   "identifier": "static.this",
+   "message": "Cannot use $this as static variable.",
+   "tip": null
+  },
+  {
    "file": "magic.php",
    "line": 4,
    "identifier": "magicConstant.outOfNamespace",
@@ -97,6 +475,83 @@
    "line": 4,
    "identifier": "cast.unset",
    "message": "The (unset) cast is no longer supported in PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "used/enum.php",
+   "line": 7,
+   "identifier": "function.notFound",
+   "message": "Used function Some\\fn1 not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "used/enum.php",
+   "line": 7,
+   "identifier": "function.notFound",
+   "message": "Used function Some\\fn2 not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "used/enum.php",
+   "line": 8,
+   "identifier": "constant.notFound",
+   "message": "Used constant Some\\C1 not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "used/enum.php",
+   "line": 9,
+   "identifier": "constant.notFound",
+   "message": "Used constant Some\\GROUPED_C not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "used/enum.php",
+   "line": 9,
+   "identifier": "function.notFound",
+   "message": "Used function Some\\groupedFn not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "used/enum.php",
+   "line": 10,
+   "identifier": "function.notFound",
+   "message": "Used function Some\\typedFn not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "used/enum.php",
+   "line": 12,
+   "identifier": "enum.nameInUse",
+   "message": "Cannot declare enum UsedEnum\\Thing because the name is already in use.",
+   "tip": null
+  },
+  {
+   "file": "used/enum.php",
+   "line": 16,
+   "identifier": "class.nameInUse",
+   "message": "Cannot declare class UsedEnum\\Lead because the name is already in use.",
+   "tip": null
+  },
+  {
+   "file": "used/enum.php",
+   "line": 32,
+   "identifier": "use.nameInUse",
+   "message": "Cannot use Another\\Unrelated as FN1 because the name is already in use.",
+   "tip": null
+  },
+  {
+   "file": "used/enum.php",
+   "line": 33,
+   "identifier": "use.nameInUse",
+   "message": "Cannot use Another\\Other as C1 because the name is already in use.",
+   "tip": null
+  },
+  {
+   "file": "used/no-namespace.php",
+   "line": 9,
+   "identifier": "trait.nameInUse",
+   "message": "Cannot declare trait NoNamespaceUsed because the name is already in use.",
    "tip": null
   }
  ]

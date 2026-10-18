@@ -1,0 +1,495 @@
+//! Assignment checks: InvalidAssignVarRule with NullsafeCheck, InvalidVariableAssignRule (the VariableAssignNodes
+//! AssignHandler::processAssignVar() emits) and OffsetAccessWithoutDimForReadingRule (with the expressions
+//! `$scope->isInExpressionAssign()` holds for).
+
+use std::collections::HashSet;
+
+use mago_codex::metadata::function_like::FunctionLikeMetadata;
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
+use pun_phpstan::symbols::ByRef;
+
+use super::{Checker, builtins, members};
+
+/// What these checks remember during a walk.
+#[derive(Default)]
+pub struct State {
+    /// `[]` fetches PHPStan visits inside `enterExpressionAssign()` for them.
+    assigned: HashSet<Span>,
+    /// Subtrees PHPStan only assigns virtually (VirtualAssignNodeCallback: no rule sees their nodes).
+    virtual_targets: Vec<Span>,
+}
+
+fn unparenthesized<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
+    while let Expression::Parenthesized(p) = e {
+        e = p.expression;
+    }
+    e
+}
+
+/// A destructuring target's items (`List_::$items`) as (key, value, `short` for the value). php-parser has `list()`
+/// as a List_, and `[...]` as one only where `short` (a target's top level, or in a `[...]` list): in `list()`, a
+/// `[...]` is an Array_.
+type Item<'e, 'arena> = (Option<&'e Expression<'arena>>, &'e Expression<'arena>, bool);
+
+fn list_items<'e, 'arena>(e: &'e Expression<'arena>, short: bool) -> Option<Vec<Item<'e, 'arena>>> {
+    let (elements, short) = match e {
+        Expression::List(l) => (&l.elements, false),
+        Expression::Array(a) if short => (&a.elements, true),
+        _ => return None,
+    };
+    Some(
+        elements
+            .iter()
+            .filter_map(|item| match item {
+                ArrayElement::KeyValue(kv) => Some((Some(kv.key), kv.value, short)),
+                ArrayElement::Value(ValueArrayElement { value })
+                | ArrayElement::Variadic(VariadicArrayElement { value, .. }) => {
+                    Some((None, *value, short))
+                }
+                ArrayElement::Missing(_) => None,
+            })
+            .collect(),
+    )
+}
+
+/// NullsafeCheck::containsNullSafe() on an expression read (a returned or referenced expression).
+pub fn contains_nullsafe(e: &Expression) -> bool {
+    nullsafe(e, false)
+}
+
+/// NullsafeCheck::containsNullSafe(). `short`: a `[...]` here is a List_ (see [`list_items()`]).
+fn nullsafe(e: &Expression, short: bool) -> bool {
+    let e = unparenthesized(e);
+    match e {
+        Expression::Access(Access::NullSafeProperty(_))
+        | Expression::Call(Call::NullSafeMethod(_)) => true,
+        Expression::ArrayAccess(a) => contains_nullsafe(a.array),
+        Expression::ArrayAppend(a) => contains_nullsafe(a.array),
+        Expression::Access(Access::Property(p)) => contains_nullsafe(p.object),
+        Expression::Access(Access::StaticProperty(p)) => {
+            is_expr_class(p.class) && contains_nullsafe(p.class)
+        }
+        Expression::Call(Call::Method(m)) => contains_nullsafe(m.object),
+        Expression::Call(Call::StaticMethod(m)) => {
+            is_expr_class(m.class) && contains_nullsafe(m.class)
+        }
+        _ => list_items(e, short).is_some_and(|items| {
+            items.into_iter().any(|(key, value, short)| {
+                key.is_some_and(contains_nullsafe) || nullsafe(value, short)
+            })
+        }),
+    }
+}
+
+/// `$expr->class instanceof Expr`: not a name (php-parser has `self`, `static` and `parent` as names).
+fn is_expr_class(class: &Expression) -> bool {
+    !matches!(
+        class,
+        Expression::Identifier(_)
+            | Expression::Self_(_)
+            | Expression::Static(_)
+            | Expression::Parent(_)
+    )
+}
+
+/// InvalidAssignVarRule's containsNonAssignableExpression().
+fn non_assignable(e: &Expression, short: bool) -> bool {
+    let e = unparenthesized(e);
+    match e {
+        Expression::Variable(_)
+        | Expression::Access(Access::Property(_) | Access::StaticProperty(_))
+        | Expression::ArrayAccess(_)
+        | Expression::ArrayAppend(_) => false,
+        _ => list_items(e, short).is_none_or(|items| {
+            items
+                .into_iter()
+                .any(|(_, value, short)| non_assignable(value, short))
+        }),
+    }
+}
+
+/// InvalidAssignVarRule on `var = expr` (`by_ref`: `=&`, with `expr` the referenced expression).
+fn invalid_assign_var(c: &mut Checker, at: Span, var: &Expression, expr: Option<&Expression>) {
+    if nullsafe(var, true) {
+        c.report_non_ignorable(
+            at,
+            "nullsafe.assign",
+            "Nullsafe operator cannot be on left side of assignment.".to_string(),
+            None,
+        );
+    } else if expr.is_some_and(contains_nullsafe) {
+        c.report_non_ignorable(
+            at,
+            "nullsafe.byRef",
+            "Nullsafe operator cannot be on right side of assignment by reference.".to_string(),
+            None,
+        );
+    } else if non_assignable(var, true) {
+        c.report_non_ignorable(
+            at,
+            "assign.invalidExpr",
+            "Expression on left side of assignment is not assignable.".to_string(),
+            None,
+        );
+    }
+}
+
+/// An `Assign`, `AssignOp` or `AssignRef`.
+pub fn assignment(c: &mut Checker, a: &Assignment) {
+    let referenced = match (&a.operator, unparenthesized(a.rhs)) {
+        (AssignmentOperator::Assign(_), Expression::UnaryPrefix(u))
+            if u.operator.is_reference() =>
+        {
+            Some(u.operand)
+        }
+        _ => None,
+    };
+    invalid_assign_var(c, a.span(), a.lhs, referenced);
+    if let AssignmentOperator::Assign(_) = a.operator {
+        mark_assigned(c, a.lhs, true);
+        if let Some(r) = referenced {
+            c.assign.assigned.insert(unparenthesized(r).span());
+        }
+    }
+    assign_var(c, a.lhs, true);
+}
+
+/// processAssignVar() with `$enterExpressionAssign`: the `[]` fetches of the target's dim-fetch chains.
+fn mark_assigned(c: &mut Checker, var: &Expression, short: bool) {
+    let mut var = unparenthesized(var);
+    if let Some(items) = list_items(var, short) {
+        for (_, value, short) in items {
+            mark_assigned(c, value, short);
+        }
+        return;
+    }
+    loop {
+        match var {
+            Expression::ArrayAppend(a) => {
+                c.assign.assigned.insert(var.span());
+                var = unparenthesized(a.array);
+            }
+            Expression::ArrayAccess(a) => var = unparenthesized(a.array),
+            _ => return,
+        }
+    }
+}
+
+/// The VariableAssignNodes processAssignVar() emits for `var`: a variable, the variable a dim-fetch chain starts
+/// at, and those of a list's items.
+fn assign_var(c: &mut Checker, var: &Expression, short: bool) {
+    let mut var = unparenthesized(var);
+    if let Some(items) = list_items(var, short) {
+        for (_, value, short) in items {
+            assign_var(c, value, short);
+        }
+        return;
+    }
+    while let Expression::ArrayAccess(ArrayAccess { array, .. })
+    | Expression::ArrayAppend(ArrayAppend { array, .. }) = var
+    {
+        var = unparenthesized(array);
+    }
+    if let Expression::Variable(Variable::Direct(v)) = var {
+        variable_assign(c, v);
+    }
+}
+
+/// InvalidVariableAssignRule.
+pub fn variable_assign(c: &mut Checker, v: &DirectVariable) {
+    if v.name != b"$this" {
+        return;
+    }
+    if !c.classes.is_empty()
+        && c.class_scope().is_some_and(|k| {
+            k.all_parent_interfaces
+                .iter()
+                .any(|i| i.as_bytes().eq_ignore_ascii_case(b"ArrayAccess"))
+        })
+    {
+        return;
+    }
+    c.report_non_ignorable(
+        v,
+        "assign.this",
+        "Cannot re-assign $this.".to_string(),
+        None,
+    );
+}
+
+/// `foreach`: a variable key or value is a VariableAssignNode; any other target is assigned virtually.
+pub fn foreach(c: &mut Checker, f: &Foreach) {
+    let (key, value) = match &f.target {
+        ForeachTarget::Value(t) => (None, t.value),
+        ForeachTarget::KeyValue(t) => (Some(t.key), t.value),
+    };
+    let value = match unparenthesized(value) {
+        Expression::UnaryPrefix(u) if u.operator.is_reference() => u.operand,
+        v => v,
+    };
+    if list_items(unparenthesized(value), true).is_some() {
+        invalid_assign_var(c, value.span(), value, None);
+    }
+    for target in key.into_iter().chain([value]) {
+        c.assign.virtual_targets.push(target.span());
+        assign_var(c, target, true);
+    }
+}
+
+/// `catch (E $var)`.
+pub fn catch(c: &mut Checker, clause: &TryCatchClause) {
+    if let Some(v) = &clause.variable {
+        variable_assign(c, v);
+    }
+}
+
+/// `++`/`--` assign their operand virtually.
+pub fn increment(c: &mut Checker, operand: &Expression) {
+    assign_var(c, operand, true);
+}
+
+/// `unset($a[$k])` assigns its dim-fetch chain virtually.
+pub fn unset(c: &mut Checker, u: &Unset) {
+    for value in u.values.iter() {
+        if let Expression::ArrayAccess(_) = unparenthesized(value) {
+            assign_var(c, value, true);
+        }
+    }
+}
+
+/// OffsetAccessWithoutDimForReadingRule.
+pub fn array_append(c: &mut Checker, a: &ArrayAppend) {
+    let span = a.span();
+    if c.assign.assigned.contains(&span)
+        || c.assign
+            .virtual_targets
+            .iter()
+            .any(|t| t.start.offset <= span.start.offset && span.end.offset <= t.end.offset)
+    {
+        return;
+    }
+    c.report_non_ignorable(
+        a,
+        "offsetAccess.noDim",
+        "Cannot use [] for reading.".to_string(),
+        None,
+    );
+}
+
+/// A parameter as far as passing by reference goes.
+struct Param {
+    name: Vec<u8>,
+    /// `passedByReference()->createsNewVariable()`
+    by_ref: bool,
+    variadic: bool,
+}
+
+fn of_metadata(f: &FunctionLikeMetadata) -> Vec<Param> {
+    f.parameters
+        .iter()
+        .map(|p| Param {
+            name: p.get_name().0.as_bytes()[1..].to_vec(),
+            by_ref: p.flags.is_by_reference(),
+            variadic: p.flags.is_variadic(),
+        })
+        .collect()
+}
+
+fn of_builtin(variants: &[pun_phpstan::symbols::Variant], n: usize) -> Option<Vec<Param>> {
+    let accepts = |v: &&pun_phpstan::symbols::Variant| {
+        v.params
+            .iter()
+            .filter(|p| !p.optional && !p.variadic)
+            .count()
+            <= n
+            && (v.params.iter().any(|p| p.variadic) || n <= v.params.len())
+    };
+    // ponytail: PHPStan tells several accepting variants apart by the arguments' types; the first wins here
+    let v = variants.iter().find(accepts).or(variants.first())?;
+    Some(
+        v.params
+            .iter()
+            .map(|p| Param {
+                name: p.name.as_bytes().to_vec(),
+                by_ref: p.by_ref == ByRef::CreatesNewVariable,
+                variadic: p.variadic,
+            })
+            .collect(),
+    )
+}
+
+fn of_method(m: &members::Method, n: usize) -> Option<Vec<Param>> {
+    match m {
+        members::Method::User { f, .. } => Some(of_metadata(f)),
+        members::Method::Builtin { f, .. } => of_builtin(&f.variants, n),
+    }
+}
+
+fn of_syntax(params: &FunctionLikeParameterList) -> Vec<Param> {
+    params
+        .parameters
+        .iter()
+        .map(|p| Param {
+            name: p.variable.name[1..].to_vec(),
+            by_ref: p.ampersand.is_some(),
+            variadic: p.ellipsis.is_some(),
+        })
+        .collect()
+}
+
+/// A call whose arguments [`arguments()`] reads.
+pub enum Callee<'e, 'arena> {
+    Function(&'e FunctionCall<'arena>),
+    Method(&'e MethodCall<'arena>),
+    StaticMethod(&'e StaticMethodCall<'arena>),
+    New(&'e Instantiation<'arena>),
+}
+
+/// The callee's parameters (`$parametersAcceptor->getParameters()`), when PHPStan knows it here.
+fn callee_params(c: &Checker, call: &Callee, n: usize) -> Option<Vec<Param>> {
+    match call {
+        Callee::Function(f) => match unparenthesized(f.function) {
+            Expression::Closure(k) => Some(of_syntax(&k.parameter_list)),
+            Expression::ArrowFunction(k) => Some(of_syntax(&k.parameter_list)),
+            Expression::Identifier(id) => {
+                let fallback = match id {
+                    Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
+                    _ => None,
+                };
+                std::iter::once(c.names.get(&id.span()))
+                    .chain(fallback)
+                    .find_map(|name| {
+                        if let Some(f) = c
+                            .codebase
+                            .get_function(name)
+                            .filter(|f| !f.flags.is_built_in())
+                        {
+                            return Some(of_metadata(f));
+                        }
+                        let f = builtins()
+                            .functions
+                            .get(&String::from_utf8_lossy(name).to_ascii_lowercase())?;
+                        of_builtin(&f.variants, n)
+                    })
+            }
+            _ => None,
+        },
+        Callee::Method(m) => {
+            let ClassLikeMemberSelector::Identifier(name) = &m.method else {
+                return None;
+            };
+            let class = match m.object {
+                Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+                    c.class_scope()?
+                }
+                object => object_class(c, object)?,
+            };
+            of_method(&members::method(c.codebase, class, name.value)?, n)
+        }
+        Callee::StaticMethod(m) => {
+            let ClassLikeMemberSelector::Identifier(name) = &m.method else {
+                return None;
+            };
+            let class = named_class(c, m.class).or_else(|| object_class(c, m.class))?;
+            of_method(&members::method(c.codebase, class, name.value)?, n)
+        }
+        Callee::New(new) => {
+            let class = named_class(c, new.class)?;
+            of_method(&members::method(c.codebase, class, b"__construct")?, n)
+        }
+    }
+}
+
+/// The class of an object expression's type, as Mago infers it, when it is one named object.
+fn object_class<'a>(
+    c: &Checker<'a, '_>,
+    object: &Expression,
+) -> Option<&'a mago_codex::metadata::class_like::ClassLikeMetadata> {
+    let t = c.type_of(object)?;
+    let [TAtomic::Object(TObject::Named(o))] = t.types.as_ref() else {
+        return None;
+    };
+    c.class_like(&String::from_utf8_lossy(o.name.as_bytes()))
+}
+
+fn named_class<'a>(
+    c: &Checker<'a, '_>,
+    class: &Expression,
+) -> Option<&'a mago_codex::metadata::class_like::ClassLikeMetadata> {
+    match class {
+        Expression::Identifier(id) => c.class_like(&c.resolved(id)),
+        Expression::Self_(_) | Expression::Static(_) => c.class_scope(),
+        Expression::Parent(_) => c
+            .class_scope()?
+            .direct_parent_class
+            .and_then(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes()))),
+        _ => None,
+    }
+}
+
+/// processArgs() for arguments passed by reference to a parameter that creates a new variable: a `[]` argument is
+/// visited inside `enterExpressionAssign()`, and any argument but `$this` is assigned virtually.
+pub fn arguments(c: &mut Checker, call: Callee) {
+    let args = match &call {
+        Callee::Function(f) => &f.argument_list,
+        Callee::Method(m) => &m.argument_list,
+        Callee::StaticMethod(m) => &m.argument_list,
+        Callee::New(new) => match &new.argument_list {
+            Some(args) => args,
+            None => return,
+        },
+    };
+    if !args.arguments.iter().any(|a| by_ref_candidate(a.value())) {
+        return;
+    }
+    let Some(params) = callee_params(c, &call, args.arguments.len()) else {
+        return;
+    };
+    for (i, arg) in args.arguments.iter().enumerate() {
+        let param = match arg {
+            Argument::Named(a) => params.iter().find(|p| p.name == a.name.value),
+            Argument::Positional(_) => params
+                .get(i)
+                .or_else(|| params.last().filter(|p| p.variadic)),
+        };
+        if !param.is_some_and(|p| p.by_ref) {
+            continue;
+        }
+        let value = unparenthesized(arg.value());
+        if let Expression::ArrayAppend(_) = value {
+            c.assign.assigned.insert(value.span());
+        }
+        if !matches!(value, Expression::Variable(Variable::Direct(v)) if v.name == b"$this") {
+            assign_var(c, value, true);
+        }
+    }
+}
+
+/// An argument whose parameter decides an error: a `[]` fetch or a dim-fetch chain on `$this`.
+fn by_ref_candidate(value: &Expression) -> bool {
+    let value = unparenthesized(value);
+    if let Expression::ArrayAppend(_) = value {
+        return true;
+    }
+    let mut var = value;
+    while let Expression::ArrayAccess(ArrayAccess { array, .. })
+    | Expression::ArrayAppend(ArrayAppend { array, .. }) = var
+    {
+        var = unparenthesized(array);
+    }
+    !std::ptr::eq(var, value)
+        && matches!(var, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+}
+
+/// The method-call object or static-call class expression whose type [`callee_params()`] reads.
+pub fn typed_object<'e, 'arena>(
+    object: &'e Expression<'arena>,
+    args: &ArgumentList<'arena>,
+) -> Option<&'e Expression<'arena>> {
+    let named = matches!(object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+        || !is_expr_class(object);
+    (!named && args.arguments.iter().any(|a| by_ref_candidate(a.value()))).then_some(object)
+}
