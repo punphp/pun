@@ -284,7 +284,11 @@ fn contains_linebreak(tokens: &Tokens, start_index: usize, end_index: usize) -> 
     ((start_index + 1)..=end_index).any(|i| Preg::r#match(r"/\R/", tokens[i].get_content()))
 }
 
-fn operands_can_not_be_merged(tokens: &Tokens, first_operand: Operand, second_operand: Operand) -> bool {
+fn operands_can_not_be_merged(
+    tokens: &Tokens,
+    first_operand: Operand,
+    second_operand: Operand,
+) -> bool {
     // If the first operand does not end with a variable, no variables would be broken by concatenation. (Upstream
     // first returns false when it is not a `"..."` with variables, but every caller passes one.)
     if !tokens[first_operand.end - 1].is_kind(T_VARIABLE) {

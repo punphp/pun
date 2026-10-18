@@ -50,13 +50,14 @@ impl Fixer for PhpdocAnnotationWithoutDotFixer {
                 if !tag.valid() || !TAGS.iter().any(|t| t.as_bytes() == tag.get_name()) {
                     continue;
                 }
-                if let Some(line_after_annotation) = doc.get_line(annotation.get_end() + 1) {
-                    let line = line_after_annotation.borrow();
+                // malformed PHPDoc, missing asterisk !
+                let malformed = doc.get_line(annotation.get_end() + 1).is_some_and(|line| {
+                    let line = line.borrow();
                     let trimmed = ltrim_chars(line.get_content(), TRIM_CHARS);
-                    // malformed PHPDoc, missing asterisk !
-                    if trimmed.is_empty() || !trimmed.starts_with(b"*") {
-                        continue;
-                    }
+                    trimmed.is_empty() || !trimmed.starts_with(b"*")
+                });
+                if malformed {
+                    continue;
                 }
                 let content = annotation.get_content();
                 if !Preg::r#match(r"/[.。]\h*$/u", &content)

@@ -93,7 +93,9 @@ impl EchoTagSyntaxFixer {
         loop {
             let found = match index {
                 None if tokens[0].is_kind(T_OPEN_TAG_WITH_ECHO) => Some(0),
-                None => tokens.get_next_token_of_kind(0, &[Proto::Kind(T_OPEN_TAG_WITH_ECHO)], true),
+                None => {
+                    tokens.get_next_token_of_kind(0, &[Proto::Kind(T_OPEN_TAG_WITH_ECHO)], true)
+                }
                 Some(i) => {
                     tokens.get_next_token_of_kind(i, &[Proto::Kind(T_OPEN_TAG_WITH_ECHO)], true)
                 }
