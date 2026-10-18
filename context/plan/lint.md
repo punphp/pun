@@ -258,3 +258,15 @@ Lint spike (Build 1, 2026-10-17; report: ../reports/lint-spike.md):
 - **Assistant's call: the Rector oracle** is rector-src at the tag Pinkary's lock pins (fixtures, `.oracle/rector`)
   plus the released rector/rector locked by `scripts/oracle-rector/composer.lock` (runnable, `.oracle/rector-bin`).
 
+- **Assistant's call (lint 7 batch 2): where the new code goes in parentheses.** A rule builds its code from the
+  source text of the nodes it keeps and adds parentheses where php-parser's precedence table (`pInfixOp`,
+  `pPrefixOp`) puts them, also around an expression it moves into a new place (`'x' . sprintf($a ? $b : 'c')` becomes
+  `'x' . ($a ? $b : 'c')`; Rector prints it bare). It leaves them out on the right of the same associative operator
+  (`'x' . sprintf($a . $b)` is `'x' . $a . $b`, as Rector prints it).
+- **Assistant's call (lint 7 batch 2): one statement into several.** In a single-statement body (`if ($a) stmt;`)
+  Pun puts braces around the new statements, as Rector's reprint of the `if` does. In a colon body (`if ($a): ...
+  endif;`) Pun keeps the colon syntax, where Rector reprints the whole `if` with braces. A statement ending in `?>`
+  is left alone there.
+- **Assistant's call (lint 7 batch 2): `in_array($x, array_values($y))`.** Pun replaces only the argument's value, and
+  leaves the call alone when either argument is spread or `array_values()` has none (Rector crashes or drops the
+  spread).

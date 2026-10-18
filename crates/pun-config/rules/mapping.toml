@@ -251,7 +251,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 
 [rules.lint]
 "arrays/no-implicit-array-creation" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided" }
-"arrays/prefer-array-append" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided" }
+"arrays/prefer-array-append" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `$array[] =` instead of `array_push()` in a statement." }
 "arrays/prefer-array-spread" = { fix = "unsafe", sets = ["modernize"], ported = true, origin = "mago", status = "decided" }
 "classes/add-dynamic-properties" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "classes/add-stringable" = { fix = "safe", sets = ["modernize"], ported = false, status = "decided", summary = "A class that implements the `__toString()` method must explicitly implement the `Stringable` interface." }
@@ -275,14 +275,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/require-class-matches-file" = { fix = "unsafe", intent = "correctness", sets = ["code-quality"], ported = false, status = "decided", summary = "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name." }
 "classes/require-member-order" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Orders the elements of classes/interfaces/traits/enums." }
 "comments/no-unused-ignore" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], status = "decided", pun_only = true, summary = "A @pun-ignore comment that suppressed nothing. Fix removes it." }
-"complexity/no-and-assignment" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Split 2 assigns with \"and\" to separate lines" }
+"complexity/no-and-assignment" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Split 2 assigns with \"and\" to separate lines" }
 "complexity/no-boolean-flag-parameter" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Flags function-like parameters that use a boolean type and drive the function's behaviour." }
 "complexity/no-boolean-literal-compare" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify bool value compare to true or false" }
 "complexity/no-compact" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change `compact()` call to own array" }
-"complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
+"complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
 "complexity/no-constant-condition" = { fix = "safe", sets = ["dead-code"], status = "decided", summary = "Detects `if` statements where the condition is a constant that always" }
 "complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
-"complexity/no-double-negation" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace the Double not operator (!!) by type-casting to boolean" }
+"complexity/no-double-negation" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace the Double not operator (!!) by type-casting to boolean" }
 "complexity/no-duplicate-match-arm" = { fix = "none", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects `match` arms that produce the same result as an earlier arm." }
 "complexity/no-else-clause" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Flags `if` statements that include an `else` or `elseif` branch." }
 "complexity/no-empty-file" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects redundant files that contain no executable code or declarations." }
@@ -296,10 +296,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-excessive-properties" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "" }
 "complexity/no-goto" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "" }
 "complexity/no-iterator-to-array-in-foreach" = { fix = "none", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects `iterator_to_array()` calls used directly as a `foreach` expression." }
-"complexity/no-negated-and" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify negated \"and\" conditions to \"or\" with de Morgan theorem" }
-"complexity/no-negated-boolean-literal" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace negated boolean literals (!false, !true) with their simplified equivalents (true, false)" }
+"complexity/no-negated-and" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify negated \"and\" conditions to \"or\" with de Morgan theorem" }
+"complexity/no-negated-boolean-literal" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace negated boolean literals (!false, !true) with their simplified equivalents (true, false)" }
 "complexity/no-negated-comparison" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace negated comparisons such as `!($a === $b)` with the inverse operator." }
-"complexity/no-negated-group" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify negated conditions with de Morgan theorem" }
+"complexity/no-negated-group" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify negated conditions with de Morgan theorem" }
 "complexity/no-phpdoc-class-case-mismatch" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Fix a misspelled class name casing in a @var docblock to match the real class name" }
 "complexity/no-redundant-isset" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided" }
 "complexity/no-redundant-literal-return" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided" }
@@ -308,19 +308,19 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-redundant-nullsafe" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", note = "merges Mago no-redundant-nullsafe (null already checked) and Rector CleanupUnneededNullsafeOperator (type is non-null)" }
 "complexity/no-redundant-write-visibility" = { fix = "none", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects redundant write visibility modifiers on properties." }
 "complexity/no-single-case-switch" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change `switch` with only 1 check to `if`" }
-"complexity/no-single-item-in-array" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes in_array() with single element to ===" }
+"complexity/no-single-item-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes in_array() with single element to ===" }
 "complexity/no-sole-value-sprintf" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove `sprintf()` wrapper if not needed" }
 "complexity/no-unused-label" = { fix = "none", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects redundant `goto` labels that are declared but not used." }
-"complexity/no-useless-array-values" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes unneeded array_values() in in_array() call" }
+"complexity/no-useless-array-values" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes unneeded array_values() in in_array() call" }
 "complexity/no-useless-block" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove `{ }` blocks that do not belong to a control structure." }
 "complexity/prefer-absolute-include" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Migrate include/require to absolute path. This Rector might introduce backwards incompatible code, when the include/require being changed depends on the current working directory." }
 "complexity/prefer-array-literal" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change array_merge of non arrays to array directly" }
 "complexity/prefer-coalesce-chain" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "complexity/prefer-coalesce-over-empty-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "complexity/prefer-coalesce-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
-"complexity/prefer-empty-array-compare" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Compare with `[]` instead of empty()/is_array() on arrays." }
+"complexity/prefer-empty-array-compare" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Compare with `[]` instead of empty()/is_array() on arrays." }
 "complexity/prefer-empty-array-identical" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
-"complexity/prefer-func-num-args" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify count of func_get_args() to func_num_args()" }
+"complexity/prefer-func-num-args" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify count of func_get_args() to func_num_args()" }
 "complexity/prefer-in-array" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use in_array() instead of repeated `||`/`&&` comparisons, array_search() checks and foreach loops." }
 "complexity/prefer-in-array-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "complexity/prefer-in-array-over-search" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
@@ -329,7 +329,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change ternary number compare to `max()` call" }
 "complexity/prefer-named-literal-argument" = { fix = "safe", ported = false, origin = "mago", later = true, status = "decided", summary = "Name literal arguments (true, false, null, numbers) in calls." }
 "complexity/prefer-not-in-array" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
-"complexity/prefer-null-coalesce" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups." }
+"complexity/prefer-null-coalesce" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups." }
 "complexity/prefer-property-default" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move property default from constructor to property default" }
 "complexity/prefer-property-exists" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Use property_exists() instead of array_key_exists() or isset() on object properties." }
 "complexity/prefer-simple-condition" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
@@ -390,7 +390,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-redundant-property-default" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove redundant default value from property that is always assigned in the constructor" }
 "dead-code/no-return-in-constructor" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove useless return Expr in __construct()" }
 "dead-code/no-self-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, origin = "mago", status = "decided" }
-"dead-code/no-tautology-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
+"dead-code/no-tautology-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the value a ternary always gives when it compares the two values it chooses between." }
 "dead-code/no-typed-property-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "dead-code/no-unreachable-code" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unreachable statements" }
 "dead-code/no-unused-assignment" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assignments whose value is never read, including stores overwritten before use." }
@@ -774,7 +774,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/no-empty" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless (semicolon) statements." }
 "statements/require-strict-types" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Force a strict types mode in all files.", note = "fix is safe where Rector SafeDeclareStrictTypes proves no scalar coercion, unsafe otherwise" }
 "strings/no-non-printable-character" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols." }
-"strings/no-single-argument-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided" }
+"strings/no-single-argument-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the format itself instead of `sprintf()` with no values." }
 "strings/no-trailing-whitespace-in-string" = { fix = "unsafe", intent = "suspicious", ported = false, later = true, status = "decided", summary = "There must be no trailing whitespace at the end of lines in strings." }
 "strings/prefer-empty-string-identical" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided" }
 "strings/prefer-mb-functions" = { fix = "unsafe", intent = "correctness", ported = true, status = "decided", summary = "Replace non multibyte-safe functions with corresponding mb function." }
