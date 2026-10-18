@@ -1,5 +1,6 @@
 //! The ported rules. Each file is one Pun rule, ported function by function from its upstream source.
 
+mod laravel;
 mod no_and_assignment;
 mod no_and_true;
 mod no_assign_in_ternary_branch;
@@ -56,6 +57,7 @@ mod rector_conditions;
 mod rector_stmts;
 mod used_variable;
 
+pub use laravel::*;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
 pub use no_assign_in_ternary_branch::NoAssignInTernaryBranch;
@@ -111,6 +113,13 @@ use crate::Rule;
 
 /// Every rule, in a fixed order.
 pub fn all() -> Vec<Box<dyn Rule>> {
+    let mut rules = laravel::all();
+    rules.extend(ungrouped());
+    rules
+}
+
+/// The rules outside the group modules.
+fn ungrouped() -> Vec<Box<dyn Rule>> {
     vec![
         Box::new(PreferCompoundAssignment),
         Box::new(NoAndAssignment),

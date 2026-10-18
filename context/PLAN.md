@@ -240,7 +240,8 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
 | lint: the engine uses `pun_problem::{Problem, apply_fixes}` for diagnostics and the fix loop | todo |
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
-| lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
+| lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | doing (lint-c, main) |
+| lint 7 (lint-c): the 119 1.0 rules of the `types` (79) and `laravel` (40) groups; syntax-only rules first | doing (lint-c, main); 9 of 119 native (batch 1: 9 syntax-only laravel rules) |
 | lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | doing (config, main) |
 | lint 7: the 428 lint rules for 1.0 native, in usage order (`later = true` rules wait) | todo; 98 of 428 native (batch 1: 13 syntax-only dead-code rules done; batch 2: 14 syntax-only code-quality rules done; batch 3: 11 syntax-only dead-code, early-return and code-quality statement rules done; batch 4: 10 code-quality rules done) |
 | lint 7 (lint-a): the dead-code, complexity, control-flow, operators, strings, arrays, statements, comments, tags and refactor groups (98 rules), first the unfinished wf/lint-5 and wf/lint-7 work | doing (lint-a, crates/pun-lint, crates/pun-fixers new fixer files) |

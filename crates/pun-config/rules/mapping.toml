@@ -445,7 +445,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/no-collection-aliases" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the base collection methods instead of their aliases." }
 "laravel/no-controller-middleware" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "This rule warns against applying middlewares in controllers." }
 "laravel/no-implicit-model-query" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Start Eloquent queries with Model::query() instead of static magic calls." }
-"laravel/no-negated-blank-filled" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Swap the use of NotBooleans used with filled() and blank() to the correct helper." }
+"laravel/no-negated-blank-filled" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Swap the use of NotBooleans used with filled() and blank() to the correct helper." }
 "laravel/no-negated-contains" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert negated calls to `contains` to `doesntContain`, or vice versa." }
 "laravel/no-negated-filter" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Avoid negated conditionals in `filter()` by using `reject()`, or vice versa." }
 "laravel/no-negated-when" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Reverse conditionable method calls" }
@@ -457,7 +457,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-anonymous-migration" = { fix = "none", sets = ["code-quality"], ported = false, status = "decided", summary = "Prefer using anonymous classes for Laravel migrations instead of named classes." }
 "laravel/prefer-appends-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-array-validation-rules" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use array syntax for validation rules instead of 'a|b' strings." }
-"laravel/prefer-back-helper" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace `redirect()->back()` and `Redirect::back()` with `back()`" }
+"laravel/prefer-back-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `redirect()->back()` and `Redirect::back()` with `back()`" }
 "laravel/prefer-backoff-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-casts-method" = { fix = "safe", sets = ["coding-style"], origin = "mago", status = "decided", summary = "Detects the `$casts` property on an Eloquent model. Laravel 11 introduced the `casts()`" }
 "laravel/prefer-class-container-key" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the string or class const used for a service container make call" }
@@ -476,10 +476,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-delete-when-missing-models-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-description-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-dispatch-helper" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the event or dispatch helpers instead of the static dispatch method." }
-"laravel/prefer-env-helper" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change env variable to env static call" }
+"laravel/prefer-env-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change env variable to env static call" }
 "laravel/prefer-environment-check" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace app environment comparison with parameter or method call" }
 "laravel/prefer-error-bag-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
-"laravel/prefer-exception-class-string" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "changes use of a new throw instance to class string" }
+"laravel/prefer-exception-class-string" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "changes use of a new throw instance to class string" }
 "laravel/prefer-explicit-json-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change method calls from $this->json to $this->postJson, $this->putJson, etc." }
 "laravel/prefer-facade-over-app" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Change app() func calls to facade calls" }
 "laravel/prefer-fail-on-timeout-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
@@ -498,20 +498,20 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-queue-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-report-if" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-request-facade" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the Request facade instead of $_GET, $_POST and $_SERVER." }
-"laravel/prefer-request-server" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided" }
+"laravel/prefer-request-server" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided" }
 "laravel/prefer-request-validate" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Change static validate() method to $request->validate()" }
 "laravel/prefer-resolve-helper" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert app() to resolve() where applicable." }
 "laravel/prefer-session-facade" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change PHP session usage to Session Facade methods" }
 "laravel/prefer-signature-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
-"laravel/prefer-sleep-facade" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use Sleep::sleep() and Sleep::usleep() instead of the sleep() and usleep() function." }
+"laravel/prefer-sleep-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use Sleep::sleep() and Sleep::usleep() instead of the sleep() and usleep() function." }
 "laravel/prefer-status-assertion-method" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "laravel/prefer-stop-on-first-failure-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
-"laravel/prefer-str-starts-with" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use Str::startsWith() or Str::endsWith() instead of substr() === $str" }
+"laravel/prefer-str-starts-with" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use Str::startsWith() or Str::endsWith() instead of substr() === $str" }
 "laravel/prefer-table-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-throw-if" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-timeout-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
-"laravel/prefer-to-route-helper" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace `redirect()->route(\"home\")` and `Redirect::route(\"home\")` with `to_route(\"home\")`" }
-"laravel/prefer-today" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use today() instead of now()->startOfDay()" }
+"laravel/prefer-to-route-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `redirect()->route(\"home\")` and `Redirect::route(\"home\")` with `to_route(\"home\")`" }
+"laravel/prefer-today" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use today() instead of now()->startOfDay()" }
 "laravel/prefer-touches-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
 "laravel/prefer-travel-to" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the `$this->travelTo()` method in Laravel's `TestCase` class instead of the `Carbon::setTestNow()` method." }
 "laravel/prefer-tries-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided" }
