@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "get_class_to_class_keyword",
+        "input": "<?php\n$a = 1;\necho get_class();\necho get_class( /* x */ );\n",
+        "expected": "<?php\n$a = 1;\necho get_class();\necho get_class( /* x */ );\n"
+    }
+]

@@ -1,0 +1,250 @@
+{
+    "fixer": "regular_callable_call",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\RegularCallableCallFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/RegularCallableCallFixerTest.php",
+    "case_count": 24,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\RegularCallableCallFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "call by name - list",
+                    "args": [
+                        "<?php\n                dont_touch_me(1, 2);\n                foo();\n                foo();\n                call_user_func(\"foo\" . \"bar\"); // not (yet?) supported by Fixer, possible since PHP 7+\n                var_dump(1, 2);\n                Bar\\Baz::d(1, 2);\n                \\Bar\\Baz::d(1, 2);",
+                        "<?php\n                dont_touch_me(1, 2);\n                call_user_func('foo');\n                call_user_func(\"foo\");\n                call_user_func(\"foo\" . \"bar\"); // not (yet?) supported by Fixer, possible since PHP 7+\n                call_user_func(\"var_dump\", 1, 2);\n                call_user_func(\"Bar\\Baz::d\", 1, 2);\n                call_user_func(\"\\Bar\\Baz::d\", 1, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "call by name - array",
+                    "args": [
+                        "<?php Bar\\Baz::d(...[1, 2]);",
+                        "<?php call_user_func_array(\"Bar\\Baz::d\", [1, 2]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "call by array-as-name, not supported",
+                    "args": [
+                        "<?php\n                call_user_func(array(\"Bar\\baz\", \"myCallbackMethod\"), 1, 2);\n                call_user_func([\"Bar\\baz\", \"myCallbackMethod\"], 1, 2);\n                call_user_func([$obj, \"myCallbackMethod\"], 1, 2);\n                call_user_func([$obj, $cb.\"Method\"], 1, 2);\n                call_user_func(array(__NAMESPACE__ .\"Foo\", \"test\"), 1, 2);\n                call_user_func(array(\"Foo\", \"parent::method\"), 1, 2); // no way to convert `parent::`\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "call by variable",
+                    "args": [
+                        "<?php\n                $c(1, 2);\n                $a[\"b\"][\"c\"](1, 2);\n            ",
+                        "<?php\n                call_user_func($c, 1, 2);\n                call_user_func($a[\"b\"][\"c\"], 1, 2);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "call with comments",
+                    "args": [
+                        "<?php\n                dont_touch_me(/* a */1, 2/** b */);\n                foo();\n                foo(/* a */1, 2/** b */);\n                foo(/* a *//** b *//** c */1/** d */,/** e */ 2);\n                call_user_func(\"foo\" . \"bar\"); // not (yet?) supported by Fixer, possible since PHP 7+\n                var_dump(1, /*\n                    aaa\n                    */ 2);\n                var_dump(3 /*\n                    aaa\n                    */, 4);\n                Bar\\Baz::d(1, 2);\n                \\Bar\\Baz::d(1, 2);",
+                        "<?php\n                dont_touch_me(/* a */1, 2/** b */);\n                call_user_func('foo');\n                call_user_func(\"foo\", /* a */1, 2/** b */);\n                call_user_func(\"foo\"/* a *//** b */, /** c */1/** d */,/** e */ 2);\n                call_user_func(\"foo\" . \"bar\"); // not (yet?) supported by Fixer, possible since PHP 7+\n                call_user_func(\"var_dump\", 1, /*\n                    aaa\n                    */ 2);\n                call_user_func(\"var_dump\", 3 /*\n                    aaa\n                    */, 4);\n                call_user_func(\"Bar\\Baz::d\", 1, 2);\n                call_user_func(\"\\Bar\\Baz::d\", 1, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single var",
+                    "args": [
+                        "<?php $foo() ?>",
+                        "<?php \\call_user_func($foo) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unsafe repeated variable",
+                    "args": [
+                        "<?php call_user_func($foo, $foo = \"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "call by property",
+                    "args": [
+                        "<?php\n                ($f->c)(1, 2);\n                ($f->{c})(1, 2);\n                ($x[\"y\"]->c)(1, 2);\n                ($x[\"y\"]->{\"c\"})(1, 2);\n            ",
+                        "<?php\n                call_user_func($f->c, 1, 2);\n                call_user_func($f->{c}, 1, 2);\n                call_user_func($x[\"y\"]->c, 1, 2);\n                call_user_func($x[\"y\"]->{\"c\"}, 1, 2);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "call by anon-function",
+                    "args": [
+                        "<?php\n                (function ($a, $b) { var_dump($a, $b); })(1, 2);\n                (static function ($a, $b) { var_dump($a, $b); })(1, 2);\n            ",
+                        "<?php\n                call_user_func(function ($a, $b) { var_dump($a, $b); }, 1, 2);\n                call_user_func(static function ($a, $b) { var_dump($a, $b); }, 1, 2);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex cases",
+                    "args": [
+                        "<?php\n                call_user_func('a'.$a.$b, 1, 2);\n                ($a/**/.$b)(1, 2);\n                (function (){})();\n                ($a[\"b\"][\"c\"]->a)(1, 2, 3, 4);\n                ($a::$b)(1, 2);\n                ($a[1]::$b[2][3])([&$c], array(&$d));\n            ",
+                        "<?php\n                call_user_func('a'.$a.$b, 1, 2);\n                call_user_func($a/**/.$b, 1, 2);\n                \\call_user_func(function (){});\n                call_user_func($a[\"b\"][\"c\"]->a, 1, 2, 3, 4);\n                call_user_func($a::$b, 1, 2);\n                call_user_func($a[1]::$b[2][3], [&$c], array(&$d));\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php ($a(1, 2))([&$x], array(&$z));",
+                        "<?php call_user_func($a(1, 2), [&$x], array(&$z));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "redeclare/override",
+                    "args": [
+                        "<?php\n                if (!function_exists(\"call_user_func\")) {\n                    function call_user_func($foo){}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function name with escaped slash",
+                    "args": [
+                        "<?php \\pack(...$args);",
+                        "<?php call_user_func_array(\"\\\\pack\", $args);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function call_user_func_array with leading slash",
+                    "args": [
+                        "<?php \\pack(...$args);",
+                        "<?php \\call_user_func_array(\"\\\\pack\", $args);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function call_user_func_array caps",
+                    "args": [
+                        "<?php \\pack(...$args);",
+                        "<?php \\CALL_USER_FUNC_ARRAY(\"\\\\pack\", $args);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php foo(1,);",
+                        "<?php call_user_func(\"foo\", 1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty string double quote",
+                    "args": [
+                        "<?php call_user_func(\"\", 1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty string single quote",
+                    "args": [
+                        "<?php call_user_func('    ', 1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "string with padding",
+                    "args": [
+                        "<?php call_user_func(\" padded  \", 1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "binary string lower double quote",
+                    "args": [
+                        "<?php call_user_func(b\"foo\", 1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "binary string upper single quote",
+                    "args": [
+                        "<?php call_user_func(B\"foo\", 1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static property as first argument",
+                    "args": [
+                        "<?php\nclass Foo {\n  public static $factory;\n  public static function createFromFactory(...$args) {\n    return call_user_func_array(static::$factory, $args);\n  }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\RegularCallableCallFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "call by variable",
+                    "args": [
+                        "<?php\n                $a{\"b\"}{\"c\"}(1, 2);\n            ",
+                        "<?php\n                call_user_func($a{\"b\"}{\"c\"}, 1, 2);\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\RegularCallableCallFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php \\call_user_func(...) ?>"
+                    ]
+                }
+            ]
+        }
+    ]
+}

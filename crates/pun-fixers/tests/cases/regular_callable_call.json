@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "regular_callable_call",
+        "input": "<?php\ncall_user_func();\ncall_user_func('foo', 1);\n",
+        "expected": "<?php\ncall_user_func();\nfoo(1);\n"
+    }
+]

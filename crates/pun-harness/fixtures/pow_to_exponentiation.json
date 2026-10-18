@@ -1,0 +1,453 @@
+{
+    "fixer": "pow_to_exponentiation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\PowToExponentiationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/PowToExponentiationFixerTest.php",
+    "case_count": 49,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\PowToExponentiationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php 1**2;",
+                        "<?php pow(1,2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php 1**2?>",
+                        "<?php pow(1,2)?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php 1.2**2.3;",
+                        "<?php pow(1.2,2.3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php echo (-2)** 3;",
+                        "<?php echo pow(-2, 3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php echo (-2)**( -3);",
+                        "<?php echo pow(-2, -3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php echo (-2)**( 1-3);",
+                        "<?php echo pow(-2, 1-3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php echo (-2)**( -1-3);",
+                        "<?php echo pow(-2, -1-3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a = 3** +2;",
+                        "<?php $a = pow(3, +2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $a--**++$b;",
+                        "<?php pow($a--,++$b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php 1//\n                #\n                **2/**/ /**  */;",
+                        "<?php pow(1//\n                #\n                ,2/**/ /**  */);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php /**/a(3/**/,4)**$pow;//pow(1,2);",
+                        "<?php pow/**/(a(3/**/,4),$pow);//pow(1,2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php \\a\\pow(5,6);7**8?>",
+                        "<?php \\a\\pow(5,6);pow(7,8)?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php (9**10)**(11**12);",
+                        "<?php pow(pow(9,10),pow(11,12));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php (1 + 2)**( 3 * 4);",
+                        "<?php pow(1 + 2, 3 * 4);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php ($b = 4)** 3;",
+                        "<?php pow($b = 4, 3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php 13**14;",
+                        "<?php \\pow(13,14);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = 15 + (16** 17)** 18;",
+                        "<?php $a = 15 + \\pow(\\pow(16, 17), 18);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $a = $b** $c($d + 1);",
+                        "<?php $a = pow($b, $c($d + 1));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $a = ($a+$b)** ($c-$d);",
+                        "<?php $a = pow(($a+$b), ($c-$d));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $a = 2**( '1'.'2'). 2;",
+                        "<?php $a = pow(2, '1'.'2'). 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php A::B** 2;\\A\\B\\C::B** 2;",
+                        "<?php pow(A::B, 2);pow(\\A\\B\\C::B, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $obj->{$bar}** $obj->{$foo};",
+                        "<?php pow($obj->{$bar}, $obj->{$foo});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php echo ${$bar}** ${$foo};",
+                        "<?php echo pow(${$bar}, ${$foo});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php echo $a[2^3+1]->test(1,2)** $b[2+$c];",
+                        "<?php echo pow($a[2^3+1]->test(1,2), $b[2+$c]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php (int)\"2\"**(float)\"3.0\";",
+                        "<?php pow((int)\"2\",(float)\"3.0\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php namespace\\Foo::BAR** 2;",
+                        "<?php pow(namespace\\Foo::BAR, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php (-1)**( (-2)**( (-3)**( (-4)**( (-5)**( (-6)**( (-7)**( (-8)**( (-9)** 3))))))));",
+                        "<?php pow(-1, pow(-2, pow(-3, pow(-4, pow(-5, pow(-6, pow(-7, pow(-8, pow(-9, 3)))))))));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n                    $z = 1**2;\n                    $a = 1**( 2**( 3**( 4**( 5**( 6**( 7**( 8**( 9** 3))))))));\n                    $b = 1**( 2**( 3**( 4**( 5**( 6**( 7**( 8**( 9** 3))))))));\n                    $d = 1**2;\n                ",
+                        "<?php\n                    $z = pow(1,2);\n                    $a = \\pow(1, \\poW(2, \\pOw(3, \\pOW(4, \\Pow(5, \\PoW(6, \\POw(7, \\POW(8, \\pow(9, 3)))))))));\n                    $b = \\pow(1, \\pow(2, \\pow(3, \\pow(4, \\pow(5, \\pow(6, \\pow(7, \\pow(8, \\pow(9, 3)))))))));\n                    $d = pow(1,2);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $b = 3** __LINE__;",
+                        "<?php $b = pow(3, __LINE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n                    ($a-$b)**(\n                    ($a-$b)**(\n                    ($a-$b)**(\n                    ($a-$b)**(\n                    ($a-$b)**($a-$b)\n                ))));",
+                        "<?php\n                    pow($a-$b,\n                    pow($a-$b,\n                    pow($a-$b,\n                    pow($a-$b,\n                    pow($a-$b,$a-$b)\n                ))));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php (-1)**( $a** pow(1,2,3, ($a-3)** 4));",
+                        "<?php pow(-1, pow($a, pow(1,2,3, pow($a-3, 4))));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php 1**2    /**/ ?>",
+                        "<?php pow(1,2)    /**/ ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php ($$a)**( $$b);",
+                        "<?php pow($$a, $$b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php [1, 2, 3, 4][$x]** 2;",
+                        "<?php pow([1, 2, 3, 4][$x], 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php echo +$a** 2;",
+                        "<?php echo pow(+$a, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n                interface Test\n                {\n                    public function pow($a, $b);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n                interface Test\n                {\n                    public function &pow($a, $b);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php echo $a[1]** $b[2+5];",
+                        "<?php echo pow($a[1], $b[2+5]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php pow($b, ...$a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php echo +$a** 2;",
+                        "<?php echo pow(+$a, 2,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php echo +$a** 2/*1*//*2*/;",
+                        "<?php echo pow(+$a, 2/*1*/,/*2*/);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n$a = \n    1**\n    2\n;\n",
+                        "<?php\n$a = pow(\n    1,\n    2,\n);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php echo 10_0** 2;",
+                        "<?php echo pow(10_0, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php pow(); ++$a;++$a;++$a;++$a;++$a;++$a;// pow(1,2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php pow(5); ++$a;++$a;++$a;++$a;++$a;++$a;# pow(1,2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php pow(5,1,1); ++$a;++$a;++$a;++$a;++$a;++$a;/* pow(1,2); */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php \\a\\pow(4,3); ++$a;++$a;++$a;++$a;++$a;++$a;/** pow(1,2); */"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\PowToExponentiationFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo $a{1}** $b{2+5};",
+                        "<?php echo pow($a{1}, $b{2+5});"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\PowToExponentiationFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo $a[2^3+1]?->test(1,2)** $b[2+$c];",
+                        "<?php echo pow($a[2^3+1]?->test(1,2), $b[2+$c]);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

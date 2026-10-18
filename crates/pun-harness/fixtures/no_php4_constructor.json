@@ -1,0 +1,324 @@
+{
+    "fixer": "no_php4_constructor",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoPhp4ConstructorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/NoPhp4ConstructorFixerTest.php",
+    "case_count": 36,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoPhp4ConstructorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = new class {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = new class {}?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                    $a = new Foo() <=> 1;\n                    $a = new Foo <=> 1;\n                    $a = new class() {};\n                    $a = new class() implements Foo{};\n                    $a = new class() /**/ extends Bar1{};\n                    $a = new class()  extends Bar2 implements Foo{};\n                    $a = new class()    extends Bar3 implements Foo, Foo2{};\n                    $a = new class() {};\n                    $a = new class {};\n                    $a = new class implements Foo{};\n                    $a = new class /**/ extends Bar1{};\n                    $a = new class  extends Bar2 implements Foo{};\n                    $a = new class    extends Bar3 implements Foo, Foo2{};\n                    $a = new class {}?>\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple class 1",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function __construct($bar)\n    {\n        var_dump(1);\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    public function Foo($bar)\n    {\n        var_dump(1);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple class 2",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public#\n    function#\n__construct#\n    (#\n    $bar#\n    )#\n    {}\n}",
+                        "<?php\n\nclass Foo\n{\n    public#\n    function#\nFoo#\n    (#\n    $bar#\n    )#\n    {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace",
+                    "args": [
+                        "<?php\n\nnamespace Baz\\Qux;\n\nclass Foo\n{\n    public function __construct($bar)\n    {\n        var_dump(1);\n    }\n\n    public function Foo($bar)\n    {\n        var_dump(2);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace 2",
+                    "args": [
+                        "<?php\n\nnamespace Baz\\Qux\n{\n    class Foo\n    {\n        public function __construct($bar)\n        {\n            var_dump(1);\n        }\n\n        public function Foo($bar)\n        {\n            var_dump(2);\n        }\n    }\n\n    class Bar\n    {\n        public function Bar()\n        {\n            var_dump(3);\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace global",
+                    "args": [
+                        "<?php\n\nnamespace {\n    class Foo\n    {\n        function __construct($bar)\n        {\n            var_dump(1);\n        }\n    }\n}",
+                        "<?php\n\nnamespace {\n    class Foo\n    {\n        function Foo($bar)\n        {\n            var_dump(1);\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHP 5 only",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    function __construct($bar)\n    {\n        var_dump(1);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHP 4 only",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    function __construct($bar)\n    {\n        var_dump(1);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    function foO($bar)\n    {\n        var_dump(1);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "both the right way 1",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct()\n    {\n        var_dump(1);\n    }\n\n    public function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct()\n    {\n        var_dump(1);\n    }\n\n    /**\n     * PHP-4 Constructor\n     */\n    function Foo()\n    {\n        // Call PHP5!\n        $this->__construct();\n    }\n\n    public function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "both the right way 2",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct($bar)\n    {\n        var_dump(1);\n    }\n\n    public function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct($bar)\n    {\n        var_dump(1);\n    }\n\n    /**\n     * PHP-4 Constructor\n     */\n    function Foo($bar)\n    {\n        // Call PHP5!\n        $this->__construct($bar);\n    }\n\n    public function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "both the right way 3",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct($bar = 1, $baz = null)\n    {\n        var_dump(1);\n    }\n\n    public function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct($bar = 1, $baz = null)\n    {\n        var_dump(1);\n    }\n\n    /**\n     * PHP-4 Constructor\n     */\n    function Foo($bar = 1, $baz = null)\n    {\n        // Call PHP5!\n        $this->__construct($bar, $baz);\n    }\n\n    public function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "both the other way around 1",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n\n    /**\n     * PHP-4 Constructor.\n     *\n     * This is the real constructor. It's the one that most likely contains any meaningful info in the docblock.\n     */\n    private function __construct($bar)\n    {\n        var_dump(1);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * PHP-5 Constructor.\n     *\n     * This docblock is removed, along with the entire wrapper method.\n     */\n    protected function __construct($bar)\n    {\n        // Call The Real Constructor, not the hippy fake one!\n        $this->Foo($bar);\n    }\n\n    /**\n     * PHP-4 Constructor.\n     *\n     * This is the real constructor. It's the one that most likely contains any meaningful info in the docblock.\n     */\n    private function Foo($bar)\n    {\n        var_dump(1);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHP 4 parent",
+                    "args": [
+                        "<?php\n\nclass Foo extends FooParEnt\n{\n    /**\n     * Constructor\n     */\n    function __construct($bar)\n    {\n        parent::__construct(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo extends FooParEnt\n{\n    /**\n     * Constructor\n     */\n    function Foo($bar)\n    {\n        parent::FooPaRent(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHP 4 parent init",
+                    "args": [
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function __construct($bar)\n    {\n        parent::init(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function Foo($bar)\n    {\n        parent::init(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed parent",
+                    "args": [
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function __construcT($bar)\n    {\n        parent::__construct(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function __construcT($bar)\n    {\n        parent::FooParenT(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed parent 2",
+                    "args": [
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function __construcT($bar)\n    {\n        parent::__construct(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function __construcT($bar)\n    {\n        $this->FooParenT(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "parent other",
+                    "args": [
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function __construct($bar)\n    {\n        parent::__construct(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function Foo($bar)\n    {\n        $this->FooParent(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "parent other 2",
+                    "args": [
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function __construct($bar)\n    {\n        parent::__construct(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}",
+                        "<?php\n\nclass Foo extends FooParent\n{\n    /**\n     * Constructor\n     */\n    function Foo($bar)\n    {\n        FooParent::FooParent(1);\n        var_dump(9);\n    }\n\n    function bar()\n    {\n        var_dump(3);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with anonymous",
+                    "args": [
+                        "<?php\n\nclass Foo {\n    private $bar;\n\n    public function __construct()\n    {\n        $this->bar = function () {};\n    }\n}",
+                        "<?php\n\nclass Foo {\n    private $bar;\n\n    public function Foo()\n    {\n        $this->bar = function () {};\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with comments",
+                    "args": [
+                        "<?php\nclass  /* test */\n// another\n\nFoo {\npublic function /* test */ __construct($param) {\n}\n}",
+                        "<?php\nclass  /* test */\n// another\n\nFoo {\npublic function /* test */ Foo($param) {\n}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha beta",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function Foo()\n    {\n        echo 'alpha';\n    }\n    public function __construct()\n    {\n        echo 'beta';\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha beta trick 1",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function Foo()\n    {\n        // This is not $this->__construct()\n        echo 'alpha';\n    }\n    public function __construct()\n    {\n        echo 'beta';\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha beta trick 2",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function Foo()\n    {\n        echo 'alpha';\n    }\n    public function __construct()\n    {\n        // This is not $this->Foo()\n        echo 'beta';\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha beta trick 3",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function Foo()\n    {\n        echo 'alpha';\n        /* yeah, ok let's construct it anyway */\n        $this->__construct();\n    }\n    public function __construct()\n    {\n        echo 'beta';\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha beta trick 4 with another class",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function Foo()\n    {\n        echo 'alpha';\n    }\n    public function __construct()\n    {\n        $this->Foo();\n        // Do something more!\n        echo 'beta';\n    }\n}\n\nClass Bar\n{\n    function __construct()\n    {\n        $this->foo = 1;\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    public function Foo()\n    {\n        echo 'alpha';\n    }\n    public function __construct()\n    {\n        $this->Foo();\n        // Do something more!\n        echo 'beta';\n    }\n}\n\nClass Bar\n{\n    function bar()\n    {\n        $this->foo = 1;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract",
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    abstract function Foo();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract trick",
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    abstract public function Foo();\n\n    public function bar()\n    {\n        // This is messed up, I know\n        $this->__construct();\n    }\n\n    public function __construct()\n    {\n        $this->baz = 1;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "parent multiple classes",
+                    "args": [
+                        "<?php\n    class Class1 extends Parent1\n    {\n        function __construct($foo)\n        {\n            parent::__construct();\n            echo \"something\";\n        }\n    }\n\n    class Class2 extends Parent2\n    {\n        function __construct($foo)\n        {\n            echo \"something\";\n        }\n    }\n?>",
+                        "<?php\n    class Class1 extends Parent1\n    {\n        function __construct($foo)\n        {\n            $this->Parent1();\n            echo \"something\";\n        }\n    }\n\n    class Class2 extends Parent2\n    {\n        function __construct($foo)\n        {\n            echo \"something\";\n        }\n    }\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "infinite recursion",
+                    "args": [
+                        "<?php\n    class Parent1\n    {\n        function __construct()\n        {\n            echo \"foobar\";\n        }\n    }\n\n    class Class1 extends Parent1\n    {\n        function __construct($foo)\n        {\n            parent::__construct();\n            echo \"something\";\n        }\n    }\n?>",
+                        "<?php\n    class Parent1\n    {\n        function __construct()\n        {\n            echo \"foobar\";\n        }\n    }\n\n    class Class1 extends Parent1\n    {\n        function Class1($foo)\n        {\n            $this->__construct();\n            echo \"something\";\n        }\n    }\n?>"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoPhp4ConstructorFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function __construct($bar,)\n    {\n        var_dump(1);\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    public function Foo($bar,)\n    {\n        var_dump(1);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function __construct()\n    {\n    }\n}",
+                        "<?php\nclass Foo\n{\n    public function Foo()\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function __construct()\n    {\n        $this?->__construct();\n    }\n}",
+                        "<?php\nclass Foo\n{\n    public function Foo()\n    {\n        $this?->__construct();\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Foo extends Bar\n{\n    public function __construct()\n    {\n        parent::__construct();\n    }\n}",
+                        "<?php\nclass Foo extends Bar\n{\n    public function Foo()\n    {\n        $this?->Bar();\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct($bar = 1, $baz = null)\n    {\n        var_dump(1);\n    }\n}\n",
+                        "<?php\nclass Foo\n{\n    /**\n     * Constructor\n     */\n    public function __construct($bar = 1, $baz = null)\n    {\n        var_dump(1);\n    }\n\n    /**\n     * PHP-4 Constructor\n     */\n    function Foo($bar = 1, $baz = null)\n    {\n        $this?->__construct($bar, $baz);\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

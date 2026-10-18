@@ -1,0 +1,197 @@
+{
+    "fixer": "implode_call",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\ImplodeCallFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/ImplodeCallFixerTest.php",
+    "case_count": 22,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\ImplodeCallFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php implode('', [1,2,3]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php implode(\"\", $foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php implode($foo, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $arrayHelper->implode($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php ArrayHelper::implode($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php ArrayHelper\\implode($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php define(\"implode\", \"foo\"); implode; bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php implode(\"\", $foo);",
+                        "<?php implode($foo, \"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php \\implode(\"\", $foo);",
+                        "<?php \\implode($foo, \"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php implode(\"Lorem ipsum dolor sit amet\", $foo);",
+                        "<?php implode($foo, \"Lorem ipsum dolor sit amet\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php implode('', $foo);",
+                        "<?php implode($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php IMPlode(\"\", $foo);",
+                        "<?php IMPlode($foo, \"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php implode(\"\",$foo);",
+                        "<?php implode($foo,\"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php implode(\"\", $weirdStuff[mt_rand($min, getMax()) + 200]);",
+                        "<?php implode($weirdStuff[mt_rand($min, getMax()) + 200], \"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                implode(\n                    \"\",\n                    $foo\n                );",
+                        "<?php\n                implode(\n                    $foo,\n                    \"\"\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                implode(\n                    '', $foo\n                );",
+                        "<?php\n                implode(\n                    $foo\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nimplode(# 1\n\"\"/* 2.1 */,# 2.2\n$foo# 3\n);",
+                        "<?php\nimplode(# 1\n$foo/* 2.1 */,# 2.2\n\"\"# 3\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nimplode(# 1\n# 2\n'', $foo# 3\n# 4\n)# 5\n;",
+                        "<?php\nimplode(# 1\n# 2\n$foo# 3\n# 4\n)# 5\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nimplode('', $a);implode('', $a);implode('', $a);implode('', $a);implode('', $a);implode('', $a);\n// comment for testing\nimplode('', $a);implode('', $a);implode('', $a);implode('', $a);implode('', $a);implode('', $a);\n",
+                        "<?php\nimplode($a);implode($a);implode($a);implode($a);implode($a);implode($a);\n// comment for testing\nimplode($a);implode($a);implode($a);implode($a);implode($a);implode($a);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php implode(\"\", $foo, );",
+                        "<?php implode($foo, \"\", );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php implode('', $foo, );",
+                        "<?php implode($foo, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n                implode(\n                    \"\",\n                    $foo,\n                );",
+                        "<?php\n                implode(\n                    $foo,\n                    \"\",\n                );"
+                    ]
+                }
+            ]
+        }
+    ]
+}

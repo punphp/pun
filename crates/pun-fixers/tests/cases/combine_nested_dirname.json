@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "combine_nested_dirname",
+        "input": "<?php\n$a = dirname(dirname($path, 2,));\n$b = dirname(dirname($path, 2 + 1));\n",
+        "expected": "<?php\n$a = dirname($path, 3);\n$b = dirname(dirname($path, 2 + 1));\n"
+    }
+]

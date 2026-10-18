@@ -1,0 +1,232 @@
+{
+    "fixer": "ereg_to_preg",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\EregToPregFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/EregToPregFixerTest.php",
+    "case_count": 24,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\EregToPregFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = \"ereg\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = ereg(\"[A-Z]\".\"foo\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = ereg(\"^*broken\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = Foo::split(\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = $foo->split(\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = Foo\\split(\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = preg_match('/[A-Z]/D');",
+                        "<?php $x = ereg('[A-Z]');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $x = preg_match('/[A-Z]/D', $m);",
+                        "<?php $x = ereg('[A-Z]', $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $x = preg_match(\"/[A-Z]/D\", $m);",
+                        "<?php $x = ereg(\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $x = preg_match(\"/[A-Z]/Di\", $m);",
+                        "<?php $x = eregi(\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $x = preg_match(\"#/[AZ]#D\", $m);",
+                        "<?php $x = ereg(\"/[AZ]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $x = preg_match(\"#[AZ]/#D\", $m);",
+                        "<?php $x = ereg(\"[AZ]/\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $x = preg_match(\"!#[A]/!D\", $m);",
+                        "<?php $x = ereg(\"#[A]/\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x = preg_match(\"!##[A\\!]//!D\", $m);",
+                        "<?php $x = ereg(\"##[A!]//\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $x = preg_match(\"/##[A!!]\\/\\//D\", $m);",
+                        "<?php $x = ereg(\"##[A!!]//\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $x = preg_match(\"#\\#\\#[A!!]///#D\", $m);",
+                        "<?php $x = ereg(\"##[A!!]///\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $x = preg_replace(\"/[A-Z]/D\", \"\", $m);",
+                        "<?php $x = ereg_replace(\"[A-Z]\", \"\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $x = preg_replace(\"/[A-Z]/Di\", \"\", $m);",
+                        "<?php $x = eregi_replace(\"[A-Z]\", \"\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $x = preg_split(\"/[A-Z]/D\", $m);",
+                        "<?php $x = split(\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $x = preg_split(\"/[A-Z]/Di\", $m);",
+                        "<?php $x = spliti(\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "binary lowercase",
+                    "args": [
+                        "<?php $x = preg_split(b\"/[A-Z]/Di\", $m);",
+                        "<?php $x = spliti(b\"[A-Z]\", $m);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "binary uppercase",
+                    "args": [
+                        "<?php $x = preg_split(B\"/[A-Z]/Di\", $m);",
+                        "<?php $x = spliti(B\"[A-Z]\", $m);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\EregToPregFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = spliti(...);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

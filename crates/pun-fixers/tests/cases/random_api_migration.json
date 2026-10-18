@@ -1,0 +1,27 @@
+[
+    {
+        "fixer": "random_api_migration",
+        "config": {
+            "replacements": {
+                "foo": "bar"
+            }
+        },
+        "error": "[random_api_migration] Invalid configuration: Function \"foo\" is not handled by the fixer."
+    },
+    {
+        "fixer": "random_api_migration",
+        "config": {
+            "replacements": {
+                "rand": 1
+            }
+        },
+        "error": "[random_api_migration] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+    },
+    {
+        "fixer": "random_api_migration",
+        "config": {
+            "replacements": "x"
+        },
+        "error": "[random_api_migration] Invalid configuration: The option \"replacements\" with value \"x\" is expected to be of type \"string[]\", but is of type \"string\"."
+    }
+]

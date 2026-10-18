@@ -789,7 +789,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-array-accumulation-in-loop" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects O(n²) array accumulation patterns inside loops." }
 "style/no-array-push" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Converts simple usages of `array_push($x, $y);` to `$x[] = $y;`." }
 "style/no-assign-in-ternary-branch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Assign outcome of ternary condition to variable, where applicable" }
-"style/no-call-user-func" = { fix = "unsafe", sets = ["code-quality", "coding-style"], ported = false, status = "decided", summary = "Call callables directly instead of through call_user_func()." }
+"style/no-call-user-func" = { fix = "unsafe", sets = ["code-quality", "coding-style"], ported = true, status = "decided", summary = "Call callables directly instead of through call_user_func()." }
 "style/no-dynamic-method-call" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
 "style/no-dynamic-method-callable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
 "style/no-dynamic-name" = { fix = "none", sets = ["coding-style"], origin = "mago", status = "decided", summary = "Discourages usage of PHP's variable variables feature." }
@@ -798,7 +798,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-dynamic-static-callable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
 "style/no-dynamic-static-property" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
 "style/no-empty" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], status = "decided", summary = "Detects the use of the `empty()` construct.", note = "fix (Rector DisallowedEmptyRuleFixer) is unsafe; report-only from strict-rules empty.notAllowed and Mago no-empty" }
-"style/no-ereg" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replace deprecated `ereg` regular expression functions with `preg`." }
+"style/no-ereg" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace deprecated `ereg` regular expression functions with `preg`." }
 "style/no-escaped-quotes" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Prefer quote that are not inside the string" }
 "style/no-hash-emoji" = { fix = "safe", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Discourages usage of the `#️⃣` emoji in place of the ASCII `#`." }
 "style/no-ini-set" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Enforces that ini_set is not used." }
@@ -810,8 +810,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-multiple-classes-per-file" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Ensures that each file contains at most one class-like definition (class, interface, enum, or trait)." }
 "style/no-nested-ternary" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Nested ternary expressions are disallowed to improve code clarity and prevent potential bugs arising from confusion over operator associativity." }
 "style/no-parameter-shadowing" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects when a function or method parameter is shadowed by a loop variable," }
-"style/no-php4-constructor" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Convert PHP4-style constructors to `__construct`." }
-"style/no-redundant-final" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Removes `final` from methods where possible." }
+"style/no-php4-constructor" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Convert PHP4-style constructors to `__construct`." }
+"style/no-redundant-final" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Removes `final` from methods where possible." }
 "style/no-redundant-final-const" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove final from constants in classes defined as final" }
 "style/no-redundant-yield-from" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Yield from array must be unpacked to series of yields." }
 "style/no-short-ternary" = { fix = "none", sets = ["coding-style"], status = "decided", summary = "Detects the use of the shorthand ternary and elvis operators." }
@@ -819,7 +819,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-sleep-wakeup" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replace __sleep()/__wakeup() with __serialize()/__unserialize()." }
 "style/no-sprintf-concat" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Disallows string concatenation with the result of an `sprintf` call." }
 "style/no-unreachable-loop" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects loops (for, foreach, while, do-while) that unconditionally break or return" }
-"style/no-useless-printf" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "There must be no `printf` calls with only the first argument." }
+"style/no-useless-printf" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be no `printf` calls with only the first argument." }
 "style/no-useless-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove sprintf() calls with only the format argument." }
 "style/no-variable-variable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
 "style/prefer-arrow-function" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Anonymous functions with return as the only statement must use arrow functions." }
@@ -828,13 +828,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-catch-name-from-type" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Type and name of catch exception should match" }
 "style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = false, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
 "style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided" }
-"style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
+"style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
 "style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided" }
 "style/prefer-compound-assignment" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
 "style/prefer-create-from-timestamp" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Suggests `DateTimeImmutable::createFromTimestamp()` when a Unix timestamp is converted" }
 "style/prefer-date-time-immutable" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "Class `DateTimeImmutable` should be used instead of `DateTime`." }
-"style/prefer-dir-constant" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replaces `dirname(__FILE__)` expression with equivalent `__DIR__` constant." }
-"style/prefer-dirname-levels" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Replace nested dirname() calls with one call and a `$levels` argument." }
+"style/prefer-dir-constant" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replaces `dirname(__FILE__)` expression with equivalent `__DIR__` constant." }
+"style/prefer-dirname-levels" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replace nested dirname() calls with one call and a `$levels` argument." }
 "style/prefer-early-continue" = { fix = "safe", sets = ["early-return"], ported = false, origin = "mago", status = "decided", summary = "Continue early instead of nesting the loop body in an if." }
 "style/prefer-early-return" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return early instead of nesting the rest of the function in an if or else." }
 "style/prefer-early-return-of-variable" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return the value directly where an if overrides a variable that is returned right after." }
@@ -845,15 +845,15 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-list-phpdoc" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "PHPDoc `list` type must be used instead of `array` without a key." }
 "style/prefer-php-version-id" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Changes use of call to version compare function to use of PHP version constant" }
 "style/prefer-phpdoc-comment" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Comments with annotation should be docblock when used on structural elements." }
-"style/prefer-pow-operator" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Converts `pow` to the `**` operator." }
+"style/prefer-pow-operator" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Converts `pow` to the `**` operator." }
 "style/prefer-property-over-local-getter" = { fix = "unsafe", sets = ["privatization"], ported = true, status = "decided", summary = "Privatize getter of local property to property" }
-"style/prefer-random-int" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`." }
+"style/prefer-random-int" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`." }
 "style/prefer-readonly-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts readonly comment on classes to the readonly keyword." }
 "style/prefer-self-reference" = { fix = "unsafe", ported = true, status = "decided", summary = "Inside class or interface element `self` should be preferred to the class name itself." }
 "style/prefer-short-ternary" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Use the Elvis operator `?:` where possible." }
 "style/prefer-spread" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace `call_user_func_array()` with variadic" }
 "style/prefer-static-private-method" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Converts private methods to `static` where possible." }
-"style/prefer-str-contains" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible." }
+"style/prefer-str-contains" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible." }
 "style/prefer-variadic-param" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Refactor `func_get_args()` in to a variadic param" }
 "style/prefer-while-loop" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Suggests using a `while` loop instead of a `for` loop when the `for` loop does not have any" }
 "style/require-assign-set-padding" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Add extra space before new assign set" }
@@ -863,7 +863,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/require-final-public-method" = { fix = "unsafe", ported = true, status = "decided", summary = "All `public` methods of `abstract` classes should be `final`." }
 "style/require-fopen-binary-flag" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "The flags in `fopen` calls must omit `t`, and `b` must be omitted or included consistently." }
 "style/require-fopen-flag-order" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Order the flags in `fopen` calls, `b` and `t` must be last." }
-"style/require-implode-separator" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Function `implode` must be called with 2 arguments in the documented order." }
+"style/require-implode-separator" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Function `implode` must be called with 2 arguments in the documented order." }
 "style/require-namespace" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects files that contain definitions (classes, interfaces, enums, traits, functions, or constants)" }
 "style/require-naming-convention" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Enforce naming conventions for classes, interfaces, traits, enums, functions, methods, properties, constants and variables (options per kind)." }
 "style/require-ordered-traits" = { fix = "unsafe", ported = true, status = "decided", summary = "Trait `use` statements must be sorted alphabetically.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }

@@ -1,0 +1,628 @@
+{
+    "fixer": "modernize_strpos",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\ModernizeStrposFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/ModernizeStrposFixerTest.php",
+    "case_count": 70,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\ModernizeStrposFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "yoda ===",
+                    "args": [
+                        "<?php if (  str_starts_with($haystack1, $needle)) {}",
+                        "<?php if (0 === strpos($haystack1, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive yoda ===",
+                    "args": [
+                        "<?php if (  str_starts_with(strtolower($haystack1), strtolower($needle))) {}",
+                        "<?php if (0 === stripos($haystack1, $needle)) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not zero yoda !==",
+                    "args": [
+                        "<?php if (  !str_starts_with($haystack2, $needle)) {}",
+                        "<?php if (0 !== strpos($haystack2, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive not zero yoda !==",
+                    "args": [
+                        "<?php if (  !str_starts_with(strtolower($haystack2), strtolower($needle))) {}",
+                        "<?php if (0 !== stripos($haystack2, $needle)) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "false yoda ===",
+                    "args": [
+                        "<?php if (  !str_contains($haystack, $needle)) {}",
+                        "<?php if (false === strpos($haystack, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive false yoda ===",
+                    "args": [
+                        "<?php if (  !str_contains(strtolower($haystack), strtolower($needle))) {}",
+                        "<?php if (false === stripos($haystack, $needle)) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php if (str_starts_with($haystack3, $needle)  ) {}",
+                        "<?php if (strpos($haystack3, $needle) === 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php if (str_starts_with(strtolower($haystack3), strtolower($needle))  ) {}",
+                        "<?php if (stripos($haystack3, $needle) === 0) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "casing call",
+                    "args": [
+                        "<?php if (str_starts_with($haystack4, $needle)  ) {}",
+                        "<?php if (STRPOS($haystack4, $needle) === 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive casing call",
+                    "args": [
+                        "<?php if (str_starts_with(strtolower($haystack4), strtolower($needle))  ) {}",
+                        "<?php if (STRIPOS($haystack4, $needle) === 0) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leading namespace",
+                    "args": [
+                        "<?php if (\\str_starts_with($haystack5, $needle)  ) {}",
+                        "<?php if (\\strpos($haystack5, $needle) === 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive leading namespace",
+                    "args": [
+                        "<?php if (\\str_starts_with(\\strtolower($haystack5), \\strtolower($needle))  ) {}",
+                        "<?php if (\\stripos($haystack5, $needle) === 0) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leading namespace with yoda",
+                    "args": [
+                        "<?php if (  \\str_starts_with($haystack5, $needle)) {}",
+                        "<?php if (0 === \\strpos($haystack5, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive leading namespace with yoda",
+                    "args": [
+                        "<?php if (  \\str_starts_with(\\strtolower($haystack5), \\strtolower($needle))) {}",
+                        "<?php if (0 === \\stripos($haystack5, $needle)) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php if (!str_starts_with($haystack6, $needle)  ) {}",
+                        "<?php if (strpos($haystack6, $needle) !== 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php if (!str_starts_with(strtolower($haystack6), strtolower($needle))  ) {}",
+                        "<?php if (stripos($haystack6, $needle) !== 0) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php if (!\\str_starts_with($haystack6, $needle)  ) {}",
+                        "<?php if (\\strpos($haystack6, $needle) !== 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php if (!\\str_starts_with(\\strtolower($haystack6), \\strtolower($needle))  ) {}",
+                        "<?php if (\\stripos($haystack6, $needle) !== 0) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php if (  !\\str_starts_with($haystack6, $needle)) {}",
+                        "<?php if (0 !== \\strpos($haystack6, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php if (  !\\str_starts_with(\\strtolower($haystack6), \\strtolower($needle))) {}",
+                        "<?php if (0 !== \\stripos($haystack6, $needle)) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "casing operand",
+                    "args": [
+                        "<?php if (str_contains($haystack7, $needle)  ) {}",
+                        "<?php if (strpos($haystack7, $needle) !== FALSE) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive casing operand",
+                    "args": [
+                        "<?php if (str_contains(strtolower($haystack7), strtolower($needle))  ) {}",
+                        "<?php if (stripos($haystack7, $needle) !== FALSE) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php if (!str_contains($haystack8, $needle)  ) {}",
+                        "<?php if (strpos($haystack8, $needle) === false) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php if (!str_contains(strtolower($haystack8), strtolower($needle))  ) {}",
+                        "<?php if (stripos($haystack8, $needle) === false) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php if (  !str_starts_with($haystack9, $needle)) {}",
+                        "<?php if (0 !== strpos($haystack9, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php if (  !str_starts_with(strtolower($haystack9), strtolower($needle))) {}",
+                        "<?php if (0 !== stripos($haystack9, $needle)) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a = !str_starts_with($haystack9a, $needle)  ;",
+                        "<?php $a = strpos($haystack9a, $needle) !== 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $a = !str_starts_with(strtolower($haystack9a), strtolower($needle))  ;",
+                        "<?php $a = stripos($haystack9a, $needle) !== 0;",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments inside, no spacing",
+                    "args": [
+                        "<?php if (/* foo *//* bar */str_contains($haystack10,$a)) {}",
+                        "<?php if (/* foo */false/* bar */!==strpos($haystack10,$a)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive comments inside, no spacing",
+                    "args": [
+                        "<?php if (/* foo *//* bar */str_contains(strtolower($haystack10),strtolower($a))) {}",
+                        "<?php if (/* foo */false/* bar */!==stripos($haystack10,$a)) {}",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a =   !str_contains($haystack11, $needle)?>",
+                        "<?php $a = false === strpos($haystack11, $needle)?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $a =   !str_contains(strtolower($haystack11), strtolower($needle))?>",
+                        "<?php $a = false === stripos($haystack11, $needle)?>",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = $input &&   str_contains($input, $method)   ? $input : null;",
+                        "<?php $a = $input &&   strpos($input, $method) !== FALSE ? $input : null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $a = $input &&   str_contains(strtolower($input), strtolower($method))   ? $input : null;",
+                        "<?php $a = $input &&   stripos($input, $method) !== FALSE ? $input : null;",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php   !str_starts_with(strtolower($file), strtolower($needle.\\DIRECTORY_SEPARATOR));",
+                        "<?php 0 !== stripos($file, $needle.\\DIRECTORY_SEPARATOR);",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php   !str_starts_with(strtolower($file.\\DIRECTORY_SEPARATOR), strtolower($needle.\\DIRECTORY_SEPARATOR));",
+                        "<?php 0 !== stripos($file.\\DIRECTORY_SEPARATOR, $needle.\\DIRECTORY_SEPARATOR);",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php   !str_starts_with(strtolower($file.\\DIRECTORY_SEPARATOR), strtolower($needle));",
+                        "<?php 0 !== stripos($file.\\DIRECTORY_SEPARATOR, $needle);",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php   str_starts_with(strtolower(/** comm */ $file.\\DIRECTORY_SEPARATOR /* comm2 */), /* comm3 */ strtolower($needle // comm4\n            ));",
+                        "<?php 0 === stripos(/** comm */ $file.\\DIRECTORY_SEPARATOR /* comm2 */, /* comm3 */ $needle // comm4\n            );",
+                        {
+                            "modernize_stripos": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                $x = 1;\n                $x = \"strpos\";\n                // if (false === strpos($haystack12, $needle)) {}\n                /** if (false === strpos($haystack13, $needle)) {} */\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                $x = 1;\n                $x = \"stripos\";\n                // if (false === strpos($haystack12, $needle)) {}\n                /** if (false === strpos($haystack13, $needle)) {} */\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "disabled stripos (default)",
+                    "args": [
+                        "<?php if (stripos($haystack3, $needle) === 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "disabled stripos",
+                    "args": [
+                        "<?php if (stripos($haystack3, $needle) === 0) {}",
+                        null,
+                        {
+                            "modernize_stripos": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "different namespace",
+                    "args": [
+                        "<?php if (a\\strpos($haystack14, $needle) === 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive different namespace",
+                    "args": [
+                        "<?php if (a\\stripos($haystack14, $needle) === 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "different namespace with yoda",
+                    "args": [
+                        "<?php if (0 === a\\strpos($haystack14, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive different namespace with yoda",
+                    "args": [
+                        "<?php if (0 === a\\stripos($haystack14, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non condition (hardcoded)",
+                    "args": [
+                        "<?php $x = strpos('foo', 'f');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive non condition (hardcoded)",
+                    "args": [
+                        "<?php $x = stripos('foo', 'f');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non condition",
+                    "args": [
+                        "<?php $x = strpos($haystack15, $needle) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive non condition",
+                    "args": [
+                        "<?php $x = stripos($haystack15, $needle) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "none zero int",
+                    "args": [
+                        "<?php if (1 !== strpos($haystack16, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive none zero int",
+                    "args": [
+                        "<?php if (1 !== stripos($haystack16, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "greater condition",
+                    "args": [
+                        "<?php if (strpos($haystack17, $needle) > 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive greater condition",
+                    "args": [
+                        "<?php if (stripos($haystack17, $needle) > 0) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "lesser condition",
+                    "args": [
+                        "<?php if (0 < strpos($haystack18, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive lesser condition",
+                    "args": [
+                        "<?php if (0 < stripos($haystack18, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no argument",
+                    "args": [
+                        "<?php $z = strpos();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive no argument",
+                    "args": [
+                        "<?php $z = stripos();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "one argument",
+                    "args": [
+                        "<?php if (0 === strpos($haystack1)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive one argument",
+                    "args": [
+                        "<?php if (0 === stripos($haystack1)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "3 arguments",
+                    "args": [
+                        "<?php if (0 === strpos($haystack1, $a, $b)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive 3 arguments",
+                    "args": [
+                        "<?php if (0 === stripos($haystack1, $a, $b)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "higher precedence 1",
+                    "args": [
+                        "<?php if (4 + 0 !== strpos($haystack9, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive higher precedence 1",
+                    "args": [
+                        "<?php if (4 + 0 !== stripos($haystack9, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "higher precedence 2",
+                    "args": [
+                        "<?php if (!false === strpos($haystack, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive higher precedence 2",
+                    "args": [
+                        "<?php if (!false === stripos($haystack, $needle)) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "higher precedence 3",
+                    "args": [
+                        "<?php $a = strpos($haystack, $needle) === 0 + 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive higher precedence 3",
+                    "args": [
+                        "<?php $a = stripos($haystack, $needle) === 0 + 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "higher precedence 4",
+                    "args": [
+                        "<?php $a = strpos($haystack, $needle) === 0 > $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive higher precedence 4",
+                    "args": [
+                        "<?php $a = stripos($haystack, $needle) === 0 > $b;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

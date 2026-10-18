@@ -1,0 +1,116 @@
+{
+    "fixer": "no_useless_printf",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUselessPrintfFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/NoUselessPrintfFixerTest.php",
+    "case_count": 9,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUselessPrintfFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "single-quoted",
+                    "args": [
+                        "<?php print 'bar';",
+                        "<?php printf('bar');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double-quoted",
+                    "args": [
+                        "<?php print \"bar\\n\";",
+                        "<?php printf(\"bar\\n\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive",
+                    "args": [
+                        "<?php print \"bar\";",
+                        "<?php PrInTf(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trailing comma",
+                    "args": [
+                        "<?php print \"bar\";",
+                        "<?php printf(\"bar\",);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leading NS separator",
+                    "args": [
+                        "<?php print \"bar\";",
+                        "<?php \\printf(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "skip not global function",
+                    "args": [
+                        "<?php\nnamespace Foo {\n    function printf($arg) {}\n}\n\nnamespace Bar {\n    use function Foo\\printf;\n    printf('bar');\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "skip function cases",
+                    "args": [
+                        "<?php\nprintf();\nprintf('%s%s', 'foo', 'bar');\n\\Foo\\printf('bar');\nprintf(...$bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "skip class cases",
+                    "args": [
+                        "<?php\nclass Foo {\n    public function printf($arg) {}\n}\n\nclass Bar {\n    public static function printf($arg) {}\n}\n\n(new Foo())->printf('bar');\nBar::printf('bar');"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUselessPrintfFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "skip first class callable",
+                    "args": [
+                        "<?php return printf(...);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

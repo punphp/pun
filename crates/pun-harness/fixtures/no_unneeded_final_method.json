@@ -1,0 +1,309 @@
+{
+    "fixer": "no_unneeded_final_method",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoUnneededFinalMethodFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/NoUnneededFinalMethodFixerTest.php",
+    "case_count": 30,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoUnneededFinalMethodFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "default",
+                    "args": [
+                        "<?php\nfinal class Foo {\n    public function foo() {}\n    protected function bar() {}\n    private function baz() {}\n}",
+                        "<?php\nfinal class Foo {\n    final public function foo() {}\n    final protected function bar() {}\n    final private function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-after-visibility",
+                    "args": [
+                        "<?php\nfinal class Foo {\n    public function foo() {}\n    protected function bar() {}\n    private function baz() {}\n}",
+                        "<?php\nfinal class Foo {\n    public final function foo() {}\n    protected final function bar() {}\n    private final function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "default-static",
+                    "args": [
+                        "<?php\nfinal class SomeClass {\n    public static function foo() {}\n    protected static function bar() {}\n    private static function baz() {}\n}",
+                        "<?php\nfinal class SomeClass {\n    final public static function foo() {}\n    final protected static function bar() {}\n    final private static function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "visibility-then-final-then-static",
+                    "args": [
+                        "<?php\nfinal class SomeClass {\n    public static function foo() {}\n    protected static function bar() {}\n    private static function baz() {}\n}",
+                        "<?php\nfinal class SomeClass {\n    public final static function foo() {}\n    protected final static function bar() {}\n    private final static function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "visibility-then-static-then-final",
+                    "args": [
+                        "<?php\nfinal class SomeClass {\n    public static function foo() {}\n    protected static function bar() {}\n    private static function baz() {}\n}",
+                        "<?php\nfinal class SomeClass {\n    public static final function foo() {}\n    protected static final function bar() {}\n    private static final function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static-then-visibility-then-final",
+                    "args": [
+                        "<?php\nfinal class SomeClass {\n    static public function foo() {}\n    static protected function bar() {}\n    static private function baz() {}\n}",
+                        "<?php\nfinal class SomeClass {\n    static public final function foo() {}\n    static protected final function bar() {}\n    static private final function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static-then-final-then-visibility",
+                    "args": [
+                        "<?php\nfinal class SomeClass {\n    static public function foo() {}\n    static protected function bar() {}\n    static private function baz() {}\n}",
+                        "<?php\nfinal class SomeClass {\n    static final public function foo() {}\n    static final protected function bar() {}\n    static final private function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no-visibility",
+                    "args": [
+                        "<?php\nfinal class Foo {\n    function foo() {}\n    function bar() {}\n    function baz() {}\n}",
+                        "<?php\nfinal class Foo {\n    final function foo() {}\n    final function bar() {}\n    final function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no-visibility-final-then-static",
+                    "args": [
+                        "<?php\nfinal class SomeClass {\n    static function foo() {}\n    static function bar() {}\n    static function baz() {}\n}",
+                        "<?php\nfinal class SomeClass {\n    final static function foo() {}\n    final static function bar() {}\n    final static function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no-visibility-static-then-final",
+                    "args": [
+                        "<?php\nfinal class SomeClass {\n    static function foo() {}\n    static function bar() {}\n    static function baz() {}\n}",
+                        "<?php\nfinal class SomeClass {\n    static final function foo() {}\n    static final function bar() {}\n    static final function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "private-method",
+                    "args": [
+                        "<?php\nclass Foo {\n    final function bar0() {}\n    final public function bar1() {}\n    final protected function bar2() {}\n    final static public function bar4() {}\n    final public static function bar5() {}\n\n    private function bar31() {}\n    private function bar32() {}\n}",
+                        "<?php\nclass Foo {\n    final function bar0() {}\n    final public function bar1() {}\n    final protected function bar2() {}\n    final static public function bar4() {}\n    final public static function bar5() {}\n\n    final private function bar31() {}\n    private final function bar32() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "private-method-with-visibility-before-final",
+                    "args": [
+                        "<?php\nclass Foo {\n    private function bar() {}\n}",
+                        "<?php\nclass Foo {\n    private final function bar() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "preserve-comment",
+                    "args": [
+                        "<?php final class Foo { /* comment */public function foo() {} }",
+                        "<?php final class Foo { final/* comment */public function foo() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple-classes-per-file",
+                    "args": [
+                        "<?php final class Foo { public function foo() {} } abstract class Bar { final public function bar() {} }",
+                        "<?php final class Foo { final public function foo() {} } abstract class Bar { final public function bar() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non-final",
+                    "args": [
+                        "<php class Foo { final public function foo() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract-class",
+                    "args": [
+                        "<php abstract class Foo { final public function foo() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-method-with-private-attribute",
+                    "args": [
+                        "<?php abstract class Foo { private static $var; final public function foo() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait",
+                    "args": [
+                        "<php trait Foo { final public function foo() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix constructors",
+                    "args": [
+                        "<?php\nclass Bar\n{\n    final private function __construct()\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous-class-inside",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function foo()\n    {\n    }\n\n    private function bar()\n    {\n        new class {\n            final public function baz()\n            {\n            }\n        };\n    }\n}\n",
+                        "<?php\nfinal class Foo\n{\n    final public function foo()\n    {\n    }\n\n    private function bar()\n    {\n        new class {\n            final public function baz()\n            {\n            }\n        };\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous-class-inside-with-final-private-method",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar()\n    {\n        new class {\n            private function qux()\n            {\n            }\n        };\n    }\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar()\n    {\n        new class {\n            final private function qux()\n            {\n            }\n        };\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final private static",
+                    "args": [
+                        "<?php\nclass Foo {\n    public function bar(){}\n\n    private static function bar1() {echo 1;}\n    private static function bar2() {echo 2;}\n    static private function bar3() {echo 3;}\n    private static function bar4() {echo 4;}\n    static private function bar5() {echo 5;}\n    static private function bar6() {echo 6;}\n}\n",
+                        "<?php\nclass Foo {\n    public function bar(){}\n\n    private static final function bar1() {echo 1;}\n    private final static function bar2() {echo 2;}\n    final static private function bar3() {echo 3;}\n    final private static function bar4() {echo 4;}\n    static final private function bar5() {echo 5;}\n    static private final function bar6() {echo 6;}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nabstract class Foo {\n    public final function bar1(){ $this->bar3(); }\n    private function bar2(){ echo 1; }\n\n    private function bar3(){ echo 2; }\n}",
+                        "<?php\nabstract class Foo {\n    public final function bar1(){ $this->bar3(); }\n    private function bar2(){ echo 1; }\n\n    private final function bar3(){ echo 2; }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    private function baz() {}\n}\n\nclass Bar\n{\n    final private function bar1() {}\n}\n",
+                        "<?php\nfinal class Foo\n{\n    final private function baz() {}\n}\n\nclass Bar\n{\n    final private function bar1() {}\n}\n",
+                        {
+                            "private_methods": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoUnneededFinalMethodFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nfinal class Foo81 {\n    public readonly string $prop1;\n    readonly public string $prop2;\n    readonly string $prop3;\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo81 {\n    public readonly string $prop1;\n    readonly public string $prop2;\n    readonly string $prop3;\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nfinal class Foo81 {\n    public function foo81() {}\n    protected function bar81() {}\n    private function baz81() {}\n    public readonly string $prop81;\n    final public const Y = \"i81\";\n    final const XY = \"i81\";\n}\n            ",
+                        "<?php\nfinal class Foo81 {\n    final public function foo81() {}\n    final protected function bar81() {}\n    final private function baz81() {}\n    public readonly string $prop81;\n    final public const Y = \"i81\";\n    final const XY = \"i81\";\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php\n\nenum Foo: string\n{\n    case Hearts = \"H\";\n\n    public function test() {\n        echo 123;\n    }\n}\n\nvar_dump(Foo::Spades);",
+                        "<?php\n\nenum Foo: string\n{\n    case Hearts = \"H\";\n\n    final public function test() {\n        echo 123;\n    }\n}\n\nvar_dump(Foo::Spades);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoUnneededFinalMethodFixerTest",
+            "body": "    public function testFix82(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "final readonly class - final after visibility method",
+                    "args": [
+                        "<?php\nfinal readonly class Foo {\n    public function foo() {}\n    protected function bar() {}\n    private function baz() {}\n}",
+                        "<?php\nfinal readonly class Foo {\n    public final function foo() {}\n    protected final function bar() {}\n    private final function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "readonly comment final class - final before visibility method",
+                    "args": [
+                        "<?php\nreadonly /* X */ final class Foo {\n    public function foo() {}\n    protected function bar() {}\n    private function baz() {}\n}",
+                        "<?php\nreadonly /* X */ final class Foo {\n    final public function foo() {}\n    final protected function bar() {}\n    final private function baz() {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

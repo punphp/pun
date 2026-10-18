@@ -1,0 +1,192 @@
+{
+    "fixer": "combine_nested_dirname",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\CombineNestedDirnameFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/CombineNestedDirnameFixerTest.php",
+    "case_count": 19,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\CombineNestedDirnameFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php dirname();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php dirname($path);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php dirname($path, 3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php dirname($path, 2);",
+                        "<?php dirname(dirname($path));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php dirname /* a */ ( /* b */ /* c */ $path /* d */, 2);",
+                        "<?php dirname /* a */ ( /* b */ dirname( /* c */ $path) /* d */);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php dirname($path, 3);",
+                        "<?php dirname(\\dirname(dirname($path)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php dirname($path, 4);",
+                        "<?php dirname(dirname($path, 3));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php dirname($path, 4);",
+                        "<?php dirname(dirname($path), 3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php dirname($path, 5);",
+                        "<?php dirname(dirname($path, 2), 3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php dirname($path, 5);",
+                        "<?php dirname(dirname(dirname($path), 3));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php dirname(dirname($path, $level));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php dirname(\"foo/\".dirname($path));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php dirname(dirname($path).$foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php foo\\dirname(dirname($path));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php dirname(foo(dirname($path, 2)), 2);",
+                        "<?php dirname(dirname(foo(dirname(dirname($path)))));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php new dirname(dirname($path, 2));",
+                        "<?php new dirname(dirname(dirname($path)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php dirname($path, 3);",
+                        "<?php dirname(dirname(dirname($path, ), ));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php dirname($path, 3);",
+                        "<?php dirname(dirname(dirname($path, ), ), );"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\CombineNestedDirnameFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = dirname(dirname(...));"
+                    ]
+                }
+            ]
+        }
+    ]
+}

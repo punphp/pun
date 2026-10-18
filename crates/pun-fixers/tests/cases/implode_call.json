@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "implode_call",
+        "input": "<?php\nimplode($a, ',', $c);\nimplode();\n",
+        "expected": "<?php\nimplode($a, ',', $c);\nimplode();\n"
+    }
+]

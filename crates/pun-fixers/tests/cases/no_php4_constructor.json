@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "no_php4_constructor",
+        "input": "<?php\nnamespace A {\n    class B { function B() {} }\n    class C { function C() {} }\n}\nnamespace D {\n    class E { function E() {} }\n}\n",
+        "expected": "<?php\nnamespace A {\n    class B { function B() {} }\n    class C { function C() {} }\n}\nnamespace D {\n    class E { function E() {} }\n}\n"
+    },
+    {
+        "fixer": "no_php4_constructor",
+        "input": "<?php\nnamespace A {\n}\nclass B { function B() {} }\n",
+        "expected": "<?php\nnamespace A {\n}\nclass B { function __construct() {} }\n"
+    }
+]

@@ -1,0 +1,259 @@
+{
+    "fixer": "dir_constant",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\DirConstantFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/DirConstantFixerTest.php",
+    "case_count": 31,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\DirConstantFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = \"dirname\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = dirname(__FILE__.\".dist\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = ClassA::dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = ScopeA\\dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = namespace\\dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = $object->dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = new \\dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = new dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $x = new ScopeB\\dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php dirnameSmth(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php smth_dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php \"SELECT ... dirname(__FILE__) ...\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php \"SELECT ... DIRNAME(__FILE__) ...\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php \"test\" . \"dirname\" . \"in concatenation\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x = dirname(__DIR__);",
+                        "<?php $x = dirname(dirname(__FILE__));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $x = __DIR__;",
+                        "<?php $x = dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $x =   /* A */ __DIR__     /* B */;",
+                        "<?php $x = dirname  (  /* A */ __FILE__  )   /* B */;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $x = __DIR__;",
+                        "<?php $x = \\dirname(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $x = __DIR__.\".dist\";",
+                        "<?php $x = dirname(__FILE__).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $x = __DIR__.\".dist\";",
+                        "<?php $x = \\dirname(__FILE__).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $x = /* 0 *//* 1 */ /** x2*//*3*//** 4*/__DIR__/**5*//*xx*/;",
+                        "<?php $x = /* 0 */dirname/* 1 */ /** x2*/(/*3*//** 4*/__FILE__/**5*/)/*xx*/;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n                interface Test\n                {\n                    public function dirname($a);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                interface Test\n                {\n                    public function &dirname($a);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php echo __DIR__\n?>",
+                        "<?php echo dirname\n(\n__FILE__\n)\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php echo __DIR__/*1*/\n?>",
+                        "<?php echo dirname\n(\n__FILE__/*1*/\n)\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $x =\n__DIR__\n\n;",
+                        "<?php $x =\ndirname\n\n(\n\n    __FILE__\n\n)\n\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $x = __DIR__;",
+                        "<?php $x = \\dirname(\n                    __FILE__                     \n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n                    $x = dirname(dirname(\"a\".__FILE__));\n                    $x = dirname(dirname(__FILE__.\"a\"));\n                    $x = dirname(dirname(\"a\".__FILE__.\"a\"));\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $x = __DIR__.\".dist\";",
+                        "<?php $x = dirname(__FILE__,   ).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $x = __DIR__/* a */  /* b */  .\".dist\";",
+                        "<?php $x = \\dirname(__FILE__/* a */,  /* b */)  .\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $x = __DIR__;",
+                        "<?php $x = \\dirname(\n                    __FILE__   ,                     \n                );"
+                    ]
+                }
+            ]
+        }
+    ]
+}
