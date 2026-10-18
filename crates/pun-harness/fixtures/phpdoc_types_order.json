@@ -1,0 +1,1792 @@
+{
+    "fixer": "phpdoc_types_order",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTypesOrderFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocTypesOrderFixerTest.php",
+    "case_count": 156,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTypesOrderFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @var null|int|string */",
+                        "<?php /** @var string|int|null */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @param Bar|\\Foo */",
+                        "<?php /** @param \\Foo|Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @property-read \\Bar|Foo */",
+                        "<?php /** @property-read Foo|\\Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @property-write bar|Foo */",
+                        "<?php /** @property-write Foo|bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /** @return Bar|foo */",
+                        "<?php /** @return foo|Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** @method \\Bar|Foo foo(\\Bar|Foo $foo, \\Bar|Foo $bar) */",
+                        "<?php /** @method Foo|\\Bar foo(Foo|\\Bar $foo, Foo|\\Bar $bar) */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /** @var null|array|Bar\\Baz|bool[]|false|Foo|int|object|resource|string|string[] */",
+                        "<?php /** @var string[]|resource|false|object|null|Foo|Bar\\Baz|bool[]|string|array|int */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php /** @var null|array<int, string> Foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php /** @var null|array<int, array<string>> Foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php /** @var NULL|int|string */",
+                        "<?php /** @var string|int|NULL */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php /** @var ?Bar|Foo */",
+                        "<?php /** @var Foo|?Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php /** @var Bar|?Foo */",
+                        "<?php /** @var ?Foo|Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php /** @var ?\\Bar|Foo */",
+                        "<?php /** @var Foo|?\\Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php /** @var Bar|?\\Foo */",
+                        "<?php /** @var ?\\Foo|Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php /** @var array<null|int|string> */",
+                        "<?php /** @var array<string|int|null> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php /** @var array<int|string, null|int|string> */",
+                        "<?php /** @var array<string|int, string|int|null> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php /** @var array<int|string,     array<int|string, null|int|string>> */",
+                        "<?php /** @var array<string|int,     array<string|int, string|int|null>> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php /** @var null|null */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php /** @var null|\\null */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php /** @var \\null|null */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php /** @var \\null|\\null */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php /** @var array<\\null|int|string> */",
+                        "<?php /** @var array<string|\\null|int> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<null|OutputInterface>>>>> */",
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<OutputInterface|null>>>>> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php /** @var null|Foo|Foo[]|Foo\\Bar|Foo_Bar */",
+                        "<?php /** @var Foo[]|null|Foo|Foo\\Bar|Foo_Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php /** @return array<array<string, int>> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php /** @return array<int, callable(array<string, null|string> , DateTime): bool> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php /** @var null|string */",
+                        "<?php /** @var string|null */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php /** @param null|string $foo */",
+                        "<?php /** @param string|null $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php /** @property null|string $foo */",
+                        "<?php /** @property string|null $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php /** @property-read null|string $foo */",
+                        "<?php /** @property-read string|null $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php /** @property-write null|string $foo */",
+                        "<?php /** @property-write string|null $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php /** @method null|string foo(null|int $foo, null|string $bar) */",
+                        "<?php /** @method string|null foo(int|null $foo, string|null $bar) */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php /** @return null|string */",
+                        "<?php /** @return string|null */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php /** @var null|string[]|resource|false|object|Foo|Bar\\Baz|bool[]|string|array|int */",
+                        "<?php /** @var string[]|resource|false|object|null|Foo|Bar\\Baz|bool[]|string|array|int */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php /** @var null|array<int, string> Foo */",
+                        "<?php /** @var array<int, string>|null Foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php /** @var null|array<int, array<string>> Foo */",
+                        "<?php /** @var array<int, array<string>>|null Foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php /** @var NULL|string */",
+                        "<?php /** @var string|NULL */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php /** @var Foo|?Bar */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php /** @var ?Foo|Bar */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php /** @var array<null|string> */",
+                        "<?php /** @var array<string|null> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php /** @var array<int, null|string> */",
+                        "<?php /** @var array<int, string|null> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php /** @var array<int,     array<null|int|string>> */",
+                        "<?php /** @var array<int,     array<int|string|null>> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php /** @var null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php /** @var null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php /** @var \\null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php /** @var \\null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php /** @var \\null|int */",
+                        "<?php /** @var int|\\null */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php /** @var array<\\null|int> */",
+                        "<?php /** @var array<int|\\null> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<null|OutputInterface>>>>> */",
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<OutputInterface|null>>>>> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php /** @var null|Foo[]|Foo|Foo\\Bar|Foo_Bar */",
+                        "<?php /** @var Foo[]|null|Foo|Foo\\Bar|Foo_Bar */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php /** @method null|Y|X setOrder(array<string, null|array{Y,X,null|Z}> $by) */",
+                        "<?php /** @method Y|null|X setOrder(array<string, array{Y,X,Z|null}|null> $by) */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@method with invalid 2nd phpdoc",
+                    "args": [
+                        "<?php /** @method null|X setOrder($$by) */",
+                        "<?php /** @method X|null setOrder($$by) */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php /** @var array<array<int, int>, OutputInterface> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php /** @var iterable<array{names:array<string>, surname:string}> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php /** @var iterable<array{surname:string, names:array<string>}> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php /** @return array<array{level:string, message:string, context:array<mixed>}> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php /** @return Data<array{enabled: string[], all: array<string, string>}> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php /** @return array<int, callable(array<string, null|string> , DateTime): bool> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php /** @param null|callable(array<string>): array<string, T> $callback */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php /** @return Closure(Iterator<TKey, T>): Generator<int, array<TKey, T>> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php /** @var Closure(Iterator<TKey, T>): Generator<int, array<TKey, T>> $pipe */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php /** @return Generator<int, Promise<mixed>, mixed, Identity> */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php /** @param null|callable(null|foo, null|bar): array<string, T> $callback */",
+                        "<?php /** @param null|callable(foo|null, bar|null): array<string, T> $callback */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php /** @param null|string$foo */",
+                        "<?php /** @param string|null$foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php /** @var string|null */",
+                        "<?php /** @var null|string */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php /** @param string|null $foo */",
+                        "<?php /** @param null|string $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php /** @property string|null $foo */",
+                        "<?php /** @property null|string $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php /** @property-read string|null $foo */",
+                        "<?php /** @property-read null|string $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php /** @property-write string|null $foo */",
+                        "<?php /** @property-write null|string $foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php /** @method string|null foo(int|null $foo, string|null $bar) */",
+                        "<?php /** @method null|string foo(null|int $foo, null|string $bar) */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php /** @return string|null */",
+                        "<?php /** @return null|string */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php /** @var string[]|resource|false|object|Foo|Bar\\Baz|bool[]|string|array|int|null */",
+                        "<?php /** @var string[]|resource|false|object|null|Foo|Bar\\Baz|bool[]|string|array|int */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php /** @var array<int, string>|null Foo */",
+                        "<?php /** @var null|array<int, string> Foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php /** @var array<int, array<string>>|null Foo */",
+                        "<?php /** @var null|array<int, array<string>> Foo */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php /** @var string|NULL */",
+                        "<?php /** @var NULL|string */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php /** @var Foo|?Bar */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php /** @var ?Foo|Bar */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php /** @var Foo|?\\Bar */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php /** @var ?\\Foo|Bar */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php /** @var array<string|null> */",
+                        "<?php /** @var array<null|string> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php /** @var array<int, string|null> */",
+                        "<?php /** @var array<int, null|string> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php /** @var array<int,     array<int|string|null>> */",
+                        "<?php /** @var array<int,     array<null|int|string>> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php /** @var null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php /** @var null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php /** @var \\null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php /** @var \\null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php /** @var int|\\null */",
+                        "<?php /** @var \\null|int */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php /** @var array<int|\\null> */",
+                        "<?php /** @var array<\\null|int> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<OutputInterface|null>>>>> */",
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<null|OutputInterface>>>>> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php /** @var Foo[]|Foo|Foo\\Bar|Foo_Bar|null */",
+                        "<?php /** @var Foo[]|null|Foo|Foo\\Bar|Foo_Bar */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php /** @return array<int, callable(array<string, string|null> , DateTime): bool> */",
+                        "<?php /** @return array<int, callable(array<string, null|string> , DateTime): bool> */",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php /** @var int|null|string */",
+                        "<?php /** @var string|int|null */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php /** @param Bar|\\Foo */",
+                        "<?php /** @param \\Foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php /** @property-read \\Bar|Foo */",
+                        "<?php /** @property-read Foo|\\Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php /** @property-write bar|Foo */",
+                        "<?php /** @property-write Foo|bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php /** @return Bar|foo */",
+                        "<?php /** @return foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php /** @method \\Bar|Foo foo(\\Bar|Foo $foo, \\Bar|Foo $bar) */",
+                        "<?php /** @method Foo|\\Bar foo(Foo|\\Bar $foo, Foo|\\Bar $bar) */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php /** @var array|Bar\\Baz|bool[]|false|Foo|int|null|object|resource|string|string[] */",
+                        "<?php /** @var string[]|resource|false|object|null|Foo|Bar\\Baz|bool[]|string|array|int */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php /** @var array<int, string>|null Foo */",
+                        "<?php /** @var null|array<int, string> Foo */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php /** @var array<int, array<string>>|null Foo */",
+                        "<?php /** @var null|array<int, array<string>> Foo */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php /** @var ?Bar|Foo */",
+                        "<?php /** @var Foo|?Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<?php /** @var Bar|?Foo */",
+                        "<?php /** @var ?Foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php /** @var ?\\Bar|Foo */",
+                        "<?php /** @var Foo|?\\Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php /** @var Bar|?\\Foo */",
+                        "<?php /** @var ?\\Foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php /** @var array<null|string> */",
+                        "<?php /** @var array<string|null> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php /** @var array<int|string, null|string> */",
+                        "<?php /** @var array<string|int, string|null> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php /** @var array<int|string,     array<int|string, null|string>> */",
+                        "<?php /** @var array<string|int,     array<string|int, string|null>> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php /** @var null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php /** @var null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php /** @var \\null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 109,
+                    "args": [
+                        "<?php /** @var \\null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 110,
+                    "args": [
+                        "<?php /** @var int|\\null|string */",
+                        "<?php /** @var string|\\null|int */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 111,
+                    "args": [
+                        "<?php /** @var array<int|\\null|string> */",
+                        "<?php /** @var array<string|\\null|int> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 112,
+                    "args": [
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<null|OutputInterface>>>>> */",
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<OutputInterface|null>>>>> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 113,
+                    "args": [
+                        "<?php /** @var Foo|Foo[]|Foo\\Bar|Foo_Bar|null */",
+                        "<?php /** @var Foo[]|null|Foo|Foo\\Bar|Foo_Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 114,
+                    "args": [
+                        "<?php /** @return array<int, callable(array<string, null|string> , DateTime): bool> */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 115,
+                    "args": [
+                        "<?php /** @return A&B&C */",
+                        "<?php /** @return A&C&B */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 116,
+                    "args": [
+                        "<?php /** @return array<A&B&C> */",
+                        "<?php /** @return array<A&C&B> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 117,
+                    "args": [
+                        "<?php /** @return array<A&B&C>|bool|string */",
+                        "<?php /** @return bool|array<A&B&C>|string */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 118,
+                    "args": [
+                        "<?php /** @return A&B<X|Y|Z>&C&D */",
+                        "<?php /** @return A&D&B<X|Y|Z>&C */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 119,
+                    "args": [
+                        "<?php /** @param A|(B&C) */",
+                        "<?php /** @param (C&B)|A */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 120,
+                    "args": [
+                        "<?php /** @param A|((A&B)|(B&C)) */",
+                        "<?php /** @param ((B&C)|(B&A))|A */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 121,
+                    "args": [
+                        "<?php /** @param A&(B&C) */",
+                        "<?php /** @param (C&B)&A */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 122,
+                    "args": [
+                        "<?php /** @param (A&C)|(B&C)|(C&D) */",
+                        "<?php /** @param (C&A)|(C&B)|(C&D) */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 123,
+                    "args": [
+                        "<?php /** @param \\A|(\\B&\\C)|D */",
+                        "<?php /** @param D|\\A|(\\C&\\B) */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 124,
+                    "args": [
+                        "<?php /** @param A|((B&C)|D) */",
+                        "<?php /** @param (D|(C&B))|A */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 125,
+                    "args": [
+                        "<?php /** @var Closure<T>(T): T|null|string */",
+                        "<?php /** @var string|Closure<T>(T): T|null */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 126,
+                    "args": [
+                        "<?php /** @var \\Closure<T of Model, T2, T3>(A|T, T3, T2): (T|T2)|null|string */",
+                        "<?php /** @var string|\\Closure<T of Model, T2, T3>(T|A, T3, T2): (T2|T)|null */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 127,
+                    "args": [
+                        "<?php /** @var Closure<Closure_can_be_regular_class>|null|string */",
+                        "<?php /** @var string|Closure<Closure_can_be_regular_class>|null */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 128,
+                    "args": [
+                        "<?php /** @var int|string|null */",
+                        "<?php /** @var string|int|null */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 129,
+                    "args": [
+                        "<?php /** @param Bar|\\Foo */",
+                        "<?php /** @param \\Foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 130,
+                    "args": [
+                        "<?php /** @property-read \\Bar|Foo */",
+                        "<?php /** @property-read Foo|\\Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 131,
+                    "args": [
+                        "<?php /** @property-write bar|Foo */",
+                        "<?php /** @property-write Foo|bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 132,
+                    "args": [
+                        "<?php /** @return Bar|foo */",
+                        "<?php /** @return foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 133,
+                    "args": [
+                        "<?php /** @method \\Bar|Foo foo(\\Bar|Foo $foo, \\Bar|Foo $bar) */",
+                        "<?php /** @method Foo|\\Bar foo(Foo|\\Bar $foo, Foo|\\Bar $bar) */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 134,
+                    "args": [
+                        "<?php /** @var array|Bar\\Baz|bool[]|false|Foo|int|object|resource|string|string[]|null */",
+                        "<?php /** @var string[]|resource|false|object|null|Foo|Bar\\Baz|bool[]|string|array|int */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 135,
+                    "args": [
+                        "<?php /** @var array<int, string>|null Foo */",
+                        "<?php /** @var null|array<int, string> Foo */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 136,
+                    "args": [
+                        "<?php /** @var array<int, array<string>>|null Foo */",
+                        "<?php /** @var null|array<int, array<string>> Foo */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 137,
+                    "args": [
+                        "<?php /** @var int|string|NULL */",
+                        "<?php /** @var string|int|NULL */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 138,
+                    "args": [
+                        "<?php /** @var ?Bar|Foo */",
+                        "<?php /** @var Foo|?Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 139,
+                    "args": [
+                        "<?php /** @var Bar|?Foo */",
+                        "<?php /** @var ?Foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 140,
+                    "args": [
+                        "<?php /** @var ?\\Bar|Foo */",
+                        "<?php /** @var Foo|?\\Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 141,
+                    "args": [
+                        "<?php /** @var Bar|?\\Foo */",
+                        "<?php /** @var ?\\Foo|Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 142,
+                    "args": [
+                        "<?php /** @var array<int|string|null> */",
+                        "<?php /** @var array<string|int|null> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 143,
+                    "args": [
+                        "<?php /** @var array<int|string, int|string|null> */",
+                        "<?php /** @var array<string|int, string|int|null> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 144,
+                    "args": [
+                        "<?php /** @var array<int|string,     array<int|string, int|string|null>> */",
+                        "<?php /** @var array<string|int,     array<string|int, string|int|null>> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 145,
+                    "args": [
+                        "<?php /** @var null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 146,
+                    "args": [
+                        "<?php /** @var null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 147,
+                    "args": [
+                        "<?php /** @var \\null|null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 148,
+                    "args": [
+                        "<?php /** @var \\null|\\null */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 149,
+                    "args": [
+                        "<?php /** @var array<int|string|\\null> */",
+                        "<?php /** @var array<string|\\null|int> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 150,
+                    "args": [
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<OutputInterface|null>>>>> */",
+                        "<?php /** @var array<int, array<int, array<int, array<int, array<null|OutputInterface>>>>> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 151,
+                    "args": [
+                        "<?php /** @var Foo|Foo[]|Foo\\Bar|Foo_Bar|null */",
+                        "<?php /** @var Foo[]|null|Foo|Foo\\Bar|Foo_Bar */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 152,
+                    "args": [
+                        "<?php /** @return array<int, callable(array<string, string|null> , DateTime): bool> */",
+                        "<?php /** @return array<int, callable(array<string, null|string> , DateTime): bool> */",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 153,
+                    "args": [
+                        "<?php /** @var ?Deferred<TestLocations> */",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 154,
+                    "args": [
+                        "<?php /** @var AA|Aaa */",
+                        "<?php /** @var Aaa|AA */",
+                        {
+                            "case_sensitive": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

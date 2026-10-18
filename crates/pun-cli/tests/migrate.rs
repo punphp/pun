@@ -187,13 +187,13 @@ fn config_and_preset_flags() {
     let (_, err, code) = pun(&d, &["migrate", "--dry-run", "--preset=per"]);
     assert_eq!((err.as_str(), code), ("", Some(0)));
     // A pint.json with `"preset": "symfony"`: only the preset's rules that are still `ported = false` in mapping.toml
-    // are named, in the preset's order (three format rules, three lint rules).
+    // are named, in the preset's order (only lint rules: every format rule of @Symfony is native).
     let s = project("symfony", &[("pint.json", r#"{"preset":"symfony"}"#)]);
     let (_, err, code) = pun(&s, &["migrate", "--dry-run"]);
     assert_eq!(
         (err.as_str(), code),
         (
-            "pun migrate: pint.json: no_null_property_initialization: not supported by Pun yet; skipped\npun migrate: pint.json: no_useless_nullsafe_operator: not supported by Pun yet; skipped\npun migrate: pint.json: php_unit_fqcn_annotation: not supported by Pun yet; skipped\npun migrate: pint.json: phpdoc_to_comment: not supported by Pun yet; skipped\npun migrate: pint.json: phpdoc_types_order: not supported by Pun yet; skipped\npun migrate: pint.json: simple_to_complex_string_variable: not supported by Pun yet; skipped\n",
+            "pun migrate: pint.json: no_null_property_initialization: not supported by Pun yet; skipped\npun migrate: pint.json: no_useless_nullsafe_operator: not supported by Pun yet; skipped\npun migrate: pint.json: phpdoc_to_comment: not supported by Pun yet; skipped\n",
             Some(0)
         )
     );

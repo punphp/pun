@@ -1,0 +1,43 @@
+[
+    {
+        "fixer": "phpdoc_types_order",
+        "config": {
+            "case_sensitive": true
+        },
+        "input": "<?php\n/**\n * Only text.\n * @see Foo\n */\n/**\n * @param 10|9|a|B|null|1e1|0.5 $x\n * @return Foo|10|2\n */\nfunction a($x) {}\n",
+        "expected": "<?php\n/**\n * Only text.\n * @see Foo\n */\n/**\n * @param null|0.5|9|10|1e1|B|a $x\n * @return 2|10|Foo\n */\nfunction a($x) {}\n"
+    },
+    {
+        "fixer": "phpdoc_types_order",
+        "input": "<?php\n/**\n * Only text.\n * @see Foo\n */\n/**\n * @param 10|9|a|B|null|1e1|0.5 $x\n * @return Foo|10|2\n */\nfunction a($x) {}\n",
+        "expected": "<?php\n/**\n * Only text.\n * @see Foo\n */\n/**\n * @param null|0.5|10|1e1|9|a|B $x\n * @return 10|2|Foo\n */\nfunction a($x) {}\n"
+    },
+    {
+        "fixer": "phpdoc_types_order",
+        "config": {
+            "sort_algorithm": "beta"
+        },
+        "error": "[phpdoc_types_order] Invalid configuration: The option \"sort_algorithm\" with value \"beta\" is invalid. Accepted values are: \"alpha\", \"none\"."
+    },
+    {
+        "fixer": "phpdoc_types_order",
+        "config": {
+            "null_adjustment": "middle"
+        },
+        "error": "[phpdoc_types_order] Invalid configuration: The option \"null_adjustment\" with value \"middle\" is invalid. Accepted values are: \"always_first\", \"always_last\", \"none\"."
+    },
+    {
+        "fixer": "phpdoc_types_order",
+        "config": {
+            "case_sensitive": 1
+        },
+        "error": "[phpdoc_types_order] Invalid configuration: The option \"case_sensitive\" with value 1 is expected to be of type \"bool\", but is of type \"int\"."
+    },
+    {
+        "fixer": "phpdoc_types_order",
+        "config": {
+            "foo": 1
+        },
+        "error": "[phpdoc_types_order] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"case_sensitive\", \"null_adjustment\", \"sort_algorithm\"."
+    }
+]

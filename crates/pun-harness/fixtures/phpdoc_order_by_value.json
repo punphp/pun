@@ -1,0 +1,1164 @@
+{
+    "fixer": "phpdoc_order_by_value",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocOrderByValueFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocOrderByValueFixerTest.php",
+    "case_count": 89,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "annotation",
+                    "type": "",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocOrderByValueFixerTest",
+            "body": "    public function testInvalidConfiguration($annotation): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n\n        $this->fixer->configure([\n            'annotations' => [\n                $annotation,\n            ],\n        ]);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "null",
+                    "args": [
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "false",
+                    "args": [
+                        false
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "true",
+                    "args": [
+                        true
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "int",
+                    "args": [
+                        0
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "float",
+                    "args": [
+                        3.14
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "array",
+                    "args": [
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "object",
+                    "args": [
+                        {
+                            "__class": "stdClass"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "unknown",
+                    "args": [
+                        "foo"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocOrderByValueFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "author - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @author Bob\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "author"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "author - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @author Alice\n                     * @author Bob\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @author Bob\n                     * @author Alice\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "author"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "author - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @author Alice\n                     * Comment 3\n                     * @author Bob\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @author Bob\n                     * Comment 2\n                     * @author Alice\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "author"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "author - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @author Alice\n                     * @author chris\n                     * @author Daniel\n                     * @author Erna\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @author Alice\n                     * @author Erna\n                     * @author chris\n                     * @author Daniel\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "author"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "author - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @author Alice\n                         * @dataProvider provide\n                         * @author Bob\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @author Bob\n                         * @dataProvider provide\n                         * @author Alice\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "author"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "covers - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @covers Foo\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "covers"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "covers - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @covers Bar\n                     * @covers Foo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @covers Foo\n                     * @covers Bar\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "covers"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "covers - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @covers Bar\n                     * Comment 3\n                     * @covers Foo\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @covers Foo\n                     * Comment 2\n                     * @covers Bar\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "covers"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "covers - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @covers A\n                     * @covers c\n                     * @covers D\n                     * @covers E\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @covers A\n                     * @covers E\n                     * @covers c\n                     * @covers D\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "covers"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "covers - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @covers Bar\n                         * @dataProvider provide\n                         * @covers Foo\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @covers Foo\n                         * @dataProvider provide\n                         * @covers Bar\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "covers"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "coversNothing - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @coversNothing Foo\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "coversNothing"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "coversNothing - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @coversNothing Bar\n                     * @coversNothing Foo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @coversNothing Foo\n                     * @coversNothing Bar\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "coversNothing"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "coversNothing - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @coversNothing Bar\n                     * Comment 3\n                     * @coversNothing Foo\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @coversNothing Foo\n                     * Comment 2\n                     * @coversNothing Bar\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "coversNothing"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "coversNothing - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @coversNothing A\n                     * @coversNothing c\n                     * @coversNothing D\n                     * @coversNothing E\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @coversNothing A\n                     * @coversNothing E\n                     * @coversNothing c\n                     * @coversNothing D\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "coversNothing"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "coversNothing - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @coversNothing Bar\n                         * @dataProvider provide\n                         * @coversNothing Foo\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @coversNothing Foo\n                         * @dataProvider provide\n                         * @coversNothing Bar\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "coversNothing"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dataProvider - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @dataProvider Foo::provideData()\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "dataProvider"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dataProvider - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @dataProvider Bar::provideData()\n                     * @dataProvider Foo::provideData()\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @dataProvider Foo::provideData()\n                     * @dataProvider Bar::provideData()\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "dataProvider"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dataProvider - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @dataProvider Bar::provideData()\n                     * Comment 3\n                     * @dataProvider Foo::provideData()\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @dataProvider Foo::provideData()\n                     * Comment 2\n                     * @dataProvider Bar::provideData()\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "dataProvider"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dataProvider - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @dataProvider A::provideData()\n                     * @dataProvider c::provideData()\n                     * @dataProvider D::provideData()\n                     * @dataProvider E::provideData()\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @dataProvider A::provideData()\n                     * @dataProvider E::provideData()\n                     * @dataProvider c::provideData()\n                     * @dataProvider D::provideData()\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "dataProvider"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dataProvider - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @dataProvider Bar::provideData()\n                         * @dataProvider dataProvider\n                         * @dataProvider Foo::provideData()\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @dataProvider Foo::provideData()\n                         * @dataProvider dataProvider\n                         * @dataProvider Bar::provideData()\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "dataProvider"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "depends - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @depends testFoo\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "depends"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "depends - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @depends testBar\n                     * @depends testFoo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @depends testFoo\n                     * @depends testBar\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "depends"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "depends - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @depends testBar\n                     * Comment 3\n                     * @depends testFoo\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @depends testFoo\n                     * Comment 2\n                     * @depends testBar\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "depends"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "depends - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @depends testA\n                     * @depends testc\n                     * @depends testD\n                     * @depends testE\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @depends testA\n                     * @depends testE\n                     * @depends testc\n                     * @depends testD\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "depends"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "depends - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @depends testBar\n                         * @dataProvider provide\n                         * @depends testFoo\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @depends testFoo\n                         * @dataProvider provide\n                         * @depends testBar\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "depends"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "group - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @group slow\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "group"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "group - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @group fast\n                     * @group slow\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @group slow\n                     * @group fast\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "group"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "group - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @group fast\n                     * Comment 3\n                     * @group slow\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @group slow\n                     * Comment 2\n                     * @group fast\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "group"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "group - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @group A\n                     * @group c\n                     * @group D\n                     * @group E\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @group A\n                     * @group E\n                     * @group c\n                     * @group D\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "group"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "group - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @group fast\n                         * @dataProvider provide\n                         * @group slow\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @group slow\n                         * @dataProvider provide\n                         * @group fast\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "group"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "internal - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @internal Foo\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "internal - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @internal Bar\n                     * @internal Foo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @internal Foo\n                     * @internal Bar\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "internal - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @internal Bar\n                     * Comment 3\n                     * @internal Foo\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @internal Foo\n                     * Comment 2\n                     * @internal Bar\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "internal - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @internal A\n                     * @internal c\n                     * @internal D\n                     * @internal E\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @internal A\n                     * @internal E\n                     * @internal c\n                     * @internal D\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "internal - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @internal Bar\n                         * @dataProvider provide\n                         * @internal Foo\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @internal Foo\n                         * @dataProvider provide\n                         * @internal Bar\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                /**\n                 * @method int foo(array $b)\n                 */\n                class Foo {}\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method - base case",
+                    "args": [
+                        "<?php\n                /**\n                 * @method bool bar(int $a, bool $b)\n                 * @method array|null baz()\n                 * @method int foo(array $b)\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @method int foo(array $b)\n                 * @method bool bar(int $a, bool $b)\n                 * @method array|null baz()\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                /**\n                 * Comment 1\n                 * @method bool bar(int $a, bool $b)\n                 * Comment 3\n                 * @method int foo(array $b)\n                 * Comment 2\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * Comment 1\n                 * @method int foo(array $b)\n                 * Comment 2\n                 * @method bool bar(int $a, bool $b)\n                 * Comment 3\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method - case-insensitive",
+                    "args": [
+                        "<?php\n                /**\n                 * @method int A()\n                 * @method bool b()\n                 * @method array|null c()\n                 * @method float D()\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @method array|null c()\n                 * @method float D()\n                 * @method bool b()\n                 * @method int A()\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method - with-possibly-unexpected-comparable",
+                    "args": [
+                        "<?php\n                /**\n                 * @method int foo(Z $b)\n                 * @method int fooA( $b)\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @method int fooA( $b)\n                 * @method int foo(Z $b)\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method - with-and-without-types",
+                    "args": [
+                        "<?php\n                /**\n                 * @method int A()\n                 * @method b()\n                 * @method array|null c()\n                 * @method D()\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @method array|null c()\n                 * @method D()\n                 * @method b()\n                 * @method int A()\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixin - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    /**\n                     * @package SomePackage\n                     * @mixin Bar\n                     * @license MIT\n                     */\n                    class Foo {\n                    }\n\n                    /**\n                     * @package SomePackage\n                     * @license MIT\n                     */\n                    class Foo2 {\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "mixin"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixin - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @mixin Bar1\n                     * @mixin Bar2\n                     * @mixin Bar3\n                     */\n                    class Foo {\n                    }\n                ",
+                        "<?php\n                    /**\n                     * @mixin Bar2\n                     * @mixin Bar3\n                     * @mixin Bar1\n                     */\n                    class Foo {\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "mixin"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixin - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @mixin Bar1\n                     * Comment 3\n                     * @mixin Bar2\n                     * Comment 2\n                     */\n                    class Foo {\n                    }\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @mixin Bar2\n                     * Comment 2\n                     * @mixin Bar1\n                     * Comment 3\n                     */\n                    class Foo {\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "mixin"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixin - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @mixin A\n                     * @mixin b\n                     * @mixin C\n                     */\n                    class Foo {\n                    }\n                ",
+                        "<?php\n                    /**\n                     * @mixin b\n                     * @mixin A\n                     * @mixin C\n                     */\n                    class Foo {\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "mixin"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixin - fully-qualified",
+                    "args": [
+                        "<?php\n                    /**\n                     * @mixin \\A\\B\\Bar2\n                     * @mixin Bar1\n                     * @mixin Bar3\n                     */\n                    class Foo {\n                    }\n                ",
+                        "<?php\n                    /**\n                     * @mixin Bar3\n                     * @mixin Bar1\n                     * @mixin \\A\\B\\Bar2\n                     */\n                    class Foo {\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "mixin"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                /**\n                 * @property int|\\stdClass $foo\n                 */\n                class Foo {}\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property - base case",
+                    "args": [
+                        "<?php\n                /**\n                 * @property bool $bar\n                 * @property array|null $baz\n                 * @property int|\\stdClass $foo\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property int|\\stdClass $foo\n                 * @property bool $bar\n                 * @property array|null $baz\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                /**\n                 * Comment 1\n                 * @property bool $bar\n                 * Comment 3\n                 * @property int|\\stdClass $foo\n                 * Comment 2\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * Comment 1\n                 * @property int|\\stdClass $foo\n                 * Comment 2\n                 * @property bool $bar\n                 * Comment 3\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property - case-insensitive",
+                    "args": [
+                        "<?php\n                /**\n                 * @property int|\\stdClass $A\n                 * @property bool $b\n                 * @property array|null $C\n                 * @property float $D\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property array|null $C\n                 * @property float $D\n                 * @property bool $b\n                 * @property int|\\stdClass $A\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property - with-and-without-types",
+                    "args": [
+                        "<?php\n                /**\n                 * @property int|\\stdClass $A\n                 * @property $b\n                 * @property array|null $C\n                 * @property $D\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property array|null $C\n                 * @property $D\n                 * @property $b\n                 * @property int|\\stdClass $A\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-read - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-read int|\\stdClass $foo\n                 */\n                class Foo {}\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "property-read"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-read - base case",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-read bool $bar\n                 * @property-read array|null $baz\n                 * @property-read int|\\stdClass $foo\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property-read int|\\stdClass $foo\n                 * @property-read bool $bar\n                 * @property-read array|null $baz\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-read"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-read - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                /**\n                 * Comment 1\n                 * @property-read bool $bar\n                 * Comment 3\n                 * @property-read int|\\stdClass $foo\n                 * Comment 2\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * Comment 1\n                 * @property-read int|\\stdClass $foo\n                 * Comment 2\n                 * @property-read bool $bar\n                 * Comment 3\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-read"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-read - case-insensitive",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-read int|\\stdClass $A\n                 * @property-read bool $b\n                 * @property-read array|null $C\n                 * @property-read float $D\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property-read array|null $C\n                 * @property-read float $D\n                 * @property-read bool $b\n                 * @property-read int|\\stdClass $A\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-read"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-read - with-and-without-types",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-read int|\\stdClass $A\n                 * @property-read $b\n                 * @property-read array|null $C\n                 * @property-read $D\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property-read array|null $C\n                 * @property-read $D\n                 * @property-read $b\n                 * @property-read int|\\stdClass $A\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-read"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-write - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-write int|\\stdClass $foo\n                 */\n                class Foo {}\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "property-write"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-write - base case",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-write bool $bar\n                 * @property-write array|null $baz\n                 * @property-write int|\\stdClass $foo\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property-write int|\\stdClass $foo\n                 * @property-write bool $bar\n                 * @property-write array|null $baz\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-write"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-write - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                /**\n                 * Comment 1\n                 * @property-write bool $bar\n                 * Comment 3\n                 * @property-write int|\\stdClass $foo\n                 * Comment 2\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * Comment 1\n                 * @property-write int|\\stdClass $foo\n                 * Comment 2\n                 * @property-write bool $bar\n                 * Comment 3\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-write"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-write - case-insensitive",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-write int|\\stdClass $A\n                 * @property-write bool $b\n                 * @property-write array|null $C\n                 * @property-write float $D\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property-write array|null $C\n                 * @property-write float $D\n                 * @property-write bool $b\n                 * @property-write int|\\stdClass $A\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-write"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property-write - with-and-without-types",
+                    "args": [
+                        "<?php\n                /**\n                 * @property-write int|\\stdClass $A\n                 * @property-write $b\n                 * @property-write array|null $C\n                 * @property-write $D\n                 */\n                class Foo {}\n                ",
+                        "<?php\n                /**\n                 * @property-write array|null $C\n                 * @property-write $D\n                 * @property-write $b\n                 * @property-write int|\\stdClass $A\n                 */\n                class Foo {}\n                ",
+                        {
+                            "annotations": [
+                                "property-write"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "requires - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @requires function json_decode\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "requires"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "requires - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @requires extension redis\n                     * @requires function json_decode\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @requires function json_decode\n                     * @requires extension redis\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "requires"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "requires - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @requires extension redis\n                     * Comment 3\n                     * @requires function json_decode\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @requires function json_decode\n                     * Comment 2\n                     * @requires extension redis\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "requires"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "requires - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @requires extension redis\n                     * @requires function json_decode\n                     * @requires OS Linux\n                     * @requires PHP 7.2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @requires PHP 7.2\n                     * @requires function json_decode\n                     * @requires extension redis\n                     * @requires OS Linux\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "requires"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "requires - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @requires extension redis\n                         * @dataProvider provide\n                         * @requires function json_decode\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @requires function json_decode\n                         * @dataProvider provide\n                         * @requires extension redis\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "requires"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class Foo {\n                        /**\n                         * @throws Bar\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function bar() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function baz() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws - base case",
+                    "args": [
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * @throws Bar\n                         * @throws Baz\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * @throws Baz\n                         * @throws Bar\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * Comment 1\n                         * @throws Bar\n                         * Comment 3\n                         * @throws Baz\n                         * Comment 2\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * Comment 1\n                         * @throws Baz\n                         * Comment 2\n                         * @throws Bar\n                         * Comment 3\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws - case-insensitive",
+                    "args": [
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * @throws A\n                         * @throws b\n                         * @throws C\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * @throws b\n                         * @throws C\n                         * @throws A\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws - fully-qualified",
+                    "args": [
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * @throws \\Bar\\Baz\\Qux\n                         * @throws Bar\n                         * @throws Foo\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        "<?php\n                    class Foo\n                    {\n                        /**\n                         * @throws Bar\n                         * @throws \\Bar\\Baz\\Qux\n                         * @throws Foo\n                         */\n                        public function bar() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "uses - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @uses Foo\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "uses - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @uses Bar\n                     * @uses Foo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @uses Foo\n                     * @uses Bar\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "uses - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @uses Bar\n                     * Comment 3\n                     * @uses Foo\n                     * Comment 2\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @uses Foo\n                     * Comment 2\n                     * @uses Bar\n                     * Comment 3\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "uses - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @uses A\n                     * @uses c\n                     * @uses D\n                     * @uses E\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @uses A\n                     * @uses E\n                     * @uses c\n                     * @uses D\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "uses - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @uses Bar\n                         * @dataProvider provide\n                         * @uses Foo\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @uses Foo\n                         * @dataProvider provide\n                         * @uses Bar\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple annotations - skip on 1 or 0 occurrences",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n                        /**\n                         * @uses Foo\n                         * @covers Baz\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe() {}\n\n                        /**\n                         * @params bool $bool\n                         * @return void\n                         */\n                        public function testMe2() {}\n                    }\n                ",
+                        null,
+                        {
+                            "annotations": [
+                                "covers",
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple annotations - base case",
+                    "args": [
+                        "<?php\n                    /**\n                     * @uses Bar\n                     * @uses Foo\n                     * @covers Baz\n                     * @covers Qux\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @uses Foo\n                     * @uses Bar\n                     * @covers Qux\n                     * @covers Baz\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "covers",
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple annotations - preserve positions if other docblock parts are present",
+                    "args": [
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @uses Bar\n                     * Comment 3\n                     * @uses Foo\n                     * Comment 2\n                     * @covers Baz\n                     * Comment 5\n                     * @covers Qux\n                     * Comment 4\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * Comment 1\n                     * @uses Foo\n                     * Comment 2\n                     * @uses Bar\n                     * Comment 3\n                     * @covers Qux\n                     * Comment 4\n                     * @covers Baz\n                     * Comment 5\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "covers",
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple annotations - case-insensitive",
+                    "args": [
+                        "<?php\n                    /**\n                     * @uses A\n                     * @uses c\n                     * @covers D\n                     * @covers e\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /**\n                     * @uses c\n                     * @uses A\n                     * @covers e\n                     * @covers D\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        {
+                            "annotations": [
+                                "covers",
+                                "uses"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple annotations - data provider",
+                    "args": [
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @uses Bar\n                         * @dataProvider provideOne\n                         * @uses Foo\n                         * @dataProvider provideTwo\n                         * @covers Baz\n                         * @dataProvider provideThree\n                         * @covers Qux\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        "<?php\n                    class FooTest extends \\PHPUnit_Framework_TestCase\n                    {\n                        /**\n                         * @uses Foo\n                         * @dataProvider provideOne\n                         * @uses Bar\n                         * @dataProvider provideTwo\n                         * @covers Qux\n                         * @dataProvider provideThree\n                         * @covers Baz\n                         */\n                        public function testMe() {}\n                    }\n                ",
+                        {
+                            "annotations": [
+                                "covers",
+                                "uses"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

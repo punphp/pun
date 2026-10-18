@@ -185,10 +185,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/line-span" = { fix = "safe", ported = false, status = "decided", summary = "Changes doc blocks from single to multi line, or reversed." }
 "phpdoc/no-alias-tag" = { fix = "safe", ported = true, status = "decided", summary = "No alias PHPDoc tags should be used." }
 "phpdoc/no-blank-line-after" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be blank lines between docblock and the documented element." }
-"phpdoc/no-duplicate-types" = { fix = "safe", ported = false, status = "decided", summary = "Removes duplicate PHPDoc types." }
+"phpdoc/no-duplicate-types" = { fix = "safe", ported = true, status = "decided", summary = "Removes duplicate PHPDoc types." }
 "phpdoc/no-empty" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be empty PHPDoc blocks." }
 "phpdoc/order" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Annotations in PHPDoc should be ordered in defined sequence." }
-"phpdoc/order-by-value" = { fix = "safe", ported = false, status = "decided", summary = "Order PHPDoc tags by value." }
+"phpdoc/order-by-value" = { fix = "safe", ported = true, status = "decided", summary = "Order PHPDoc tags by value." }
 "phpdoc/param-order" = { fix = "safe", ported = false, status = "decided", summary = "Orders all `@param` annotations in DocBlocks according to method signature." }
 "phpdoc/return-self-reference" = { fix = "safe", ported = true, status = "decided", summary = "The type of `@return` annotations of methods returning a reference to itself must the configured one." }
 "phpdoc/scalar" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Scalar types should always be written in the same form. `int` not `integer`, `bool` not `boolean`, `float` not `real` or `double`." }
@@ -200,15 +200,15 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/trim" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "PHPDoc should start and end with content, excluding the very first and last line of the docblocks." }
 "phpdoc/trim-blank-lines" = { fix = "safe", ported = true, status = "decided", summary = "Removes extra blank lines after summary and after description in PHPDoc." }
 "phpdoc/types" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "The correct case must be used for standard PHP types in PHPDoc." }
-"phpdoc/types-order" = { fix = "safe", ported = false, status = "decided", summary = "Sorts PHPDoc types." }
+"phpdoc/types-order" = { fix = "safe", ported = true, status = "decided", summary = "Sorts PHPDoc types." }
 "phpdoc/var-order" = { fix = "safe", ported = true, status = "decided", summary = "`@var` and `@type` annotations must have type and name in the correct order." }
 "phpdoc/var-without-name" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "`@var` and `@type` annotations of classy properties should not contain the name." }
-"phpunit/fqcn-annotation" = { fix = "safe", ported = false, status = "decided", summary = "PHPUnit annotations should be a FQCNs including a root namespace." }
+"phpunit/fqcn-annotation" = { fix = "safe", ported = true, status = "decided", summary = "PHPUnit annotations should be a FQCNs including a root namespace." }
 "statements/blank-line-before" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "An empty line feed must precede any configured statement." }
 "statements/braces-position" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Braces must be placed as configured." }
 "statements/declare-equal" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Equal sign in declare statement should be surrounded by spaces or not following configuration." }
 "statements/declare-parentheses" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There must not be spaces around `declare` statement parentheses." }
-"statements/explicit-indirect-variable" = { fix = "safe", ported = false, status = "decided", summary = "Add curly braces to indirect variables to make them clear to understand." }
+"statements/explicit-indirect-variable" = { fix = "safe", ported = true, status = "decided", summary = "Add curly braces to indirect variables to make them clear to understand." }
 "statements/multiline-semicolon" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Forbid multi-line whitespace before the closing semicolon or move the semicolon to the new line for chained calls." }
 "statements/no-mixed-echo-print" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Either language construct `print` or `echo` should be used." }
 "statements/no-space-before-semicolon" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Single-line whitespace before closing semicolon are prohibited." }
@@ -219,8 +219,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/single-line-empty-body" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Empty body of class, interface, trait, enum or function must be abbreviated as `{}` and placed on the same line as the previous symbol, separated by a single space." }
 "statements/space-after-semicolon" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Fix whitespace after a semicolon." }
 "statements/space-around-construct" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Ensures a single space after language constructs." }
-"strings/complex-variable" = { fix = "safe", ported = false, status = "decided", summary = "Converts explicit variables in double-quoted strings and heredoc syntax from simple to complex format (`${` to `{$`)." }
-"strings/explicit-variable" = { fix = "safe", ported = false, status = "decided", summary = "Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax." }
+"strings/complex-variable" = { fix = "safe", ported = true, status = "decided", summary = "Converts explicit variables in double-quoted strings and heredoc syntax from simple to complex format (`${` to `{$`)." }
+"strings/explicit-variable" = { fix = "safe", ported = true, status = "decided", summary = "Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax." }
 "strings/heredoc-closing-marker" = { fix = "safe", ported = false, status = "decided", summary = "Unify `heredoc` or `nowdoc` closing marker." }
 "strings/heredoc-indentation" = { fix = "safe", ported = false, status = "decided", summary = "Heredoc/nowdoc content must be properly indented." }
 "strings/heredoc-to-nowdoc" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Convert `heredoc` to `nowdoc` where possible." }

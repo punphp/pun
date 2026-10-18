@@ -1,0 +1,99 @@
+{
+    "fixer": "phpdoc_no_duplicate_types",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoDuplicateTypesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocNoDuplicateTypesFixerTest.php",
+    "case_count": 9,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoDuplicateTypesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @var string|null|int */",
+                        "<?php /** @var string|string|null|int */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @var list<int> */",
+                        "<?php /** @var list<int|int> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @var string|array<string, string>|array<int, int> */",
+                        "<?php /** @var string|string|array<string, string|string>|array<int, int|int> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @var list<float|int> */",
+                        "<?php /** @var list<float|int>|list<int|float> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /** @var array<int|float, int|string|float|null>|string */",
+                        "<?php /** @var array<int|float, int|int|string|float|null>|array<float|int, string|null|int|int|float>|string|string */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** @var array{foo: string} */",
+                        "<?php /** @var array{foo: string|string} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /** @var Bar|Baz */",
+                        "<?php /** @var Bar|Bar|Baz */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php /** @var Bar|\\Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php /** @var string|\\Foo\\Baz|\\Foo\\Bar|Foo\\Baz */",
+                        "<?php /** @var string|\\Foo\\Baz|\\Foo\\Bar|\\Foo\\Baz|Foo\\Baz */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+[
+    {
+        "fixer": "phpdoc_order_by_value",
+        "config": {
+            "annotations": [
+                "covers",
+                "throws",
+                "covers"
+            ]
+        },
+        "input": "<?php\n/**\n * @covers \\Foo\n * @covers \\Bar\n * @covers \\Foo\n * @covers \\Baz\n */\nclass A {}\n/**\n * @throws Zed\n * @throws Alpha\n * @throws Zed\n */\nclass B {}\n",
+        "expected": "<?php\n/**\n * @covers \\Bar\n * @covers \\Baz\n * @covers \\Foo\n */\nclass A {}\n/**\n * @throws Alpha\n * @throws Zed\n */\nclass B {}\n"
+    },
+    {
+        "fixer": "phpdoc_order_by_value",
+        "config": {
+            "annotations": []
+        },
+        "input": "<?php\n/**\n * @covers \\Foo\n * @covers \\Bar\n * @covers \\Foo\n * @covers \\Baz\n */\nclass A {}\n/**\n * @throws Zed\n * @throws Alpha\n * @throws Zed\n */\nclass B {}\n",
+        "expected": "<?php\n/**\n * @covers \\Foo\n * @covers \\Bar\n * @covers \\Foo\n * @covers \\Baz\n */\nclass A {}\n/**\n * @throws Zed\n * @throws Alpha\n * @throws Zed\n */\nclass B {}\n"
+    },
+    {
+        "fixer": "phpdoc_order_by_value",
+        "config": {
+            "annotations": [
+                "foo"
+            ]
+        },
+        "error": "[phpdoc_order_by_value] Invalid configuration: The option \"annotations\" with value array is invalid."
+    },
+    {
+        "fixer": "phpdoc_order_by_value",
+        "config": {
+            "foo": 1
+        },
+        "error": "[phpdoc_order_by_value] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"annotations\"."
+    }
+]

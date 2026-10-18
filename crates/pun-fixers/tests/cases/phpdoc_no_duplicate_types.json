@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_no_duplicate_types",
+        "input": "<?php\n/**\n * Just text.\n * @author Foo\n */\nclass A {}\n/**\n * @method int|int|string foo(int|int $a, string|string|int $b)\n * @method static void bar(callable(int|int): void $c)\n */\nclass B {}\n",
+        "expected": "<?php\n/**\n * Just text.\n * @author Foo\n */\nclass A {}\n/**\n * @method int|string foo(int $a, string|int $b)\n * @method static void bar(callable(int|int): void $c)\n */\nclass B {}\n"
+    }
+]

@@ -69,7 +69,7 @@ PHP-CS-Fixer marks some fixers "risky": they can change behaviour (`final_class`
 ## 5. Rules: what exists
 
 208 format rules in total today (every safe PHP-CS-Fixer fixer plus Pint's two); 40 of them move to lint
-(commands.md §4), leaving 168. 158 are ported natively: 139 of the 168 format rules, 29 left.
+(commands.md §4), leaving 168. 165 are ported natively: 146 of the 168 format rules, 22 left.
 
 | Preset | Rules today | After the 40 move | Not ported |
 | --- | ---: | ---: | ---: |
@@ -77,7 +77,8 @@ PHP-CS-Fixer marks some fixers "risky": they can change behaviour (`final_class`
 | psr12 | 52 | 50 | 0 |
 
 The unported rules are in no preset: Doctrine annotations, PHPUnit fixers, heredoc and string rewrites, a few PHPDoc
-rules, and the rules only `per` and `symfony` used. Until one is ported, `pun migrate` names it and skips it.
+rules, and a few rules of PHP-CS-Fixer's own sets (every format rule of `per` and `symfony` is native). Until one is
+ported, `pun migrate` names it and skips it.
 
 ## 6. The CLI
 
@@ -129,6 +130,17 @@ pint.json, harness and fuzzer. Speed and memory come first (decided). The steps 
    NoUselessConcatOperatorFixer port leaves out `operandsCanNotBeMerged`'s first check (the first operand is not a
    `"..."` with variables), which no caller can reach; tests/fixtures.rs gives a case that omits a trailing argument the
    parameter's default (NoUselessConcatOperatorFixerTest's `$configuration = ['juggle_simple_strings' => true]`).
+   Batch 3 done (wf/format-4, 2026-10-19): the Symfony rules `phpdoc/types-order`, `phpunit/fqcn-annotation`,
+   `strings/complex-variable` and the @PhpCsFixer rules `phpdoc/no-duplicate-types`, `phpdoc/order-by-value`,
+   `statements/explicit-indirect-variable`, `strings/explicit-variable`; a pint.json with `"preset": "symfony"` now names
+   only the lint rules `no_null_property_initialization`, `no_useless_nullsafe_operator` and `phpdoc_to_comment` as
+   unsupported. Assistant's calls: `phpdoc/types-order`'s default `null_adjustment` is PHP-CS-Fixer 3's `always_first`
+   (Pint runs without future mode), as for `types/ordered`; TypeExpression's `sortTypes` and `removeDuplicateTypes`
+   are ported into analyzers/docblock/type_expression.rs with PHP 8's string `<=>` (`php_spaceship`: numeric strings
+   by value as doubles, else byte-wise; two integers past 2^53 that PHP compares as longs are left out);
+   `Utils::stableSort` is Rust's stable `sort_by` (the same order for a consistent comparator; a cyclic one, such as
+   `<=>` over `2|1e1|1f`, may order differently from zend_sort); the docblock unit test runs upstream's testSortTypes
+   with a reversed sort in place of its crc32 one.
 
 After 1.0: the native Blade formatter (Blade stays on Node + Prettier until then) and a Pun reprinting preset.
 

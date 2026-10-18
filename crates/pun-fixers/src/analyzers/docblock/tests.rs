@@ -489,12 +489,35 @@ fn type_expression_map_types() {
     }
 }
 
-/// testSortTypes' inputs (conditionals on a type, nested ones) parse with inner start indexes matching their text.
+/// testSortTypes: sorted case-insensitively, then in another order (upstream uses crc32; here the reverse) and back.
 #[test]
-fn type_expression_parses_sort_types_inputs() {
+fn type_expression_sort_types() {
+    use pun_tokens::php_compat::strcasecmp;
+    let case =
+        |a: &TypeExpression, b: &TypeExpression| strcasecmp(a.to_string(), b.to_string()).cmp(&0);
+    let reverse = |a: &TypeExpression, b: &TypeExpression| case(b, a);
     for c in cases("TypeExpressionTest::testSortTypes") {
-        assert_eq!(lossy(parse(&s(&c[0])).to_string()), lossy(&s(&c[0])));
+        let expression = parse(&s(&c[0])).sort_types(&case);
+        check_inner_start_index(&expression);
+        assert_eq!(lossy(expression.to_string()), lossy(&s(&c[1])));
+        let expression = expression.sort_types(&reverse);
+        check_inner_start_index(&expression);
+        let expression = expression.sort_types(&case);
+        check_inner_start_index(&expression);
+        assert_eq!(lossy(expression.to_string()), lossy(&s(&c[1])));
     }
+}
+
+/// PHP 8's `<=>` on strings: numeric strings by value
+/// (`php -r 'var_dump("10" <=> "9", " 1e1" <=> "10 ", "10" <=> "9a", ".5" <=> "0.50");'`).
+#[test]
+fn php_spaceship_compares_numeric_strings_by_value() {
+    use super::type_expression::php_spaceship;
+    use std::cmp::Ordering::*;
+    assert_eq!(php_spaceship(b"10", b"9"), Greater);
+    assert_eq!(php_spaceship(b" 1e1", b"10 "), Equal);
+    assert_eq!(php_spaceship(b"10", b"9a"), Less);
+    assert_eq!(php_spaceship(b".5", b"0.50"), Equal);
 }
 
 #[test]

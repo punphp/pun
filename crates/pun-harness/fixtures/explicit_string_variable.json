@@ -1,0 +1,396 @@
+{
+    "fixer": "explicit_string_variable",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\ExplicitStringVariableFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/ExplicitStringVariableFixerTest.php",
+    "case_count": 47,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\ExplicitStringVariableFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $var1 = \"My name is {$name}!\"; $var2 = \"My name is {$name}!\"; $var3 = \"My name is {$name}!\"; $var4 = \"My name is {$name}!\"; $var5 = \"My name is {$name}!\"; $var6 = \"My name is {$name}!\"; $var7 = \"My name is {$name}!\"; $var8 = \"My name is {$name}!\"; $var9 = \"My name is {$name}!\"; $var10 = \"My name is {$name}!\"; $var11 = \"My name is {$name}!\"; $var12 = \"My name is {$name}!\"; $var13 = \"My name is {$name}!\"; $var14 = \"My name is {$name}!\";",
+                        "<?php $var1 = \"My name is $name!\"; $var2 = \"My name is $name!\"; $var3 = \"My name is $name!\"; $var4 = \"My name is $name!\"; $var5 = \"My name is $name!\"; $var6 = \"My name is $name!\"; $var7 = \"My name is $name!\"; $var8 = \"My name is $name!\"; $var9 = \"My name is $name!\"; $var10 = \"My name is $name!\"; $var11 = \"My name is $name!\"; $var12 = \"My name is $name!\"; $var13 = \"My name is $name!\"; $var14 = \"My name is $name!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = \"My name is {$name}!\";",
+                        "<?php $a = \"My name is $name!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php \"My name is {$james}{$bond}!\";",
+                        "<?php \"My name is $james$bond!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = <<<EOF\nMy name is {$name}!\nEOF;\n",
+                        "<?php $a = <<<EOF\nMy name is $name!\nEOF;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $a = \"{$b}\";",
+                        "<?php $a = \"$b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $a = \"{$b} start\";",
+                        "<?php $a = \"$b start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $a = \"end {$b}\";",
+                        "<?php $a = \"end $b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a = <<<EOF\n{$b}\nEOF;\n",
+                        "<?php $a = <<<EOF\n$b\nEOF;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $a = 'My name is $name!';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $a = \"My name is \" . $name;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $a = \"My name is {$name}!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $a = <<<EOF\nMy name is {$name}!\nEOF;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a = \"My name is {$user->name}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $a = <<<EOF\nMy name is {$user->name}\nEOF;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a = <<<'EOF'\n$b\nEOF;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $a = \"My name is {$object->property} !\";",
+                        "<?php $a = \"My name is $object->property !\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = \"My name is {$array[1]} !\";",
+                        "<?php $a = \"My name is $array[1] !\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $a = \"My name is {$array['foo']} !\";",
+                        "<?php $a = \"My name is $array[foo] !\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $a = \"My name is {$array[$foo]} !\";",
+                        "<?php $a = \"My name is $array[$foo] !\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $a = \"My name is {$array[$foo]}[{$bar}] !\";",
+                        "<?php $a = \"My name is $array[$foo][$bar] !\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $a = \"Closure not allowed {$closure}() text\";",
+                        "<?php $a = \"Closure not allowed $closure() text\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $a = \"Complex object chaining not allowed {$object->property}->method()->array[1] text\";",
+                        "<?php $a = \"Complex object chaining not allowed $object->property->method()->array[1] text\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $a = \"Complex array chaining not allowed {$array[1]}[2][MY_CONSTANT] text\";",
+                        "<?php $a = \"Complex array chaining not allowed $array[1][2][MY_CONSTANT] text\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $a = \"Concatenation: {$james}{$bond}{$object->property}{$array[1]}!\";",
+                        "<?php $a = \"Concatenation: $james$bond$object->property$array[1]!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $a = \"{$a->b} start\";",
+                        "<?php $a = \"$a->b start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $a = \"end {$a->b}\";",
+                        "<?php $a = \"end $a->b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $a = \"{$a[1]} start\";",
+                        "<?php $a = \"$a[1] start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $a = \"end {$a[1]}\";",
+                        "<?php $a = \"end $a[1]\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $a = b\"{$a->b} start\";",
+                        "<?php $a = b\"$a->b start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $a = b\"end {$a->b}\";",
+                        "<?php $a = b\"end $a->b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $a = b\"{$a[1]} start\";",
+                        "<?php $a = b\"$a[1] start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $a = b\"end {$a[1]}\";",
+                        "<?php $a = b\"end $a[1]\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $a = B\"{$a->b} start\";",
+                        "<?php $a = B\"$a->b start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $a = B\"end {$a->b}\";",
+                        "<?php $a = B\"end $a->b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $a = B\"{$a[1]} start\";",
+                        "<?php $a = B\"$a[1] start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $a = B\"end {$a[1]}\";",
+                        "<?php $a = B\"end $a[1]\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $a = \"*{$a[0]}{$b[1]}X{$c[2]}{$d[3]}\";",
+                        "<?php $a = \"*$a[0]$b[1]X$c[2]$d[3]\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $a = `echo $foo`;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $a = \"My name is {$name}!\"; $a = `echo $foo`; $a = \"{$a->b} start\";",
+                        "<?php $a = \"My name is $name!\"; $a = `echo $foo`; $a = \"$a->b start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $mobileNumberVisible = \"***-***-{$last4Digits[0]}{$last4Digits[1]}-{$last4Digits[2]}{$last4Digits[3]}\";",
+                        "<?php $mobileNumberVisible = \"***-***-$last4Digits[0]$last4Digits[1]-$last4Digits[2]$last4Digits[3]\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php $pair = \"{$foo} {$bar[0]}\";",
+                        "<?php $pair = \"$foo {$bar[0]}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php $pair = \"{$foo}{$bar[0]}\";",
+                        "<?php $pair = \"$foo{$bar[0]}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $a = \"My name is {$array[-1]} !\";",
+                        "<?php $a = \"My name is $array[-1] !\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php $a = \"{$a[-1]} start\";",
+                        "<?php $a = \"$a[-1] start\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php $a = \"end {$a[-1]}\";",
+                        "<?php $a = \"end $a[-1]\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php $a = b\"end {$a[-1]}\";",
+                        "<?php $a = b\"end $a[-1]\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php $a = B\"end {$a[-1]}\";",
+                        "<?php $a = B\"end $a[-1]\";"
+                    ]
+                }
+            ]
+        }
+    ]
+}

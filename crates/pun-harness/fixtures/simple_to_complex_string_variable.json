@@ -1,0 +1,96 @@
+{
+    "fixer": "simple_to_complex_string_variable",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\SimpleToComplexStringVariableFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/SimpleToComplexStringVariableFixerTest.php",
+    "case_count": 9,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\SimpleToComplexStringVariableFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic fix",
+                    "args": [
+                        "<?php\n$name = \"World\";\necho \"Hello {$name}!\";",
+                        "<?php\n$name = \"World\";\necho \"Hello ${name}!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc",
+                    "args": [
+                        "<?php\n$name = 'World';\necho <<<TEST\nHello {$name}!\nTEST;\n",
+                        "<?php\n$name = 'World';\necho <<<TEST\nHello ${name}!\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "implicit",
+                    "args": [
+                        "<?php\n$name = 'World';\necho \"Hello $name!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "implicit again",
+                    "args": [
+                        "<?php\n$name = 'World';\necho \"Hello { $name }!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "escaped",
+                    "args": [
+                        "<?php\n$name = 'World';\necho \"Hello \\${name}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double dollar",
+                    "args": [
+                        "<?php\n$name = 'World';\necho \"Hello \\${$name}\";",
+                        "<?php\n$name = 'World';\necho \"Hello $${name}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double dollar heredoc",
+                    "args": [
+                        "<?php\n$name = 'World';\necho <<<TEST\nHello \\${$name}!\nTEST;\n",
+                        "<?php\n$name = 'World';\necho <<<TEST\nHello $${name}!\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double dollar single quote",
+                    "args": [
+                        "<?php\n$name = 'World';\necho 'Hello $${name}';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array elements",
+                    "args": [
+                        "<?php\n\"Hello {$array[0]}!\";\n\"Hello {$array['index']}!\";",
+                        "<?php\n\"Hello ${array[0]}!\";\n\"Hello ${array['index']}!\";"
+                    ]
+                }
+            ]
+        }
+    ]
+}

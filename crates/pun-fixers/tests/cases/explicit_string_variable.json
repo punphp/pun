@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "explicit_string_variable",
+        "input": "<?php\n$a = \"$${b} and \\$${c}\";\n$x = `ls $foo`;\n$y = b\"x $foo y\";\n$z = B\"x $foo[1] y\";\n",
+        "expected": "<?php\n$a = \"$${b} and \\$${c}\";\n$x = `ls $foo`;\n$y = b\"x {$foo} y\";\n$z = B\"x {$foo[1]} y\";\n"
+    }
+]

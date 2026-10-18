@@ -1,0 +1,148 @@
+{
+    "fixer": "explicit_indirect_variable",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ExplicitIndirectVariableFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/ExplicitIndirectVariableFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ExplicitIndirectVariableFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable variable function call",
+                    "args": [
+                        "<?php echo ${$foo}($bar);",
+                        "<?php echo $$foo($bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable variable array fetch",
+                    "args": [
+                        "<?php echo ${$foo}['bar']['baz'];",
+                        "<?php echo $$foo['bar']['baz'];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dynamic property access",
+                    "args": [
+                        "<?php echo $foo->{$bar}['baz'];",
+                        "<?php echo $foo->$bar['baz'];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dynamic property access with method call",
+                    "args": [
+                        "<?php echo $foo->{$bar}['baz']();",
+                        "<?php echo $foo->$bar['baz']();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable variable with comments between dollar signs",
+                    "args": [
+                        "<?php echo $\n/* C1 */\n// C2\n{$foo}\n// C3\n;",
+                        "<?php echo $\n/* C1 */\n// C2\n$foo\n// C3\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dynamic static property access using variable variable",
+                    "args": [
+                        "<?php echo Foo::${$bar};",
+                        "<?php echo Foo::$$bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dynamic static property access using variable variable with method call",
+                    "args": [
+                        "<?php echo Foo::${$bar}->baz();",
+                        "<?php echo Foo::$$bar->baz();"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ExplicitIndirectVariableFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "dynamic property fetch with nullsafe operator",
+                    "args": [
+                        "<?php echo $foo?->{$bar}[\"baz\"];",
+                        "<?php echo $foo?->$bar[\"baz\"];"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "dynamic property fetch with nullsafe operator and method call",
+                    "args": [
+                        "<?php echo $foo?->{$bar}[\"baz\"]();",
+                        "<?php echo $foo?->$bar[\"baz\"]();"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\ExplicitIndirectVariableFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "dynamic class const fetch with variable variable",
+                    "args": [
+                        "<?php echo Foo::{${$bar}};",
+                        "<?php echo Foo::{$$bar};"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,7 +1,26 @@
 //! `PhpCsFixer\DocBlock\TypeExpression`.
 
 use crate::analyzers::preg::{Captures, Preg};
+use std::cmp::Ordering;
 use std::sync::LazyLock;
+
+/// PHP 8's `$a <=> $b` on two strings: numerically when both are numeric strings, else byte-wise.
+pub fn php_spaceship(a: &[u8], b: &[u8]) -> Ordering {
+    match (numeric_value(a), numeric_value(b)) {
+        (Some(x), Some(y)) => x.partial_cmp(&y).unwrap(),
+        _ => a.cmp(b),
+    }
+}
+
+/// The value of a PHP 8 numeric string (leading and trailing whitespace allowed), else None.
+fn numeric_value(s: &[u8]) -> Option<f64> {
+    let m = Preg::match_groups(
+        r"/^[ \t\n\r\x0b\x0c]*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)[ \t\n\r\x0b\x0c]*$/D",
+        s,
+    )?;
+    // The pattern only lets through what Rust's float parser reads.
+    Some(std::str::from_utf8(m.str(1)).unwrap().parse().unwrap())
+}
 
 pub const REGEX_IDENTIFIER: &str = crate::__regex_identifier!();
 pub const REGEX_TYPES: &str = crate::__regex_types!();
@@ -123,6 +142,47 @@ impl TypeExpression {
             TypeExpression::new(&value)
         };
         callback(t)
+    }
+
+    /// `sortTypes`: `Utils::stableSort` of every composite type's members, innermost first.
+    pub fn sort_types(
+        &self,
+        compare: &dyn Fn(&TypeExpression, &TypeExpression) -> Ordering,
+    ) -> Self {
+        self.map_types(&mut |t| {
+            if !t.is_composite_type {
+                return t;
+            }
+            let inner = &t.inner_type_expressions;
+            let mut order: Vec<usize> = (0..inner.len()).collect();
+            order.sort_by(|&a, &b| compare(&inner[a].1, &inner[b].1));
+            if order.iter().enumerate().all(|(i, &o)| i == o) {
+                return t;
+            }
+            let values: Vec<&[u8]> = order.iter().map(|&i| &inner[i].1.value[..]).collect();
+            TypeExpression::new(&values.join(&t.types_glue.unwrap()))
+        })
+    }
+
+    /// `removeDuplicateTypes`: drops every composite member equal to an earlier one once both are sorted.
+    pub fn remove_duplicate_types(&self) -> Self {
+        self.map_types(&mut |t| {
+            if !t.is_composite_type {
+                return t;
+            }
+            let mut seen_normalized: Vec<Vec<u8>> = vec![];
+            let mut unique: Vec<&[u8]> = vec![];
+            for (_, inner) in &t.inner_type_expressions {
+                let normalized = inner
+                    .sort_types(&|a, b| php_spaceship(&a.value, &b.value))
+                    .value;
+                if !seen_normalized.contains(&normalized) {
+                    seen_normalized.push(normalized);
+                    unique.push(&inner.value);
+                }
+            }
+            TypeExpression::new(&unique.join(&t.types_glue.unwrap()))
+        })
     }
 
     fn parse(&mut self) -> Result<(), ParseError> {
