@@ -79,7 +79,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   keeps PHP's byte semantics (`mb_strtolower` gives `?`). Take `&[u8]` and port the substitution into `php_compat`.
   Not checked against PHP. Spans crates. Reproduced with PHP-CS-Fixer: `testÉcole` in Latin-1 (`test\xC9cole`) gives
   `test_?cole` (Preg drops `u`, so 0xC9 is an uppercase letter); Pun wrote U+FFFD. Added
-  `php_compat::mb_strtolower`. Fixed in wf/audit-fixers-messages.
+  `php_compat::mb_strtolower`. Fixed in 5a24bbc.
 - [x] 14. `crates/pun-fixers/src/analyzers/preg.rs:487-520` panics with "PregException: error occurred when calling
   {method} with pattern ...", and drops `exec`'s error code (`:282-284`, `:512`). Upstream `Preg::newPregException`
   (`.oracle/php-cs-fixer/src/Preg.php:191-216`) prints "Unknown error occurred when calling {method}: {msg}." or the
@@ -87,12 +87,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   the code out and format it like upstream. Checked against the PHP source. The messages now come from
   `preg_last_error_msg()` (backtrack, JIT stack, internal) or PHP's compile warning with `PCRE_VERSION`; the UTF-8
   and recursion codes cannot occur in Pun (UTF-8 is never matched unchecked, every pattern is JIT-compiled). Fixed
-  in wf/audit-fixers-messages.
+  in 5a24bbc.
 - [x] 15. `crates/pun-fixers/src/analyzers/docblock/type_expression.rs:15-26` formats "Unable to parse phpdoc type '{}'"
   with `from_utf8_lossy`; upstream (`DocBlock/TypeExpression.php:486`) uses `var_export`, which escapes `\` and `'`,
   so every failing namespaced type (`\Foo\Bar<`) prints differently. Add a byte-exact `var_export` to `php_compat`
   and assert the full message. Checked against the PHP source. Spans crates. Added `php_compat::var_export_string`.
-  Fixed in wf/audit-fixers-messages.
+  Fixed in 5a24bbc.
 - [ ] 16. Built-in symbols ignore the project's PHP version and disagree with each other:
   `crates/pun-phpstan/src/symbols.rs:236-248` (`class`, `function`) always read PHP 8.4, while
   `crates/pun-analyse/src/rules/mod.rs:1003-1005` (`builtins`) and `codebase.rs:64` use 8.5 and `members.rs:123` uses
@@ -133,7 +133,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `is_err()` (`method_argument_space.rs:439-447`). Make `Resolved::invalid`, `type_error` and `format_value`
   (`analyzers/fixer_configuration_resolver.rs`) `pub(crate)`, use them, and record the upstream messages as oracle
   cases. Recorded 40 oracle cases (configure errors, including the int-key ones of item 63); binary_operator_spaces
-  also printed `string#7` for an int key where upstream prints `integer#7`. Fixed in wf/audit-fixers-messages.
+  also printed `string#7` for an int key where upstream prints `integer#7`. Fixed in c9adf6f.
 - [ ] 23. `crates/pun-fixers/src/fixers/ordered_class_elements.rs:473-476` panics ("no position for
   property_public_static_readonly") on modifier mixes the grammar accepts and PHP's compiler rejects (`public static
   readonly int $x;`, `readonly public function f()`). Reproduced. Decide whether to mirror upstream's undefined-key
@@ -321,12 +321,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `configure(&Value::Null)` in `fixer()`. `Pipeline::new` always configures, so use that one pattern everywhere.
   Every configurable fixer's `fixer()` now builds neutral fields and calls `configured()` (`configure(Null)`), and
   phpdoc_return_self_reference's `configure` sets its default when the option is absent (it relied on `fixer()`).
-  Pinkary and pinkary-dirty: 0 differing files. Fixed in wf/audit-fixers-messages.
+  Pinkary and pinkary-dirty: 0 differing files. Fixed in c9adf6f.
 - [x] 63. Four configures walk "a PHP array as list or map" by hand with unwraps after `check_types`:
   `phpdoc_align.rs:96-111`, `phpdoc_return_self_reference.rs:53-66`, `phpdoc_separation.rs:33-62`,
   `phpdoc_tag_type.rs:84-93`. Add `Resolved::php_array(key)`. `php_array` also reads int-like object keys as PHP int
   keys, which fixed phpdoc_return_self_reference (`string#7` for `integer#7`) and phpdoc_tag_type (no TypeError for
-  `{"0": ...}`); class_attributes_separation uses it too. Fixed in wf/audit-fixers-messages.
+  `{"0": ...}`); class_attributes_separation uses it too. Fixed in c9adf6f.
 - [ ] 64. Small helpers copied inside crates: `c`/`k`/`idx` in `pun-tokens/src/transformers.rs:51-69` and
   `tokens_analyzer.rs:9-14,66-81`; `CLASSY_KINDS` in `fully_qualified_strict_types.rs:26` and
   `pun-tokens/src/token.rs:82`; the PCRE `\s` byte set in `docblock/line.rs:52`, `tag.rs:50`, `annotation.rs:209`
@@ -402,7 +402,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 78. `crates/pun-fixers/src/analyzers/classy_analyzer.rs:14`, `constant_invocation.rs:10`, `utils.rs:21` format
   `Option` with `{:?}`, printing `got "Some("T_OPEN_TAG")"` where upstream prints `got "T_OPEN_TAG"`, and the test
   at `classy_analyzer.rs:122` locks it in. A token without an id now prints `""`, as upstream's null name does. Fixed
-  in wf/audit-fixers-messages.
+  in 5a24bbc.
 
 ### Errors and tests
 

@@ -31,9 +31,9 @@ Uncovered lines:
 ## Exclusions
 
 - `crates/pun-fixers/src/fixers/normalize_index_brace.rs:23-31` fix body: CT_ARRAY_INDEX_BRACE_* only come from PHP < 8 `$a{1}`, which no longer lints (upstream on PHP 8.5 never reaches it either; its fixtures are all `#[RequiresPhp(< 8.0)]`).
-- `crates/pun-fixers/src/fixers/no_spaces_around_offset.rs:49` the `$a{0}` (CT_ARRAY_INDEX_BRACE) block type: as for normalize_index_brace, that syntax no longer lints on PHP 8.
-- `crates/pun-fixers/src/fixers/yoda_style.rs:427` the same `$a{0}` block type.
-- `crates/pun-fixers/src/fixers/method_argument_space.rs:347` ensureSingleLineForParentheses' `//` comment check: argumentContentIsMultiline already returns for any comment outside a nested block, and nested blocks are skipped by both loops, so a comment never precedes the whitespace (upstream has the same dead check).
+- `crates/pun-fixers/src/fixers/no_spaces_around_offset.rs:48` the `$a{0}` (CT_ARRAY_INDEX_BRACE) block type: as for normalize_index_brace, that syntax no longer lints on PHP 8.
+- `crates/pun-fixers/src/fixers/yoda_style.rs:421` the same `$a{0}` block type.
+- `crates/pun-fixers/src/fixers/method_argument_space.rs:334` ensureSingleLineForParentheses' `//` comment check: argumentContentIsMultiline already returns for any comment outside a nested block, and nested blocks are skipped by both loops, so a comment never precedes the whitespace (upstream has the same dead check).
 - `crates/pun-fixers/src/fixers/pint_laravel_blade/php_block_formatting.rs:221` formatDirectiveArg's fallback when the formatted host has no balanced `(...)`: the argument was cut out of the template by the same matchParen, so it is balanced, and the formatter either returns the host unchanged (a CompileError) or keeps it balanced (no fixer adds quotes or comments).
 - `crates/pun-cli/src/run.rs:407` the panic hook's pass-through for panics outside per-file fixing: reaching it means the binary crashes, which no test can assert in-process.
 - `crates/pun-analyse/src/laravel/mod.rs:464-471` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.

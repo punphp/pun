@@ -323,6 +323,11 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
 | wf tooling: link crates/pun-fixers/node_modules into worktrees (blade_like_pint needs it) | todo |
 | wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
+| tests: crates/pun-tokens tests/api.rs and tests/parity.rs fail on PHP 8.5 (tools/api.php: 'Cannot use the final modifier on a parameter' on one case), so scripts/coverage.sh punphp-tokens reports FAILED | todo |
+| pun-fixers Preg: compile rejects the `r` modifier (PCRE2_EXTRA_CASELESS_RESTRICT) that PHP 8.4+ accepts (`preg_match('/a/r', 'a')` panics); no upstream pattern uses it yet | todo |
+| oracle: the local PHP (Herd ini) runs with pcre.jit=Off, so preg limit errors read 'Recursion limit exhausted' where PHP's default (and Pun) give 'JIT stack limit exhausted'; run preg oracles with `-d pcre.jit=1` | todo |
+| fixers: binary_operator_spaces with an array in `operators` prints PHP's 'Warning: Array to string conversion' before the configure error upstream; Pun prints only the error | todo |
+| audit fixers-messages follow-up: run scripts/cli-parity.sh on a bad fixer config to confirm the reworded configure errors end to end | todo |
 | perf (from bench): analyse is slower than a warm PHPStan result cache (pun 0.5-1.8 s vs 0.4-0.8 s) and 1.5-2.2x slower than Mago's analyser; targets for the perf rounds (reports/scoreboard.md "Analyse benchmark") | todo |
 | audit item 9 (decision): on a `<style>`/`<script>` regex backtrack failure Pint writes an empty Blade file and Pun matches it; choose parity or keep the input / report the file as errored | todo |
 | coverage: method_argument_space.rs:337 and yoda_style.rs:426 are uncovered (already on 0c5bd30); regenerate reports/COVERAGE.md | todo |
