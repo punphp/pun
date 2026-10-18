@@ -292,3 +292,28 @@ Lint 7 batch 1 (dead-code, 2026-10-18; 13 of 14 rules ported, parity on Pinkary 
   PHPStan's reflection whether a called function is pure (`count()` is, `array_shift()` is not) and whether a
   static call's class is a `Throwable`, so it is type-aware (Build 8).
 
+Lint 7 batch 3 (statement rules, 2026-10-18; 11 of 14 rules ported):
+
+- **Assistant's call (lint 7 batch 3): statement lists as php-parser sees them.** The statement rules share
+  `rules/rector_stmts.rs`, which reads a Mago statement list the way php-parser builds it (open and close tags and
+  `;` dropped, a trailing comment as a `Nop`, a braced `if`/`else` body flattened, the newline after `?>` not inline
+  HTML) and writes moved and new statements as Rector's format-preserving printer does (a removed statement takes the
+  whitespace before it, new `if`s pretty-printed a statement a line, a kept node keeps its old whitespace). It copies
+  the token helpers of batch 1's `php_parser.rs` rather than editing it; the two merge once both land.
+- **Assistant's call (lint 7 batch 3): reordered `case`s.** `no-duplicate-case-body` ports php-parser's `Differ`
+  (Myers, with `coalesceReplacements`) and the `pArray` rules for the switch's cases, so the blank lines and comments
+  between moved cases land where Rector's printer puts them. A moved trailing comment (php-parser's `Nop`) is
+  followed by an empty line, as `BetterStandardPrinter::pArray` leaves it.
+- **Assistant's call (lint 7 batch 3): colon `if`s and single-statement bodies.** `no-else-after-return` prints the
+  `if` it rewrites with braces where Rector keeps `if (...): ... endif;`, and wraps the statements a single-statement
+  body becomes in a new `{}` where Rector reprints the parent with braces; `no-identical-branches` does the same.
+  The laravel preset's format makes both the same (their Oracle cases compare formatted code only).
+- **Assistant's call (lint 7 batch 3): code after `?>`.** Where Rector falls back to reprinting a whole file of
+  `<?php ... ?>` blocks (laravel-framework's `tests/View/Fixtures/section-exception.php`), Pun removes the same
+  statements and the `?>` after them, and leaves the rest of the file's bytes alone (a `Pun/` fixture).
+- **Assistant's call (lint 7 batch 3): three rules need types and wait for analyse.** `SimplifyUselessVariableRector`
+  (`isNewInstance` reads the scope's native type and reflection), `SimplifyIfReturnBoolRector` (`ExprBoolCaster`
+  reads the condition's type) and `InlineArrayReturnAssignRector` (`ValueResolver` resolves class constants through
+  reflection) are left for step 8.
+- **Assistant's call (lint 7 batch 3): the spike's `lint/php-8.0/no-unused-catch-variable` is gone.** The engine
+  tests use test-local rules for the PHP-version gate and the fix rounds.

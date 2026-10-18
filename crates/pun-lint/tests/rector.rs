@@ -1,5 +1,7 @@
-//! Rector's own fixtures for the two ported rules, copied verbatim from rector-src 2.6.1 (`.oracle/rector`,
-//! rules-tests/...) into tests/rector/<Rector class>/. A fixture is `input -----\n expected`, or only the input when
+//! Rector's own fixtures for the ported rules, copied verbatim from rector-src 2.6.1 (`.oracle/rector`,
+//! rules-tests/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector 2.6.1
+//! (`.oracle/rector-bin`, the rule alone) wrote for them; Pun/ holds the cases where Pun keeps the meaning but not
+//! Rector's bytes, its expected output derived by hand. A fixture is `input -----\n expected`, or only the input when
 //! the rule must not change it (Rector's FixtureSplitter). Each one must pass as
 //! `format(pun lint --fix) == format(expected)` (lint.md Build 1), with format being the laravel preset. The text edits
 //! also reproduce Rector's bytes before format, which is checked too.
@@ -8,7 +10,19 @@ use std::path::{Path, PathBuf};
 
 use pun_format::Pipeline;
 use pun_lint::Linter;
-use pun_lint::rules::{self, NoUnusedCatchVariable, PreferCompoundAssignment};
+use pun_lint::rules;
+use pun_lint::rules::NoDuplicateCaseBody;
+use pun_lint::rules::NoElseAfterReturn;
+use pun_lint::rules::NoIdenticalBranches;
+use pun_lint::rules::NoMirrorAssignment;
+use pun_lint::rules::NoRedundantPromotedAssign;
+use pun_lint::rules::NoUnreachableCode;
+use pun_lint::rules::PreferCompoundAssignment;
+use pun_lint::rules::PreferEarlyReturn;
+use pun_lint::rules::PreferEarlyReturnOfVariable;
+use pun_lint::rules::PreferEarlyReturnOverPreparedValue;
+use pun_lint::rules::PreferInArray;
+use pun_lint::rules::PreferNotInArray;
 use pun_lint::rules::{
     NoAndAssignment, NoConcatAssignNewItem, NoDoubleNegation, NoNegatedAnd,
     NoNegatedBooleanLiteral, NoNegatedGroup, NoSingleArgumentSprintf, NoSingleItemInArray,
@@ -81,24 +95,6 @@ fn run(linter: &Linter, dir: &str) {
             assert!(fixed.applied.is_empty(), "{name}");
         }
     }
-}
-
-#[test]
-fn remove_unused_variable_in_catch() {
-    // config/configured_rule.php: phpVersion(PhpVersion::PHP_80).
-    run(
-        &Linter::new(vec![Box::new(NoUnusedCatchVariable)], 80000),
-        "RemoveUnusedVariableInCatchRector/Fixture",
-    );
-}
-
-#[test]
-fn remove_unused_variable_in_catch_skipped_below_php_80() {
-    // config/configured_rule_php_version_74.php: phpVersion(PhpVersion::PHP_74).
-    run(
-        &Linter::new(vec![Box::new(NoUnusedCatchVariable)], 70400),
-        "RemoveUnusedVariableInCatchRector/FixtureSkipped",
-    );
 }
 
 #[test]
@@ -286,10 +282,6 @@ fn every_rule_id_is_a_lint_rule_of_the_mapping() {
     let lint = &mapping[mapping.find("[rules.lint]").unwrap()..];
     let lint = &lint[..lint[1..].find("\n[").unwrap()];
     for rule in pun_lint::rules::all() {
-        // The spike's sample rule, out of scope since the mapping audit (PLAN.md Track B removes it).
-        if rule.id() == "lint/php-8.0/no-unused-catch-variable" {
-            continue;
-        }
         let key = format!("\n\"{}\" = {{", rule.id().strip_prefix("lint/").unwrap());
         assert!(lint.contains(&key), "{} is not in [rules.lint]", rule.id());
     }
@@ -445,4 +437,130 @@ fn replace_block_to_its_stmts() {
         // Pun's removal the blanks before it (as for any other removed statement), so one blank line fewer stays.
         &["no_stmts.php.inc"],
     );
+}
+
+#[test]
+fn remove_unreachable_statement() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoUnreachableCode)], 80400);
+    run(&linter, "RemoveUnreachableStatementRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RemoveUnreachableStatementRector/Oracle");
+    // Where Rector reprints the whole file; the expected code is derived by hand.
+    run(&linter, "RemoveUnreachableStatementRector/Pun");
+}
+
+#[test]
+fn simplify_mirror_assign() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoMirrorAssignment)], 80400);
+    run(&linter, "SimplifyMirrorAssignRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "SimplifyMirrorAssignRector/Oracle");
+}
+
+#[test]
+fn remove_useless_assign_from_property_promotion() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoRedundantPromotedAssign)], 80400);
+    run(
+        &linter,
+        "RemoveUselessAssignFromPropertyPromotionRector/Fixture",
+    );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RemoveUselessAssignFromPropertyPromotionRector/Oracle");
+}
+
+#[test]
+fn remove_duplicated_case_in_switch() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoDuplicateCaseBody)], 80400);
+    run(&linter, "RemoveDuplicatedCaseInSwitchRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RemoveDuplicatedCaseInSwitchRector/Oracle");
+}
+
+#[test]
+fn simplify_if_else_with_same_content() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoIdenticalBranches)], 80400);
+    run(&linter, "SimplifyIfElseWithSameContentRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone). Rector reprints a
+    // single-statement body its own way, so only the formatted code is compared.
+    run_formatted(&linter, "SimplifyIfElseWithSameContentRector/OracleFormat");
+}
+
+#[test]
+fn remove_always_else() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(NoElseAfterReturn)], 80400);
+    run(&linter, "RemoveAlwaysElseRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RemoveAlwaysElseRector/Oracle");
+    // Rector reprints a colon `if` or a single-statement body its own way, so only the formatted code is compared.
+    run_formatted(&linter, "RemoveAlwaysElseRector/OracleFormat");
+}
+
+/// [`run`] for cases where Rector reprints more than Pun changes (a colon `if` with braces, the parent of a
+/// single-statement body): only `format(lint --fix) == format(expected)` holds, the bytes before format differ.
+fn run_formatted(linter: &Linter, dir: &str) {
+    let pipeline = laravel();
+    for (path, input, expected) in fixtures(dir) {
+        let name = path.file_name().unwrap().to_string_lossy();
+        let fixed = linter.fix(&path, &input).unwrap();
+        assert_eq!(
+            format(&pipeline, &fixed.source),
+            format(&pipeline, &expected),
+            "{name}: format(lint --fix)"
+        );
+        assert_eq!(fixed.applied.is_empty(), input == expected, "{name}");
+    }
+}
+
+#[test]
+fn change_if_else_value_assign_to_early_return() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(PreferEarlyReturn)], 80400);
+    run(
+        &linter,
+        "ChangeIfElseValueAssignToEarlyReturnRector/Fixture",
+    );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "ChangeIfElseValueAssignToEarlyReturnRector/Oracle");
+}
+
+#[test]
+fn prepared_value_to_early_return() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(PreferEarlyReturnOverPreparedValue)], 80400);
+    run(&linter, "PreparedValueToEarlyReturnRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "PreparedValueToEarlyReturnRector/Oracle");
+}
+
+#[test]
+fn return_early_if_variable() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(PreferEarlyReturnOfVariable)], 80400);
+    run(&linter, "ReturnEarlyIfVariableRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "ReturnEarlyIfVariableRector/Oracle");
+}
+
+#[test]
+fn repeated_or_equal_to_in_array() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(PreferInArray)], 80400);
+    run(&linter, "RepeatedOrEqualToInArrayRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RepeatedOrEqualToInArrayRector/Oracle");
+}
+
+#[test]
+fn repeated_and_not_equal_to_not_in_array() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    let linter = Linter::new(vec![Box::new(PreferNotInArray)], 80400);
+    run(&linter, "RepeatedAndNotEqualToNotInArrayRector/Fixture");
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone).
+    run(&linter, "RepeatedAndNotEqualToNotInArrayRector/Oracle");
 }
