@@ -4,6 +4,7 @@
 //! `pun config`.
 
 use crate::MAPPING;
+use anyhow::{Result, anyhow, bail};
 use serde_json::{Map, Value};
 use std::sync::LazyLock;
 
@@ -131,19 +132,19 @@ fn strings<'a>(values: impl Iterator<Item = &'a String>) -> String {
 
 /// A `[format.rules]` value (`true`, `false`, a table of options or the shorthand value) as the fixer takes it:
 /// `true`/`false`, or its options under upstream names and values. `rule` is the key as written, `id` the rule ID.
-pub(crate) fn to_fixer(rule: &str, id: &str, v: toml::Value) -> Result<Value, String> {
+pub(crate) fn to_fixer(rule: &str, id: &str, v: toml::Value) -> Result<Value> {
     let opts = rule_options(id);
     let table = match v {
         toml::Value::Boolean(b) => return Ok(Value::Bool(b)),
         toml::Value::Table(t) if opts.is_empty() => {
-            return Err(format!(
+            bail!(
                 "`{rule}` has no options: it is true or false{}",
                 if t.is_empty() {
                     ""
                 } else {
                     ", without a table"
                 }
-            ));
+            );
         }
         toml::Value::Table(t) => t,
         v => match shorthand(opts) {
@@ -153,7 +154,7 @@ pub(crate) fn to_fixer(rule: &str, id: &str, v: toml::Value) -> Result<Value, St
                     [] => "true or false".to_string(),
                     _ => "true, false or a table of options".to_string(),
                 };
-                return Err(format!("`{rule}` must be {one}"));
+                bail!("`{rule}` must be {one}");
             }
         },
     };
@@ -164,17 +165,17 @@ pub(crate) fn to_fixer(rule: &str, id: &str, v: toml::Value) -> Result<Value, St
             let up = opts
                 .iter()
                 .find(|o| o.upstream == k || o.upstream.replace('_', "-") == k);
-            return Err(match up {
+            return Err(anyhow!(match up {
                 Some(o) => format!("`{rule}` has no option `{k}`: use `{}`", o.name),
                 None => format!(
                     "`{rule}` has no option `{k}`; its options are {}",
                     quote(opts.iter().map(|o| &o.name))
                 ),
-            });
+            }));
         };
         let got = v.to_string();
         let value = fixer_value(o, v)
-            .ok_or_else(|| format!("`{rule}` option `{k}` = {got}: expected {}", expected(o)))?;
+            .ok_or_else(|| anyhow!("`{rule}` option `{k}` = {got}: expected {}", expected(o)))?;
         out.insert(o.upstream.clone(), value);
     }
     Ok(Value::Object(out))
@@ -275,15 +276,15 @@ fn fixer_value(o: &RuleOption, v: toml::Value) -> Option<Value> {
 /// none, the bare value for a rule's only option ([`shorthand`]), else a table under Pun names. An option left at
 /// upstream's `null` with no Pun spelling is left out, which means the same. `Err` names what PHP-CS-Fixer itself
 /// rejects (an option it doesn't define, a value it doesn't accept), in its words.
-pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value, String> {
+pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value> {
     let Value::Object(m) = options else {
         return Ok(Value::Bool(true));
     };
     let opts = rule_options(id);
     if opts.is_empty() {
-        return Err(format!("[{fixer}] Is not configurable."));
+        bail!("[{fixer}] Is not configurable.");
     }
-    let invalid = |msg: String| format!("[{fixer}] Invalid configuration: {msg}");
+    let invalid = |msg: String| anyhow!("[{fixer}] Invalid configuration: {msg}");
     let mut out = Map::new();
     for (k, v) in m {
         let Some(o) = opts.iter().find(|o| o.upstream == *k) else {

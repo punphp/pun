@@ -1,5 +1,7 @@
 //! Composer version constraints, just enough to find the lowest version a constraint admits.
 
+use anyhow::{Context, Result, anyhow, bail};
+
 pub type V = (u64, u64, u64);
 
 #[derive(Clone, Copy)]
@@ -10,14 +12,15 @@ struct Range {
 
 /// The lowest version the composer constraint admits, or `None` when it admits none (`>=8.4 <8.3`).
 /// `|` and `||` are OR, spaces and commas are AND, as in composer/semver's `VersionParser::parseConstraints`.
-pub fn lowest(constraint: &str) -> Result<Option<V>, String> {
+pub fn lowest(constraint: &str) -> Result<Option<V>> {
     let mut low: Option<V> = None;
     for alt in constraint
         .split('|')
         .map(str::trim)
         .filter(|s| !s.is_empty())
     {
-        let r = conjunction(alt).map_err(|e| format!("invalid constraint `{constraint}`: {e}"))?;
+        // One message, not a context: `pun format --watch` prints errors without their causes.
+        let r = conjunction(alt).map_err(|e| anyhow!("invalid constraint `{constraint}`: {e}"))?;
         let nonempty = match r.hi {
             None => true,
             Some((hi, inc)) => r.lo < hi || (inc && r.lo == hi),
@@ -29,7 +32,7 @@ pub fn lowest(constraint: &str) -> Result<Option<V>, String> {
     Ok(low)
 }
 
-fn conjunction(s: &str) -> Result<Range, String> {
+fn conjunction(s: &str) -> Result<Range> {
     // Hyphen range: "8.1 - 8.3".
     if let Some((a, b)) = s.split_once(" - ") {
         let (a, b) = (parse(a.trim())?, parse(b.trim())?);
@@ -54,7 +57,7 @@ fn conjunction(s: &str) -> Result<Range, String> {
         }
     }
     if !pending.is_empty() {
-        return Err(format!("missing version after `{pending}`"));
+        bail!("missing version after `{pending}`");
     }
     let mut r = Range {
         lo: (0, 0, 0),
@@ -75,7 +78,7 @@ fn conjunction(s: &str) -> Result<Range, String> {
     Ok(r)
 }
 
-fn single(p: &str) -> Result<Range, String> {
+fn single(p: &str) -> Result<Range> {
     let any = Range {
         lo: (0, 0, 0),
         hi: None,
@@ -83,7 +86,7 @@ fn single(p: &str) -> Result<Range, String> {
     let at = |v: V, hi: Option<(V, bool)>| Range { lo: v, hi };
     let (op, ver) = match p.find(|c: char| !"<>=!^~".contains(c)) {
         Some(i) => p.split_at(i),
-        None => return Err(format!("missing version in `{p}`")),
+        None => bail!("missing version in `{p}`"),
     };
     if ver == "*" || ver == "x" {
         return Ok(any);
@@ -131,7 +134,7 @@ fn single(p: &str) -> Result<Range, String> {
         "!=" | "<>" => any,
         "" | "=" | "==" if is_wild(ver) => at(full, Some((wild_upper(v), false))),
         "" | "=" | "==" => at(full, Some((full, true))),
-        _ => return Err(format!("unknown operator `{op}`")),
+        _ => bail!("unknown operator `{op}`"),
     })
 }
 
@@ -157,7 +160,7 @@ fn pad((x, y, z): (u64, Option<u64>, Option<u64>)) -> V {
 }
 
 /// "8", "8.4", "v8.4.1", "8.4.*", "8.4.0-dev", "8.4@stable" -> components; wildcards become None.
-fn parse(s: &str) -> Result<(u64, Option<u64>, Option<u64>), String> {
+fn parse(s: &str) -> Result<(u64, Option<u64>, Option<u64>)> {
     let s = s.trim().trim_start_matches(['v', 'V']);
     let s = s.split(['@', '-', '+']).next().unwrap_or("");
     let mut it = s.split('.').map(|c| match c {
@@ -165,9 +168,9 @@ fn parse(s: &str) -> Result<(u64, Option<u64>, Option<u64>), String> {
         _ => c
             .parse::<u64>()
             .map(Some)
-            .map_err(|_| format!("bad version `{s}`")),
+            .map_err(|_| anyhow!("bad version `{s}`")),
     });
-    let x = it.next().ok_or("empty version")??.ok_or("bad major")?;
+    let x = it.next().context("empty version")??.context("bad major")?;
     let y = it.next().transpose()?.flatten();
     let z = if y.is_some() {
         it.next().transpose()?.flatten()
@@ -181,7 +184,7 @@ fn parse(s: &str) -> Result<(u64, Option<u64>, Option<u64>), String> {
 mod tests {
     use super::{V, lowest};
 
-    fn allows_below(c: &str, b: V) -> Result<bool, String> {
+    fn allows_below(c: &str, b: V) -> anyhow::Result<bool> {
         Ok(lowest(c)?.is_some_and(|l| l < b))
     }
 
@@ -243,7 +246,7 @@ mod tests {
             ("<=8.3 <8.3", true),
         ];
         for (c, below) in cases {
-            assert_eq!(allows_below(c, b), Ok(below), "{c}");
+            assert_eq!(allows_below(c, b).unwrap(), below, "{c}");
         }
         // composer: "Could not parse version constraint ..."
         for bad in [">", "^", ">=8.4 <", "abc", "%8.4", "=>8.4", "!8.4"] {

@@ -14,11 +14,11 @@ fn upstream() -> Map<String, Value> {
 fn read(rule: &str, value: &str) -> Result<Value, String> {
     let v: toml::Table = toml::from_str(&format!("x = {value}")).unwrap();
     let id = format!("format/{rule}");
-    to_fixer(rule, &id, v["x"].clone())
+    to_fixer(rule, &id, v["x"].clone()).map_err(|e| e.to_string())
 }
 
 fn write(fixer: &str, options: Value) -> Result<Value, String> {
-    to_pun(fixer, rule_of(fixer).unwrap(), &options)
+    to_pun(fixer, rule_of(fixer).unwrap(), &options).map_err(|e| e.to_string())
 }
 
 /// Every option of every fixer behind a format rule has a Pun name and type, and nothing else is listed.

@@ -286,6 +286,7 @@ fn parse(
         let id = schema::rule_id(path, "format", &name)?;
         // Every format rule is a PHP-CS-Fixer or Pint fixer (rules/mapping.toml).
         let fixer = fixer_of("format", &id).unwrap();
+        // One message, not a context: `pun format --watch` prints errors without their causes.
         let v = options::to_fixer(&name, &id, v).map_err(|e| anyhow::anyhow!("{at}: {e}"))?;
         rules.insert(fixer.into(), v);
     }

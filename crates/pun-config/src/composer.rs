@@ -114,9 +114,7 @@ pub(crate) fn php_require(root: &Path, sources: &mut Vec<PathBuf>) -> Result<Opt
     };
     Ok(Some(PhpRequire {
         constraint: c.to_string(),
-        lowest: constraint::lowest(c)
-            .map_err(anyhow::Error::msg)?
-            .map(Version::from),
+        lowest: constraint::lowest(c)?.map(Version::from),
     }))
 }
 

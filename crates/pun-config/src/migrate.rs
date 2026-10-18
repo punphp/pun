@@ -251,9 +251,7 @@ fn write(
         let v = match (lint, value(&r.options)) {
             (true, Value::Bool(true)) => Value::from("error"),
             (true, v) => v,
-            (false, _) => {
-                crate::options::to_pun(&r.name, id, &r.options).map_err(anyhow::Error::msg)?
-            }
+            (false, _) => crate::options::to_pun(&r.name, id, &r.options)?,
         };
         let Some(v) = toml_value(&v) else {
             unsupported.push(format!(

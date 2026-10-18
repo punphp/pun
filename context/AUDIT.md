@@ -265,9 +265,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 54. `crates/pun-lint/src/lib.rs:25,164,217` and `pun-problem`'s `apply_fixes` take source as `&str`, so a
   Latin-1 file that `pun format` handles can't be linted (the examples `continue` past it). Take `&[u8]`, as Mago's
   parser and `Pipeline::run` do. Spans crates.
-- [ ] 55. `crates/pun-config/src/constraint.rs:13,32,78,160` and `options.rs:134,278` return `Result<_, String>` that
+- [x] 55. `crates/pun-config/src/constraint.rs:13,32,78,160` and `options.rs:134,278` return `Result<_, String>` that
   every caller converts (`composer.rs:118`, `lib.rs:270`, `migrate.rs:255`) and no caller branches on. Return
-  `anyhow::Result` and use `.with_context` for the `{at}: ` prefix.
+  `anyhow::Result` and use `.with_context` for the `{at}: ` prefix. They return `anyhow::Result` now, but the
+  prefixes stay in one message: `pun format --watch` prints `{e}` (`crates/pun-cli/src/watch.rs:94`), which would
+  drop a context's cause; switch to `.with_context` once it prints `{e:#}`. Fixed in wf/audit-config.
 
 ## P3: Polish
 
