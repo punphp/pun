@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "multiline_promoted_properties",
+        "config": {
+            "foo": true
+        },
+        "error": "[multiline_promoted_properties] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"keep_blank_lines\", \"minimum_number_of_parameters\"."
+    }
+]

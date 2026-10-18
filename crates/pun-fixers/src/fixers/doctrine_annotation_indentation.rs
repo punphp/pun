@@ -56,9 +56,7 @@ impl DoctrineAnnotationIndentationFixer {
         let mut index = 0;
         while index < tokens.len() {
             if tokens[index].kind == T_AT {
-                let Some(end) = tokens.get_annotation_end(index) else {
-                    return;
-                };
+                let end = tokens.get_annotation_end(index);
                 annotation_positions.push((index, end));
                 index = end;
             }
@@ -116,17 +114,14 @@ fn get_line_braces_count(tokens: &DocTokens, index: usize) -> (usize, usize) {
     (opening, closing)
 }
 
+/// Only called on a line whose braces don't balance, so a non-T_NONE token follows on the line.
 fn is_closing_line_with_meaningful_content(tokens: &DocTokens, index: usize) -> bool {
-    for token in &tokens.0[index + 1..] {
-        if token.kind == T_NONE {
-            if token.content.contains(&b'\n') {
-                return false;
-            }
-            continue;
-        }
-        return !token.is_type(&[T_CLOSE_PARENTHESIS, T_CLOSE_CURLY_BRACES]);
-    }
-    false
+    let token = tokens.0[index + 1..]
+        .iter()
+        .find(|t| t.kind != T_NONE || t.content.contains(&b'\n'));
+    token.is_some_and(|t| {
+        t.kind != T_NONE && !t.is_type(&[T_CLOSE_PARENTHESIS, T_CLOSE_CURLY_BRACES])
+    })
 }
 
 fn indentation_can_be_fixed(

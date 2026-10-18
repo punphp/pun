@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "ordered_attributes",
+        "config": {
+            "sort_algorithm": "foo"
+        },
+        "error": "[ordered_attributes] Invalid configuration: The option \"sort_algorithm\" with value \"foo\" is invalid. Accepted values are: \"alpha\", \"custom\"."
+    }
+]

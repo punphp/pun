@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "doctrine_annotation_braces",
+        "config": {
+            "syntax": "foo"
+        },
+        "error": "[doctrine_annotation_braces] Invalid configuration: The option \"syntax\" with value \"foo\" is invalid. Accepted values are: \"with_braces\", \"without_braces\"."
+    }
+]

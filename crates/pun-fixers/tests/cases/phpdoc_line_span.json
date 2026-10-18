@@ -1,0 +1,19 @@
+[
+    {
+        "fixer": "phpdoc_line_span",
+        "config": {
+            "class": "foo"
+        },
+        "error": "[phpdoc_line_span] Invalid configuration: The option \"class\" with value \"foo\" is invalid. Accepted values are: \"single\", \"multi\", null."
+    },
+    {
+        "fixer": "phpdoc_line_span",
+        "config": {
+            "class": null,
+            "function": null,
+            "other": null
+        },
+        "input": "<?php\n/** @var int */\nclass A {\n    /**\n     * @var int\n     */\n    public $a;\n}\n",
+        "expected": "<?php\n/** @var int */\nclass A {\n    /**\n     * @var int\n     */\n    public $a;\n}\n"
+    }
+]

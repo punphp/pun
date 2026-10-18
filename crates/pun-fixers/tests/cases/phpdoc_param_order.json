@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "phpdoc_param_order",
+        "input": "<?php\n/** Only text */\nfunction foo($a) {}\n/**\n * @param int $b\n * @param int $a\n */\nfunction bar($a, $b) {}\n",
+        "expected": "<?php\n/** Only text */\nfunction foo($a) {}\n/**\n * @param int $a\n * @param int $b\n */\nfunction bar($a, $b) {}\n"
+    },
+    {
+        "fixer": "phpdoc_param_order",
+        "input": "<?php\n/**\n * @param int $b\n * @param int $a\n */\nfunction foo($a, $b, $a) {}\n",
+        "expected": "<?php\n/**\n * @param int $a\n * @param int $b\n */\nfunction foo($a, $b, $a) {}\n"
+    },
+    {
+        "fixer": "phpdoc_param_order",
+        "input": "<?php\n$a = 1;\n/** @param int $a */\n$b = 2;\n",
+        "expected": "<?php\n$a = 1;\n/** @param int $a */\n$b = 2;\n"
+    }
+]

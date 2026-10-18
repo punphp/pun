@@ -136,10 +136,8 @@ impl DocTokens {
             let mut scanned: Vec<&DocToken> = vec![];
             let mut use_count = 0;
             let mut scopes = 0;
+            // The scan starts at the `@`, so its first token is always T_AT (upstream checks it).
             for (index, token) in scanned_all.iter().enumerate() {
-                if index == 0 && token.kind != T_AT {
-                    break;
-                }
                 if index == 1 {
                     if token.kind != T_IDENTIFIER
                         || ignored_tags
@@ -222,36 +220,34 @@ impl DocTokens {
         }
     }
 
-    /// `getAnnotationEnd`: the index of the `)` closing the annotation at `index`, or the tag's own index.
-    pub(crate) fn get_annotation_end(&self, index: usize) -> Option<usize> {
+    /// `getAnnotationEnd`: the index of the `)` closing the annotation at `index`, or the tag's name.
+    ///
+    /// Upstream returns null when the parentheses never close; `from_doc_comment` keeps only balanced annotations and
+    /// the docblock's closing `*/` always follows the last one, so the end always exists here.
+    pub(crate) fn get_annotation_end(&self, index: usize) -> usize {
         let t = &self.0;
-        let mut current = None;
-        if let Some(token) = t.get(index + 2) {
-            if token.kind == T_OPEN_PARENTHESIS {
-                current = Some(index + 2);
-            } else if let Some(next) = t.get(index + 3)
-                && token.kind == T_NONE
-                && next.kind == T_OPEN_PARENTHESIS
-                && Preg::r#match(r"/^(\R\s*\*\s*)*\s*$/", &token.content)
-            {
-                current = Some(index + 3);
-            }
-        }
-        let Some(start) = current else {
-            return Some(index + 1);
+        let token = &t[index + 2];
+        let start = if token.kind == T_OPEN_PARENTHESIS {
+            index + 2
+        } else if token.kind == T_NONE
+            && t.get(index + 3).is_some_and(|t| t.kind == T_OPEN_PARENTHESIS)
+            && Preg::r#match(r"/^(\R\s*\*\s*)*\s*$/", &token.content)
+        {
+            index + 3
+        } else {
+            return index + 1;
         };
         let mut level = 0;
-        for (i, token) in t.iter().enumerate().skip(start) {
-            if token.kind == T_OPEN_PARENTHESIS {
-                level += 1;
-            } else if token.kind == T_CLOSE_PARENTHESIS {
-                level -= 1;
-            }
-            if level == 0 {
-                return Some(i);
-            }
-        }
-        None
+        (start..t.len())
+            .find(|&i| {
+                match t[i].kind {
+                    T_OPEN_PARENTHESIS => level += 1,
+                    T_CLOSE_PARENTHESIS => level -= 1,
+                    _ => {}
+                }
+                level == 0
+            })
+            .unwrap()
     }
 
     pub(crate) fn insert_at(&mut self, index: usize, token: DocToken) {

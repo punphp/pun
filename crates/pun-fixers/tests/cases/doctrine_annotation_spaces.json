@@ -1,0 +1,14 @@
+[
+    {
+        "fixer": "doctrine_annotation_spaces",
+        "config": {
+            "foo": true
+        },
+        "error": "[doctrine_annotation_spaces] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"after_argument_assignments\", \"after_array_assignments_colon\", \"after_array_assignments_equals\", \"around_commas\", \"around_parentheses\", \"before_argument_assignments\", \"before_array_assignments_colon\", \"before_array_assignments_equals\", \"ignored_tags\"."
+    },
+    {
+        "fixer": "doctrine_annotation_spaces",
+        "input": "<?php\n/**\n * @Foo(a=1.5, b = 2, c={\"d\":3.0e2})\n */\nclass Bar {}\n",
+        "expected": "<?php\n/**\n * @Foo(a=1.5, b=2, c={\"d\" : 3.0e2})\n */\nclass Bar {}\n"
+    }
+]

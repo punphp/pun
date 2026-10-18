@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "doctrine_annotation_indentation",
+        "config": {
+            "foo": true
+        },
+        "error": "[doctrine_annotation_indentation] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"ignored_tags\", \"indent_mixed_lines\"."
+    },
+    {
+        "fixer": "doctrine_annotation_indentation",
+        "config": {
+            "indent_mixed_lines": true
+        },
+        "input": "<?php\n/**\n * @Foo({\n * \"a\",\n * . \"b\"},\n *   c)\n */\nclass Bar {}\n",
+        "expected": "<?php\n/**\n * @Foo({\n *     \"a\",\n *     . \"b\"},\n * c)\n */\nclass Bar {}\n"
+    }
+]

@@ -77,9 +77,8 @@ fn removes_braces_from_annotations(tokens: &mut DocTokens) {
         if tokens[open].kind != T_OPEN_PARENTHESIS {
             continue;
         }
-        let Some(close) = tokens.get_next_meaningful_token(open) else {
-            continue;
-        };
+        // An annotation's parentheses are balanced, so a `(` is always followed by a meaningful token.
+        let close = tokens.get_next_meaningful_token(open).unwrap();
         if tokens[close].kind != T_CLOSE_PARENTHESIS {
             continue;
         }

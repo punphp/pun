@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "numeric_literal_separator",
+        "config": {
+            "strategy": "foo"
+        },
+        "error": "[numeric_literal_separator] Invalid configuration: The option \"strategy\" with value \"foo\" is invalid. Accepted values are: \"use_separator\", \"no_separator\"."
+    }
+]

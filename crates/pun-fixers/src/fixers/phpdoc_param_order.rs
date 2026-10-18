@@ -36,11 +36,10 @@ impl Fixer for PhpdocParamOrderFixer {
             {
                 return;
             }
-            // Find start index of param block (opening parenthesis)
-            let Some(param_block_start) = tokens.get_next_token_of_kind(index, &["(".into()], true)
-            else {
-                return;
-            };
+            // Find start index of param block (opening parenthesis); a function always has one.
+            let param_block_start = tokens
+                .get_next_token_of_kind(index, &["(".into()], true)
+                .unwrap();
             let doc = DocBlock::new(tokens[index].get_content());
             let param_annotations = doc.get_annotations_of_type(&["param"]);
             if param_annotations.is_empty() {

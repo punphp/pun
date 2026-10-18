@@ -1,0 +1,68 @@
+[
+    {
+        "fixer": "header_comment",
+        "config": {
+            "comment_type": "comment"
+        },
+        "error": "[header_comment] Missing required configuration: The required option \"header\" is missing."
+    },
+    {
+        "fixer": "header_comment",
+        "config": {
+            "header": "x",
+            "validator": 1
+        },
+        "error": "[header_comment] Invalid configuration: The option \"validator\" with value 1 is expected to be of type \"string\" or \"null\", but is of type \"int\"."
+    },
+    {
+        "fixer": "header_comment",
+        "config": {
+            "header": "x",
+            "location": "foo"
+        },
+        "error": "[header_comment] Invalid configuration: The option \"location\" with value \"foo\" is invalid. Accepted values are: \"after_open\", \"after_declare_strict\"."
+    },
+    {
+        "fixer": "header_comment",
+        "config": {
+            "header": "x",
+            "separate": "foo"
+        },
+        "error": "[header_comment] Invalid configuration: The option \"separate\" with value \"foo\" is invalid. Accepted values are: \"both\", \"top\", \"bottom\", \"none\"."
+    },
+    {
+        "fixer": "header_comment",
+        "config": {
+            "header": "Foo",
+            "location": "after_open"
+        },
+        "input": "<?php\n\n/*\n * Foo\n */\n\necho 1;\n",
+        "expected": "<?php\n\n/*\n * Foo\n */\n\necho 1;\n"
+    },
+    {
+        "fixer": "header_comment",
+        "config": {
+            "header": "Foo",
+            "validator": "/Foo/"
+        },
+        "input": "<?php\n/* Foo */\necho 1;\n",
+        "expected": "<?php\n\n/*\n * Foo\n */\n\necho 1;\n"
+    },
+    {
+        "fixer": "header_comment",
+        "config": {
+            "header": "Foo",
+            "comment_type": "PHPDoc"
+        },
+        "input": "<?php\n/**\n * Foo\n */class Bar {}\n",
+        "expected": "<?php\n\n/**\n * Foo\n */\n\nclass Bar {}\n"
+    },
+    {
+        "fixer": "header_comment",
+        "config": {
+            "header": "x",
+            "foo": 1
+        },
+        "error": "[header_comment] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"comment_type\", \"header\", \"location\", \"separate\", \"validator\"."
+    }
+]

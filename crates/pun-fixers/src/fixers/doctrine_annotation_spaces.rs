@@ -111,9 +111,7 @@ fn fix_spaces_around_parentheses(tokens: &mut DocTokens) {
                 continue;
             }
         } else if tokens[index].kind == T_AT {
-            if let Some(end) = tokens.get_annotation_end(index) {
-                in_annotation_until = Some(end + 1);
-            }
+            in_annotation_until = Some(tokens.get_annotation_end(index) + 1);
             continue;
         }
         if in_annotation_until.is_none()
@@ -149,9 +147,7 @@ fn fix_spaces_around_commas(tokens: &mut DocTokens) {
                 continue;
             }
         } else if tokens[current].kind == T_AT {
-            if let Some(end) = tokens.get_annotation_end(current) {
-                in_annotation_until = Some(end);
-            }
+            in_annotation_until = Some(tokens.get_annotation_end(current));
             continue;
         }
         if in_annotation_until.is_none() || tokens[current].kind != T_COMMA {

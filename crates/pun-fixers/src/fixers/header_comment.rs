@@ -367,10 +367,9 @@ fn get_line_break_count(tokens: &Tokens, index: usize, direction: isize) -> usiz
         if direction == -1 && token.is_kind(T_OPEN_TAG) {
             whitespace.extend_from_slice(token.get_content());
         }
-        if !token.get_content().is_empty() {
-            break;
-        }
-        index += direction;
+        // Upstream walks on over empty (cleared) tokens; none exist here: the runner clears them after every fixer and
+        // this fixer clears a header only after its last whitespace fix.
+        break;
     }
     substr_count(&whitespace, b"\n")
 }
