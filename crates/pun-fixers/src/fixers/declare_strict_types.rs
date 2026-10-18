@@ -18,7 +18,7 @@ struct DeclareStrictTypesFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     // `configure` sets the strategy.
     crate::configured(DeclareStrictTypesFixer {
         strategy: Strategy::Remove,

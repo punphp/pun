@@ -2,10 +2,10 @@
 //! `'&'` tokens, so upstream's leading `CT::T_RETURN_REF` check is left out.
 use pun_tokens::{Kind::*, Proto, Tokens};
 
-pub struct ReferenceAnalyzer;
+pub(crate) struct ReferenceAnalyzer;
 
 impl ReferenceAnalyzer {
-    pub fn is_reference(&self, tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn is_reference(&self, tokens: &Tokens, index: usize) -> bool {
         if !tokens[index].equals("&", true) {
             return false;
         }

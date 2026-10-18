@@ -43,7 +43,7 @@ struct NoExtraBlankLinesFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NoExtraBlankLinesFixer {
         token_kind_callback_map: IndexMap::new(),
         token_equals_map: Vec::new(),

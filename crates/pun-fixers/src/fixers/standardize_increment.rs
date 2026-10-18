@@ -7,7 +7,7 @@ use std::path::Path;
 
 struct StandardizeIncrementFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(StandardizeIncrementFixer)
 }
 

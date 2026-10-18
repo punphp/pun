@@ -1,10 +1,10 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\BlocksAnalyzer`.
 use pun_tokens::{BlockType, Token, Tokens};
 
-pub struct BlocksAnalyzer;
+pub(crate) struct BlocksAnalyzer;
 
 impl BlocksAnalyzer {
-    pub fn is_block(&self, tokens: &Tokens, open_index: usize, close_index: usize) -> bool {
+    pub(crate) fn is_block(&self, tokens: &Tokens, open_index: usize, close_index: usize) -> bool {
         assert!(
             open_index < tokens.len(),
             "Tokex index {open_index} for potential block opening does not exist."

@@ -18,8 +18,8 @@ use std::ffi::{c_int, c_void};
 use std::hash::{BuildHasherDefault, Hasher};
 use std::rc::Rc;
 
-pub const PREG_SPLIT_NO_EMPTY: u32 = 1;
-pub const PREG_SPLIT_DELIM_CAPTURE: u32 = 2;
+pub(crate) const PREG_SPLIT_NO_EMPTY: u32 = 1;
+pub(crate) const PREG_SPLIT_DELIM_CAPTURE: u32 = 2;
 
 /// PHP's pcre.backtrack_limit / pcre.recursion_limit defaults.
 const BACKTRACK_LIMIT: u32 = 1_000_000;
@@ -368,7 +368,7 @@ impl Regex {
 
 /// `$matches` of one match.
 #[derive(Clone, Debug)]
-pub struct Captures<'s> {
+pub(crate) struct Captures<'s> {
     subject: &'s [u8],
     groups: Groups,
     /// Number of numeric entries PHP puts in `$matches` (`count` from pcre2_match: trailing unmatched groups omitted).
@@ -391,7 +391,7 @@ impl<'s> Captures<'s> {
     }
 
     /// Group text, `None` when the group did not participate (PHP: "" or null).
-    pub fn get(&self, i: usize) -> Option<&'s [u8]> {
+    pub(crate) fn get(&self, i: usize) -> Option<&'s [u8]> {
         self.groups
             .get(i)
             .copied()
@@ -400,22 +400,22 @@ impl<'s> Captures<'s> {
     }
 
     /// Group text as PHP gives it ("" for unmatched).
-    pub fn str(&self, i: usize) -> &'s [u8] {
+    pub(crate) fn str(&self, i: usize) -> &'s [u8] {
         self.get(i).unwrap_or(b"")
     }
 
     /// Byte offset of the group, `None` where PREG_OFFSET_CAPTURE gives -1 (unmatched).
-    pub fn offset(&self, i: usize) -> Option<usize> {
+    pub(crate) fn offset(&self, i: usize) -> Option<usize> {
         self.groups.get(i).copied().flatten().map(|(s, _)| s)
     }
 
     /// Byte offset of the whole match (group 0 always matched).
-    pub fn start(&self) -> usize {
+    pub(crate) fn start(&self) -> usize {
         self.offset(0).expect("group 0 always matched")
     }
 
     /// Number of numeric entries in `$matches` (never 0: group 0 always matched).
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         self.len
     }
 
@@ -432,34 +432,34 @@ impl<'s> Captures<'s> {
     }
 
     /// Named group text (`$matches['name']`), `None` when unmatched or absent.
-    pub fn name(&self, name: &str) -> Option<&'s [u8]> {
+    pub(crate) fn name(&self, name: &str) -> Option<&'s [u8]> {
         self.get(self.group_by_name(name.as_bytes())?)
     }
 
     /// `$matches['name'] ?? ''`.
-    pub fn name_str(&self, name: &str) -> &'s [u8] {
+    pub(crate) fn name_str(&self, name: &str) -> &'s [u8] {
         self.name(name).unwrap_or(b"")
     }
 
     /// `array_key_exists('name', $matches)`.
-    pub fn name_exists(&self, name: &str) -> bool {
+    pub(crate) fn name_exists(&self, name: &str) -> bool {
         self.group_by_name(name.as_bytes()).is_some()
     }
 
     /// Byte offset of a named group, `None` when unmatched or absent.
-    pub fn name_offset(&self, name: &str) -> Option<usize> {
+    pub(crate) fn name_offset(&self, name: &str) -> Option<usize> {
         self.offset(self.group_by_name(name.as_bytes())?)
     }
 }
 
 /// One split piece (with PREG_SPLIT_OFFSET_CAPTURE the offset is meaningful).
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Piece {
+pub(crate) struct Piece {
     pub text: Vec<u8>,
     pub offset: usize,
 }
 
-pub struct Preg;
+pub(crate) struct Preg;
 
 /// `Preg::match('/\R/', $s)`: CR, LF, VT or FF; with the `/u` attempt (valid UTF-8) also U+0085, U+2028 and U+2029,
 /// otherwise (the non-`u` fallback) the byte 0x85.
@@ -588,7 +588,7 @@ fn pcre_version() -> String {
 
 impl Preg {
     /// `Preg::match($pattern, $subject)`.
-    pub fn r#match(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> bool {
+    pub(crate) fn r#match(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> bool {
         // `/\R/` (a line break anywhere) is the hottest pattern, run on nearly every whitespace token.
         if pattern.as_ref() == br"/\R/" {
             return has_line_break(subject.as_ref());
@@ -598,13 +598,16 @@ impl Preg {
 
     /// `Preg::match($pattern, $subject, $matches)`; `None` when no match. Offsets (PREG_OFFSET_CAPTURE) are always
     /// available on Captures.
-    pub fn match_groups<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Option<Captures<'s>> {
+    pub(crate) fn match_groups<'s>(
+        pattern: impl AsRef<[u8]>,
+        subject: &'s [u8],
+    ) -> Option<Captures<'s>> {
         Self::match_at(pattern, subject, 0)
     }
 
     /// `match_groups` for a pattern built from file content: compiled for this call and not kept in the per-thread
     /// cache, which never evicts.
-    pub fn match_groups_uncached<'s>(
+    pub(crate) fn match_groups_uncached<'s>(
         pattern: impl AsRef<[u8]>,
         subject: &'s [u8],
     ) -> Option<Captures<'s>> {
@@ -619,7 +622,7 @@ impl Preg {
     }
 
     /// `Preg::match($pattern, $subject, $matches, 0, $offset)`.
-    pub fn match_at<'s>(
+    pub(crate) fn match_at<'s>(
         pattern: impl AsRef<[u8]>,
         subject: &'s [u8],
         offset: usize,
@@ -636,7 +639,7 @@ impl Preg {
 
     /// `Preg::matchAll($pattern, $subject, $matches, PREG_SET_ORDER)`: every match in order (its
     /// length is matchAll's return value). PREG_PATTERN_ORDER callers read `m.str(i)` of every match.
-    pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
+    pub(crate) fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
         with_fallback(
             pattern.as_ref(),
             subject,
@@ -648,7 +651,7 @@ impl Preg {
     }
 
     /// `Preg::replace($pattern, $replacement, $subject)`.
-    pub fn replace(
+    pub(crate) fn replace(
         pattern: impl AsRef<[u8]>,
         replacement: impl AsRef<[u8]>,
         subject: impl AsRef<[u8]>,
@@ -657,7 +660,7 @@ impl Preg {
     }
 
     /// `Preg::replace($pattern, $replacement, $subject, $limit, $count)` -> (result, count).
-    pub fn replace_limit(
+    pub(crate) fn replace_limit(
         pattern: impl AsRef<[u8]>,
         replacement: impl AsRef<[u8]>,
         subject: impl AsRef<[u8]>,
@@ -673,7 +676,7 @@ impl Preg {
     }
 
     /// `replace_limit` for a pattern built from file content, compiled for this call only (see `match_groups_uncached`).
-    pub fn replace_limit_uncached(
+    pub(crate) fn replace_limit_uncached(
         pattern: impl AsRef<[u8]>,
         replacement: impl AsRef<[u8]>,
         subject: impl AsRef<[u8]>,
@@ -706,7 +709,7 @@ impl Preg {
     }
 
     /// `Preg::replaceCallback($pattern, $callback, $subject)`.
-    pub fn replace_callback(
+    pub(crate) fn replace_callback(
         pattern: impl AsRef<[u8]>,
         callback: impl Fn(&Captures) -> Vec<u8>,
         subject: impl AsRef<[u8]>,
@@ -714,7 +717,7 @@ impl Preg {
         Self::replace_callback_limit(pattern, callback, subject, -1).0
     }
 
-    pub fn replace_callback_limit(
+    pub(crate) fn replace_callback_limit(
         pattern: impl AsRef<[u8]>,
         callback: impl Fn(&Captures) -> Vec<u8>,
         subject: impl AsRef<[u8]>,
@@ -745,7 +748,7 @@ impl Preg {
     }
 
     /// `Preg::split($pattern, $subject, $limit, $flags)`.
-    pub fn split(
+    pub(crate) fn split(
         pattern: impl AsRef<[u8]>,
         subject: impl AsRef<[u8]>,
         limit: isize,
@@ -758,7 +761,7 @@ impl Preg {
     }
 
     /// `Preg::split` returning just the strings.
-    pub fn split_str(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> Vec<Vec<u8>> {
+    pub(crate) fn split_str(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> Vec<Vec<u8>> {
         Self::split(pattern, subject, -1, 0)
             .into_iter()
             .map(|p| p.text)
@@ -892,7 +895,7 @@ fn expand_replacement(replacement: &[u8], c: &Captures) -> Vec<u8> {
 /// functions directly instead of `PhpCsFixer\Preg` (e.g. Pint's Blade formatters). A pattern PHP
 /// cannot compile, or a match error, behaves like PHP's `false`/`null` return: no match / `None`, or for the
 /// replace functions `Err` with `preg_last_error_msg()`.
-pub struct RawPreg;
+pub(crate) struct RawPreg;
 
 impl RawPreg {
     fn try_run<T>(
@@ -913,22 +916,25 @@ impl RawPreg {
     }
 
     /// `preg_match($pattern, $subject, $matches) === 1`.
-    pub fn match_groups<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Option<Captures<'s>> {
+    pub(crate) fn match_groups<'s>(
+        pattern: impl AsRef<[u8]>,
+        subject: &'s [u8],
+    ) -> Option<Captures<'s>> {
         Self::run(pattern.as_ref(), subject, |re| re.captures_at(subject, 0)).flatten()
     }
 
-    pub fn r#match(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> bool {
+    pub(crate) fn r#match(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> bool {
         Self::match_groups(pattern, subject.as_ref()).is_some()
     }
 
     /// `preg_match_all($pattern, $subject, $m, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)`: every match;
     /// use `Captures::offset` for offsets.
-    pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
+    pub(crate) fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
         Self::run(pattern.as_ref(), subject, |re| re.captures_all(subject)).unwrap_or_default()
     }
 
     /// `preg_replace_callback`; `Err` = PHP's `null`, with `preg_last_error_msg()`.
-    pub fn replace_callback(
+    pub(crate) fn replace_callback(
         pattern: impl AsRef<[u8]>,
         callback: impl Fn(&Captures) -> Vec<u8>,
         subject: impl AsRef<[u8]>,
@@ -941,7 +947,7 @@ impl RawPreg {
     }
 
     /// `preg_replace`; `Err` = PHP's `null`, with `preg_last_error_msg()`.
-    pub fn replace(
+    pub(crate) fn replace(
         pattern: impl AsRef<[u8]>,
         replacement: impl AsRef<[u8]>,
         subject: impl AsRef<[u8]>,

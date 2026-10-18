@@ -37,7 +37,7 @@ struct BlankLineBeforeStatementFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(BlankLineBeforeStatementFixer {
         fix_token_map: Vec::new(),
         whitespaces_config: Default::default(),

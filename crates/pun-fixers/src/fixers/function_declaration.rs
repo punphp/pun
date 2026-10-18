@@ -13,7 +13,7 @@ struct FunctionDeclarationFixer {
     trailing_comma_single_line: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(FunctionDeclarationFixer::default())
 }
 

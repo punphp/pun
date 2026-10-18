@@ -33,7 +33,7 @@ fn is_word(c: Option<u8>) -> bool {
     c.is_some_and(|c| c == b'_' || ctype_alnum(c))
 }
 
-pub fn post_format(content: &[u8]) -> Vec<u8> {
+pub(super) fn post_format(content: &[u8]) -> Vec<u8> {
     let length = content.len();
     let mut offset = 0;
     let mut inserts: Vec<usize> = Vec::new();

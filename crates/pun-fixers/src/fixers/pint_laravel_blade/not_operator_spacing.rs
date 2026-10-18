@@ -5,7 +5,7 @@ use super::php::{ctype_alnum, ctype_alpha, stripos, strpos, substr};
 const JS_ATTRIBUTE_PREFIXES: &[&[u8]] = &[b"x-", b"@", b":"];
 const RAW_TEXT_ELEMENTS: &[&[u8]] = &[b"script", b"style"];
 
-pub fn post_format(content: &[u8]) -> Vec<u8> {
+pub(super) fn post_format(content: &[u8]) -> Vec<u8> {
     let length = content.len();
     let mut offset = 0;
     let mut inserts: Vec<usize> = Vec::new();

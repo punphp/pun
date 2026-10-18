@@ -3,14 +3,14 @@
 use super::preg::Preg;
 use pun_tokens::{Kind::*, Tokens};
 
-pub fn get_line_indentation(tokens: &Tokens, index: usize) -> Vec<u8> {
+pub(crate) fn get_line_indentation(tokens: &Tokens, index: usize) -> Vec<u8> {
     match get_previous_newline_token_index(tokens, index) {
         None => Vec::new(),
         Some(i) => extract_indent(&compute_new_line_content(tokens, i)),
     }
 }
 
-pub fn extract_indent(content: &[u8]) -> Vec<u8> {
+pub(crate) fn extract_indent(content: &[u8]) -> Vec<u8> {
     if !content.is_ascii() {
         return Preg::match_groups("/\\R(\\h*)[^\\r\\n]*$/D", content)
             .map(|m| m.str(1).to_vec())
@@ -33,7 +33,7 @@ pub fn extract_indent(content: &[u8]) -> Vec<u8> {
         .to_vec()
 }
 
-pub fn get_previous_newline_token_index(tokens: &Tokens, mut index: usize) -> Option<usize> {
+pub(crate) fn get_previous_newline_token_index(tokens: &Tokens, mut index: usize) -> Option<usize> {
     while index > 0 {
         index = tokens.get_prev_token_of_kind(
             index,
@@ -47,7 +47,7 @@ pub fn get_previous_newline_token_index(tokens: &Tokens, mut index: usize) -> Op
     None
 }
 
-pub fn compute_new_line_content(tokens: &Tokens, index: usize) -> Vec<u8> {
+pub(crate) fn compute_new_line_content(tokens: &Tokens, index: usize) -> Vec<u8> {
     let content = tokens[index].get_content();
     if index != 0 && tokens[index - 1].is_given_kind(&[T_OPEN_TAG, T_CLOSE_TAG]) {
         return [
@@ -59,7 +59,7 @@ pub fn compute_new_line_content(tokens: &Tokens, index: usize) -> Vec<u8> {
     content.to_vec()
 }
 
-pub fn is_new_line_token(tokens: &Tokens, index: usize) -> bool {
+pub(crate) fn is_new_line_token(tokens: &Tokens, index: usize) -> bool {
     let token = &tokens[index];
     if token.is_kind(T_OPEN_TAG)
         && index + 1 < tokens.count()

@@ -6,7 +6,7 @@ use std::path::Path;
 
 struct NoShortBoolCastFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NoShortBoolCastFixer)
 }
 

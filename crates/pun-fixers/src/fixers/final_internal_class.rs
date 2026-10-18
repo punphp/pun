@@ -7,7 +7,7 @@ use pun_tokens::Tokens;
 use serde_json::Value;
 use std::path::Path;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(FinalInternalClassFixer::default())
 }
 

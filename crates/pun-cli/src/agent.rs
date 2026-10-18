@@ -17,7 +17,7 @@ static MODE: OnceLock<Mode> = OnceLock::new();
 
 /// Decide once per run: `--agent`/`--no-agent`, then `PUN_AGENT`, then PAO's `PAO_DISABLE`/`PAO_FORCE`, then
 /// [`detected`]. A missing TTY alone is not an agent.
-pub fn init(flag: Option<bool>, cmd: &'static str) {
+pub(crate) fn init(flag: Option<bool>, cmd: &'static str) {
     let on = flag
         .or_else(|| boolean("PUN_AGENT"))
         .or_else(|| boolean("PAO_DISABLE").filter(|d| *d).map(|_| false))
@@ -88,7 +88,7 @@ fn boolean(var: &str) -> Option<bool> {
     }
 }
 
-pub fn enabled() -> bool {
+pub(crate) fn enabled() -> bool {
     MODE.get().is_some_and(|m| m.on)
 }
 
@@ -96,12 +96,12 @@ fn mode() -> &'static Mode {
     MODE.get().expect("agent::init runs first")
 }
 
-pub fn cmd() -> &'static str {
+pub(crate) fn cmd() -> &'static str {
     mode().cmd
 }
 
 /// `pun <cmd>: <result>[, <detail>] ([<checked>, ]0.21s)` and the findings, capped at CAP unless `all`.
-pub fn render(
+pub(crate) fn render(
     result: &str,
     detail: &[String],
     checked: &str,
@@ -133,7 +133,7 @@ pub fn render(
     o
 }
 
-pub fn error(message: &str) -> String {
+pub(crate) fn error(message: &str) -> String {
     let one: Vec<&str> = message
         .lines()
         .map(str::trim)
@@ -142,6 +142,6 @@ pub fn error(message: &str) -> String {
     format!("pun {}: error: {}\n", cmd(), one.join(" "))
 }
 
-pub fn count(n: usize, what: &str) -> String {
+pub(crate) fn count(n: usize, what: &str) -> String {
     format!("{n} {what}{}", if n == 1 { "" } else { "s" })
 }

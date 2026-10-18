@@ -9,27 +9,27 @@ mod line;
 mod regex;
 mod short_description;
 mod tag;
-pub mod type_expression;
+pub(crate) mod type_expression;
 
 #[cfg(test)]
 mod tests;
 
-pub use annotation::{Annotation, TAGS_WITH_TYPES};
-pub use line::{Line, LineRef};
-pub use short_description::ShortDescription;
-pub use type_expression::TypeExpression;
+pub(crate) use annotation::{Annotation, TAGS_WITH_TYPES};
+pub(crate) use line::{Line, LineRef};
+pub(crate) use short_description::ShortDescription;
+pub(crate) use type_expression::TypeExpression;
 
 use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg};
 use std::cell::OnceCell;
 
 #[derive(Clone, Debug)]
-pub struct DocBlock {
+pub(crate) struct DocBlock {
     lines: Vec<LineRef>,
     annotations: OnceCell<Vec<Annotation>>,
 }
 
 impl DocBlock {
-    pub fn new(content: &[u8]) -> Self {
+    pub(crate) fn new(content: &[u8]) -> Self {
         let lines = split_lines_ascii(content)
             .unwrap_or_else(|| {
                 Preg::split(
@@ -51,15 +51,15 @@ impl DocBlock {
         }
     }
 
-    pub fn get_lines(&self) -> &[LineRef] {
+    pub(crate) fn get_lines(&self) -> &[LineRef] {
         &self.lines
     }
 
-    pub fn get_line(&self, pos: usize) -> Option<&LineRef> {
+    pub(crate) fn get_line(&self, pos: usize) -> Option<&LineRef> {
         self.lines.get(pos)
     }
 
-    pub fn get_annotations(&self) -> &[Annotation] {
+    pub(crate) fn get_annotations(&self) -> &[Annotation] {
         self.annotations.get_or_init(|| {
             let mut annotations = vec![];
             let total = self.lines.len();
@@ -80,22 +80,22 @@ impl DocBlock {
         })
     }
 
-    pub fn is_multi_line(&self) -> bool {
+    pub(crate) fn is_multi_line(&self) -> bool {
         self.lines.len() != 1
     }
 
-    pub fn get_annotation(&self, pos: usize) -> Option<&Annotation> {
+    pub(crate) fn get_annotation(&self, pos: usize) -> Option<&Annotation> {
         self.get_annotations().get(pos)
     }
 
-    pub fn get_annotations_of_type(&self, types: &[&str]) -> Vec<&Annotation> {
+    pub(crate) fn get_annotations_of_type(&self, types: &[&str]) -> Vec<&Annotation> {
         self.get_annotations()
             .iter()
             .filter(|a| types.iter().any(|t| t.as_bytes() == a.get_tag().get_name()))
             .collect()
     }
 
-    pub fn get_content(&self) -> Vec<u8> {
+    pub(crate) fn get_content(&self) -> Vec<u8> {
         self.lines
             .iter()
             .flat_map(|l| l.borrow().get_content().to_vec())

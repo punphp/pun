@@ -49,7 +49,7 @@ struct BracesPositionFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(BracesPositionFixer {
         control_structures_opening_brace: Position::SameLine,
         functions_opening_brace: Position::SameLine,

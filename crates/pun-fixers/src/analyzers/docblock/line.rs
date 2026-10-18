@@ -6,29 +6,29 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Line {
+pub(crate) struct Line {
     content: Vec<u8>,
 }
 
 /// Lines are shared between a DocBlock and its annotations/tags, like upstream's objects.
-pub type LineRef = Rc<RefCell<Line>>;
+pub(crate) type LineRef = Rc<RefCell<Line>>;
 
 impl Line {
-    pub fn new(content: impl Into<Vec<u8>>) -> Self {
+    pub(crate) fn new(content: impl Into<Vec<u8>>) -> Self {
         Line {
             content: content.into(),
         }
     }
 
-    pub fn shared(content: impl Into<Vec<u8>>) -> LineRef {
+    pub(crate) fn shared(content: impl Into<Vec<u8>>) -> LineRef {
         Rc::new(RefCell::new(Self::new(content)))
     }
 
-    pub fn get_content(&self) -> &[u8] {
+    pub(crate) fn get_content(&self) -> &[u8] {
         &self.content
     }
 
-    pub fn contains_useful_content(&self) -> bool {
+    pub(crate) fn contains_useful_content(&self) -> bool {
         Preg::r#match(r"/\*\s*\S+/", &self.content)
             && !trim(
                 &self
@@ -40,7 +40,7 @@ impl Line {
             .is_empty()
     }
 
-    pub fn contains_a_tag(&self) -> bool {
+    pub(crate) fn contains_a_tag(&self) -> bool {
         if !self.content.is_ascii() {
             return Preg::r#match(r"/\*\s*@/", &self.content);
         }
@@ -50,23 +50,23 @@ impl Line {
         })
     }
 
-    pub fn is_the_start(&self) -> bool {
+    pub(crate) fn is_the_start(&self) -> bool {
         self.content.windows(3).any(|w| w == b"/**")
     }
 
-    pub fn is_the_end(&self) -> bool {
+    pub(crate) fn is_the_end(&self) -> bool {
         self.content.windows(2).any(|w| w == b"*/")
     }
 
-    pub fn set_content(&mut self, content: impl Into<Vec<u8>>) {
+    pub(crate) fn set_content(&mut self, content: impl Into<Vec<u8>>) {
         self.content = content.into();
     }
 
-    pub fn remove(&mut self) {
+    pub(crate) fn remove(&mut self) {
         self.content.clear();
     }
 
-    pub fn add_blank(&mut self) {
+    pub(crate) fn add_blank(&mut self) {
         let Some(m) = Preg::match_groups(r"/^(\h*\*)[^\r\n]*(\r?\n)$/", &self.content) else {
             return;
         };

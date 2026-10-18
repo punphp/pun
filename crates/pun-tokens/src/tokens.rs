@@ -292,9 +292,6 @@ impl Tokens {
     pub fn as_slice(&self) -> &[Token] {
         &self.tokens
     }
-    pub fn offset_exists(&self, index: isize) -> bool {
-        index >= 0 && (index as usize) < self.tokens.len()
-    }
 
     fn invalidate_block_cache_at(&mut self, index: usize) {
         let c = self.blocks.get_mut();

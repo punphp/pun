@@ -4,10 +4,10 @@ use crate::analyzers::attribute_analyzer::AttributeAnalyzer;
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
 
-pub struct ClassyAnalyzer;
+pub(crate) struct ClassyAnalyzer;
 
 impl ClassyAnalyzer {
-    pub fn is_classy_invocation(&self, tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn is_classy_invocation(&self, tokens: &Tokens, index: usize) -> bool {
         let token = &tokens[index];
         assert!(
             token.is_kind(T_STRING),

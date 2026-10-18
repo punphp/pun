@@ -9,7 +9,7 @@ use std::io::Write;
 use std::path::PathBuf;
 
 #[derive(Args)]
-pub struct ListFilesArgs {
+pub(crate) struct ListFilesArgs {
     /// Paths to list instead of `[files] paths`.
     paths: Vec<PathBuf>,
     /// List one command's files: its own `exclude` added (`format` also applies Pint's finder rules).
@@ -33,7 +33,7 @@ enum CommandArg {
     Analyse,
 }
 
-pub fn run(a: ListFilesArgs) -> Result<u8> {
+pub(crate) fn run(a: ListFilesArgs) -> Result<u8> {
     let json = match a.format.as_deref() {
         None => false,
         Some("json") => true,

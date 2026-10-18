@@ -80,7 +80,7 @@ impl WhitespacesFixerConfig {
 }
 
 /// Fixers PHP-CS-Fixer 3.95 marks deprecated (DeprecatedFixerInterface) and their successors. Pun does not port them.
-pub const DEPRECATED: &[(&str, &[&str])] = &[
+pub(crate) const DEPRECATED: &[(&str, &[&str])] = &[
     (
         "braces",
         &[

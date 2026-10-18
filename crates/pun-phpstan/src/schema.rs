@@ -356,7 +356,7 @@ impl Context {
 }
 
 /// `Nette\Schema\Helpers::formatValue()`.
-pub fn format_value(v: &Value) -> String {
+pub(crate) fn format_value(v: &Value) -> String {
     match v {
         Value::Entity(_) | Value::OptionalPath(_) | Value::DateTime(_) => {
             format!("object {}", object_class(v))
@@ -767,7 +767,7 @@ fn validate_range(v: &Value, range: (Option<f64>, Option<f64>), ctx: &mut Contex
 }
 
 /// PHP `levenshtein($a, $b, $insert, $replace, $delete)`.
-pub fn levenshtein(a: &str, b: &str, ins: usize, rep: usize, del: usize) -> usize {
+pub(crate) fn levenshtein(a: &str, b: &str, ins: usize, rep: usize, del: usize) -> usize {
     let (a, b) = (a.as_bytes(), b.as_bytes());
     let mut p1: Vec<usize> = (0..=b.len()).map(|i| i * ins).collect();
     let mut p2 = vec![0; b.len() + 1];
@@ -785,7 +785,7 @@ pub fn levenshtein(a: &str, b: &str, ins: usize, rep: usize, del: usize) -> usiz
 }
 
 /// `Nette\Utils\ObjectHelpers::getSuggestion()`.
-pub fn suggestion(possibilities: &[String], value: &str) -> Option<String> {
+pub(crate) fn suggestion(possibilities: &[String], value: &str) -> Option<String> {
     let prefix = |s: &str, with: &str| -> String {
         for p in ["get", "set", "has", "is", "add"] {
             if let Some(rest) = s.strip_prefix(p)

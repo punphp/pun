@@ -21,7 +21,7 @@ struct PhpdocSeparationFixer {
     skip_unlisted_annotations: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(PhpdocSeparationFixer {
         groups: vec![],
         skip_unlisted_annotations: false,

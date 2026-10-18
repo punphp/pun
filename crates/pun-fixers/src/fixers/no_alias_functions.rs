@@ -37,7 +37,7 @@ const ALLOWED_SETS: &[&str] = &[
 ];
 const DEFAULT_SETS: &[&str] = &["@internal", "@IMAP", "@pg"];
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NoAliasFunctionsFixer::default())
 }
 

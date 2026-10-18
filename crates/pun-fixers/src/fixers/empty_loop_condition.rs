@@ -10,7 +10,7 @@ struct EmptyLoopConditionFixer {
     while_style: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(EmptyLoopConditionFixer { while_style: true })
 }
 

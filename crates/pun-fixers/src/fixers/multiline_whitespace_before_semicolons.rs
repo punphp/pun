@@ -21,7 +21,7 @@ struct MultilineWhitespaceBeforeSemicolonsFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(MultilineWhitespaceBeforeSemicolonsFixer {
         strategy: Strategy::NoMultiLine,
         whitespaces_config: Default::default(),

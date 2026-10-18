@@ -3,17 +3,17 @@ use crate::analyzers::analysis::NamespaceUseType;
 use pun_format::WhitespacesFixerConfig;
 use pun_tokens::{Kind::*, Token, Tokens};
 
-pub struct ImportProcessor {
+pub(crate) struct ImportProcessor {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 impl ImportProcessor {
-    pub fn new(whitespaces_config: WhitespacesFixerConfig) -> Self {
+    pub(crate) fn new(whitespaces_config: WhitespacesFixerConfig) -> Self {
         ImportProcessor { whitespaces_config }
     }
 
     /// `imports`: `[type => names]` in PHP array order (each type's names are sorted here, like upstream).
-    pub fn insert_imports(
+    pub(crate) fn insert_imports(
         &self,
         tokens: &mut Tokens,
         imports: &[(NamespaceUseType, Vec<Vec<u8>>)],

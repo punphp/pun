@@ -5,12 +5,12 @@ use super::php::{join_lines, lines, ltrim, rtrim, strpos, trim};
 use crate::analyzers::preg::RawPreg;
 
 /// `StripSensitiveLeadingBlankLines`: drops the blank lines prettier injects after a wrapped `<pre>`/`<textarea>` tag.
-pub mod strip_sensitive_leading_blank_lines {
+pub(super) mod strip_sensitive_leading_blank_lines {
     use super::*;
 
     const SENSITIVE: &[&[u8]] = &[b"pre", b"textarea"];
 
-    pub fn post_format(content: &[u8]) -> Vec<u8> {
+    pub(crate) fn post_format(content: &[u8]) -> Vec<u8> {
         let lines = lines(content);
         let line_count = lines.len();
         let mut result: Vec<Vec<u8>> = Vec::new();
@@ -100,10 +100,10 @@ pub mod strip_sensitive_leading_blank_lines {
 }
 
 /// `JoinDanglingCloseBracket`: joins a closing tag's dangling ">" back onto the preceding line.
-pub mod join_dangling_close_bracket {
+pub(super) mod join_dangling_close_bracket {
     use super::*;
 
-    pub fn post_format(content: &[u8]) -> Vec<u8> {
+    pub(crate) fn post_format(content: &[u8]) -> Vec<u8> {
         let lines = lines(content);
         let line_count = lines.len();
         let mut result: Vec<Vec<u8>> = Vec::new();
@@ -127,10 +127,10 @@ pub mod join_dangling_close_bracket {
 }
 
 /// `JoinDanglingOpenBracket`: pulls a hugged opening terminator back up onto its bare tag name line.
-pub mod join_dangling_open_bracket {
+pub(super) mod join_dangling_open_bracket {
     use super::*;
 
-    pub fn post_format(content: &[u8]) -> Vec<u8> {
+    pub(crate) fn post_format(content: &[u8]) -> Vec<u8> {
         let lines = lines(content);
         let line_count = lines.len();
         let mut result: Vec<Vec<u8>> = Vec::new();
@@ -157,10 +157,10 @@ pub mod join_dangling_open_bracket {
 }
 
 /// `DedentHuggedTerminator`: re-indents a hugged opening terminator line to match its tag.
-pub mod dedent_hugged_terminator {
+pub(super) mod dedent_hugged_terminator {
     use super::*;
 
-    pub fn post_format(content: &[u8]) -> Vec<u8> {
+    pub(crate) fn post_format(content: &[u8]) -> Vec<u8> {
         let lines = lines(content);
         let line_count = lines.len();
         let mut result: Vec<Vec<u8>> = Vec::new();
@@ -206,12 +206,12 @@ pub mod dedent_hugged_terminator {
 }
 
 /// `CollapseShortSlots`: collapses a short single-body `<x-slot>` back onto one line.
-pub mod collapse_short_slots {
+pub(super) mod collapse_short_slots {
     use super::*;
 
     const PRINT_WIDTH: usize = 120;
 
-    pub fn post_format(content: &[u8]) -> Vec<u8> {
+    pub(crate) fn post_format(content: &[u8]) -> Vec<u8> {
         let lines = lines(content);
         let line_count = lines.len();
         let mut result: Vec<Vec<u8>> = Vec::new();

@@ -16,7 +16,7 @@ struct CastSpacesFixer {
     space: Space,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(CastSpacesFixer {
         space: Space::Single,
     })

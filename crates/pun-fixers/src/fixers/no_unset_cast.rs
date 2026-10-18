@@ -6,7 +6,7 @@ use std::path::Path;
 
 struct NoUnsetCastFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NoUnsetCastFixer)
 }
 

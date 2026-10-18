@@ -18,7 +18,7 @@ fn unset(imports: &mut Imports, key: &[u8]) -> bool {
 
 struct LambdaNotUsedImportFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(LambdaNotUsedImportFixer)
 }
 

@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
 
 #[derive(clap::Args, Default)]
-pub struct MigrateArgs {
+pub(crate) struct MigrateArgs {
     /// Print what would change, as a diff, and write nothing.
     #[arg(long)]
     dry_run: bool,
@@ -38,7 +38,7 @@ static IGNORE: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 #[derive(Clone, Copy, PartialEq, Debug, clap::ValueEnum)]
-pub enum Source {
+pub(crate) enum Source {
     Pint,
     PhpCsFixer,
     Phpstan,
@@ -146,7 +146,7 @@ fn ask(detected: &[(Source, String)]) -> Result<Vec<Source>> {
         .collect())
 }
 
-pub fn run(a: MigrateArgs) -> Result<u8> {
+pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
     let root = root()?;
     let pint = a.config.as_deref().unwrap_or(Path::new("pint.json"));
     let detected = detect(&root, pint);

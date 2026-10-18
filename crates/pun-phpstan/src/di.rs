@@ -6,7 +6,7 @@ use crate::neon;
 use crate::php::{absolutize_path, normalize_path};
 use crate::value::{Array, Entity, Key, Value};
 
-pub const PREVENT_MERGING: &str = "_prevent_merging";
+pub(crate) const PREVENT_MERGING: &str = "_prevent_merging";
 
 fn prevent_key() -> Key {
     Key::Str(PREVENT_MERGING.into())
@@ -18,7 +18,7 @@ fn has_prevent(a: &Array) -> bool {
 }
 
 /// `Nette\Schema\Helpers::merge($value, $base)`: `$value` wins; its list items are appended to `$base`.
-pub fn merge(value: Value, base: Value) -> Value {
+pub(crate) fn merge(value: Value, base: Value) -> Value {
     match (value, base) {
         (Value::Array(v), Value::Array(b)) => Value::Array(merge_arrays(v, b)),
         (Value::Array(mut v), _) => {
@@ -31,7 +31,7 @@ pub fn merge(value: Value, base: Value) -> Value {
 }
 
 /// [`merge`] of two arrays.
-pub fn merge_arrays(mut v: Array, mut b: Array) -> Array {
+pub(crate) fn merge_arrays(mut v: Array, mut b: Array) -> Array {
     if has_prevent(&v) {
         v.remove(&prevent_key());
         return v;
@@ -50,7 +50,7 @@ pub fn merge_arrays(mut v: Array, mut b: Array) -> Array {
 }
 
 /// `Nette\DI\Helpers::escape()`.
-pub fn escape(v: Value) -> Value {
+pub(crate) fn escape(v: Value) -> Value {
     match v {
         Value::Array(a) => {
             let mut res = Array::new();
@@ -76,7 +76,7 @@ pub fn escape(v: Value) -> Value {
 }
 
 /// Only `%` doubling: for values PHPStan passes as runtime (dynamic) parameters, which expansion never touches.
-pub fn escape_percent(v: Value) -> Value {
+pub(crate) fn escape_percent(v: Value) -> Value {
     match v {
         Value::Array(a) => {
             let mut res = Array::new();
@@ -98,7 +98,11 @@ fn statement(entity: Value, arguments: Array) -> Value {
 }
 
 /// `Nette\DI\Helpers::expand($var, $params, $recursive)`; `recursive` is `None` for a plain expansion.
-pub fn expand(var: &Value, params: &Array, recursive: Option<&[String]>) -> Result<Value, String> {
+pub(crate) fn expand(
+    var: &Value,
+    params: &Array,
+    recursive: Option<&[String]>,
+) -> Result<Value, String> {
     match var {
         Value::Array(a) => Ok(Value::Array(expand_array(a, params, recursive)?)),
         Value::Entity(e) => Ok(statement(
@@ -225,7 +229,7 @@ fn expand_parameter(
 }
 
 /// [`expand`] of an array (keys are expanded too).
-pub fn expand_array(
+pub(crate) fn expand_array(
     a: &Array,
     params: &Array,
     recursive: Option<&[String]>,
@@ -245,7 +249,7 @@ pub fn expand_array(
 }
 
 /// PHP `dirname()` for `/`-separated paths.
-pub fn dirname(path: &str) -> String {
+pub(crate) fn dirname(path: &str) -> String {
     // (only ever given absolute file paths: no trailing slash, no bare name)
     let parent = std::path::Path::new(path)
         .parent()
@@ -374,7 +378,7 @@ fn process(
 }
 
 /// `Nette\Utils\Validators::assert($value, 'list', $label)` message.
-pub fn assert_list(v: &Value, label: &str) -> Result<(), String> {
+pub(crate) fn assert_list(v: &Value, label: &str) -> Result<(), String> {
     if let Value::Array(a) = v
         && a.is_list()
     {
@@ -402,7 +406,7 @@ pub fn assert_list(v: &Value, label: &str) -> Result<(), String> {
 }
 
 /// `Loader::expandIncludedFile()` / `ContainerFactory::expandIncludedFile()`: `#([a-z]+:)?[/\\\\]#Ai`.
-pub fn expand_included_file(included: &str, main: &str) -> String {
+pub(crate) fn expand_included_file(included: &str, main: &str) -> String {
     let rest = match included.find(':') {
         Some(i) if i > 0 && included[..i].bytes().all(|c| c.is_ascii_alphabetic()) => {
             &included[i + 1..]
@@ -418,7 +422,7 @@ pub fn expand_included_file(included: &str, main: &str) -> String {
 
 /// Reads one config file: `.neon`/`.dist` through PHPStan's NeonAdapter, `.php` through the baseline-shaped PHP
 /// reader (anything else in a `.php` config needs PHP).
-pub fn load_file(
+pub(crate) fn load_file(
     files: &dyn Files,
     file: &str,
     expand_relative: &[String],
@@ -443,7 +447,7 @@ pub fn load_file(
 
 /// `Nette\DI\Config\Loader` with PHPStan's `NeonLoader`: returns every loaded file's data, includes first (the
 /// `$merge = false` form the compiler consumes).
-pub struct Loader<'a> {
+pub(crate) struct Loader<'a> {
     pub files: &'a dyn Files,
     pub parameters: Array,
     pub expand_relative: Vec<String>,
@@ -452,7 +456,7 @@ pub struct Loader<'a> {
 }
 
 impl<'a> Loader<'a> {
-    pub fn new(
+    pub(crate) fn new(
         files: &'a dyn Files,
         parameters: Array,
         expand_relative: Vec<String>,
@@ -468,12 +472,12 @@ impl<'a> Loader<'a> {
     }
 
     /// `Loader::load($file, false)`.
-    pub fn load(&mut self, file: &str) -> Result<Vec<Array>, String> {
+    pub(crate) fn load(&mut self, file: &str) -> Result<Vec<Array>, String> {
         self.load_inner(file, false)
     }
 
     /// `Loader::load($file)` (merged).
-    pub fn load_merged(&mut self, file: &str) -> Result<Array, String> {
+    pub(crate) fn load_merged(&mut self, file: &str) -> Result<Array, String> {
         Ok(self.load_inner(file, true)?.pop().unwrap_or_default())
     }
 

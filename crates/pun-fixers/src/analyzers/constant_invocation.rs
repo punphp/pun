@@ -4,7 +4,7 @@ use super::attribute_analyzer::AttributeAnalyzer;
 use super::goto_label_analyzer::GotoLabelAnalyzer;
 use pun_tokens::{Kind::*, Tokens, token::CLASSY_KINDS};
 
-pub fn is_constant_invocation(tokens: &Tokens, index: usize) -> bool {
+pub(crate) fn is_constant_invocation(tokens: &Tokens, index: usize) -> bool {
     assert!(
         tokens[index].is_kind(T_STRING),
         "No T_STRING at given index {index}, got \"{}\".",

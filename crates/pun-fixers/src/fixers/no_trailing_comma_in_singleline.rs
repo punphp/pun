@@ -29,7 +29,7 @@ struct NoTrailingCommaInSinglelineFixer {
     elements: Vec<Element>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NoTrailingCommaInSinglelineFixer {
         elements: CHOICES.iter().map(|&(_, e)| e).collect(),
     })

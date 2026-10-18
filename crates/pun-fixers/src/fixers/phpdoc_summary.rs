@@ -9,7 +9,7 @@ struct PhpdocSummaryFixer {
     line_ending: Vec<u8>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocSummaryFixer {
         line_ending: b"\n".to_vec(),
     })

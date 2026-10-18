@@ -22,7 +22,7 @@ struct YodaStyleFixer {
     candidates_map: Vec<(Candidate, Token)>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(YodaStyleFixer::default())
 }
 

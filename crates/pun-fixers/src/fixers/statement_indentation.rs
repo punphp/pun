@@ -70,12 +70,12 @@ struct Scope {
 }
 
 #[derive(Default)]
-pub struct StatementIndentationFixer {
+pub(crate) struct StatementIndentationFixer {
     stick_comment_to_next_continuous_control_statement: bool,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     // Upstream's `bracesFixerCompatibility` mode is only used by the deprecated `braces` fixer, which Pun refuses.
     crate::configured(StatementIndentationFixer::default())
 }

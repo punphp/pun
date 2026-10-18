@@ -4,25 +4,25 @@
 use super::functions_analyzer::FunctionsAnalyzer;
 use pun_tokens::{Kind::*, Tokens};
 
-pub fn is_candidate(tokens: &Tokens) -> bool {
+pub(crate) fn is_candidate(tokens: &Tokens) -> bool {
     tokens.is_token_kind_found(T_STRING)
 }
 
-pub const IS_RISKY: bool = true;
+pub(crate) const IS_RISKY: bool = true;
 
 #[derive(Default)]
-pub struct FunctionReferenceFinder {
+pub(crate) struct FunctionReferenceFinder {
     functions_analyzer: FunctionsAnalyzer,
 }
 
 impl FunctionReferenceFinder {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
     /// `[function name index, open parenthesis, close parenthesis]` of the next global call to
     /// `function_name_to_search` (case-insensitive) in `start..=end` (`end` defaults to the token count).
-    pub fn find(
+    pub(crate) fn find(
         &self,
         function_name_to_search: &str,
         tokens: &Tokens,

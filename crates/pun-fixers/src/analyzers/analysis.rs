@@ -7,7 +7,7 @@ use pun_tokens::php_compat::{strtolower, trim};
 
 /// `NamespaceUseAnalysis::TYPE_*`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum NamespaceUseType {
+pub(crate) enum NamespaceUseType {
     Class = 1,
     Function = 2,
     Constant = 3,
@@ -15,7 +15,7 @@ pub enum NamespaceUseType {
 
 impl NamespaceUseType {
     /// The import type's name in configuration and in `use function` / `use const`: `class`, `function`, `const`.
-    pub fn name(self) -> &'static str {
+    pub(crate) fn name(self) -> &'static str {
         match self {
             Self::Class => "class",
             Self::Function => "function",
@@ -26,7 +26,7 @@ impl NamespaceUseType {
 
 /// `NamespaceUseAnalysis`.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct NamespaceUseAnalysis {
+pub(crate) struct NamespaceUseAnalysis {
     pub type_: NamespaceUseType,
     pub full_name: Vec<u8>,
     pub short_name: Vec<u8>,
@@ -39,13 +39,13 @@ pub struct NamespaceUseAnalysis {
 }
 
 impl NamespaceUseAnalysis {
-    pub fn is_class(&self) -> bool {
+    pub(crate) fn is_class(&self) -> bool {
         self.type_ == NamespaceUseType::Class
     }
-    pub fn is_function(&self) -> bool {
+    pub(crate) fn is_function(&self) -> bool {
         self.type_ == NamespaceUseType::Function
     }
-    pub fn is_constant(&self) -> bool {
+    pub(crate) fn is_constant(&self) -> bool {
         self.type_ == NamespaceUseType::Constant
     }
 }
@@ -74,7 +74,7 @@ const RESERVED_TYPES: &[&[u8]] = &[
 
 /// `TypeAnalysis`.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct TypeAnalysis {
+pub(crate) struct TypeAnalysis {
     pub name: Vec<u8>,
     pub start_index: Option<usize>,
     pub end_index: Option<usize>,
@@ -83,7 +83,7 @@ pub struct TypeAnalysis {
 
 impl TypeAnalysis {
     /// `new TypeAnalysis($name, $startIndex, $endIndex)` (PHP >= 8.0 branch).
-    pub fn new(name: &[u8], start_index: Option<usize>, end_index: Option<usize>) -> Self {
+    pub(crate) fn new(name: &[u8], start_index: Option<usize>, end_index: Option<usize>) -> Self {
         let (name, nullable) = if let Some(rest) = name.strip_prefix(b"?") {
             (rest.to_vec(), true)
         } else {
@@ -100,23 +100,23 @@ impl TypeAnalysis {
             nullable,
         }
     }
-    pub fn get_start_index(&self) -> usize {
+    pub(crate) fn get_start_index(&self) -> usize {
         self.start_index.expect("TypeAnalysis: no start index.")
     }
-    pub fn get_end_index(&self) -> usize {
+    pub(crate) fn get_end_index(&self) -> usize {
         self.end_index.expect("TypeAnalysis: no end index.")
     }
-    pub fn is_reserved_type(&self) -> bool {
+    pub(crate) fn is_reserved_type(&self) -> bool {
         RESERVED_TYPES.contains(&&strtolower(&self.name)[..])
     }
-    pub fn is_nullable(&self) -> bool {
+    pub(crate) fn is_nullable(&self) -> bool {
         self.nullable
     }
 }
 
 /// `ArgumentAnalysis`.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ArgumentAnalysis {
+pub(crate) struct ArgumentAnalysis {
     pub name: Option<Vec<u8>>,
     pub name_index: Option<usize>,
     pub default: Option<Vec<u8>>,
@@ -125,7 +125,7 @@ pub struct ArgumentAnalysis {
 
 /// One entry of `AttributeAnalysis::getAttributes()`: `array{start: int, end: int, name: string}`.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Attribute {
+pub(crate) struct Attribute {
     pub start: usize,
     pub end: usize,
     pub name: Vec<u8>,
@@ -133,7 +133,7 @@ pub struct Attribute {
 
 /// `AttributeAnalysis`.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct AttributeAnalysis {
+pub(crate) struct AttributeAnalysis {
     pub start_index: usize,
     pub end_index: usize,
     pub opening_bracket_index: usize,

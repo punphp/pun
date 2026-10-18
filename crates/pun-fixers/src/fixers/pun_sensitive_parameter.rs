@@ -10,7 +10,7 @@ use std::path::Path;
 
 struct SensitiveParameter;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(SensitiveParameter)
 }
 

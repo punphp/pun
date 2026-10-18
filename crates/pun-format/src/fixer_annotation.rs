@@ -6,7 +6,7 @@ use pun_tokens::Tokens;
 use std::sync::LazyLock;
 
 /// Annotation name => its values.
-pub type Annotations = Vec<(Vec<u8>, Vec<Vec<u8>>)>;
+pub(crate) type Annotations = Vec<(Vec<u8>, Vec<Vec<u8>>)>;
 
 const PATTERN: &str =
     r"^\h*[*\/]+\h+@(php-cs-fixer-\w+\h+(?:@?[\w\/,])+|pun-ignore-file +[\w\/,.-]+)";
@@ -25,7 +25,7 @@ static BYTES: LazyLock<Regex> =
 
 /// What `find()` throws.
 #[derive(Debug, PartialEq)]
-pub enum FindError {
+pub(crate) enum FindError {
     /// RuntimeException (Runner::fixFile wraps it): a value listed twice under one annotation.
     Duplicated(String),
     /// The ErrorException Pint's error handler raises for `$matchParts[1]` when a tab, not a space, follows the name.
@@ -33,7 +33,7 @@ pub enum FindError {
 }
 
 /// `find()`: annotation name => sorted values, in first-seen order.
-pub fn find(tokens: &Tokens) -> Result<Annotations, FindError> {
+pub(crate) fn find(tokens: &Tokens) -> Result<Annotations, FindError> {
     let mut comments: Vec<&[u8]> = vec![];
     let count = tokens.count();
     let mut index = 0;
@@ -113,13 +113,13 @@ pub fn find(tokens: &Tokens) -> Result<Annotations, FindError> {
 }
 
 /// `$fixerAnnotationAnalysis['php-cs-fixer-ignore'] ?? []`.
-pub fn ignored(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
+pub(crate) fn ignored(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
     values(annotations, b"php-cs-fixer-ignore")
 }
 
 /// The fixers a file opts out of: `@php-cs-fixer-ignore` names plus the fixers of `@pun-ignore-file` rule IDs
 /// (`format/group/x`, `lint/group/x` or `group/x`; unknown IDs are skipped).
-pub fn skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
+pub(crate) fn skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
     let pun = pun_skipped(annotations)
         .into_iter()
         .map(|f| f.as_bytes().to_vec());
@@ -127,7 +127,7 @@ pub fn skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
 }
 
 /// The fixers of `@pun-ignore-file` rule IDs alone.
-pub fn pun_skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<&'static str> {
+pub(crate) fn pun_skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<&'static str> {
     values(annotations, b"pun-ignore-file")
         .into_iter()
         .filter_map(|id| {

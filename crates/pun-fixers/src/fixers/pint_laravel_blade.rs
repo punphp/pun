@@ -35,7 +35,7 @@ const WORKER_IDLE_TIMEOUT: Duration = Duration::from_secs(30);
 
 struct LaravelBladeFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(LaravelBladeFixer)
 }
 

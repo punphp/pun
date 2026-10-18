@@ -9,7 +9,7 @@ use std::path::Path;
 
 struct PhpdocAnnotationWithoutDotFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocAnnotationWithoutDotFixer)
 }
 

@@ -32,7 +32,7 @@ pub struct Project {
 }
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
-pub const RUNTIME_PHP_VERSION: u32 = 80511;
+pub(crate) const RUNTIME_PHP_VERSION: u32 = 80511;
 
 fn strings<'a>(params: &'a Array, key: &str) -> Vec<&'a str> {
     params

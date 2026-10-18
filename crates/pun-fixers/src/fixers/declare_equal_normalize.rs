@@ -11,7 +11,7 @@ struct DeclareEqualNormalizeFixer {
     space_none: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(DeclareEqualNormalizeFixer::default())
 }
 

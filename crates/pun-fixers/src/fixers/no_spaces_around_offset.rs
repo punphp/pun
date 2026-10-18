@@ -18,7 +18,7 @@ struct NoSpacesAroundOffsetFixer {
 
 const VALUES: &[&str] = &["inside", "outside"];
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NoSpacesAroundOffsetFixer {
         positions: vec![Position::Inside, Position::Outside],
     })

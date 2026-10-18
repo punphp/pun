@@ -13,7 +13,7 @@ use serde_json::Value;
 use std::path::Path;
 
 #[derive(Default)]
-pub struct GeneralPhpdocTagRenameFixer {
+pub(crate) struct GeneralPhpdocTagRenameFixer {
     fix_annotation: bool,
     fix_inline: bool,
     /// Normalized `replacements`, in PHP array order.

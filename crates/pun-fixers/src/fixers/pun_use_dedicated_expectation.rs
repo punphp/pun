@@ -37,7 +37,7 @@ const TWO_ARGS: &[(&str, &str)] = &[
 
 struct UseDedicatedExpectation;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(UseDedicatedExpectation)
 }
 

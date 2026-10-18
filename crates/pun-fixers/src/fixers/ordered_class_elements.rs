@@ -137,7 +137,7 @@ struct OrderedClassElementsFixer {
     case_sensitive: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(OrderedClassElementsFixer {
         type_position: HashMap::new(),
         sort_alpha: false,

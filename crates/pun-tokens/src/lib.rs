@@ -4,7 +4,7 @@ pub mod kind;
 pub mod lexer;
 pub mod namespaces_analyzer;
 pub mod parse_lexer;
-pub mod parse_mode;
+mod parse_mode;
 pub mod php_compat;
 pub mod token;
 pub mod tokens;

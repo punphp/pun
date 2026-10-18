@@ -7,13 +7,13 @@ use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
 
 /// `AbstractPhpUnitFixer::isCandidate`.
-pub fn is_candidate(tokens: &Tokens) -> bool {
+pub(crate) fn is_candidate(tokens: &Tokens) -> bool {
     tokens.is_all_token_kinds_found(&[T_CLASS, T_STRING])
 }
 
 /// `AbstractPhpUnitFixer::applyFix`: runs `apply_php_unit_class_fix(tokens, start, end)` per PHPUnit class,
 /// lazily like upstream's generator (each class is located after the previous one was fixed).
-pub fn apply_fix(
+pub(crate) fn apply_fix(
     tokens: &mut Tokens,
     mut apply_php_unit_class_fix: impl FnMut(&mut Tokens, usize, usize),
 ) {
@@ -26,7 +26,7 @@ pub fn apply_fix(
 }
 
 /// `AbstractPhpUnitFixer::isTestAttributePresent`.
-pub fn is_test_attribute_present(tokens: &Tokens, index: usize) -> bool {
+pub(crate) fn is_test_attribute_present(tokens: &Tokens, index: usize) -> bool {
     // The class's `{` always precedes a method.
     let attribute_index = tokens
         .get_prev_token_of_kind(index, &["{".into(), T_ATTRIBUTE.into()], true)
@@ -49,7 +49,7 @@ pub fn is_test_attribute_present(tokens: &Tokens, index: usize) -> bool {
 }
 
 /// `DocBlockAnnotationTrait::getDocBlockIndex`.
-pub fn get_doc_block_index(tokens: &Tokens, mut index: usize) -> usize {
+pub(crate) fn get_doc_block_index(tokens: &Tokens, mut index: usize) -> usize {
     loop {
         index = tokens.get_prev_non_whitespace(index, None).unwrap();
         if tokens[index].is_kind(CT_ATTRIBUTE_CLOSE) {

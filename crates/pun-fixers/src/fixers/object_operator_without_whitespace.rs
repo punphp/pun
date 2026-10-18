@@ -5,7 +5,7 @@ use std::path::Path;
 
 struct ObjectOperatorWithoutWhitespaceFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(ObjectOperatorWithoutWhitespaceFixer)
 }
 

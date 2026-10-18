@@ -5,7 +5,7 @@ use std::path::Path;
 
 struct NoLeadingImportSlashFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NoLeadingImportSlashFixer)
 }
 

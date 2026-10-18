@@ -50,7 +50,7 @@ pub struct Laravel<'a> {
 }
 
 /// Registers the model-attribute hook for the Laravel app.
-pub fn register(
+pub(crate) fn register(
     registry: &mut PluginRegistry,
     app: Laravel,
     project: &Project,

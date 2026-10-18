@@ -26,7 +26,7 @@ struct OrderedTypesFixer {
     case_sensitive: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(OrderedTypesFixer {
         alpha: true,
         // `Future::getV4OrV3('always_last', 'always_first')`: Pint runs without future mode.

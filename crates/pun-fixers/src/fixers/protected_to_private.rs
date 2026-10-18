@@ -25,7 +25,7 @@ const MODIFIER_KINDS: &[Kind] = &[
 
 struct ProtectedToPrivateFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(ProtectedToPrivateFixer)
 }
 

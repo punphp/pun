@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\AlternativeSyntaxAnalyzer`.
 use pun_tokens::{Kind, Kind::*, Proto, Tokens};
 
-pub struct AlternativeSyntaxAnalyzer;
+pub(crate) struct AlternativeSyntaxAnalyzer;
 
 fn alternative_syntax_block_edges(kind: Kind) -> Option<&'static [Kind]> {
     Some(match kind {
@@ -17,7 +17,7 @@ fn alternative_syntax_block_edges(kind: Kind) -> Option<&'static [Kind]> {
 }
 
 impl AlternativeSyntaxAnalyzer {
-    pub fn belongs_to_alternative_syntax(&self, tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn belongs_to_alternative_syntax(&self, tokens: &Tokens, index: usize) -> bool {
         if !tokens[index].equals(":", true) {
             return false;
         }
@@ -38,7 +38,11 @@ impl AlternativeSyntaxAnalyzer {
         ])
     }
 
-    pub fn find_alternative_syntax_block_end(&self, tokens: &Tokens, mut index: usize) -> usize {
+    pub(crate) fn find_alternative_syntax_block_end(
+        &self,
+        tokens: &Tokens,
+        mut index: usize,
+    ) -> usize {
         assert!(index < tokens.len(), "There is no token at index {index}.");
         assert!(
             self.is_start_of_alternative_syntax_block(tokens, index),

@@ -10,7 +10,7 @@ struct FinalClassFixer {
     proxy: FinalInternalClassFixer,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     let mut proxy = FinalInternalClassFixer::default();
     proxy
         .configure_options(

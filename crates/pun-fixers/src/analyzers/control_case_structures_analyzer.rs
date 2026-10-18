@@ -8,49 +8,49 @@ const SUPPORTED_TYPES_WITH_CASE_OR_DEFAULT: &[Kind] = &[T_SWITCH, T_MATCH, T_ENU
 
 /// `CaseAnalysis`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct CaseAnalysis {
+pub(crate) struct CaseAnalysis {
     index: usize,
     colon_index: usize,
 }
 
 impl CaseAnalysis {
-    pub fn get_colon_index(&self) -> usize {
+    pub(crate) fn get_colon_index(&self) -> usize {
         self.colon_index
     }
 }
 
 /// `DefaultAnalysis`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct DefaultAnalysis {
+pub(crate) struct DefaultAnalysis {
     index: usize,
     colon_index: usize,
 }
 
 impl DefaultAnalysis {
-    pub fn get_index(&self) -> usize {
+    pub(crate) fn get_index(&self) -> usize {
         self.index
     }
-    pub fn get_colon_index(&self) -> usize {
+    pub(crate) fn get_colon_index(&self) -> usize {
         self.colon_index
     }
 }
 
 /// `SwitchAnalysis`.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ControlCaseStructuresAnalysis {
+pub(crate) struct ControlCaseStructuresAnalysis {
     open_index: usize,
     cases: Vec<CaseAnalysis>,
     default: Option<DefaultAnalysis>,
 }
 
 impl ControlCaseStructuresAnalysis {
-    pub fn get_open_index(&self) -> usize {
+    pub(crate) fn get_open_index(&self) -> usize {
         self.open_index
     }
-    pub fn get_cases(&self) -> &[CaseAnalysis] {
+    pub(crate) fn get_cases(&self) -> &[CaseAnalysis] {
         &self.cases
     }
-    pub fn get_default_analysis(&self) -> Option<DefaultAnalysis> {
+    pub(crate) fn get_default_analysis(&self) -> Option<DefaultAnalysis> {
         self.default
     }
 }
@@ -64,13 +64,13 @@ struct Frame {
     open: usize,
 }
 
-pub struct ControlCaseStructuresAnalyzer;
+pub(crate) struct ControlCaseStructuresAnalyzer;
 
 impl ControlCaseStructuresAnalyzer {
     /// `findControlStructures($tokens, [T_SWITCH])`: analyses in the order upstream's generator yields them
     /// (innermost structure first). Collected eagerly; callers that only clear or retag tokens see the
     /// same results as with the lazy generator.
-    pub fn find_switch_structures(tokens: &Tokens) -> Vec<ControlCaseStructuresAnalysis> {
+    pub(crate) fn find_switch_structures(tokens: &Tokens) -> Vec<ControlCaseStructuresAnalysis> {
         let mut out = Vec::new();
         if !tokens.is_token_kind_found(T_SWITCH) {
             return out;

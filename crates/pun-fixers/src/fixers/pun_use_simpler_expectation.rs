@@ -15,7 +15,7 @@ use std::path::Path;
 
 struct UseSimplerExpectation;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(UseSimplerExpectation)
 }
 

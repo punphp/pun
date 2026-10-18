@@ -3,7 +3,7 @@ use pun_tokens::Kind::{self, *};
 use pun_tokens::Tokens;
 
 /// The compound assignment operators: `??=`, `+=`, `-=`, `*=`, `/=`, `.=`, `%=`, `**=`, `&=`, `|=`, `^=`, `<<=`, `>>=`.
-pub const COMPOUND_ASSIGNMENTS: &[Kind] = &[
+pub(crate) const COMPOUND_ASSIGNMENTS: &[Kind] = &[
     T_COALESCE_EQUAL,
     T_PLUS_EQUAL,
     T_MINUS_EQUAL,
@@ -20,7 +20,7 @@ pub const COMPOUND_ASSIGNMENTS: &[Kind] = &[
 ];
 
 /// (first, last) meaningful token of each comma-separated item between `open` and `close`.
-pub fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)> {
+pub(crate) fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)> {
     let mut items = vec![];
     let mut k = tokens.get_next_meaningful_token(open).unwrap();
     while k < close {

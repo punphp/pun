@@ -33,7 +33,7 @@ fn names_phpstan(code: &[u8]) -> bool {
         .any(|w| w.eq_ignore_ascii_case(b"phpstan\\") || w.eq_ignore_ascii_case(b"phpparse"))
 }
 
-pub fn php_version(id: u32) -> PHPVersion {
+pub(crate) fn php_version(id: u32) -> PHPVersion {
     PHPVersion::new(id / 10000, id / 100 % 100, id % 100)
 }
 
@@ -58,7 +58,7 @@ impl std::error::Error for CouldNotReadFile {
 }
 
 /// `path` as a Mago file, `None` when it does not exist.
-pub fn read(path: &Path, file_type: FileType) -> Result<Option<File>, CouldNotReadFile> {
+pub(crate) fn read(path: &Path, file_type: FileType) -> Result<Option<File>, CouldNotReadFile> {
     let contents = match std::fs::read(path) {
         Ok(contents) => contents,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
@@ -197,14 +197,14 @@ fn scan_api(version: PHPVersion) -> CodebaseMetadata {
 const CHUNK: usize = 32;
 
 /// The analysed files as the scan read them, by path, for the rules to walk without reading them again.
-pub type Sources = HashMap<PathBuf, Arc<File>>;
+pub(crate) type Sources = HashMap<PathBuf, Arc<File>>;
 
-pub fn build(project: &Project) -> Result<CodebaseMetadata, CouldNotReadFile> {
+pub(crate) fn build(project: &Project) -> Result<CodebaseMetadata, CouldNotReadFile> {
     Ok(build_with_sources(project)?.0)
 }
 
 /// The codebase, and the analysed files' [`Sources`].
-pub fn build_with_sources(
+pub(crate) fn build_with_sources(
     project: &Project,
 ) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {
     let version = php_version(project.php_version);

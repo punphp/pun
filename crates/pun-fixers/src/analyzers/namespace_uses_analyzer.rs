@@ -4,7 +4,7 @@ use pun_tokens::Kind::*;
 use pun_tokens::NamespaceAnalysis;
 use pun_tokens::{Proto, Tokens, TokensAnalyzer};
 
-pub struct NamespaceUsesAnalyzer;
+pub(crate) struct NamespaceUsesAnalyzer;
 
 struct QualifiedName {
     full_name: Vec<u8>,
@@ -14,7 +14,7 @@ struct QualifiedName {
 }
 
 impl NamespaceUsesAnalyzer {
-    pub fn get_declarations_from_tokens(
+    pub(crate) fn get_declarations_from_tokens(
         &self,
         tokens: &Tokens,
         allow_multi_uses: bool,
@@ -26,7 +26,7 @@ impl NamespaceUsesAnalyzer {
         self.get_declarations(tokens, &use_indices, allow_multi_uses)
     }
 
-    pub fn get_declarations_in_namespace(
+    pub(crate) fn get_declarations_in_namespace(
         &self,
         tokens: &Tokens,
         namespace: &NamespaceAnalysis,

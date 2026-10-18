@@ -13,7 +13,7 @@ struct WhitespaceAfterCommaInArrayFixer {
     ensure_single_space: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(WhitespaceAfterCommaInArrayFixer::default())
 }
 

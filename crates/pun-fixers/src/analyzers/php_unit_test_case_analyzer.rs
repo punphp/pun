@@ -3,12 +3,12 @@ use crate::analyzers::preg::Preg;
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
 
-pub struct PhpUnitTestCaseAnalyzer;
+pub(crate) struct PhpUnitTestCaseAnalyzer;
 
 impl PhpUnitTestCaseAnalyzer {
     /// Generator step of `findPhpUnitClasses`: the last PHPUnit class whose T_CLASS index is below `before` (that
     /// index and the body range), or `None`. Upstream starts at `count() - 1` and stops before index 0.
-    pub fn next_php_unit_class(
+    pub(crate) fn next_php_unit_class(
         &self,
         tokens: &Tokens,
         before: usize,

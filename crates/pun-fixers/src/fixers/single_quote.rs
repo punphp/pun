@@ -13,7 +13,7 @@ struct SingleQuoteFixer {
     strings_containing_single_quote_chars: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(SingleQuoteFixer::default())
 }
 

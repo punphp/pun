@@ -4,18 +4,18 @@
 use crate::analyzers::docblock::DocBlock;
 use pun_tokens::{Kind, Token, Tokens};
 
-pub struct GeneralPhpdocAnnotationRemove {
+pub(crate) struct GeneralPhpdocAnnotationRemove {
     pub annotations: &'static [&'static str],
 }
 
 impl GeneralPhpdocAnnotationRemove {
-    pub const PRIORITY: i32 = 10;
+    pub(crate) const PRIORITY: i32 = 10;
 
-    pub fn is_candidate(&self, tokens: &Tokens) -> bool {
+    pub(crate) fn is_candidate(&self, tokens: &Tokens) -> bool {
         tokens.is_token_kind_found(Kind::T_DOC_COMMENT)
     }
 
-    pub fn fix(&self, tokens: &mut Tokens) {
+    pub(crate) fn fix(&self, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;

@@ -12,7 +12,7 @@ struct PhpdocOrderFixer {
     configuration_order: Vec<String>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(PhpdocOrderFixer {
         configuration_order: vec![],
     })

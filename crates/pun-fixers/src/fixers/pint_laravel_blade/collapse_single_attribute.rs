@@ -4,7 +4,7 @@
 use super::php::{ctype_space, join_lines, lines, ltrim, rtrim, trim};
 use crate::analyzers::preg::RawPreg;
 
-pub fn post_format(content: &[u8]) -> Vec<u8> {
+pub(super) fn post_format(content: &[u8]) -> Vec<u8> {
     let lines = lines(content);
     let line_count = lines.len();
     let mut result: Vec<Vec<u8>> = Vec::new();

@@ -31,7 +31,7 @@ struct MethodArgumentSpaceFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(MethodArgumentSpaceFixer {
         keep_multiple_spaces_after_comma: false,
         on_multiline: OnMultiline::Ignore,

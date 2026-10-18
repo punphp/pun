@@ -4,7 +4,7 @@ use crate::analyzers::preg::Preg;
 use pun_tokens::Kind::*;
 use pun_tokens::{Proto, Tokens};
 
-pub struct AttributeAnalyzer;
+pub(crate) struct AttributeAnalyzer;
 
 const TOKEN_KINDS_NOT_ALLOWED_IN_ATTRIBUTE: &[Proto<'static>] = &[
     Proto::Char(b";"),
@@ -22,7 +22,7 @@ const TOKEN_KINDS_NOT_ALLOWED_IN_ATTRIBUTE: &[Proto<'static>] = &[
 ];
 
 impl AttributeAnalyzer {
-    pub fn is_attribute(tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn is_attribute(tokens: &Tokens, index: usize) -> bool {
         if !tokens[index].is_kind(T_STRING) || !tokens.is_any_token_kinds_found(&[T_ATTRIBUTE]) {
             return false;
         }
@@ -45,7 +45,7 @@ impl AttributeAnalyzer {
         count == 0
     }
 
-    pub fn collect(tokens: &Tokens, mut index: usize) -> Vec<AttributeAnalysis> {
+    pub(crate) fn collect(tokens: &Tokens, mut index: usize) -> Vec<AttributeAnalysis> {
         assert!(
             tokens[index].is_kind(T_ATTRIBUTE),
             "Given index must point to an attribute."
@@ -70,7 +70,7 @@ impl AttributeAnalyzer {
         elements
     }
 
-    pub fn collect_one(tokens: &Tokens, index: usize) -> AttributeAnalysis {
+    pub(crate) fn collect_one(tokens: &Tokens, index: usize) -> AttributeAnalysis {
         assert!(
             tokens[index].is_kind(T_ATTRIBUTE),
             "Given index must point to an attribute."

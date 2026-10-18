@@ -17,7 +17,7 @@ fn is_member_modifier(k: Kind) -> bool {
     )
 }
 
-pub fn is_semi_reserved(k: Kind) -> bool {
+pub(crate) fn is_semi_reserved(k: Kind) -> bool {
     is_member_modifier(k)
         || matches!(
             k,

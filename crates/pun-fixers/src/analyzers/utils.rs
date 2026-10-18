@@ -4,10 +4,10 @@ pub use pun_config::options::natural_language_join;
 use pun_tokens::Token;
 use pun_tokens::php_compat::mb_strtolower;
 
-pub struct Utils;
+pub(crate) struct Utils;
 
 impl Utils {
-    pub fn camel_case_to_underscore(string: &[u8]) -> Vec<u8> {
+    pub(crate) fn camel_case_to_underscore(string: &[u8]) -> Vec<u8> {
         mb_strtolower(&Preg::replace(
             "/(?<!^)(?<!_)((?=[\\p{Lu}][^\\p{Lu}])|(?<![\\p{Lu}])(?=[\\p{Lu}]))/",
             "_",
@@ -16,7 +16,7 @@ impl Utils {
     }
 
     /// Everything after the final newline of a whitespace token.
-    pub fn calculate_trailing_whitespace_indent(token: &Token) -> Vec<u8> {
+    pub(crate) fn calculate_trailing_whitespace_indent(token: &Token) -> Vec<u8> {
         assert!(
             token.is_whitespace(None),
             "The given token must be whitespace, got \"{}\".",
@@ -49,7 +49,7 @@ impl Utils {
 
 /// `mb_strwidth($s)` (UTF-8): East Asian Wide/Fullwidth characters count 2, everything else
 /// (including each maximal invalid UTF-8 subpart) counts 1. Table generated from PHP 8.5 mbstring.
-pub fn mb_strwidth(s: &[u8]) -> usize {
+pub(crate) fn mb_strwidth(s: &[u8]) -> usize {
     String::from_utf8_lossy(s)
         .chars()
         .map(|c| {

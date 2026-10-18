@@ -4,7 +4,7 @@ use pun_tokens::{Kind, Token, Tokens};
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-pub fn is_candidate(tokens: &Tokens) -> bool {
+pub(crate) fn is_candidate(tokens: &Tokens) -> bool {
     tokens.is_token_kind_found(Kind::T_DOC_COMMENT)
 }
 
@@ -21,7 +21,7 @@ thread_local! {
 /// `memo_key` names the fixer and its configuration: two fixers (or configurations) never share results.
 /// `may_change(docblock)` is false only when `normalize` provably leaves every type in it as it is (the docblock is
 /// then not parsed at all).
-pub fn apply_fix(
+pub(crate) fn apply_fix(
     tokens: &mut Tokens,
     memo_key: &str,
     may_change: &dyn Fn(&[u8]) -> bool,

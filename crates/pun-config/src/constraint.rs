@@ -2,7 +2,7 @@
 
 use anyhow::{Context, Result, anyhow, bail};
 
-pub type V = (u64, u64, u64);
+pub(crate) type V = (u64, u64, u64);
 
 #[derive(Clone, Copy)]
 struct Range {
@@ -12,7 +12,7 @@ struct Range {
 
 /// The lowest version the composer constraint admits, or `None` when it admits none (`>=8.4 <8.3`).
 /// `|` and `||` are OR, spaces and commas are AND, as in composer/semver's `VersionParser::parseConstraints`.
-pub fn lowest(constraint: &str) -> Result<Option<V>> {
+pub(crate) fn lowest(constraint: &str) -> Result<Option<V>> {
     let mut low: Option<V> = None;
     for alt in constraint
         .split('|')

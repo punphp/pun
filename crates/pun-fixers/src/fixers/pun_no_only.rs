@@ -20,7 +20,7 @@ const PEST_TEST_FUNCTIONS: &[&str] = &[
 
 struct NoOnly;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NoOnly)
 }
 

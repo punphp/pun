@@ -2,7 +2,7 @@
 use crate::analyzers::general_phpdoc_tag_rename::GeneralPhpdocTagRenameFixer;
 use pun_format::Fixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(GeneralPhpdocTagRenameFixer::default())
 }
 

@@ -6,7 +6,7 @@ use std::path::Path;
 
 struct FullOpeningTagFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(FullOpeningTagFixer)
 }
 

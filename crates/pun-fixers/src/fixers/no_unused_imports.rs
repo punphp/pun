@@ -15,7 +15,7 @@ const TOKENS_NOT_BEFORE_FUNCTION_CALL: &[Kind] = &[Kind::T_NEW, Kind::T_ATTRIBUT
 
 struct NoUnusedImportsFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NoUnusedImportsFixer)
 }
 

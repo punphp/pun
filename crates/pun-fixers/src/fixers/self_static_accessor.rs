@@ -9,7 +9,7 @@ const CLASSY_TOKENS_OF_INTEREST: &[Proto<'static>] =
 
 struct SelfStaticAccessorFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(SelfStaticAccessorFixer)
 }
 

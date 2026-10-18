@@ -16,7 +16,7 @@ struct EchoTagSyntaxFixer {
     shorten_simple_statements_only: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(EchoTagSyntaxFixer::default())
 }
 

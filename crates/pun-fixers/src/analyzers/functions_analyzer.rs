@@ -30,25 +30,25 @@ struct FunctionsAnalysis {
 /// analysis is cached and rebuilt when the collection is changed (upstream: `isChanged()` or a
 /// different code hash).
 #[derive(Default)]
-pub struct FunctionsAnalyzer {
+pub(crate) struct FunctionsAnalyzer {
     functions_analysis: RefCell<FunctionsAnalysis>,
 }
 
 impl FunctionsAnalyzer {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self::default()
     }
 
-    pub fn is_global_function_call(&self, tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn is_global_function_call(&self, tokens: &Tokens, index: usize) -> bool {
         self.is_global_function_call_or_usage(tokens, index, true)
     }
 
-    pub fn is_global_function_usage(&self, tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn is_global_function_usage(&self, tokens: &Tokens, index: usize) -> bool {
         self.is_global_function_call_or_usage(tokens, index, false)
     }
 
     /// Argument name => analysis, in argument order (later duplicates overwrite in place).
-    pub fn get_function_arguments(
+    pub(crate) fn get_function_arguments(
         &self,
         tokens: &Tokens,
         function_index: usize,
@@ -71,7 +71,7 @@ impl FunctionsAnalyzer {
         arguments
     }
 
-    pub fn get_function_return_type(
+    pub(crate) fn get_function_return_type(
         &self,
         tokens: &Tokens,
         method_index: usize,

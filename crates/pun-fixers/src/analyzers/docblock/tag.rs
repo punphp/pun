@@ -6,20 +6,20 @@ use pun_tokens::php_compat::isspace;
 use std::cell::OnceCell;
 
 #[derive(Clone, Debug)]
-pub struct Tag {
+pub(crate) struct Tag {
     line: LineRef,
     name: OnceCell<Vec<u8>>,
 }
 
 impl Tag {
-    pub fn new(line: LineRef) -> Self {
+    pub(crate) fn new(line: LineRef) -> Self {
         Tag {
             line,
             name: OnceCell::new(),
         }
     }
 
-    pub fn get_name(&self) -> &[u8] {
+    pub(crate) fn get_name(&self) -> &[u8] {
         self.name.get_or_init(|| {
             let line = self.line.borrow();
             let content = line.get_content();
@@ -34,14 +34,14 @@ impl Tag {
     }
 
     /// `valid()`: the name is one of `PSR_STANDARD_TAGS`.
-    pub fn valid(&self) -> bool {
+    pub(crate) fn valid(&self) -> bool {
         PSR_STANDARD_TAGS
             .iter()
             .any(|t| t.as_bytes() == self.get_name())
     }
 }
 
-pub const PSR_STANDARD_TAGS: [&str; 25] = [
+pub(super) const PSR_STANDARD_TAGS: [&str; 25] = [
     "api",
     "author",
     "category",

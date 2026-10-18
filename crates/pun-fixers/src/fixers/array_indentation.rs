@@ -12,7 +12,7 @@ struct ArrayIndentationFixer {
     whitespaces_config: WhitespacesFixerConfig,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(ArrayIndentationFixer::default())
 }
 

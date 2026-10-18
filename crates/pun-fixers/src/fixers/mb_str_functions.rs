@@ -32,7 +32,7 @@ const FUNCTIONS_MAP: &[(&str, &str, &[usize])] = &[
     ("rtrim", "mb_rtrim", &[1, 2]),
 ];
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(MbStrFunctionsFixer {
         functions: FUNCTIONS_MAP
             .iter()

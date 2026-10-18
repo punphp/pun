@@ -11,7 +11,7 @@ struct ArraySyntaxFixer {
     candidate_token_kind: Kind,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     // `configure` sets both fields.
     crate::configured(ArraySyntaxFixer {
         short: false,

@@ -14,7 +14,7 @@ use std::io::IsTerminal;
 use std::path::Path;
 
 #[derive(clap::Args)]
-pub struct InitArgs {
+pub(crate) struct InitArgs {
     /// The code style, `[format] preset` (default: laravel for a Laravel app, else psr12).
     #[arg(long, value_enum)]
     style: Option<Style>,
@@ -40,7 +40,7 @@ const STYLES: [&str; 2] = ["laravel", "psr12"];
 /// The lint sets ticked by default (init.md §2).
 const DEFAULT_SETS: [&str; 2] = ["dead-code", "modernize"];
 
-pub fn run(a: InitArgs) -> Result<u8> {
+pub(crate) fn run(a: InitArgs) -> Result<u8> {
     let root = root()?;
     if root.join("pun.toml").exists() {
         bail!(

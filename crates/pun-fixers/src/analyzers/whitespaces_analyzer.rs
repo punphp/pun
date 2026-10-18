@@ -1,10 +1,10 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\WhitespacesAnalyzer`.
 use pun_tokens::{Kind::*, Tokens};
 
-pub struct WhitespacesAnalyzer;
+pub(crate) struct WhitespacesAnalyzer;
 
 impl WhitespacesAnalyzer {
-    pub fn detect_indent(tokens: &Tokens, mut index: usize) -> Vec<u8> {
+    pub(crate) fn detect_indent(tokens: &Tokens, mut index: usize) -> Vec<u8> {
         let whitespace_index = loop {
             let Some(whitespace_index) =
                 tokens.get_prev_token_of_kind(index, &[T_WHITESPACE.into()], true)

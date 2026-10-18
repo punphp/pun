@@ -22,7 +22,7 @@ struct AlignMultilineCommentFixer {
     line_ending: Vec<u8>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(AlignMultilineCommentFixer {
         comment_type: CommentType::PhpdocsOnly,
         token_kinds: vec![T_DOC_COMMENT],

@@ -14,7 +14,7 @@ struct TypesSpacesFixer {
     space_multiple_catch_single: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(TypesSpacesFixer::default())
 }
 

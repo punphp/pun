@@ -28,7 +28,7 @@ enum Context {
 }
 
 #[derive(Default)]
-pub struct EmbeddedBladeMasker {
+pub(super) struct EmbeddedBladeMasker {
     map: Vec<(Vec<u8>, Vec<u8>)>,
     original: Vec<u8>,
     counter: usize,
@@ -41,7 +41,7 @@ fn is_word(c: u8) -> bool {
 impl EmbeddedBladeMasker {
     /// `Err` where Pint's `preg_replace_callback` returns `null` (e.g. the backtrack limit on an unclosed
     /// `<script>` with quoted attributes): Pint casts it to `""` and empties the file; Pun reports the file instead.
-    pub fn pre_format(&mut self, content: &[u8]) -> Result<Vec<u8>, String> {
+    pub(super) fn pre_format(&mut self, content: &[u8]) -> Result<Vec<u8>, String> {
         self.map = Vec::new();
         self.original = content.to_vec();
         self.counter = 0;
@@ -63,7 +63,7 @@ impl EmbeddedBladeMasker {
         result.map_err(|e| format!("preg_replace_callback(): {e}"))
     }
 
-    pub fn post_format(&self, content: &[u8]) -> Vec<u8> {
+    pub(super) fn post_format(&self, content: &[u8]) -> Vec<u8> {
         if self.map.is_empty() {
             return content.to_vec();
         }

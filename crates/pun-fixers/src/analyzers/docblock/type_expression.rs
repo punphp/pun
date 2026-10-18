@@ -22,9 +22,9 @@ fn numeric_value(s: &[u8]) -> Option<f64> {
     Some(std::str::from_utf8(m.str(1)).unwrap().parse().unwrap())
 }
 
-pub const REGEX_IDENTIFIER: &str = crate::__regex_identifier!();
-pub const REGEX_TYPES: &str = crate::__regex_types!();
-const REGEX_TYPE: &str = crate::__regex_type!();
+pub(crate) const REGEX_IDENTIFIER: &str = __regex_identifier!();
+pub(crate) const REGEX_TYPES: &str = __regex_types!();
+const REGEX_TYPE: &str = __regex_type!();
 /// parse()'s and parseCommaSeparatedInnerTypes()'s patterns, built once (they run for every type in every docblock).
 static PARSE_PATTERN: LazyLock<String> =
     LazyLock::new(|| format!(r"{{\G{REGEX_TYPE}(?<glue_raw>\h*(?<glue>[|&])\h*(?!$)|$)}}"));
@@ -56,7 +56,7 @@ static ARRAY_SHAPE_INNER: LazyLock<Prefixed> =
     LazyLock::new(|| Prefixed::new("array_shape_inner", r"(?:\h*,[\h\v*]*|$)"));
 
 #[derive(Debug)]
-pub struct ParseError(pub Vec<u8>);
+pub(crate) struct ParseError(pub Vec<u8>);
 
 impl std::fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -70,7 +70,7 @@ impl std::fmt::Display for ParseError {
 }
 
 #[derive(Clone, Debug)]
-pub struct TypeExpression {
+pub(crate) struct TypeExpression {
     value: Vec<u8>,
     is_composite_type: bool,
     types_glue: Option<u8>,
@@ -79,11 +79,11 @@ pub struct TypeExpression {
 
 impl TypeExpression {
     /// Panics like upstream throws on an unparsable type; see `try_new`.
-    pub fn new(value: &[u8]) -> Self {
+    pub(crate) fn new(value: &[u8]) -> Self {
         Self::try_new(value).unwrap_or_else(|e| panic!("{e}"))
     }
 
-    pub fn try_new(value: &[u8]) -> Result<Self, ParseError> {
+    pub(crate) fn try_new(value: &[u8]) -> Result<Self, ParseError> {
         let mut t = TypeExpression {
             value: value.to_vec(),
             is_composite_type: false,
@@ -94,11 +94,11 @@ impl TypeExpression {
         Ok(t)
     }
 
-    pub fn to_string(&self) -> &[u8] {
+    pub(crate) fn to_string(&self) -> &[u8] {
         &self.value
     }
 
-    pub fn get_types(&self) -> Vec<Vec<u8>> {
+    pub(crate) fn get_types(&self) -> Vec<Vec<u8>> {
         if self.is_composite_type {
             return self
                 .inner_type_expressions
@@ -109,19 +109,19 @@ impl TypeExpression {
         vec![self.value.clone()]
     }
 
-    pub fn is_composite_type(&self) -> bool {
+    pub(crate) fn is_composite_type(&self) -> bool {
         self.is_composite_type
     }
 
-    pub fn is_union_type(&self) -> bool {
+    pub(crate) fn is_union_type(&self) -> bool {
         self.is_composite_type && self.types_glue == Some(b'|')
     }
 
-    pub fn get_types_glue(&self) -> Option<u8> {
+    pub(crate) fn get_types_glue(&self) -> Option<u8> {
         self.types_glue
     }
 
-    pub fn map_types(
+    pub(crate) fn map_types(
         &self,
         callback: &mut dyn FnMut(TypeExpression) -> TypeExpression,
     ) -> TypeExpression {

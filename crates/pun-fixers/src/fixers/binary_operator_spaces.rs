@@ -57,7 +57,7 @@ struct BinaryOperatorSpacesFixer {
     align_operator_tokens: Mutex<Vec<(Vec<u8>, &'static str)>>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(BinaryOperatorSpacesFixer {
         operators: Vec::new(),
         align_operator_tokens: Mutex::new(Vec::new()),

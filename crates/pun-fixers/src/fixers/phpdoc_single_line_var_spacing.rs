@@ -6,7 +6,7 @@ use std::path::Path;
 
 struct PhpdocSingleLineVarSpacingFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocSingleLineVarSpacingFixer)
 }
 

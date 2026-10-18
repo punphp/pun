@@ -1,13 +1,13 @@
 //! The parts of Laravel's `Illuminate\Support\Str` that model and column names go through.
 
 /// `class_basename()`: the class name without its namespace.
-pub fn class_basename(class: &str) -> &str {
+pub(super) fn class_basename(class: &str) -> &str {
     class.rsplit('\\').next().unwrap_or(class)
 }
 
 /// `Str::snake($value)` on a class name (no whitespace, so `ucwords` and the whitespace removal change nothing): `_`
 /// before every capital that follows a character, lowercase.
-pub fn snake(value: &str) -> String {
+pub(super) fn snake(value: &str) -> String {
     let mut out = String::new();
     for c in value.chars() {
         if c.is_ascii_uppercase() && !out.is_empty() {
@@ -19,7 +19,7 @@ pub fn snake(value: &str) -> String {
 }
 
 /// `Str::studly($value)`: words split on `-`, `_` and spaces, each capitalised, joined.
-pub fn studly(value: &str) -> String {
+pub(super) fn studly(value: &str) -> String {
     value
         .split(['-', '_', ' '])
         .map(|w| {
@@ -32,7 +32,7 @@ pub fn studly(value: &str) -> String {
 }
 
 /// `Str::camel($value)`: `studly` with the first letter lowercase.
-pub fn camel(value: &str) -> String {
+pub(super) fn camel(value: &str) -> String {
     let s = studly(value);
     let mut c = s.chars();
     c.next().map_or_else(String::new, |f| {
@@ -41,7 +41,7 @@ pub fn camel(value: &str) -> String {
 }
 
 /// `Str::pluralStudly($value)`: the last studly word made plural.
-pub fn plural_studly(value: &str) -> String {
+pub(super) fn plural_studly(value: &str) -> String {
     let split = value
         .char_indices()
         .filter(|&(i, c)| i > 0 && c.is_ascii_uppercase())

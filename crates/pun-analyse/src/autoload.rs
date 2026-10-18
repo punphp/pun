@@ -15,7 +15,7 @@ use crate::project::Autoloaded;
 type Map<K, V> = HashMap<K, V, FixedState>;
 
 /// The autoloaded files by the class their path holds: index into the build's file list.
-pub struct Index {
+pub(crate) struct Index {
     psr4: Map<Box<[u8]>, Vec<usize>>,
     psr0: Map<Box<[u8]>, Vec<usize>>,
 }
@@ -27,7 +27,7 @@ type Range = (usize, usize);
 type Full = (Option<Range>, Range);
 
 impl Index {
-    pub fn new<'a>(files: impl Iterator<Item = (usize, &'a Autoloaded)>) -> Index {
+    pub(crate) fn new<'a>(files: impl Iterator<Item = (usize, &'a Autoloaded)>) -> Index {
         let mut index = Index {
             psr4: Map::default(),
             psr0: Map::default(),
@@ -46,7 +46,7 @@ impl Index {
     }
 
     /// Adds to `out` the files that may hold a class `code` names.
-    pub fn wanted(&self, code: &[u8], out: &mut Vec<usize>) {
+    pub(crate) fn wanted(&self, code: &[u8], out: &mut Vec<usize>) {
         if self.psr4.is_empty() && self.psr0.is_empty() {
             return;
         }

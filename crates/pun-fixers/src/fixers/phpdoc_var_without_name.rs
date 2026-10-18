@@ -22,7 +22,7 @@ const PROPERTY_MODIFIER_KINDS: &[Kind] = &[
 
 struct PhpdocVarWithoutNameFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocVarWithoutNameFixer)
 }
 

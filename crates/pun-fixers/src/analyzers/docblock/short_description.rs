@@ -2,16 +2,16 @@
 
 use super::DocBlock;
 
-pub struct ShortDescription<'a> {
+pub(crate) struct ShortDescription<'a> {
     doc: &'a DocBlock,
 }
 
 impl<'a> ShortDescription<'a> {
-    pub fn new(doc: &'a DocBlock) -> Self {
+    pub(crate) fn new(doc: &'a DocBlock) -> Self {
         ShortDescription { doc }
     }
 
-    pub fn get_end(&self) -> Option<usize> {
+    pub(crate) fn get_end(&self) -> Option<usize> {
         let mut reached_content = false;
         for (index, line) in self.doc.get_lines().iter().enumerate() {
             let line = line.borrow();

@@ -100,7 +100,7 @@ fn kinds(map: &[(&str, Kind)], selected: &[String]) -> Vec<Kind> {
         .collect()
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(SingleSpaceAroundConstructFixer {
         contain: vec![],
         preceded: vec![],

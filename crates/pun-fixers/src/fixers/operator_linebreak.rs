@@ -16,7 +16,7 @@ struct OperatorLinebreakFixer {
     operators: Vec<Proto<'static>>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(OperatorLinebreakFixer {
         beginning: true,
         operators: [&BOOLEAN_OPERATORS[..], &NON_BOOLEAN_OPERATORS[..]].concat(),

@@ -7,7 +7,7 @@ use std::path::Path;
 
 struct NativeTypeDeclarationCasingFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(NativeTypeDeclarationCasingFixer)
 }
 

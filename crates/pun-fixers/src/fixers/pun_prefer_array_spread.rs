@@ -12,7 +12,7 @@ use std::path::Path;
 
 struct PreferArraySpread;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PreferArraySpread)
 }
 

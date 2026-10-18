@@ -18,7 +18,7 @@ const MAGIC_CONSTANTS: &[(Kind, &str)] = &[
 
 struct MagicConstantCasingFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(MagicConstantCasingFixer)
 }
 

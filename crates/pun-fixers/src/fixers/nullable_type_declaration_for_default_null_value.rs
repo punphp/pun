@@ -14,7 +14,7 @@ struct NullableTypeDeclarationForDefaultNullValueFixer {
     use_nullable_type_declaration: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NullableTypeDeclarationForDefaultNullValueFixer::default())
 }
 

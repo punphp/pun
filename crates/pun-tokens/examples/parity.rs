@@ -147,7 +147,7 @@ fn main() {
 
 /// Compare every .php file under `paths` with the dump of `php`; prints a report, returns the number of mismatched
 /// files.
-pub fn run(php: &Path, mode: &str, paths: &[String], verbose: bool) -> usize {
+pub(crate) fn run(php: &Path, mode: &str, paths: &[String], verbose: bool) -> usize {
     let mut files = Vec::new();
     for a in paths {
         collect(Path::new(a), &mut files);

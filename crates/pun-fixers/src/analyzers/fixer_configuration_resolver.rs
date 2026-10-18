@@ -4,7 +4,7 @@
 use anyhow::{Result, bail};
 use serde_json::{Map, Value};
 
-pub struct Resolved {
+pub(crate) struct Resolved {
     fixer: &'static str,
     map: Map<String, Value>,
 }
@@ -15,7 +15,7 @@ fn variant<T: Copy>(choices: &[(&str, T)], value: &str) -> T {
 }
 
 /// `Null` (rule enabled with `true`) means "all defaults". Unknown keys are rejected like upstream.
-pub fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) -> Result<Resolved> {
+pub(crate) fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) -> Result<Resolved> {
     // RuleSet / FixerFactory::useRuleSet checks, done before configure() upstream.
     let map = match options {
         Value::Null => Map::new(),
@@ -183,11 +183,11 @@ impl Resolved {
         self.map.get(key).map(php_array)
     }
 
-    pub fn get(&self, key: &str) -> Option<&Value> {
+    pub(crate) fn get(&self, key: &str) -> Option<&Value> {
         self.map.get(key)
     }
 
-    pub fn bool(&self, key: &str, default: bool) -> Result<bool> {
+    pub(crate) fn bool(&self, key: &str, default: bool) -> Result<bool> {
         match self.map.get(key) {
             None => Ok(default),
             Some(Value::Bool(b)) => Ok(*b),
@@ -196,7 +196,7 @@ impl Resolved {
     }
 
     /// A string restricted to `allowed` (`setAllowedValues`), or any string when `allowed` is empty (`setAllowedTypes(['string'])`).
-    pub fn string(&self, key: &str, default: &str, allowed: &[&str]) -> Result<String> {
+    pub(crate) fn string(&self, key: &str, default: &str, allowed: &[&str]) -> Result<String> {
         match self.map.get(key) {
             None => Ok(default.to_string()),
             Some(Value::String(s)) if allowed.is_empty() || allowed.contains(&s.as_str()) => {
@@ -209,14 +209,19 @@ impl Resolved {
 
     /// `string` for an option whose allowed values stand for enum variants: the variant paired with the value.
     /// `choices` keeps upstream's order of allowed values, which the error message lists.
-    pub fn choice<T: Copy>(&self, key: &str, default: &str, choices: &[(&str, T)]) -> Result<T> {
+    pub(crate) fn choice<T: Copy>(
+        &self,
+        key: &str,
+        default: &str,
+        choices: &[(&str, T)],
+    ) -> Result<T> {
         let allowed: Vec<&str> = choices.iter().map(|&(name, _)| name).collect();
         let value = self.string(key, default, &allowed)?;
         Ok(variant(choices, &value))
     }
 
     /// `strings` restricted to `choices`: the variant of each configured value, in order.
-    pub fn choices<T: Copy>(
+    pub(crate) fn choices<T: Copy>(
         &self,
         key: &str,
         default: &[&str],
@@ -228,7 +233,7 @@ impl Resolved {
     }
 
     /// `bool|null` options (e.g. yoda_style's `equal`).
-    pub fn opt_bool(&self, key: &str, default: Option<bool>) -> Result<Option<bool>> {
+    pub(crate) fn opt_bool(&self, key: &str, default: Option<bool>) -> Result<Option<bool>> {
         match self.map.get(key) {
             None => Ok(default),
             Some(Value::Null) => Ok(None),
@@ -238,7 +243,12 @@ impl Resolved {
     }
 
     /// A `string[]`, each item in `allowed` (an `AllowedValueSubset`; empty = any). JSON objects count as PHP arrays.
-    pub fn strings(&self, key: &str, default: &[&str], allowed: &[&str]) -> Result<Vec<String>> {
+    pub(crate) fn strings(
+        &self,
+        key: &str,
+        default: &[&str],
+        allowed: &[&str],
+    ) -> Result<Vec<String>> {
         let v = match self.map.get(key) {
             None => return Ok(default.iter().map(|s| s.to_string()).collect()),
             Some(v) => v,
@@ -263,7 +273,7 @@ impl Resolved {
 
     /// Symfony OptionsResolver's `setAllowedTypes` check (`verifyTypes`) for scalar/array types such as
     /// `["int", "int[]"]` or `["string[][]"]`; Ok when the option is absent or matches one of `types`.
-    pub fn check_types(&self, key: &str, types: &[&str]) -> Result<()> {
+    pub(crate) fn check_types(&self, key: &str, types: &[&str]) -> Result<()> {
         let Some(v) = self.map.get(key) else {
             return Ok(());
         };

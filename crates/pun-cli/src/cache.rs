@@ -12,18 +12,18 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use xxhash_rust::xxh3::xxh3_128;
 
-pub struct Cache {
+pub(crate) struct Cache {
     path: PathBuf,
     signature: Value,
     hashes: BTreeMap<String, String>,
 }
 
-pub fn hash(code: &[u8]) -> String {
+pub(crate) fn hash(code: &[u8]) -> String {
     format!("{:032x}", xxh3_128(code))
 }
 
 /// Default location for `root`, or `None` without a home directory.
-pub fn default_path(root: &Path) -> Option<PathBuf> {
+pub(crate) fn default_path(root: &Path) -> Option<PathBuf> {
     let base = std::env::var_os("XDG_CACHE_HOME")
         .filter(|v| !v.is_empty())
         .map(PathBuf::from)
@@ -40,7 +40,7 @@ pub fn default_path(root: &Path) -> Option<PathBuf> {
 
 /// What a clean result depends on besides the file itself. The binary's size and mtime stand in for the code, so a
 /// rebuild with the same version number still invalidates.
-pub fn signature(cfg: &pun_config::Config) -> Value {
+pub(crate) fn signature(cfg: &pun_config::Config) -> Value {
     let exe = std::env::current_exe().and_then(std::fs::metadata).ok();
     let build = exe.map(|m| {
         (
@@ -84,7 +84,7 @@ pub fn signature(cfg: &pun_config::Config) -> Value {
 }
 
 impl Cache {
-    pub fn load(path: PathBuf, signature: Value) -> Cache {
+    pub(crate) fn load(path: PathBuf, signature: Value) -> Cache {
         let mut hashes = BTreeMap::new();
         if let Some(mut v) = std::fs::read(&path)
             .ok()
@@ -104,18 +104,18 @@ impl Cache {
         }
     }
 
-    pub fn path(&self) -> &Path {
+    pub(crate) fn path(&self) -> &Path {
         &self.path
     }
 
     /// `rel` had exactly this content (`hash`) the last time it was found clean.
-    pub fn is_clean(&self, rel: &str, hash: &str) -> bool {
+    pub(crate) fn is_clean(&self, rel: &str, hash: &str) -> bool {
         self.hashes.get(rel).is_some_and(|h| h == hash)
     }
 
     /// Records this run's outcome per file (`Some(hash)` = clean) and writes the file (best effort, atomic rename).
     /// Entries for files outside this run (e.g. `--dirty`) are kept.
-    pub fn save(mut self, outcomes: impl IntoIterator<Item = (String, Option<String>)>) {
+    pub(crate) fn save(mut self, outcomes: impl IntoIterator<Item = (String, Option<String>)>) {
         for (rel, clean) in outcomes {
             match clean {
                 Some(h) => self.hashes.insert(rel, h),

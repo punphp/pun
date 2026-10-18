@@ -6,7 +6,7 @@ use std::path::Path;
 
 struct SemicolonAfterInstructionFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(SemicolonAfterInstructionFixer)
 }
 

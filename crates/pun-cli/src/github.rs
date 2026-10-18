@@ -13,7 +13,7 @@ use std::sync::LazyLock;
 
 /// GithubErrorFormatter::formatMessage: newlines encoded, and each `@mention` put in backticks so GitHub doesn't
 /// notify anyone. `%` and `\r` are encoded first (escapeData), so GitHub decodes the message back to what it was.
-pub fn escape_data(message: &str) -> String {
+pub(crate) fn escape_data(message: &str) -> String {
     static MENTION: LazyLock<Regex> =
         LazyLock::new(|| Regex::new(r"(^|\s)@([a-zA-Z0-9_\-]+)(\s|$)").expect("regex"));
     let message = message
@@ -40,7 +40,7 @@ pub fn escape_data(message: &str) -> String {
 }
 
 /// A property value (`file=`, `title=`): escapeProperty's `%`, `\r`, `\n`, `:` and `,`.
-pub fn escape_property(value: &str) -> String {
+pub(crate) fn escape_property(value: &str) -> String {
     value
         .replace('%', "%25")
         .replace('\r', "%0D")
@@ -71,7 +71,7 @@ fn annotation(
 }
 
 /// A problem (lint, analyse, a syntax error) at its span's start.
-pub fn problem(p: &Problem, index: &LineIndex) -> String {
+pub(crate) fn problem(p: &Problem, index: &LineIndex) -> String {
     let at = index.line_col(p.span.start);
     annotation(
         p.level,
@@ -84,19 +84,19 @@ pub fn problem(p: &Problem, index: &LineIndex) -> String {
 }
 
 /// A whole file (it needs formatting, or rules can fix it): an error at `line`, titled with the rule IDs.
-pub fn file(path: &str, line: usize, rules: &[String], message: &str) -> String {
+pub(crate) fn file(path: &str, line: usize, rules: &[String], message: &str) -> String {
     annotation(Level::Error, path, line, 0, &rules.join(", "), message)
 }
 
 /// A run error, which has no file: `::error ::<message>`.
-pub fn run_error(message: &str) -> String {
+pub(crate) fn run_error(message: &str) -> String {
     format!("::error ::{}\n", escape_data(message))
 }
 
 /// The first line `new` changes in `old` (1-based): GitlabReporter::getLines' `begin`, the first `+`/`-` line of the
 /// diff's first chunk. sebastian/diff drops the common prefix before diffing, so that is the line holding the first
 /// byte the two differ in. Lines end at `\r\n`, `\r` or `\n`, as its `\R` split does.
-pub fn first_changed_line(old: &[u8], new: &[u8]) -> usize {
+pub(crate) fn first_changed_line(old: &[u8], new: &[u8]) -> usize {
     let same = old.iter().zip(new).take_while(|(a, b)| a == b).count();
     let mut line = 1;
     for (i, &b) in old[..same].iter().enumerate() {

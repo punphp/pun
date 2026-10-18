@@ -1730,13 +1730,13 @@ pub(crate) struct ShapeBuilder {
 }
 
 impl ShapeBuilder {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         ShapeBuilder {
             array: ConstArray::empty(),
         }
     }
 
-    pub fn set(&mut self, key: Option<Type>, value: Type, optional: bool) {
+    pub(crate) fn set(&mut self, key: Option<Type>, value: Type, optional: bool) {
         let a = &mut self.array;
         // a PHPDoc item without a key is never optional (`value?` is not a shape item)
         let Some(key) = key else {
@@ -1789,11 +1789,11 @@ impl ShapeBuilder {
         }
     }
 
-    pub fn make_unsealed(&mut self, key: Type, value: Type) {
+    pub(crate) fn make_unsealed(&mut self, key: Type, value: Type) {
         self.array.unsealed = Some((key, value));
     }
 
-    pub fn get(self) -> Type {
+    pub(crate) fn get(self) -> Type {
         let mut array = self.array;
         // without keys nothing was set: still an empty list
         if array.keys.is_empty() {

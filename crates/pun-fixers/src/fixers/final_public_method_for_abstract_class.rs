@@ -24,7 +24,7 @@ const MAGIC_METHODS: &[&[u8]] = &[
 
 struct FinalPublicMethodForAbstractClassFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(FinalPublicMethodForAbstractClassFixer)
 }
 

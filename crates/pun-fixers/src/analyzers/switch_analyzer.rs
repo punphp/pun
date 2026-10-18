@@ -2,10 +2,10 @@
 use super::control_case_structures_analyzer::ControlCaseStructuresAnalyzer;
 use pun_tokens::Tokens;
 
-pub struct SwitchAnalyzer;
+pub(crate) struct SwitchAnalyzer;
 
 impl SwitchAnalyzer {
-    pub fn belongs_to_switch(tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn belongs_to_switch(tokens: &Tokens, index: usize) -> bool {
         if !tokens[index].equals(":", true) {
             return false;
         }

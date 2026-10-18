@@ -13,7 +13,7 @@ struct OrderedTraitsFixer {
     case_sensitive: bool,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(OrderedTraitsFixer::default())
 }
 

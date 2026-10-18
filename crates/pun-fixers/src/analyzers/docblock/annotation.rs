@@ -7,7 +7,7 @@ use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg
 use pun_tokens::php_compat::isspace;
 use std::cell::{OnceCell, RefCell};
 
-pub const TAGS_WITH_TYPES: &[&str] = &[
+pub(crate) const TAGS_WITH_TYPES: &[&str] = &[
     "extends",
     "implements",
     "method",
@@ -29,7 +29,7 @@ pub const TAGS_WITH_TYPES: &[&str] = &[
 ];
 
 #[derive(Clone, Debug)]
-pub struct Annotation {
+pub(crate) struct Annotation {
     lines: Vec<LineRef>,
     start: usize,
     end: usize,
@@ -40,7 +40,7 @@ pub struct Annotation {
 
 impl Annotation {
     /// `lines` are `(index in the docblock, line)` pairs, like upstream's preserved-key slice.
-    pub fn new(lines: Vec<(usize, LineRef)>) -> Self {
+    pub(crate) fn new(lines: Vec<(usize, LineRef)>) -> Self {
         let start = lines.first().unwrap().0;
         let end = lines.last().unwrap().0;
         Annotation {
@@ -53,23 +53,23 @@ impl Annotation {
         }
     }
 
-    pub fn get_start(&self) -> usize {
+    pub(crate) fn get_start(&self) -> usize {
         self.start
     }
 
-    pub fn get_end(&self) -> usize {
+    pub(crate) fn get_end(&self) -> usize {
         self.end
     }
 
-    pub fn get_tag(&self) -> &Tag {
+    pub(crate) fn get_tag(&self) -> &Tag {
         self.tag.get_or_init(|| Tag::new(self.lines[0].clone()))
     }
 
-    pub fn get_type_expression(&self) -> Option<TypeExpression> {
+    pub(crate) fn get_type_expression(&self) -> Option<TypeExpression> {
         self.get_types_content().map(|c| TypeExpression::new(&c))
     }
 
-    pub fn get_variable_name(&self) -> Option<Vec<u8>> {
+    pub(crate) fn get_variable_name(&self) -> Option<Vec<u8>> {
         let types = self.get_types_content().unwrap_or_default();
         let content = self.get_content();
         if let Some(v) = variable_name_ascii(&content, self.get_tag().get_name(), &types) {
@@ -90,7 +90,7 @@ impl Annotation {
         Preg::match_groups_uncached(&regex, &content).map(|m| m.name_str("variable").to_vec())
     }
 
-    pub fn get_types(&self) -> Vec<Vec<u8>> {
+    pub(crate) fn get_types(&self) -> Vec<Vec<u8>> {
         if self.types.borrow().is_none() {
             let t = self
                 .get_type_expression()
@@ -100,7 +100,7 @@ impl Annotation {
         self.types.borrow().clone().unwrap()
     }
 
-    pub fn set_types(&self, types: &[Vec<u8>]) {
+    pub(crate) fn set_types(&self, types: &[Vec<u8>]) {
         let orig_types_content = self.get_types_content().unwrap_or_default();
         // The glue only joins two or more types; skip re-parsing the expression for the usual single one.
         let new_types_content = match types {
@@ -143,7 +143,7 @@ impl Annotation {
         self.clear_cache();
     }
 
-    pub fn remove(&self) {
+    pub(crate) fn remove(&self) {
         for line in &self.lines {
             let mut line = line.borrow_mut();
             if line.is_the_start() && line.is_the_end() {
@@ -163,20 +163,20 @@ impl Annotation {
         self.clear_cache();
     }
 
-    pub fn get_content(&self) -> Vec<u8> {
+    pub(crate) fn get_content(&self) -> Vec<u8> {
         self.lines
             .iter()
             .flat_map(|l| l.borrow().get_content().to_vec())
             .collect()
     }
 
-    pub fn support_types(&self) -> bool {
+    pub(crate) fn support_types(&self) -> bool {
         let name = self.get_tag().get_name();
         TAGS_WITH_TYPES.iter().any(|t| t.as_bytes() == name)
     }
 
     /// Panics like upstream's RuntimeException when the tag does not support types.
-    pub fn get_types_content(&self) -> Option<Vec<u8>> {
+    pub(crate) fn get_types_content(&self) -> Option<Vec<u8>> {
         if self.types_content.borrow().is_none() {
             let name = self.get_tag().get_name();
             if !self.support_types() {

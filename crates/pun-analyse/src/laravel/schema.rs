@@ -16,7 +16,7 @@ const BLUEPRINT: &str = "Illuminate\\Database\\Schema\\Blueprint";
 
 /// `SchemaColumn`: a column's name, its readable type as a PHPDoc type string, and enum or set options.
 #[derive(Clone, Debug, PartialEq)]
-pub struct Column {
+pub(super) struct Column {
     pub readable_type: String,
     pub nullable: bool,
     pub options: Option<Vec<String>>,
@@ -24,7 +24,7 @@ pub struct Column {
 
 /// `SchemaTable`.
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Table {
+pub(super) struct Table {
     pub columns: HashMap<String, Column>,
 }
 
@@ -60,7 +60,7 @@ impl Table {
 
 /// `SchemaAggregator`. `model_key` answers `getModelReferenceType()`'s question about a model class: its table and
 /// primary key name (Larastan instantiates the model for that).
-pub struct SchemaAggregator<'a> {
+pub(super) struct SchemaAggregator<'a> {
     pub tables: HashMap<String, Table>,
     codebase: &'a CodebaseMetadata,
     model_key: &'a dyn Fn(&str) -> Option<(String, String)>,
@@ -130,7 +130,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ExpressionStatements<'ast, 'a
 }
 
 impl<'a> SchemaAggregator<'a> {
-    pub fn new(
+    pub(super) fn new(
         codebase: &'a CodebaseMetadata,
         model_key: &'a dyn Fn(&str) -> Option<(String, String)>,
     ) -> Self {
@@ -157,7 +157,7 @@ impl<'a> SchemaAggregator<'a> {
         name == "Schema" || self.is_a(&name, SCHEMA_FACADE)
     }
 
-    pub fn add_statements(&mut self, program: &Program, names: &ResolvedNames) {
+    pub(super) fn add_statements(&mut self, program: &Program, names: &ResolvedNames) {
         let mut classes = Classes::default();
         classes.walk_program(program, &mut ());
         for members in classes.0 {

@@ -23,14 +23,14 @@ static PIPELINES: LazyLock<Pipelines> = LazyLock::new(Pipelines::default);
 
 /// `PhpFragmentFormatter`: the active preset's fixers (never the project's own overrides, like Pint's
 /// sequential runner), memoized per fragment/file key.
-pub struct PhpFragmentFormatter {
+pub(super) struct PhpFragmentFormatter {
     preset: String,
     fragment: OnceCell<&'static Option<Pipeline>>,
     file: OnceCell<&'static Option<Pipeline>>,
 }
 
 impl PhpFragmentFormatter {
-    pub fn new(preset: String) -> Self {
+    pub(super) fn new(preset: String) -> Self {
         PhpFragmentFormatter {
             preset,
             fragment: OnceCell::new(),
@@ -39,7 +39,7 @@ impl PhpFragmentFormatter {
     }
 
     /// Format a PHP document that already opens with "<?php".
-    pub fn format(&self, code: &[u8], fragment: bool) -> Vec<u8> {
+    pub(super) fn format(&self, code: &[u8], fragment: bool) -> Vec<u8> {
         // Tokens::fromCode (TOKEN_PARSE) throws a CompileError on invalid code: leave it as-is.
         if pun_format::lint(code).is_err() {
             return code.to_vec();
@@ -127,16 +127,16 @@ fn edit_spans(edits: &[Edit]) -> Vec<Span> {
     edits.iter().map(|e| (e.0, e.0 + e.1)).collect()
 }
 
-pub struct PhpBlockFormatting {
+pub(super) struct PhpBlockFormatting {
     formatter: PhpFragmentFormatter,
 }
 
 impl PhpBlockFormatting {
-    pub fn new(formatter: PhpFragmentFormatter) -> Self {
+    pub(super) fn new(formatter: PhpFragmentFormatter) -> Self {
         PhpBlockFormatting { formatter }
     }
 
-    pub fn post_format(&self, content: &[u8]) -> Vec<u8> {
+    pub(super) fn post_format(&self, content: &[u8]) -> Vec<u8> {
         let verbatim = verbatim_spans(content);
         let mut edits = self.region_edits(content, &verbatim);
         let more = self.directive_edits(content, &edits, &verbatim);

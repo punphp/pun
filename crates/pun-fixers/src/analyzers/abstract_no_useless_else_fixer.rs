@@ -3,9 +3,9 @@ use pun_tokens::{Kind::*, Tokens};
 
 /// `getPriority()`: should be run before NoWhitespaceInBlankLineFixer, NoExtraBlankLinesFixer,
 /// BracesFixer and after NoEmptyStatementFixer.
-pub const PRIORITY: i32 = 39;
+pub(crate) const PRIORITY: i32 = 39;
 
-pub fn is_superfluous_else(tokens: &Tokens, index: usize) -> bool {
+pub(crate) fn is_superfluous_else(tokens: &Tokens, index: usize) -> bool {
     let mut previous_block_start = index;
     loop {
         // Check if all 'if', 'else if ' and 'elseif' blocks above this 'else' always end,

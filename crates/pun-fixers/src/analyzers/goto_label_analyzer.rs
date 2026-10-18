@@ -1,10 +1,10 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\GotoLabelAnalyzer`.
 use pun_tokens::{Kind::*, Tokens};
 
-pub struct GotoLabelAnalyzer;
+pub(crate) struct GotoLabelAnalyzer;
 
 impl GotoLabelAnalyzer {
-    pub fn belongs_to_go_to_label(&self, tokens: &Tokens, index: usize) -> bool {
+    pub(crate) fn belongs_to_go_to_label(&self, tokens: &Tokens, index: usize) -> bool {
         if !tokens[index].equals(":", true) {
             return false;
         }

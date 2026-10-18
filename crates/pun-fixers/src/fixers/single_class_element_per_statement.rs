@@ -12,7 +12,7 @@ struct SingleClassElementPerStatementFixer {
     elements: Vec<String>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(SingleClassElementPerStatementFixer::default())
 }
 

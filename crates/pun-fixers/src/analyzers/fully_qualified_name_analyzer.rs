@@ -7,14 +7,14 @@ use pun_tokens::Tokens;
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-pub struct FullyQualifiedNameAnalyzer<'a> {
+pub(crate) struct FullyQualifiedNameAnalyzer<'a> {
     tokens: &'a Tokens,
     namespace_analyses: RefCell<Vec<NamespaceAnalysis>>,
     namespace_use_analyses: RefCell<HashMap<usize, Vec<NamespaceUseAnalysis>>>,
 }
 
 impl<'a> FullyQualifiedNameAnalyzer<'a> {
-    pub fn new(tokens: &'a Tokens) -> Self {
+    pub(crate) fn new(tokens: &'a Tokens) -> Self {
         FullyQualifiedNameAnalyzer {
             tokens,
             namespace_analyses: RefCell::default(),
@@ -22,7 +22,7 @@ impl<'a> FullyQualifiedNameAnalyzer<'a> {
         }
     }
 
-    pub fn get_fully_qualified_name(
+    pub(crate) fn get_fully_qualified_name(
         &self,
         name: &[u8],
         index_in_namespace: usize,

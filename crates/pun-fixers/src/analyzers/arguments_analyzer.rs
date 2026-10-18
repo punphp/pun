@@ -15,10 +15,10 @@ const ARGUMENT_INFO_SKIP_TYPES: &[Kind] = &[
     T_PUBLIC_SET,
 ];
 
-pub struct ArgumentsAnalyzer;
+pub(crate) struct ArgumentsAnalyzer;
 
 impl ArgumentsAnalyzer {
-    pub fn count_arguments(
+    pub(crate) fn count_arguments(
         &self,
         tokens: &Tokens,
         open_parenthesis: usize,
@@ -29,7 +29,7 @@ impl ArgumentsAnalyzer {
     }
 
     /// start index => end index of each argument.
-    pub fn get_arguments(
+    pub(crate) fn get_arguments(
         &self,
         tokens: &Tokens,
         open_parenthesis: usize,
@@ -62,7 +62,7 @@ impl ArgumentsAnalyzer {
         arguments
     }
 
-    pub fn get_argument_info(
+    pub(crate) fn get_argument_info(
         &self,
         tokens: &Tokens,
         argument_start: usize,

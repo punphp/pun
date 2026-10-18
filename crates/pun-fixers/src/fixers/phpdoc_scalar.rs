@@ -25,7 +25,7 @@ struct PhpdocScalarFixer {
     types: Vec<String>,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(PhpdocScalarFixer::default())
 }
 

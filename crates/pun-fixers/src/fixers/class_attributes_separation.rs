@@ -33,7 +33,7 @@ const DEFAULT_ELEMENTS: [(ClassyElementType, Spacing); 5] = [
     (ClassyElementType::Case, Spacing::None),
 ];
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(ClassAttributesSeparationFixer::default())
 }
 

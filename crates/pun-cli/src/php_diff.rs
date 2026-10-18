@@ -10,7 +10,7 @@ const DIFF_LINE_END_WARNING: u8 = 3;
 const NO_LINE_END_EOF_WARNING: u8 = 4;
 
 /// `--- {path}\n+++ {path}\n` and the hunks; empty when nothing changed.
-pub fn unified(old: &[u8], new: &[u8], path: &str) -> Vec<u8> {
+pub(crate) fn unified(old: &[u8], new: &[u8], path: &str) -> Vec<u8> {
     let diff = diff_to_array(split_lines(old), split_lines(new));
     get_diff(&format!("--- {path}\n+++ {path}\n"), diff)
 }

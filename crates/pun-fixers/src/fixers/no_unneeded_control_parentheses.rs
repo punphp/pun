@@ -50,7 +50,7 @@ const DEFAULT_STATEMENTS: &[&str] = &[
     "yield",
 ];
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     crate::configured(NoUnneededControlParenthesesFixer {
         statements: vec![
             Statement::Break,

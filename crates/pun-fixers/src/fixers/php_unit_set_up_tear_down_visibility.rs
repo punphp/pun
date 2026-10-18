@@ -8,7 +8,7 @@ use std::path::Path;
 
 struct PhpUnitSetUpTearDownVisibilityFixer;
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpUnitSetUpTearDownVisibilityFixer)
 }
 

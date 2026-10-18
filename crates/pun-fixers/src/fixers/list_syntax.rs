@@ -10,7 +10,7 @@ struct ListSyntaxFixer {
     candidate_token_kind: Kind,
 }
 
-pub fn fixer() -> Box<dyn Fixer> {
+pub(crate) fn fixer() -> Box<dyn Fixer> {
     // `configure` sets the field.
     crate::configured(ListSyntaxFixer {
         candidate_token_kind: T_LIST,

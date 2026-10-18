@@ -17,13 +17,13 @@ pub(crate) struct Section {
 
 impl Section {
     /// The section's entries, in file order.
-    pub fn table(&self) -> &toml::Table {
+    pub(crate) fn table(&self) -> &toml::Table {
         self.table
             .get_or_init(|| toml::from_str(self.body).expect("rules/mapping.toml"))
     }
 
     /// The 1-based line of the entry `key` (`"arrays/syntax" = ...`).
-    pub fn line_of(&self, key: &str) -> Option<usize> {
+    pub(crate) fn line_of(&self, key: &str) -> Option<usize> {
         let entry = format!("\"{key}\" = ");
         let i = self.body.lines().position(|l| l.starts_with(&entry))?;
         Some(self.line + 1 + i)
