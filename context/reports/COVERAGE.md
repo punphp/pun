@@ -7,13 +7,13 @@
 | punphp-analyse | 3547 | 3497 | 98.59% | ok |
 | punphp-config | 609 | 609 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
-| punphp-format | 940 | 940 | 100.00% | ok |
-| punphp-harness | 223 | 223 | 100.00% | ok |
+| punphp-format | 996 | 996 | 100.00% | ok |
+| punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 4626 | 4626 | 100.00% | ok |
 | punphp-phpstan | 7192 | 7163 | 99.60% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3558 | 3558 | 100.00% | ok |
-| punphp-workspace | 395 | 395 | 100.00% | ok |
+| punphp-workspace | 457 | 457 | 100.00% | ok |
 
 Uncovered lines:
 

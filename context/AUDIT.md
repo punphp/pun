@@ -72,7 +72,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   round-trip the byte diff from `php_diff::unified` through `String::from_utf8_lossy`, so `-v` and the
   txt/junit/xml diffs print U+FFFD for every non-UTF-8 byte of a Latin-1 file, and paths go through
   `to_string_lossy` (`run.rs:184-188`). Keep diffs and paths as bytes until the console boundary. Not checked against
-  Pint.
+  Pint. Reproduced at 8cc3efa against Pint on `<?php $a = array( "caf\xe9" );` with `--test -v`: Pint's txt, junit
+  and xml reports carry the raw `\xe9`, Pun's U+FFFD; `--format=json -v` makes Pint abort (exit 1) with "In
+  JsonReporter.php line 63: Malformed UTF-8 characters, possibly incorrectly encoded" (`[JsonException (5)]`) where Pun
+  prints `\ufffd`, so the fix also needs that abort; gitlab, checkstyle and agent have no diff. The path half can't be
+  reproduced on macOS (APFS refuses non-UTF-8 names). Deferred: `run.rs`, `report.rs`, `fix_report.rs` and
+  `console.rs` are claimed by the platform/format track; the console part can reuse item 12's `format_bytes`.
 - [ ] 12. `crates/pun-format/src/php_parser.rs:333-338`, `lib.rs:389-393` (`LintError.message: String`) and
   `fixer_annotation.rs:99-106` build parse-error and annotation messages with `from_utf8_lossy`, so a token cut at
   byte 30 inside `é`, or any Latin-1 byte, prints `�` where PHP prints the raw bytes. Keep messages as `Vec<u8>`
@@ -174,7 +179,9 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 30. Report formats are strings: `main.rs:133-141` (`Option<String>`, help lists 3 of 7), `report.rs:662-745`
   (`match format`), `run.rs:317` and `report.rs:260,297` (`format.is_none()` as a mode), `list_files.rs:23,37-41`, and
   `report.rs:371-379` compares `agent::cmd()` with `"format"`. Replace Type Code with Enum `ReportFormat` (`FromStr`),
-  parsed where `emit` runs today so Pint's "Format [x] is not supported." keeps its place.
+  parsed where `emit` runs today so Pint's "Format [x] is not supported." keeps its place. Still held at 8cc3efa
+  (the help now lists all eight); the `agent::cmd()` checks are in `human()` and `agent()`, and `Ctx` could carry the
+  `Stage` instead. Deferred: `main.rs`, `run.rs` and `report.rs` are claimed by the platform/format track.
 - [ ] 31. `crates/pun-cli/src/pint_error.rs:59-120` recovers error kinds by matching message text produced in
   `run.rs:203,259-262`, `pun-workspace/src/lib.rs:87,215,252,263` and pun-format, so rewording any of them silently
   changes the Pint box's class, file and line. A caller branches on the kind, so a typed `PintError` downcast with
@@ -188,11 +195,16 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `type Processed = (FileResult, Option<String>, bool, Option<FileResult>)` read as `.0`/`.2`, and
   `pint_error.rs:123-124` is generic only to accept that tuple; `lint_fixers: Vec<(Rule, bool, bool)>` and
   `Stage::Lint(bool)` are bools as modes. Introduce Parameter Object `Processed`, Extract Function `resolve_rules`,
-  `select_files`, `process_file`, and name the bools.
-- [ ] 33. `crates/pun-cli/src/migrate.rs:148-393`: `run` is 245 lines covering detection, prompts, planning, the
+  `select_files`, `process_file`, and name the bools. Still held at 8cc3efa (`format` is 331 lines, the closure
+  110), except that `pint_error.rs` is no longer generic. Deferred: `run.rs` is claimed by the platform/format track.
+- [x] 33. `crates/pun-cli/src/migrate.rs:148-393`: `run` is 245 lines covering detection, prompts, planning, the
   summary table, conversion, clash checks, ignore-comment rewrites, writes and two output modes, and rebinds `from`
   and `toml` with new meanings (`:264`, `:280`, `:355`). Extract Function per phase and return a `Report` the two
-  printers render.
+  printers render. Still held at 8cc3efa. `run` now calls `check_from`, `announce`, `summarize`, `convert`,
+  `ignore_rewrites` and `apply`; notes go through `Notes` (humans: stderr as found, as before; agent: findings) and
+  the end is a `Report` printed either way. 156 migrate runs (six projects; plain, `--dry-run`, `--yes`, `--agent`,
+  `--preset`, `--config`, every `--from`, a clash, a rerun, and the checklist and starter prompts on a terminal)
+  print and write the same bytes as before. Fixed in wf/audit-cli-structure.
 - [x] 34. `crates/pun-cli/tests/agent.rs:366` and `watch.rs:194` fake a read error with mode `000`, which root can
   read, so on this machine (uid 0) `errors` fails and `watch_reformats_like_pint` waits 60 s and fails. Use a
   directory or a dangling path instead. Likely; not run. Not reproducible as uid 501; the runner never reads a directory or symlink, so the tests
@@ -449,7 +461,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 83. `crates/pun-cli/src/report.rs` (780 lines) holds the Symfony error box, the Node/Prettier probe and semver,
   the terminal summary and three reporters while the other four live in `fix_report.rs`, and it imports
   `pint_error`, which imports it back. Move `abort_box` to `pint_error.rs`, the probe to `prettier.rs`, the reporters
-  together.
+  together. Still held at 8cc3efa (974 lines). Deferred: `report.rs`, `pint_error.rs`, `fix_report.rs` and
+  `main.rs` are claimed by the platform/format track. The move is ready as
+  `pun-wf/scratch/audit-cli-structure-item83.patch` (applies to 8cc3efa; the json, txt and agent reporters join the
+  other four in `fix_report.rs`, `report.rs` keeps the dispatch): 170 runs of `pun format`/`lint`/`check` over the
+  sample, a Latin-1 file and the abort cases (every `--format`, `-q`, `--ansi`, `-v`, agent, `--output-to-file`)
+  print the same bytes as before.
 - [x] 84. `crates/pun-fixers/src/fixers/final_class.rs:3` imports `final_internal_class`, the only fixer-to-fixer
   import, so `PUN_FIXERS_ONLY=final_class` fails to build. Move the shared core into `analyzers/`. Fixed in edb08b1.
 - [x] 85. Per-token clones and pre-check work on Laravel-preset paths: `braces_position.rs:148`,

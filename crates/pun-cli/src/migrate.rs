@@ -150,20 +150,7 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
     let root = root()?;
     let pint = a.config.as_deref().unwrap_or(Path::new("pint.json"));
     let detected = detect(&root, pint);
-    for s in &a.from {
-        if !detected.iter().any(|d| d.0 == *s) {
-            let files = if *s == Source::Pint {
-                vec![pint.display().to_string()]
-            } else {
-                s.files().iter().map(|f| f.to_string()).collect()
-            };
-            bail!(
-                "--from {}: no {} found",
-                s.name().to_lowercase(),
-                files.join(" or ")
-            );
-        }
-    }
+    check_from(&a.from, &detected, pint)?;
     let interactive = !(a.yes || !a.from.is_empty() || agent::enabled())
         && std::io::stdin().is_terminal()
         && std::io::stdout().is_terminal();
@@ -179,7 +166,114 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
     } else {
         detected.iter().map(|d| d.0).collect()
     };
-    if detected.is_empty() && human {
+    if human && !announce(&a, &detected, &nothing, interactive)? {
+        println!("pun migrate: nothing written.");
+        return Ok(0);
+    }
+    let rows = plan(&detected, &chosen);
+    let (summary, sources) = summarize(&rows, a.dry_run, pint);
+    let format_source = (rows.iter())
+        .find(|r| r.2 == Action::Migrate)
+        .map(|r| (r.0, root.join(&r.1)));
+    let has_format = detected.iter().any(|d| d.0.supported());
+    if (chosen.is_empty() && !detected.is_empty()) || (format_source.is_none() && has_format) {
+        // Nothing to write: the user left pint.json / .php-cs-fixer.php out.
+        let why = if chosen.is_empty() {
+            "nothing selected"
+        } else {
+            "no Pint or PHP-CS-Fixer config selected"
+        };
+        if human {
+            println!("pun migrate: {why}, pun.toml not written.");
+            print!("{summary}");
+        } else {
+            let detail = [format!("{why}, pun.toml not written")];
+            print!("{}", agent::render("ok", &detail, "", &sources, false));
+        }
+        return Ok(0);
+    }
+    let mut notes = Notes {
+        human,
+        agent: sources,
+    };
+    let from = format_source.as_ref().map(|s| s.1.clone());
+    let toml = convert(
+        &root,
+        &a,
+        pint,
+        format_source,
+        &nothing,
+        detected.is_empty(),
+        &mut notes,
+    )?;
+    let path = root.join("pun.toml");
+    let old = std::fs::read_to_string(&path).ok();
+    if old.as_ref().is_some_and(|o| *o != toml) && !a.dry_run {
+        bail!(
+            "pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)"
+        );
+    }
+    let cfg = pun_config::from_toml(&root, &toml)?;
+    let mut edits = ignore_rewrites(&root, &cfg, &mut notes);
+    let rewritten = edits.len();
+    let written = old.as_deref() != Some(&toml);
+    if written {
+        let old = old.unwrap_or_default().into_bytes();
+        edits.insert(0, (path, old, toml.into_bytes()));
+    }
+    let diffs = apply(&root, &edits, a.dry_run)?;
+    let (toml, from) = match &from {
+        Some(f) => ("pun.toml", format!("from {}", rel(&root, f))),
+        None if detected.is_empty() && !human => ("starter pun.toml", nothing),
+        None => ("starter pun.toml", String::new()),
+    };
+    let report = Report {
+        toml,
+        state: match (written, a.dry_run) {
+            (false, _) => "already up to date",
+            (true, true) => "to write",
+            (true, false) => "written",
+        },
+        from,
+        ignores: if a.dry_run { "to rewrite" } else { "rewritten" },
+        rewritten,
+        diffs,
+        summary,
+        dry_run: a.dry_run,
+        cfg,
+    };
+    report.print(notes);
+    Ok(0)
+}
+
+/// `--from` names only detected configs.
+fn check_from(from: &[Source], detected: &[(Source, String)], pint: &Path) -> Result<()> {
+    for s in from {
+        if !detected.iter().any(|d| d.0 == *s) {
+            let files = if *s == Source::Pint {
+                vec![pint.display().to_string()]
+            } else {
+                s.files().iter().map(|f| f.to_string()).collect()
+            };
+            bail!(
+                "--from {}: no {} found",
+                s.name().to_lowercase(),
+                files.join(" or ")
+            );
+        }
+    }
+    Ok(())
+}
+
+/// The human run's opening line: no config (a terminal is asked whether to write the starter; `false` when it says
+/// no), or that everything detected is migrated when nothing was picked.
+fn announce(
+    a: &MigrateArgs,
+    detected: &[(Source, String)],
+    nothing: &str,
+    interactive: bool,
+) -> Result<bool> {
+    if detected.is_empty() {
         println!("pun migrate: {nothing}.");
         let confirm = || {
             dialoguer::Confirm::new()
@@ -188,24 +282,30 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
                 .interact_on_opt(&dialoguer::console::Term::stdout())
         };
         if interactive && confirm()? != Some(true) {
-            println!("pun migrate: nothing written.");
-            return Ok(0);
+            return Ok(false);
         }
-    } else if a.from.is_empty() && !interactive && human {
+    } else if a.from.is_empty() && !interactive {
         let files: Vec<&str> = detected.iter().map(|d| d.1.as_str()).collect();
         println!(
             "pun migrate: migrating everything detected (pick with --from): {}",
             files.join(", ")
         );
     }
-    let rows = plan(&detected, &chosen);
-    // Agent mode: one line per config, then the notes, as findings under one summary line printed at the end.
-    let mut sources = vec![];
-    let mut notes = vec![];
+    Ok(true)
+}
+
+/// What happens to each detected config: the human table (one line per config) and agent mode's findings.
+fn summarize(
+    rows: &[(Source, String, Action)],
+    dry_run: bool,
+    pint: &Path,
+) -> (String, Vec<String>) {
+    let width = rows.iter().map(|r| r.1.len()).max().unwrap_or(0);
     let mut summary = String::new();
-    for (s, f, action) in &rows {
+    let mut sources = vec![];
+    for (s, f, action) in rows {
         let (kind, text) = match action {
-            Action::Migrate if a.dry_run => ("migrate", "to migrate".to_string()),
+            Action::Migrate if dry_run => ("migrate", "to migrate".to_string()),
             Action::Migrate => ("migrated", "migrated".into()),
             Action::Unsupported => (
                 "not-supported",
@@ -223,174 +323,179 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
                 ),
             ),
         };
-        let width = rows.iter().map(|r| r.1.len()).max().unwrap();
         writeln!(summary, "  {f:<width$}  {text}").unwrap();
         sources.push(match action {
             Action::Migrate | Action::NotSelected => format!("{f} {kind}"),
             _ => format!("{f} {kind} {text}"),
         });
     }
-    let format_source = (rows.iter())
-        .find(|r| r.2 == Action::Migrate)
-        .map(|r| (r.0, root.join(&r.1)));
-    let has_format = detected.iter().any(|d| d.0.supported());
-    if (chosen.is_empty() && !detected.is_empty()) || (format_source.is_none() && has_format) {
-        // Nothing to write: the user left pint.json / .php-cs-fixer.php out.
-        let why = if chosen.is_empty() {
-            "nothing selected"
-        } else {
-            "no Pint or PHP-CS-Fixer config selected"
-        };
-        if human {
-            println!("pun migrate: {why}, pun.toml not written.");
-            print!("{summary}");
-        } else {
-            print!(
-                "{}",
-                agent::render(
-                    "ok",
-                    &[format!("{why}, pun.toml not written")],
-                    "",
-                    &sources,
-                    false
-                )
-            );
-        }
-        return Ok(0);
-    }
-    // Pun runs a rule only with a native fixer; migrate names and skips the rest.
+    (summary, sources)
+}
+
+/// pun.toml's text from the config that gives `[format]` (`source`), or from Pint's defaults (its laravel preset, or
+/// `--preset`) when there is none. Pun runs a rule only with a native fixer; the rules it skips become notes.
+fn convert(
+    root: &Path,
+    a: &MigrateArgs,
+    pint: &Path,
+    source: Option<(Source, PathBuf)>,
+    nothing: &str,
+    none_detected: bool,
+    notes: &mut Notes,
+) -> Result<String> {
     let fixers: std::collections::HashSet<&str> =
         pun_fixers::all().iter().map(|f| f.name()).collect();
     let runs = |name: &str| fixers.contains(name);
-    let (from, m) = match format_source {
+    let m = match &source {
         Some((Source::PhpCsFixer, f)) => {
-            let (rules, finder) = php_cs_fixer_config(&root, &f)?;
-            (Some(f), migrate::from_rules(rules, &finder, &runs)?)
+            let (rules, finder) = php_cs_fixer_config(root, f)?;
+            migrate::from_rules(rules, &finder, &runs)?
         }
-        Some((_, f)) => {
-            let m = migrate::from_pint(&f, a.preset.as_deref(), &runs)?;
-            (Some(f), m)
-        }
-        // No pint.json: Pint's defaults (its laravel preset, or --preset).
-        None => (
-            None,
-            migrate::from_pint(&root.join(pint), a.preset.as_deref(), &runs)?,
-        ),
+        Some((_, f)) => migrate::from_pint(f, a.preset.as_deref(), &runs)?,
+        None => migrate::from_pint(&root.join(pint), a.preset.as_deref(), &runs)?,
     };
-    if !m.unsupported.is_empty() {
-        let from = match &from {
-            Some(f) => rel(&root, f),
-            None => format!("preset {}", a.preset.as_deref().unwrap_or("laravel")),
-        };
-        for u in &m.unsupported {
-            if human {
-                eprintln!("pun migrate: {from}: {u}; skipped");
-            } else {
-                notes.push(format!("{from} unsupported {u}"));
-            }
-        }
+    let from = match &source {
+        Some((_, f)) => rel(root, f),
+        None => format!("preset {}", a.preset.as_deref().unwrap_or("laravel")),
+    };
+    for u in &m.unsupported {
+        notes.add(
+            format!("{from}: {u}; skipped"),
+            format!("{from} unsupported {u}"),
+        );
     }
-    let header = match &from {
-        Some(f) => format!("from {}.", rel(&root, f)),
-        None if detected.is_empty() => format!(": {nothing}; starter config."),
+    let header = match &source {
+        Some(_) => format!(" from {from}."),
+        None if none_detected => format!(": {nothing}; starter config."),
         None => format!(
             ": no {} or .php-cs-fixer.php found; starter config.",
             pint.display()
         ),
     };
-    let toml = format!(
-        "# Written by `pun migrate`{}{header}\n{}",
-        if from.is_some() { " " } else { "" },
-        m.toml
-    );
-    let path = root.join("pun.toml");
-    let old = std::fs::read_to_string(&path).ok();
-    if old.as_ref().is_some_and(|o| *o != toml) && !a.dry_run {
-        bail!(
-            "pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)"
-        );
-    }
+    Ok(format!("# Written by `pun migrate`{header}\n{}", m.toml))
+}
 
-    let cfg = pun_config::from_toml(&root, &toml)?;
+/// Each project file whose `@php-cs-fixer-ignore` comments [`rewrite`] changes: (path, old, new). An annotation
+/// naming a fixer Pun has no rule for becomes a note.
+fn ignore_rewrites(
+    root: &Path,
+    cfg: &pun_config::Config,
+    notes: &mut Notes,
+) -> Vec<(PathBuf, Vec<u8>, Vec<u8>)> {
     let mut edits = vec![];
     let mut unknown = vec![];
     // A broken finder (a missing `in` dir) is `pun format`'s to report, as Pint does.
-    for f in pun_workspace::discover(&cfg, &[]).unwrap_or_default() {
+    for f in pun_workspace::discover(cfg, &[]).unwrap_or_default() {
         // Unreadable files are `pun format`'s to report.
         let Ok(code) = std::fs::read(&f) else {
             continue;
         };
-        if let Some(new) = rewrite(&code, &rel(&root, &f), &mut unknown) {
+        if let Some(new) = rewrite(&code, &rel(root, &f), &mut unknown) {
             edits.push((f, code, new));
         }
     }
     for (path, rules) in &unknown {
         let note = format!("`@php-cs-fixer-ignore {rules}` left as is (no Pun rule for it)");
-        if human {
-            eprintln!("pun migrate: {path}: {note}");
-        } else {
-            notes.push(format!("{path} ignore-not-migrated {note}"));
-        }
-    }
-    let rewritten = edits.len();
-    let written = old.as_deref() != Some(&toml);
-    if written {
-        edits.insert(
-            0,
-            (
-                path,
-                old.unwrap_or_default().into_bytes(),
-                toml.into_bytes(),
-            ),
+        notes.add(
+            format!("{path}: {note}"),
+            format!("{path} ignore-not-migrated {note}"),
         );
     }
+    edits
+}
+
+/// Writes the edits, or with `--dry-run` returns their diffs instead.
+fn apply(root: &Path, edits: &[(PathBuf, Vec<u8>, Vec<u8>)], dry_run: bool) -> Result<String> {
     let mut diffs = String::new();
-    for (f, old, new) in &edits {
-        if a.dry_run {
+    for (f, old, new) in edits {
+        if dry_run {
             let (old, new) = (String::from_utf8_lossy(old), String::from_utf8_lossy(new));
-            diffs += &report::diff(&old, &new, Path::new(&rel(&root, f)));
+            diffs += &report::diff(&old, &new, Path::new(&rel(root, f)));
         } else {
             std::fs::write(f, new).with_context(|| format!("can't write {}", f.display()))?;
         }
     }
-    let (toml, from) = match &from {
-        Some(f) => ("pun.toml", format!("from {}", rel(&root, f))),
-        None if detected.is_empty() && !human => ("starter pun.toml", nothing.clone()),
-        None => ("starter pun.toml", String::new()),
-    };
-    let state = match (written, a.dry_run) {
-        (false, _) => "already up to date",
-        (true, true) => "to write",
-        (true, false) => "written",
-    };
-    let ignores = if a.dry_run { "to rewrite" } else { "rewritten" };
-    if human {
-        print!("{diffs}");
-        let sep = if from.is_empty() { "" } else { " " };
-        println!(
-            "pun migrate: {toml} {state}{sep}{from}, ignore comments {ignores} in {rewritten} file(s)."
-        );
-        print!("{summary}");
-    } else {
-        let detail = [
-            format!(
-                "{toml} {} (preset {}, {}, {})",
-                state.trim_start_matches("already "),
-                cfg.preset,
-                agent::count(cfg.rules.len(), "format rule"),
-                agent::count(cfg.lint.rules.len(), "lint rule")
-            ),
-            format!(
-                "ignore comments {ignores} in {}",
-                agent::count(rewritten, "file")
-            ),
-        ];
-        let result = if a.dry_run { "dry-run" } else { "ok" };
-        sources.extend(notes);
-        print!("{}", agent::render(result, &detail, &from, &sources, false));
-        print!("{diffs}");
+    Ok(diffs)
+}
+
+/// Notes on what migrate leaves out: humans get each on stderr as it is found; agent mode lists them after the
+/// configs, under its summary line.
+struct Notes {
+    human: bool,
+    /// Agent mode's findings: one line per config, then the notes.
+    agent: Vec<String>,
+}
+
+impl Notes {
+    fn add(&mut self, human: String, agent: String) {
+        if self.human {
+            eprintln!("pun migrate: {human}");
+        } else {
+            self.agent.push(agent);
+        }
     }
-    Ok(0)
+}
+
+/// A migration that wrote (or, with `--dry-run`, would write) pun.toml.
+struct Report {
+    /// `pun.toml`, or `starter pun.toml` without a Pint or PHP-CS-Fixer config.
+    toml: &'static str,
+    /// `written`, `to write` or `already up to date`.
+    state: &'static str,
+    /// `from <config>`, agent mode's "nothing found" for a starter, or empty.
+    from: String,
+    ignores: &'static str,
+    /// Files whose ignore comments were (or would be) rewritten.
+    rewritten: usize,
+    /// `--dry-run`'s diffs.
+    diffs: String,
+    /// The human table of detected configs.
+    summary: String,
+    dry_run: bool,
+    cfg: pun_config::Config,
+}
+
+impl Report {
+    fn print(self, notes: Notes) {
+        let Report {
+            toml,
+            state,
+            from,
+            ignores,
+            rewritten,
+            diffs,
+            ..
+        } = &self;
+        if notes.human {
+            print!("{diffs}");
+            let sep = if from.is_empty() { "" } else { " " };
+            println!(
+                "pun migrate: {toml} {state}{sep}{from}, ignore comments {ignores} in {rewritten} file(s)."
+            );
+            print!("{}", self.summary);
+        } else {
+            let cfg = &self.cfg;
+            let detail = [
+                format!(
+                    "{toml} {} (preset {}, {}, {})",
+                    state.trim_start_matches("already "),
+                    cfg.preset,
+                    agent::count(cfg.rules.len(), "format rule"),
+                    agent::count(cfg.lint.rules.len(), "lint rule")
+                ),
+                format!(
+                    "ignore comments {ignores} in {}",
+                    agent::count(*rewritten, "file")
+                ),
+            ];
+            let result = if self.dry_run { "dry-run" } else { "ok" };
+            print!(
+                "{}",
+                agent::render(result, &detail, from, &notes.agent, false)
+            );
+            print!("{diffs}");
+        }
+    }
 }
 
 /// `code` with each `@php-cs-fixer-ignore a,b` in a comment turned into `@pun-ignore-file format/x/a,lint/y/b`, or
