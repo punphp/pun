@@ -6,6 +6,7 @@ use pun_tokens::{BlockType, Proto, Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct NoUnneededControlParenthesesFixer {
     statements: Vec<String>,
 }
@@ -33,9 +34,7 @@ const DEFAULT_STATEMENTS: &[&str] = &[
 ];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoUnneededControlParenthesesFixer {
-        statements: DEFAULT_STATEMENTS.iter().map(|s| s.to_string()).collect(),
-    })
+    crate::configured(NoUnneededControlParenthesesFixer::default())
 }
 
 const BLOCK_TYPES: &[BlockType] = &[

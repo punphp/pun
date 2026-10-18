@@ -12,8 +12,9 @@ struct ArraySyntaxFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ArraySyntaxFixer {
-        short: true,
+    // `configure` sets both fields.
+    crate::configured(ArraySyntaxFixer {
+        short: false,
         candidate_token_kind: T_ARRAY,
     })
 }

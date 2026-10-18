@@ -1,23 +1,21 @@
 //! Port of `PhpCsFixer\Fixer\Whitespace\TypesSpacesFixer`.
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
-use anyhow::{Result, bail};
+use anyhow::Result;
 use pun_format::Fixer;
 use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
 use std::collections::BTreeMap;
 use std::path::Path;
 
+#[derive(Default)]
 struct TypesSpacesFixer {
     space_single: bool,
     space_multiple_catch_single: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(TypesSpacesFixer {
-        space_single: false,
-        space_multiple_catch_single: false,
-    })
+    crate::configured(TypesSpacesFixer::default())
 }
 
 impl Fixer for TypesSpacesFixer {
@@ -36,9 +34,7 @@ impl Fixer for TypesSpacesFixer {
         let catch = match o.get("space_multiple_catch") {
             None | Some(Value::Null) => space.clone(),
             Some(Value::String(s)) if s == "none" || s == "single" => s.clone(),
-            Some(v) => bail!(
-                "[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value {v} is invalid. Accepted values are: \"none\", \"single\", null."
-            ),
+            Some(v) => return Err(o.invalid_or_null("space_multiple_catch", v, &["none", "single"])),
         };
         self.space_single = space == "single";
         self.space_multiple_catch_single = catch == "single";

@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocReturnSelfReferenceFixer`.
 use crate::analyzers::docblock::DocBlock;
-use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::fixer_configuration_resolver::{PhpKey, resolve};
 use anyhow::{Result, bail};
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -21,16 +21,13 @@ const DEFAULT: [(&str, &str); 6] = [
     ("@static", "static"),
 ];
 
+#[derive(Default)]
 struct PhpdocReturnSelfReferenceFixer {
     replacements: Vec<(Vec<u8>, Vec<u8>)>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let replacements = DEFAULT
-        .iter()
-        .map(|(f, t)| (f.as_bytes().to_vec(), t.as_bytes().to_vec()))
-        .collect();
-    Box::new(PhpdocReturnSelfReferenceFixer { replacements })
+    crate::configured(PhpdocReturnSelfReferenceFixer::default())
 }
 
 /// `Utils::naturalLanguageJoin`: `"a", "b" and "c"`.
@@ -50,28 +47,22 @@ impl Fixer for PhpdocReturnSelfReferenceFixer {
     fn configure(&mut self, options: &Value) -> Result<()> {
         let c = resolve(self.name(), options, &["replacements"])?;
         c.check_types("replacements", &["string[]"])?;
-        let entries: Vec<(String, &str)> = match c.get("replacements") {
-            None => return Ok(()),
-            Some(Value::Object(map)) => map
+        let Some(entries) = c.php_array("replacements") else {
+            self.replacements = DEFAULT
                 .iter()
-                .map(|(k, v)| {
-                    (
-                        format!("string#{}", k.to_ascii_lowercase()),
-                        v.as_str().unwrap(),
-                    )
-                })
-                .collect(),
-            Some(v) => v
-                .as_array()
-                .unwrap()
-                .iter()
-                .enumerate()
-                .map(|(i, v)| (format!("integer#{i}"), v.as_str().unwrap()))
-                .collect(),
+                .map(|(f, t)| (f.as_bytes().to_vec(), t.as_bytes().to_vec()))
+                .collect();
+            return Ok(());
         };
         let defaults: Vec<&str> = DEFAULT.iter().map(|(f, _)| *f).collect();
         let mut replacements: Vec<(Vec<u8>, Vec<u8>)> = vec![];
         for (from, to) in entries {
+            let to = to.as_str().unwrap();
+            // the normalizer strtolower()s string keys
+            let from = match from {
+                PhpKey::Str(k) => format!("string#{}", k.to_ascii_lowercase()),
+                k => k.typed(),
+            };
             let Some(key) = from
                 .strip_prefix("string#")
                 .filter(|k| defaults.contains(k))

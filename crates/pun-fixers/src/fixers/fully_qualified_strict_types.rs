@@ -70,6 +70,7 @@ impl OMap {
     }
 }
 
+#[derive(Default)]
 struct FullyQualifiedStrictTypesFixer {
     leading_backslash_in_global_namespace: bool,
     import_symbols: bool,
@@ -97,12 +98,7 @@ struct UsesCache {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(FullyQualifiedStrictTypesFixer {
-        leading_backslash_in_global_namespace: false,
-        import_symbols: false,
-        phpdoc_tags: PHPDOC_TAGS.iter().map(|s| s.to_string()).collect(),
-        whitespaces_config: WhitespacesFixerConfig::default(),
-    })
+    crate::configured(FullyQualifiedStrictTypesFixer::default())
 }
 
 impl Fixer for FullyQualifiedStrictTypesFixer {

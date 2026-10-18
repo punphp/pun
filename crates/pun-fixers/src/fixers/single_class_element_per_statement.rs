@@ -7,14 +7,13 @@ use pun_tokens::{Kind, Kind::*, Token, Tokens, TokensAnalyzer, php_compat, token
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct SingleClassElementPerStatementFixer {
     elements: Vec<String>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SingleClassElementPerStatementFixer {
-        elements: vec!["const".into(), "property".into()],
-    })
+    crate::configured(SingleClassElementPerStatementFixer::default())
 }
 
 impl Fixer for SingleClassElementPerStatementFixer {

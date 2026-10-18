@@ -9,14 +9,13 @@ use std::path::Path;
 
 const ELEMENTS: &[&str] = &["arguments", "array", "array_destructuring", "group_import"];
 
+#[derive(Default)]
 struct NoTrailingCommaInSinglelineFixer {
     elements: Vec<String>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoTrailingCommaInSinglelineFixer {
-        elements: ELEMENTS.iter().map(|s| s.to_string()).collect(),
-    })
+    crate::configured(NoTrailingCommaInSinglelineFixer::default())
 }
 
 impl Fixer for NoTrailingCommaInSinglelineFixer {

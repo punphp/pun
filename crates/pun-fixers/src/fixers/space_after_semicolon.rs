@@ -7,14 +7,13 @@ use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct SpaceAfterSemicolonFixer {
     remove_in_empty_for_expressions: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SpaceAfterSemicolonFixer {
-        remove_in_empty_for_expressions: false,
-    })
+    crate::configured(SpaceAfterSemicolonFixer::default())
 }
 
 impl Fixer for SpaceAfterSemicolonFixer {

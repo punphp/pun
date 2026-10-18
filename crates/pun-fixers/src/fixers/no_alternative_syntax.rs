@@ -6,14 +6,13 @@ use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct NoAlternativeSyntaxFixer {
     fix_non_monolithic_code: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoAlternativeSyntaxFixer {
-        fix_non_monolithic_code: true,
-    })
+    crate::configured(NoAlternativeSyntaxFixer::default())
 }
 
 impl Fixer for NoAlternativeSyntaxFixer {

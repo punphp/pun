@@ -6,12 +6,13 @@ use pun_tokens::{Kind::*, Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct NoUnneededBracesFixer {
     namespaces: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoUnneededBracesFixer { namespaces: false })
+    crate::configured(NoUnneededBracesFixer::default())
 }
 
 impl Fixer for NoUnneededBracesFixer {

@@ -69,6 +69,7 @@ struct Scope {
     is_indented_block: bool,
 }
 
+#[derive(Default)]
 pub struct StatementIndentationFixer {
     stick_comment_to_next_continuous_control_statement: bool,
     whitespaces_config: WhitespacesFixerConfig,
@@ -76,10 +77,7 @@ pub struct StatementIndentationFixer {
 
 pub fn fixer() -> Box<dyn Fixer> {
     // Upstream's `bracesFixerCompatibility` mode is only used by the deprecated `braces` fixer, which Pun refuses.
-    Box::new(StatementIndentationFixer {
-        stick_comment_to_next_continuous_control_statement: false,
-        whitespaces_config: WhitespacesFixerConfig::default(),
-    })
+    crate::configured(StatementIndentationFixer::default())
 }
 
 impl Fixer for StatementIndentationFixer {

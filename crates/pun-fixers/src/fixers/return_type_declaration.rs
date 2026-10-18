@@ -6,14 +6,13 @@ use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct ReturnTypeDeclarationFixer {
     one_space_before: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ReturnTypeDeclarationFixer {
-        one_space_before: false,
-    })
+    crate::configured(ReturnTypeDeclarationFixer::default())
 }
 
 impl Fixer for ReturnTypeDeclarationFixer {

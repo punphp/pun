@@ -123,16 +123,17 @@ items marked "not checked against Pint" still need one oracle run before the fix
 
 ## P2: Inconsistent or costly to change
 
-- [ ] 22. Fixer `configure` messages written by hand drift from PHP-CS-Fixer's (checked with the pinned fixer):
+- [x] 22. Fixer `configure` messages written by hand drift from PHP-CS-Fixer's (checked with the pinned fixer):
   `blank_lines_before_namespace.rs:133-141` drops ", but is of type \"string\"";
-  `general_phpdoc_tag_rename.rs:69-78` says `"array<string, string>"` where upstream says `"string[]"` and prints JSON
-  where upstream prints `array`; `binary_operator_spaces.rs:664-703` drops "Accepted values are: ...", the "expected
-  any of" list and `string#`/`integer#` keys; the same `{v}`-as-JSON pattern is in `types_spaces.rs:39-41`,
-  `ordered_class_elements.rs:182-184` and `final_internal_class.rs:88-90`. pun-config validates pun.toml first, so
-  these surface only where its checks are looser, and the fixers' tests assert only `is_err()`
-  (`method_argument_space.rs:439-447`). Make `Resolved::invalid`, `type_error` and `format_value`
+  `general_phpdoc_tag_rename.rs:69-78` says `"array<string, string>"` where upstream says `"string[]"` and prints
+  JSON where upstream prints `array`; `binary_operator_spaces.rs:664-703` drops "Accepted values are: ...", the
+  "expected any of" list and `string#`/`integer#` keys; the same `{v}`-as-JSON pattern is in
+  `types_spaces.rs:39-41`, `ordered_class_elements.rs:182-184` and `final_internal_class.rs:88-90`. pun-config
+  validates pun.toml first, so these surface only where its checks are looser, and the fixers' tests assert only
+  `is_err()` (`method_argument_space.rs:439-447`). Make `Resolved::invalid`, `type_error` and `format_value`
   (`analyzers/fixer_configuration_resolver.rs`) `pub(crate)`, use them, and record the upstream messages as oracle
-  cases.
+  cases. Recorded 40 oracle cases (configure errors, including the int-key ones of item 63); binary_operator_spaces
+  also printed `string#7` for an int key where upstream prints `integer#7`. Fixed in wf/audit-fixers-messages.
 - [ ] 23. `crates/pun-fixers/src/fixers/ordered_class_elements.rs:473-476` panics ("no position for
   property_public_static_readonly") on modifier mixes the grammar accepts and PHP's compiler rejects (`public static
   readonly int $x;`, `readonly public function f()`). Reproduced. Decide whether to mirror upstream's undefined-key
@@ -314,13 +315,18 @@ items marked "not checked against Pint" still need one oracle run before the fix
   order-sensitive equality with `iter().eq`.
 - [ ] 61. `Preg` and `RawPreg` repeat the match, match-all and replace loops (`preg.rs:550-555` vs `829-834`,
   `566-572` vs `845-851`, `632-646` vs `862-874`). Extract Method on `Regex`.
-- [ ] 62. Option defaults are written in both `fixer()` and `configure()` in about 24 fixers (for example
+- [x] 62. Option defaults are written in both `fixer()` and `configure()` in about 24 fixers (for example
   `increment_style.rs:14/35`, `ordered_imports.rs:31-33/72-110`, `yoda_style.rs:27/48-50`,
   `trailing_comma_in_multiline.rs:20-23/43`), while `phpdoc_align`, `method_argument_space` and others call
   `configure(&Value::Null)` in `fixer()`. `Pipeline::new` always configures, so use that one pattern everywhere.
-- [ ] 63. Four configures walk "a PHP array as list or map" by hand with unwraps after `check_types`:
+  Every configurable fixer's `fixer()` now builds neutral fields and calls `configured()` (`configure(Null)`), and
+  phpdoc_return_self_reference's `configure` sets its default when the option is absent (it relied on `fixer()`).
+  Pinkary and pinkary-dirty: 0 differing files. Fixed in wf/audit-fixers-messages.
+- [x] 63. Four configures walk "a PHP array as list or map" by hand with unwraps after `check_types`:
   `phpdoc_align.rs:96-111`, `phpdoc_return_self_reference.rs:53-66`, `phpdoc_separation.rs:33-62`,
-  `phpdoc_tag_type.rs:84-93`. Add `Resolved::php_array(key)`.
+  `phpdoc_tag_type.rs:84-93`. Add `Resolved::php_array(key)`. `php_array` also reads int-like object keys as PHP int
+  keys, which fixed phpdoc_return_self_reference (`string#7` for `integer#7`) and phpdoc_tag_type (no TypeError for
+  `{"0": ...}`); class_attributes_separation uses it too. Fixed in wf/audit-fixers-messages.
 - [ ] 64. Small helpers copied inside crates: `c`/`k`/`idx` in `pun-tokens/src/transformers.rs:51-69` and
   `tokens_analyzer.rs:9-14,66-81`; `CLASSY_KINDS` in `fully_qualified_strict_types.rs:26` and
   `pun-tokens/src/token.rs:82`; the PCRE `\s` byte set in `docblock/line.rs:52`, `tag.rs:50`, `annotation.rs:209`

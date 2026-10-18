@@ -12,11 +12,9 @@ struct PhpdocOrderFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = PhpdocOrderFixer {
+    crate::configured(PhpdocOrderFixer {
         configuration_order: vec![],
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 impl Fixer for PhpdocOrderFixer {

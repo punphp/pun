@@ -38,12 +38,10 @@ struct BlankLineBeforeStatementFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = BlankLineBeforeStatementFixer {
+    crate::configured(BlankLineBeforeStatementFixer {
         fix_token_map: Vec::new(),
         whitespaces_config: Default::default(),
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 fn newlines(s: &[u8]) -> usize {

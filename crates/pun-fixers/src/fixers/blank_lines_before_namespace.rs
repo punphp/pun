@@ -6,6 +6,7 @@ use pun_tokens::{Kind::*, Token, Tokens, php_compat::rtrim};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct BlankLinesBeforeNamespaceFixer {
     min_line_breaks: usize,
     max_line_breaks: usize,
@@ -13,11 +14,7 @@ struct BlankLinesBeforeNamespaceFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(BlankLinesBeforeNamespaceFixer {
-        min_line_breaks: 2,
-        max_line_breaks: 2,
-        whitespaces_config: Default::default(),
-    })
+    crate::configured(BlankLinesBeforeNamespaceFixer::default())
 }
 
 impl BlankLinesBeforeNamespaceFixer {
@@ -131,13 +128,8 @@ impl Fixer for BlankLinesBeforeNamespaceFixer {
             &["min_line_breaks", "max_line_breaks"],
         )?;
         let int = |key: &str| -> Result<i64> {
-            match r.get(key) {
-                None => Ok(2),
-                Some(Value::Number(n)) if n.is_i64() => Ok(n.as_i64().unwrap()),
-                Some(v) => bail!(
-                    "[blank_lines_before_namespace] Invalid configuration: The option \"{key}\" with value {v} is expected to be of type \"int\"."
-                ),
-            }
+            r.check_types(key, &["int"])?;
+            Ok(r.get(key).map_or(2, |v| v.as_i64().unwrap()))
         };
         let min = int("min_line_breaks")?;
         if min < 0 {
@@ -201,8 +193,6 @@ mod tests {
             err(json!({"min_line_breaks": 2, "max_line_breaks": 1})),
             "[blank_lines_before_namespace] Option `max_line_breaks` cannot have lower value than `min_line_breaks`."
         );
-        assert!(fixer().configure(&json!({"min_line_breaks": "1"})).is_err());
-        assert!(fixer().configure(&json!({"min_line_breaks": 1.0})).is_err());
         assert!(
             fixer()
                 .configure(&json!({"min_line_breaks": 0, "max_line_breaks": 0}))

@@ -7,16 +7,14 @@ use pun_tokens::{Kind::*, Token, Tokens, TokensAnalyzer, php_compat};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct SingleImportPerStatementFixer {
     group_to_single_imports: bool,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SingleImportPerStatementFixer {
-        group_to_single_imports: true,
-        whitespaces_config: Default::default(),
-    })
+    crate::configured(SingleImportPerStatementFixer::default())
 }
 
 impl Fixer for SingleImportPerStatementFixer {

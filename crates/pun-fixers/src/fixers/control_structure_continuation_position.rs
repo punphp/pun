@@ -16,7 +16,7 @@ struct ControlStructureContinuationPositionFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ControlStructureContinuationPositionFixer::default())
+    crate::configured(ControlStructureContinuationPositionFixer::default())
 }
 
 impl Fixer for ControlStructureContinuationPositionFixer {

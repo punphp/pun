@@ -14,16 +14,14 @@ const ELEMENTS: &[&str] = &[
     "match",
 ];
 
+#[derive(Default)]
 struct TrailingCommaInMultilineFixer {
     after_heredoc: bool,
     elements: Vec<String>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(TrailingCommaInMultilineFixer {
-        after_heredoc: false,
-        elements: vec!["arrays".into()],
-    })
+    crate::configured(TrailingCommaInMultilineFixer::default())
 }
 
 impl Fixer for TrailingCommaInMultilineFixer {

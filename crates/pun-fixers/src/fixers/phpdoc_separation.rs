@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocSeparationFixer`.
 use crate::analyzers::docblock::{Annotation, DocBlock, replace_all};
-use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::fixer_configuration_resolver::{php_array, resolve};
 use crate::analyzers::preg::{Preg, preg_quote};
 use anyhow::{Result, bail};
 use pun_format::Fixer;
@@ -21,20 +21,10 @@ struct PhpdocSeparationFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = PhpdocSeparationFixer {
+    crate::configured(PhpdocSeparationFixer {
         groups: vec![],
         skip_unlisted_annotations: false,
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
-}
-
-/// Values of a PHP array (JSON list or object); `check_types` guaranteed it is one.
-fn php_list(v: &Value) -> Vec<&Value> {
-    match v {
-        Value::Object(o) => o.values().collect(),
-        _ => v.as_array().unwrap().iter().collect(),
-    }
+    })
 }
 
 impl Fixer for PhpdocSeparationFixer {
@@ -56,12 +46,12 @@ impl Fixer for PhpdocSeparationFixer {
                 .iter()
                 .map(|g| g.iter().map(|s| s.to_string()).collect())
                 .collect(),
-            Some(v) => php_list(v)
+            Some(v) => php_array(v)
                 .into_iter()
-                .map(|g| {
-                    php_list(g)
+                .map(|(_, g)| {
+                    php_array(g)
                         .into_iter()
-                        .map(|s| s.as_str().unwrap().to_string())
+                        .map(|(_, s)| s.as_str().unwrap().to_string())
                         .collect()
                 })
                 .collect(),

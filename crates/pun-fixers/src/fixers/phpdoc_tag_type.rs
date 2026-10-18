@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocTagTypeFixer`.
+use crate::analyzers::fixer_configuration_resolver::{PhpKey, php_array, resolve};
 use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, Preg, preg_quote};
 use anyhow::{Result, bail};
 use pun_format::Fixer;
@@ -40,18 +41,14 @@ const DEFAULT_TAGS: &[&str] = &[
     "version",
 ];
 
+#[derive(Default)]
 struct PhpdocTagTypeFixer {
     /// lowercased tag => is_inline, in configuration order
     tags: Vec<(String, bool)>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocTagTypeFixer {
-        tags: DEFAULT_TAGS
-            .iter()
-            .map(|t| (t.to_ascii_lowercase(), false))
-            .collect(),
-    })
+    crate::configured(PhpdocTagTypeFixer::default())
 }
 
 impl Fixer for PhpdocTagTypeFixer {
@@ -65,7 +62,7 @@ impl Fixer for PhpdocTagTypeFixer {
         tokens.is_token_kind_found(T_DOC_COMMENT)
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let o = crate::analyzers::fixer_configuration_resolver::resolve(
+        let o = resolve(
             self.name(),
             options,
             &["tags"],
@@ -80,11 +77,7 @@ impl Fixer for PhpdocTagTypeFixer {
             return Ok(());
         };
         o.check_types("tags", &["string[]"])?;
-        // a list's values are its elements (keyed by position)
-        let entries: Vec<(&str, &Value)> = match v.as_object() {
-            Some(m) => m.iter().map(|(k, t)| (k.as_str(), t)).collect(),
-            None => v.as_array().unwrap().iter().map(|t| ("", t)).collect(),
-        };
+        let entries = php_array(v);
         // setAllowedValues runs before the normalizer
         for (_, ty) in &entries {
             if !matches!(ty.as_str(), Some("annotation" | "inline")) {
@@ -94,12 +87,12 @@ impl Fixer for PhpdocTagTypeFixer {
                 );
             }
         }
-        if v.is_array() && !entries.is_empty() {
-            // the normalizer strtolower()s a list's int keys: a TypeError under strict_types
-            bail!("strtolower(): Argument #1 ($string) must be of type string, int given");
-        }
         let mut tags: Vec<(String, bool)> = Vec::new();
         for (tag, ty) in entries {
+            let PhpKey::Str(tag) = tag else {
+                // the normalizer strtolower()s every key: a TypeError on an int key under strict_types
+                bail!("strtolower(): Argument #1 ($string) must be of type string, int given");
+            };
             let inline = ty == "inline";
             // normalizer: strtolower keys, later duplicates overwrite earlier ones in place
             let key = tag.to_ascii_lowercase();

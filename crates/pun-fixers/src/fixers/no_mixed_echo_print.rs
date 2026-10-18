@@ -11,7 +11,8 @@ struct NoMixedEchoPrintFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoMixedEchoPrintFixer {
+    // `configure` sets the field.
+    crate::configured(NoMixedEchoPrintFixer {
         candidate_token_type: T_PRINT,
     })
 }

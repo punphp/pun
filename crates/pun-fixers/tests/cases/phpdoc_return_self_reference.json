@@ -94,5 +94,14 @@
         "fixer": "phpdoc_return_self_reference",
         "input": "<?php\nclass A\n{\n    /**\n     * @param int $a\n     */\n    public function f($a) {}\n}\n",
         "expected": "<?php\nclass A\n{\n    /**\n     * @param int $a\n     */\n    public function f($a) {}\n}\n"
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "7": "$this"
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: Unknown key \"integer#7\", expected any of \"this\", \"@this\", \"$self\", \"@self\", \"$static\" and \"@static\"."
     }
 ]

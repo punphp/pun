@@ -27,7 +27,7 @@ struct BracesPositionFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = BracesPositionFixer {
+    crate::configured(BracesPositionFixer {
         control_structures_opening_brace: String::new(),
         functions_opening_brace: String::new(),
         anonymous_functions_opening_brace: String::new(),
@@ -36,9 +36,7 @@ pub fn fixer() -> Box<dyn Fixer> {
         allow_single_line_empty_anonymous_classes: true,
         allow_single_line_anonymous_functions: true,
         whitespaces_config: Default::default(),
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 impl BracesPositionFixer {

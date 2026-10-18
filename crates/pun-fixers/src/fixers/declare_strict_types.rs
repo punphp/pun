@@ -19,8 +19,9 @@ struct DeclareStrictTypesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(DeclareStrictTypesFixer {
-        strategy: Strategy::Enforce,
+    // `configure` sets the strategy.
+    crate::configured(DeclareStrictTypesFixer {
+        strategy: Strategy::Remove,
         whitespaces_config: Default::default(),
     })
 }

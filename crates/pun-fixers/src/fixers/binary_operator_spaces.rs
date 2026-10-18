@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\Operator\BinaryOperatorSpacesFixer`.
 use pun_tokens::php_compat::str_replace;
-use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::fixer_configuration_resolver::{PhpKey, resolve};
 use crate::analyzers::preg::Preg;
 use crate::analyzers::utils::mb_strwidth;
 use anyhow::{Result, bail};
@@ -58,12 +58,31 @@ struct BinaryOperatorSpacesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = BinaryOperatorSpacesFixer {
+    crate::configured(BinaryOperatorSpacesFixer {
         operators: Vec::new(),
         align_operator_tokens: Mutex::new(Vec::new()),
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
+}
+
+/// `Utils::naturalLanguageJoin` of already-wrapped names: `a, b and c`.
+fn natural_language_join(names: impl Iterator<Item = String>) -> String {
+    let mut names: Vec<String> = names.collect();
+    let last = names.pop().unwrap();
+    format!("{} and {last}", names.join(", "))
+}
+
+/// `gettype($value).'#'.$value` for a decoded JSON value other than null, as the "operators" validator prints it.
+fn typed_value(v: &Value) -> String {
+    match v {
+        Value::String(s) => format!("string#{s}"),
+        Value::Number(n) if n.is_i64() => format!("integer#{n}"),
+        Value::Number(n) => format!(
+            "double#{}",
+            pun_tokens::php_compat::float_to_string(n.as_f64().unwrap())
+        ),
+        Value::Bool(b) => format!("boolean#{}", if *b { "1" } else { "" }),
+        _ => "array#Array".into(),
+    }
 }
 
 fn strategy(s: &str) -> &'static str {
@@ -665,43 +684,36 @@ impl Fixer for BinaryOperatorSpacesFixer {
             None => Some(SINGLE_SPACE),
             Some(Value::Null) => None,
             Some(Value::String(s)) if ALLOWED_VALUES.contains(&s.as_str()) => Some(strategy(s)),
-            Some(v) => bail!(
-                "[binary_operator_spaces] Invalid configuration: The option \"default\" with value {v} is invalid."
-            ),
+            Some(v) => return Err(r.invalid_or_null("default", v, ALLOWED_VALUES)),
         };
-        let configured: Vec<(String, Option<&'static str>)> = match r.get("operators") {
-            None => Vec::new(),
-            Some(Value::Array(a)) if a.is_empty() => Vec::new(),
-            Some(Value::Object(o)) => {
-                let mut out = Vec::new();
-                for (operator, value) in o {
-                    if !SUPPORTED_OPERATORS.contains(&operator.as_str()) {
-                        let quoted: Vec<String> = SUPPORTED_OPERATORS
-                            .iter()
-                            .map(|o| format!("\"{o}\""))
-                            .collect();
-                        let (last, rest) = quoted.split_last().unwrap();
-                        bail!(
-                            "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of {} and {last}, got \"string#{operator}\".",
-                            rest.join(", ")
-                        );
-                    }
-                    match value {
-                        Value::Null => out.push((operator.clone(), None)),
-                        Value::String(s) if ALLOWED_VALUES.contains(&s.as_str()) => {
-                            out.push((operator.clone(), Some(strategy(s))))
-                        }
-                        v => bail!(
-                            "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"{operator}\", got {v}."
-                        ),
-                    }
-                }
-                out
+        // `array<string, ?string>`, which the resolver checks as `array`.
+        r.check_types("operators", &["array"])?;
+        let mut configured: Vec<(String, Option<&'static str>)> = Vec::new();
+        for (operator, value) in r.php_array("operators").unwrap_or_default() {
+            if !matches!(operator, PhpKey::Str(o) if SUPPORTED_OPERATORS.contains(&o)) {
+                bail!(
+                    "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of {}, got \"{}\".",
+                    natural_language_join(SUPPORTED_OPERATORS.iter().map(|o| format!("\"{o}\""))),
+                    operator.typed()
+                );
             }
-            Some(v) => bail!(
-                "[binary_operator_spaces] Invalid configuration: The option \"operators\" with value {v} is expected to be of type \"array<string, ?string>\"."
-            ),
-        };
+            match value {
+                Value::Null => configured.push((operator.to_string(), None)),
+                Value::String(s) if ALLOWED_VALUES.contains(&s.as_str()) => {
+                    configured.push((operator.to_string(), Some(strategy(s))))
+                }
+                v => bail!(
+                    "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"{operator}\", expected any of {}, got \"{}\".",
+                    natural_language_join(
+                        ALLOWED_VALUES
+                            .iter()
+                            .map(|a| format!("\"'{a}'\""))
+                            .chain(["\"null\"".to_string()])
+                    ),
+                    typed_value(v)
+                ),
+            }
+        }
         // resolveOperatorsFromConfig
         let mut operators: Vec<(Vec<u8>, &'static str)> = Vec::new();
         if let Some(d) = default {
@@ -761,13 +773,6 @@ mod tests {
     // Accept/reject and messages from the real fixer's configure() (PHP-CS-Fixer 3.95).
     #[test]
     fn configure_validation() {
-        assert!(fixer().configure(&json!({"default": "foo"})).is_err());
-        assert!(
-            fixer()
-                .configure(&json!({"operators": {"=": "foo"}}))
-                .is_err()
-        );
-        assert!(fixer().configure(&json!({"operators": "x"})).is_err());
         assert_eq!(
             fixer()
                 .configure(&json!({"operators": {"~~": "align"}}))

@@ -51,15 +51,13 @@ struct PhpdocAlignFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = PhpdocAlignFixer {
+    crate::configured(PhpdocAlignFixer {
         regex: String::new(),
         regex_comment_line: String::new(),
         align_left: false,
         spacing: Spacing::Int(1),
         line_ending: b"\n".to_vec(),
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 #[derive(Clone)]
@@ -96,19 +94,14 @@ impl Fixer for PhpdocAlignFixer {
         r.check_types("spacing", &["int", "int[]"])?;
         let spacing = match r.get("spacing") {
             None => Spacing::Int(DEFAULT_SPACING),
-            Some(Value::Object(o)) => Spacing::Map(
-                o.iter()
-                    .map(|(k, v)| (k.clone(), v.as_i64().unwrap()))
-                    .collect(),
-            ),
-            // a JSON list is a PHP array keyed 0..n
-            Some(Value::Array(a)) => Spacing::Map(
-                a.iter()
-                    .enumerate()
+            Some(v) if v.is_i64() => Spacing::Int(v.as_i64().unwrap()),
+            Some(_) => Spacing::Map(
+                r.php_array("spacing")
+                    .unwrap()
+                    .into_iter()
                     .map(|(k, v)| (k.to_string(), v.as_i64().unwrap()))
                     .collect(),
             ),
-            Some(v) => Spacing::Int(v.as_i64().unwrap()),
         };
         let vals: Vec<i64> = match &spacing {
             Spacing::Int(i) => vec![*i],

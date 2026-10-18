@@ -11,7 +11,7 @@ struct FinalClassFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut proxy = FinalInternalClassFixer::new();
+    let mut proxy = FinalInternalClassFixer::default();
     proxy
         .configure_options(
             &serde_json::json!({"include": [], "consider_absent_docblock_as_internal_class": true}),

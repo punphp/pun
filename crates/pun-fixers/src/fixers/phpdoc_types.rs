@@ -31,11 +31,9 @@ struct PhpdocTypesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = PhpdocTypesFixer {
+    crate::configured(PhpdocTypesFixer {
         types_set_to_fix: vec![],
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 impl PhpdocTypesFixer {

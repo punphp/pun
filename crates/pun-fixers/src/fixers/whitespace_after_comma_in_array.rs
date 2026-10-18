@@ -8,14 +8,13 @@ use serde_json::Value;
 use std::collections::BTreeMap;
 use std::path::Path;
 
+#[derive(Default)]
 struct WhitespaceAfterCommaInArrayFixer {
     ensure_single_space: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(WhitespaceAfterCommaInArrayFixer {
-        ensure_single_space: false,
-    })
+    crate::configured(WhitespaceAfterCommaInArrayFixer::default())
 }
 
 impl Fixer for WhitespaceAfterCommaInArrayFixer {

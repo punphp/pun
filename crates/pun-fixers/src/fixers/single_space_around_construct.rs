@@ -101,13 +101,11 @@ fn kinds(map: &[(&str, Kind)], selected: &[String]) -> Vec<Kind> {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = SingleSpaceAroundConstructFixer {
+    crate::configured(SingleSpaceAroundConstructFixer {
         contain: vec![],
         preceded: vec![],
         followed: vec![],
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 impl Fixer for SingleSpaceAroundConstructFixer {

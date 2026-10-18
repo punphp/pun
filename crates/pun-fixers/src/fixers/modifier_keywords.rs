@@ -41,9 +41,7 @@ struct ModifierKeywordsFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = ModifierKeywordsFixer { elements: vec![] };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    crate::configured(ModifierKeywordsFixer { elements: vec![] })
 }
 
 impl Fixer for ModifierKeywordsFixer {

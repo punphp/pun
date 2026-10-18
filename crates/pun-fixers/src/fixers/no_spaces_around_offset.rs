@@ -6,6 +6,7 @@ use pun_tokens::{Kind::*, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct NoSpacesAroundOffsetFixer {
     positions: Vec<String>,
 }
@@ -13,9 +14,7 @@ struct NoSpacesAroundOffsetFixer {
 const VALUES: &[&str] = &["inside", "outside"];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoSpacesAroundOffsetFixer {
-        positions: VALUES.iter().map(|s| s.to_string()).collect(),
-    })
+    crate::configured(NoSpacesAroundOffsetFixer::default())
 }
 
 impl Fixer for NoSpacesAroundOffsetFixer {

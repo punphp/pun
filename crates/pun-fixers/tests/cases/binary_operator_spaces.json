@@ -36,5 +36,118 @@
         },
         "input": "<?php\n$a  =  1;\n$b=2;\n$c = [1=>2,  3    =>  4];\n$d = $a  +$b   ??  $c;\n",
         "expected": "<?php\n$a  =  1;\n$b = 2;\n$c = [1 => 2,  3    =>  4];\n$d = $a  + $b   ??  $c;\n"
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "default": "foo"
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: The option \"default\" with value \"foo\" is invalid. Accepted values are: \"align\", \"align_by_scope\", \"align_single_space\", \"align_single_space_minimal\", \"align_single_space_by_scope\", \"align_single_space_minimal_by_scope\", \"single_space\", \"no_space\", \"at_least_single_space\", null."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "default": 1
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: The option \"default\" with value 1 is invalid. Accepted values are: \"align\", \"align_by_scope\", \"align_single_space\", \"align_single_space_minimal\", \"align_single_space_by_scope\", \"align_single_space_minimal_by_scope\", \"single_space\", \"no_space\", \"at_least_single_space\", null."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "default": [
+                "x"
+            ]
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: The option \"default\" with value array is invalid. Accepted values are: \"align\", \"align_by_scope\", \"align_single_space\", \"align_single_space_minimal\", \"align_single_space_by_scope\", \"align_single_space_minimal_by_scope\", \"single_space\", \"no_space\", \"at_least_single_space\", null."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "foo": "single_space"
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\" and \"??=\", got \"string#foo\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "7": "single_space"
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\" and \"??=\", got \"integer#7\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "=": "foo"
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"=\", expected any of \"'align'\", \"'align_by_scope'\", \"'align_single_space'\", \"'align_single_space_minimal'\", \"'align_single_space_by_scope'\", \"'align_single_space_minimal_by_scope'\", \"'single_space'\", \"'no_space'\", \"'at_least_single_space'\" and \"null\", got \"string#foo\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "=": 1
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"=\", expected any of \"'align'\", \"'align_by_scope'\", \"'align_single_space'\", \"'align_single_space_minimal'\", \"'align_single_space_by_scope'\", \"'align_single_space_minimal_by_scope'\", \"'single_space'\", \"'no_space'\", \"'at_least_single_space'\" and \"null\", got \"integer#1\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "=": true
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"=\", expected any of \"'align'\", \"'align_by_scope'\", \"'align_single_space'\", \"'align_single_space_minimal'\", \"'align_single_space_by_scope'\", \"'align_single_space_minimal_by_scope'\", \"'single_space'\", \"'no_space'\", \"'at_least_single_space'\" and \"null\", got \"boolean#1\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "=": [
+                    "x"
+                ]
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"=\", expected any of \"'align'\", \"'align_by_scope'\", \"'align_single_space'\", \"'align_single_space_minimal'\", \"'align_single_space_by_scope'\", \"'align_single_space_minimal_by_scope'\", \"'single_space'\", \"'no_space'\", \"'at_least_single_space'\" and \"null\", got \"array#Array\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "=": 1.5
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"=\", expected any of \"'align'\", \"'align_by_scope'\", \"'align_single_space'\", \"'align_single_space_minimal'\", \"'align_single_space_by_scope'\", \"'align_single_space_minimal_by_scope'\", \"'single_space'\", \"'no_space'\", \"'at_least_single_space'\" and \"null\", got \"double#1.5\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": "x"
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: The option \"operators\" with value \"x\" is expected to be of type \"array\", but is of type \"string\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": [
+                "single_space"
+            ]
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\" and \"??=\", got \"integer#0\"."
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "operators": {
+                "=": {}
+            }
+        },
+        "error": "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"=\", expected any of \"'align'\", \"'align_by_scope'\", \"'align_single_space'\", \"'align_single_space_minimal'\", \"'align_single_space_by_scope'\", \"'align_single_space_minimal_by_scope'\", \"'single_space'\", \"'no_space'\", \"'at_least_single_space'\" and \"null\", got \"array#Array\"."
     }
 ]

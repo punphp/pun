@@ -44,14 +44,12 @@ struct NoExtraBlankLinesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = NoExtraBlankLinesFixer {
+    crate::configured(NoExtraBlankLinesFixer {
         tokens_config: Vec::new(),
         token_kind_callback_map: Vec::new(),
         token_equals_map: Vec::new(),
         whitespaces_config: Default::default(),
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 struct Run<'a> {

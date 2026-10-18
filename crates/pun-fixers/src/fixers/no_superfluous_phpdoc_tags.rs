@@ -77,7 +77,7 @@ struct NoSuperfluousPhpdocTagsFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoSuperfluousPhpdocTagsFixer::default())
+    crate::configured(NoSuperfluousPhpdocTagsFixer::default())
 }
 
 impl Fixer for NoSuperfluousPhpdocTagsFixer {

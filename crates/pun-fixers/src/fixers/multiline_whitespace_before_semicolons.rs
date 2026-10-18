@@ -10,16 +10,14 @@ use std::path::Path;
 const STRATEGY_NO_MULTI_LINE: &str = "no_multi_line";
 const STRATEGY_NEW_LINE_FOR_CHAINED_CALLS: &str = "new_line_for_chained_calls";
 
+#[derive(Default)]
 struct MultilineWhitespaceBeforeSemicolonsFixer {
     strategy: String,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(MultilineWhitespaceBeforeSemicolonsFixer {
-        strategy: STRATEGY_NO_MULTI_LINE.into(),
-        whitespaces_config: Default::default(),
-    })
+    crate::configured(MultilineWhitespaceBeforeSemicolonsFixer::default())
 }
 
 impl MultilineWhitespaceBeforeSemicolonsFixer {

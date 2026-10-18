@@ -17,15 +17,13 @@ struct MethodArgumentSpaceFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = MethodArgumentSpaceFixer {
+    crate::configured(MethodArgumentSpaceFixer {
         keep_multiple_spaces_after_comma: false,
         on_multiline: String::new(),
         after_heredoc: false,
         attribute_placement: String::new(),
         whitespaces_config: Default::default(),
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 fn is_newline(token: &Token) -> bool {
@@ -426,22 +424,5 @@ impl Fixer for MethodArgumentSpaceFixer {
                 }
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use serde_json::json;
-
-    // Both rejected by the real fixer's configure() ("... is invalid. Accepted values are: ...").
-    #[test]
-    fn configure_rejects_unknown_values() {
-        assert!(fixer().configure(&json!({"on_multiline": "foo"})).is_err());
-        assert!(
-            fixer()
-                .configure(&json!({"attribute_placement": "x"}))
-                .is_err()
-        );
     }
 }

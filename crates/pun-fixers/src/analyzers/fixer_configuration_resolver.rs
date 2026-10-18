@@ -77,6 +77,56 @@ fn debug_type(v: &Value) -> &'static str {
     }
 }
 
+/// A PHP array key: json_decode turns a canonical decimal-integer string key that fits an int into an int key.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) enum PhpKey<'a> {
+    Int(i64),
+    Str(&'a str),
+}
+
+impl std::fmt::Display for PhpKey<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            PhpKey::Int(i) => write!(f, "{i}"),
+            PhpKey::Str(s) => f.write_str(s),
+        }
+    }
+}
+
+impl PhpKey<'_> {
+    /// `gettype($key).'#'.$key`, as upstream's option validators print a key.
+    pub(crate) fn typed(&self) -> String {
+        match self {
+            PhpKey::Int(i) => format!("integer#{i}"),
+            PhpKey::Str(s) => format!("string#{s}"),
+        }
+    }
+}
+
+/// The entries of a value that is a PHP array (a JSON list keyed 0..n, or an object), in order. Panics on any other
+/// value, so call it on options `check_types` has accepted as arrays.
+pub(crate) fn php_array(v: &Value) -> Vec<(PhpKey<'_>, &Value)> {
+    match v {
+        Value::Object(o) => o
+            .iter()
+            .map(|(k, v)| {
+                let key = match k.parse::<i64>() {
+                    Ok(i) if i.to_string() == *k => PhpKey::Int(i),
+                    _ => PhpKey::Str(k),
+                };
+                (key, v)
+            })
+            .collect(),
+        _ => v
+            .as_array()
+            .unwrap()
+            .iter()
+            .enumerate()
+            .map(|(i, v)| (PhpKey::Int(i as i64), v))
+            .collect(),
+    }
+}
+
 impl Resolved {
     fn error(&self, key: &str, v: &Value, problem: &str) -> anyhow::Error {
         anyhow::anyhow!(
@@ -87,7 +137,7 @@ impl Resolved {
     }
 
     /// `setAllowedTypes` failure, e.g. `"bool" or "null"`.
-    fn type_error(&self, key: &str, v: &Value, expected: &str) -> anyhow::Error {
+    pub(crate) fn type_error(&self, key: &str, v: &Value, expected: &str) -> anyhow::Error {
         self.error(
             key,
             v,
@@ -99,16 +149,33 @@ impl Resolved {
     }
 
     /// `setAllowedValues` failure: the accepted values are listed unless the check is a closure (`allowed` empty).
-    fn invalid(&self, key: &str, v: &Value, allowed: &[&str]) -> anyhow::Error {
+    pub(crate) fn invalid(&self, key: &str, v: &Value, allowed: &[&str]) -> anyhow::Error {
+        self.invalid_listed(key, v, allowed, false)
+    }
+
+    /// `setAllowedValues` failure for a nullable option: the list ends with `null`.
+    pub(crate) fn invalid_or_null(&self, key: &str, v: &Value, allowed: &[&str]) -> anyhow::Error {
+        self.invalid_listed(key, v, allowed, true)
+    }
+
+    fn invalid_listed(&self, key: &str, v: &Value, allowed: &[&str], null: bool) -> anyhow::Error {
         if allowed.is_empty() {
             return self.error(key, v, "is invalid");
         }
-        let list = allowed
-            .iter()
-            .map(|a| format!("\"{a}\""))
-            .collect::<Vec<_>>()
-            .join(", ");
-        self.error(key, v, &format!("is invalid. Accepted values are: {list}"))
+        let mut list: Vec<String> = allowed.iter().map(|a| format!("\"{a}\"")).collect();
+        if null {
+            list.push("null".into());
+        }
+        self.error(
+            key,
+            v,
+            &format!("is invalid. Accepted values are: {}", list.join(", ")),
+        )
+    }
+
+    /// `php_array` of an option `check_types` accepted as an array; `None` when it is not set.
+    pub(crate) fn php_array(&self, key: &str) -> Option<Vec<(PhpKey<'_>, &Value)>> {
+        self.map.get(key).map(php_array)
     }
 
     pub fn get(&self, key: &str) -> Option<&Value> {
@@ -216,6 +283,7 @@ fn verify_types(type_: &str, v: &Value, invalid: &mut Vec<&'static str>, level: 
         "string" => v.is_string(),
         "bool" => v.is_boolean(),
         "null" => v.is_null(),
+        "array" => v.is_array() || v.is_object(),
         _ => false,
     };
     if !ok && (invalid.is_empty() || level > 0) && !invalid.contains(&debug_type(v)) {

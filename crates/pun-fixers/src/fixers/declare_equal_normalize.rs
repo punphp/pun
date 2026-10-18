@@ -6,12 +6,13 @@ use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct DeclareEqualNormalizeFixer {
     space_none: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(DeclareEqualNormalizeFixer { space_none: true })
+    crate::configured(DeclareEqualNormalizeFixer::default())
 }
 
 impl Fixer for DeclareEqualNormalizeFixer {

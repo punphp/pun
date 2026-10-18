@@ -21,15 +21,13 @@ const PROPERTY_MODIFIERS: &[Kind] = &[
     T_PRIVATE_SET,
 ];
 
+#[derive(Default)]
 struct TypeDeclarationSpacesFixer {
     elements: Vec<String>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    // Future::getV4OrV3(['function', 'property', 'constant'], ['function', 'property'])
-    Box::new(TypeDeclarationSpacesFixer {
-        elements: vec!["function".into(), "property".into()],
-    })
+    crate::configured(TypeDeclarationSpacesFixer::default())
 }
 
 impl Fixer for TypeDeclarationSpacesFixer {
@@ -47,6 +45,7 @@ impl Fixer for TypeDeclarationSpacesFixer {
         let o = resolve(self.name(), options, &["elements"])?;
         self.elements = o.strings(
             "elements",
+            // Future::getV4OrV3(['function', 'property', 'constant'], ['function', 'property'])
             &["function", "property"],
             &["function", "property", "constant"],
         )?;

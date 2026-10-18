@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\ClassNotation\OrderedClassElementsFixer`.
 use crate::analyzers::fixer_configuration_resolver::resolve;
-use anyhow::{Result, bail};
+use anyhow::Result;
 use pun_format::Fixer;
 use pun_tokens::php_compat::{strcasecmp, strtolower};
 use pun_tokens::token::CLASSY_KINDS;
@@ -138,13 +138,11 @@ struct OrderedClassElementsFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = OrderedClassElementsFixer {
+    crate::configured(OrderedClassElementsFixer {
         type_position: HashMap::new(),
         sort_alpha: false,
         case_sensitive: false,
-    };
-    f.configure(&Value::Null).unwrap();
-    Box::new(f)
+    })
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -179,9 +177,7 @@ impl Fixer for OrderedClassElementsFixer {
                 || v.starts_with("method:")
         });
         if !ok {
-            bail!(
-                "[ordered_class_elements] Invalid configuration: The option \"order\" with value array is invalid."
-            );
+            return Err(r.invalid("order", r.get("order").unwrap(), &[]));
         }
         self.sort_alpha = r.string("sort_algorithm", "none", &["none", "alpha"])? == "alpha";
         self.case_sensitive = r.bool("case_sensitive", false)?;

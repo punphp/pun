@@ -11,6 +11,7 @@ use std::path::Path;
 /// alias => (replacement, required argument count for the `[name, count]` form).
 type Alias = (&'static str, &'static str, Option<usize>);
 
+#[derive(Default)]
 struct NoAliasFunctionsFixer {
     aliases: Vec<Alias>,
 }
@@ -37,16 +38,7 @@ const ALLOWED_SETS: &[&str] = &[
 const DEFAULT_SETS: &[&str] = &["@internal", "@IMAP", "@pg"];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = NoAliasFunctionsFixer {
-        aliases: Vec::new(),
-    };
-    f.set_sets(
-        &DEFAULT_SETS
-            .iter()
-            .map(|s| s.to_string())
-            .collect::<Vec<_>>(),
-    );
-    Box::new(f)
+    crate::configured(NoAliasFunctionsFixer::default())
 }
 
 impl NoAliasFunctionsFixer {

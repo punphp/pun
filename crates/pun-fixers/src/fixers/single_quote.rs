@@ -8,14 +8,13 @@ use serde_json::Value;
 use std::path::Path;
 use std::sync::LazyLock;
 
+#[derive(Default)]
 struct SingleQuoteFixer {
     strings_containing_single_quote_chars: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SingleQuoteFixer {
-        strings_containing_single_quote_chars: false,
-    })
+    crate::configured(SingleQuoteFixer::default())
 }
 
 // regex: odd number of backslashes, not followed by double quote or dollar

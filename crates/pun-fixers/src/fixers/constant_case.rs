@@ -6,12 +6,13 @@ use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct ConstantCaseFixer {
     upper: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ConstantCaseFixer { upper: false })
+    crate::configured(ConstantCaseFixer::default())
 }
 
 impl Fixer for ConstantCaseFixer {

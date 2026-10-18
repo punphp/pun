@@ -6,12 +6,13 @@ use pun_tokens::{Proto, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct IncrementStyleFixer {
     pre: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(IncrementStyleFixer { pre: true })
+    crate::configured(IncrementStyleFixer::default())
 }
 
 const STATEMENT_START: [Proto<'static>; 5] = [

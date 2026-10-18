@@ -13,6 +13,7 @@ enum Candidate {
     Char(&'static str),
 }
 
+#[derive(Default)]
 struct YodaStyleFixer {
     always_move_variable: bool,
     /// `$candidateTypesConfiguration` (key => yoda), insertion order kept.
@@ -22,13 +23,7 @@ struct YodaStyleFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = YodaStyleFixer {
-        always_move_variable: false,
-        candidate_types: Vec::new(),
-        candidates_map: Vec::new(),
-    };
-    f.resolve_configuration(Some(true), Some(true), None);
-    Box::new(f)
+    crate::configured(YodaStyleFixer::default())
 }
 
 impl Fixer for YodaStyleFixer {

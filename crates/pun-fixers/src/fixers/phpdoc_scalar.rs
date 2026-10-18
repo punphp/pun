@@ -20,14 +20,13 @@ const TYPES_MAP: &[(&str, &str)] = &[
 ];
 const DEFAULT_TYPES: &[&str] = &["boolean", "callback", "double", "integer", "real", "str"];
 
+#[derive(Default)]
 struct PhpdocScalarFixer {
     types: Vec<String>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocScalarFixer {
-        types: DEFAULT_TYPES.iter().map(|s| s.to_string()).collect(),
-    })
+    crate::configured(PhpdocScalarFixer::default())
 }
 
 impl PhpdocScalarFixer {

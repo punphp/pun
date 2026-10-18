@@ -11,14 +11,13 @@ use serde_json::Value;
 use std::collections::BTreeMap;
 use std::path::Path;
 
+#[derive(Default)]
 struct NullableTypeDeclarationFixer {
     question_mark: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NullableTypeDeclarationFixer {
-        question_mark: true,
-    })
+    crate::configured(NullableTypeDeclarationFixer::default())
 }
 
 const PROPERTY_MODIFIERS: &[Kind] = &[

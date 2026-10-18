@@ -18,10 +18,7 @@ struct ClassDefinitionFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ClassDefinitionFixer {
-        inline_constructor_arguments: true,
-        ..Default::default()
-    })
+    crate::configured(ClassDefinitionFixer::default())
 }
 
 #[derive(Clone, Copy)]

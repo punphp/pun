@@ -6,14 +6,13 @@ use pun_tokens::{Kind::*, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct NoWhitespaceBeforeCommaInArrayFixer {
     after_heredoc: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoWhitespaceBeforeCommaInArrayFixer {
-        after_heredoc: false,
-    })
+    crate::configured(NoWhitespaceBeforeCommaInArrayFixer::default())
 }
 
 impl Fixer for NoWhitespaceBeforeCommaInArrayFixer {

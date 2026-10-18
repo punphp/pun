@@ -19,14 +19,13 @@ const DEFAULT_TAGS: &[&str] = &[
     "tutorial",
 ];
 
+#[derive(Default)]
 struct PhpdocInlineTagNormalizerFixer {
     tags: Vec<String>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocInlineTagNormalizerFixer {
-        tags: DEFAULT_TAGS.iter().map(|s| s.to_string()).collect(),
-    })
+    crate::configured(PhpdocInlineTagNormalizerFixer::default())
 }
 
 impl Fixer for PhpdocInlineTagNormalizerFixer {

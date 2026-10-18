@@ -6,14 +6,13 @@ use pun_tokens::{Kind::*, Token, Tokens, token::CAST_KINDS};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct CastSpacesFixer {
     space: String,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(CastSpacesFixer {
-        space: "single".into(),
-    })
+    crate::configured(CastSpacesFixer::default())
 }
 
 impl Fixer for CastSpacesFixer {

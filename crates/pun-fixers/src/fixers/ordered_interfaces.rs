@@ -8,6 +8,7 @@ use pun_tokens::{Kind, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct OrderedInterfacesFixer {
     order_length: bool,
     descend: bool,
@@ -15,11 +16,7 @@ struct OrderedInterfacesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(OrderedInterfacesFixer {
-        order_length: false,
-        descend: false,
-        case_sensitive: false,
-    })
+    crate::configured(OrderedInterfacesFixer::default())
 }
 
 impl Fixer for OrderedInterfacesFixer {

@@ -16,9 +16,9 @@ struct AlignMultilineCommentFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(AlignMultilineCommentFixer {
-        comment_type: "phpdocs_only".into(),
-        token_kinds: vec![T_DOC_COMMENT],
+    crate::configured(AlignMultilineCommentFixer {
+        comment_type: String::new(),
+        token_kinds: vec![],
         line_ending: b"\n".to_vec(),
     })
 }

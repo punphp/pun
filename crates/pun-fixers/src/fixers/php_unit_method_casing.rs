@@ -13,12 +13,13 @@ use serde_json::Value;
 use std::collections::HashSet;
 use std::path::Path;
 
+#[derive(Default)]
 struct PhpUnitMethodCasingFixer {
     camel_case: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpUnitMethodCasingFixer { camel_case: true })
+    crate::configured(PhpUnitMethodCasingFixer::default())
 }
 
 impl Fixer for PhpUnitMethodCasingFixer {

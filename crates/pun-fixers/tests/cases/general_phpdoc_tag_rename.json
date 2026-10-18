@@ -88,5 +88,57 @@
             }
         },
         "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag \"+1\" cannot be replaced by invalid tag \"a b\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": "x"
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value \"x\" is expected to be of type \"string[]\", but is of type \"string\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "a": 1
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "a": [
+                    "b"
+                ]
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"array\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "a": null
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"null\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": true
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value true is expected to be of type \"string[]\", but is of type \"bool\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "7": "a"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string."
     }
 ]

@@ -6,12 +6,13 @@ use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct SpacesInsideParenthesesFixer {
     single: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SpacesInsideParenthesesFixer { single: false })
+    crate::configured(SpacesInsideParenthesesFixer::default())
 }
 
 impl Fixer for SpacesInsideParenthesesFixer {

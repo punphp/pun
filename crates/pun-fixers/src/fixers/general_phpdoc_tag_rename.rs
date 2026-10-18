@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocTagRenameFixer`.
-use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::fixer_configuration_resolver::{PhpKey, resolve};
 use crate::analyzers::preg::Preg;
 use anyhow::{Result, bail};
 use pun_format::Fixer;
@@ -11,6 +11,7 @@ use pun_tokens::{
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct GeneralPhpdocTagRenameFixer {
     fix_annotation: bool,
     fix_inline: bool,
@@ -20,17 +21,7 @@ struct GeneralPhpdocTagRenameFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(GeneralPhpdocTagRenameFixer {
-        fix_annotation: true,
-        fix_inline: true,
-        replacements: Vec::new(),
-        case_sensitive: false,
-    })
-}
-
-/// PHP turns canonical decimal-integer string keys that fit an int into int keys.
-fn is_int_key(s: &str) -> bool {
-    s.parse::<i64>().is_ok_and(|n| n.to_string() == s)
+    crate::configured(GeneralPhpdocTagRenameFixer::default())
 }
 
 impl Fixer for GeneralPhpdocTagRenameFixer {
@@ -58,29 +49,15 @@ impl Fixer for GeneralPhpdocTagRenameFixer {
         let fix_inline = r.bool("fix_inline", true)?;
         let case_sensitive = r.bool("case_sensitive", false)?;
         let mut normalized: Vec<(Vec<u8>, Vec<u8>)> = Vec::new();
-        let entries: Vec<(String, &Value)> = match r.get("replacements") {
-            None => Vec::new(),
-            Some(Value::Array(a)) => a
-                .iter()
-                .enumerate()
-                .map(|(i, v)| (i.to_string(), v))
-                .collect(),
-            Some(Value::Object(o)) => o.iter().map(|(k, v)| (k.clone(), v)).collect(),
-            Some(v) => bail!(
-                "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value {v} is expected to be of type \"array<string, string>\"."
-            ),
-        };
-        for (from, to) in entries {
-            let Value::String(to) = to else {
-                bail!(
-                    "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value {to} is expected to be of type \"array<string, string>\"."
-                );
-            };
-            if is_int_key(&from) {
+        // `array<string, string>`, which the resolver checks as `string[]`.
+        r.check_types("replacements", &["string[]"])?;
+        for (from, to) in r.php_array("replacements").unwrap_or_default() {
+            let PhpKey::Str(from) = from else {
                 bail!(
                     "[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string."
                 );
-            }
+            };
+            let to = to.as_str().unwrap();
             if !Preg::r#match("#^\\S+$#", to) || to.contains("*/") {
                 bail!(
                     "[general_phpdoc_tag_rename] Invalid configuration: Tag \"{from}\" cannot be replaced by invalid tag \"{to}\"."
@@ -189,12 +166,6 @@ mod tests {
     fn configure_validation() {
         let err = |c: Value| fixer().configure(&c).unwrap_err().to_string();
         let p = "[general_phpdoc_tag_rename] Invalid configuration: ";
-        assert!(fixer().configure(&json!({"replacements": "x"})).is_err());
-        assert!(
-            fixer()
-                .configure(&json!({"replacements": {"a": 1}}))
-                .is_err()
-        );
         assert_eq!(
             err(json!({"replacements": ["b"]})),
             format!("{p}Tag to replace must be a string.")

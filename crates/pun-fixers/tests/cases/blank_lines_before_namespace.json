@@ -14,5 +14,42 @@
             "pun_nope": 1
         },
         "error": "[blank_lines_before_namespace] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"max_line_breaks\", \"min_line_breaks\"."
+    },
+    {
+        "fixer": "blank_lines_before_namespace",
+        "config": {
+            "min_line_breaks": "2"
+        },
+        "error": "[blank_lines_before_namespace] Invalid configuration: The option \"min_line_breaks\" with value \"2\" is expected to be of type \"int\", but is of type \"string\"."
+    },
+    {
+        "fixer": "blank_lines_before_namespace",
+        "config": {
+            "max_line_breaks": 1.5
+        },
+        "error": "[blank_lines_before_namespace] Invalid configuration: The option \"max_line_breaks\" with value 1.5 is expected to be of type \"int\", but is of type \"float\"."
+    },
+    {
+        "fixer": "blank_lines_before_namespace",
+        "config": {
+            "min_line_breaks": null
+        },
+        "error": "[blank_lines_before_namespace] Invalid configuration: The option \"min_line_breaks\" with value null is expected to be of type \"int\", but is of type \"null\"."
+    },
+    {
+        "fixer": "blank_lines_before_namespace",
+        "config": {
+            "max_line_breaks": [
+                1
+            ]
+        },
+        "error": "[blank_lines_before_namespace] Invalid configuration: The option \"max_line_breaks\" with value array is expected to be of type \"int\", but is of type \"array\"."
+    },
+    {
+        "fixer": "blank_lines_before_namespace",
+        "config": {
+            "max_line_breaks": true
+        },
+        "error": "[blank_lines_before_namespace] Invalid configuration: The option \"max_line_breaks\" with value true is expected to be of type \"int\", but is of type \"bool\"."
     }
 ]

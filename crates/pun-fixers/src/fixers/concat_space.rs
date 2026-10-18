@@ -6,14 +6,13 @@ use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct ConcatSpaceFixer {
     spacing: String,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ConcatSpaceFixer {
-        spacing: "none".into(),
-    })
+    crate::configured(ConcatSpaceFixer::default())
 }
 
 impl ConcatSpaceFixer {

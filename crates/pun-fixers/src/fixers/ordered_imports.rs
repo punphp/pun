@@ -27,8 +27,9 @@ struct OrderedImportsFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(OrderedImportsFixer {
-        sort_algorithm: Sort::Alpha,
+    // `configure` sets the options.
+    crate::configured(OrderedImportsFixer {
+        sort_algorithm: Sort::None,
         imports_order: None,
         case_sensitive: false,
         ws: WhitespacesFixerConfig::default(),

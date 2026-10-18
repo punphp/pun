@@ -11,7 +11,8 @@ struct ListSyntaxFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ListSyntaxFixer {
+    // `configure` sets the field.
+    crate::configured(ListSyntaxFixer {
         candidate_token_kind: T_LIST,
     })
 }

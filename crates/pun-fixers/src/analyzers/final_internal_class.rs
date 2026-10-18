@@ -26,6 +26,7 @@ const CLASS_CANDIDATE_ACCEPT_TYPES: &[Kind] =
 /// A normalized annotation list: lowercased keys (leading `@` dropped) in PHP array insertion order.
 type Keys = Vec<Vec<u8>>;
 
+#[derive(Default)]
 pub(crate) struct FinalInternalClassFixer {
     include: Keys,
     exclude: Keys,
@@ -50,15 +51,6 @@ fn intersects(a: &Keys, b: &BTreeMap<Vec<u8>, bool>) -> bool {
 }
 
 impl FinalInternalClassFixer {
-    pub(crate) fn new() -> Self {
-        FinalInternalClassFixer {
-            include: normalize(DEFAULT_INCLUDE),
-            exclude: normalize(DEFAULT_EXCLUDE),
-            consider_absent_docblock_as_internal_class: false,
-            check_attributes: true,
-        }
-    }
-
     pub(crate) fn configure_options(&mut self, options: &Value) -> anyhow::Result<()> {
         let c = resolve(
             "final_internal_class",
@@ -79,9 +71,7 @@ impl FinalInternalClassFixer {
             let defaults: Vec<&str> = defaults.iter().map(String::as_str).collect();
             let values = c.strings(key, &defaults, &[])?;
             if values.iter().any(|v| v.is_empty()) {
-                bail!(
-                    "[final_internal_class] Invalid configuration: The option \"{key}\" with value array is invalid."
-                );
+                return Err(c.invalid(key, c.get(key).unwrap(), &[]));
             }
             Ok(normalize(&values))
         };

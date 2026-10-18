@@ -6,6 +6,7 @@ use pun_tokens::{Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct FunctionDeclarationFixer {
     closure_function_spacing_none: bool,
     closure_fn_spacing_none: bool,
@@ -13,11 +14,7 @@ struct FunctionDeclarationFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(FunctionDeclarationFixer {
-        closure_function_spacing_none: false,
-        closure_fn_spacing_none: false,
-        trailing_comma_single_line: false,
-    })
+    crate::configured(FunctionDeclarationFixer::default())
 }
 
 const SINGLE_LINE_WHITESPACE_OPTIONS: &[u8] = b" \t";

@@ -20,6 +20,7 @@ use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
+#[derive(Default)]
 struct GlobalNamespaceImportFixer {
     import_constants: Option<bool>,
     import_functions: Option<bool>,
@@ -28,12 +29,7 @@ struct GlobalNamespaceImportFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(GlobalNamespaceImportFixer {
-        import_constants: None,
-        import_functions: None,
-        import_classes: Some(true),
-        whitespaces_config: Default::default(),
-    })
+    crate::configured(GlobalNamespaceImportFixer::default())
 }
 
 /// `array<string, string|true>`: `None` = `true` (not aliased), `Some(alias)`.

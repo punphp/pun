@@ -8,14 +8,13 @@ use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct NullableTypeDeclarationForDefaultNullValueFixer {
     use_nullable_type_declaration: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NullableTypeDeclarationForDefaultNullValueFixer {
-        use_nullable_type_declaration: true,
-    })
+    crate::configured(NullableTypeDeclarationForDefaultNullValueFixer::default())
 }
 
 const CONSTRUCTOR_PROPERTY_MODIFIERS: &[Kind] = &[

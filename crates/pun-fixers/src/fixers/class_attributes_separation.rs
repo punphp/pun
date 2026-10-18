@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\ClassNotation\ClassAttributesSeparationFixer`.
-use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::fixer_configuration_resolver::{PhpKey, resolve};
 use crate::analyzers::preg::Preg;
 use anyhow::bail;
 use pun_format::{Fixer, WhitespacesFixerConfig};
@@ -17,6 +17,7 @@ enum Spacing {
     OnlyIfMeta,
 }
 
+#[derive(Default)]
 struct ClassAttributesSeparationFixer {
     /// `$classElementTypes`: element type => spacing, in configuration order.
     class_element_types: Vec<(&'static str, Spacing)>,
@@ -32,10 +33,7 @@ const DEFAULT_ELEMENTS: [(&str, Spacing); 5] = [
 ];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ClassAttributesSeparationFixer {
-        class_element_types: DEFAULT_ELEMENTS.to_vec(),
-        whitespaces_config: WhitespacesFixerConfig::default(),
-    })
+    crate::configured(ClassAttributesSeparationFixer::default())
 }
 
 const MODIFIER_TYPES: &[Kind] = &[
@@ -86,32 +84,25 @@ impl Fixer for ClassAttributesSeparationFixer {
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
         let c = resolve(self.name(), options, &["elements"])?;
-        let Some(elements) = c.get("elements") else {
+        c.check_types("elements", &["string[]"])?; // setAllowedTypes(['array<string, string>'])
+        let Some(elements) = c.php_array("elements") else {
             self.class_element_types = DEFAULT_ELEMENTS.to_vec();
             return Ok(());
         };
-        let spacings = c.strings("elements", &[], &[])?; // setAllowedTypes(['array<string, string>'])
-        // PHP array keys: list indexes (and numeric-string keys) are integers.
-        let types: Vec<String> = match elements {
-            Value::Object(o) => o.keys().cloned().collect(),
-            _ => (0..spacings.len()).map(|i| i.to_string()).collect(),
-        };
         let mut out = Vec::new();
-        for (type_, spacing) in types.into_iter().zip(&spacings) {
-            let Some(&t) = ["const", "method", "property", "trait_import", "case"]
+        for (type_, spacing) in elements {
+            let spacing = spacing.as_str().unwrap();
+            let supported = ["const", "method", "property", "trait_import", "case"];
+            let Some(&t) = supported
                 .iter()
-                .find(|t| **t == type_)
+                .find(|t| matches!(type_, PhpKey::Str(s) if s == **t))
             else {
-                let php_type = if type_.parse::<i64>().is_ok_and(|n| n.to_string() == type_) {
-                    "integer"
-                } else {
-                    "string"
-                };
                 bail!(
-                    "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"{php_type}#{type_}\"."
+                    "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"{}\".",
+                    type_.typed()
                 );
             };
-            let s = match spacing.as_str() {
+            let s = match spacing {
                 "none" => Spacing::None,
                 "one" => Spacing::One,
                 "only_if_meta" => Spacing::OnlyIfMeta,

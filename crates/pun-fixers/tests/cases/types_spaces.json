@@ -5,5 +5,35 @@
             "space_multiple_catch": "foo"
         },
         "error": "[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value \"foo\" is invalid. Accepted values are: \"none\", \"single\", null."
+    },
+    {
+        "fixer": "types_spaces",
+        "config": {
+            "space_multiple_catch": "x"
+        },
+        "error": "[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value \"x\" is invalid. Accepted values are: \"none\", \"single\", null."
+    },
+    {
+        "fixer": "types_spaces",
+        "config": {
+            "space_multiple_catch": 1
+        },
+        "error": "[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value 1 is invalid. Accepted values are: \"none\", \"single\", null."
+    },
+    {
+        "fixer": "types_spaces",
+        "config": {
+            "space_multiple_catch": [
+                "a"
+            ]
+        },
+        "error": "[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value array is invalid. Accepted values are: \"none\", \"single\", null."
+    },
+    {
+        "fixer": "types_spaces",
+        "config": {
+            "space": "x"
+        },
+        "error": "[types_spaces] Invalid configuration: The option \"space\" with value \"x\" is invalid. Accepted values are: \"none\", \"single\"."
     }
 ]

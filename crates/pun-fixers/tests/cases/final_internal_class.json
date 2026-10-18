@@ -82,5 +82,31 @@
             ]
         },
         "error": "[final_internal_class] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"bool\"."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "exclude": [
+                "a",
+                ""
+            ]
+        },
+        "error": "[final_internal_class] Invalid configuration: The option \"exclude\" with value array is invalid."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "include": "x"
+        },
+        "error": "[final_internal_class] Invalid configuration: The option \"include\" with value \"x\" is expected to be of type \"string[]\", but is of type \"string\"."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "include": {
+                "x": ""
+            }
+        },
+        "error": "[final_internal_class] Invalid configuration: The option \"include\" with value array is invalid."
     }
 ]

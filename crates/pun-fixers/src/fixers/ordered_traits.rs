@@ -8,14 +8,13 @@ use serde_json::Value;
 
 use std::path::Path;
 
+#[derive(Default)]
 struct OrderedTraitsFixer {
     case_sensitive: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(OrderedTraitsFixer {
-        case_sensitive: false,
-    })
+    crate::configured(OrderedTraitsFixer::default())
 }
 
 impl Fixer for OrderedTraitsFixer {

@@ -8,7 +8,7 @@ use serde_json::Value;
 use std::path::Path;
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(FinalInternalClassFixer::new())
+    crate::configured(FinalInternalClassFixer::default())
 }
 
 impl Fixer for FinalInternalClassFixer {

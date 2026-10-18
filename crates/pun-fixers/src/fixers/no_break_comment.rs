@@ -12,16 +12,14 @@ const STRUCTURE_KINDS: &[Kind] = &[
     T_FOR, T_FOREACH, T_WHILE, T_IF, T_ELSEIF, T_SWITCH, T_FUNCTION, T_MATCH,
 ];
 
+#[derive(Default)]
 struct NoBreakCommentFixer {
     comment_text: String,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoBreakCommentFixer {
-        comment_text: "no break".into(),
-        whitespaces_config: Default::default(),
-    })
+    crate::configured(NoBreakCommentFixer::default())
 }
 
 impl Fixer for NoBreakCommentFixer {

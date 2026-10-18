@@ -7,16 +7,14 @@ use pun_tokens::{Kind::*, Token, Tokens, php_compat};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct SingleLineCommentStyleFixer {
     asterisk_enabled: bool,
     hash_enabled: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SingleLineCommentStyleFixer {
-        asterisk_enabled: true,
-        hash_enabled: true,
-    })
+    crate::configured(SingleLineCommentStyleFixer::default())
 }
 
 impl Fixer for SingleLineCommentStyleFixer {

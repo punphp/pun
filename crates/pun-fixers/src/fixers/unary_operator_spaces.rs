@@ -6,14 +6,13 @@ use pun_tokens::{Kind::*, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct UnaryOperatorSpacesFixer {
     only_dec_inc: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(UnaryOperatorSpacesFixer {
-        only_dec_inc: false,
-    })
+    crate::configured(UnaryOperatorSpacesFixer::default())
 }
 
 impl Fixer for UnaryOperatorSpacesFixer {

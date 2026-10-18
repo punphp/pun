@@ -6,16 +6,14 @@ use pun_tokens::{Proto, Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
 
+#[derive(Default)]
 struct NewWithParenthesesFixer {
     named_class: bool,
     anonymous_class: bool,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NewWithParenthesesFixer {
-        named_class: true,
-        anonymous_class: true,
-    })
+    crate::configured(NewWithParenthesesFixer::default())
 }
 
 const NEXT_TOKEN_KINDS: [Proto<'static>; 44] = [
