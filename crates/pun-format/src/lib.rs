@@ -191,6 +191,9 @@ impl Pipeline {
     pub fn new(rules: &[Rule], factory: &dyn Fn() -> Vec<Box<dyn Fixer>>) -> Result<Self> {
         let mut fixers: Vec<Box<dyn Fixer>> = Vec::new();
         let mut not_ported = Vec::new();
+        // One set of fixers, each taken by the rule that enables it; a second rule for the same fixer
+        // (visibility_required next to modifier_keywords) gets a fresh set.
+        let mut pool = factory();
         for rule in rules {
             let mut target = rule.name.as_str();
             if let Some((_, successors)) = DEPRECATED.iter().find(|(n, _)| *n == target) {
@@ -211,7 +214,11 @@ impl Pipeline {
                 }
                 target = successors[0];
             }
-            match factory().into_iter().find(|f| f.name() == target) {
+            let found = match pool.iter().position(|f| f.name() == target) {
+                Some(i) => Some(pool.swap_remove(i)),
+                None => factory().into_iter().find(|f| f.name() == target),
+            };
+            match found {
                 Some(mut f) => {
                     // FixerFactory::setWhitespacesConfig on every WhitespacesAwareFixerInterface; Pint keeps the defaults.
                     f.set_whitespaces_config(&WhitespacesFixerConfig::default());

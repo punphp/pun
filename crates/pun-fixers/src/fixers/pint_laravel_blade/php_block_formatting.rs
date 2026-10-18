@@ -5,7 +5,9 @@ use crate::analyzers::preg::RawPreg;
 use pun_format::Pipeline;
 use pun_tokens::Tokens;
 use std::cell::OnceCell;
+use std::collections::HashMap;
 use std::path::Path;
+use std::sync::{LazyLock, Mutex};
 
 /// `PhpFragmentFormatter::DENYLIST` / `FRAGMENT_DENYLIST`.
 const DENYLIST: &[&str] = &["no_closing_tag", "Pint/laravel_blade"];
@@ -15,12 +17,16 @@ const FRAGMENT_DENYLIST: &[&str] = &[
     "declare_strict_types",
 ];
 
+/// The preset pipelines, built once per process for each (preset, fragment) pair and shared by every Blade file.
+type Pipelines = Mutex<HashMap<(String, bool), &'static Option<Pipeline>>>;
+static PIPELINES: LazyLock<Pipelines> = LazyLock::new(Pipelines::default);
+
 /// `PhpFragmentFormatter`: the active preset's fixers (never the project's own overrides, like Pint's
 /// sequential runner), memoized per fragment/file key.
 pub struct PhpFragmentFormatter {
     preset: String,
-    fragment: OnceCell<Option<Pipeline>>,
-    file: OnceCell<Option<Pipeline>>,
+    fragment: OnceCell<&'static Option<Pipeline>>,
+    file: OnceCell<&'static Option<Pipeline>>,
 }
 
 impl PhpFragmentFormatter {
@@ -40,7 +46,7 @@ impl PhpFragmentFormatter {
         }
         let mut tokens = Tokens::from_code(code);
         let file = Path::new("fragment.php");
-        for fixer in self.fixers(fragment).into_iter().flat_map(Pipeline::fixers) {
+        for fixer in self.fixers(fragment).iter().flat_map(|p| p.fixers()) {
             // AbstractFixer::fix only applies to non-empty tokens.
             if tokens.count() == 0 || !fixer.supports(file) || !fixer.is_candidate(&tokens) {
                 continue;
@@ -54,29 +60,36 @@ impl PhpFragmentFormatter {
         tokens.generate_code()
     }
 
-    fn fixers(&self, fragment: bool) -> Option<&Pipeline> {
+    fn fixers(&self, fragment: bool) -> &'static Option<Pipeline> {
         let cell = if fragment { &self.fragment } else { &self.file };
         cell.get_or_init(|| {
-            let deny: Vec<&str> = if fragment {
-                [DENYLIST, FRAGMENT_DENYLIST].concat()
-            } else {
-                DENYLIST.to_vec()
-            };
-            // Pint unsets the denylist before `new RuleSet()`, so a denied rule a set enables still runs.
-            let mut rules = pun_config::preset_rules(&self.preset).unwrap_or_default();
-            rules.retain(|name, _| !deny.contains(&name.as_str()));
-            // A preset's sets are always booleans.
-            let rules = pun_config::rule_set(rules).unwrap();
-            Pipeline::new(&rules, &|| {
-                crate::all()
-                    .into_iter()
-                    .filter(|f| f.name() != "Pint/laravel_blade")
-                    .collect()
-            })
-            .ok()
+            *PIPELINES
+                .lock()
+                .unwrap()
+                .entry((self.preset.clone(), fragment))
+                .or_insert_with(|| Box::leak(Box::new(pipeline(&self.preset, fragment))))
         })
-        .as_ref()
     }
+}
+
+fn pipeline(preset: &str, fragment: bool) -> Option<Pipeline> {
+    let deny: Vec<&str> = if fragment {
+        [DENYLIST, FRAGMENT_DENYLIST].concat()
+    } else {
+        DENYLIST.to_vec()
+    };
+    // Pint unsets the denylist before `new RuleSet()`, so a denied rule a set enables still runs.
+    let mut rules = pun_config::preset_rules(preset).unwrap_or_default();
+    rules.retain(|name, _| !deny.contains(&name.as_str()));
+    // A preset's sets are always booleans.
+    let rules = pun_config::rule_set(rules).unwrap();
+    Pipeline::new(&rules, &|| {
+        crate::all()
+            .into_iter()
+            .filter(|f| f.name() != "Pint/laravel_blade")
+            .collect()
+    })
+    .ok()
 }
 
 fn control_directive(lower: &[u8]) -> Option<&'static [u8]> {
