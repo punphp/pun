@@ -185,7 +185,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 31. `crates/pun-cli/src/pint_error.rs:59-120` recovers error kinds by matching message text produced in
   `run.rs:203,259-262`, `pun-workspace/src/lib.rs:87,215,252,263` and pun-format, so rewording any of them silently
   changes the Pint box's class, file and line. A caller branches on the kind, so a typed `PintError` downcast with
-  `downcast_ref` earns its keep. Spans crates. Still held at 8cc3efa. Partly done in wf/audit-cli-structure:
+  `downcast_ref` earns its keep. Spans crates. Still held at 8cc3efa. Partly done in 093609e:
   pun-workspace returns `FinderError` (`NotReadable`, `DirectoryNotFound`) and pun-format's `check_annotations`
   returns `AnnotationError` (`NotEnabled`, `Analysing { path, message }`, `UndefinedArrayKey`), same messages. Waits:
   `pint_error.rs` and `run.rs` belong to the platform/format track, so pun-cli still matches the text; the switch
@@ -204,7 +204,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `ignore_rewrites` and `apply`; notes go through `Notes` (humans: stderr as found, as before; agent: findings) and
   the end is a `Report` printed either way. 156 migrate runs (six projects; plain, `--dry-run`, `--yes`, `--agent`,
   `--preset`, `--config`, every `--from`, a clash, a rerun, and the checklist and starter prompts on a terminal)
-  print and write the same bytes as before. Fixed in wf/audit-cli-structure.
+  print and write the same bytes as before. Fixed in ef7c179.
 - [x] 34. `crates/pun-cli/tests/agent.rs:366` and `watch.rs:194` fake a read error with mode `000`, which root can
   read, so on this machine (uid 0) `errors` fails and `watch_reformats_like_pint` waits 60 s and fails. Use a
   directory or a dangling path instead. Likely; not run. Not reproducible as uid 501; the runner never reads a directory or symlink, so the tests
@@ -437,7 +437,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 79. `crates/pun-harness/src/main.rs:82-171` leaks two corpus copies in `/tmp` on any `?` after `copy_tree`
   (its own `missing_pieces` test triggers it), and `process::exit(1)` at `:169`. Use a Drop guard and
   `main() -> Result<ExitCode>`. Reproduced with `TMPDIR` set for the unspawnable-pun case (one copy left), which
-  `missing_pieces` now asserts. Fixed in wf/audit-cli-structure.
+  `missing_pieces` now asserts. Fixed in 3543130.
 - [x] 80. Tests that share fixed paths or leak state: `pun-cli/tests/rules_e2e.rs:31-45` and `perf.rs:31-40` write ~200
   cache files into the real `~/.cache/pun` per run; `pun-phpstan/tests/schema.rs:13` and `config.rs:149-167` reuse
   fixed temp dirs across concurrent runs; `pun-fixers/src/analyzers/active_preset.rs:22-27` mutates a global;

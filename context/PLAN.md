@@ -383,6 +383,11 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit item 39 follow-up: docblock Annotation's types_content/types caches are still RefCell clones per read; a OnceCell needs set_types/remove to take &mut self, which DocBlock's OnceCell<Vec<Annotation>> does not allow | todo |
 | audit item 41 follow-up: other patterns built from file content still go through Preg's never-evicting cache (no_unused_imports' comment pattern, method_chaining_indentation); move them to the `_uncached` entry points | todo |
 | coverage: no_spaces_around_offset.rs:59 (the CT_ARRAY_INDEX_BRACE branch) is uncovered on main besides the method_argument_space and yoda_style lines above; add an oracle case | todo |
+| audit items 11, 30, 32, 83 and the pun-cli half of 31 (pun-cli run.rs, report.rs, pint_error.rs, fix_report.rs, main.rs, console.rs): validated and still open, deferred to the platform/format tracks that own those files; item 83's move is ready as pun-wf/scratch/audit-cli-structure-item83.patch (applies to 8cc3efa, 170 runs byte-identical) | todo |
+| audit item 31 follow-up: in pun-cli pint_error.rs, replace origin()'s message matching with downcast_ref on pun_workspace::FinderError, pun_format::AnnotationError and a pun-cli PintError for the read, write and report-file errors (library half done in 093609e) | todo |
+| audit item 11 follow-up: with --format=json -v and a non-UTF-8 diff, abort like Pint's JsonException ('Malformed UTF-8 characters, possibly incorrectly encoded', JsonReporter.php:63, exit 1); txt, junit and xml write the raw bytes (reuse item 12's console::format_bytes) | todo |
+| coverage: measure punphp (pun-cli) on Linux after audit item 33 (ef7c179); migrate::announce's decline branch is reached only by the Linux-only pty tests | todo |
+| tests: crates/pun-cli/tests/migrate.rs pty tests use util-linux `script -qec` and fail on macOS (checklist_on_a_terminal, starter_on_a_terminal) | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
