@@ -10,9 +10,10 @@ use mago_syntax::cst::*;
 
 use mago_span::HasSpan;
 
+use super::class_names::{self, Pair};
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, members, params};
 
-/// NewStaticRule, then InstantiationRule (level 0: no argument types, no case check).
+/// NewStaticRule, then InstantiationRule (level 0: no argument types).
 pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'arena>) {
     if matches!(new.class, Expression::Static(_)) {
         new_static(c, new);
@@ -33,7 +34,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
     let (class, is_static) = match new.class {
         Expression::Identifier(id) => {
             let name = c.resolved(id);
-            named(c, new, &name, true);
+            named(c, new, &name, true, Pair::name(name.clone(), id.span()));
             return;
         }
         Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_) if !in_class => {
@@ -96,7 +97,8 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
         Expression::AnonymousClass(_) => return, // ponytail: anonymous class constructors unchecked
         expr => {
             for (name, is_name) in class_names(c, expr) {
-                named(c, new, &name, is_name);
+                let pair = Pair::node(name.clone(), expr.span());
+                named(c, new, &name, is_name, pair);
             }
             return;
         }
@@ -139,7 +141,7 @@ fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
             .filter(|k| !k.flags.is_abstract() && !k.kind.is_interface())
             .map(|k| {
                 (
-                    String::from_utf8_lossy(k.name.as_bytes()).into_owned(),
+                    String::from_utf8_lossy(k.original_name.as_bytes()).into_owned(),
                     true,
                 )
             })
@@ -155,15 +157,19 @@ fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
         .collect()
 }
 
-/// `checkClassName()` for a class given by name.
+/// `checkClassName()` for a class given by name, `pair` the name and the node `new` names it with.
 fn named<'arena>(
     c: &mut Checker<'_, 'arena>,
     new: &Instantiation<'arena>,
     name: &str,
     is_name: bool,
+    pair: Pair,
 ) {
     match c.class_like(name) {
-        Some(class) => check_class(c, new, class, false, is_name),
+        Some(class) => {
+            class_names::check(c, &[pair], true);
+            check_class(c, new, class, false, is_name);
+        }
         None if c.in_class_exists(name) => {}
         None => c.report(
             new,

@@ -5,9 +5,10 @@
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
-use mago_span::Span;
+use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
+use super::class_names::{self, Pair};
 use super::declarations::{doc_before, doc_tags, has_tag, is_abstract, is_private};
 use super::members;
 use super::names::{Known, known};
@@ -155,6 +156,12 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
             String::from_utf8_lossy(k.original_name.as_bytes()).into_owned()
         })
     });
+    let pairs: Vec<Pair> = u
+        .trait_names
+        .iter()
+        .map(|id| Pair::name(c.resolved(id), id.span()))
+        .collect();
+    class_names::check(c, &pairs, true);
     // (an interface is never a trait's context)
     if kind == SymbolKind::Interface {
         let display = display.expect("a named interface");

@@ -354,4 +354,24 @@ Assistant's calls in analyse 3f (class-hierarchy declaration rules, hierarchy.rs
 - `instanceof.trait` describes only `$this` (`$this(Class)`) and `mixed`; other expression types wait for analyse 4.
 - Anonymous classes are skipped where the message names them (`class@anonymous/<path>:<line>` needs
   FuzzyRelativePathHelper): MissingMethodImplementationRuleTest::testRule stays in gaps.txt for that.
-- The ClassNameCheck part of the three ExistingClassIn* rules (`*.nameCase`, `class.prefixed`) is not ported.
+- The ClassNameCheck part of the three ExistingClassIn* rules (`*.nameCase`, `class.prefixed`) is not ported (analyse 3i ported it).
+
+Assistant's calls in analyse 3i (ClassNameCheck once for every level-0 caller, class_names.rs, 2026-10-19; the plan
+was silent):
+- `checkClassCaseSensitivity` is a bool on `rules::Checks`, copied from a new `Project::check_class_case_sensitivity`
+  that is always false (level 0) until the presets set it; it is not read from the PHPStan config, and pun-config has
+  no option. The callers that pass it upstream are FunctionDefinitionCheck (functions, methods, closures, arrow
+  functions, hooks, `@phpstan-self-out`), ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule and
+  ExistingClassesInPropertiesRule; the rest call with `true`. tests/class_names.rs proves the flag against a
+  level-2 oracle run.
+- `checkInternalClassCaseSensitivity` stays off, but PHPStan reflects four core attribute classes from its own
+  stubs (stubs/runtime/Attribute84.php: Attribute, AllowDynamicProperties, ReturnTypeWillChange,
+  SensitiveParameter), so they are not built-in to it and their case is checked (`#[\ATTRIBUTE]` reports at level 0).
+  A probe of every class in data/symbols.json found no others.
+- UseAliasVisitor is a per-namespace map of explicit `use X as Y` aliases; a pair whose node is the written name
+  skips the case check when the name is one part written exactly as such an alias. Pairs on other nodes (an
+  attribute, a parameter, a property, a `use` item) never skip, as their php-parser node carries no such attribute.
+- StaticMethodCallCheck's case and prefix errors are dropped where PHPStan returns none: a missing method on a class
+  with `__callStatic()` (reportMagicMethods is off at level 0), unless a guard or an `@method static` tag knows it.
+- AccessStaticPropertiesCheck and StaticMethodCallableRule have no call site in Pun yet (their rules are not
+  ported), so their ClassNameCheck calls wait for those rules.

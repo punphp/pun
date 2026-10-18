@@ -8,6 +8,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_word::word;
 
+use super::class_names::{self, Pair};
 use super::scope::Guard;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, builtins};
 
@@ -153,6 +154,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
                         );
                         return;
                     }
+                    class_names::check(c, &[Pair::name(name.clone(), id.span())], true);
                     (k, k.display())
                 }
                 None if c.in_class_exists(&name) => return,
@@ -296,38 +298,46 @@ pub fn instanceof<'arena>(
                     format!("Class {name} not found."),
                     Some(DISCOVERING_SYMBOLS_TIP),
                 ),
-                Some(k) if k.is_trait() => {
-                    // `$scope->getType($expr)->describe()`: only `$this` (ThisType) and `mixed` are described until
-                    // analyse 4 maps Mago's types to PHPStan's descriptions
-                    let described = match expr {
-                        Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
-                            c.class_scope().map(|k| {
-                                format!(
-                                    "$this({})",
-                                    String::from_utf8_lossy(k.original_name.as_bytes())
-                                )
-                            })
-                        }
-                        _ => c
-                            .type_of(expr)
-                            .filter(|t| t.get_id().as_bytes() == b"mixed")
-                            .map(|_| "mixed".to_string()),
-                    };
-                    if let Some(described) = described {
-                        c.report(
-                            expr,
-                            "instanceof.trait",
-                            format!(
-                                "Instanceof between {described} and trait {name} will always evaluate to false."
-                            ),
-                            None,
-                        );
+                Some(k) => {
+                    let case = c.case_sensitivity;
+                    class_names::check(c, &[Pair::name(name.clone(), id.span())], case);
+                    if k.is_trait() {
+                        instanceof_trait(c, expr, &name);
                     }
                 }
-                Some(_) => {}
             }
         }
         _ => {}
+    }
+}
+
+/// The `instanceof.trait` part of ExistingClassInInstanceOfRule.
+fn instanceof_trait<'arena>(c: &mut Checker<'_, 'arena>, expr: &Expression<'arena>, name: &str) {
+    // `$scope->getType($expr)->describe()`: only `$this` (ThisType) and `mixed` are described until
+    // analyse 4 maps Mago's types to PHPStan's descriptions
+    let described = match expr {
+        Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+            c.class_scope().map(|k| {
+                format!(
+                    "$this({})",
+                    String::from_utf8_lossy(k.original_name.as_bytes())
+                )
+            })
+        }
+        _ => c
+            .type_of(expr)
+            .filter(|t| t.get_id().as_bytes() == b"mixed")
+            .map(|_| "mixed".to_string()),
+    };
+    if let Some(described) = described {
+        c.report(
+            expr,
+            "instanceof.trait",
+            format!(
+                "Instanceof between {described} and trait {name} will always evaluate to false."
+            ),
+            None,
+        );
     }
 }
 
@@ -344,13 +354,18 @@ pub fn catch<'arena>(c: &mut Checker<'_, 'arena>, clause: &TryCatchClause<'arena
                 format!("Caught class {name} not found."),
                 Some(DISCOVERING_SYMBOLS_TIP),
             ),
-            Some(k) if !k.is_interface() && !implements_throwable(c, k) => c.report(
-                at,
-                "catch.notThrowable",
-                format!("Caught class {} is not an exception.", k.display()),
-                None,
-            ),
-            Some(_) => {}
+            Some(k) => {
+                if !k.is_interface() && !implements_throwable(c, k) {
+                    c.report(
+                        at,
+                        "catch.notThrowable",
+                        format!("Caught class {} is not an exception.", k.display()),
+                        None,
+                    );
+                }
+                let case = c.case_sensitivity;
+                class_names::check(c, &[Pair::name(name, at)], case);
+            }
         }
     }
 }
@@ -417,8 +432,8 @@ pub fn typehints<'arena>(
         let name = String::from_utf8_lossy(p.variable.name).into_owned();
         // the parameter's line for functions and methods, the type's for closures
         let at = if anonymous { hint.span() } else { p.span() };
-        for (class, _) in names {
-            let identifier = match known(c, &class) {
+        for (class, _) in &names {
+            let identifier = match known(c, class) {
                 None => "class.notFound",
                 Some(k) if k.is_trait() => "parameter.trait",
                 Some(_) => continue,
@@ -430,14 +445,23 @@ pub fn typehints<'arena>(
                 None,
             );
         }
+        // a closure's pairs are on the type node, a function's on the parameter
+        let pairs = typehint_pairs(
+            c,
+            &names,
+            at,
+            anonymous && matches!(hint, Hint::Identifier(_)),
+        );
+        let case = c.case_sensitivity;
+        class_names::check(c, &pairs, case);
     }
     let Some(r) = return_type else {
         return;
     };
     let mut names = Vec::new();
     hint_classes(c, &r.hint, &mut names);
-    for (class, _) in names {
-        let identifier = match known(c, &class) {
+    for (class, _) in &names {
+        let identifier = match known(c, class) {
             None => "class.notFound",
             Some(k) if k.is_trait() => "return.trait",
             Some(_) => continue,
@@ -449,6 +473,33 @@ pub fn typehints<'arena>(
             None,
         );
     }
+    let pairs = typehint_pairs(
+        c,
+        &names,
+        r.hint.span(),
+        matches!(r.hint, Hint::Identifier(_)),
+    );
+    let case = c.case_sensitivity;
+    class_names::check(c, &pairs, case);
+}
+
+/// FunctionDefinitionCheck's ClassNameNodePairs for a type's classes: a name written in another case than it
+/// resolves to (`bar` imported by `use Foo\Bar;`) is paired as written with its own node
+/// (getOriginalClassNamePairsFromTypeNode()), the others with `at`, the type node itself when `at_is_name`.
+fn typehint_pairs(c: &Checker, names: &[(String, Span)], at: Span, at_is_name: bool) -> Vec<Pair> {
+    names
+        .iter()
+        .map(|(class, span)| {
+            let original = class_names::original_case(c, *span);
+            if original != *class {
+                Pair::name(original, *span)
+            } else if at_is_name {
+                Pair::name(class.clone(), at)
+            } else {
+                Pair::node(class.clone(), at)
+            }
+        })
+        .collect()
 }
 
 /// The `#[NoDiscard]` part of FunctionDefinitionCheck: the attribute on a function-like whose return type is void or
@@ -513,6 +564,13 @@ pub fn class_hierarchy<'arena>(
     interface: bool,
     readonly: bool,
 ) {
+    let pairs: Vec<Pair> = extends
+        .iter()
+        .flat_map(|e| e.types.iter())
+        .chain(implements.iter().flat_map(|i| i.types.iter()))
+        .map(|id| Pair::name(c.resolved(id), id.span()))
+        .collect();
+    class_names::check(c, &pairs, true);
     if let Some(e) = extends {
         for id in e.types.iter() {
             let name = c.resolved(id);
@@ -652,7 +710,40 @@ pub fn property_type<'arena>(
                 Some(_) => {}
             }
         }
+        let pairs: Vec<Pair> = classes
+            .iter()
+            .map(|(referenced, _)| Pair::node(referenced.clone(), at))
+            .collect();
+        let case = c.case_sensitivity;
+        class_names::check(c, &pairs, case);
     }
+}
+
+/// ExistingNamesInUseRule and ExistingNamesInGroupUseRule for class names (ClassNameCheck alone, so a missing name,
+/// which may be a namespace, is no error).
+pub fn use_classes<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
+    let text = |id: &Identifier| {
+        String::from_utf8_lossy(id.value())
+            .trim_start_matches('\\')
+            .to_string()
+    };
+    let pairs: Vec<Pair> = match &u.items {
+        UseItems::Sequence(s) => s
+            .items
+            .iter()
+            .map(|item| Pair::node(text(&item.name), item.name.span()))
+            .collect(),
+        UseItems::MixedList(l) => {
+            let prefix = text(&l.namespace);
+            l.items
+                .iter()
+                .filter(|i| i.r#type.is_none())
+                .map(|i| Pair::node(format!("{prefix}\\{}", text(&i.item.name)), i.span()))
+                .collect()
+        }
+        UseItems::TypedSequence(_) | UseItems::TypedList(_) => Vec::new(),
+    };
+    class_names::check(c, &pairs, true);
 }
 
 /// ExistingNamesInUseRule and ExistingNamesInGroupUseRule for `use function`.

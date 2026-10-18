@@ -4,6 +4,7 @@
 mod assign;
 mod attributes;
 mod calls;
+mod class_names;
 mod classes;
 mod declarations;
 mod enums;
@@ -57,11 +58,17 @@ pub struct Checks {
     php_version: u32,
     report_ignores_without_comments: bool,
     report_unmatched_ignores: bool,
+    /// PHPStan's `checkClassCaseSensitivity` parameter: off at level 0 (conf/config.neon), on from level 2
+    /// (config.level2.neon). The rules that pass it to ClassNameCheck (FunctionDefinitionCheck,
+    /// ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule, ExistingClassesInPropertiesRule) report
+    /// `*.nameCase` only with it on. Set from [`Project::check_class_case_sensitivity`], which the presets will set.
+    check_class_case_sensitivity: bool,
 }
 
 impl Checks {
     pub fn of(project: &Project) -> Checks {
         Checks {
+            check_class_case_sensitivity: project.check_class_case_sensitivity,
             php_version: project.php_version,
             report_ignores_without_comments: project.report_ignores_without_comments,
             report_unmatched_ignores: project.report_unmatched_ignores,
@@ -268,6 +275,11 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.templateTypeNotInParameter",
     "selfOut.trait",
     "property.trait",
+    "class.nameCase",
+    "interface.nameCase",
+    "trait.nameCase",
+    "enum.nameCase",
+    "class.prefixed",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -353,6 +365,9 @@ pub struct Checker<'a, 'arena> {
     syntax: syntax::State,
     assign: assign::State,
     signatures: signatures::State,
+    class_names: class_names::State,
+    /// [`Checks`]'s `check_class_case_sensitivity`.
+    case_sensitivity: bool,
     errors: Vec<Error>,
 }
 
@@ -411,6 +426,8 @@ fn checker<'a, 'arena>(
         syntax: syntax::State::default(),
         assign: assign::State::default(),
         signatures: signatures::State::default(),
+        class_names: class_names::State::default(),
+        case_sensitivity: false,
         errors: Vec::new(),
     }
 }
@@ -441,6 +458,7 @@ pub fn check_file(
         files,
         sources,
     );
+    checker.case_sensitivity = project.check_class_case_sensitivity;
     checker.walk_program(program, &mut ());
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
@@ -525,6 +543,7 @@ fn in_trait_context(
     checker.context = Some((class_file.to_string(), class.to_string()));
     checker.context_trait = Some(String::from_utf8_lossy(t.name.as_bytes()).into_owned());
     checker.renames = u.renames.clone();
+    checker.case_sensitivity = project.check_class_case_sensitivity;
     checker.walk_program(program, &mut ());
     let label = checker.label.clone();
     let (mut lines, _) = lines_to_ignore(&file.contents);
@@ -1626,7 +1645,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_use(&mut self, u: &'ast Use<'arena>, _: &mut ()) {
         names::use_functions(self, u);
+        names::use_classes(self, u);
         signatures::use_statement(self, u);
+        class_names::use_statement(self, u);
     }
     fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
@@ -1794,6 +1815,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
         let name = n.name.as_ref().map(|id| self.resolved(id));
         signatures::enter_namespace(self, name.as_deref());
+        class_names::enter_namespace(self);
         self.namespaces.push(name);
     }
     fn walk_out_namespace(&mut self, _: &'ast Namespace<'arena>, _: &mut ()) {

@@ -6,6 +6,7 @@ use mago_syntax::cst::*;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::visibility::Visibility;
 
+use super::class_names::{self, Pair};
 use super::members;
 use super::params;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
@@ -239,6 +240,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let in_class = !c.classes.is_empty();
     let scope_class = c.class_scope();
     let is_static_keyword = matches!(call.class, Expression::Static(_));
+    // ClassNameCheck's errors on a written class, dropped where PHPStan returns none (`__callStatic()`)
+    let mut pair = None;
     let class = match call.class {
         Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) if !in_class => {
             let identifier = match call.class {
@@ -291,7 +294,10 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         Expression::Identifier(id) => {
             let class_name = c.resolved(id);
             match c.class_like(&class_name) {
-                Some(k) => k,
+                Some(k) => {
+                    pair = Some(Pair::name(class_name, id.span()));
+                    k
+                }
                 None if c.in_class_exists(&class_name) => return,
                 None => {
                     c.report(
@@ -314,13 +320,16 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
             _ => String::from_utf8_lossy(class.name.as_bytes()).into_owned(),
         };
         let key = format!("{guarded}::{method_name}").to_ascii_lowercase();
-        if c.guards.contains(&super::scope::Guard::Method(key))
-            || members::method(c.codebase, class, b"__callStatic").is_some()
+        let known = c.guards.contains(&super::scope::Guard::Method(key))
             || class
                 .static_pseudo_methods
                 .iter()
-                .any(|m| m.as_bytes().eq_ignore_ascii_case(name.value))
-        {
+                .any(|m| m.as_bytes().eq_ignore_ascii_case(name.value));
+        if !known && members::method(c.codebase, class, b"__callStatic").is_some() {
+            return;
+        }
+        class_names::check(c, pair.as_slice(), true);
+        if known {
             return;
         }
         c.report(
@@ -331,6 +340,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         );
         return;
     };
+    class_names::check(c, pair.as_slice(), true);
     let declaring = method.declaring_display();
     let declared = method.name();
     let is_static = method.is_static();

@@ -9,6 +9,7 @@ use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
+use super::class_names::{self, Pair};
 use super::names::{Known, known};
 use super::{Checker, members, params};
 
@@ -93,7 +94,7 @@ pub fn check<'arena>(
                 None,
             );
         }
-        // ponytail: ClassNameCheck's case-sensitivity and prefixed-name errors (class.nameCase, class.prefixed)
+        class_names::check(c, &[Pair::node(name.clone(), attribute.span())], true);
         if flags & required == 0 {
             c.report(
                 attribute,

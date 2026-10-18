@@ -14,6 +14,7 @@ use pun_phpstan::resolve::resolve;
 use pun_phpstan::types::{Tri, Type, is_super_type_of};
 
 use super::Checker;
+use super::class_names::{self, Pair};
 use super::declarations::doc_before;
 use super::names::{FunctionKind, Known, known};
 
@@ -837,6 +838,10 @@ fn self_out(c: &mut Checker, at: Span, subject: &str, doc: &Doc) {
         .collect();
     let mut classes = Vec::new();
     referenced(c, node, &templates, &mut classes);
+    let pairs: Vec<Pair> = classes
+        .iter()
+        .map(|class| Pair::node(class.clone(), at))
+        .collect();
     for class in classes {
         let identifier = match known(c, &class) {
             None => "class.notFound",
@@ -852,6 +857,8 @@ fn self_out(c: &mut Checker, at: Span, subject: &str, doc: &Doc) {
             None,
         );
     }
+    let case = c.case_sensitivity;
+    class_names::check(c, &pairs, case);
 }
 
 /// The checks whose messages don't name the function-like: checkImplicitlyNullableType() and

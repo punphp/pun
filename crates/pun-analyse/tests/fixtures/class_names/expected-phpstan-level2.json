@@ -1,0 +1,306 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "declared.php",
+   "line": 40,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "prefixed.php",
+   "line": 5,
+   "identifier": "class.notFound",
+   "message": "Class ClassNamesPrefixed\\A extends unknown class _PHPStan_abc\\Foo.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 5,
+   "identifier": "class.prefixed",
+   "message": "Referencing prefixed PHPStan class: _PHPStan_abc\\Foo.",
+   "tip": "This is most likely unintentional. Did you mean to type \\Foo?"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 9,
+   "identifier": "class.notFound",
+   "message": "Class ClassNamesPrefixed\\B extends unknown class _PHPStan_abc.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 9,
+   "identifier": "class.prefixed",
+   "message": "Referencing prefixed PHPStan class: _PHPStan_abc.",
+   "tip": "This is most likely unintentional. Did you mean to type abc?"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 13,
+   "identifier": "class.prefixed",
+   "message": "Referencing prefixed Box class: _HumbugBox1\\Contract.",
+   "tip": "This is most likely unintentional. Did you mean to type \\Contract?"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 13,
+   "identifier": "class.prefixed",
+   "message": "Referencing prefixed Rector class: RectorPrefix202302\\Contract.",
+   "tip": "This is most likely unintentional. Did you mean to type \\Contract?"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 13,
+   "identifier": "interface.notFound",
+   "message": "Class ClassNamesPrefixed\\C implements unknown interface RectorPrefix202302\\Contract.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 13,
+   "identifier": "interface.notFound",
+   "message": "Class ClassNamesPrefixed\\C implements unknown interface _HumbugBox1\\Contract.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 17,
+   "identifier": "class.notFound",
+   "message": "Function ClassNamesPrefixed\\f() has invalid return type PHPUnitPHAR\\Diff\\Exception.",
+   "tip": null
+  },
+  {
+   "file": "prefixed.php",
+   "line": 17,
+   "identifier": "class.notFound",
+   "message": "Parameter $x of function ClassNamesPrefixed\\f() has invalid type _PhpScoper19ae93be897e\\Thing.",
+   "tip": null
+  },
+  {
+   "file": "prefixed.php",
+   "line": 17,
+   "identifier": "class.prefixed",
+   "message": "Referencing prefixed PHP-Scoper class: _PhpScoper19ae93be897e\\Thing.",
+   "tip": "This is most likely unintentional. Did you mean to type \\Thing?"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 17,
+   "identifier": "class.prefixed",
+   "message": "Referencing prefixed PHPUnit class: PHPUnitPHAR\\Diff\\Exception.",
+   "tip": "This is most likely unintentional. Did you mean to type \\Diff\\Exception?"
+  },
+  {
+   "file": "prefixed.php",
+   "line": 17,
+   "identifier": "return.missing",
+   "message": "Function ClassNamesPrefixed\\f() should return PHPUnitPHAR\\Diff\\Exception but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 5,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 7,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 8,
+   "identifier": "interface.nameCase",
+   "message": "Interface ClassNames\\Bar referenced with incorrect case: ClassNames\\BAR.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 11,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 11,
+   "identifier": "interface.nameCase",
+   "message": "Interface ClassNames\\Bar referenced with incorrect case: ClassNames\\BAR.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 13,
+   "identifier": "trait.nameCase",
+   "message": "Trait ClassNames\\Baz referenced with incorrect case: ClassNames\\BAZ.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 15,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 17,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 17,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 21,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 21,
+   "identifier": "enum.nameCase",
+   "message": "Enum ClassNames\\Kind referenced with incorrect case: ClassNames\\KIND.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 33,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 35,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Failure referenced with incorrect case: ClassNames\\FAILURE.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 37,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 38,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\foo.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 39,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Statics referenced with incorrect case: ClassNames\\STATICS.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 40,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Magic referenced with incorrect case: ClassNames\\MAGIC.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 40,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method ClassNames\\Magic::missing().",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 41,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 44,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 45,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 45,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 48,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 48,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 52,
+   "identifier": "interface.nameCase",
+   "message": "Interface ClassNames\\Bar referenced with incorrect case: ClassNames\\BAR.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 56,
+   "identifier": "interface.nameCase",
+   "message": "Interface ClassNames\\Bar referenced with incorrect case: ClassNames\\BAR.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 60,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 60,
+   "identifier": "class.nameCase",
+   "message": "Class ClassNames\\Foo referenced with incorrect case: ClassNames\\FOO.",
+   "tip": null
+  },
+  {
+   "file": "used.php",
+   "line": 65,
+   "identifier": "class.nameCase",
+   "message": "Class Attribute referenced with incorrect case: ATTRIBUTE.",
+   "tip": null
+  }
+ ]
+}

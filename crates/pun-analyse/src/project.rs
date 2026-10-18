@@ -29,6 +29,8 @@ pub struct Project {
     pub report_ignores_without_comments: bool,
     /// `ignoreErrors` (with the baseline's entries).
     pub ignore_errors: IgnoredErrors,
+    /// PHPStan's `checkClassCaseSensitivity` (see `rules::Checks`): false, as at level 0, until the presets set it.
+    pub check_class_case_sensitivity: bool,
 }
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
@@ -113,6 +115,7 @@ impl Project {
             report_unmatched_ignores,
             report_ignores_without_comments: flag("reportIgnoresWithoutComments"),
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
+            check_class_case_sensitivity: false,
         }
     }
 
@@ -126,6 +129,7 @@ impl Project {
             report_unmatched_ignores: true,
             report_ignores_without_comments: false,
             ignore_errors: IgnoredErrors::new(&Array::new(), true),
+            check_class_case_sensitivity: false,
         }
     }
 }
