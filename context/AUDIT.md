@@ -120,7 +120,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `crates/pun-config/src/migrate.rs:120` print "Permission denied (os error 13)" alone; `pun-cli/src/migrate.rs:443-458`
   discards PHP's stderr, so a fatal error in `.php-cs-fixer.php` prints `pun: ` with nothing after it. Add
   `.with_context(|| path)` and fall back to stderr. Reproduced (`x Permission denied (os error 13)`, and a bare `x ` for a fatal error);
-  `pun lint --mago` prints no cause chain, so its message carries the OS error itself. Fixed in wf/audit-cli-errors.
+  `pun lint --mago` prints no cause chain, so its message carries the OS error itself. Fixed in 1c51c87.
 - [x] 20. `crates/pun-fixers/src/fixers/pint_laravel_blade.rs:140-150` (`resources_in`) writes the Prettier worker
   through a temp name that is the same for every rayon thread (`worker.<pid>`), so on a cold temp dir two threads can
   truncate each other's file and one `rename` fails, reporting a Blade file as errored. The guard also checks only
@@ -191,7 +191,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 34. `crates/pun-cli/tests/agent.rs:366` and `watch.rs:194` fake a read error with mode `000`, which root can
   read, so on this machine (uid 0) `errors` fails and `watch_reformats_like_pint` waits 60 s and fails. Use a
   directory or a dangling path instead. Likely; not run. Not reproducible as uid 501; the runner never reads a directory or symlink, so the tests
-  now assert the read error only when the mode-000 file really is unreadable. Fixed in wf/audit-cli-errors.
+  now assert the read error only when the mode-000 file really is unreadable. Fixed in b1ea6d4.
 - [x] 35. `crates/pun-tokens/src/tokens.rs:14-15`: `BlockType(pub u8)` accepts 0 and 16, which panic in
   `block_edges` (`:73-126`); the `1..=15` range is copied in `tokens.rs:131`,
   `pun-fixers/src/analyzers/blocks_analyzer.rs:24` and `fixers/class_reference_name_casing.rs:78`; and
@@ -426,7 +426,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `docblock/tests.rs:46-59` swaps the process panic hook. Use per-run temp dirs, `env_clear()` and `catch_unwind`. Reproduced: ~/.cache/pun held 13,805 files. rules_e2e and perf now set `XDG_CACHE_HOME`
   inside the project, the phpstan dirs carry the pid, and docblock's `panics` uses `catch_unwind` alone. The
   `active_preset` global is not reproduced: no other test in that binary reads it (blade's unit tests pass the preset
-  explicitly). Fixed in wf/audit-cli-errors.
+  explicitly). Fixed in 1eab7e8.
 - [x] 81. Oracle tests disagree on a missing `php`: `pun-tokens/src/php_compat.rs:356-378` says "skipped" but panics,
   while `tests/parity.rs:10-16` and `tests/api.rs:285-296` return silently and pass. One helper, one policy. Reproduced with `php` off PATH: the two
   `php_compat` tests panicked, `api` and `parity` passed without comparing anything. Policy: the oracle is required

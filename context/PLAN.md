@@ -343,6 +343,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | fixers: switch_continue_to_break decodes `continue 0X1F;` as octal because it checks only lowercase `0x`/`0b`; this matches upstream SwitchContinueToBreakFixer.php, so keep it unless upstream changes | todo |
 | audit item 51 follow-up: FormatPreset enum for `Config.preset` (read as a string in pun-cli/src/run.rs and main.rs) and FixSafety via pun_problem::Safety for `RuleMeta.fix == "safe"` in pun-cli/src/report.rs; waits for the platform/format tracks that own those files | todo |
 | audit item 55 follow-up: switch to_fixer's `{at}: ` prefix and constraint::lowest's 'invalid constraint' prefix to `.with_context` once pun-cli/src/watch.rs prints `{e:#}` | todo |
+| audit items 10, 18, 29, 74 (pun-cli report.rs, watch.rs, main.rs, run.rs, pint_error.rs): validated and still open, deferred to the platform/format tracks that own those files; item 10's fix pads the prettier-plugin-tailwindcss version with `.chain([0; 3]).take(3)` and adds a same_abort case to output.rs `prettier_preflight_like_pint` | todo |
+| tests: crates/pun-cli/tests/cli.rs:327 and output.rs:816 fake read errors with mode 000 like audit item 34 did; assert the error only when std::fs::read really fails | todo |
+| tests: crates/pun-tokens/tests/api.rs:317 swaps the process panic hook (as docblock tests did, audit item 80); use catch_unwind alone | todo |
 | audit item 52 follow-up: pun-analyse part (codebase.rs:36, rules/mod.rs:204-206) treats unreadable files as missing; tick item 52 once it lands (pun-config part done in afe5778) | todo |
 | coverage: pun-config lib.rs:389,395,397 (options(): Boolean and bail arms) are uncovered; its only caller (schema.rs:449) always passes a Table, so delete the dead arms | todo |
 | tests: crates/pun-cli/tests/cli.rs `blade_like_pint` fails on the Pint oracle's own output (expected substring missing), likely a change in the installed oracle's Blade plugin | todo |
