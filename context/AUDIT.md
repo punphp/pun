@@ -418,8 +418,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   cache files into the real `~/.cache/pun` per run; `pun-phpstan/tests/schema.rs:13` and `config.rs:149-167` reuse
   fixed temp dirs across concurrent runs; `pun-fixers/src/analyzers/active_preset.rs:22-27` mutates a global;
   `docblock/tests.rs:46-59` swaps the process panic hook. Use per-run temp dirs, `env_clear()` and `catch_unwind`.
-- [ ] 81. Oracle tests disagree on a missing `php`: `pun-tokens/src/php_compat.rs:356-378` says "skipped" but panics,
-  while `tests/parity.rs:10-16` and `tests/api.rs:285-296` return silently and pass. One helper, one policy.
+- [x] 81. Oracle tests disagree on a missing `php`: `pun-tokens/src/php_compat.rs:356-378` says "skipped" but panics,
+  while `tests/parity.rs:10-16` and `tests/api.rs:285-296` return silently and pass. One helper, one policy. Reproduced with `php` off PATH: the two
+  `php_compat` tests panicked, `api` and `parity` passed without comparing anything. Policy: the oracle is required
+  (CI installs it), so `tests/common/mod.rs` (`php()`, `require_php_cs_fixer()`) fails every PHP-backed test with
+  "run scripts/oracle.sh"; the `php_compat` comparisons moved to `tests/php_compat.rs` to share it. Fixed in wf/audit-tokens.
 - [x] 82. Weak or stale assertions: `pun-format/src/lib.rs:595-603` checks only a `"Parse error: "` prefix under a
   comment about Mago, which lint no longer uses (also `context/reports/COVERAGE.md:38`); `docblock/tests.rs:332-343`
   uses `contains`. Assert the oracle's exact message. The pun-format test now asserts PHP 8.5's exact messages and the

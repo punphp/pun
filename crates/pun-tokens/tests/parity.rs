@@ -1,31 +1,18 @@
-//! Edge-case fixtures must tokenize identically to PHP in all three modes (needs `php`;
-//! the fixer mode also needs .oracle/php-cs-fixer). Skipped when unavailable.
+//! Edge-case fixtures must tokenize identically to PHP in all four modes (needs `php`; the fixer and
+//! classy modes also need .oracle/php-cs-fixer or PUN_PHP_CS_FIXER).
+
+mod common;
 
 #[path = "../examples/parity.rs"]
-#[allow(dead_code)]
+#[expect(dead_code, reason = "the example's `main` is not called here")]
 mod parity;
 
 #[test]
 fn fixtures_match_php() {
-    if std::process::Command::new("php")
-        .arg("-v")
-        .output()
-        .is_err()
-    {
-        return;
-    }
+    common::php();
+    common::require_php_cs_fixer();
     let fixtures = vec![concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures").to_string()];
-    let oracle = concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/../../.oracle/php-cs-fixer/vendor/autoload.php"
-    );
     for mode in ["raw", "parse", "fixer", "classy"] {
-        if (mode == "fixer" || mode == "classy")
-            && std::env::var("PUN_PHP_CS_FIXER").is_err()
-            && !std::path::Path::new(oracle).exists()
-        {
-            continue;
-        }
         assert_eq!(parity::run(mode, &fixtures, false), 0, "mode {mode}");
     }
 }

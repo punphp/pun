@@ -1,10 +1,12 @@
 //! Tokens / Token / TokensAnalyzer API parity with PHP-CS-Fixer: every case in api_cases.json is run here and
-//! through tools/api.php (the real classes); the PHP results are the expectations. Skipped without php or the
+//! through tools/api.php (the real classes); the PHP results are the expectations. Needs php and the
 //! .oracle/php-cs-fixer checkout (or PUN_PHP_CS_FIXER).
 //!
 //! A case is `{"code": "...", "ops": [[op, args...], ...]}`; `["code"]` and `["changed"]` are appended to every
 //! case. `["each", op, args...]` runs `op` with every token index as first argument. Protos/tokens: `"x"` (plain
 //! token), `["T_STRING"]` (kind), `["T_STRING", "foo"]` (kind + content); kinds by `token_name()` / `CT::T_*`.
+mod common;
+
 use pun_tokens::tokens_analyzer::TokensAnalyzer;
 use pun_tokens::{BlockType, FoundKey, Kind, Proto, Token, Tokens};
 use serde_json::{Value, json};
@@ -12,7 +14,7 @@ use std::collections::BTreeMap;
 use std::io::Write;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 
 fn kind(v: &Value) -> Kind {
     let n = v.as_str().unwrap();
@@ -287,19 +289,14 @@ fn run_case(case: &Value) -> Vec<Value> {
 #[test]
 fn api_matches_php_cs_fixer() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let oracle = root.join("../../.oracle/php-cs-fixer/vendor/autoload.php");
-    if std::env::var("PUN_PHP_CS_FIXER").is_err() && !oracle.exists() {
-        return;
-    }
+    common::require_php_cs_fixer();
     let cases_json = std::fs::read_to_string(root.join("tests/api_cases.json")).unwrap();
-    let Ok(mut child) = Command::new("php")
+    let mut child = common::php()
         .arg(root.join("tools/api.php"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
-    else {
-        return;
-    };
+        .unwrap();
     child
         .stdin
         .take()
