@@ -343,8 +343,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit item 52 follow-up: pun-analyse part (codebase.rs:36, rules/mod.rs:204-206) treats unreadable files as missing; tick item 52 once it lands (pun-config part done in afe5778) | todo |
 | coverage: pun-config lib.rs:389,395,397 (options(): Boolean and bail arms) are uncovered; its only caller (schema.rs:449) always passes a Table, so delete the dead arms | todo |
 | tests: crates/pun-cli/tests/cli.rs `blade_like_pint` fails on the Pint oracle's own output (expected substring missing), likely a change in the installed oracle's Blade plugin | todo |
-| perf: analyse speed and memory, round by round against the bench, errors unchanged | doing (workflow, wf/perf-analyse-N) |
-| perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
 | tests: since audit item 81 the pun-tokens oracle tests (api, parity, php_compat) fail when php or .oracle/php-cs-fixer is missing; on macOS the default `php` (Herd 8.4) fails tools/api.php ('Cannot use the final modifier on a parameter'), so put PHP 8.5 first on PATH or point the helper at it | todo |
