@@ -9,6 +9,8 @@ Each command picks its rules on its own. There is no top-level preset.
 
 `[format] preset` is `laravel` (the default, Pint's), `psr12` or `empty`. `[format.rules]` holds only what differs from it.
 
+Pint's `per` and `symfony` presets were removed, from `pun.toml` and from `--preset`. Either one is an error (exit 2) that names the replacement: `preset = "empty"` with the preset's rules under `[format.rules]`. `pun migrate` writes exactly that for a `pint.json` that uses one, or for `pun migrate --preset per`.
+
 ## Lint sets
 
 Lint rules come in sets, Rector's prepared sets. Tick the ones you want; a rule can be in several, and a rule a set turns on is an `error`:

@@ -590,7 +590,13 @@ fn pun_only_behaviour() {
     let dir = tmp("own");
     reset(&dir, &files());
     // Every command needs pun.toml; `--preset` or `--no-config` runs without one.
-    for cmd in [&["format"][..], &["lint"], &["check", "--fix"], &["config"]] {
+    for cmd in [
+        &["format"][..],
+        &["lint"],
+        &["check", "--fix"],
+        &["config"],
+        &["list-files"],
+    ] {
         let (out, err, code) = pun(&dir, cmd);
         assert_eq!(
             (out.as_str(), err.as_str(), code),
@@ -724,17 +730,33 @@ fn pun_only_behaviour() {
         out.ends_with("\napp/Clean.php lint/statements/require-strict-types [fix:unsafe] Force a strict types mode in all files.\n"),
         "{out}"
     );
-    // Without pun.toml, `--preset` names the preset; per's @PER-CS expands (PHP-CS-Fixer's set definitions), and
-    // its rules without a Pun fixer are named under their Pun IDs (mapping.toml), in the order the set lists them.
+    // `--preset per|symfony` was removed (format 1): exit 2 with one line naming `empty`, `[format.rules]` and
+    // `pun migrate`, through every command that takes `--preset`.
     std::fs::remove_file(dir.join("pun.toml")).unwrap();
-    let (_, err, code) = pun(&dir, &["format", "--test", "--preset=per"]);
-    assert_eq!(
-        (err.as_str(), code),
-        (
-            "pun: preset per: rules not supported by Pun yet: `format/operators/linebreak`, `format/types/ordered`, `format/attributes/no-block-spaces`\n",
-            Some(2)
-        )
-    );
+    for args in [
+        &["format", "--test", "--preset=per"][..],
+        &["check", "--preset=symfony"],
+        &["lint", "--preset=per"],
+        &["config", "--preset=symfony"],
+    ] {
+        let p = args.last().unwrap().strip_prefix("--preset=").unwrap();
+        let (out, err, code) = pun(&dir, args);
+        assert_eq!(
+            (out.as_str(), err, code),
+            (
+                "",
+                format!(
+                    "pun: --preset {p} was removed: use --preset empty with its rules under [format.rules] in pun.toml (`pun migrate --preset {p}` expands it)\n"
+                ),
+                Some(2)
+            ),
+            "{args:?}"
+        );
+    }
+    // pun.toml's `[format] preset = "symfony"` is the same removed preset: exit 2.
+    std::fs::write(dir.join("pun.toml"), "[format]\npreset = \"symfony\"\n").unwrap();
+    let (_, err, code) = pun(&dir, &["format", "--test"]);
+    assert_eq!(code, Some(2), "{err}");
 
     // A broken pun.toml is a one-line error.
     std::fs::write(dir.join("pun.toml"), "[format]\nnope = 1\n").unwrap();

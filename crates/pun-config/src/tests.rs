@@ -690,12 +690,31 @@ fn show() {
         load(&d, &Options::default()).unwrap().show()["analyse"]["baseline"],
         "b.toml"
     );
-    // `--preset per` expands @PER-CS: @PER-CS2x0's concat_space shows under its Pun ID, as its one option's value.
-    let c = load(&dir(&[]), &preset("per")).unwrap();
-    assert_eq!(
-        c.show()["format"]["rules"]["operators/concat-spacing"],
-        "one"
-    );
+}
+
+/// `--preset per|symfony` is an error naming the replacement (format 1), with or without a pun.toml, and a typed one
+/// so the CLI exits 2; pun.toml's `[format] preset = "per"` is the same type. An unknown preset stays "Preset not
+/// found." (a plain error).
+#[test]
+fn removed_presets() {
+    let removed = |d: &Path, o: Options| load(d, &o).unwrap_err().is::<RemovedPreset>();
+    for p in ["per", "symfony"] {
+        let want = format!(
+            "--preset {p} was removed: use --preset empty with its rules under [format.rules] in pun.toml (`pun migrate --preset {p}` expands it)"
+        );
+        let none = dir(&[]);
+        assert_eq!(err(&none, preset(p)), want);
+        assert!(removed(&none, preset(p)));
+        let d = dir(&[("pun.toml", "[format]\npreset = \"psr12\"\n")]);
+        assert_eq!(err(&d, preset(p)), want);
+        let d = dir(&[("pun.toml", &format!("[format]\npreset = \"{p}\"\n"))]);
+        assert!(removed(&d, Options::default()));
+    }
+    assert!(!removed(&dir(&[]), preset("nope")));
+    // The kept presets still load through --preset.
+    for p in FORMAT_PRESETS {
+        assert_eq!(load(&dir(&[]), &preset(p)).unwrap().preset, p);
+    }
 }
 
 /// The text after `docs      ` is mapping.toml's URL with the line of the rule's own row.

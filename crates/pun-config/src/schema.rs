@@ -385,7 +385,7 @@ fn setting(path: &Path, name: &str, v: toml::Value) -> Result<LintSetting> {
     let options = if opts.is_empty() {
         Value::Null
     } else if fixer_of("lint", &id).is_some() {
-        options(path, name, toml::Value::Table(opts))?
+        options(opts)
     } else {
         serde_json::to_value(opts).unwrap()
     };

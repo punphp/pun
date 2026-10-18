@@ -26,7 +26,7 @@ Pint's flags work the same way.
 | `--diff=<branch>` | Only files changed since branching off `<branch>`. |
 | `--blade` | Also format Blade files. |
 | `--config=<path>` | Use this `pun.toml`. |
-| `--preset=<name>` | Use a built-in preset (`laravel`, `per`, `psr12`, `symfony`, `empty`) instead of `pun.toml`. |
+| `--preset=<name>` | Use a built-in preset (`laravel`, `psr12` or `empty`) instead of `pun.toml`. Pint's `per` and `symfony` are an error (exit 2): use `empty` with their rules under `[format.rules]`, which `pun migrate --preset per` writes. |
 | `--no-config` | Use the `laravel` preset and no config file. |
 | `--format=<fmt>` | Output format: `json`, `txt`, `agent`, and the rest Pint supports. |
 | `--output-to-file=<path>` | Also write results to a file, in `--output-format`. |
@@ -53,7 +53,7 @@ Pun prints what Pint prints: the summary, `-v` diffs, syntax-error snippets, col
 
 Without a `pun.toml`, every command stops with `No pun.toml found. Run pun migrate.`, unless you pass `--preset` or `--no-config`.
 
-Pun never runs PHP for a rule it lacks. If `pun.toml` (or the `--preset`) enables a rule Pun hasn't ported, `pun format`, `pun lint` and `pun check` stop before touching any file and exit 2, naming the rule:
+Pun never runs PHP for a rule it lacks. If `pun.toml` enables a rule Pun hasn't ported, `pun format`, `pun lint` and `pun check` stop before touching any file and exit 2, naming the rule:
 
 ```
 pun: /path/to/pun.toml: rule not supported by Pun yet: `format/strings/explicit-variable`

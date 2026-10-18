@@ -237,14 +237,22 @@ fn main() -> ExitCode {
             print!("{}", pint_error::render(&e.to_string()));
             ExitCode::FAILURE
         }
-        Err(e) if agent::enabled() => {
-            print!("{}", agent::error(&format!("{e:#}")));
-            ExitCode::FAILURE
-        }
         Err(e) => {
-            eprintln!("pun: {e:#}");
-            ExitCode::FAILURE
+            match agent::enabled() {
+                true => print!("{}", agent::error(&format!("{e:#}"))),
+                false => eprintln!("pun: {e:#}"),
+            }
+            ExitCode::from(config_exit(&e))
         }
+    }
+}
+
+/// A config error's exit code: 2 for a removed format preset (`--preset per`, `[format] preset = "symfony"`), 1 otherwise.
+pub(crate) fn config_exit(e: &anyhow::Error) -> u8 {
+    if e.is::<pun_config::RemovedPreset>() {
+        2
+    } else {
+        1
     }
 }
 

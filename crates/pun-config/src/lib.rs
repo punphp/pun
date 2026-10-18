@@ -47,8 +47,22 @@ const MAPPING: &str = include_str!("../rules/mapping.toml");
 /// What every command prints when the project has no pun.toml.
 pub const NO_CONFIG: &str = "No pun.toml found. Run `pun migrate`.";
 
-/// The format presets pun.toml takes (`per` and `symfony` stay in [`PRESETS`] for `pun migrate` and `--preset`).
+/// The format presets pun.toml and `--preset` take. `per` and `symfony` stay in [`PRESETS`] only for `pun migrate`,
+/// which expands them over `empty`; `format`, `lint`, `check` and `config` reject them with [`RemovedPreset`].
 pub const FORMAT_PRESETS: [&str; 3] = ["laravel", "psr12", "empty"];
+
+/// A dropped format preset (`per`, `symfony`) in pun.toml or `--preset`: the message names the replacement, and the
+/// CLI exits 2 on it.
+#[derive(Debug)]
+pub struct RemovedPreset(String);
+
+impl std::fmt::Display for RemovedPreset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl std::error::Error for RemovedPreset {}
 
 /// One enabled fixer (upstream name). `options` is `Null` when the rule is just `true`.
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -234,9 +248,9 @@ fn parse(
         bail!("{at}: [format] paths moved to [files] paths, which every command shares");
     }
     match f.preset.as_deref() {
-        Some(p @ ("per" | "symfony")) => bail!(
+        Some(p @ ("per" | "symfony")) => bail!(RemovedPreset(format!(
             "{at}: [format] preset = \"{p}\" was removed: use preset = \"empty\" with its rules under [format.rules] (`pun migrate` expands a pint.json that used it)"
-        ),
+        ))),
         Some(p) if !FORMAT_PRESETS.contains(&p) => {
             bail!("{at}: [format] preset = \"{p}\": expected `laravel`, `psr12` or `empty`")
         }
@@ -257,6 +271,11 @@ fn parse(
     let lint = schema::lint(path, lint, &files, &gates)?;
     let analyse = schema::analyse(path, analyse, &files, &gates)?;
 
+    if let Some(p @ ("per" | "symfony")) = opts.preset.as_deref() {
+        bail!(RemovedPreset(format!(
+            "--preset {p} was removed: use --preset empty with its rules under [format.rules] in pun.toml (`pun migrate --preset {p}` expands it)"
+        )));
+    }
     let preset = opts
         .preset
         .clone()
@@ -393,20 +412,13 @@ pub fn rule(id: &str) -> Option<RuleMeta> {
     })
 }
 
-/// A lint or analyse rule's options as PHP-CS-Fixer takes them: `true`/`false`, or options with snake_case keys.
-fn options(path: &Path, rule: &str, v: toml::Value) -> Result<Value> {
-    Ok(match v {
-        toml::Value::Boolean(b) => Value::Bool(b),
-        toml::Value::Table(t) => Value::Object(
-            t.into_iter()
-                .map(|(k, v)| (k.replace('-', "_"), serde_json::to_value(v).unwrap()))
-                .collect(),
-        ),
-        _ => bail!(
-            "{}: `{rule}` must be true, false or a table of options",
-            path.display()
-        ),
-    })
+/// A lint rule's options table as PHP-CS-Fixer takes it: snake_case keys.
+fn options(t: toml::Table) -> Value {
+    Value::Object(
+        t.into_iter()
+            .map(|(k, v)| (k.replace('-', "_"), serde_json::to_value(v).unwrap()))
+            .collect(),
+    )
 }
 
 /// A preset's `getRules()` (sets unresolved), or `None` for an unknown preset.

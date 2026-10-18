@@ -485,11 +485,9 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
     let errors = issues.iter().filter(|i| i.is_error()).count();
     let fixable = issues.len() - errors;
     let label = match ctx.preset {
-        "per" => "PER",
         "psr12" => "PSR 12",
         "laravel" => "Laravel",
-        "symfony" => "Symfony",
-        // pun-config only resolves the five presets.
+        // pun-config only resolves laravel, psr12 and empty.
         _ => "Empty",
     };
     let _ = writeln!(

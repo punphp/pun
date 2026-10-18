@@ -145,7 +145,7 @@ Each of these is an error that names what to write instead:
 | --- | --- |
 | top-level `preset = "recommended"` | `[lint] sets` and `[analyse] preset` |
 | `[format] paths` | `[files] paths` |
-| `[format] preset = "per"` or `"symfony"` | `preset = "empty"` with the rules under `[format.rules]` |
+| `[format] preset = "per"` or `"symfony"`, or `--preset per` / `symfony` (exit 2) | `preset = "empty"` with the rules under `[format.rules]` (`pun migrate` writes them) |
 | `fix = "apply"` | nothing: `--fix` applies every enabled rule |
 | `fix = "safe-only"` | nothing, or `fix = "off"` to keep the rule report-only |
 | `"info"`, or `severity` in a rule table | `"warn"`, and `level` |
@@ -160,4 +160,4 @@ Every command stops with:
 No pun.toml found. Run `pun migrate`.
 ```
 
-`--preset <name>` or `--no-config` runs a built-in preset without a file, as in Pint.
+`--preset <name>` (`laravel`, `psr12` or `empty`) or `--no-config` runs a built-in preset without a file, as in Pint.

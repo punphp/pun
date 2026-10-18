@@ -60,7 +60,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     };
     let mut cfg = match load_config(&a, &root) {
         Ok(cfg) => cfg,
-        Err(e) => return config_error(&format!("{e:#}"), 1),
+        Err(e) => return config_error(&format!("{e:#}"), crate::config_exit(&e)),
     };
     // No PHP fallback: a rule without a native fixer, format or named lint rule, stops every command (exit 2, Pun
     // can't run). A set or a group skips the rules Pun can't run yet.
@@ -379,14 +379,11 @@ fn unported_error(a: &FormatArgs, cfg: &Config, names: &[String]) -> String {
     let ids: Vec<String> = (names.iter())
         .map(|n| format!("`{}`", pun_config::rule_of(n).unwrap_or(n)))
         .collect();
-    let toml = cfg
-        .root
-        .join(a.config.as_deref().unwrap_or(Path::new("pun.toml")));
-    let from = if cfg.sources.contains(&toml) {
-        toml.display().to_string()
-    } else {
-        format!("preset {}", cfg.preset)
-    };
+    // Every rule of the laravel, psr12 and empty presets runs natively, so an unported rule comes from pun.toml.
+    let from = (cfg.root)
+        .join(a.config.as_deref().unwrap_or(Path::new("pun.toml")))
+        .display()
+        .to_string();
     let rules = if ids.len() == 1 { "rule" } else { "rules" };
     format!(
         "{from}: {rules} not supported by Pun yet: {}",
