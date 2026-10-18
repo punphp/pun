@@ -55,16 +55,8 @@ impl Fixer for PreferDedicatedStatusAssertion {
             if !tokens[close].equals(")", true) || (i..close).any(|k| tokens[k].is_comment()) {
                 continue;
             }
-            let digits: Vec<u8> = tokens[num]
-                .get_content()
-                .iter()
-                .copied()
-                .filter(|&b| b != b'_')
-                .collect();
-            let Some(method) = std::str::from_utf8(&digits)
-                .ok()
-                .and_then(|s| s.parse().ok())
-                .and_then(dedicated_status_method)
+            let Some(method) =
+                int_literal_value(tokens[num].get_content()).and_then(dedicated_status_method)
             else {
                 continue;
             };
@@ -79,6 +71,24 @@ impl Fixer for PreferDedicatedStatusAssertion {
             );
         }
     }
+}
+
+/// The value of a `T_LNUMBER` literal, as PHP reads it: `_` separators, `0x`/`0b`/`0o` prefixes in either case, and a
+/// leading `0` for octal. `None` when it does not fit a `u64`.
+fn int_literal_value(literal: &[u8]) -> Option<u64> {
+    let digits: String = literal
+        .iter()
+        .filter(|&&b| b != b'_')
+        .map(|&b| b as char)
+        .collect();
+    let (radix, digits) = match digits.as_bytes() {
+        [b'0', b'x' | b'X', ..] => (16, &digits[2..]),
+        [b'0', b'b' | b'B', ..] => (2, &digits[2..]),
+        [b'0', b'o' | b'O', ..] => (8, &digits[2..]),
+        [b'0', _, ..] => (8, &digits[1..]),
+        _ => (10, &digits[..]),
+    };
+    u64::from_str_radix(digits, radix).ok()
 }
 
 /// Mirrors `Illuminate\Testing\Concerns\AssertsStatusCodes` (same table as Mago).
@@ -192,6 +202,26 @@ mod tests {
         assert_eq!(
             fix("<?php $r->assertStatus(4_04);"),
             "<?php $r->assertNotFound();"
+        );
+        // Other bases decode like PHP (`php -r 'var_dump(0624, 0o624, 0x194, 0b110010100);'` gives 404 each);
+        // `0404` is octal 260, which has no dedicated method.
+        for literal in [
+            "0624",
+            "0o624",
+            "0O624",
+            "0x194",
+            "0X1_94",
+            "0b110010100",
+            "0B110010100",
+        ] {
+            assert_eq!(
+                fix(&format!("<?php $r->assertStatus({literal});")),
+                "<?php $r->assertNotFound();"
+            );
+        }
+        assert_eq!(
+            fix("<?php $r->assertStatus(0404);"),
+            "<?php $r->assertStatus(0404);"
         );
     }
 

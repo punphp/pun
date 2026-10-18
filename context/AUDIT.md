@@ -44,9 +44,9 @@ items marked "not checked against Pint" still need one oracle run before the fix
   branch never checks the receiver against the parameters, so `fn ($x) => $x->equals($x)` becomes
   `$x->equals(...)`, which reads an undefined outer `$x`. Return `None` when `callee` is one of `params`, and add the
   case to the tests. Reproduced. Fixed in wf/audit-fixers-rules.
-- [ ] 8. `crates/pun-fixers/src/fixers/pun_prefer_dedicated_status_assertion.rs:58-67` parses `0404` as decimal 404,
+- [x] 8. `crates/pun-fixers/src/fixers/pun_prefer_dedicated_status_assertion.rs:58-67` parses `0404` as decimal 404,
   so `assertStatus(0404)` (octal 260 in PHP) becomes `assertNotFound()` and changes what the test asserts. Skip
-  literals with a leading `0`, or decode them like `switch_continue_to_break::base_dec`. Reproduced (PHP gives 260).
+  literals with a leading `0`, or decode them like `switch_continue_to_break::base_dec`. Reproduced (PHP gives 260). Fixed in wf/audit-fixers-rules.
 - [ ] 9. `crates/pun-fixers/src/fixers/pint_laravel_blade/embedded_blade_masker.rs:56-70` returns
   `result.unwrap_or_default()` when the `<style|script>` regex fails, and `pint_laravel_blade.rs:65-71` then clears
   every token, so `pun format` empties the file. The pattern's `(?:"[^"]*"|'[^']*'|[^>])*` is ambiguous: a
