@@ -209,9 +209,11 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | format 4-5: memory target; 8-core benchmark in CI (laravel-framework under 1 s cold) | todo |
 | format 4-5 follow-up (from bench, needs Pushpak): BENCH=format runs Pint with Xdebug loaded on this Mac; set XDEBUG_MODE=off as the analyse and lint modes do (changes format-mode behaviour of scripts/bench.py) | todo |
 | format 6: swap `vendor/bin/pint` for Pun in Pinkary's CI | todo |
-| format 7: port the remaining format rules (158 of 208 native, 29 format rules left; batches 1-2 done: the PER-CS and Symfony operator, type and loop rules, then the Symfony comment, concat, phpdoc, semicolon and echo tag rules; the Symfony preset still lacks phpdoc_types_order, php_unit_fqcn_annotation and simple_to_complex_string_variable) | todo |
+| format 7: port the remaining format rules (165 of 208 native, 22 format rules left; batches 1-3 done: the PER-CS and Symfony operator, type and loop rules, the Symfony comment, concat, phpdoc, semicolon and echo tag rules, then the rest of the Symfony preset plus phpdoc_no_duplicate_types, phpdoc_order_by_value, explicit_indirect_variable and explicit_string_variable) | todo |
 | format 7 follow-up: heavy-slot target dirs are shared across worktrees, so cargo reuses another worktree's artifacts; give each worktree its own target dir or touch sources inside each heavy call | todo |
-| format 7 follow-up: run scripts/coverage.sh punphp-fixers over the whole crate to confirm switch_analyzer.rs (cache now keyed on the whole token list) stays at 100% | todo |
+| format 7 follow-up: run scripts/coverage.sh punphp-fixers over the whole crate to confirm switch_analyzer.rs (cache now keyed on the whole token list) and analyzers/docblock/type_expression.rs (sortTypes, removeDuplicateTypes, php_spaceship from batch 3) stays at 100% | todo |
+| format 7 follow-up: laravel-framework pun-harness format runs exceed one 600-second heavy call; run Pint with --parallel in the harness or split the corpus run | todo |
+| format 7 follow-up: with the symfony preset Pun's Blade path does not apply the symfony PHP rules Pint applies inside Blade directives (yoda_style, not_operator_with_successor_space); blocks a 0-diff symfony-preset pinkary run once phpdoc_to_comment is in lint | todo |
 | format: delete or re-justify `pun_ignored` and the delegate-mode comments in crates/pun-format/src/lib.rs (unused since config 6) | todo |
 | format: pun-fixers build.rs adds rerun-if-changed on the source dir (generated fixers.rs in a shared target dir can point at another worktree) | todo |
 | migrate 2-3: unsupported list with the PR request, the new output | todo |
