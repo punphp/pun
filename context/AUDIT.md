@@ -421,10 +421,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   (`mod.rs:7-8`) and is the only user of `pun-problem` in pun-cli. It waits for output.md Build 3; switch to
   `#![expect(..., reason = "output.md Build 3")]` so it fails once wired, or gate it behind `cfg(test)`. — not reproduced at 6d2441c: 11ce261 put `pun format` on the renderer, `render/mod.rs` has
   no `allow` left, and `report.rs` and `github.rs` use `pun-problem` too.
-- [ ] 71. `crates/pun-format/src/lib.rs:366-376` (`pun_ignored`, for the removed delegate mode) has no caller, and its
+- [x] 71. `crates/pun-format/src/lib.rs:366-376` (`pun_ignored`, for the removed delegate mode) has no caller, and its
   first doc line belongs to `has_annotation` (`:378`), which has none. Also unused outside tests: `Kind::is_custom`,
   `php_compat::{strtoupper, strcmp, strnatcasecmp}`, `token::is_native_constant`, the names in `TRANSFORMERS`
-  (`transformers.rs:15-39`). Needs a decision on test-only ports.
+  (`transformers.rs:15-39`). Needs a decision on test-only ports. All deleted (Pushpak approved), with their test
+  lines and `isNativeConstant()` in `tools/api.php`; `pun_skipped` is inlined into `skipped`. Fixed in this commit.
 - [x] 72. Unused fields and parameters: `no_extra_blank_lines.rs:40,48,307` (`tokens_config`, written never read);
   `no_unneeded_control_parentheses.rs:593-600` (always `Some`) and its dead `Option` parameter; `method_argument_space.rs:211`
   (`_override`, passed `true`/`false`); `embedded_blade_masker.rs:350-351` (`length`); `pun-lint/src/lib.rs:24-29`

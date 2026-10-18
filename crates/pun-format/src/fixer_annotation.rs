@@ -120,21 +120,14 @@ pub(crate) fn ignored(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
 /// The fixers a file opts out of: `@php-cs-fixer-ignore` names plus the fixers of `@pun-ignore-file` rule IDs
 /// (`format/group/x`, `lint/group/x` or `group/x`; unknown IDs are skipped).
 pub(crate) fn skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
-    let pun = pun_skipped(annotations)
-        .into_iter()
-        .map(|f| f.as_bytes().to_vec());
-    ignored(annotations).into_iter().chain(pun).collect()
-}
-
-/// The fixers of `@pun-ignore-file` rule IDs alone.
-pub(crate) fn pun_skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<&'static str> {
-    values(annotations, b"pun-ignore-file")
+    let pun = values(annotations, b"pun-ignore-file")
         .into_iter()
         .filter_map(|id| {
             let id = String::from_utf8(id).ok()?;
             pun_config::fixer_of("format", &id).or_else(|| pun_config::fixer_of("lint", &id))
         })
-        .collect()
+        .map(|f| f.as_bytes().to_vec());
+    ignored(annotations).into_iter().chain(pun).collect()
 }
 
 fn values(annotations: &[(Vec<u8>, Vec<Vec<u8>>)], name: &[u8]) -> Vec<Vec<u8>> {

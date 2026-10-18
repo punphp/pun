@@ -84,7 +84,7 @@ function op(Tokens &$t, array $o) {
         case 'tok':
             $k = $t[$x[0]];
             return [$k->getName(), kname($k->getId()), $k->getContent(), $k->isArray(), $k->isCast(), $k->isClassy(), $k->isComment(),
-                $k->isObjectOperator(), $k->isKeyword(), $k->isMagicConstant(), $k->isNativeConstant(), $k->isWhitespace()];
+                $k->isObjectOperator(), $k->isKeyword(), $k->isMagicConstant(), $k->isWhitespace()];
         case 'isWs': return $t[$x[0]]->isWhitespace($x[1] ?? null);
         case 'equals': return $t[$x[0]]->equals(proto($x[1]), $x[2] ?? true);
         case 'equalsProto': return $t[$x[0]]->equals($t[$x[1]]->getPrototype(), $x[2] ?? true);

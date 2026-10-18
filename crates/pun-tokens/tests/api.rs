@@ -151,7 +151,6 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
                 k.is_object_operator(),
                 k.is_keyword(),
                 k.is_magic_constant(),
-                k.is_native_constant(),
                 k.is_whitespace(None)
             ])
         }

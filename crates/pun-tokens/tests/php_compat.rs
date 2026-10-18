@@ -65,7 +65,7 @@ fn matches_php() {
     let script = r#"
         $in = json_decode(stream_get_contents(STDIN));
         foreach ($in as $a) foreach ($in as $b)
-            echo strcmp($a,$b) <=> 0, ' ', strcasecmp($a,$b), ' ', strnatcmp($a,$b), ' ', strnatcasecmp($a,$b), "\n";
+            echo strcasecmp($a,$b), ' ', strnatcmp($a,$b), "\n";
         foreach ($in as $a) echo json_encode([ltrim($a, " \t0a"), rtrim($a, " \t7"), rtrim($a), trim($a), str_replace("a", "XY", $a), str_replace("00", "0", $a), str_replace("", "Z", $a)]), "\n";
     "#;
     let json = format!(
@@ -93,13 +93,7 @@ fn matches_php() {
     for a in INPUTS {
         for b in INPUTS {
             let (a, b) = (a.as_bytes(), b.as_bytes());
-            let got = format!(
-                "{} {} {} {}",
-                strcmp(a, b),
-                strcasecmp(a, b),
-                strnatcmp(a, b),
-                strnatcasecmp(a, b)
-            );
+            let got = format!("{} {}", strcasecmp(a, b), strnatcmp(a, b));
             let line = lines.next().expect("php output");
             assert_eq!(got, line, "{:?} vs {:?}", a, b);
         }

@@ -19,10 +19,6 @@ macro_rules! kinds {
                 }
             }
 
-            pub fn is_custom(self) -> bool {
-                self as u16 >= Kind::CT_ARRAY_INDEX_BRACE_CLOSE as u16
-            }
-
             pub fn from_name(name: &str) -> Option<Kind> {
                 Kind::ALL.iter().copied().find(|k| k.name() == name)
             }
@@ -264,6 +260,5 @@ mod tests {
             Kind::from_name("CT::T_TYPE_COLON"),
             Some(Kind::CT_TYPE_COLON)
         );
-        assert!(Kind::CT_TYPE_COLON.is_custom() && !Kind::T_BAD_CHARACTER.is_custom());
     }
 }

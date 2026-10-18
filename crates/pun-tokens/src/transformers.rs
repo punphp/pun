@@ -12,34 +12,31 @@ use crate::tokens::Tokens;
 
 type Process = fn(&mut Tokens, usize);
 
-const TRANSFORMERS: &[(&str, Process)] = &[
-    ("attribute", attribute),
-    ("name_qualified", name_qualified),
-    ("first_class_callable", first_class_callable),
-    ("class_constant", class_constant),
-    ("return_ref", return_ref),
-    ("namespace_operator", namespace_operator),
-    ("whitespacy_comment", whitespacy_comment),
-    ("brace", brace),
-    ("array_typehint", array_typehint),
-    ("constructor_promotion", constructor_promotion),
-    ("square_brace", square_brace),
-    ("import", import),
-    ("brace_class_instantiation", brace_class_instantiation),
-    ("use", use_),
-    ("type_colon", type_colon),
-    ("type_alternation", type_alternation),
-    ("named_argument", named_argument),
-    ("type_intersection", type_intersection),
-    (
-        "disjunctive_normal_form_type_parenthesis",
-        dnf_type_parenthesis,
-    ),
-    ("nullable_type", nullable_type),
+const TRANSFORMERS: &[Process] = &[
+    attribute,
+    name_qualified,
+    first_class_callable,
+    class_constant,
+    return_ref,
+    namespace_operator,
+    whitespacy_comment,
+    brace,
+    array_typehint,
+    constructor_promotion,
+    square_brace,
+    import,
+    brace_class_instantiation,
+    use_,
+    type_colon,
+    type_alternation,
+    named_argument,
+    type_intersection,
+    dnf_type_parenthesis,
+    nullable_type,
 ];
 
 pub fn transform(tokens: &mut Tokens) {
-    for (_, process) in TRANSFORMERS {
+    for process in TRANSFORMERS {
         let mut index = 0;
         while index < tokens.len() {
             process(tokens, index);

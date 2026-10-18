@@ -12,10 +12,6 @@ pub fn strtolower(s: &[u8]) -> Vec<u8> {
     s.to_ascii_lowercase()
 }
 
-pub fn strtoupper(s: &[u8]) -> Vec<u8> {
-    s.to_ascii_uppercase()
-}
-
 /// `mb_strtolower($s)` (UTF-8): full Unicode lowercasing, with each maximal invalid UTF-8 subpart replaced by `?`.
 pub fn mb_strtolower(s: &[u8]) -> Vec<u8> {
     mb_convert_case(s, str::to_lowercase)
@@ -41,12 +37,6 @@ fn sign(o: Ordering) -> i32 {
     o as i32
 }
 
-/// Sign only: PHP returns glibc memcmp's raw value here (e.g. 32 or 32769), which callers
-/// (usort comparators) only ever use by sign.
-pub fn strcmp(a: &[u8], b: &[u8]) -> i32 {
-    sign(a.cmp(b))
-}
-
 /// zend_binary_strcasecmp: difference of the first differing lowercased bytes, else
 /// the length comparison (-1/0/1).
 pub fn strcasecmp(a: &[u8], b: &[u8]) -> i32 {
@@ -61,10 +51,6 @@ pub fn strcasecmp(a: &[u8], b: &[u8]) -> i32 {
 
 pub fn strnatcmp(a: &[u8], b: &[u8]) -> i32 {
     strnatcmp_ex(a, b, false)
-}
-
-pub fn strnatcasecmp(a: &[u8], b: &[u8]) -> i32 {
-    strnatcmp_ex(a, b, true)
 }
 
 /// Default character list of trim()/rtrim()/ltrim().
@@ -621,7 +607,6 @@ mod tests {
     #[test]
     fn ascii_only_case() {
         assert_eq!(strtolower("ÉA".as_bytes()), "Éa".as_bytes());
-        assert_eq!(strtoupper(b"a\xff"), b"A\xff");
         assert_eq!(strlen("é".as_bytes()), 2);
         assert_eq!(rtrim(b"x \n\0"), b"x");
     }

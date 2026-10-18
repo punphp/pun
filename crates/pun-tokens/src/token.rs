@@ -305,13 +305,6 @@ impl Token {
     pub fn is_magic_constant(&self) -> bool {
         self.is_given_kind(MAGIC_CONSTANTS)
     }
-    pub fn is_native_constant(&self) -> bool {
-        self.is_array()
-            && [&b"true"[..], b"false", b"null"]
-                .iter()
-                .any(|c| self.content.eq_ignore_ascii_case(c))
-    }
-
     /// `isWhitespace($whitespaces)`; `None` = PHP's default `" \t\n\r\0\x0B"`. Note that an
     /// empty (cleared) token counts as whitespace, like upstream.
     pub fn is_whitespace(&self, whitespaces: Option<&[u8]>) -> bool {
