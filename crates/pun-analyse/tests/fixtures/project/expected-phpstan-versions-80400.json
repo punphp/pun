@@ -1,0 +1,166 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "versions/Versions.php",
+   "line": 14,
+   "identifier": "interface.duplicateMethod",
+   "message": "Cannot redeclare method Versions\\Duplicates::SAME().",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 25,
+   "identifier": "property.staticAsymmetricVisibility",
+   "message": "Asymmetric visibility for static properties is supported only on PHP 8.5 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 27,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class Versions\\Features has an uninitialized readonly property $readonly. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 30,
+   "identifier": "property.invalidPromoted",
+   "message": "Promoted properties can be in constructor only.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 34,
+   "identifier": "property.invalidPromoted",
+   "message": "Final promoted properties are supported only on PHP 8.5 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 49,
+   "identifier": "method.finalPrivate",
+   "message": "Private method Versions\\NewerFlipped::foo() cannot be final as it is never overridden by other classes.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 63,
+   "identifier": "method.finalPrivate",
+   "message": "Private method Versions\\Exactly81::foo() cannot be final as it is never overridden by other classes.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 70,
+   "identifier": "method.finalPrivate",
+   "message": "Private method Versions\\Never::foo() cannot be final as it is never overridden by other classes.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 85,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 99,
+   "identifier": "method.finalPrivate",
+   "message": "Private method Versions\\Docs::finalByDoc() cannot be final as it is never overridden by other classes.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 104,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 106,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 111,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 114,
+   "identifier": "class.notFound",
+   "message": "Class Versions\\FromMissing extends unknown class Versions\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 128,
+   "identifier": "property.virtualDefault",
+   "message": "Virtual hooked properties cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 134,
+   "identifier": "property.readOnlyNoNativeType",
+   "message": "Readonly property must have a native type.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 147,
+   "identifier": "property.virtualDefault",
+   "message": "Virtual hooked properties cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 168,
+   "identifier": "method.finalPrivate",
+   "message": "Private method Versions\\NotEqual::foo() cannot be final as it is never overridden by other classes.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 174,
+   "identifier": "enum.caseType",
+   "message": "Enum case Versions\\FloatCase::A value 1.5 does not match the \"int\" type.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 179,
+   "identifier": "enum.caseWithValue",
+   "message": "Enum Versions\\Unbacked is not backed, but case N has value null.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 180,
+   "identifier": "enum.caseWithValue",
+   "message": "Enum Versions\\Unbacked is not backed, but case P has value 2.5.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 181,
+   "identifier": "enum.caseWithValue",
+   "message": "Enum Versions\\Unbacked is not backed, but case C has value 'Versions\\\\Features'.",
+   "tip": null
+  },
+  {
+   "file": "versions/Versions.php",
+   "line": 184,
+   "identifier": "enum.duplicateValue",
+   "message": "Enum Versions\\Values has duplicate value 1 for cases A, B.",
+   "tip": null
+  }
+ ]
+}

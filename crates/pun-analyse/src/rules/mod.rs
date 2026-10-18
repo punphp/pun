@@ -4,9 +4,12 @@
 mod calls;
 mod classes;
 mod functions;
+mod declarations;
+mod enums;
 mod members;
 mod names;
 mod params;
+mod properties;
 mod scope;
 mod statements;
 
@@ -137,6 +140,60 @@ pub const IDENTIFIERS: &[&str] = &[
     "ignore.unmatched",
     "ignore.count",
     "ignore.allLineErrors",
+    "enum.constructor",
+    "enum.destructor",
+    "enum.magicMethod",
+    "enum.methodRedeclaration",
+    "enum.backingType",
+    "enum.serializable",
+    "enum.caseWithValue",
+    "enum.missingCase",
+    "enum.caseType",
+    "enum.duplicateValue",
+    "enum.caseOutsideOfEnum",
+    "class.duplicateConstant",
+    "class.duplicateProperty",
+    "class.duplicateMethod",
+    "class.duplicateEnumCase",
+    "interface.duplicateConstant",
+    "interface.duplicateProperty",
+    "interface.duplicateMethod",
+    "interface.duplicateEnumCase",
+    "enum.duplicateConstant",
+    "enum.duplicateProperty",
+    "enum.duplicateMethod",
+    "enum.duplicateEnumCase",
+    "method.abstractPrivate",
+    "method.finalPrivate",
+    "classConstant.finalPrivate",
+    "property.inInterface",
+    "property.nonHookedInInterface",
+    "property.nonPublicInInterface",
+    "property.readOnlyInInterface",
+    "property.hookedStatic",
+    "property.abstractInInterface",
+    "property.finalInInterface",
+    "property.abstractFinalHook",
+    "property.hookBodyInInterface",
+    "property.final",
+    "property.abstractNonHooked",
+    "property.abstractWithoutAbstractHook",
+    "property.abstract",
+    "property.hookWithoutBody",
+    "property.abstractPrivate",
+    "property.finalPrivate",
+    "property.finalPrivateHook",
+    "property.abstractFinal",
+    "property.hookReadOnly",
+    "property.staticAsymmetricVisibility",
+    "property.virtualDefault",
+    "property.hooksNotSupported",
+    "property.readOnlyNoNativeType",
+    "property.readOnlyDefaultValue",
+    "property.readOnlyStatic",
+    "property.readOnlyByPhpDocDefaultValue",
+    "property.promotedNotSupported",
+    "property.invalidPromoted",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -212,6 +269,13 @@ pub struct Checker<'a, 'arena> {
     /// DeclarePositionVisitor: no statement seen yet, and the `declare`s that came after one.
     first_statement: bool,
     declares_not_first: Vec<Span>,
+    /// The class-likes being declared (InClassNode's ClassReflection), innermost last.
+    decls: Vec<declarations::Decl>,
+    /// `isImmutable()` of the codebase's classes, by lowercase name.
+    immutable: HashMap<String, bool>,
+    /// A symbol's file, and the analysed files' sources (other files are read when a rule needs them).
+    files: &'a HashMap<FileId, PathBuf>,
+    sources: &'a Sources,
     errors: Vec<Error>,
 }
 
@@ -223,6 +287,7 @@ struct TraitUse {
 }
 
 /// A checker for one walk of `file`.
+#[allow(clippy::too_many_arguments)]
 fn checker<'a, 'arena>(
     arena: &'arena LocalArena,
     file: &'a File,
@@ -230,6 +295,8 @@ fn checker<'a, 'arena>(
     names: &'a ResolvedNames<'arena>,
     codebase: &'a CodebaseMetadata,
     php_version: u32,
+    files: &'a HashMap<FileId, PathBuf>,
+    sources: &'a Sources,
 ) -> Checker<'a, 'arena> {
     Checker {
         file,
@@ -260,6 +327,10 @@ fn checker<'a, 'arena>(
         magic_defaults: HashSet::new(),
         first_statement: true,
         declares_not_first: Vec::new(),
+        decls: Vec::new(),
+        immutable: HashMap::new(),
+        files,
+        sources,
         errors: Vec::new(),
     }
 }
@@ -280,7 +351,16 @@ pub fn check_file(
     let arena = LocalArena::new();
     let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
-    let mut checker = checker(&arena, file, program, &names, codebase, project.php_version);
+    let mut checker = checker(
+        &arena,
+        file,
+        program,
+        &names,
+        codebase,
+        project.php_version,
+        files,
+        sources,
+    );
     checker.walk_program(program, &mut ());
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
@@ -354,6 +434,8 @@ fn in_trait_context(
         &names,
         codebase,
         project.php_version,
+        files,
+        sources,
     );
     let display = codebase.get_class_like(class.as_bytes()).map_or_else(
         || class.to_string(),
@@ -517,6 +599,18 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     /// `$scope->getType($expr)`, as Mago infers it, for the expressions [`typed_expressions()`] lists.
     fn type_of(&self, expr: &Expression) -> Option<&TUnion> {
         self.types.get(&expr.span())
+    }
+
+    /// A file's contents: this one, an analysed one, or one read from disk.
+    fn file_contents(&self, id: FileId) -> Option<std::borrow::Cow<'a, [u8]>> {
+        if id == self.file.id {
+            return Some(std::borrow::Cow::Borrowed(&self.file.contents[..]));
+        }
+        let path = self.files.get(&id)?;
+        match self.sources.get(path) {
+            Some(f) => Some(std::borrow::Cow::Borrowed(&f.contents[..])),
+            None => std::fs::read(path).ok().map(std::borrow::Cow::Owned),
+        }
     }
 
     fn file_name(&self) -> String {
@@ -835,9 +929,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         self.enter_class(Some(class.name.span), class.members.as_slice());
         self.push_frame(FrameKind::Class);
+        let decl = self.decl_of(
+            class.span(),
+            Some(class.name.span),
+            SymbolKind::Class,
+            class.modifiers.as_slice(),
+            class.extends.as_ref(),
+        );
+        self.decls.push(decl);
+        declarations::duplicates(self, class.members.as_slice());
     }
     fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
         self.classes.pop();
+        self.decls.pop();
         self.pop_frame();
     }
     fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
@@ -845,9 +949,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         names::class_hierarchy(self, i.span(), &current, i.extends.as_ref(), None, true);
         self.enter_class(Some(i.name.span), i.members.as_slice());
         self.push_frame(FrameKind::Class);
+        let decl = self.decl_of(
+            i.span(),
+            Some(i.name.span),
+            SymbolKind::Interface,
+            &[],
+            None,
+        );
+        self.decls.push(decl);
+        declarations::duplicates(self, i.members.as_slice());
     }
     fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
         self.classes.pop();
+        self.decls.pop();
         self.pop_frame();
     }
     fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
@@ -859,9 +973,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         self.enter_class(Some(e.name.span), e.members.as_slice());
         self.push_frame(FrameKind::Class);
+        let decl = self.decl_of(e.span(), Some(e.name.span), SymbolKind::Enum, &[], None);
+        self.decls.push(decl);
+        enums::sanity(self, e);
+        declarations::duplicates(self, e.members.as_slice());
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
         self.classes.pop();
+        self.decls.pop();
         self.pop_frame();
     }
     // ponytail: trait bodies have no class scope; PHPStan analyses them once per using class (add with traits).
@@ -874,17 +993,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             return;
         };
         let name = self.resolved_span(t.name.span);
-        if !self
+        let target = self
             .context_trait
             .as_deref()
-            .is_some_and(|n| n.eq_ignore_ascii_case(&name))
-        {
+            .is_some_and(|n| n.eq_ignore_ascii_case(&name));
+        // the class's walk put it in the codebase
+        let Some(decl) = target.then(|| self.decl_of_class(&class)).flatten() else {
             return;
-        }
+        };
         self.trait_uses_of(&class, t.members.as_slice());
         let saved = self.classes.len();
         self.enter_class(None, t.members.as_slice());
         self.classes[saved].name = Some(class.clone());
+        self.decls.push(decl);
         self.in_target = true;
         for member in t.members.iter() {
             if let ClassLikeMember::Method(m) = member {
@@ -903,6 +1024,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         self.in_target = false;
         self.classes.truncate(saved);
+        self.decls.pop();
     }
     fn walk_in_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, _: &mut ()) {
         names::class_hierarchy(
@@ -915,6 +1037,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         self.enter_class(None, a.members.as_slice());
         self.push_frame(FrameKind::Class);
+        let decl = self.decl_of(
+            a.span(),
+            None,
+            SymbolKind::Class,
+            a.modifiers.as_slice(),
+            a.extends.as_ref(),
+        );
+        self.decls.push(decl);
     }
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
@@ -927,6 +1057,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             names::FunctionKind::Function(&name),
             &f.parameter_list,
             f.return_type_hint.as_ref(),
+        );
+        declarations::promoted(
+            self,
+            f.span(),
+            declarations::FunctionLike::Other,
+            &f.parameter_list,
         );
         self.enter_function(Vec::new());
         self.functions.push(FunctionScope {
@@ -957,6 +1093,22 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             Some((span, alias)) if *span == m.span() => alias.clone(),
             _ => String::from_utf8_lossy(m.name.value).into_owned(),
         };
+        declarations::method(self, m, &method);
+        declarations::promoted(
+            self,
+            m.span(),
+            declarations::FunctionLike::Method {
+                name: &method,
+                original: m.name.value,
+                body: matches!(m.body, MethodBody::Concrete(_)),
+            },
+            &m.parameter_list,
+        );
+        if method.eq_ignore_ascii_case("__construct")
+            || m.name.value.eq_ignore_ascii_case(b"__construct")
+        {
+            properties::promoted(self, &m.parameter_list);
+        }
         if let Some(class) = self.class_scope() {
             let class = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
             names::typehints(
@@ -1116,6 +1268,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
         self.classes.pop();
         self.pop_frame();
+        self.decls.pop();
     }
 
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
@@ -1188,6 +1341,23 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
         names::property_type(self, p.span(), p.hint(), &names);
+        properties::property(self, p);
+    }
+    fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+        declarations::constant(self, k);
+    }
+    fn walk_in_enum_case(&mut self, case: &'ast EnumCase<'arena>, _: &mut ()) {
+        enums::case_outside(self, case);
+    }
+    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+        if let Some(parameters) = &h.parameter_list {
+            declarations::promoted(
+                self,
+                h.span(),
+                declarations::FunctionLike::Other,
+                parameters,
+            );
+        }
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         functions::function_like(self, f, &f.parameter_list);
@@ -1204,6 +1374,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             names::FunctionKind::Anonymous,
             &f.parameter_list,
             f.return_type_hint.as_ref(),
+        );
+        declarations::promoted(
+            self,
+            f.span(),
+            declarations::FunctionLike::Other,
+            &f.parameter_list,
         );
     }
     fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, _: &mut ()) {
@@ -1226,6 +1402,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             names::FunctionKind::Anonymous,
             &f.parameter_list,
             f.return_type_hint.as_ref(),
+        );
+        declarations::promoted(
+            self,
+            f.span(),
+            declarations::FunctionLike::Other,
+            &f.parameter_list,
         );
         self.mark_top_level(f.expression);
     }

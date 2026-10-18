@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "versions80/Old.php",
+   "line": 7,
+   "identifier": "property.inInterface",
+   "message": "Interfaces can include properties only on PHP 8.4 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions80/Old.php",
+   "line": 12,
+   "identifier": "property.final",
+   "message": "Final properties are supported only on PHP 8.4 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions80/Old.php",
+   "line": 14,
+   "identifier": "property.hooksNotSupported",
+   "message": "Property hooks are supported only on PHP 8.4 and later.",
+   "tip": null
+  }
+ ]
+}

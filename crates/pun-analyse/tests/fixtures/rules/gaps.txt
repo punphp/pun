@@ -15,6 +15,9 @@ Classes/LocalTypeAliasesRuleTest::testEnums
 Classes/LocalTypeTraitAliasesRuleTest::testRule
 Classes/LocalTypeTraitUseAliasesRuleTest::testRule
 Classes/LocalTypeTraitUseAliasesRuleTest::testRuleSpecific
+# `abstract final` on a property is a php-parser error (phpstan.parse, nothing else reported); Mago parses it
+Properties/PropertyInClassRuleTest::testPhp84AndAbstractFinalHookedPropertiesParseError
+Properties/PropertyInClassRuleTest::testPhp84FinalPropertyHooks
 # exported after the first port (Methods, Properties, Namespaces, Variables...): triage in progress
 Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testIntersectionTypes#0
 Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testIntersectionTypes#1

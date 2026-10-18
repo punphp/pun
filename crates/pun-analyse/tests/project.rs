@@ -78,3 +78,14 @@ fn autoloaded_classes_found_on_demand() {
 fn symlinks_are_followed() {
     check_in("symlinks", "phpstan");
 }
+
+/// The class-member declaration rules' PHP-version branches (hooks, final and interface properties, asymmetric
+/// visibility of static properties, promoted and final promoted properties), `PHP_VERSION_ID` narrowing in
+/// FinalPrivateMethodRule, PHPDoc tags and `@immutable` parents (in another analysed file, in a scanned one, missing),
+/// virtual properties overriding a parent's, and enum case values the codex does not type.
+#[test]
+fn declaration_rules_by_php_version() {
+    check("phpstan-versions-70400");
+    check("phpstan-versions-80000");
+    check("phpstan-versions-80400");
+}

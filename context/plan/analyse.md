@@ -299,3 +299,17 @@ Assistant's calls in analyse 3b (the first 13 level-0 declaration and keyword ru
 - Verify (2026-10-18): PHPStan runs no rule on statements after a terminating one (`return; echo __CLASS__;` reports
   nothing), while Pun's walk checks dead code for every rule, these 13 included. That is an engine gap (unreachable
   statements, later with never-returning calls from inference), not a bug in this batch; it shows only on dead code.
+
+Assistant's calls in analyse 3c (class-member declaration rules, 2026-10-18; the plan was silent):
+- Rules that print a class name (DuplicateDeclarationRule, FinalPrivateMethodRule, FinalPrivateConstantRule) skip
+  anonymous classes: PHPStan's `class@anonymous/<relative path>:<line>` display name is not ported yet.
+- An enum case's value is the constant Mago's codex infers for it (class constants and `X::Case->value` followed
+  through the codebase); float literals and `self::Case->value`, which the codex leaves untyped, are read from the
+  case's own expression. A value neither gives (an array, a float constant) reports nothing.
+- `PHP_VERSION_ID` narrowing for FinalPrivateMethodRule's `$scope->getPhpVersion()` is a scope guard: `<`, `<=`, `>`,
+  `>=` against an integer, intersected across nested conditions; an `||` keeps the hull of both ranges.
+- `property.readOnlyNotSupported` is not reported: below PHP 8.1 php-parser lexes `readonly` as a name, so PHPStan
+  reports a parse error and never reaches ReadOnlyPropertyRule's check.
+- `isImmutable()` reads a parent class's PHPDoc from its file (an analysed one's source, otherwise from disk).
+- php-parser's modifier errors (`abstract final` property) are not emulated: Mago parses them, so PropertyInClassRule
+  reports where PHPStan reports only `phpstan.parse` (2 fixture cases in gaps.txt).

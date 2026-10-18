@@ -17,6 +17,8 @@ pub enum Guard {
     Method(String),
     /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
     ThisNotInstanceOf(String),
+    /// `PHP_VERSION_ID` compared with an integer: its range here, bounds inclusive (`None` unbounded).
+    PhpVersion(Option<i64>, Option<i64>),
 }
 
 /// Guards from `expr` being true. `var` looks a variable's remembered guards up.
@@ -57,7 +59,7 @@ pub fn truthy(
                     _ => Vec::new(),
                 }
             }
-            _ => Vec::new(),
+            _ => php_version(b, true).into_iter().collect(),
         },
         Expression::Variable(Variable::Direct(v)) => var(v.name),
         Expression::Assignment(a) => truthy(a.rhs, var, resolve),
@@ -108,14 +110,85 @@ pub fn falsy(
                     _ => Vec::new(),
                 }
             }
-            _ => Vec::new(),
+            _ => php_version(b, false).into_iter().collect(),
         },
         _ => Vec::new(),
     }
 }
 
+/// What holds when `a` or `b` does: the guards both have, and the hull of their `PHP_VERSION_ID` ranges (exact for
+/// the one question rules ask of it, whether the range lies within or outside `[v, max]`).
 fn both(a: Vec<Guard>, b: Vec<Guard>) -> Vec<Guard> {
-    a.into_iter().filter(|g| b.contains(g)).collect()
+    let mut out: Vec<Guard> = a.iter().filter(|g| b.contains(g)).cloned().collect();
+    if let (Some((alo, ahi)), Some((blo, bhi))) = (version_range(&a), version_range(&b)) {
+        out.retain(|g| !matches!(g, Guard::PhpVersion(..)));
+        out.push(Guard::PhpVersion(
+            alo.zip(blo).map(|(x, y)| x.min(y)),
+            ahi.zip(bhi).map(|(x, y)| x.max(y)),
+        ));
+    }
+    out
+}
+
+/// The intersection of the `PHP_VERSION_ID` ranges among `guards`, `None` when none narrows it.
+pub fn version_range(guards: &[Guard]) -> Option<(Option<i64>, Option<i64>)> {
+    guards.iter().fold(None, |acc, g| match g {
+        Guard::PhpVersion(lo, hi) => {
+            let (alo, ahi) = acc.unwrap_or((None, None));
+            let hi = match (ahi, *hi) {
+                (Some(a), Some(b)) => Some(a.min(b)),
+                (a, b) => a.or(b),
+            };
+            Some((alo.max(*lo), hi))
+        }
+        _ => acc,
+    })
+}
+
+/// `PHP_VERSION_ID <op> N` (either side) being `holds`: the range it leaves.
+fn php_version(b: &Binary, holds: bool) -> Option<Guard> {
+    let int = |e: &Expression| match e {
+        Expression::Literal(Literal::Integer(i)) => i.value.and_then(|v| i64::try_from(v).ok()),
+        _ => None,
+    };
+    let is_version = |e: &Expression| {
+        matches!(e, Expression::ConstantAccess(c)
+            if c.name.value().strip_prefix(b"\\").unwrap_or(c.name.value()) == b"PHP_VERSION_ID")
+    };
+    // normalised to `PHP_VERSION_ID <op> n`
+    let (n, flip) = if is_version(b.lhs) {
+        (int(b.rhs)?, false)
+    } else if is_version(b.rhs) {
+        (int(b.lhs)?, true)
+    } else {
+        return None;
+    };
+    // (strictly less, or-equal) of `PHP_VERSION_ID` against n
+    let (less, equal) = match (b.operator, flip) {
+        (BinaryOperator::LessThan(_), false) | (BinaryOperator::GreaterThan(_), true) => {
+            (true, false)
+        }
+        (BinaryOperator::LessThanOrEqual(_), false)
+        | (BinaryOperator::GreaterThanOrEqual(_), true) => (true, true),
+        (BinaryOperator::GreaterThan(_), false) | (BinaryOperator::LessThan(_), true) => {
+            (false, false)
+        }
+        (BinaryOperator::GreaterThanOrEqual(_), false)
+        | (BinaryOperator::LessThanOrEqual(_), true) => (false, true),
+        _ => return None,
+    };
+    // when false, `<` becomes `>=` and `<=` becomes `>`
+    let (less, equal) = if holds {
+        (less, equal)
+    } else {
+        (!less, !equal)
+    };
+    Some(match (less, equal) {
+        (true, true) => Guard::PhpVersion(None, Some(n)),
+        (true, false) => Guard::PhpVersion(None, Some(n - 1)),
+        (false, true) => Guard::PhpVersion(Some(n), None),
+        (false, false) => Guard::PhpVersion(Some(n + 1), None),
+    })
 }
 
 fn bool_literal(e: &Expression) -> Option<bool> {
