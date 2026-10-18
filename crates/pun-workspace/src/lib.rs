@@ -25,6 +25,23 @@ const PINT_NOT_NAME: [&str; 4] = [
     "_ide_helper.php",
     ".phpstorm.meta.php",
 ];
+/// Pint's `notName` list, plus `*.blade.php` unless Blade formatting is on.
+fn pint_not_name(cfg: &Config) -> Vec<&'static str> {
+    let mut not_name = PINT_NOT_NAME.to_vec();
+    if !cfg.blade {
+        not_name.push("*.blade.php");
+    }
+    not_name
+}
+
+/// An explicit path, resolved against the root and canonicalized, or Pint's "not readable" error.
+fn real_path(cfg: &Config, p: &Path) -> Result<PathBuf, FinderError> {
+    cfg.root
+        .join(p)
+        .canonicalize()
+        .map_err(|_| FinderError::NotReadable(p.to_path_buf()))
+}
+
 const PINT_EXCLUDE: [&str; 4] = ["bootstrap/cache", "build", "node_modules", "storage"];
 const VCS: [&str; 9] = [
     ".svn",
@@ -90,12 +107,8 @@ impl Finder {
 
     /// `ConfigurationFactory::finder()`.
     fn pint(cfg: &Config) -> Result<Self> {
-        let mut not_name: Vec<&str> = PINT_NOT_NAME.to_vec();
-        if !cfg.blade {
-            not_name.push("*.blade.php");
-        }
         let mut f = Self::php_cs_fixer()
-            .not_name(not_name)?
+            .not_name(pint_not_name(cfg))?
             .exclude(PINT_EXCLUDE);
         // pint.json finder options, applied in Pint's key order (exclude, in, notPath, notName are independent).
         // Globs are pun.toml's own (Pint has none): Mago's root-relative match.
@@ -233,11 +246,7 @@ pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
             Finder::pint(cfg)?
         };
         for p in paths {
-            let abs = cfg.root.join(&p);
-            let real = abs
-                .canonicalize()
-                .map_err(|_| FinderError::NotReadable(p.clone()))?;
-            push(&mut f, real);
+            push(&mut f, real_path(cfg, &p)?);
         }
         f
     };
@@ -282,9 +291,7 @@ pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Resul
         }
     } else {
         for p in paths {
-            let real = (cfg.root.join(p).canonicalize())
-                .map_err(|_| FinderError::NotReadable(p.clone()))?;
-            push(&mut f, real);
+            push(&mut f, real_path(cfg, p)?);
         }
     }
     let mut out: Vec<PathBuf> = f.files()?;
@@ -438,10 +445,7 @@ pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
         .file_name()
         .map(|n| n.to_string_lossy().into_owned())
         .unwrap_or_default();
-    let mut not_name: Vec<&str> = PINT_NOT_NAME.to_vec();
-    if !cfg.blade {
-        not_name.push("*.blade.php");
-    }
+    let not_name = pint_not_name(cfg);
     let under = |d: &str| {
         let d = d.replace('\\', "/");
         rel == d || rel.starts_with(&format!("{d}/"))
