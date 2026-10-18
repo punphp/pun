@@ -562,8 +562,12 @@ fn remove_utf8_modifier(pattern: &[u8]) -> Vec<u8> {
 fn variants(pattern: &[u8], cached: bool) -> [Option<Rc<Regex>>; 2] {
     if !cached {
         return [
-            compile_uncached(&add_utf8_modifier(pattern)).ok().map(Rc::new),
-            compile_uncached(&remove_utf8_modifier(pattern)).ok().map(Rc::new),
+            compile_uncached(&add_utf8_modifier(pattern))
+                .ok()
+                .map(Rc::new),
+            compile_uncached(&remove_utf8_modifier(pattern))
+                .ok()
+                .map(Rc::new),
         ];
     }
     VARIANTS

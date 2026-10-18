@@ -269,8 +269,8 @@ impl TypeExpression {
         let pattern: &str = &COMMA_SEPARATED_PATTERN;
         let mut index = 0;
         while value.len() != index {
-            let m = Preg::match_at(pattern, value, index)
-                .ok_or_else(|| ParseError(value.to_vec()))?;
+            let m =
+                Preg::match_at(pattern, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
             self.push(start_index + index, m.name_str("types"))?;
             index += m.str(0).len();
         }
