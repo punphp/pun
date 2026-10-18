@@ -4,7 +4,7 @@ use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, LazyLock};
+use std::sync::{Arc, LazyLock, OnceLock};
 
 use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
@@ -98,6 +98,17 @@ fn build_prelude() -> (CodebaseMetadata, SymbolReferences) {
     (metadata, symbol_references)
 }
 
+/// PHPStan's API stub's symbols.
+fn scan_api(version: PHPVersion) -> CodebaseMetadata {
+    let stub = File::new(
+        Cow::Borrowed(b"phpstan-api.php"),
+        FileType::Vendored,
+        None,
+        Cow::Borrowed(PHPSTAN_API),
+    );
+    scan(&mut LocalArena::new(), &stub, version)
+}
+
 /// Files scanned by one task: small enough that the threads finish together.
 const CHUNK: usize = 32;
 
@@ -140,7 +151,11 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
     // reflection of built-in classes (symbols::class(), which the rules read) is loaded, rather than by the first file
     // that asks while the others wait.
     let php84 = || pun_phpstan::symbols::symbols(pun_phpstan::symbols::PhpVersion::Php84);
-    let (((mut metadata, mut references), _), (scanned, sources, api)) = rayon::join(
+    // PHPStan's API stub (one large file, about a quarter of the run on larastan and pest when scanned after the
+    // rounds) is scanned on its own thread as soon as an analysed file names PHPStan, beside the rounds; it is merged
+    // after them, as before
+    let api = OnceLock::new();
+    let (((mut metadata, mut references), _), (scanned, sources)) = rayon::join(
         || rayon::join(prelude, php84),
         || {
             let mut loaded = vec![false; files.len()];
@@ -148,7 +163,6 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
             let mut round: Vec<usize> = (0..eager).collect();
             let mut scanned = Vec::new();
             let mut sources = Sources::new();
-            let mut api = false;
             while !round.is_empty() {
                 let size = (round.len() / (rayon::current_num_threads() * 4)).clamp(1, CHUNK);
                 let chunks: Vec<_> = round
@@ -166,6 +180,11 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
                             index.wanted(&file.contents, &mut wanted);
                             wanted.retain(|&w| !loaded[w]);
                             if file_type == FileType::Host {
+                                if names_phpstan(&file.contents) {
+                                    api.get_or_init(|| {
+                                        std::thread::spawn(move || scan_api(version))
+                                    });
+                                }
                                 sources.push((path.clone(), Arc::new(file)));
                             }
                         }
@@ -175,10 +194,7 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
                 round.clear();
                 for (chunk, files, wanted) in chunks {
                     scanned.push(chunk);
-                    for (path, file) in files {
-                        api |= names_phpstan(&file.contents);
-                        sources.insert(path, file);
-                    }
+                    sources.extend(files);
                     round.extend(wanted);
                 }
                 round.sort_unstable();
@@ -187,20 +203,14 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
                     loaded[i] = true;
                 }
             }
-            (scanned, sources, api)
+            (scanned, sources)
         },
     );
     for chunk in scanned {
         metadata.extend(chunk);
     }
-    if api {
-        let stub = File::new(
-            Cow::Borrowed(b"phpstan-api.php"),
-            FileType::Vendored,
-            None,
-            Cow::Borrowed(PHPSTAN_API),
-        );
-        metadata.extend(scan(&mut LocalArena::new(), &stub, version));
+    if let Some(api) = api.into_inner() {
+        metadata.extend(api.join().expect("the API stub scan never panics"));
     }
     populate_codebase_parallel(
         &mut metadata,
