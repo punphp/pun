@@ -178,7 +178,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 31. `crates/pun-cli/src/pint_error.rs:59-120` recovers error kinds by matching message text produced in
   `run.rs:203,259-262`, `pun-workspace/src/lib.rs:87,215,252,263` and pun-format, so rewording any of them silently
   changes the Pint box's class, file and line. A caller branches on the kind, so a typed `PintError` downcast with
-  `downcast_ref` earns its keep. Spans crates.
+  `downcast_ref` earns its keep. Spans crates. Still held at 8cc3efa. Partly done in wf/audit-cli-structure:
+  pun-workspace returns `FinderError` (`NotReadable`, `DirectoryNotFound`) and pun-format's `check_annotations`
+  returns `AnnotationError` (`NotEnabled`, `Analysing { path, message }`, `UndefinedArrayKey`), same messages. Waits:
+  `pint_error.rs` and `run.rs` belong to the platform/format track, so pun-cli still matches the text; the switch
+  (`Thrown::of(&anyhow::Error)` by `downcast_ref`, a `PintError` for the read/write/report-file errors) lands once
+  that claim is released.
 - [ ] 32. `crates/pun-cli/src/run.rs:50-364`: `format` is 315 lines with a 100-line `process` closure, returns
   `type Processed = (FileResult, Option<String>, bool, Option<FileResult>)` read as `.0`/`.2`, and
   `pint_error.rs:123-124` is generic only to accept that tuple; `lint_fixers: Vec<(Rule, bool, bool)>` and

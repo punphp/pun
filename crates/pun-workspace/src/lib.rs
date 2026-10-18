@@ -12,7 +12,7 @@
 //! the project root. For `format` a plain entry keeps Symfony's `exclude()` meaning above; for every other file set a
 //! plain entry is Mago's root-relative path prefix. See [`files`].
 
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result};
 use mago_database::matcher::{ExclusionMatcher, contains_glob_metacharacters};
 use pcre2::bytes::{Regex, RegexBuilder};
 use pun_config::Config;
@@ -36,6 +36,29 @@ const VCS: [&str; 9] = [
     ".git",
     ".hg",
 ];
+
+/// A path the finder can't use, worded as the exception Pint throws for it. Callers branch on the variant (pun-cli
+/// renders Pint's box from it), never on the text.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum FinderError {
+    /// A path argument that doesn't resolve: ConfigurationResolver's InvalidConfigurationException.
+    NotReadable(PathBuf),
+    /// An `in` directory that doesn't exist: Symfony Finder's DirectoryNotFoundException.
+    DirectoryNotFound(String),
+}
+
+impl std::fmt::Display for FinderError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            FinderError::NotReadable(p) => {
+                write!(f, "The path \"{}\" is not readable.", p.display())
+            }
+            FinderError::DirectoryNotFound(d) => write!(f, "The \"{d}\" directory does not exist."),
+        }
+    }
+}
+
+impl std::error::Error for FinderError {}
 
 /// A Symfony Finder configured the way PHP-CS-Fixer and Pint configure it.
 struct Finder {
@@ -84,7 +107,7 @@ impl Finder {
             let p = cfg.root.join(d);
             // ponytail: Symfony also globs non-directory `in` values; add when a project uses `in: ["src/*"]`.
             if !p.is_dir() {
-                bail!("The \"{d}\" directory does not exist.");
+                return Err(FinderError::DirectoryNotFound(d.clone()).into());
             }
             f.dirs.push(p);
         }
@@ -212,7 +235,7 @@ pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
             let abs = cfg.root.join(&p);
             let real = abs
                 .canonicalize()
-                .map_err(|_| anyhow::anyhow!("The path \"{}\" is not readable.", p.display()))?;
+                .map_err(|_| FinderError::NotReadable(p.clone()))?;
             push(&mut f, real);
         }
         f
@@ -249,7 +272,7 @@ pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Resul
         for d in dirs {
             let p = cfg.root.join(d);
             if !p.exists() {
-                bail!("The \"{d}\" directory does not exist.");
+                return Err(FinderError::DirectoryNotFound(d.clone()).into());
             }
             push(&mut f, p);
         }
@@ -258,10 +281,8 @@ pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Resul
         }
     } else {
         for p in paths {
-            let real =
-                cfg.root.join(p).canonicalize().map_err(|_| {
-                    anyhow::anyhow!("The path \"{}\" is not readable.", p.display())
-                })?;
+            let real = (cfg.root.join(p).canonicalize())
+                .map_err(|_| FinderError::NotReadable(p.clone()))?;
             push(&mut f, real);
         }
     }

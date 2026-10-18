@@ -332,10 +332,13 @@ impl Pipeline {
         let path = file.display();
         let annotations = match fixer_annotation::find(&Tokens::from_code(code)) {
             Ok(a) => a,
-            Err(fixer_annotation::FindError::Duplicated(e)) => {
-                bail!("Error while analysing file \"{path}\": {e}")
+            Err(fixer_annotation::FindError::Duplicated(message)) => {
+                let path = path.to_string();
+                return Err(AnnotationError::Analysing { path, message }.into());
             }
-            Err(fixer_annotation::FindError::UndefinedArrayKey) => bail!("Undefined array key 1"),
+            Err(fixer_annotation::FindError::UndefinedArrayKey) => {
+                return Err(AnnotationError::UndefinedArrayKey.into());
+            }
         };
         if std::env::var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS")
             .is_ok_and(|v| php_bool(&v))
@@ -361,14 +364,41 @@ impl Pipeline {
         if missing.is_empty() {
             return Ok(());
         }
-        bail!(
+        Err(AnnotationError::NotEnabled(format!(
             "@php-cs-fixer-ignore annotation(s) used for rules that are not in the current set of enabled rules:\n{}\n\n\
              Please check your annotation(s) usage in {path} to ensure that these rules are included, or update your \
              annotation(s) usage if they have been replaced by other rules in the version of PHP CS Fixer you are using.",
             missing.join("\n")
-        )
+        ))
+        .into())
     }
 }
+
+/// Why [`Pipeline::check_annotations`] aborts a run, as the exception Runner::fixFile throws. Callers branch on the
+/// variant (pun-cli renders Pint's box from it), never on the text.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AnnotationError {
+    /// validateRulesNamesForExceptions: annotations naming rules the run doesn't enable (the whole message).
+    NotEnabled(String),
+    /// FixerAnnotationAnalyzer's exception (`message`), which Runner::fixFile wraps with the file's `path`.
+    Analysing { path: String, message: String },
+    /// The PHP warning FixerAnnotationAnalyzer hits on an annotation without a space after its name.
+    UndefinedArrayKey,
+}
+
+impl std::fmt::Display for AnnotationError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            AnnotationError::NotEnabled(message) => f.write_str(message),
+            AnnotationError::Analysing { path, message } => {
+                write!(f, "Error while analysing file \"{path}\": {message}")
+            }
+            AnnotationError::UndefinedArrayKey => f.write_str("Undefined array key 1"),
+        }
+    }
+}
+
+impl std::error::Error for AnnotationError {}
 
 /// Cheap guard: FixerAnnotationAnalyzer can only find something when the marker is in the file.
 /// The fixers `code`'s `@pun-ignore-file` comments opt out of, for engines that only know `@php-cs-fixer-ignore`
@@ -756,6 +786,30 @@ mod tests {
             err(b"<?php\n// @php-cs-fixer-ignore\tx\n"),
             "Undefined array key 1"
         );
+        // The same errors by kind, for pun-cli's box: the analyser's own message apart from Runner's wrapper.
+        let kind = |code: &[u8]| {
+            (p.check_annotations(Path::new("/p/b.php"), code)
+                .unwrap_err())
+            .downcast::<AnnotationError>()
+            .unwrap()
+        };
+        assert_eq!(
+            kind(b"<?php\n// @php-cs-fixer-ignore a,b,b,a\n"),
+            AnnotationError::Analysing {
+                path: "/p/b.php".into(),
+                message:
+                    "Duplicated values found for annotation \"@php-cs-fixer-ignore\": \"a\", \"b\"."
+                        .into()
+            }
+        );
+        assert_eq!(
+            kind(b"<?php\n// @php-cs-fixer-ignore\tx\n"),
+            AnnotationError::UndefinedArrayKey
+        );
+        assert!(matches!(
+            kind(b"<?php\n// @php-cs-fixer-ignore nope\n"),
+            AnnotationError::NotEnabled(_)
+        ));
         // PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS (FILTER_VALIDATE_BOOLEAN) turns the name check off, not the analysis.
         unsafe { std::env::set_var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS", " Yes") };
         p.check_annotations(Path::new("a.php"), b"<?php\n// @php-cs-fixer-ignore nope\n")

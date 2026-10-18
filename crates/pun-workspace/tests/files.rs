@@ -2,7 +2,7 @@
 //! the plan's rules: the `[files]` set walks `paths` like PHP-CS-Fixer's `Finder::create()` and drops pun.toml's
 //! excludes (globs and plain prefixes matched Mago's way, relative to the project root); `format` is Pint's finder.
 extern crate punphp_workspace as pun_workspace;
-use pun_workspace::{Command, files, is_path_excluded};
+use pun_workspace::{Command, FinderError, files, is_path_excluded};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -215,4 +215,28 @@ fn stdin_filename_honours_glob_excludes() {
     let cfg = pun_config::from_toml(&root, "[format]\nexclude = [\"app/Gen*/**\"]\n").unwrap();
     assert!(is_path_excluded(&cfg, &root.join("app/Generated/X.php")));
     assert!(!is_path_excluded(&cfg, &root.join("app/Models/X.php")));
+}
+
+/// The finder's errors carry their kind, so pun-cli picks Pint's exception (class, file, line) without reading the
+/// message: every site, through `files` and `discover`, with or without a command.
+#[test]
+fn errors_are_typed() {
+    let root = tree(&["src/A.php"]);
+    let kind = |toml: &str, command: Option<Command>, paths: &[&str]| {
+        let cfg = pun_config::from_toml(&root, toml).unwrap();
+        let paths: Vec<PathBuf> = paths.iter().map(PathBuf::from).collect();
+        let e = files(&cfg, command, &paths).unwrap_err();
+        e.downcast_ref::<FinderError>().cloned()
+    };
+    let missing = "[files]\npaths = [\"missing\"]\n";
+    for command in [None, Some(Command::Format)] {
+        assert_eq!(
+            kind("", command, &["nope"]),
+            Some(FinderError::NotReadable("nope".into()))
+        );
+        assert_eq!(
+            kind(missing, command, &[]),
+            Some(FinderError::DirectoryNotFound("missing".into()))
+        );
+    }
 }
