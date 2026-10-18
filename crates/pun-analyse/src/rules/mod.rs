@@ -3,9 +3,9 @@
 
 mod calls;
 mod classes;
-mod functions;
 mod declarations;
 mod enums;
+mod functions;
 mod members;
 mod names;
 mod params;
@@ -1349,16 +1349,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_enum_case(&mut self, case: &'ast EnumCase<'arena>, _: &mut ()) {
         enums::case_outside(self, case);
     }
-    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
-        if let Some(parameters) = &h.parameter_list {
-            declarations::promoted(
-                self,
-                h.span(),
-                declarations::FunctionLike::Other,
-                parameters,
-            );
-        }
-    }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         functions::function_like(self, f, &f.parameter_list);
         functions::closure_use(self, f);
@@ -1434,6 +1424,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
         if let Some(params) = &h.parameter_list {
             functions::function_like(self, h, params);
+            declarations::promoted(self, h.span(), declarations::FunctionLike::Other, params);
         }
         self.push_frame(FrameKind::Named);
     }
