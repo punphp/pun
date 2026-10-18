@@ -192,7 +192,10 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | --- | --- |
 | output follow-up: add a warning text token to design/tokens.json that reads on a light ground (light terminals fall back to SGR 33) | todo |
 | output follow-up: decide the rule docs base URL so `Renderer::with_rule_docs` (now `#[cfg(test)]`, drop that) links rule IDs, and switch `pun explain`'s docs row from the mapping.toml#L<line> link (`pun_config::MAPPING_URL`) to the rule page | todo |
-| output 4-6: GitHub annotations, `pun check` grouped view, exit code 2 | todo |
+| output 5: `pun check` grouped view | todo |
+| output follow-up: when lint and analyse emit `pun_problem::Problem` values, annotate them through `github::problem` (`::warning` for lint warnings); analyse decides whether to drop `title=` for byte parity with PHPStan's `--error-format=github` | todo |
+| output follow-up (decision): under agent mode with `--format=github`, should run errors print `::error ::<message>` instead of the agent line | todo |
+| output follow-up: re-run scripts/coverage.sh punphp after output 4 and 6 once the gpgsign and BSD-script test rows land, and refresh reports/COVERAGE.md (its 2302-line baseline is stale) | todo |
 
 **Gate:** every human output sample in the plan files is pinned by a test; machine formats and exit codes still pass
 `scripts/cli-parity.sh`.
@@ -309,7 +312,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
 | CI: after output 3, confirm punphp line coverage at 100% (98.49% on macOS; gaps in cache.rs, report.rs, run.rs, list_files.rs, migrate.rs sit behind the environment-failing tests) | todo |
 | tests: crates/pun-cli/tests/migrate.rs pty tests use a `script` invocation that works on macOS (BSD `script` has no `-qec`) | todo |
-| tests: crates/pun-cli/tests/output.rs `ignore_annotations_like_pint` expects the `assert()` message, so it fails on a PHP with `zend.assertions` off (got "Undefined array key 1"); run the oracle with `-d zend.assertions=1` | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
