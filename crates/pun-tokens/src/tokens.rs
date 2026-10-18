@@ -68,6 +68,8 @@ pub struct Tokens {
     blocks: RefCell<BlockCache>,
     /// `$namespaceDeclarations`: NamespacesAnalyzer's result, dropped on every change.
     namespace_declarations: RefCell<Option<Arc<Vec<NamespaceAnalysis>>>>,
+    /// SwitchAnalyzer's colon indices (upstream caches them per code hash), dropped on every change.
+    switch_colons: RefCell<Option<Arc<[usize]>>>,
     changed: bool,
 }
 
@@ -80,6 +82,7 @@ impl Default for Tokens {
             found_contents: HashMap::new(),
             blocks: RefCell::default(),
             namespace_declarations: RefCell::default(),
+            switch_colons: RefCell::default(),
             changed: false,
         }
     }
@@ -270,7 +273,7 @@ impl Tokens {
         }
         crate::transformers::transform(self);
         self.changed = true;
-        *self.namespace_declarations.get_mut() = None;
+        self.drop_derived();
         *self.blocks.get_mut() = BlockCache::default();
     }
 
@@ -310,10 +313,16 @@ impl Tokens {
             let old = std::mem::replace(&mut self.tokens[index], Token::char(""));
             self.unregister_found_token(&old);
             self.changed = true;
-            *self.namespace_declarations.get_mut() = None;
+            self.drop_derived();
             self.register_found_token(&token);
         }
         self.tokens[index] = token;
+    }
+
+    /// Drops the values computed from the token list (`namespace_declarations`, `switch_colon_indices`).
+    fn drop_derived(&mut self) {
+        *self.namespace_declarations.get_mut() = None;
+        *self.switch_colons.get_mut() = None;
     }
 
     pub fn clear_changed(&mut self) {
@@ -332,6 +341,20 @@ impl Tokens {
         }
         let v = Arc::new(NamespacesAnalyzer::compute(self));
         *self.namespace_declarations.borrow_mut() = Some(v.clone());
+        v
+    }
+
+    /// SwitchAnalyzer's `getColonIndicesForSwitch`: `compute` runs once per token-list version, and every edit drops
+    /// the cached value, like `namespace_declarations`.
+    pub fn switch_colon_indices(
+        &self,
+        compute: impl FnOnce(&Tokens) -> Vec<usize>,
+    ) -> Arc<[usize]> {
+        if let Some(v) = self.switch_colons.borrow().as_ref() {
+            return v.clone();
+        }
+        let v: Arc<[usize]> = compute(self).into();
+        *self.switch_colons.borrow_mut() = Some(v.clone());
         v
     }
 
@@ -359,7 +382,7 @@ impl Tokens {
             index += 1;
         }
         // Tokens moved: index-based caches go (upstream resets namespaceDeclarations here too).
-        *self.namespace_declarations.get_mut() = None;
+        self.drop_derived();
         self.found_contents.insert(Vec::new(), 0);
         // updateSizeByTrimmingTrailingEmptyTokens
         while self
@@ -683,7 +706,7 @@ impl Tokens {
         }
         self.changed = true;
         *self.blocks.get_mut() = BlockCache::default();
-        *self.namespace_declarations.get_mut() = None;
+        self.drop_derived();
         let old_size = self.tokens.len();
         let far = *slices.keys().next_back().unwrap();
         assert!(
@@ -1017,9 +1040,15 @@ mod tests {
     }
 
     #[test]
-    fn namespace_declarations_cached_until_changed() {
-        // Like upstream's $namespaceDeclarations: computed once, recomputed after every edit that moves or changes
-        // tokens. Without a namespace the global one spans the file, so its scope end is count - 1.
+    fn derived_values_cached_until_changed() {
+        // Like upstream's $namespaceDeclarations and SwitchAnalyzer's per-code cache: computed once, recomputed after
+        // every edit that moves or changes tokens. Without a namespace the global one spans the file, so its scope end
+        // is count - 1.
+        let runs = std::cell::Cell::new(0);
+        let colons = |t: &Tokens| {
+            runs.set(runs.get() + 1);
+            vec![t.count()]
+        };
         let mut t = Tokens::from_code(b"<?php foo(1);");
         let first = t.namespace_declarations();
         // token_get_all('<?php foo(1);') has 6 tokens.
@@ -1028,14 +1057,21 @@ mod tests {
         // Re-setting an identical token is not a change.
         t.set(1, t[1].clone());
         assert!(Arc::ptr_eq(&first, &t.namespace_declarations()));
+        assert_eq!(*t.switch_colon_indices(colons), [6]);
+        assert_eq!(*t.switch_colon_indices(colons), [6]);
+        assert_eq!(runs.get(), 1);
+        t.set(1, t[1].clone());
+        t.switch_colon_indices(colons);
+        assert_eq!(runs.get(), 1);
         type Edit = Box<dyn Fn(&mut Tokens)>;
         let mut edits: Vec<Edit> = vec![
             Box::new(|t| t.set(1, Token::new(T_STRING, "bar"))),
             Box::new(|t| t.insert_at(1, vec![Token::new(T_WHITESPACE, " ")])),
             Box::new(|t| {
                 t.clear_at(1);
-                // the clear above already dropped it; compute again so only clear_empty_tokens can drop it next
+                // the clear above already dropped them; compute again so only clear_empty_tokens can drop them next
                 t.namespace_declarations();
+                t.switch_colon_indices(|_| vec![]);
                 t.clear_empty_tokens();
             }),
             Box::new(|t| t.set_code(b"<?php $a;")),
@@ -1048,6 +1084,9 @@ mod tests {
             assert!(!Arc::ptr_eq(&before, &now));
             assert_eq!(now[0].scope_end_index, end);
             before = now;
+            let runs_before = runs.get();
+            assert_eq!(*t.switch_colon_indices(colons), [end + 1]);
+            assert_eq!(runs.get(), runs_before + 1);
         }
     }
 }

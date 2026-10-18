@@ -1,13 +1,6 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\SwitchAnalyzer`.
 use super::control_case_structures_analyzer::ControlCaseStructuresAnalyzer;
-use pun_tokens::{Token, Tokens};
-use std::cell::RefCell;
-
-thread_local! {
-    /// Upstream caches per collection hash (code, count and token ids); we keep the last collection's
-    /// tokens + result, so a collection with the same code but other indices (cleared tokens) misses.
-    static CACHE: RefCell<Option<(Vec<Token>, Vec<usize>)>> = const { RefCell::new(None) };
-}
+use pun_tokens::Tokens;
 
 pub struct SwitchAnalyzer;
 
@@ -16,19 +9,15 @@ impl SwitchAnalyzer {
         if !tokens[index].equals(":", true) {
             return false;
         }
-        CACHE.with(|c| {
-            let mut c = c.borrow_mut();
-            if !c
-                .as_ref()
-                .is_some_and(|(cached, _)| cached[..] == *tokens.as_slice())
-            {
-                *c = Some((
-                    tokens.as_slice().to_vec(),
-                    Self::get_colon_indices_for_switch(tokens),
-                ));
-            }
-            c.as_ref().unwrap().1.contains(&index)
-        })
+        // Upstream caches per collection hash; Tokens keeps the indices until the next edit, sorted for the lookup.
+        tokens
+            .switch_colon_indices(|t| {
+                let mut indices = Self::get_colon_indices_for_switch(t);
+                indices.sort_unstable();
+                indices
+            })
+            .binary_search(&index)
+            .is_ok()
     }
 
     fn get_colon_indices_for_switch(tokens: &Tokens) -> Vec<usize> {
