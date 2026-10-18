@@ -394,12 +394,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   as its submodule; pun-workspace shares `tree`; pun-fixers' `tests/common::do_test` is doTest for both fixtures.rs
   and cases.rs (the oracle cases pass the stricter checks), blade.rs runs `Pipeline::run`, and the 17 `Pun/*`
   helpers call `fix_with`. Deferred: pun-lint's example walkers (pun-lint is claimed by the lint track). Fixed in
-  wf/audit-hygiene.
+  224ca1d and 7a0dae4.
 - [x] 67. Small duplication in pun-workspace and list-files: `PINT_NOT_NAME` built twice (`lib.rs:69-72`, `:419-422`),
   the canonicalize-or-"not readable" block twice (`:212-216`, `:261-264`), and `CommandArg` mirroring
   `pun_workspace::Command` (`pun-cli/src/list_files.rs:30-54`). `pint_not_name` and `real_path` now hold the two
   blocks. `CommandArg` stays: it carries clap's `ValueEnum` derive, and moving that onto `Command` would make
-  pun-workspace depend on clap for three variants. Fixed in wf/audit-hygiene.
+  pun-workspace depend on clap for three variants. Fixed in ed72e06.
 - [x] 68. Crate manifests repeat `homepage`, `keywords` and `categories` in every crate instead of
   `[workspace.package]`; `pprof` (`pun-cli/Cargo.toml:24`) and `pcre2-sys` bypass `[workspace.dependencies]`;
   `pun-fixers/Cargo.toml:15-17` repeats the `pcre2` and `libc` versions, uses `pcre2` only in a test, and uses `libc`
@@ -408,7 +408,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   pun-analyse and pun-phpstan keep their own) and `categories` come from `[workspace.package]`, which also sets
   `rust-version = "1.99"`; `pprof` and `pcre2-sys` are workspace dependencies; pun-fixers takes `c_int`/`c_void` from
   `std::ffi` and `pcre2` as a dev-dependency (single_quote now goes through `Preg`, item 88). CI's `@stable` is left
-  while CI is off. Deferred: pun-lint's manifest (claimed by the lint track). Fixed in wf/audit-hygiene.
+  while CI is off. Deferred: pun-lint's manifest (claimed by the lint track). Fixed in 4649981.
 
 ### Dead code
 
@@ -432,7 +432,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   at `no_unneeded_control_parentheses.rs:83`. All held at d565ad2. `tokens_config`, the always-`Some` `Option`,
   `_override` and `length` are gone (upstream's `fixNewline` and `echoSpan` never read `$override`/`$length` either);
   the comment sits on `T_REQUIRE` in `KNOWN_NEGATIVE_PRE_TYPES`, as upstream has it. pun-lint's `Context` fields and
-  `serde_json` stay (owned by the lint track). Fixed in wf/audit-hygiene.
+  `serde_json` stay (owned by the lint track). Fixed in 362bcfc.
 - [x] 73. Forwarding wrappers: `ordered_imports.rs:153-155` (`spaceship`), `no_alias_functions.rs:56-58` (`merge`),
   `import_processor.rs:59-61` (`tokenize_name`), `type_expression.rs:358-364`, `helpers.rs:28-30` (`has_newline`,
   used twice while 28 sites call `Preg` directly), `pun-phpstan/src/types.rs:288-290`, and all of
@@ -452,7 +452,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `Option`. The lint rule tuple is a `LintRule` map; `Captures::offset`/`name_offset` return `Option<usize>` (plus
   `start()` for group 0); `need_tokens` is `Option<u32>`; `step` uses `checked_add_signed`, the block walk and
   `next_php_unit_class` count in `usize` (`before`, exclusive). pun-analyse's `params.rs` and `rules/mod.rs` are left
-  to the analyse track. Fixed in wf/audit-hygiene.
+  to the analyse track. Fixed in a8163a9.
 - [ ] 76. `crates/pun-tokens/src/token.rs:8-11,202-208`: `Token` has public fields and getters for them (pun-fixers
   reads `.content` 213 times and `get_content()` 246 times), and struct literals skip `Token::new`'s check. Pick one.
   Needs a decision.
@@ -523,12 +523,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   internals have no outside caller); `docblock/regex.rs:4,13,187` exports three macros as the crate's public API;
   `pun-format/src/lib.rs:83` (`DEPRECATED`), `parse_mode.rs:20`, `tokens.rs:209`. `pub(crate)` them; the workspace
   lint in item 28 keeps them that way. `cargo clippy --fix -- -W unreachable_pub` narrowed 470 items across
-  pun-fixers, pun-tokens, pun-format, pun-config, pun-phpstan, pun-analyse and pun-cli; `phpdoc` and `parse_mode`
-  are private modules, the `di`/`schema`/`phpfile` items no test or crate uses are `pub(crate)`, the regex macros are
+  pun-fixers, pun-tokens, pun-format, pun-config, pun-phpstan, pun-analyse and pun-cli; `parse_mode` is a private
+  module (`phpdoc` stays `pub`: pun-analyse's signatures rule now parses with it), the `di`/`schema`/`phpfile` items no test or crate uses are `pub(crate)`, the regex macros are
   crate-local, `DEPRECATED` is `pub(crate)` and `Tokens::offset_exists` lost its last caller (item 75) and is gone.
   Deferred: the files the format, analyse and lint tracks claim (`pun-cli/src/{run,report,pint_error,fix_report,
   watch,main,console}.rs`, `render/`, `pun-analyse/src/rules/`, pun-lint); the lint setting waits for item 28.
-  Fixed in wf/audit-hygiene.
+  Fixed in 9f42b7b.
 - [x] 88. Small fixes: `abstract_no_useless_else_fixer::PRIORITY` used by one of its two users
   (`no_useless_else.rs:17-19` hard-codes 39); `blank_line_before_statement.rs:146-153` looks each key up twice;
   `single_quote.rs:22-23,58` alone bypasses `Preg`; `namespaces_analyzer.rs:76-82` clones the whole cached list to
@@ -541,7 +541,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   the private link are fixed. Deferred: pun-analyse's two links to a missing `typed_expressions()` (warned by `cargo
   doc --document-private-items`; point them at `TypedExpressions`), as the analyse track owns `rules/mod.rs`. Not
   reproduced: the namespaces clone (475eb65 moved the
-  analyzer to pun-tokens and `get_namespace_at` clones only the entry it finds). md5 left as it is (needs a decision). Fixed in wf/audit-hygiene.
+  analyzer to pun-tokens and `get_namespace_at` clones only the entry it finds). md5 left as it is (needs a decision). Fixed in 4649981.
 
 ### Lints
 

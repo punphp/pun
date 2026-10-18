@@ -365,7 +365,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
 | coverage: reports/COVERAGE.md still lists punphp-fixers at 100% while scripts/coverage.sh reports 99.99% (method_argument_space.rs:336, yoda_style.rs:426, same on main); update the row with the fix | todo |
-| audit item 88: the namespaces_analyzer.rs part (cloning the whole cached list) is done in the item 36 commit; the rest of item 88 is open | todo |
 | audit php-compat follow-up: an invalid PHP regex in a pint.json notPath/notName (unknown modifier, missing end delimiter) is now a run error with PHP's message, as Pint fails; mention it on the docs config page | todo |
 | pun-phpstan: with the `n` modifier `php_compat::preg_compile` prepends `(?n)`, so the error offset of `/(a)\1/n` is 5 where PHP says 4; set PCRE2_NO_AUTO_CAPTURE as the fixers' raw compile does | todo |
 | tests: on macOS PHP rejects a non-ASCII regex delimiter such as `§` as alphanumeric (locale isalnum) while php_compat::preg_parse reports an unknown modifier; check glibc PHP and add a case if they agree | todo |
@@ -398,6 +397,11 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit item 31 follow-up: in pun-cli pint_error.rs, replace origin()'s message matching with downcast_ref on pun_workspace::FinderError, pun_format::AnnotationError and a pun-cli PintError for the read, write and report-file errors (library half done in 093609e) | todo |
 | audit item 11 follow-up: with --format=json -v and a non-UTF-8 diff, abort like Pint's JsonException ('Malformed UTF-8 characters, possibly incorrectly encoded', JsonReporter.php:63, exit 1); txt, junit and xml write the raw bytes (reuse item 12's console::format_bytes) | todo |
 | coverage: measure punphp (pun-cli) on Linux after audit item 33 (ef7c179); migrate::announce's decline branch is reached only by the Linux-only pty tests | todo |
+| audit-hygiene follow-up (item 68): move crates/pun-lint/Cargo.toml's homepage, keywords and categories to `.workspace = true` (left for the lint track, which owns the file) | todo |
+| audit-hygiene follow-up (item 66): pun-lint's examples repeat their file walkers; share one helper (left for the lint track) | todo |
+| audit-hygiene follow-up (item 87): `unreachable_pub` is still open in pun-cli run.rs, report.rs, pint_error.rs, fix_report.rs, watch.rs, main.rs, console.rs, render.rs, in pun-analyse/src/rules and in pun-lint (files owned by other tracks); without the item 28 lint gate the narrowing can regress | todo |
+| wf tooling: pun-fixers' build.rs registers fixers with absolute `#[path]`s, so a shared target slot can compile another worktree's src/fixers; emitting relative paths (a macro_rules list, mods declared in lib.rs) fixes it but breaks worktrees still on the old build.rs, so land it once every track has rebased | todo |
+| clippy: pun-cli tests/output.rs:467 (`iter().copied().collect()`), pun-analyse src/rules/calls.rs:348 (collapsible if) and src/rules/scope.rs:103 (`matches!`) warn on main | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
