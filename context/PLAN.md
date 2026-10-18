@@ -362,6 +362,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf analyse 3 follow-up: scan PHPStan's API stub (phpstan-api.php, about 60 ms serial on larastan and pest) off the critical path; `rayon::join` beside the scan rounds gave -20% wall but 2 of 14 runs stalled for 600-1000 s, so find the cause (Mago interner or rayon) before retrying | todo |
 | perf analyse 3 follow-up: walk psr-4 and psr-0 directories lazily, reading only the directories a class lookup needs (the directory walk is about 18% of samples; about half the directories hold a loaded file) | todo |
 | perf analyse 3 follow-up: a lexer-aware name scan (code names plus docblocks only) would load about 8% fewer files on Pinkary; skipping vendor method bodies would load about 17% fewer, but Mago infers assertions from single-return bodies, so it needs a parity plan | todo |
+| audit item 12 follow-up: apply pun-wf/scratch/audit-format-item12.patch (`LintError`/`SyntaxError.message: Vec<u8>`, byte `console::format_bytes`, pun-cli report.rs/run.rs/console.rs writing the ERROR and `-q` lines as bytes) once the tracks reworking those pun-cli files release them; rerun pun-format/pun-cli tests and cli-parity, then tick item 12 | todo |
+| audit item 82 follow-up: docblock/tests.rs `type_expression_parse_invalid` still checks the message with `contains`; item 15 (var_export) has landed, so assert the full message with oracle values | todo |
+| wf tooling: shared heavy-slot target dirs make one worktree's workspace-crate build look fresh in another (cargo hashes are path-independent), giving stale types; touch sources before each run or use per-worktree target dirs | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |

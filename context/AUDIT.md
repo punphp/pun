@@ -199,7 +199,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   keeps them, and type the cache. Spans crates.
 - [x] 37. `crates/pun-format/src/php_parser.rs:440-442` copies the reduction's right-hand side with `.to_vec()` on
   every grammar reduction of every linted file; `values` is a local, so `&values[values.len() - len..]` works. Hot
-  path; removes an allocation. Fixed in wf/audit-format.
+  path; removes an allocation. Fixed in 2cb0bbf.
 - [ ] 38. `crates/pun-fixers/src/analyzers/preg.rs`: seven `unsafe` blocks (`:43`, `:54`, `:93`, `:182-239`, `:244`,
   `:268`, `:285`) with no `// SAFETY:` (clippy `undocumented_unsafe_blocks`), the 58-line block at `:182` mixes safe
   code with FFI, `Matcher::new` never checks the two `*_create` calls for NULL, and the `!Send` invariant of `Regex`
@@ -424,7 +424,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   comment about Mago, which lint no longer uses (also `context/reports/COVERAGE.md:38`); `docblock/tests.rs:332-343`
   uses `contains`. Assert the oracle's exact message. The pun-format test now asserts PHP 8.5's exact messages and the
   stale Mago note is gone from COVERAGE.md; the docblock message is left to item 15, whose exact-message test (oracle
-  values, `var_export` escaping) lands with that fix. Fixed in wf/audit-format.
+  values, `var_export` escaping) lands with that fix. Fixed in 7ab5e7f.
 
 ### Splits and smaller items
 
