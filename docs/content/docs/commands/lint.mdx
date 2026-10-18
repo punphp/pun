@@ -39,19 +39,30 @@ Options for a rule go in the same table. Rule names are Pun IDs, `<group>/<name>
 
 Which rules run comes from your [lint sets](/docs/configuration/presets#lint-sets), `[lint.groups]` and `[lint.rules]` ([pun.toml](/docs/configuration/pun-toml#lint)). `pun migrate` moves the risky and code-deleting rules your `pint.json` enabled here at `"error"`, so `pun check --fix` applies them as Pint did.
 
-## Mago's report-only rules
+## Levels on the command line
 
 ```bash
-pun lint --mago            # the whole project
-pun lint --mago app routes # specific paths
+pun lint -A lint/style                     # turn a group off for this run
+pun lint -W security/no-global             # turn a rule on as a warning
+pun lint -D lint/security -A security/no-eval
+pun lint --deny-warnings                   # warnings fail the run too
+pun lint --max-warnings 10                 # fail on more than 10 warnings
 ```
 
-Reports Mago's lint-only Laravel rules as `path:line:col: level [rule] message`. These have no auto-fix, so this never edits files. It exits 1 when it finds something.
+`-A` (allow, off), `-W` (warn) and `-D` (deny, error) take a rule or a group and apply after `pun.toml`, in the order given, so a later flag wins. A group means every rule of it Pun can run. A rule Pun can't run yet is an error (exit 2) when you name it; a group skips it.
 
-| Rule | Flags |
-| --- | --- |
-| `no-request-all` | `$request->all()` |
-| `prefer-casts-method` | a `$casts` property instead of a `casts()` method |
-| `prefer-anonymous-migration` | named migration classes |
-| `prefer-view-array` | `view()->with()` chains instead of an array |
-| `middleware-in-routes` | middleware set in controllers instead of routes |
+`[[lint.overrides]]` set levels per file: each override whose `files` globs match the file applies after `[lint.rules]`, later ones winning, and the command line applies last.
+
+## Output
+
+A rule on Mago's tree reports each problem with a code frame, its level (`✖` error, `⚠` warning) and `fixable` when `--fix` can apply it; `--concise` prints one line per problem. A PHP-CS-Fixer rule reports the file it would change, with its rule ID. `--format` takes Pint's reporters (`json`, `txt`, `checkstyle`, `junit`, `xml`, `gitlab`, `github`, `agent`), which list each file's rule IDs.
+
+Only `error` fails a run, unless `--deny-warnings` or `--max-warnings` says otherwise. Lint skips Blade templates and Pint's default directories (`bootstrap/cache`, `build`, `node_modules`, `storage`) besides `[lint] exclude`, and keeps a cache of clean files apart from `pun format`'s (`--no-cache` turns it off).
+
+## Ignore comments
+
+```php
+$x = eval($code); // @pun-ignore lint/security/no-eval -- legacy plugin loader
+```
+
+See [ignore comments](/docs/configuration/ignore-comments) for every form. A PHP-CS-Fixer rule changes a whole file, so only `@pun-ignore-file` turns it off. With `comments/no-unused-ignore` on, an ignore ID that suppressed nothing is reported, and `--fix` deletes it; an `@pun-ignore` without a rule ID is an `invalid-ignore-comment` error.

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 /// A scratch tree `pun-<prefix>-<pid>-<n>` under the temp dir holding each of `files` with `content`, canonical.
-pub fn tree(prefix: &str, files: &[&str], content: &str) -> PathBuf {
+pub(crate) fn tree(prefix: &str, files: &[&str], content: &str) -> PathBuf {
     static N: AtomicUsize = AtomicUsize::new(0);
     let root = std::env::temp_dir().join(format!(
         "pun-{prefix}-{}-{}",

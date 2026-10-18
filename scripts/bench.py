@@ -167,6 +167,8 @@ ANALYSE = {
     "pest": (["phpstan-pest-extension.neon", "vendor/pestphp/pest-plugin-phpstan/extension.neon"], ["src"], []),
     "laravel-pint": (["vendor/larastan/larastan/extension.neon"], ["app", "bootstrap", "config", "resources"], []),
 }
+# project -> its PHPStan excludePaths, for pun-bench-analyse.toml
+ANALYSE_EXCLUDE = {"laravel-framework": ["src/Illuminate/Testing/ParallelRunner.php", "src/*/views/*"]}
 # project -> the paths of its rector.php
 LINT = {
     "pinkary": ["app", "bootstrap/app.php", "config", "database", "public", "tests"],
@@ -189,7 +191,7 @@ AGENT_ENV = ["AUGMENT_AGENT", "AMP_CURRENT_THREAD_ID", "AI_AGENT", "CURSOR_TRACE
 
 
 def php_files(work: Path, paths: list[str]) -> int:
-    """The PHP files Pun's lint example and Pun's analyser walk: no vendor/, node_modules/, dot dirs or Blade."""
+    """The PHP files `pun lint` and `pun analyse` walk: no vendor/, node_modules/, dot dirs or Blade."""
     n = 0
     for rel in paths:
         p = work / rel
@@ -243,18 +245,34 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
             (work / f"pun-bench-{kind}.neon").write_text("\n".join(lines) + "\n")
         (work / "pun-bench-mago.toml").write_text(
             "[source]\npaths = [" + ", ".join(f'"{p}"' for p in paths) + ']\nincludes = ["vendor"]\n')
+        # Pun reads only pun.toml: the same paths and excludes, PHPStan level 0's preset.
+        exclude = ", ".join(f'"{e}"' for e in ANALYSE_EXCLUDE.get(name, []))
+        (work / "pun-bench-analyse.toml").write_text(
+            '[analyse]\npreset = "basic"\npaths = [' + ", ".join(f'"{p}"' for p in paths) + f"]\nexclude = [{exclude}]\n")
     else:
         paths = ", ".join(f"__DIR__.'/{p}'" for p in LINT[name])
         rules = ", ".join(f"\\{c}::class" for c in rector_rules)
+        # Every native lint rule, at `error`.
+        (work / "pun-bench-lint.toml").write_text(
+            "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in native_rules()))
         (work / "pun-bench-rector.php").write_text(
             "<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
             f"    ->withPaths([{paths}])\n    ->withRules([{rules}])\n    ->withPhpVersion(80400);\n")
 
 
-def ported_rector_rules(lint_bin: str) -> list[str]:
+def native_rules() -> list[str]:
+    """The IDs of pun-lint's native rules, read from each rule's `fn id`."""
+    import re
+    ids = set()
+    for f in (ROOT / "crates/pun-lint/src/rules").rglob("*.rs"):
+        ids.update(re.findall(r'fn id\(&self\) -> &\'static str \{\s*"(lint/[^"]+)"', f.read_text()))
+    return sorted(ids)
+
+
+def ported_rector_rules() -> list[str]:
     """The Rector classes of the rules pun-lint has ported: its rule IDs, looked up in rules/mapping.toml."""
     import tomllib
-    ids = subprocess.run([lint_bin, "--rules"], capture_output=True, text=True, check=True).stdout.split()
+    ids = native_rules()
     mapping = tomllib.loads((ROOT / "crates/pun-config/rules/mapping.toml").read_text())
     classes = [entry["class"] for table, rules in mapping["upstream"].items() if "rector" in table
                for entry in rules.values() if isinstance(entry, dict) and entry.get("pun") in ids and "class" in entry]
@@ -284,7 +302,8 @@ def count_of(tool: str, data) -> int:
         return data["totals"]["changed_files"]
     if tool == "mago":
         return len(data["issues"] if isinstance(data, dict) else data)
-    return data["flagged"] if "flagged" in data else len(data["errors"])
+    # `pun analyse --format=json` is PHPStan's json; `pun lint --format=json` lists the files with problems.
+    return data["totals"]["file_errors"] if "totals" in data else len(data["files"])
 
 
 def ratio(other: float, pun: float) -> str:
@@ -296,23 +315,20 @@ def ratio(other: float, pun: float) -> str:
 def bench_mode(mode: str) -> None:
     import json
     all_tools, configs = MODES[mode]
-    analyse_bin = os.environ.get("PUN_ANALYSE_BIN", str(ROOT / "target/profiling/examples/analyse"))
-    lint_bin = os.environ.get("PUN_LINT_BIN", str(ROOT / "target/profiling/examples/check"))
-    pun = analyse_bin if mode == "analyse" else lint_bin
+    pun = os.environ.get("PUN_BIN", str(ROOT / "target/profiling/pun"))
     mago = os.environ.get("MAGO_BIN") or next((str(p) for p in sorted((ROOT / ".oracle/mago").glob("**/mago")) if p.is_file()), None)
     runs = int(os.environ.get("RUNS", "3"))
     warmup = int(os.environ.get("WARMUP", "1"))
     tools = os.environ.get("TOOLS", ",".join(all_tools)).split(",")
     projects = sys.argv[1:] or list(configs)
     if "pun" in tools and not os.access(pun, os.X_OK):
-        example = "-p punphp-analyse --example analyse" if mode == "analyse" else "-p punphp-lint --example check"
-        sys.exit(f"missing {pun}: cargo build --profile profiling {example}")
+        sys.exit(f"missing {pun}: cargo build --profile profiling -p punphp")
     if "mago" in tools and not mago:
         sys.exit("missing Mago: put the 1.57.0 binary under .oracle/mago/ or set MAGO_BIN (or drop it from TOOLS)")
     upstream = PHPSTAN if mode == "analyse" else RECTOR
     if not upstream.is_file():
         sys.exit(f"missing {upstream}: run scripts/oracle.sh")
-    rector_rules = ported_rector_rules(lint_bin) if mode == "lint" else []
+    rector_rules = ported_rector_rules() if mode == "lint" else []
     env = {k: v for k, v in os.environ.items() if k not in AGENT_ENV}
     env.update({"PUN_AGENT": "0", "PUN_IGNORE_PHP_CONSTRAINT": "1", "XDEBUG_MODE": "off"})
 
@@ -348,7 +364,8 @@ def bench_mode(mode: str) -> None:
             "rector-ported": ["php", str(RECTOR)] + rector + ["pun-bench-rector.php"],
             # The project's own Rector install: its rector.php loads sets (Pest's, for one) from its vendor/.
             "rector-full": ["php", "vendor/bin/rector"] + rector + ["rector.php"],
-            "pun": [pun, str(work), str(work / "pun-bench-cold.neon")] if mode == "analyse" else [pun, *paths],
+            "pun": [pun, "analyse", "--config", "pun-bench-analyse.toml", "--format=json"] if mode == "analyse"
+                   else [pun, "lint", "--config", "pun-bench-lint.toml", "--format=json", "--no-cache", *paths],
             "mago": [mago or "mago", "--config", str(work / "pun-bench-mago.toml"), "analyze",
                      "--reporting-format", "json"] if mode == "analyse"
                     else [mago or "mago", "lint", "--reporting-format", "json", *paths],

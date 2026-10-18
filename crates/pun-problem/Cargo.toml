@@ -13,6 +13,10 @@ name = "pun_problem"
 
 [dependencies]
 serde.workspace = true
+pun-tokens.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
+
+[lints]
+workspace = true

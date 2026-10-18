@@ -1,25 +1,63 @@
-//! `pun format` / `lint` / `check`: load the config, pick the engine, fix the files, report.
+//! `pun format` / `lint` / `check`: load the config, pick the engines, fix the files, report.
+//!
+//! A file goes through the native lint rules first (`pun_lint` on Mago's tree, with `@pun-ignore` comments and the
+//! per-file levels of crate::lint_plan), then through one token pipeline (the format rules and the lint rules that
+//! are PHP-CS-Fixer fixers, in PHP-CS-Fixer's priority order, as Pint runs them). `pun check` then analyses the
+//! project (crate::analyse) and reports its errors with the rest.
+use crate::lint_plan::{self, CliLevel, Engine, On, Plan};
 use crate::render::{Look, RunError, Spinner};
 use crate::report::{self, Abort, FileResult, Status};
 use crate::{FormatArgs, cache, root};
 use anyhow::{Context, Result};
-use pun_config::{Config, Options};
+use pun_config::{Config, Options, Rule};
 use pun_format::{LintError, Pipeline};
+use pun_problem::ignore::{Ignores, covers};
+use pun_problem::{LineIndex, Problem};
 use rayon::prelude::*;
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::{IsTerminal, Read, Write};
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 
-/// Which rules a run applies. `bool`: `--fix` (every enabled lint rule's fix but those with `fix = "off"`; without
+/// Which rules a run applies. `fix`: `--fix` (every enabled lint rule's fix but those with `fix = "off"`; without
 /// it every enabled lint rule is checked, nothing written).
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Stage {
     Format,
-    Lint(bool),
-    /// Format and lint fixers in one pipeline, so fixers run in PHP-CS-Fixer's priority order, as Pint runs them.
-    /// ponytail: `pun analyse` joins here once pun-analyse has a library entry point.
-    Check(bool),
+    Lint {
+        fix: bool,
+    },
+    /// Format and lint in one pass over each file, then analyse.
+    Check {
+        fix: bool,
+    },
 }
 
+impl Stage {
+    fn fix(self) -> bool {
+        matches!(self, Stage::Lint { fix: true } | Stage::Check { fix: true })
+    }
+
+    fn name(self) -> &'static str {
+        match self {
+            Stage::Format => "format",
+            Stage::Lint { .. } => "lint",
+            Stage::Check { .. } => "check",
+        }
+    }
+}
+
+/// `pun lint` and `pun check`'s own flags.
+#[derive(Clone, Default)]
+pub(crate) struct LintOpts {
+    /// `-A`, `-W` and `-D`, in the order given.
+    pub levels: Vec<(CliLevel, String)>,
+    pub deny_warnings: bool,
+    pub max_warnings: Option<usize>,
+    pub concise: bool,
+}
+
+/// What a file's token pass returned: the new code and the fixers that changed it, or why it failed.
 type Run = Result<Option<(Vec<u8>, Vec<&'static str>)>, LintError>;
 
 /// One file through the pipeline. The outer error aborts the run (a malformed `@php-cs-fixer-ignore` annotation).
@@ -48,99 +86,115 @@ pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
     pun_config::load(root, &opts)
 }
 
-pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
-    let started = std::time::Instant::now();
-    let root = root()?;
-    // Config errors are Pun's own run errors, never a Pint box: Pint never reads pun.toml.
-    let mut cfg = load_config(&a, &root).map_err(|e| {
-        let message = format!("{e:#}");
-        let error = RunError {
-            path: None,
-            line: None,
-            message: message.clone(),
-            hint: None,
-        };
-        Abort::pun(message, error)
-    })?;
-    // No PHP fallback: a rule without a native fixer, format or named lint rule, stops every command (exit 2, Pun
-    // can't run). A set or a group skips the rules Pun can't run yet.
-    let named_without_fixer: Vec<String> = (cfg.lint.rules.iter())
-        .filter(|l| l.named && l.fixer.is_none())
-        .map(|l| l.id.clone())
-        .collect();
-    let lint_fixers: Vec<(pun_config::Rule, bool, bool)> = (cfg.lint.rules.iter())
-        .filter_map(|l| {
-            let rule = pun_config::Rule {
-                name: l.fixer?.to_string(),
-                options: l.options.clone(),
-            };
-            Some((rule, l.fix, l.named))
-        })
-        .collect();
-    let every: Vec<_> = (cfg.rules.iter().cloned())
-        .chain(lint_fixers.iter().map(|(r, _, _)| r.clone()))
-        .collect();
-    let not_ported = Pipeline::new(&every, &pun_fixers::all)?.not_ported;
-    let unnamed = |name: &String| {
-        lint_fixers
-            .iter()
-            .any(|(r, _, named)| r.name == *name && !named)
+/// A config error: Pun's own run error, never a Pint box (Pint never reads pun.toml).
+fn config_error(e: anyhow::Error) -> anyhow::Error {
+    let message = format!("{e:#}");
+    let error = RunError {
+        path: None,
+        line: None,
+        message: message.clone(),
+        hint: None,
     };
-    let unported: Vec<String> = (not_ported.iter())
-        .filter(|n| !unnamed(n))
-        .cloned()
-        .chain(named_without_fixer)
-        .collect();
-    if !unported.is_empty() {
-        return Err(unported_error(&a, &cfg, &unported).into());
-    }
-    let lint: Vec<(pun_config::Rule, bool)> = (lint_fixers.into_iter())
-        .filter(|(r, _, _)| !not_ported.contains(&r.name))
-        .map(|(r, fix, _)| (r, fix))
-        .collect();
-    // `--fix`: the lint rules it doesn't apply (`fix = "off"`) still run on the result, reported as remaining.
-    let pending: Vec<_> = match stage {
-        Stage::Lint(true) | Stage::Check(true) => (lint.iter())
-            .filter(|(_, fix)| !fix)
-            .map(|(r, _)| r.clone())
-            .collect(),
-        _ => vec![],
-    };
-    if let Stage::Lint(fix) | Stage::Check(fix) = stage {
-        let lint = (lint.iter())
-            .filter(|(_, apply)| *apply || !fix)
-            .map(|(r, _)| r.clone());
-        if let Stage::Lint(_) = stage {
-            cfg.rules = lint.collect();
-            cfg.blade = false;
-        } else {
-            cfg.rules.extend(lint);
+    Abort::pun(message, error).into()
+}
+
+/// The token pipelines of a run, one per distinct set of token lint rules (overrides and `@pun-ignore-file` change
+/// the set per file), each with the run's format rules ahead of them when the file is formatted.
+struct Pipelines {
+    cfg: Config,
+    format: Vec<Rule>,
+    built: Mutex<HashMap<Vec<String>, Arc<Pipeline>>>,
+}
+
+impl Pipelines {
+    fn new(cfg: &Config, format: Vec<Rule>) -> Pipelines {
+        Pipelines {
+            cfg: cfg.clone(),
+            format,
+            built: Mutex::new(HashMap::new()),
         }
     }
+
+    /// The pipeline of the format rules (none when `with_format` is false) and `lint`.
+    fn get(&self, with_format: bool, lint: &[Rule]) -> Result<Arc<Pipeline>> {
+        let mut key = vec![with_format.to_string()];
+        key.extend(lint.iter().map(|r| format!("{}={}", r.name, r.options)));
+        if let Some(p) = self.built.lock().expect("pipelines").get(&key) {
+            return Ok(p.clone());
+        }
+        let format = if with_format { &self.format[..] } else { &[] };
+        let rules = format.iter().chain(lint).cloned().collect();
+        let p = Arc::new(pipeline(&Config {
+            rules,
+            ..self.cfg.clone()
+        })?);
+        self.built.lock().expect("pipelines").insert(key, p.clone());
+        Ok(p)
+    }
+}
+
+/// Everything a run checks a file with.
+struct Engines<'a> {
+    stage: Stage,
+    /// Lint and check only.
+    plan: Option<Plan>,
+    /// The native rules on for some file, when there are any.
+    linter: Option<pun_lint::Linter>,
+    pipelines: Pipelines,
+    /// The files lint checks (`[lint] exclude`, no Blade); `None` for `pun format`.
+    lint_files: Option<HashSet<PathBuf>>,
+    /// The files `pun check` formats; `None` when every file is formatted (format) or none is (lint).
+    format_files: Option<HashSet<PathBuf>>,
+    root: &'a Path,
+}
+
+/// A file's run: its result, its content hash when it came out clean (for the cache), whether the cache said so,
+/// and under `--fix` the fixes of the token lint rules it doesn't apply.
+struct Processed {
+    result: FileResult,
+    clean: Option<String>,
+    cached: bool,
+    remaining: Option<FileResult>,
+}
+
+pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> {
+    let started = std::time::Instant::now();
+    let root = root()?;
+    let cfg = load_config(&a, &root).map_err(config_error)?;
+    // No PHP fallback: a rule Pun can't run, format or named lint rule, stops every command (exit 2, Pun can't
+    // run). A set or a group skips the rules Pun can't run yet.
+    let plan = Plan::new(&cfg, &lint.levels).map_err(config_error)?;
+    let mut unported = Pipeline::new(&cfg.rules, &pun_fixers::all)?.not_ported;
+    let plan = match plan {
+        Ok(plan) if unported.is_empty() => plan,
+        Ok(_) => return Err(unported_error(&a, &cfg, &unported).into()),
+        Err(lint) => {
+            unported.extend(lint);
+            return Err(unported_error(&a, &cfg, &unported).into());
+        }
+    };
+    let lints = stage != Stage::Format;
+    let formats = !matches!(stage, Stage::Lint { .. });
     // EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` (or --blade) needs Node and prettier in the project.
-    let blade_on = cfg
-        .rules
-        .iter()
-        .any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
-    if let Some(abort) = report::ensure_prettier(&root, blade_on) {
+    let blade_on = formats
+        && (cfg.rules.iter()).any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
+    if let Some(abort) = crate::prettier::ensure(&root, blade_on) {
         return Err(abort.into());
     }
-    let pending_engine = (!pending.is_empty())
-        .then(|| {
-            pipeline(&Config {
-                rules: pending.clone(),
-                ..cfg.clone()
-            })
-        })
-        .transpose()?;
-    let engine = pipeline(&cfg)?;
+    let pipelines = Pipelines::new(&cfg, if formats { cfg.rules.clone() } else { vec![] });
+    // The pipeline of a file no override matches: `--explain` and stdin.
+    let base_token = match lints {
+        true => token_rules(&plan.for_file(&root.join("-")), stage.fix(), false),
+        false => vec![],
+    };
+    let base = pipelines.get(formats, &base_token)?;
     if a.pun.explain {
-        explain(&cfg, &engine);
+        explain(&cfg, &base);
     }
 
     let stdin_path = a.paths.first().is_some_and(|p| p.as_os_str() == "-");
     if a.pun.stdin || stdin_path || a.stdin_filename.is_some() {
-        return stdin(&a, &cfg, &engine);
+        return stdin(&a, &cfg, &base);
     }
 
     let dry_run = a.test || a.bail;
@@ -156,9 +210,52 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             .as_ref()
             .map(|r| pun_workspace::GitSelect::Since(r.clone()))
     };
-    let files = match &selection {
-        Some(sel) => pun_workspace::git_paths(&cfg, sel)?,
-        None => pun_workspace::discover(&cfg, &a.paths)?,
+    let selected = match &selection {
+        Some(sel) => Some(pun_workspace::git_paths(&cfg, sel)?),
+        None => None,
+    };
+    let format_set = match (formats, &selected) {
+        (false, _) => vec![],
+        (true, Some(files)) => files.clone(),
+        (true, None) => pun_workspace::discover(&cfg, &a.paths)?,
+    };
+    let lint_set = match (lints, &selected) {
+        (false, _) => vec![],
+        // A git selection, narrowed to the lint file set.
+        (true, Some(files)) => {
+            let all: HashSet<PathBuf> =
+                pun_workspace::files(&cfg, Some(pun_workspace::Command::Lint), &[])?
+                    .into_iter()
+                    .collect();
+            files.iter().filter(|f| all.contains(*f)).cloned().collect()
+        }
+        (true, None) => pun_workspace::files(&cfg, Some(pun_workspace::Command::Lint), &a.paths)?,
+    };
+    let mut files = format_set.clone();
+    let known: HashSet<&PathBuf> = format_set.iter().collect();
+    files.extend(lint_set.iter().filter(|f| !known.contains(f)).cloned());
+    drop(known);
+    let natives: Vec<Box<dyn pun_lint::Rule>> = match lints {
+        true => {
+            let on = plan.mentioned();
+            (pun_lint::rules::all().into_iter())
+                .filter(|r| on.contains(r.id()))
+                .collect()
+        }
+        false => vec![],
+    };
+    let engines = Engines {
+        stage,
+        linter: (!natives.is_empty())
+            .then(|| pun_lint::Linter::new(natives, crate::analyse::php_version_id(&cfg.php))),
+        lint_files: lints.then(|| lint_set.into_iter().collect()),
+        format_files: match stage {
+            Stage::Check { .. } => Some(format_set.into_iter().collect()),
+            _ => None,
+        },
+        plan: lints.then_some(plan),
+        pipelines,
+        root: &root,
     };
 
     let cache = if a.pun.no_cache {
@@ -167,148 +264,41 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         a.cache_file
             .as_ref()
             .map(|f| root.join(f))
-            .or_else(|| cache::default_path(&root))
+            .or_else(|| cache::default_path(&root, stage.name()))
             .map(|p| {
                 let mut sig = cache::signature(&cfg);
-                sig["pending"] = pending.iter().map(|r| r.name.clone()).collect();
+                if lints {
+                    sig["command"] = stage.name().into();
+                    sig["fix"] = stage.fix().into();
+                    sig["lint"] = serde_json::to_value(&cfg.lint).unwrap_or_default();
+                    sig["levels"] = (lint.levels.iter())
+                        .map(|(l, n)| format!("{l:?} {n}"))
+                        .collect();
+                }
                 cache::Cache::load(p, sig)
             })
     };
-    // Unreadable / unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
-    // Besides the result: the content hash when the file is clean (for the cache), whether the cache said so, and
-    // the pending rules' fixes (`--fix`).
-    type Processed = (FileResult, Option<String>, bool, Option<FileResult>);
     let look = Look::stdout(a.color());
     // The progress line, for humans on a terminal (output.md §1); dropped before anything is printed.
     let human = a.format.is_none() && !a.quiet && !crate::agent::enabled();
     let spinner = human
         .then(|| Spinner::stderr(files.len(), &look, std::io::stderr().is_terminal()))
         .flatten();
-    let process_file = |path: &PathBuf| -> Result<Processed> {
-        let rel = path
-            .strip_prefix(&root)
-            .unwrap_or(path)
-            .to_string_lossy()
-            .into_owned();
-        let mut r = FileResult {
-            path: path.clone(),
-            rel,
-            status: Status::NoChanges,
-            applied: vec![],
-            diff: String::new(),
-            message: String::new(),
-            line: 0,
-        };
-        // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
-        if path.is_symlink() {
-            r.status = Status::Link;
-            return Ok((r, None, false, None));
-        }
-        let code = std::fs::read(path)
-            .with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
-        if code.is_empty() {
-            r.status = Status::Skipped;
-            return Ok((r, None, false, None));
-        }
-        let hash = cache.as_ref().map(|_| cache::hash(&code));
-        if let (Some(c), Some(h)) = (&cache, &hash)
-            && c.is_clean(&r.rel, h)
-        {
-            return Ok((r, hash, true, None));
-        }
-        let mut clean = None;
-        let outcome = match isolated(|| run_file(&engine, path, &code)) {
-            Ok(run) => run?,
-            Err(message) => {
-                r.status = Status::Exception;
-                r.message = message;
-                return Ok((r, None, false, None));
-            }
-        };
-        // Reports show diffs only with -v (sebastian/diff's LCS is quadratic, so skip it otherwise).
-        let diff = |old: &[u8], new: &[u8]| {
-            if a.verbose == 0 {
-                return String::new();
-            }
-            report::diff(
-                &String::from_utf8_lossy(old),
-                &String::from_utf8_lossy(new),
-                // Agent mode: paths relative to the project, as everywhere in its output.
-                if crate::agent::enabled() {
-                    Path::new(&r.rel)
-                } else {
-                    path
-                },
-            )
-        };
-        let result = match outcome {
-            Err(e) => {
-                r.status = if e.after_fix {
-                    Status::Lint
-                } else {
-                    Status::Invalid
-                };
-                r.message = e.message;
-                None
-            }
-            Ok(None) => {
-                clean = hash;
-                pending_engine.as_ref().map(|_| code.clone())
-            }
-            Ok(Some((new, applied))) => {
-                r.diff = diff(&code, &new);
-                r.line = crate::github::first_changed_line(&code, &new);
-                r.applied = applied;
-                r.status = Status::Fixed;
-                if !dry_run {
-                    std::fs::write(path, &new).with_context(|| {
-                        format!(
-                            "Cannot write to file \"{}\" as it is not writable.",
-                            path.display()
-                        )
-                    })?;
-                }
-                Some(new)
-            }
-        };
-        // A pending rule's failure (lint error, panic) is not reported: the file was already fixed and checked.
-        let left = match (&pending_engine, &result) {
-            (Some(e), Some(now)) => isolated(|| run_file(e, path, now))
-                .ok()
-                .transpose()?
-                .and_then(Result::ok)
-                .flatten(),
-            _ => None,
-        };
-        let left = left.map(|(new, applied)| FileResult {
-            diff: diff(result.as_deref().unwrap(), &new),
-            line: crate::github::first_changed_line(result.as_deref().unwrap(), &new),
-            applied,
-            status: Status::Fixed,
-            message: String::new(),
-            path: path.clone(),
-            rel: r.rel.clone(),
-        });
-        if left.is_some() {
-            clean = None;
-        }
-        Ok((r, clean, false, left))
-    };
     let process = |path: &PathBuf| -> Result<Processed> {
-        let r = process_file(path);
+        let r = process_file(&a, &engines, cache.as_ref(), dry_run, path);
         if let Some(s) = &spinner {
             s.tick();
         }
         r
     };
 
-    let all: Vec<Result<_>> = if a.bail {
+    let all: Vec<Result<Processed>> = if a.bail {
         // --bail is PHP-CS-Fixer's stop-on-violation: sequential, stop at the first fixable file (lint errors don't
         // stop it; an aborting file does).
         let mut out = Vec::new();
         for f in &files {
             let r = process(f);
-            let stop = r.as_ref().map_or(true, |r| r.0.status == Status::Fixed);
+            let stop = (r.as_ref()).map_or(true, |r| r.result.status == Status::Fixed);
             out.push(r);
             if stop {
                 break;
@@ -316,29 +306,21 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         }
         out
     } else {
-        // Pint's `--max-processes` (read with intval()) caps the threads, and with them the Prettier workers.
-        let threads = a
-            .max_processes
-            .as_deref()
-            .map(pun_tokens::php_compat::intval)
-            .filter(|&n| n > 0)
-            .map_or(0, |n| (n as usize).min(files.len().max(1)));
-        rayon::ThreadPoolBuilder::new()
-            .num_threads(threads)
-            .build()?
-            .install(|| files.par_iter().map(process).collect())
+        // main sizes rayon's global pool by `--max-processes`.
+        files.par_iter().map(process).collect()
     };
     drop(spinner);
-    let results: Vec<Processed> = all.into_iter().collect::<Result<_>>()?;
+    let processed: Vec<Processed> = all.into_iter().collect::<Result<_>>()?;
 
-    let hits = results.iter().filter(|r| r.2).count();
+    let hits = processed.iter().filter(|p| p.cached).count();
     let mut remaining = vec![];
-    let (results, clean): (Vec<FileResult>, Vec<Option<String>>) = (results.into_iter())
-        .map(|(r, c, _, left)| {
-            remaining.extend(left);
-            (r, c)
-        })
-        .unzip();
+    let mut results = vec![];
+    let mut clean = vec![];
+    for p in processed {
+        remaining.extend(p.remaining);
+        clean.push((p.result.rel.clone(), p.clean));
+        results.push(p.result);
+    }
     if let Some(c) = cache {
         if a.pun.explain {
             eprintln!(
@@ -347,11 +329,27 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
                 c.path().display()
             );
         }
-        c.save(results.iter().map(|r| r.rel.clone()).zip(clean));
+        c.save(clean);
+    }
+
+    let mut unmatched_baseline = 0;
+    let mut total = files.len();
+    // `pun check` analyses after the files are fixed, so it reads what was written. A git selection that selects
+    // nothing analyses nothing. ponytail: pun-analyse reads each file again; a `run` that takes the sources would
+    // share them (request row in PLAN.md).
+    if let Stage::Check { .. } = stage
+        && !a.bail
+        && selected.as_ref().is_none_or(|s| !s.is_empty())
+    {
+        let paths = selected.as_deref().unwrap_or(&a.paths);
+        let analysed = crate::analyse::analyse(&cfg, paths, true)?;
+        unmatched_baseline = analysed.unmatched_baseline;
+        total = total.max(analysed.files);
+        add_findings(&mut results, &analysed, &root);
     }
 
     let ctx = report::Ctx {
-        total: files.len(),
+        total,
         dry_run,
         remaining: &remaining,
         verbose: a.verbose > 0,
@@ -361,6 +359,8 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         root: &root,
         elapsed: started.elapsed(),
         github: a.github_actions && human,
+        concise: lint.concise,
+        unmatched_baseline,
     };
     report::emit(
         &ctx,
@@ -370,14 +370,372 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         a.output_to_file.as_deref(),
         a.output_format.as_deref(),
     )?;
-    let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
-        || results.iter().any(FileResult::is_error)
-        || !remaining.is_empty();
     // A fixer that threw or produced invalid code is Pun failing, not the file (exit 2).
     let crashed = (results.iter()).any(|r| matches!(r.status, Status::Exception | Status::Lint));
-
-    eprint!("{}", engine.profile_report());
+    let changed = results.iter().any(|r| r.status == Status::Fixed);
+    let failed = match stage {
+        Stage::Format => {
+            ((dry_run || a.repair) && changed) || results.iter().any(FileResult::is_error)
+        }
+        _ => {
+            let c = report::counts(&ctx, &results);
+            c.errors > 0
+                || c.need_formatting > 0
+                || (a.repair && changed)
+                || (lint.deny_warnings && c.warnings > 0)
+                || lint.max_warnings.is_some_and(|m| c.warnings > m)
+        }
+    };
+    eprint!("{}", base.profile_report());
     Ok(if crashed { 2 } else { u8::from(failed) })
+}
+
+/// The token lint rules of `on`, as fixer rules: under `--fix` those whose fix applies (`pending`: those whose fix
+/// doesn't), otherwise all of them.
+fn token_rules(on: &BTreeMap<String, On>, fix: bool, pending: bool) -> Vec<Rule> {
+    (on.iter())
+        .filter_map(|(id, o)| match lint_plan::engine(id) {
+            Some(Engine::Token(fixer)) if (!fix && !pending) || (fix && o.fix != pending) => {
+                Some(Rule {
+                    name: fixer.to_string(),
+                    options: o.options.clone(),
+                })
+            }
+            _ => None,
+        })
+        .collect()
+}
+
+/// A native problem's rule ID as the `'static` string the reports list fixers by.
+fn static_id(rule: &str) -> &'static str {
+    match lint_plan::native_rules().get(rule) {
+        Some(id) => id,
+        None if rule == lint_plan::UNUSED_IGNORE => lint_plan::UNUSED_IGNORE,
+        None => crate::analyse::INVALID_IGNORE,
+    }
+}
+
+/// One round of the native rules' problems, as the file's levels and comments leave them: rules that are off for
+/// the file dropped, levels set, fixes taken from `fix = "off"` rules, `@pun-ignore` comments applied, and the
+/// engine's own problems (malformed and unused ignore comments) added.
+fn filter_problems(
+    on: &BTreeMap<String, On>,
+    rel: &str,
+    source: &str,
+    problems: &mut Vec<Problem>,
+) {
+    problems.retain(|p| on.contains_key(&p.rule));
+    for p in problems.iter_mut() {
+        let o = &on[&p.rule];
+        p.level = o.level;
+        if !o.fix {
+            p.fix = None;
+        }
+    }
+    let mut ignores = Ignores::parse(source);
+    if ignores.is_empty() {
+        return;
+    }
+    ignores.retain(problems, &LineIndex::new(source));
+    // An ID of a token rule, of another command or of a rule that is off can't be judged.
+    let runs = |id: &str, native: bool| {
+        (on.keys()).any(|r| {
+            covers(id, r)
+                && match lint_plan::engine(r) {
+                    Some(Engine::Native) => native,
+                    Some(Engine::Token(_)) => !native,
+                    _ => false,
+                }
+        })
+    };
+    if let Some(o) = on.get(lint_plan::UNUSED_IGNORE) {
+        for u in ignores.unused(source, |id| runs(id, true) && !runs(id, false)) {
+            problems.push(Problem {
+                rule: lint_plan::UNUSED_IGNORE.into(),
+                path: rel.into(),
+                span: u.span,
+                message: format!("`{}` suppresses no problem here", u.id),
+                help: Some("remove it".into()),
+                level: o.level,
+                fix: o.fix.then_some(u.fix),
+            });
+        }
+    }
+    problems.extend((ignores.malformed.iter()).map(|m| crate::analyse::ignore_problem(rel, m)));
+    problems.sort_by_key(|p| p.span.start);
+}
+
+/// One file: native lint, the token pass, the pending rules under `--fix`; the result written unless a dry run.
+/// Unreadable and unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
+fn process_file(
+    a: &FormatArgs,
+    e: &Engines,
+    cache: Option<&cache::Cache>,
+    dry_run: bool,
+    path: &PathBuf,
+) -> Result<Processed> {
+    let rel = path
+        .strip_prefix(e.root)
+        .unwrap_or(path)
+        .to_string_lossy()
+        .into_owned();
+    let mut r = FileResult::new(path.clone(), rel.clone());
+    let done = |result: FileResult| Processed {
+        result,
+        clean: None,
+        cached: false,
+        remaining: None,
+    };
+    // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
+    if path.is_symlink() {
+        r.status = Status::Link;
+        return Ok(done(r));
+    }
+    let code = std::fs::read(path)
+        .with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
+    if code.is_empty() {
+        r.status = Status::Skipped;
+        return Ok(done(r));
+    }
+    let hash = cache.map(|_| cache::hash(&code));
+    if let (Some(c), Some(h)) = (cache, &hash)
+        && c.is_clean(&rel, h)
+    {
+        return Ok(Processed {
+            result: r,
+            clean: hash,
+            cached: true,
+            remaining: None,
+        });
+    }
+    let in_format = match &e.format_files {
+        Some(f) => f.contains(path),
+        None => !matches!(e.stage, Stage::Lint { .. }),
+    };
+    let in_lint = e.lint_files.as_ref().is_some_and(|f| f.contains(path));
+    let on = match (in_lint, &e.plan) {
+        (true, Some(plan)) => plan.for_file(path),
+        _ => BTreeMap::new(),
+    };
+    let text = std::str::from_utf8(&code).ok();
+    // A token rule changes a whole file, so only `@pun-ignore-file` turns it off.
+    let mut file_ignores = match text {
+        Some(t) if !on.is_empty() => Ignores::parse(t),
+        _ => Ignores::default(),
+    };
+    let token_on: BTreeMap<String, On> = (on.iter())
+        .filter(|(id, _)| matches!(lint_plan::engine(id), Some(Engine::Token(_))))
+        .filter(|(id, _)| !file_ignores.ignores_file(id))
+        .map(|(id, o)| (id.clone(), o.clone()))
+        .collect();
+    let fix = e.stage.fix();
+    let rel_path = Path::new(&rel);
+
+    // 1. The native rules.
+    let mut now = code.clone();
+    let mut applied: Vec<&'static str> = vec![];
+    let mut problems: Vec<Problem> = vec![];
+    let mut native_syntax_error = false;
+    let native_on = (on.keys()).any(|id| {
+        matches!(
+            lint_plan::engine(id),
+            Some(Engine::Native | Engine::Builtin)
+        )
+    });
+    if let (Some(linter), Some(text), true) = (&e.linter, text, native_on) {
+        let filter = |src: &str, ps: &mut Vec<Problem>| filter_problems(&on, &rel, src, ps);
+        let outcome = match fix {
+            true => linter.fix_with(rel_path, text, filter).map(|f| {
+                for p in &f.applied {
+                    let id = static_id(&p.rule);
+                    if !applied.contains(&id) {
+                        applied.push(id);
+                    }
+                }
+                now = f.source.into_bytes();
+                f.remaining
+            }),
+            false => linter.check(rel_path, text).map(|mut ps| {
+                filter_problems(&on, &rel, text, &mut ps);
+                ps
+            }),
+        };
+        match outcome {
+            Ok(ps) => problems = ps,
+            // The token pass (or PHP's grammar below) reports the syntax error.
+            Err(pun_lint::LintError::Syntax { .. }) => native_syntax_error = true,
+            Err(err) => {
+                r.status = Status::Lint;
+                r.message = err.to_string();
+                return Ok(done(r));
+            }
+        }
+    }
+
+    // 2. The token pass: the format rules and the token lint rules.
+    let token = token_rules(&token_on, fix, false);
+    if in_format || !token.is_empty() {
+        let pipeline = e.pipelines.get(in_format, &token)?;
+        let outcome = match isolated(|| run_file(&pipeline, path, &now)) {
+            Ok(run) => run?,
+            Err(message) => {
+                r.status = Status::Exception;
+                r.message = message;
+                return Ok(done(r));
+            }
+        };
+        match outcome {
+            Err(err) => {
+                r.status = if err.after_fix {
+                    Status::Lint
+                } else {
+                    Status::Invalid
+                };
+                r.message = err.message;
+                return Ok(done(r));
+            }
+            Ok(None) => {}
+            Ok(Some((new, fixers))) => {
+                applied.extend(fixers);
+                // The native problems' spans refer to the source before the token pass.
+                if !problems.is_empty()
+                    && let (Some(linter), Ok(t)) = (&e.linter, std::str::from_utf8(&new))
+                    && let Ok(mut ps) = linter.check(rel_path, t)
+                {
+                    filter_problems(&on, &rel, t, &mut ps);
+                    problems = ps;
+                }
+                now = new;
+            }
+        }
+    } else if native_syntax_error && let Err(err) = pun_format::lint(&code) {
+        r.status = Status::Invalid;
+        r.message = err.message;
+        return Ok(done(r));
+    }
+    let warned: Vec<&'static str> = (token_on.iter())
+        .filter(|(_, o)| o.level == pun_problem::Level::Warning)
+        .filter_map(|(id, _)| match lint_plan::engine(id) {
+            Some(Engine::Token(fixer)) => Some(fixer),
+            _ => None,
+        })
+        .collect();
+    r.warned = warned.clone();
+
+    // Reports show diffs only with -v (sebastian/diff's LCS is quadratic, so skip it otherwise).
+    let diff = |old: &[u8], new: &[u8]| {
+        if a.verbose == 0 {
+            return String::new();
+        }
+        report::diff(
+            &String::from_utf8_lossy(old),
+            &String::from_utf8_lossy(new),
+            // Agent mode: paths relative to the project, as everywhere in its output.
+            if crate::agent::enabled() {
+                rel_path
+            } else {
+                path
+            },
+        )
+    };
+    let mut clean = None;
+    if now != code {
+        r.diff = diff(&code, &now);
+        r.line = crate::github::first_changed_line(&code, &now);
+        r.applied = applied;
+        r.status = Status::Fixed;
+        if !dry_run {
+            std::fs::write(path, &now).with_context(|| {
+                format!(
+                    "Cannot write to file \"{}\" as it is not writable.",
+                    path.display()
+                )
+            })?;
+        }
+    } else if problems.is_empty() {
+        clean = hash;
+    }
+    if !problems.is_empty() {
+        r.source = String::from_utf8_lossy(&now).into_owned();
+        r.problems = problems;
+    }
+
+    // 3. `--fix`: the token lint rules it doesn't apply, run on the result and reported. Their failure (lint
+    // error, panic) is not reported: the file was already fixed and checked.
+    let pending = match fix {
+        true => token_rules(&token_on, true, true),
+        false => vec![],
+    };
+    let left = match pending.is_empty() {
+        true => None,
+        false => {
+            let p = e.pipelines.get(false, &pending)?;
+            isolated(|| run_file(&p, path, &now))
+                .ok()
+                .transpose()?
+                .and_then(Result::ok)
+                .flatten()
+        }
+    };
+    let remaining = left.map(|(new, fixers)| {
+        let mut f = FileResult::new(path.clone(), rel.clone());
+        f.diff = diff(&now, &new);
+        f.line = crate::github::first_changed_line(&now, &new);
+        f.applied = fixers;
+        f.status = Status::Fixed;
+        f.warned = warned;
+        f
+    });
+    if remaining.is_some() {
+        clean = None;
+    }
+    Ok(Processed {
+        result: r,
+        clean,
+        cached: false,
+        remaining,
+    })
+}
+
+/// `pun check`: the analysis's errors as problems of their files (a file only analyse covers gets a result of its
+/// own). A malformed ignore comment lint already reported is not repeated.
+fn add_findings(results: &mut Vec<FileResult>, analysed: &crate::analyse::Analysed, root: &Path) {
+    let mut at: HashMap<PathBuf, usize> = (results.iter().enumerate())
+        .map(|(i, r)| (r.path.clone(), i))
+        .collect();
+    let mut index_of = |results: &mut Vec<FileResult>, file: &Path| -> usize {
+        let i = *at.entry(file.to_path_buf()).or_insert_with(|| {
+            let rel = file.strip_prefix(root).unwrap_or(file).to_string_lossy();
+            results.push(FileResult::new(file.to_path_buf(), rel.into_owned()));
+            results.len() - 1
+        });
+        let r = &mut results[i];
+        if r.source.is_empty() {
+            r.source =
+                String::from_utf8_lossy(&std::fs::read(file).unwrap_or_default()).into_owned();
+        }
+        i
+    };
+    for f in &analysed.findings {
+        let i = index_of(results, &f.file);
+        let r = &mut results[i];
+        let p = crate::analyse::problem(f, &r.source, &LineIndex::new(&r.source));
+        r.problems.push(p);
+    }
+    for m in &analysed.malformed {
+        let i = index_of(results, &root.join(&m.path));
+        let r = &mut results[i];
+        if !r
+            .problems
+            .iter()
+            .any(|q| q.rule == m.rule && q.span == m.span)
+        {
+            r.problems.push(m.clone());
+        }
+    }
+    for r in results.iter_mut() {
+        r.problems.sort_by_key(|p| p.span.start);
+    }
 }
 
 fn pipeline(cfg: &Config) -> Result<Pipeline> {
@@ -500,13 +858,12 @@ fn isolated<T>(f: impl FnOnce() -> T) -> Result<T, String> {
 
 #[cfg(test)]
 mod tests {
-    /// A panic inside `isolated` is the file's error and prints nothing; one elsewhere still reaches the default hook.
+    /// A panic inside `isolated` is the file's error, with its message.
     #[test]
     fn isolated_panics() {
         assert_eq!(
             super::isolated(|| panic!("boom")),
             Err::<(), _>("boom".into())
         );
-        assert!(std::thread::spawn(|| panic!("elsewhere")).join().is_err());
     }
 }

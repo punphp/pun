@@ -4,7 +4,7 @@
 extern crate punphp_workspace as pun_workspace;
 mod common;
 
-use pun_workspace::{Command, FinderError, files, is_path_excluded};
+use pun_workspace::{Command, Exclusions, FinderError, files, is_path_excluded};
 use std::path::{Path, PathBuf};
 
 fn tree(files: &[&str]) -> PathBuf {
@@ -59,17 +59,25 @@ exclude = ["tests/**"]
         "app/Models/User.php",
         "app/_ide_helper.php",
         "app/storage/Kept.php",
-        "app/view.blade.php",
     ];
     let tests = ["tests/Feature/ExampleTest.php", "tests/Pest.php"];
     // `pun list-files`: app and tests. `storage/**` is root-relative, so app/storage stays.
     assert_eq!(
         list(&root, toml, None, &[]).unwrap(),
-        [&app[..], &tests].concat()
+        [
+            &app[..2],
+            &[
+                "app/_ide_helper.php",
+                "app/storage/Kept.php",
+                "app/view.blade.php"
+            ],
+            &tests
+        ]
+        .concat()
     );
-    // `pun list-files --command analyse`: only app.
+    // `pun list-files --command analyse`: only app, without the Blade template.
     assert_eq!(list(&root, toml, Some(Command::Analyse), &[]).unwrap(), app);
-    // Lint has no exclude of its own here: the [files] set.
+    // Lint has no exclude of its own here: the [files] set without the Blade template.
     assert_eq!(
         list(&root, toml, Some(Command::Lint), &[]).unwrap(),
         [&app[..], &tests].concat()
@@ -115,19 +123,15 @@ exclude = ["app/Models"]
         "storage/framework/S.php",
     ];
     assert_eq!(list(&root, toml, None, &[]).unwrap(), all);
-    // Mago's globs let `*` cross `/`: `app/*.php` drops every PHP file under app.
+    // Mago's globs let `*` cross `/`: `app/*.php` drops every PHP file under app. Lint and analyse skip the root's
+    // `storage` (Pint's default excludes, root-relative) and Blade templates.
     assert_eq!(
         list(&root, toml, Some(Command::Lint), &[]).unwrap(),
-        ["src/Other.php", "storage/framework/S.php"]
+        ["src/Other.php"]
     );
     assert_eq!(
         list(&root, toml, Some(Command::Analyse), &[]).unwrap(),
-        [
-            "app/A.php",
-            "app/_ide_helper.php",
-            "app/storage/Kept.php",
-            "app/view.blade.php"
-        ]
+        ["app/A.php", "app/_ide_helper.php", "app/storage/Kept.php"]
     );
     // Format: Pint's `exclude: ["tests"]` (a dir name at any depth) plus the root-relative glob.
     assert_eq!(
@@ -227,4 +231,36 @@ fn errors_are_typed() {
             Some(FinderError::DirectoryNotFound("missing".into()))
         );
     }
+}
+
+/// `pun analyse` drops excluded files from the symbol scan too: the same patterns as its file set, on absolute
+/// paths, with Pint's default directories as root-relative prefixes.
+#[test]
+fn exclusions_test_absolute_paths() {
+    let root = tree(&[]);
+    let cfg = pun_config::from_toml(
+        &root,
+        "[files]\nexclude = [\"src/Gen*\"]\n[analyse]\nexclude = [\"tests/**\"]\n",
+    )
+    .unwrap();
+    let e = Exclusions::new(&cfg, Command::Analyse).unwrap();
+    for excluded in [
+        "tests/Unit/A.php",
+        "src/Generated.php",
+        "storage/framework/views/x.php",
+        "node_modules/a/b.php",
+    ] {
+        assert!(e.is_excluded(&root.join(excluded)), "{excluded}");
+    }
+    for kept in [
+        "app/storage/A.php",
+        "vendor/laravel/framework/src/A.php",
+        "src/Models/A.php",
+    ] {
+        assert!(!e.is_excluded(&root.join(kept)), "{kept}");
+    }
+    // Lint has its own excludes: tests stay.
+    let e = Exclusions::new(&cfg, Command::Lint).unwrap();
+    assert!(!e.is_excluded(&root.join("tests/Unit/A.php")));
+    assert!(e.is_excluded(&root.join("src/Generated.php")));
 }

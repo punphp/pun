@@ -2,7 +2,7 @@
 //! abort boxes and every `--format` reporter stay Pint's, written as Symfony formatter markup and rendered by
 //! `console::format`, so their colours (`--ansi`, TTY) come from one code path.
 
-use crate::console::{self, escape, format as fmt};
+use crate::console::{self, format as fmt};
 use crate::fix_report::{self, Change};
 use crate::render::{
     ColorChoice, FileLine, FileStatus, FormatSummary, Look, Renderer, RunError, Summary,
@@ -38,9 +38,31 @@ pub struct FileResult {
     pub message: String,
     /// The first line the fix changes (its GitHub annotation's line); 0 when nothing changes.
     pub line: usize,
+    /// Lint and analyse problems left in the file, sorted by offset; their spans refer to `source`.
+    pub problems: Vec<Problem>,
+    /// The file's final content, when it has problems.
+    pub source: String,
+    /// The applied fixers whose lint rule is at `warn` for this file.
+    pub warned: Vec<&'static str>,
 }
 
 impl FileResult {
+    /// A file nothing happened to yet.
+    pub fn new(path: PathBuf, rel: String) -> FileResult {
+        FileResult {
+            path,
+            rel,
+            status: Status::NoChanges,
+            applied: vec![],
+            diff: String::new(),
+            message: String::new(),
+            line: 0,
+            problems: vec![],
+            source: String::new(),
+            warned: vec![],
+        }
+    }
+
     pub fn is_error(&self) -> bool {
         matches!(
             self.status,
@@ -64,6 +86,61 @@ pub struct Ctx<'a> {
     pub elapsed: Duration,
     /// Human output under GitHub Actions (`GITHUB_ACTIONS=true`): the annotations follow it.
     pub github: bool,
+    /// Problems print one line each (`--concise`).
+    pub concise: bool,
+    /// `pun check`: baseline entries no analyse error matched any more.
+    pub unmatched_baseline: usize,
+}
+
+/// `pun lint` and `pun check`'s counts: errors (failed files, lint fixes and problems at `error`, analyse errors),
+/// warnings, fixes `--fix` would apply, and files needing format rules.
+#[derive(Debug, Default, PartialEq, Eq)]
+pub struct Counts {
+    pub errors: usize,
+    pub warnings: usize,
+    pub fixable: usize,
+    pub need_formatting: usize,
+}
+
+/// A fixer's Pun rule ID (its own name when it has none).
+fn rule_id(fixer: &str) -> &str {
+    pun_config::rule_of(fixer).unwrap_or(fixer)
+}
+
+/// The fixers of `f` that apply lint rules: those at `error`, then those at `warn`.
+fn lint_fixers(f: &FileResult) -> (usize, usize) {
+    let lint = || (f.applied.iter()).filter(|n| !rule_id(n).starts_with("format/"));
+    let warned = lint().filter(|n| f.warned.contains(n)).count();
+    (lint().count() - warned, warned)
+}
+
+pub fn counts(ctx: &Ctx, results: &[FileResult]) -> Counts {
+    let mut c = Counts {
+        errors: results.iter().filter(|f| f.is_error()).count(),
+        ..Counts::default()
+    };
+    for f in results {
+        if ctx.dry_run && f.status == Status::Fixed {
+            let (errors, warnings) = lint_fixers(f);
+            c.errors += errors;
+            c.warnings += warnings;
+            c.fixable += errors + warnings;
+            c.need_formatting += usize::from(errors + warnings < f.applied.len());
+        }
+        for p in &f.problems {
+            match p.level {
+                Level::Error => c.errors += 1,
+                Level::Warning => c.warnings += 1,
+            }
+            c.fixable += usize::from(ctx.dry_run && p.fix.is_some());
+        }
+    }
+    for f in ctx.remaining {
+        let (errors, warnings) = lint_fixers(f);
+        c.errors += errors;
+        c.warnings += warnings;
+    }
+    c
 }
 
 /// A run error: Pun couldn't run (exit 2). Humans get [`RunError`]; Pint's box is kept for `--format` and `-q` runs
@@ -164,203 +241,6 @@ pub fn fail(e: anyhow::Error, f: &Failure) -> u8 {
         }
     }
     2
-}
-
-pub const ABOUT: &str =
-    "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
-
-/// Symfony's doRenderThrowable box (without the blank line before it), on stdout; `title` is `-v`'s exception class line.
-pub fn abort_box(title: Option<&str>, message: &str, decorated: bool) -> String {
-    let width = match console::width() {
-        0 => usize::MAX,
-        w => w - 1,
-    };
-    let chunk = width.saturating_sub(4).max(1);
-    let mut lines: Vec<String> = vec![];
-    for line in message
-        .split('\n')
-        .map(|l| l.strip_suffix('\r').unwrap_or(l))
-    {
-        // splitStringByWidth: every piece is padded to the chunk width once a line needs splitting.
-        let chars: Vec<char> = line.chars().collect();
-        if chars.len() <= chunk {
-            lines.push(line.to_string());
-        } else {
-            lines.extend(
-                chars
-                    .chunks(chunk)
-                    .map(|c| format!("{:chunk$}", c.iter().collect::<String>())),
-            );
-        }
-    }
-    let title_len = title.map_or(0, |t| t.chars().count());
-    let len = lines
-        .iter()
-        .map(|l| l.chars().count() + 4)
-        .max()
-        .unwrap_or(0)
-        .max(title_len);
-    let empty = format!("<error>{}</error>", " ".repeat(len));
-    let mut o = format!("{empty}\n");
-    if let Some(t) = title {
-        let _ = writeln!(o, "<error>{t}{}</error>", " ".repeat(len - title_len));
-    }
-    for l in &lines {
-        let _ = writeln!(
-            o,
-            "<error>  {}  {}</error>",
-            escape(l),
-            " ".repeat(len - l.chars().count() - 4)
-        );
-    }
-    let _ = write!(o, "{empty}\n\n");
-    fmt(&o, decorated)
-}
-
-/// EnsurePrettierIsConfigured, run before anything else when pint.json sets `"Pint/laravel_blade": true` (or
-/// `--blade`): Node must exist and prettier, prettier-plugin-blade and prettier-plugin-tailwindcss must resolve
-/// from the project at the required versions. Returns the abort (Pint's message and box) when it would abort.
-/// ponytail: Pint offers to install missing packages when interactive; Pun always takes the non-interactive "no".
-pub fn ensure_prettier(root: &Path, enabled: bool) -> Option<Abort> {
-    use std::process::{Command, Stdio};
-    if !enabled {
-        return None;
-    }
-    const REQUIRED: [(&str, &str); 3] = [
-        ("prettier", "^3.8.4"),
-        ("prettier-plugin-blade", "^3.2.2"),
-        ("prettier-plugin-tailwindcss", "^0.8.0"),
-    ];
-    // Pint's `node -v` plus resources/js/version-probe.cjs per package, in one Node start: a JSON list with, per
-    // package, null when it doesn't resolve, else its version ("" when no manifest names it).
-    const PROBE: &str = r#"const path = require('path'); const fs = require('fs');
-const probe = (pkg) => { let entry;
-  try { entry = require.resolve(pkg, { paths: [process.cwd()] }); } catch (e) { return null; }
-  let dir = path.dirname(entry);
-  while (dir !== path.dirname(dir)) { const manifest = path.join(dir, 'package.json');
-    if (fs.existsSync(manifest)) { try { const json = JSON.parse(fs.readFileSync(manifest, 'utf8'));
-      if (json.name === pkg && json.version) { return String(json.version).trim(); } } catch (e) {} }
-    dir = path.dirname(dir); }
-  return ''; };
-process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
-    let out = Command::new("node")
-        .args(["-e", PROBE])
-        .args(REQUIRED.map(|r| r.0))
-        .current_dir(root)
-        .stderr(Stdio::null())
-        .output();
-    let probes = out
-        .ok()
-        .filter(|o| o.status.success())
-        .and_then(|o| serde_json::from_slice::<Vec<Option<String>>>(&o.stdout).ok());
-    let Some(probes) = probes else {
-        let mut abort = Abort::pint(
-            "The rules enabled in your pint configuration require Node.js to be installed.",
-            Some("install Node.js, or turn `format/laravel/blade` off in pun.toml".into()),
-        );
-        abort.error.message =
-            "`format/laravel/blade` needs Node.js, and there is none on PATH".into();
-        return Some(abort);
-    };
-    let manager = if root.join("bun.lock").exists() || root.join("bun.lockb").exists() {
-        ("bun", "add -d")
-    } else if root.join("pnpm-lock.yaml").exists() {
-        ("pnpm", "add -D")
-    } else if root.join("yarn.lock").exists() {
-        ("yarn", "add -D")
-    } else {
-        ("npm", "install -D")
-    };
-    let mut missing = vec![];
-    let mut outdated = vec![];
-    for ((pkg, constraint), probe) in REQUIRED.into_iter().zip(probes) {
-        match probe {
-            None => missing.push(pkg),
-            Some(v) if !v.is_empty() && !caret_satisfies(&v, &constraint[1..]) => {
-                outdated.push((pkg, v, constraint))
-            }
-            Some(_) => {}
-        }
-    }
-    if !missing.is_empty() {
-        let warning = if crate::agent::enabled() {
-            String::new()
-        } else {
-            format!(
-                "\n\x1b[33m The rules enabled in your pint configuration require the following prettier dependencies to be installed using [{}]: {}.\x1b[39m\n\n",
-                manager.0,
-                missing.join(", ")
-            )
-        };
-        let msg = format!(
-            "The rules enabled in your pint configuration require the following prettier dependencies to be installed: {}.",
-            missing.join(", ")
-        );
-        let install = format!(
-            "install them: {} {} {}",
-            manager.0,
-            manager.1,
-            missing.join(" ")
-        );
-        let mut abort = Abort::pint(msg, Some(install));
-        abort.before = warning;
-        abort.error.message = format!(
-            "`format/laravel/blade` needs {} in the project",
-            missing.join(", ")
-        );
-        return Some(abort);
-    }
-    if !outdated.is_empty() {
-        let list: Vec<String> = outdated
-            .iter()
-            .map(|(p, v, c)| format!("  - {p} (installed: {v}, required: {c})"))
-            .collect();
-        let specs: Vec<String> = outdated
-            .iter()
-            .map(|(p, _, c)| format!("{p}@{c}"))
-            .collect();
-        let msg = format!(
-            "The following prettier dependencies do not satisfy the versions required by your pint configuration:\n{}\n\nUpdate them using [{}]: {} {} {}",
-            list.join("\n"),
-            manager.0,
-            manager.0,
-            manager.1,
-            specs.join(" ")
-        );
-        let have: Vec<String> = (outdated.iter())
-            .map(|(p, v, c)| format!("{p} {v} (needs {c})"))
-            .collect();
-        let mut abort = Abort::pint(
-            msg,
-            Some(format!(
-                "update them: {} {} {}",
-                manager.0,
-                manager.1,
-                specs.join(" ")
-            )),
-        );
-        abort.error.message = format!(
-            "`format/laravel/blade` needs newer prettier packages: {}",
-            have.join(", ")
-        );
-        return Some(abort);
-    }
-    None
-}
-
-/// Composer Semver `^x.y.z` for plain `a.b.c` versions.
-/// ponytail: pre-release/build suffixes are ignored (Composer treats them by stability); real installs are tagged releases.
-fn caret_satisfies(version: &str, base: &str) -> bool {
-    let parse = |s: &str| -> Vec<u64> {
-        s.trim_start_matches('v')
-            .split(['.', '-', '+'])
-            .take(3)
-            .map(|p| p.parse().unwrap_or(0))
-            .collect()
-    };
-    let (v, b) = (parse(version), parse(base));
-    let first = b.iter().position(|&n| n != 0).unwrap_or(2);
-    v >= b && v[..=first] == b[..=first]
 }
 
 /// The `on line N.` at the end of a lint message (the exception's line, used for the `-v` snippet).
@@ -491,6 +371,11 @@ fn annotations(ctx: &Ctx, results: &[FileResult]) -> String {
         lines.push((&f.rel, line));
     }
     lines.extend(ctx.remaining.iter().map(|f| (f.rel.as_str(), file(f))));
+    for f in results.iter().filter(|f| !f.problems.is_empty()) {
+        let index = LineIndex::new(&f.source);
+        lines.extend((f.problems.iter()).map(|p| (f.rel.as_str(), github::problem(p, &index))));
+    }
+    // A stable sort: each file's annotations keep their order.
     lines.sort_by(|a, b| a.0.cmp(b.0));
     lines.into_iter().map(|l| l.1).collect()
 }
@@ -553,8 +438,23 @@ fn human(ctx: &Ctx, results: &[FileResult]) -> String {
         .map(|f| syntax_error(f))
         .collect();
     let mut blocks: Vec<String> = vec![];
-    if !syntax.is_empty() {
-        blocks.push(r.problems(syntax.iter().map(|(p, s, i)| (p, s.as_str(), i))));
+    // The lint and analyse problems, by file and offset, then the syntax errors.
+    let mut with_problems: Vec<&FileResult> = (results.iter())
+        .filter(|f| !f.problems.is_empty())
+        .collect();
+    with_problems.sort_by(|a, b| a.rel.cmp(&b.rel));
+    let indexes: Vec<LineIndex> = with_problems
+        .iter()
+        .map(|f| LineIndex::new(&f.source))
+        .collect();
+    let mut r = r;
+    r.concise = ctx.concise;
+    let problems: Vec<(&Problem, &str, &LineIndex)> = (with_problems.iter().zip(&indexes))
+        .flat_map(|(f, i)| f.problems.iter().map(move |p| (p, f.source.as_str(), i)))
+        .chain(syntax.iter().map(|(p, s, i)| (p, s.as_str(), i)))
+        .collect();
+    if !problems.is_empty() {
+        blocks.push(r.problems(problems));
     }
     blocks.extend(
         (failed.iter())
@@ -580,28 +480,17 @@ fn human(ctx: &Ctx, results: &[FileResult]) -> String {
         }));
         return out;
     }
-    let lint = |f: &FileResult| {
-        ids(f)
-            .iter()
-            .filter(|id| !id.starts_with("format/"))
-            .count()
-    };
-    let (mut errors, mut fixable, mut need_formatting) = (failed.len(), 0, 0);
-    if ctx.dry_run {
-        for f in results.iter().filter(|f| f.status == Status::Fixed) {
-            errors += lint(f);
-            fixable += lint(f);
-            need_formatting += usize::from(lint(f) < f.applied.len());
-        }
+    if ctx.unmatched_baseline > 0 {
+        out.push_str(&crate::analyse::baseline_note(&r, ctx.unmatched_baseline));
     }
-    errors += ctx.remaining.iter().map(lint).sum::<usize>();
+    let c = counts(ctx, results);
     let fix_command = format!("pun {cmd} --fix");
     out.push_str(&r.summary(&Summary {
-        errors,
-        warnings: 0,
-        fixable,
+        errors: c.errors,
+        warnings: c.warnings,
+        fixable: c.fixable,
         fix_command: &fix_command,
-        need_formatting,
+        need_formatting: c.need_formatting,
         files: ctx.total,
         elapsed: ctx.elapsed,
     }));
@@ -660,7 +549,32 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
     sorted.sort_by(|a, b| (&a.0.rel, a.1).cmp(&(&b.0.rel, b.1)));
     let mut items = vec![];
     let (mut fixed, mut errors, mut left) = (0, 0, 0);
+    let mut warnings = 0;
     for (r, remaining) in sorted {
+        if !remaining && !r.problems.is_empty() {
+            let index = LineIndex::new(&r.source);
+            for p in &r.problems {
+                let at = index.line_col(p.span.start);
+                let fix = match p.fix.as_ref().map(|f| f.safety) {
+                    Some(pun_problem::Safety::Safe) => " [fix:safe]",
+                    Some(pun_problem::Safety::Unsafe) => " [fix:unsafe]",
+                    None => "",
+                };
+                match p.level {
+                    Level::Error => errors += 1,
+                    Level::Warning => warnings += 1,
+                }
+                let level = if p.level == Level::Warning {
+                    " [warn]"
+                } else {
+                    ""
+                };
+                items.push(format!(
+                    "{}:{}:{} {}{fix}{level} {}",
+                    r.rel, at.line, at.column, p.rule, p.message
+                ));
+            }
+        }
         if r.is_error() {
             errors += 1;
             // A fixer's exception or broken output is TYPE_LINT / TYPE_EXCEPTION, bad input TYPE_INVALID.
@@ -721,6 +635,9 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
     }
     if left > 0 {
         detail.push(format!("{} with remaining fixes", count(left, "file")));
+    }
+    if warnings > 0 {
+        detail.push(count(warnings, "warning"));
     }
     let result = if errors > 0 || left > 0 || (fixed > 0 && ctx.dry_run) {
         "fail"
@@ -799,137 +716,35 @@ fn issues(results: &[FileResult]) -> Vec<&FileResult> {
     v
 }
 
-/// DiffConsoleFormatter with TextReporter's begin/end template; lines split on PCRE's `\R`.
-fn console_diff(diff: &str, decorated: bool) -> String {
-    let mut lines = vec![];
-    let mut rest = diff;
-    while let Some(i) = rest.find(['\r', '\n', '\x0b', '\x0c', '\u{85}', '\u{2028}', '\u{2029}']) {
-        lines.push(&rest[..i]);
-        let sep = if rest[i..].starts_with("\r\n") {
-            2
-        } else {
-            rest[i..].chars().next().unwrap().len_utf8()
-        };
-        rest = &rest[i + sep..];
-    }
-    lines.push(rest);
-    let body: Vec<String> = lines
-        .iter()
-        .map(|l| {
-            if !decorated {
-                return l.to_string();
+fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) -> Result<String> {
+    // A file's lint and analyse problems list with its fixers, by rule ID, once each.
+    let fixers: Vec<Vec<&str>> = (results.iter())
+        .map(|r| {
+            let mut all: Vec<&str> = r.applied.to_vec();
+            for p in &r.problems {
+                if !all.contains(&p.rule.as_str()) {
+                    all.push(&p.rule);
+                }
             }
-            match l.as_bytes().first() {
-                Some(b'+') => format!("<fg=green>{}</fg=green>", escape(l)),
-                Some(b'-') => format!("<fg=red>{}</fg=red>", escape(l)),
-                Some(b'@') => format!("<fg=cyan>{}</fg=cyan>", escape(l)),
-                _ => escape(l),
-            }
+            all
         })
         .collect();
-    let (open, close) = if decorated {
-        ("<comment>", "</comment>")
-    } else {
-        ("", "")
-    };
-    format!(
-        "{open}      ---------- begin diff ----------{close}\n{}\n{open}      ----------- end diff -----------{close}",
-        body.join("\n")
-    )
-}
-
-fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) -> Result<String> {
-    let changed: Vec<&FileResult> = results
-        .iter()
-        .filter(|r| r.status == Status::Fixed)
-        .collect();
-    let changes: Vec<Change> = changed
-        .iter()
-        .map(|r| Change {
+    let changes: Vec<Change> = (results.iter().zip(&fixers))
+        .filter(|(r, _)| r.status == Status::Fixed || !r.problems.is_empty())
+        .map(|(r, fixers)| Change {
             file: &r.rel,
-            fixers: &r.applied,
+            fixers,
             diff: if ctx.verbose { &r.diff } else { "" },
         })
         .collect();
-    let escaped = |s: String| if decorated { escape(&s) } else { s };
     Ok(match format {
-        "json" => {
-            let files: Vec<serde_json::Value> = changes
-                .iter()
-                .map(|c| {
-                    let mut f = serde_json::json!({ "name": c.file });
-                    if ctx.verbose {
-                        f["appliedFixers"] = serde_json::json!(c.fixers);
-                    }
-                    if !c.diff.is_empty() {
-                        f["diff"] = serde_json::json!(c.diff);
-                    }
-                    f
-                })
-                .collect();
-            escaped(php_json(
-                &serde_json::json!({ "about": ABOUT, "files": files, "time": { "total": 0 }, "memory": 0 }),
-            ))
-        }
-        "txt" => {
-            let mut o = String::new();
-            for (n, c) in changes.iter().enumerate() {
-                let _ = write!(o, "{:4}) {}", n + 1, c.file);
-                if ctx.verbose {
-                    let list = c.fixers.join(", ");
-                    let _ = write!(
-                        o,
-                        "{}",
-                        if decorated {
-                            format!(" (<comment>{list}</comment>)")
-                        } else {
-                            format!(" ({list})")
-                        }
-                    );
-                }
-                if !c.diff.is_empty() {
-                    let _ = write!(o, "\n{}\n", console_diff(c.diff, decorated));
-                }
-                o.push('\n');
-            }
-            let (verb, what) = if ctx.dry_run {
-                ("Found", "files that can be fixed")
-            } else {
-                ("Fixed", "files")
-            };
-            let _ = writeln!(
-                o,
-                "\n{verb} {} of {} {what} in 0.000 seconds, 0.00 MB memory used",
-                changes.len(),
-                ctx.total
-            );
-            o
-        }
+        "json" => fix_report::json(&changes, ctx.verbose, decorated),
+        "txt" => fix_report::txt(&changes, ctx.verbose, ctx.dry_run, ctx.total, decorated),
         "agent" => {
-            let errors: Vec<&FileResult> = errors(results).collect();
-            let result = if !errors.is_empty() {
-                "fail"
-            } else if changed.is_empty() {
-                "passed"
-            } else if ctx.dry_run {
-                "fail"
-            } else {
-                "fixed"
-            };
-            let mut v = serde_json::json!({ "tool": "pint", "result": result });
-            if !changed.is_empty() {
-                v["files"] = changed
-                    .iter()
-                    .map(|r| serde_json::json!({ "path": r.rel, "fixers": r.applied }))
-                    .collect();
-            }
-            if !errors.is_empty() {
-                v["errors"] = errors
-                    .iter()
-                    .map(|r| serde_json::json!({ "path": r.rel, "message": r.message }))
-                    .collect();
-            }
-            php_json(&v)
+            let errors: Vec<(&str, &str)> = (errors(results))
+                .map(|r| (r.rel.as_str(), r.message.as_str()))
+                .collect();
+            fix_report::agent(&changes, &errors, ctx.dry_run)
         }
         "checkstyle" => fix_report::checkstyle(&changes, decorated),
         "junit" => fix_report::junit(&changes, ctx.verbose, decorated),
@@ -938,25 +753,6 @@ fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) ->
         "github" => annotations(ctx, results),
         _ => bail!("Format [{format}] is not supported."),
     })
-}
-
-/// json_encode() defaults: escape `/` and non-ASCII (as UTF-16 `\uXXXX`).
-pub fn php_json(v: &serde_json::Value) -> String {
-    let s = serde_json::to_string(v).expect("json");
-    let mut o = String::with_capacity(s.len());
-    for c in s.chars() {
-        match c {
-            '/' => o.push_str("\\/"),
-            c if c.is_ascii() => o.push(c),
-            c => {
-                let mut buf = [0u16; 2];
-                for u in c.encode_utf16(&mut buf) {
-                    let _ = write!(o, "\\u{u:04x}");
-                }
-            }
-        }
-    }
-    o
 }
 
 /// PHP-CS-Fixer UnifiedDiffer (sebastian/diff strict unified, 3 lines of context, real path in headers).

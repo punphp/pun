@@ -225,12 +225,25 @@ impl Linter {
     /// Apply every fix, round after round, until no rule has a fix that applies. Each round parses the new source
     /// once. Fixes apply in problem order; one that overlaps an earlier one waits for the next round.
     pub fn fix(&self, path: &Path, source: &str) -> Result<Fixed, LintError> {
+        self.fix_with(path, source, |_, _| {})
+    }
+
+    /// [`Linter::fix`], with `filter` called on each round's problems (and the source they refer to) before any
+    /// fix applies: it may drop problems (an ignore comment, a rule that is off for this file), take a fix away
+    /// (`fix = "off"`), set levels or add problems of its own. `Fixed::remaining` holds what it left in the last
+    /// round.
+    pub fn fix_with(
+        &self,
+        path: &Path,
+        source: &str,
+        mut filter: impl FnMut(&str, &mut Vec<Problem>),
+    ) -> Result<Fixed, LintError> {
         let mut current = source.to_string();
         let mut applied = Vec::new();
         let mut last_rules = Vec::new();
         let mut round = 0;
         loop {
-            let problems = self.check(path, &current).map_err(|e| match e {
+            let mut problems = self.check(path, &current).map_err(|e| match e {
                 LintError::Syntax { span, message } if round > 0 => LintError::FixBrokeSyntax {
                     rules: last_rules.clone(),
                     span,
@@ -238,6 +251,7 @@ impl Linter {
                 },
                 e => e,
             })?;
+            filter(&current, &mut problems);
             let with_fix: Vec<&Problem> = problems.iter().filter(|p| p.fix.is_some()).collect();
             let fixes: Vec<&Fix> = with_fix.iter().filter_map(|p| p.fix.as_ref()).collect();
             let result = apply_fixes(&current, &fixes);

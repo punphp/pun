@@ -1,7 +1,8 @@
 //! Run errors as Pint shows them: Symfony's renderThrowable box on stdout, exit 1, with the "In X.php line N:" header
 //! of the PHP exception that carries the same message.
 
-use crate::{console, report};
+use crate::console::{self, escape};
+use std::fmt::Write as _;
 
 /// The box for `message`, coloured like Symfony's configureIO decides (raw `--ansi`/`--no-ansi` in argv, else TTY).
 /// `-v` (also from raw argv) adds the exception class above the message and the trace below the box. Of the trace,
@@ -34,7 +35,7 @@ pub fn render(message: &str) -> String {
                 decorated,
             );
         }
-        out += &report::abort_box(
+        out += &abort_box(
             verbose.then(|| format!("  [{class}]  ")).as_deref(),
             m,
             decorated,
@@ -114,4 +115,52 @@ fn origin(m: &str, nested: bool) -> (&'static str, u32, &'static str, bool) {
             true,
         )
     }
+}
+
+/// Symfony's doRenderThrowable box (without the blank line before it), on stdout; `title` is `-v`'s exception class line.
+fn abort_box(title: Option<&str>, message: &str, decorated: bool) -> String {
+    let width = match console::width() {
+        0 => usize::MAX,
+        w => w - 1,
+    };
+    let chunk = width.saturating_sub(4).max(1);
+    let mut lines: Vec<String> = vec![];
+    for line in message
+        .split('\n')
+        .map(|l| l.strip_suffix('\r').unwrap_or(l))
+    {
+        // splitStringByWidth: every piece is padded to the chunk width once a line needs splitting.
+        let chars: Vec<char> = line.chars().collect();
+        if chars.len() <= chunk {
+            lines.push(line.to_string());
+        } else {
+            lines.extend(
+                chars
+                    .chunks(chunk)
+                    .map(|c| format!("{:chunk$}", c.iter().collect::<String>())),
+            );
+        }
+    }
+    let title_len = title.map_or(0, |t| t.chars().count());
+    let len = lines
+        .iter()
+        .map(|l| l.chars().count() + 4)
+        .max()
+        .unwrap_or(0)
+        .max(title_len);
+    let empty = format!("<error>{}</error>", " ".repeat(len));
+    let mut o = format!("{empty}\n");
+    if let Some(t) = title {
+        let _ = writeln!(o, "<error>{t}{}</error>", " ".repeat(len - title_len));
+    }
+    for l in &lines {
+        let _ = writeln!(
+            o,
+            "<error>  {}  {}</error>",
+            escape(l),
+            " ".repeat(len - l.chars().count() - 4)
+        );
+    }
+    let _ = write!(o, "{empty}\n\n");
+    console::format(&o, decorated)
 }

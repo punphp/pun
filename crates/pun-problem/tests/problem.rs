@@ -180,7 +180,7 @@ fn invalid_fixes_never_apply() {
     assert_eq!(out.source, "Zbc");
     assert_eq!(out.applied, vec![3]);
     assert_eq!(out.invalid, vec![0, 1, 2]);
-    assert!(out.deferred.is_empty());
+    assert_eq!(out.deferred, [] as [usize; 0]);
 }
 
 #[test]

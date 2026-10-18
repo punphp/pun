@@ -8,11 +8,11 @@ pun check          # report everything
 pun check --fix    # format and apply lint fixes
 ```
 
-`pun check` runs format, lint and analyse in one process, sharing one parse. Format and lint fixers run in PHP-CS-Fixer's priority order, as Pint runs them, so on a migrated project `pun check --fix` writes exactly what `pint` wrote.
+`pun check` runs format and lint in one pass over each file, then analyses the project. Format and lint fixers run in PHP-CS-Fixer's priority order, as Pint runs them, so on a migrated project `pun check --fix` writes exactly what `pint` wrote.
 
 - It reports everything and exits non-zero on any format diff, any lint `error` or any analyse `error`.
 - `--fix` applies format, plus the fixes of every enabled lint rule. It never edits based on analysis. The findings of lint rules with `fix = "off"` are listed as remaining (`✖`, or `[remaining]` under a coding agent) and the run exits 1.
-- It takes the same flags as `pun format`: paths, `--staged`, `--dirty`, `--format=agent`.
+- It takes the same flags as `pun format` (paths, `--staged`, `--dirty`, `--format=agent`) and `pun lint`'s (`-A`, `-W`, `-D`, `--deny-warnings`, `--max-warnings`, `--concise`). Analyse errors show as problems with the lint ones; `[analyse] baseline` and `@pun-ignore` comments apply as in `pun analyse`.
 - It exits 0 when clean, 1 on findings, and 2 when Pun couldn't run (a bad `pun.toml`, an unported rule, an unreadable path, a rule that failed on a file). See [exit codes](/docs/commands/format#exit-codes).
 - Under GitHub Actions (`GITHUB_ACTIONS=true`) the output is followed by one annotation per file to fix, titled with its rule IDs; `--format=github` prints only the annotations. See [GitHub Actions](/docs/commands/format#github-actions).
 

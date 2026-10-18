@@ -22,8 +22,9 @@ pub(crate) fn hash(code: &[u8]) -> String {
     format!("{:032x}", xxh3_128(code))
 }
 
-/// Default location for `root`, or `None` without a home directory.
-pub(crate) fn default_path(root: &Path) -> Option<PathBuf> {
+/// Default location for `root` and a command (`pun format` keeps the plain name, `lint` and `check` add theirs, so
+/// alternating commands keeps each one's cache), or `None` without a home directory.
+pub(crate) fn default_path(root: &Path, command: &str) -> Option<PathBuf> {
     let base = std::env::var_os("XDG_CACHE_HOME")
         .filter(|v| !v.is_empty())
         .map(PathBuf::from)
@@ -32,8 +33,12 @@ pub(crate) fn default_path(root: &Path) -> Option<PathBuf> {
                 .filter(|v| !v.is_empty())
                 .map(|h| PathBuf::from(h).join(".cache"))
         })?;
+    let suffix = match command {
+        "format" => String::new(),
+        c => format!("-{c}"),
+    };
     Some(base.join("pun").join(format!(
-        "{:016x}.json",
+        "{:016x}{suffix}.json",
         xxhash_rust::xxh3::xxh3_64(root.as_os_str().as_encoded_bytes())
     )))
 }

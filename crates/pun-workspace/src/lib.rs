@@ -13,6 +13,7 @@
 //! plain entry is Mago's root-relative path prefix. See [`files`].
 
 use anyhow::Result;
+use mago_database::GlobSettings;
 use mago_database::matcher::{ExclusionMatcher, contains_glob_metacharacters};
 use pcre2::bytes::Regex;
 use pun_config::Config;
@@ -153,7 +154,7 @@ impl Finder {
 
     /// Mago's `ExclusionMatcher` over `patterns`, relative to `root`; none when there are no patterns.
     fn matching(mut self, root: &Path, patterns: impl IntoIterator<Item = String>) -> Result<Self> {
-        let m = ExclusionMatcher::compile(patterns, Default::default())
+        let m = ExclusionMatcher::compile(patterns, GlobSettings::default())
             .map_err(|e| anyhow::anyhow!("invalid exclude: {e}"))?;
         self.matcher = (!m.is_empty()).then(|| (root.to_path_buf(), m));
         Ok(self)
@@ -264,20 +265,23 @@ pub enum Command {
 /// The files a command checks, sorted by path (`pun list-files`, context/plan/config.md §7). Without a command:
 /// the `[files]` set, `[files] paths` (or `paths`) walked like PHP-CS-Fixer's `Finder::create()` (`*.php`, no
 /// `vendor`, dot or VCS directories) minus `[files] exclude`. `Lint` and `Analyse` add their own `exclude` (and
-/// analyse's `paths`); `Format` is Pint's finder, [`discover`]. Outside `Format` an explicit file is excluded like
+/// analyse's `paths`) and skip Blade templates and the directories Pint skips, as root-relative prefixes
+/// ([`LINT_EXCLUDE`]); `Format` is Pint's finder, [`discover`]. Outside `Format` an explicit file is excluded like
 /// any other, as in Mago.
 pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
-    let (dirs, exclude) = match command {
+    let dirs = match command {
         Some(Command::Format) => {
             let mut out = discover(cfg, paths)?;
             out.sort();
             return Ok(out);
         }
-        None => (&cfg.files.paths, &cfg.files.exclude),
-        Some(Command::Lint) => (&cfg.files.paths, &cfg.lint.exclude),
-        Some(Command::Analyse) => (&cfg.analyse.paths, &cfg.analyse.exclude),
+        None | Some(Command::Lint) => &cfg.files.paths,
+        Some(Command::Analyse) => &cfg.analyse.paths,
     };
-    let mut f = Finder::php_cs_fixer().matching(&cfg.root, exclude.iter().cloned())?;
+    let mut f = Finder::php_cs_fixer().matching(&cfg.root, exclude_patterns(cfg, command))?;
+    if command.is_some() {
+        f = f.not_name(["*.blade.php"])?;
+    }
     if paths.is_empty() {
         for d in dirs {
             let p = cfg.root.join(d);
@@ -301,11 +305,47 @@ pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Resul
     Ok(out)
 }
 
+/// The directories `pun lint` and `pun analyse` skip besides pun.toml's excludes: Pint's defaults (compiled views,
+/// the config cache, build output, Node packages), matched as root-relative prefixes.
+pub const LINT_EXCLUDE: [&str; 4] = PINT_EXCLUDE;
+
+/// A command's exclude patterns: `[files] exclude` and its own, plus [`LINT_EXCLUDE`] for lint and analyse.
+fn exclude_patterns(cfg: &Config, command: Option<Command>) -> Vec<String> {
+    let own = match command {
+        None | Some(Command::Format) => &cfg.files.exclude,
+        Some(Command::Lint) => &cfg.lint.exclude,
+        Some(Command::Analyse) => &cfg.analyse.exclude,
+    };
+    let defaults = command.map_or(&[][..], |_| &LINT_EXCLUDE[..]);
+    (own.iter().cloned())
+        .chain(defaults.iter().map(ToString::to_string))
+        .collect()
+}
+
+/// A command's pun.toml excludes as a test on absolute paths: `pun analyse` drops excluded files from the symbol
+/// scan as well as from the analysis (`excludePaths.analyseAndScan`).
+pub struct Exclusions(Finder);
+
+impl Exclusions {
+    pub fn new(cfg: &Config, command: Command) -> Result<Exclusions> {
+        Self::globs(&cfg.root, exclude_patterns(cfg, Some(command)))
+    }
+
+    /// Paths matching any of `patterns` (Mago's globs and root-relative prefixes): `[[lint.overrides]] files`.
+    pub fn globs(root: &Path, patterns: Vec<String>) -> Result<Exclusions> {
+        Ok(Exclusions(Finder::php_cs_fixer().matching(root, patterns)?))
+    }
+
+    pub fn is_excluded(&self, path: &Path) -> bool {
+        self.0.matched(path)
+    }
+}
+
 fn push(f: &mut Finder, p: PathBuf) {
     if p.is_file() {
-        f.append.push(p)
+        f.append.push(p);
     } else {
-        f.dirs.push(p)
+        f.dirs.push(p);
     }
 }
 
@@ -471,7 +511,7 @@ pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
 
 /// One pun.toml glob exclude against a root-relative path, as Mago matches it.
 fn glob_matches(glob: &str, rel: &str) -> bool {
-    ExclusionMatcher::compile([glob], Default::default()).is_ok_and(|m| m.is_match(rel))
+    ExclusionMatcher::compile([glob], GlobSettings::default()).is_ok_and(|m| m.is_match(rel))
 }
 
 fn git(root: &Path, args: &[&str]) -> Option<String> {
@@ -559,7 +599,10 @@ fn glob_to_regex(glob: &str) -> String {
             continue;
         }
         match car.as_str() {
-            "#" | "." | "(" | ")" | "|" | "+" | "^" | "$" => re.push_str(&format!("\\{car}")),
+            "#" | "." | "(" | ")" | "|" | "+" | "^" | "$" => {
+                re.push('\\');
+                re.push_str(&car);
+            }
             "*" => re.push_str(if escaping { "\\*" } else { "[^/]*" }),
             "?" => re.push_str(if escaping { "\\?" } else { "[^/]" }),
             "{" => {

@@ -228,17 +228,17 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| lint 1-2: the engine from the spike; levels, sets, overrides at run time | todo |
-| lint 1-2 follow-up (from config 3): apply `[[lint.overrides]]` (`Config.lint.overrides`) per file in pun-cli's token-fixer pass; warn-level rules do not fail lint/check (only error fails; `--deny-warnings`, `--max-warnings`) | todo |
-| lint 1-2 follow-up: run files in parallel, a cache keyed like format's, and a `pun lint` command on `pun_lint::Linter` | todo |
-| lint 1-2 follow-up (from config 7): run `pun lint` and the lint half of `pun check` over `pun_workspace::files(cfg, Some(Command::Lint), ..)` so `[lint] exclude` takes effect; decide what happens to Blade and storage/framework/views files in that set | todo |
-| lint 1-2 follow-up (from bench): switch the `pun` row of `BENCH=lint` in scripts/bench.py from crates/pun-lint/examples/check.rs to `pun lint` once it exists | todo |
 | lint 1-2 follow-up (from perf lint 2): when `pun lint` is wired into pun-cli, check files while pun-workspace's finder is still walking (shared LIFO work stack, as in examples/check.rs) instead of discovering every file first, and take the entry type from `DirEntry::file_type` instead of a stat per entry | todo |
 | lint 1-2 follow-up (from perf lint 4): when `pun lint` is wired into pun-cli, read files on a few threads of their own (3 in examples/check.rs) and parse on all cores, instead of opening on every core; opens on more than 4 threads contend on macOS | todo |
 | pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
 | pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
 | lint: the engine uses `pun_problem::{Problem, apply_fixes}` for diagnostics and the fix loop | todo |
-| lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
+| lint 3-6 follow-up (platform): a token-path (PHP-CS-Fixer) lint rule reports its file at the first changed line, not one diagnostic per change; split its diff into per-rule hunks so each change is a problem with its own span and `@pun-ignore` line forms work for it (today only `@pun-ignore-file`) | todo |
+| lint 3-6 follow-up (platform): Pint's checkstyle, junit and gitlab reporters list a file's lint and analyse problems by rule ID only (PHP-CS-Fixer's per-file shape); give each problem its line and message there | todo |
+| platform decision (lint 1-2, from config 7): `pun lint`, the lint half of `pun check` and `pun analyse` skip Blade templates and Pint's default directories (bootstrap/cache, build, node_modules, storage) besides their own excludes, as Mago and PHPStan see only PHP sources; `pun lint --mago` is gone (its Laravel rules are native lint rules) | done |
+| platform request (pun-config): make the `[meta.groups]` list and an identifier-to-rule lookup (`analyse_rule_of(identifier)`, with the `%s` wildcards) public; pun-cli's src/mapping.rs parses mapping.toml again until then | request |
+| platform request (pun-config, mapping.toml): `class.notFound` maps to `analyse/types/invalid-pipe`; PHPStan reports it for every unknown class (`new Missing()`), so it belongs to an `undefined/class` rule | request |
+| platform request (pun-analyse): a `run` that takes the analysed files' sources, so `pun check` reads each file once instead of again after format and lint | request |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | doing (lint-c, main) |
 | lint 7 (lint-c): the 119 1.0 rules of the `types` (79) and `laravel` (40) groups; syntax-only rules first | doing (lint-c, main); 9 of 119 native (batch 1: 9 syntax-only laravel rules) |
 | lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | doing (config, main) |
@@ -271,11 +271,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| analyse 1-2: `pun analyse` command, `[analyse]` (its `exclude` globs skip both analysis and symbol scan), presets, output; Pun baseline | todo |
-| analyse 1-2 follow-up (from config 3): read `Config.analyse` (preset, switches, rules, baseline, paths) in `pun analyse` | todo |
-| analyse 1-2 follow-up (from config 7): `pun analyse` discovers files with `pun_workspace::files(cfg, Some(Command::Analyse), ..)` | todo |
-| analyse 1-2 follow-up (from bench): switch the `pun` row of `BENCH=analyse` in scripts/bench.py from crates/pun-analyse/examples/analyse.rs to `pun analyse` once it exists | todo |
-| analyse 1-2 follow-up (from perf analyse 1): `pun analyse` in pun-cli calls `pun_analyse::analyse` so it gets the parallel pipeline; its global rayon pool is shared with format/lint and capped by `--max-processes` | todo |
 | analyse 3: finish level 0: ~70 rules left, 33 gaps, corpus diffs pinkary 1 / larastan 6 / pest 5 / laravel-framework 14 | doing (analyse-a, main); trait-in-context work redone (analyse 3a); analyse 3b ported 13 declaration and keyword rules (functions.rs, statements.rs); analyse 3c ported 11 class-member declaration rules, 54 identifiers (enums.rs, declarations.rs, properties.rs); analyse 3d ported 10 syntax-only rules, 20 identifiers (syntax.rs, assign.rs: break/continue outside a loop, nullsafe by-ref, invalid assign targets, $this misuse, empty-dim reads, names in use, invalid union and nullable types); analyse 3e ported the AttributesCheck rules (13 attribute Rule classes, NonClassAttributeClassRule, TraitAttributeClassRule) and FunctionDefinitionCheck's `#[NoDiscard]` attribute.target, 20 identifiers (attributes.rs, names.rs); analyse 3f ported 9 class-hierarchy declaration rules, 16 identifiers (hierarchy.rs: final/readonly extends, trait use, instanceof trait, abstract methods and missing implementations, consistent constructor, sealed on trait, callable property type, Serializable); analyse 3g ported the rest of FunctionDefinitionCheck and the unresolvable-type part of ExistingClassesInPropertiesRule, 13 identifiers (signatures.rs: required after optional, implicitly nullable, unresolvable native types, noParent, union/never PHP-version checks, template type not in parameter, selfOut trait, property.trait); analyse 3i ported ClassNameCheck (class_names.rs: `*.nameCase`, `class.prefixed`) for every level-0 caller; only the facade-alias work remains, as analyse 6 |
 | analyse 3 follow-up (from 3g): names.rs hint_classes misses PHPStan's class.notFound for a `?parent` return and for `self` outside a class | todo |
 | analyse 3 follow-up (from 3g): run the signatures.rs checks on anonymous-class methods beyond parameter defaults, with the anonymous-class naming follow-up below | todo |

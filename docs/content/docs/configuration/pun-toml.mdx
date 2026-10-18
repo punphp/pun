@@ -85,7 +85,7 @@ Format rules only change layout, casing and spelling. Risky ones, like `final_cl
 
 A rule a set turns on is an `error`. A group's level wins over the sets, and a rule's own line wins over its group. A table without `level` is `error`. Only `error` fails a run. `--fix` applies the fix of every enabled rule; `fix = "off"` keeps a rule report-only.
 
-Not yet at run time: a `warn` rule still fails a run like an `error` one, and `[[lint.overrides]]` are checked but not yet applied per file.
+`[[lint.overrides]]` apply per file, after `[lint.rules]`; later overrides win, and `-A`/`-W`/`-D` on the command line apply last.
 
 The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`. Switch one off with its group: `[lint.groups] laravel = "off"`. A set's PHP upgrade rules (`php-8.4/...`) run from that `[php] version` on; upgrade groups such as `laravel-12` run when you turn the group on.
 
@@ -97,9 +97,20 @@ The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `larav
 | `paths` | What analyse checks, instead of `[files] paths` |
 | `exclude` | Added to `[files] exclude`, for analyse only |
 | `baseline` | The baseline file |
+| `stubs` | Stub files to read for symbols (PHPStan's `stubFiles`) |
 | `rules` | `"on"`, `"off"` or a table of options per rule; `"on"` or `"off"` per group |
+| `[[analyse.ignore]]` | Errors to ignore (PHPStan's `ignoreErrors`), one table each |
 
 Analyse rules are on or off; every finding is an error. The Laravel rules run when composer.lock locks `laravel/framework`; `[analyse.rules] laravel = "off"` switches them off.
+
+An `[[analyse.ignore]]` table ignores the errors that match every key it gives: `rule` (a Pun ID), `identifier` (the PHPStan identifier), `message` (a PCRE pattern, as in PHPStan) or `raw-message` (the exact text), and `paths` (paths or fnmatch patterns, relative to the project). It needs a rule, an identifier or a message. With `count`, exactly that many are ignored. `pun migrate` writes these from `ignoreErrors`.
+
+```toml
+[[analyse.ignore]]
+rule = "undefined/method"
+message = "#^Call to an undefined method App\\\\Models\\\\User::#"
+paths = ["app/Http/*"]
+```
 
 ## Rule names
 

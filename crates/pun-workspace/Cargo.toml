@@ -17,3 +17,6 @@ pcre2.workspace = true
 walkdir.workspace = true
 pun-config.workspace = true
 pun-tokens.workspace = true
+
+[lints]
+workspace = true

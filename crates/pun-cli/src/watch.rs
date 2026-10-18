@@ -2,7 +2,7 @@
 //! pick (same discovery, config and exclusions, re-read every time), with the usual output.
 //! Stops when the project directory goes away or the parent process exits.
 
-use crate::run::{Stage, format, load_config};
+use crate::run::{LintOpts, Stage, format, load_config};
 use crate::{FormatArgs, root};
 use anyhow::Result;
 use notify::{EventKind, RecursiveMode, Watcher};
@@ -19,7 +19,7 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
     a.pun.watch = false;
     let started_by = parent();
     let root = root()?;
-    report(format(a.clone(), Stage::Format));
+    report(&a, format(a.clone(), Stage::Format, LintOpts::default()));
     let (tx, rx) = mpsc::channel();
     let mut watcher = notify::recommended_watcher(tx)?;
     watcher.watch(&root, RecursiveMode::Recursive)?;
@@ -71,7 +71,7 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
             match load_config(&a, &root).and_then(|cfg| pun_workspace::discover(&cfg, &a.paths)) {
                 Ok(f) => f,
                 Err(e) => {
-                    report(Err(e));
+                    report(&a, Err(e));
                     continue;
                 }
             };
@@ -82,13 +82,17 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
         if targets.is_empty() {
             continue;
         }
-        report(format(
-            FormatArgs {
-                paths: targets.clone(),
-                ..rerun.clone()
-            },
-            Stage::Format,
-        ));
+        report(
+            &rerun,
+            format(
+                FormatArgs {
+                    paths: targets.clone(),
+                    ..rerun.clone()
+                },
+                Stage::Format,
+                LintOpts::default(),
+            ),
+        );
         for t in targets {
             if let Some(h) = hash(&t) {
                 done.insert(t, h);
@@ -97,10 +101,11 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
     }
 }
 
-/// A failed run (unreadable file, broken pint.json) is reported like `main` does, and the watch goes on.
-fn report(r: Result<u8>) {
+/// A failed run (unreadable file, broken pun.toml) is reported as `main` reports it, cause chain included, and the
+/// watch goes on.
+fn report(a: &FormatArgs, r: Result<u8>) {
     if let Err(e) = r {
-        eprintln!("\n  {e}\n");
+        crate::report::fail(e, &a.failure());
     }
 }
 

@@ -64,7 +64,7 @@ Pinkary is the slowest project for Pun because Blade formatting runs through Pre
 `BENCH=analyse` and `BENCH=lint` measure the same way and print the same two tables. The medians table adds each tool's error count and Pun's memory ratio. `BENCH=format` is the default and behaves as described above.
 
 - Setup: each project gets a scratch copy with `composer install` under `BENCH_SCRATCH` (default `target-bench/`), made once and reused. PHPStan 2.2.7 is copied from `.oracle/phpstan` into the copy's `vendor/`. `SETUP_ONLY=1` makes the copies without measuring, so run it through a normal heavy slot first.
-- Pun has no `pun analyse` or `pun lint` engine command yet. Build `cargo build --profile profiling -p punphp-analyse --example analyse` and `-p punphp-lint --example check`, or point `PUN_ANALYSE_BIN` and `PUN_LINT_BIN` at them.
+- Pun runs as `pun analyse --config pun-bench-analyse.toml --format=json` and `pun lint --config pun-bench-lint.toml --format=json` (every native rule at `error`), from `target/profiling/pun` or `PUN_BIN`.
 - `BENCH_RESULTS=file.json` keeps runs across calls and adds each call's runs to them. Use it to split a slow project by tool (`TOOLS=`) or by run, so one call fits a 10-minute slot. Delete the file to start over.
 - The script sets `XDEBUG_MODE=off` and removes the coding-agent variables that switch PHPStan's output format.
 
@@ -81,7 +81,7 @@ Lint mode runs on pinkary and laravel-framework, on the paths of each project's 
 
 - `rector-ported`: `.oracle/rector-bin` with exactly the Rector classes of pun-lint's rules. The list comes from `check --rules` and `rules/mapping.toml`, so it grows as rules are ported.
 - `rector-full`: the project's own Rector and rector.php. This is a reference row.
-- `pun`: `examples/check`.
+- `pun`: `pun lint` with every native rule.
 - `mago`: `mago lint`.
 
 Every Rector run uses `--dry-run --clear-cache`.

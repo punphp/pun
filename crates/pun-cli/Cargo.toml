@@ -11,10 +11,6 @@ keywords.workspace = true
 categories.workspace = true
 readme = "../../README.md"
 
-# Release builds (dist) ship `pun lint --mago`.
-[package.metadata.dist]
-features = ["mago-lint"]
-
 [[bin]]
 name = "pun"
 path = "src/main.rs"
@@ -33,18 +29,18 @@ pun-format.workspace = true
 pun-fixers.workspace = true
 pun-workspace.workspace = true
 pun-problem.workspace = true
+pun-analyse.workspace = true
+pun-lint.workspace = true
+pun-phpstan.workspace = true
+serde.workspace = true
+sha2.workspace = true
 pun-tokens.workspace = true
 pcre2.workspace = true
 notify.workspace = true
 dialoguer.workspace = true
-mago-allocator = { workspace = true, optional = true }
-mago-database = { workspace = true, optional = true }
-mago-linter = { workspace = true, optional = true }
-mago-names = { workspace = true, optional = true }
-mago-reporting = { workspace = true, optional = true }
-mago-syntax = { workspace = true, optional = true }
 
 [features]
 pprof = ["dep:pprof"]
-# `pun lint --mago`: Mago's lint-only Laravel rules. Off by default (mago-linter is ~65k lines to compile).
-mago-lint = ["dep:mago-allocator", "dep:mago-database", "dep:mago-linter", "dep:mago-names", "dep:mago-reporting", "dep:mago-syntax"]
+
+[lints]
+workspace = true

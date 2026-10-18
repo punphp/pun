@@ -14,13 +14,17 @@ use std::sync::LazyLock;
 /// GithubErrorFormatter::formatMessage: newlines encoded, and each `@mention` put in backticks so GitHub doesn't
 /// notify anyone. `%` and `\r` are encoded first (escapeData), so GitHub decodes the message back to what it was.
 pub(crate) fn escape_data(message: &str) -> String {
-    static MENTION: LazyLock<Regex> =
-        LazyLock::new(|| Regex::new(r"(^|\s)@([a-zA-Z0-9_\-]+)(\s|$)").expect("regex"));
     let message = message
         .replace('%', "%25")
         .replace('\r', "%0D")
         .replace('\n', "%0A");
-    // preg_replace: every non-overlapping match, left to right.
+    mentions(&message)
+}
+
+/// Each `@mention` in backticks, as formatMessage's preg_replace does (every non-overlapping match, left to right).
+pub(crate) fn mentions(message: &str) -> String {
+    static MENTION: LazyLock<Regex> =
+        LazyLock::new(|| Regex::new(r"(^|\s)@([a-zA-Z0-9_\-]+)(\s|$)").expect("regex"));
     let bytes = message.as_bytes();
     let mut out = Vec::with_capacity(bytes.len());
     let mut at = 0;

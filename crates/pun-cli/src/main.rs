@@ -1,29 +1,39 @@
 //! `pun` binary. `pun format` takes Pint's flags and keeps its exit codes and machine formats; the human output is
 //! Pun's own (crate::render). Every command reads pun.toml.
+#![allow(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "a command-line tool prints its reports"
+)]
 
 mod agent;
+mod analyse;
+mod analyse_report;
+mod baseline;
 mod cache;
 mod console;
 mod fix_report;
 mod github;
 mod init;
-#[cfg(feature = "mago-lint")]
-mod lint;
+mod lint_plan;
 mod list_files;
+mod mapping;
 mod migrate;
 mod php_diff;
 mod pint_error;
+mod prettier;
 mod render;
 mod report;
 mod run;
 #[cfg(feature = "pprof")]
 mod sampler;
+mod table;
 mod watch;
 
 use anyhow::Result;
-use clap::{Args, Parser, Subcommand};
+use clap::{Args, CommandFactory, FromArgMatches, Parser, Subcommand};
 use pun_config::Options;
-use run::{Stage, format};
+use run::{LintOpts, Stage, format};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -48,17 +58,13 @@ struct Cli {
 enum Cmd {
     /// Fix (or check) the layout of the given paths: the `[format]` rules.
     Format(Box<FormatArgs>),
-    /// Report the `[lint]` rules' fixes; `--fix` applies them all but those with `fix = "off"`.
-    Lint {
-        #[command(flatten)]
-        cmd: Box<StageCmd>,
-        /// Run Mago's lint-only Laravel rules instead (report only).
-        #[cfg(feature = "mago-lint")]
-        #[arg(long)]
-        mago: bool,
-    },
-    /// Format and lint in one run (analyse joins once `pun analyse` exists): reports, or `--fix` applies.
+    /// Report the `[lint]` rules' problems; `--fix` applies their fixes, but those with `fix = "off"`.
+    Lint(Box<StageCmd>),
+    /// Format, lint and analyse in one run: reports, or `--fix` applies the format and lint fixes.
     Check(Box<StageCmd>),
+    /// Find bugs with types (PHPStan's rules): the `[analyse]` rules. Never edits a file.
+    #[command(visible_alias = "analyze")]
+    Analyse(Box<analyse::AnalyseArgs>),
     /// Write pun.toml from pint.json (or .php-cs-fixer(.dist).php) and rewrite `@php-cs-fixer-ignore` comments.
     Migrate(migrate::MigrateArgs),
     /// Write pun.toml for a new project: asks the code style, lint sets and analysis preset (`--yes` takes the defaults).
@@ -85,7 +91,7 @@ enum Cmd {
     },
 }
 
-/// `pun lint` / `pun check`: `pun format`'s flags plus `--fix`.
+/// `pun lint` / `pun check`: `pun format`'s flags plus `--fix` and the lint levels.
 #[derive(Args)]
 struct StageCmd {
     #[command(flatten)]
@@ -93,6 +99,27 @@ struct StageCmd {
     /// Apply the fixes instead of reporting them.
     #[arg(long)]
     fix: bool,
+    /// Turn a rule or group off (`-A lint/style`), after pun.toml; repeatable, applied in order with -W and -D.
+    #[arg(short = 'A', long = "allow", value_name = "RULE")]
+    allow: Vec<String>,
+    /// Turn a rule or group on as a warning.
+    #[arg(short = 'W', long = "warn", value_name = "RULE")]
+    warn: Vec<String>,
+    /// Turn a rule or group on as an error.
+    #[arg(short = 'D', long = "deny", value_name = "RULE")]
+    deny: Vec<String>,
+    /// Exit 1 when there are warnings.
+    #[arg(long)]
+    deny_warnings: bool,
+    /// Exit 1 when there are more than this many warnings.
+    #[arg(long, value_name = "N")]
+    max_warnings: Option<usize>,
+    /// Print each problem on one line.
+    #[arg(long)]
+    concise: bool,
+    /// `-A`, `-W` and `-D` in command-line order (filled in `main` from clap's indices).
+    #[arg(skip)]
+    levels: Vec<(lint_plan::CliLevel, String)>,
 }
 
 #[derive(Clone, Copy, PartialEq, clap::ValueEnum)]
@@ -229,11 +256,17 @@ pub struct PunArgs {
 fn main() -> ExitCode {
     #[cfg(feature = "pprof")]
     let sampler = sampler::start();
-    let cli = Cli::parse();
+    let matches = Cli::command().get_matches();
+    let mut cli = Cli::from_arg_matches(&matches).unwrap_or_else(|e| e.exit());
+    if let (Cmd::Lint(cmd) | Cmd::Check(cmd), Some((_, sub))) = (&mut cli.cmd, matches.subcommand())
+    {
+        cmd.levels = levels(sub);
+    }
     let name = match &cli.cmd {
         Cmd::Format(_) => "format",
-        Cmd::Lint { .. } => "lint",
+        Cmd::Lint(_) => "lint",
         Cmd::Check(_) => "check",
+        Cmd::Analyse(_) => "analyse",
         Cmd::Migrate(_) => "migrate",
         Cmd::Init(_) => "init",
         Cmd::ListFiles(_) => "list-files",
@@ -246,8 +279,24 @@ fn main() -> ExitCode {
     let mut cmd = cli.cmd;
     match &mut cmd {
         Cmd::Format(a) => a.github_actions = github_actions,
-        Cmd::Lint { cmd, .. } | Cmd::Check(cmd) => cmd.args.github_actions = github_actions,
+        Cmd::Lint(cmd) | Cmd::Check(cmd) => cmd.args.github_actions = github_actions,
+        Cmd::Analyse(a) => a.github_actions = github_actions,
         _ => {}
+    }
+    // One rayon pool for every pass, capped by `--max-processes` (read like Pint's intval()).
+    let max_processes = match &cmd {
+        Cmd::Format(a) => a.max_processes.as_deref(),
+        Cmd::Lint(cmd) | Cmd::Check(cmd) => cmd.args.max_processes.as_deref(),
+        Cmd::Analyse(a) => a.max_processes(),
+        _ => None,
+    };
+    if let Some(n) = max_processes
+        .map(pun_tokens::php_compat::intval)
+        .filter(|&n| n > 0)
+    {
+        let _ = rayon::ThreadPoolBuilder::new()
+            .num_threads(n as usize)
+            .build_global();
     }
     // Other commands' errors are Pun's own run errors.
     let other = report::Failure {
@@ -259,16 +308,16 @@ fn main() -> ExitCode {
     };
     let failure = match &cmd {
         Cmd::Format(a) => a.failure(),
-        Cmd::Lint { cmd, .. } | Cmd::Check(cmd) => cmd.args.failure(),
+        Cmd::Lint(cmd) | Cmd::Check(cmd) => cmd.args.failure(),
+        Cmd::Analyse(a) => a.failure(),
         _ => other,
     };
     let result = match cmd {
         Cmd::Format(a) if a.pun.watch => watch::run(*a),
-        Cmd::Format(a) => format(*a, Stage::Format),
-        #[cfg(feature = "mago-lint")]
-        Cmd::Lint { cmd, mago: true } => lint::run(cmd.args.paths, cmd.args.config),
-        Cmd::Lint { cmd, .. } => stage(*cmd, Stage::Lint),
-        Cmd::Check(cmd) => stage(*cmd, Stage::Check),
+        Cmd::Format(a) => format(*a, Stage::Format, LintOpts::default()),
+        Cmd::Lint(cmd) => stage(*cmd, |fix| Stage::Lint { fix }),
+        Cmd::Check(cmd) => stage(*cmd, |fix| Stage::Check { fix }),
+        Cmd::Analyse(a) => analyse::run(*a),
         Cmd::Migrate(a) => migrate::run(a),
         Cmd::Init(a) => init::run(a),
         Cmd::ListFiles(a) => list_files::run(a),
@@ -295,7 +344,30 @@ fn main() -> ExitCode {
 fn stage(cmd: StageCmd, stage: fn(bool) -> Stage) -> Result<u8> {
     let mut a = cmd.args;
     a.test |= !cmd.fix;
-    format(a, stage(cmd.fix))
+    let lint = LintOpts {
+        levels: cmd.levels,
+        deny_warnings: cmd.deny_warnings,
+        max_warnings: cmd.max_warnings,
+        concise: cmd.concise,
+    };
+    format(a, stage(cmd.fix), lint)
+}
+
+/// `-A`, `-W` and `-D` in the order they were given: later ones win.
+fn levels(m: &clap::ArgMatches) -> Vec<(lint_plan::CliLevel, String)> {
+    use lint_plan::CliLevel;
+    let mut out: Vec<(usize, CliLevel, String)> = vec![];
+    for (id, level) in [
+        ("allow", CliLevel::Allow),
+        ("warn", CliLevel::Warn),
+        ("deny", CliLevel::Deny),
+    ] {
+        if let (Some(values), Some(indices)) = (m.get_many::<String>(id), m.indices_of(id)) {
+            out.extend(values.zip(indices).map(|(v, i)| (i, level, v.clone())));
+        }
+    }
+    out.sort_by_key(|l| l.0);
+    out.into_iter().map(|(_, l, v)| (l, v)).collect()
 }
 
 fn root() -> Result<PathBuf> {

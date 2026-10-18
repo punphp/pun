@@ -105,7 +105,7 @@ fn ours(root: &Path, config: Option<&str>, paths: &[&str]) -> Listing {
 
 /// Same listing, or (for errors) our message appears in Pint's output.
 fn check(root: &Path, config: Option<&str>, paths: &[&str]) {
-    let mut args: Vec<String> = paths.iter().map(|p| p.to_string()).collect();
+    let mut args: Vec<String> = paths.iter().map(ToString::to_string).collect();
     if let Some(c) = config {
         args.push(format!("--config={c}"));
     }
@@ -114,9 +114,10 @@ fn check(root: &Path, config: Option<&str>, paths: &[&str]) {
     match (&want, &got) {
         (Err(w), Err(g)) => assert!(
             w.contains(g.as_str()),
-            "{root:?} {paths:?}: pint said\n{w}\nwe said\n{g}"
+            "{} {paths:?}: pint said\n{w}\nwe said\n{g}",
+            root.display()
         ),
-        _ => assert_eq!(got, want, "{root:?} {paths:?} {config:?}"),
+        _ => assert_eq!(got, want, "{} {paths:?} {config:?}", root.display()),
     }
 }
 

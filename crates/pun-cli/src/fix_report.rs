@@ -1,16 +1,162 @@
-//! PHP-CS-Fixer's checkstyle, junit, xml and gitlab reporters (src/Console/Report/FixReport), byte for byte:
-//! DOMDocument::saveXML with formatOutput, json_encode defaults, md5 fingerprints.
+//! The `--format` reporters, byte for byte: PHP-CS-Fixer's json, txt, checkstyle, junit, xml and gitlab
+//! (src/Console/Report/FixReport: DOMDocument::saveXML with formatOutput, json_encode defaults, md5 fingerprints)
+//! and Pint's agent.
 
 use crate::console::escape;
-use crate::report::{ABOUT, php_json};
 use std::fmt::Write as _;
 use std::sync::LazyLock;
 
 /// One changed file as the reporters see it: `diff` is empty unless `-v` (Pint uses a NullDiffer otherwise).
 pub struct Change<'a> {
     pub file: &'a str,
-    pub fixers: &'a [&'static str],
+    pub fixers: &'a [&'a str],
     pub diff: &'a str,
+}
+
+pub const ABOUT: &str =
+    "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
+
+pub fn json(changes: &[Change], verbose: bool, decorated: bool) -> String {
+    let files: Vec<serde_json::Value> = changes
+        .iter()
+        .map(|c| {
+            let mut f = serde_json::json!({ "name": c.file });
+            if verbose {
+                f["appliedFixers"] = serde_json::json!(c.fixers);
+            }
+            if !c.diff.is_empty() {
+                f["diff"] = serde_json::json!(c.diff);
+            }
+            f
+        })
+        .collect();
+    let json = php_json(
+        &serde_json::json!({ "about": ABOUT, "files": files, "time": { "total": 0 }, "memory": 0 }),
+    );
+    if decorated { escape(&json) } else { json }
+}
+
+pub fn txt(
+    changes: &[Change],
+    verbose: bool,
+    dry_run: bool,
+    total: usize,
+    decorated: bool,
+) -> String {
+    let mut o = String::new();
+    for (n, c) in changes.iter().enumerate() {
+        let _ = write!(o, "{:4}) {}", n + 1, c.file);
+        if verbose {
+            let list = c.fixers.join(", ");
+            let _ = write!(
+                o,
+                "{}",
+                if decorated {
+                    format!(" (<comment>{list}</comment>)")
+                } else {
+                    format!(" ({list})")
+                }
+            );
+        }
+        if !c.diff.is_empty() {
+            let _ = write!(o, "\n{}\n", console_diff(c.diff, decorated));
+        }
+        o.push('\n');
+    }
+    let (verb, what) = if dry_run {
+        ("Found", "files that can be fixed")
+    } else {
+        ("Fixed", "files")
+    };
+    let _ = writeln!(
+        o,
+        "\n{verb} {} of {total} {what} in 0.000 seconds, 0.00 MB memory used",
+        changes.len(),
+    );
+    o
+}
+
+/// Pint's AgentReporter; `errors` are (path, message).
+pub fn agent(changes: &[Change], errors: &[(&str, &str)], dry_run: bool) -> String {
+    let result = if !errors.is_empty() {
+        "fail"
+    } else if changes.is_empty() {
+        "passed"
+    } else if dry_run {
+        "fail"
+    } else {
+        "fixed"
+    };
+    let mut v = serde_json::json!({ "tool": "pint", "result": result });
+    if !changes.is_empty() {
+        v["files"] = (changes.iter())
+            .map(|c| serde_json::json!({ "path": c.file, "fixers": c.fixers }))
+            .collect();
+    }
+    if !errors.is_empty() {
+        v["errors"] = (errors.iter())
+            .map(|(path, message)| serde_json::json!({ "path": path, "message": message }))
+            .collect();
+    }
+    php_json(&v)
+}
+
+/// DiffConsoleFormatter with TextReporter's begin/end template; lines split on PCRE's `\R`.
+fn console_diff(diff: &str, decorated: bool) -> String {
+    let mut lines = vec![];
+    let mut rest = diff;
+    while let Some(i) = rest.find(['\r', '\n', '\x0b', '\x0c', '\u{85}', '\u{2028}', '\u{2029}']) {
+        lines.push(&rest[..i]);
+        let sep = if rest[i..].starts_with("\r\n") {
+            2
+        } else {
+            rest[i..].chars().next().unwrap().len_utf8()
+        };
+        rest = &rest[i + sep..];
+    }
+    lines.push(rest);
+    let body: Vec<String> = lines
+        .iter()
+        .map(|l| {
+            if !decorated {
+                return l.to_string();
+            }
+            match l.as_bytes().first() {
+                Some(b'+') => format!("<fg=green>{}</fg=green>", escape(l)),
+                Some(b'-') => format!("<fg=red>{}</fg=red>", escape(l)),
+                Some(b'@') => format!("<fg=cyan>{}</fg=cyan>", escape(l)),
+                _ => escape(l),
+            }
+        })
+        .collect();
+    let (open, close) = if decorated {
+        ("<comment>", "</comment>")
+    } else {
+        ("", "")
+    };
+    format!(
+        "{open}      ---------- begin diff ----------{close}\n{}\n{open}      ----------- end diff -----------{close}",
+        body.join("\n")
+    )
+}
+
+/// json_encode() defaults: escape `/` and non-ASCII (as UTF-16 `\uXXXX`).
+pub fn php_json(v: &serde_json::Value) -> String {
+    let s = serde_json::to_string(v).expect("json");
+    let mut o = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '/' => o.push_str("\\/"),
+            c if c.is_ascii() => o.push(c),
+            c => {
+                let mut buf = [0u16; 2];
+                for u in c.encode_utf16(&mut buf) {
+                    let _ = write!(o, "\\u{u:04x}");
+                }
+            }
+        }
+    }
+    o
 }
 
 /// A libxml element: attributes, then either child elements or one CDATA section.

@@ -647,15 +647,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "indoc"
-version = "2.0.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a37b2691796cffeb8a8cd305ac66e65841559f147f4e63231d0eafa4db5384d1"
-dependencies = [
- "rustversion",
-]
-
-[[package]]
 name = "inotify"
 version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -842,12 +833,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fa0d502e67bfcb6898c8a277ad64ef17a07465f03860f57b76d8e5f0ab7ead2"
 
 [[package]]
-name = "mago-casing"
-version = "1.57.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7883e51e0718a05c0e66e86f08777c29cfbb738ff4f7c48bab9031c81778c1c1"
-
-[[package]]
 name = "mago-codex"
 version = "1.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -934,37 +919,6 @@ dependencies = [
  "mago-span",
  "mago-syntax",
  "memchr",
-]
-
-[[package]]
-name = "mago-linter"
-version = "1.57.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f33f9b99e3f735ec9095ed25837e006a94c2561287d2b34992dc6d119a681e6"
-dependencies = [
- "foldhash",
- "indoc",
- "mago-allocator",
- "mago-bytes",
- "mago-casing",
- "mago-collector",
- "mago-database",
- "mago-extension",
- "mago-names",
- "mago-php-version",
- "mago-phpdoc-syntax",
- "mago-reporting",
- "mago-span",
- "mago-syntax",
- "mago-syntax-core",
- "mago-text-edit",
- "mago-word",
- "memchr",
- "ordered-float",
- "regex",
- "schemars",
- "strum 0.28.0",
- "tracing",
 ]
 
 [[package]]
@@ -1380,23 +1334,22 @@ dependencies = [
  "anyhow",
  "clap",
  "dialoguer",
- "mago-allocator",
- "mago-database",
- "mago-linter",
- "mago-names",
- "mago-reporting",
- "mago-syntax",
  "notify",
  "pcre2",
  "pprof",
+ "punphp-analyse",
  "punphp-config",
  "punphp-fixers",
  "punphp-format",
+ "punphp-lint",
+ "punphp-phpstan",
  "punphp-problem",
  "punphp-tokens",
  "punphp-workspace",
  "rayon",
+ "serde",
  "serde_json",
+ "sha2",
  "toml",
  "xxhash-rust",
 ]
@@ -1426,6 +1379,7 @@ name = "punphp-config"
 version = "0.0.1"
 dependencies = [
  "anyhow",
+ "punphp-phpstan",
  "serde",
  "serde_json",
  "toml",
@@ -1473,7 +1427,12 @@ name = "punphp-lint"
 version = "0.0.1"
 dependencies = [
  "mago-allocator",
+ "mago-analyzer",
+ "mago-codex",
  "mago-database",
+ "mago-names",
+ "mago-php-version",
+ "mago-prelude",
  "mago-span",
  "mago-syntax",
  "mago-syntax-core",
@@ -1499,6 +1458,7 @@ dependencies = [
 name = "punphp-problem"
 version = "0.0.1"
 dependencies = [
+ "punphp-tokens",
  "serde",
  "serde_json",
 ]

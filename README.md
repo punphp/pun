@@ -114,7 +114,6 @@ it, or send a PR.
 **Extra rules.** Opt-in `Pun/` rules ported from Mago (Laravel and Pest idioms, redundant code, ...) are
 listed in [context/reference/mago-extras.md](context/reference/mago-extras.md). They are lint rules (`pest/no-only`, `laravel/prefer-fake-helper`, ...)
 in no preset, so default output stays identical to Pint; enable them under `[lint.rules]`.
-`pun lint --mago [paths...]` reports Mago's lint-only Laravel rules (no auto-fix, never edits).
 
 **Watch.** `pun format --watch [paths...]` does a normal run, then re-formats files as they change (same
 discovery, config and exclusions, the usual output per run). Pun's own writes don't trigger runs.
