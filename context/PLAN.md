@@ -195,7 +195,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | output 5: `pun check` grouped view (deferred, Pushpak 2026-10-18: parity starts without it; when built, add a row to put the analyse step in the view) | deferred |
 | output follow-up: when lint and analyse emit `pun_problem::Problem` values, annotate them through `github::problem` (`::warning` for lint warnings); analyse decides whether to drop `title=` for byte parity with PHPStan's `--error-format=github` | todo |
 | output follow-up (decision): under agent mode with `--format=github`, should run errors print `::error ::<message>` instead of the agent line | todo |
-| output follow-up: re-run scripts/coverage.sh punphp after output 4 and 6 once the gpgsign and BSD-script test rows land, and refresh reports/COVERAGE.md (its 2302-line baseline is stale) | todo |
+| output follow-up: re-run scripts/coverage.sh punphp after output 4 and 6 once the gpgsign test row lands (also confirms crates/pun-cli/src/init.rs at 100%), and refresh reports/COVERAGE.md (its 2302-line baseline is stale) | todo |
 
 **Gate:** every human output sample in the plan files is pinned by a test; machine formats and exit codes still pass
 `scripts/cli-parity.sh`.
@@ -216,7 +216,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | format: pun-fixers build.rs adds rerun-if-changed on the source dir (generated fixers.rs in a shared target dir can point at another worktree) | todo |
 | migrate 2-3: unsupported list with the PR request, the new output | todo |
 | migrate 2-3 follow-up: docs/content/docs/commands/migrate.mdx still promises baseline conversion and workflow switching, which plan/migrate.md §3 rules out; fix with migrate 2-3 | todo |
-| init 1-3, 5: detect, the three questions, write pun.toml, non-interactive | todo |
+| init follow-up: switch init's prompts to dialoguer's ColorfulTheme to match the '? Code style ›' look in the plan/init.md §2 sample, and pin it in tests/init.rs | todo |
 | init 4: one `pun check`, then offer fix and baseline | blocked (analyse 1-2) |
 
 **Gate:** the Pinkary CI swap from `vendor/bin/pint` to Pun, and the 8-core benchmark.
@@ -321,7 +321,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
 | tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
 | CI: after output 3, confirm punphp line coverage at 100% (98.49% on macOS; gaps in cache.rs, report.rs, run.rs, list_files.rs, migrate.rs sit behind the environment-failing tests) | todo |
-| tests: crates/pun-cli/tests/migrate.rs pty tests use a `script` invocation that works on macOS (BSD `script` has no `-qec`) | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
