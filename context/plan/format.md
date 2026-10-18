@@ -69,7 +69,7 @@ PHP-CS-Fixer marks some fixers "risky": they can change behaviour (`final_class`
 ## 5. Rules: what exists
 
 208 format rules in total today (every safe PHP-CS-Fixer fixer plus Pint's two); 40 of them move to lint
-(commands.md §4), leaving 168. 144 are ported natively.
+(commands.md §4), leaving 168. 151 are ported natively: 132 of the 168 format rules, 36 left.
 
 | Preset | Rules today | After the 40 move | Not ported |
 | --- | ---: | ---: | ---: |
@@ -111,6 +111,14 @@ pint.json, harness and fuzzer. Speed and memory come first (decided). The steps 
 6. **Pinkary's CI swap:** `vendor/bin/pint` replaced by Pun. *Done when* Pinkary's CI is green on Pun.
 7. **Port the rest of the 208 format rules** that aren't native yet, in usage order, each with upstream fixtures.
    Until a rule is ported, migrate names it as unsupported.
+   Batch 1 done (wf/format-2, 2026-10-18): the PER-CS rules `attributes/no-block-spaces`, `operators/linebreak`,
+   `types/ordered` and the Symfony rules `functions/single-line-throw`, `control-flow/empty-loop-body`,
+   `control-flow/empty-loop-condition`, `operators/standardize-increment`; a pint.json with `"preset": "per"` now
+   migrates and runs natively. Assistant's calls: `types/ordered`'s default `null_adjustment` is PHP-CS-Fixer 3's
+   `always_first` (Pint runs without future mode); `SwitchAnalyzer`'s cache is keyed on the whole token list (code,
+   count and ids, as upstream's collection hash), not the code alone, so a collection with cleared tokens no longer
+   reuses stale indices; the ReferenceAnalyzer port leaves out the `CT::T_RETURN_REF` check its only caller cannot
+   reach; tests/fixtures.rs runs EmptyLoopBodyFixerTest's "default, then configured the other way round" body.
 
 After 1.0: the native Blade formatter (Blade stays on Node + Prettier until then) and a Pun reprinting preset.
 

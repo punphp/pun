@@ -1,0 +1,158 @@
+{
+    "fixer": "empty_loop_condition",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\EmptyLoopConditionFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/EmptyLoopConditionFixerTest.php",
+    "case_count": 14,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\EmptyLoopConditionFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "from `for` to `while`",
+                    "args": [
+                        "<?php\n                while (true){ if(foo()) {break;}}\n                for(;$i < 1;){ if(foo()) {break;}}",
+                        "<?php\n                for(;;){ if(foo()) {break;}}\n                for(;$i < 1;){ if(foo()) {break;}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "from `do while` to `while`",
+                    "args": [
+                        "<?php while (true){ if(foo()) {break;}}",
+                        "<?php do{ if(foo()) {break;}}while(true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "from `while` to `for`",
+                    "args": [
+                        "<?php\n                for(;;){ if(foo()) {break;}}\n                while(false){ echo 1; }\n                while($a()) { echo 2; }\n            ",
+                        "<?php\n                while(true){ if(foo()) {break;}}\n                while(false){ echo 1; }\n                while($a()) { echo 2; }\n            ",
+                        {
+                            "style": "for"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "from `do while` to `for`",
+                    "args": [
+                        "<?php for(;;){ if(foo()) {break;}}",
+                        "<?php do{ if(foo()) {break;}}while(true);",
+                        {
+                            "style": "for"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple `do while` to `while`",
+                    "args": [
+                        "<?php while (true){}while (true){}while (true){}while (true){}while (true){}while (true){}",
+                        "<?php do{}while(true);do{}while(true);do{}while(true);do{}while(true);do{}while(true);do{}while(true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple nested `do while` to `while`",
+                    "args": [
+                        "<?php while (true){while (true){while (true){while (true){while (true){while (true){while (true){}}}}}}}",
+                        "<?php do{do{do{do{do{do{do{}while(true);}while(true);}while(true);}while(true);}while(true);}while(true);}while(true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment inside empty `for` condition",
+                    "args": [
+                        "<?php while (true)/* 1 *//* 2 */{}",
+                        "<?php for(/* 1 */;;/* 2 */){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment following empty `for` condition",
+                    "args": [
+                        "<?php for(;;)/* 3 */{}",
+                        "<?php while(true/* 3 */){}",
+                        {
+                            "style": "for"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "lot of space",
+                    "args": [
+                        "<?php while (true){ foo3(); }              ",
+                        "<?php do{ foo3(); } while(true)            ; "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nwhile (true) {\n    foo1();\n}\n\n\n\n",
+                        "<?php\n\ndo {\n    foo1();\n}\nwhile(\ntrue\n)\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not empty `while` condition",
+                    "args": [
+                        "<?php while(true === foo()){ if(foo()) {break;}}",
+                        null,
+                        {
+                            "style": "for"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not empty `for` condition",
+                    "args": [
+                        "<?php for(;foo();){ if(foo()) {break;}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not empty `do while` condition",
+                    "args": [
+                        "<?php do{ if(foo()) {break;}}while(foo());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "`while` false",
+                    "args": [
+                        "<?php while(false){ if(foo()) {break;}}",
+                        null,
+                        {
+                            "style": "for"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

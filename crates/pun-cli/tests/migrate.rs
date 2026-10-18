@@ -212,16 +212,10 @@ fn config_and_preset_flags() {
         "{out}"
     );
     assert!(out.contains("+\"strings/single-quote\" = true\n"), "{out}");
-    // No pint.json and `--preset per`: the preset is named as the source of the rules Pun can't run. Their order is
-    // @PER-CS3x0's own rules, then @PER-CS2x0's (sets.json; RuleSet appends a nested set's rules).
+    // No pint.json and `--preset per`: every rule of @PER-CS3x0 (and the sets under it) runs natively, so nothing is
+    // named as skipped.
     let (_, err, code) = pun(&d, &["migrate", "--dry-run", "--preset=per"]);
-    assert_eq!(
-        (err.as_str(), code),
-        (
-            "pun migrate: preset per: operator_linebreak: not supported by Pun yet; skipped\npun migrate: preset per: ordered_types: not supported by Pun yet; skipped\npun migrate: preset per: attribute_block_no_spaces: not supported by Pun yet; skipped\n",
-            Some(0)
-        )
-    );
+    assert_eq!((err.as_str(), code), ("", Some(0)));
     let (out, _, _) = pun(&d, &["migrate"]);
     assert_eq!(
         out,

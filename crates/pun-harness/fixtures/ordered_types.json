@@ -1,0 +1,969 @@
+{
+    "fixer": "ordered_types",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTypesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/OrderedTypesFixerTest.php",
+    "case_count": 81,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTypesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        if (null !== $configuration) {\n            $this->fixer->configure($configuration);\n        }\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "catch with default, no spaces, with both leading slash",
+                    "args": [
+                        "<?php\ntry {\n    $this->foo();\n} catch (\\LogicException|\\RuntimeException $e) {\n    // $e\n}\n",
+                        "<?php\ntry {\n    $this->foo();\n} catch (\\RuntimeException|\\LogicException $e) {\n    // $e\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "catch with default, with spaces, with both leading slash",
+                    "args": [
+                        "<?php\ntry {\n    $this->foo();\n} catch (\\LogicException|\\RuntimeException $e) {\n    // $e\n}\n",
+                        "<?php\ntry {\n    $this->foo();\n} catch (\\RuntimeException | \\LogicException $e) {\n    // $e\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "catch with default, no spaces, with no leading slash",
+                    "args": [
+                        "<?php\ntry {\n    cache()->save();\n} catch (CacheException|SimpleCacheException $e) {\n    // $e\n}\n",
+                        "<?php\ntry {\n    cache()->save();\n} catch (SimpleCacheException|CacheException $e) {\n    // $e\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "catch with default, with spaces, with one leading slash",
+                    "args": [
+                        "<?php\ntry {\n    cache()->save();\n} catch (CacheException|\\RuntimeException $e) {\n    // $e\n}\n",
+                        "<?php\ntry {\n    cache()->save();\n} catch (\\RuntimeException | CacheException $e) {\n    // $e\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "catch with no sorting",
+                    "args": [
+                        "<?php\ntry {\n    $this->foo();\n} catch (\\RuntimeException|\\LogicException $e) {\n    // $e\n}\n",
+                        null,
+                        {
+                            "sort_algorithm": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nothing to fix",
+                    "args": [
+                        "<?php\ntry {\n    $this->foo();\n} catch (\\LogicException $e) {\n    // $e\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "already fixed",
+                    "args": [
+                        "<?php\ntry {\n    $this->foo();\n} catch (LogicException|RuntimeException $e) {\n    // $e\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTypesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "sort alpha, null none",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public A|null|Z $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public Z|null|A $bar;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "sort alpha, null first",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|A|Z $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public Z|null|A $bar;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "sort alpha, null last",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public A|Z|null $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public Z|null|A $bar;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "sort none, null first",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|Z|A $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public Z|null|A $bar;\n}\n",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_first"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "sort none, null last",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public Z|A|null $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public Z|null|A $bar;\n}\n",
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "sort none, null none",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public Z|null|A $bar;\n}\n",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|int|string $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|null|int $bar = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|A|B $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public B|A|null $foo = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|\\A|B $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public B|\\A|null $foo = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|\\A|\\B $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public \\B|\\A|null $foo = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|int|string/* array */ $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|null|int/* array */ $bar = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public /* int */null|A|B $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public /* int */B|A|null $foo = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public     null|A|B     $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public     B|A|null     $foo = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar(null|array|callable|int $cb) {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar(array|int|callable|null $cb) {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar($cb): null|array|callable|int {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar($cb): array|int|callable|null {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar($cb): null|static {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar($cb): static|null {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(null|string $str, null|array|int $arr) {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(string|null $str, int|array|null $arr) {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(\\JsonSerializable|\\Stringable $obj): array|int {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(\\Stringable|\\JsonSerializable $obj): int|array {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 12,
+                    "args": [
+                        "<?php function foo(null|int|string $bar): null|\\Stringable {}",
+                        "<?php function foo(string|int|null $bar): \\Stringable|null {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 13,
+                    "args": [
+                        "<?php fn (null|\\Countable|int $number): null|int => $number;",
+                        "<?php fn (int|\\Countable|null $number): int|null => $number;"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 14,
+                    "args": [
+                        "<?php\ntry {\n    foo();\n} catch (\\Error|\\TypeError) {\n}\n",
+                        "<?php\ntry {\n    foo();\n} catch (\\TypeError|\\Error) {\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public ?string $foo = null;\n    public /* int|string */ $bar;\n    private null|array $baz = null;\n\n    public function baz(): null|string {}\n    protected function bar(string $str, ?array $config = null): callable {}\n}\n\ntry {\n    (new Foo)->baz();\n} catch (Exception $e) {\n    return $e;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public int|string|null $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|null|int $bar = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public A|B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public B|A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public \\A|B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public B|\\A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public \\A|\\B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public \\B|\\A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public int|string|null/* array */ $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|null|int/* array */ $bar = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public /* int */A|B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public /* int */B|A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public     A|B|null     $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public     B|A|null     $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 23,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar(array|callable|int|null $cb) {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar(array|int|callable|null $cb) {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar($cb): array|callable|int|null {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar($cb): array|int|callable|null {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar($cb): static|null {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar($cb): null|static {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(string|null $str, array|int|null $arr) {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(string|null $str, int|array|null $arr) {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 27,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(\\JsonSerializable|\\Stringable $obj): array|int {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(\\Stringable|\\JsonSerializable $obj): int|array {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 28,
+                    "args": [
+                        "<?php function foo(int|string|null $bar): \\Stringable|null {}",
+                        "<?php function foo(string|int|null $bar): \\Stringable|null {}",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 29,
+                    "args": [
+                        "<?php fn (\\Countable|int|null $number): int|null => $number;",
+                        "<?php fn (int|\\Countable|null $number): int|null => $number;",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 30,
+                    "args": [
+                        "<?php\ntry {\n    foo();\n} catch (\\Error|\\TypeError) {\n}\n",
+                        "<?php\ntry {\n    foo();\n} catch (\\TypeError|\\Error) {\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 31,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public ?string $foo = null;\n    public /* int|string */ $bar;\n    private array|null $baz = null;\n\n    public function baz(): string|null {}\n    protected function bar(string $str, ?array $config = null): callable {}\n}\n\ntry {\n    (new Foo)->baz();\n} catch (Exception $e) {\n    return $e;\n}\n",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 32,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public int|null|string $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|null|int $bar = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public A|B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public B|A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 34,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public \\A|B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public B|\\A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 35,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public \\A|\\B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public \\B|\\A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 36,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public int|null|string/* array */ $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|null|int/* array */ $bar = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 37,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public /* int */A|B|null $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public /* int */B|A|null $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 38,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public     A|B|null     $foo = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public     B|A|null     $foo = null;\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 39,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar(array|callable|int|null $cb) {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar(array|int|callable|null $cb) {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar($cb): array|callable|int|null {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar($cb): array|int|callable|null {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar($cb): null|static {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar($cb): static|null {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 42,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(null|string $str, array|int|null $arr) {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(string|null $str, int|array|null $arr) {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 43,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(\\JsonSerializable|\\Stringable $obj): array|int {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(\\Stringable|\\JsonSerializable $obj): int|array {}\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 44,
+                    "args": [
+                        "<?php function foo(int|null|string $bar): null|\\Stringable {}",
+                        "<?php function foo(string|int|null $bar): \\Stringable|null {}",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 45,
+                    "args": [
+                        "<?php fn (\\Countable|int|null $number): int|null => $number;",
+                        "<?php fn (int|\\Countable|null $number): int|null => $number;",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 46,
+                    "args": [
+                        "<?php\ntry {\n    foo();\n} catch (\\Error|\\TypeError) {\n}\n",
+                        "<?php\ntry {\n    foo();\n} catch (\\TypeError|\\Error) {\n}\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 47,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public ?string $foo = null;\n    public /* int|string */ $bar;\n    private array|null $baz = null;\n\n    public function baz(): null|string {}\n    protected function bar(string $str, ?array $config = null): callable {}\n}\n\ntry {\n    (new Foo)->baz();\n} catch (Exception $e) {\n    return $e;\n}\n",
+                        null,
+                        {
+                            "sort_algorithm": "alpha",
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 48,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|int|string $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string   |   null   |   int $bar = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 49,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|int|string $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string | null | int $bar = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 50,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|int|string $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string |/* array| */null|int $bar = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 51,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function bar($cb): null|static {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private function bar($cb): static /* |int */ | null {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "case sensitive cases",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|AAa|Aa $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public Aa|AAa|null $bar = null;\n}\n",
+                        {
+                            "case_sensitive": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTypesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public A&B $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public B&A $bar;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public Ae&At $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public At&Ae $bar;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public readonly null|A|B $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public readonly B|null|A $bar;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public readonly A|B|null $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public readonly B|null|A $bar;\n}\n",
+                        {
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public readonly A|null|X $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public readonly X|A|null $bar;\n}\n",
+                        {
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public B&A $bar;\n}\n",
+                        null,
+                        {
+                            "sort_algorithm": "none"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTypesFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|array|(At&Bz)|string $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|(Bz&At)|array|null $bar = null;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public array|(At&Bz)|string|null $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|(Bz&At)|array|null $bar = null;\n}\n",
+                        {
+                            "null_adjustment": "always_last"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public array|(At&Bz)|null|string $bar = null;\n}\n",
+                        "<?php\nclass Foo\n{\n    public string|(Bz&At)|array|null $bar = null;\n}\n",
+                        {
+                            "null_adjustment": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public (A&B)|(A&C)|(B&D)|(C&D) $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public (D&B)|(C&A)|(B&A)|(D&C) $bar;\n}\n",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public (A&B)|(\\A&C)|(B&\\D)|(C&D) $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public (\\D&B)|(C&\\A)|(B&A)|(D&C) $bar;\n}\n",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public (A&C)|(B&D) $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public (D&B)|(C&A) $bar;\n}\n",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public (\\A&\\C)|(\\B&\\D) $bar;\n}\n",
+                        "<?php\nclass Foo\n{\n    public (\\D&\\B)|(\\C&\\A) $bar;\n}\n",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTypesFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Foo {\n    public public(set) A|Z $a;\n    public protected(set) A|Z $b;\n    public private(set) A|Z $c;\n    protected private(set) A|Z $e;\n    protected protected(set) A|Z $f;\n    private private(set) A|Z $g;\n}",
+                        "<?php class Foo {\n    public public(set) Z|A $a;\n    public protected(set) Z|A $b;\n    public private(set) Z|A $c;\n    protected private(set) Z|A $e;\n    protected protected(set) Z|A $f;\n    private private(set) Z|A $g;\n}",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility for promoted property",
+                    "args": [
+                        "<?php class Foo {\n    public function __construct(\n        public public(set) A|Z $a,\n        public protected(set) A|Z $b,\n        public private(set) A|Z $c,\n        protected private(set) A|Z $e,\n        protected protected(set) A|Z $f,\n        private private(set) A|Z $g,\n    ) {}\n}",
+                        "<?php class Foo {\n    public function __construct(\n        public public(set) Z|A $a,\n        public protected(set) Z|A $b,\n        public private(set) Z|A $c,\n        protected private(set) Z|A $e,\n        protected protected(set) Z|A $f,\n        private private(set) Z|A $g,\n    ) {}\n}",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,68 @@
+{
+    "fixer": "attribute_block_no_spaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\AttributeNotation\\AttributeBlockNoSpacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/AttributeNotation/AttributeBlockNoSpacesFixerTest.php",
+    "case_count": 5,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\AttributeNotation\\AttributeBlockNoSpacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "With parentheses",
+                    "args": [
+                        "<?php\nclass User\n{\n    #[ApiProperty(identifier: true)]\n    private string $name;\n}",
+                        "<?php\nclass User\n{\n    #[\n        ApiProperty(identifier: true)\n    ]\n    private string $name;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Without parentheses",
+                    "args": [
+                        "<?php\nclass User\n{\n    #[ApiProperty]\n    private string $name;\n}",
+                        "<?php\nclass User\n{\n    #[     ApiProperty    ]\n    private string $name;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With multiple attributes in a block",
+                    "args": [
+                        "<?php\nclass User\n{\n    #[ApiProperty1(),\n        ApiProperty2(),\n        ApiProperty3(),]\n    private string $name;\n}",
+                        "<?php\nclass User\n{\n    #[\n        ApiProperty1(),\n        ApiProperty2(),\n        ApiProperty3(),\n    ]\n    private string $name;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With comments in a block",
+                    "args": [
+                        "<?php\nclass User\n{\n    #[\n        /** @see docs.example.com */\n        ApiPropertyExternal(),\n        ApiProperty(),\n        // @todo: add 3rd one in PHP 9\n    ]\n    private string $name;\n}",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "With multiple attributes in a row",
+                    "args": [
+                        "<?php\nclass User\n{\n    #[ApiProperty1()]\n    #[ApiProperty2()]\n    #[ApiProperty3()]\n    private string $name;\n}",
+                        "<?php\nclass User\n{\n    #[\n        ApiProperty1()\n    ]\n    #[\n        ApiProperty2()\n    ]\n    #[\n        ApiProperty3()\n    ]\n    private string $name;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

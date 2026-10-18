@@ -1,0 +1,14 @@
+[
+    {
+        "fixer": "empty_loop_condition",
+        "input": "<?php\nfor($i=0;;) {}\nfor(;$i;) {}\n",
+        "expected": "<?php\nfor($i=0;;) {}\nfor(;$i;) {}\n"
+    },
+    {
+        "fixer": "empty_loop_condition",
+        "config": {
+            "style": "x"
+        },
+        "error": "[empty_loop_condition] Invalid configuration: The option \"style\" with value \"x\" is invalid. Accepted values are: \"while\", \"for\"."
+    }
+]

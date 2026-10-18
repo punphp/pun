@@ -1,0 +1,321 @@
+{
+    "fixer": "single_line_throw",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\SingleLineThrowFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/SingleLineThrowFixerTest.php",
+    "case_count": 35,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\SingleLineThrowFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php throw new Exception; foo(\n                    \"Foo\"\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php throw new $exceptionName; foo(\n                    \"Foo\"\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php throw $exception; foo(\n                    \"Foo\"\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php throw new Exception(\"Foo.\", 0);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php throw new Exception(\"Foo.\", 0);",
+                        "<?php throw new Exception(\n                \"Foo.\",\n                0\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php throw new Exception(\"Foo.\" . \"Bar\");",
+                        "<?php throw new Exception(\n                \"Foo.\"\n                .\n                \"Bar\"\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php throw new Exception(new ExceptionReport(\"Foo\"), 0);",
+                        "<?php throw new Exception(\n                new\n                    ExceptionReport(\"Foo\"),\n                0\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php throw new Exception(sprintf('Error with number \"%s\".', 42));",
+                        "<?php throw new Exception(sprintf(\n                'Error with number \"%s\".',\n                42\n            ));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php throw new SomeVendor\\Exception(\"Foo.\");",
+                        "<?php throw new SomeVendor\\Exception(\n                \"Foo.\"\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php throw new \\SomeVendor\\Exception(\"Foo.\");",
+                        "<?php throw new \\SomeVendor\\Exception(\n                \"Foo.\"\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php throw $this->exceptionFactory->createAnException(\"Foo\");",
+                        "<?php throw $this\n                ->exceptionFactory\n                ->createAnException(\n                    \"Foo\"\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php throw $this->getExceptionFactory()->createAnException(\"Foo\");",
+                        "<?php throw $this\n                ->getExceptionFactory()\n                ->createAnException(\n                    \"Foo\"\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php throw $this->getExceptionFactory()->createAnException(function ($x, $y) { return $x === $y + 2; });",
+                        "<?php throw $this\n                ->getExceptionFactory()\n                ->createAnException(\n                    function\n                    (\n                        $x,\n                        $y\n                    )\n                    {\n                        return $x === $y + 2\n                        ;\n                    }\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php throw ExceptionFactory::createAnException(\"Foo\");",
+                        "<?php throw ExceptionFactory\n                    ::\n                    createAnException(\n                        \"Foo\"\n                    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php throw new Exception(\"Foo.\", 0);",
+                        "<?php throw\n                new\n                    Exception\n                        (\n                            \"Foo.\"\n                                ,\n                            0\n                        );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php throw new $exceptionName(\"Foo.\");",
+                        "<?php throw new $exceptionName(\n                \"Foo.\"\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php throw new $exceptions[4];",
+                        "<?php throw new $exceptions[\n                4\n            ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php throw clone $exceptionName(\"Foo.\");",
+                        "<?php throw clone $exceptionName(\n                \"Foo.\"\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php throw new WeirdException(\"Foo.\", -20, \"An elephant\", 1, 2, 3, 4, 5, 6, 7, 8);",
+                        "<?php throw new WeirdException(\"Foo.\", -20, \"An elephant\",\n\n                1,\n        2,\n                                    3, 4, 5, 6, 7, 8\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    throw new Exception(\"It is foo.\", 1);\n                } else {\n                    throw new \\Exception(\"It is not foo.\", 0);\n                }\n            ",
+                        "<?php\n                if ($foo) {\n                    throw new Exception(\n                        \"It is foo.\",\n                        1\n                    );\n                } else {\n                    throw new \\Exception(\n                        \"It is not foo.\", 0\n                    );\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php throw new Exception( /* A */\"Foo\", /* 1 */0 /* 2 */); //3",
+                        "<?php throw new Exception( // A\n                \"Foo\", // 1\n                0 // 2\n            ); //3"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php throw new Exception( /* 0123 */ \"Foo\", /* 1 */0 /* 2 */); //3",
+                        "<?php throw new Exception( /* 0123 */\n                \"Foo\", // 1\n                0 // 2\n            ); //3"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php throw new Exception( /* X  */ \"Foo\", /* 1 */0 /* 2 */); //3",
+                        "<?php throw new Exception( /* X\n */\n                \"Foo\", // 1\n                0 // 2\n            ); //3"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php throw new Exception(  0, /* 1 2 3 */ /*4*/              \"Foo\", /*5*/ /*6*/0 /*7*/);",
+                        "<?php throw new Exception(  0, /*\n1\n2\n3\n*/\n  /*4*/              \"Foo\", /*5*/\n/*6*/0 /*7*/);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php throw new Exception( /* 0 */${\"Foo\" /* a */}, /*b */fnx/*c */(/*d */0/*e */)/*f */);",
+                        "<?php throw new Exception( // 0\n    ${\"Foo\"\n    # a\n    }, #b\n    fnx#c\n    (#d\n    0#e\n    )#f\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php throw new Exception('Message.'. 1);",
+                        "<?php throw new Exception('Message.'.\n1\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php throw new class() extends Exception\n            {\n                protected $message = \"Custom message\";\n            }\n        ;",
+                        "<?php throw\n            new class()\n            extends Exception\n            {\n                protected $message = \"Custom message\";\n            }\n        ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php throw new class extends Exception\n            {\n                protected $message = \"Custom message\";\n            }\n        ;",
+                        "<?php throw\n            new class\n            extends Exception\n            {\n                protected $message = \"Custom message\";\n            }\n        ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php throw new Exception(\"Foo.\", 0)?>",
+                        "<?php throw new Exception(\n                \"Foo.\",\n                0\n            )?>"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\SingleLineThrowFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php throw $this?->getExceptionFactory()?->createAnException(\"Foo\");",
+                        "<?php throw $this\n                    ?->getExceptionFactory()\n                    ?->createAnException(\n                    \"Foo\"\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                match ($number) {\n                    1 => $function->one(),\n                    2 => $function->two(),\n                    default => throw new \\NotOneOrTwo()\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                match ($number) {\n                    1 => $function->one(),\n                    2 => throw new Exception(\"Number 2 is not allowed.\"),\n                    1 => $function->three(),\n                    default => throw new \\NotOneOrTwo()\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php throw new Exception(match ($a) { 1 => \"a\", 3 => \"b\" });",
+                        "<?php throw new Exception(match ($a) {\n                1 => \"a\",\n                3 => \"b\"\n            });"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$var = [\n    $something[1] ?? throw new Exception(123)\n];\n",
+                        "<?php\n$var = [\n    $something[1] ?? throw new Exception(\n\n    123\n\n    )\n];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$var = [\n    $something[1] ?? throw new Exception()\n];\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,120 @@
+{
+    "fixer": "empty_loop_body",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\EmptyLoopBodyFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/EmptyLoopBodyFixerTest.php",
+    "case_count": 11,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\EmptyLoopBodyFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        if ([] === $configuration) {\n            $this->doTest($expected, $input);\n\n            $this->fixer->configure(['style' => 'braces']);\n\n            if (null === $input) {\n                $this->doTest($expected, $input);\n            } else {\n                $this->doTest($input, $expected);\n            }\n        } else {\n            $this->fixer->configure($configuration);\n            $this->doTest($expected, $input);\n        }\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple \"while\"",
+                    "args": [
+                        "<?php while(foo());",
+                        "<?php while(foo()){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple \"for\"",
+                    "args": [
+                        "<?php for($i = 0;foo();++$i);",
+                        "<?php for($i = 0;foo();++$i){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple \"foreach\"",
+                    "args": [
+                        "<?php foreach (Foo() as $f);",
+                        "<?php foreach (Foo() as $f){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "\"while\" followed by \"do-while\"",
+                    "args": [
+                        "<?php while(foo(static function(){})); do{ echo 1; }while(bar());",
+                        "<?php while(foo(static function(){})){} do{ echo 1; }while(bar());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty \"while\" after \"if\"",
+                    "args": [
+                        "<?php\nif ($foo) {\n    echo $bar;\n} while(foo());\n",
+                        "<?php\nif ($foo) {\n    echo $bar;\n} while(foo()){}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested and mixed loops",
+                    "args": [
+                        "<?php\n\ndo {\n    while($foo()) {\n        while(B()); // fix\n        for($i = 0;foo();++$i); // fix\n\n        for($i = 0;foo();++$i) {\n            foreach (Foo() as $f); // fix\n        }\n    }\n} while(foo());\n",
+                        "<?php\n\ndo {\n    while($foo()) {\n        while(B()){} // fix\n        for($i = 0;foo();++$i){} // fix\n\n        for($i = 0;foo();++$i) {\n            foreach (Foo() as $f){} // fix\n        }\n    }\n} while(foo());\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not empty \"while\"",
+                    "args": [
+                        "<?php while(foo()){ bar(); };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not empty \"for\"",
+                    "args": [
+                        "<?php for($i = 0; foo(); ++$i){ bar(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not empty \"foreach\"",
+                    "args": [
+                        "<?php foreach (foo() as $f){ echo 1; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test with lot of space",
+                    "args": [
+                        "<?php while (foo1())\n;\n\n\n\necho 1;\n",
+                        "<?php while (foo1())\n{\n\n}\n\necho 1;\n",
+                        {
+                            "style": "semicolon"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty \"foreach\" with comment",
+                    "args": [
+                        "<?php foreach (Foo() as $f) {\n    // $this->add($f);\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

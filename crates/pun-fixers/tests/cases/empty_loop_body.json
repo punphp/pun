@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "empty_loop_body",
+        "config": {
+            "style": "x"
+        },
+        "error": "[empty_loop_body] Invalid configuration: The option \"style\" with value \"x\" is invalid. Accepted values are: \"braces\", \"semicolon\"."
+    }
+]

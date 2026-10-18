@@ -1,0 +1,30 @@
+[
+    {
+        "fixer": "ordered_types",
+        "config": {
+            "sort_algorithm": "foo"
+        },
+        "error": "[ordered_types] Invalid configuration: The option \"sort_algorithm\" with value \"foo\" is invalid. Accepted values are: \"alpha\", \"none\"."
+    },
+    {
+        "fixer": "ordered_types",
+        "config": {
+            "null_adjustment": "foo"
+        },
+        "error": "[ordered_types] Invalid configuration: The option \"null_adjustment\" with value \"foo\" is invalid. Accepted values are: \"always_first\", \"always_last\", \"none\"."
+    },
+    {
+        "fixer": "ordered_types",
+        "config": {
+            "case_sensitive": "yes"
+        },
+        "error": "[ordered_types] Invalid configuration: The option \"case_sensitive\" with value \"yes\" is expected to be of type \"bool\", but is of type \"string\"."
+    },
+    {
+        "fixer": "ordered_types",
+        "config": {
+            "order": "x"
+        },
+        "error": "[ordered_types] Invalid configuration: The option \"order\" does not exist. Defined options are: \"case_sensitive\", \"null_adjustment\", \"sort_algorithm\"."
+    }
+]

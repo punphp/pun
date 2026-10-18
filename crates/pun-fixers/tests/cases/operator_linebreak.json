@@ -1,0 +1,34 @@
+[
+    {
+        "fixer": "operator_linebreak",
+        "input": "<?php\n$a = $b + // c\n    $c;\n",
+        "expected": "<?php\n$a = $b // c\n    + $c;\n"
+    },
+    {
+        "fixer": "operator_linebreak",
+        "config": {
+            "position": "middle"
+        },
+        "error": "[operator_linebreak] Invalid configuration: The option \"position\" with value \"middle\" is invalid. Accepted values are: \"beginning\", \"end\"."
+    },
+    {
+        "fixer": "operator_linebreak",
+        "config": {
+            "only_booleans": 1
+        },
+        "error": "[operator_linebreak] Invalid configuration: The option \"only_booleans\" with value 1 is expected to be of type \"bool\", but is of type \"int\"."
+    },
+    {
+        "fixer": "operator_linebreak",
+        "input": "<?php\n$a = $b + /* x\n y */ $c;\n$a = $b /* x\n y */ + $c;\n",
+        "expected": "<?php\n$a = $b + /* x\n y */ $c;\n$a = $b /* x\n y */ + $c;\n"
+    },
+    {
+        "fixer": "operator_linebreak",
+        "config": {
+            "position": "end"
+        },
+        "input": "<?php\n$a = $b + /* x\n y */ $c;\n$a = $b /* x\n y */ + $c;\n",
+        "expected": "<?php\n$a = $b + /* x\n y */ $c;\n$a = $b /* x\n y */ + $c;\n"
+    }
+]

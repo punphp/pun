@@ -93,7 +93,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "arrays/trailing-comma-multiline" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Arguments lists, array destructuring lists, arrays that are multi-line, `match`-lines and parameters lists must have a trailing comma." }
 "arrays/trim-spaces" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Arrays should be formatted like function/method arguments, without leading or trailing single line space." }
 "attributes/empty-parentheses" = { fix = "safe", ported = false, status = "decided", summary = "PHP attributes declared without arguments must (not) be followed by empty parentheses." }
-"attributes/no-block-spaces" = { fix = "safe", ported = false, status = "decided", summary = "Remove spaces before and after the attributes block." }
+"attributes/no-block-spaces" = { fix = "safe", ported = true, status = "decided", summary = "Remove spaces before and after the attributes block." }
 "attributes/ordered" = { fix = "safe", ported = false, status = "decided", summary = "Sorts attributes using the configured sort algorithm." }
 "casing/class-reference" = { fix = "safe", ported = true, status = "decided", summary = "When referencing an internal class it must be written using the correct casing." }
 "casing/constants" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "The PHP constants `true`, `false`, and `null` MUST be written using the correct casing." }
@@ -127,8 +127,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/braces" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "The body of each control structure MUST be enclosed within braces." }
 "control-flow/continuation-position" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Control structure continuation keyword must be on the configured line." }
 "control-flow/elseif" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "The keyword `elseif` should be used instead of `else if` so that all control keywords look like single words." }
-"control-flow/empty-loop-body" = { fix = "safe", ported = false, status = "decided", summary = "Empty loop-body must be in configured style." }
-"control-flow/empty-loop-condition" = { fix = "safe", ported = false, status = "decided", summary = "Empty loop-condition must be in configured style." }
+"control-flow/empty-loop-body" = { fix = "safe", ported = true, status = "decided", summary = "Empty loop-body must be in configured style." }
+"control-flow/empty-loop-condition" = { fix = "safe", ported = true, status = "decided", summary = "Empty loop-condition must be in configured style." }
 "control-flow/include" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Include/Require and file path should be divided with a single space. File path should not be placed within parentheses." }
 "control-flow/no-alternative-syntax" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Replace control structure alternative syntax to use braces." }
 "control-flow/no-break-comment" = { fix = "safe", presets = ["psr12"], ported = true, status = "decided", summary = "There must be a comment when fall-through is intentional in a non-empty case body." }
@@ -148,7 +148,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/no-alias-construct-call" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Master language constructs shall be used instead of aliases." }
 "functions/no-space-after-name" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "When making a method or function call, there MUST NOT be a space between the method or function name and the opening parenthesis." }
 "functions/return-type-spacing" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Adjust spacing around colon in return type declarations and backed enum types." }
-"functions/single-line-throw" = { fix = "safe", ported = false, status = "decided", summary = "Throwing exception must be done in single line." }
+"functions/single-line-throw" = { fix = "safe", ported = true, status = "decided", summary = "Throwing exception must be done in single line." }
 "imports/blank-line-after" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Each namespace use MUST go on its own line and there MUST be one blank line after the use statements block." }
 "imports/blank-line-after-namespace" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There MUST be one blank line after the namespace declaration." }
 "imports/blank-line-between-groups" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Putting blank lines between `use` statement groups." }
@@ -166,7 +166,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "operators/binary-spacing" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Binary operators should be surrounded by space as configured." }
 "operators/concat-spacing" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Concatenation should be spaced according to configuration." }
 "operators/increment-style" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Pre- or post-increment and decrement operators should be used if possible." }
-"operators/linebreak" = { fix = "safe", ported = false, status = "decided", summary = "Operators - when multiline - must always be at the beginning or at the end of the line." }
+"operators/linebreak" = { fix = "safe", ported = true, status = "decided", summary = "Operators - when multiline - must always be at the beginning or at the end of the line." }
 "operators/new-expression-parentheses" = { fix = "safe", ported = false, status = "decided", summary = "All `new` expressions with a further call must (not) be wrapped in parentheses." }
 "operators/new-parentheses" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "All instances created with `new` keyword must (not) be followed by parentheses." }
 "operators/no-space-around-arrow" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be space before or after object operators `->` and `?->`." }
@@ -174,7 +174,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "operators/no-useless-concat" = { fix = "safe", ported = false, status = "decided", summary = "There should not be useless concat operations." }
 "operators/not-with-space" = { fix = "safe", ported = false, status = "decided", summary = "Logical NOT operators (`!`) should have leading and trailing whitespaces." }
 "operators/not-with-successor-space" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Logical NOT operators (`!`) should have one trailing whitespace." }
-"operators/standardize-increment" = { fix = "safe", ported = false, status = "decided", summary = "Increment and decrement operators should be used if possible." }
+"operators/standardize-increment" = { fix = "safe", ported = true, status = "decided", summary = "Increment and decrement operators should be used if possible." }
 "operators/standardize-not-equals" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Replace all `<>` with `!=`." }
 "operators/ternary-spacing" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Standardize spaces around ternary operator." }
 "operators/unary-spacing" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Unary operators should be placed adjacent to their operands." }
@@ -237,7 +237,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/declaration-spacing" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Ensure single space between a variable and its type declaration in function arguments and properties." }
 "types/nullable-for-null-default" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Adds or removes `?` before single type declarations or `|null` at the end of union types when parameters have a default `null` value." }
 "types/nullable-syntax" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Nullable single type declaration should be standardised using configured syntax." }
-"types/ordered" = { fix = "safe", ported = false, status = "decided", summary = "Sort union types and intersection types using configured order." }
+"types/ordered" = { fix = "safe", ported = true, status = "decided", summary = "Sort union types and intersection types using configured order." }
 "types/union-spacing" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "A single space or none should be around union type and intersection type operators." }
 "whitespace/encoding" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "PHP code MUST use only UTF-8 without BOM (remove BOM)." }
 "whitespace/final-newline" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "A PHP file without end tag must always end with a single empty line feed." }

@@ -1,0 +1,1177 @@
+{
+    "fixer": "standardize_increment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\StandardizeIncrementFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/StandardizeIncrementFixerTest.php",
+    "case_count": 149,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\StandardizeIncrementFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php ++$i;",
+                        "<?php $i += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php ++$i;",
+                        "<?php $i+=1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php for ($i = 0; $i < $n; ++$i) {};",
+                        "<?php for ($i = 0; $i < $n; $i += 1) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php ++$foo->bar;",
+                        "<?php $foo->bar += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php ++$foo->$bar;",
+                        "<?php $foo->$bar += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php ++$foo->$$$bar;",
+                        "<?php $foo->$$$bar += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php ++$foo[\"bar\"];",
+                        "<?php $foo[\"bar\"] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php ++$foo[baz()];",
+                        "<?php $foo[baz()] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php ++$foo[$bar->baz];",
+                        "<?php $foo[$bar->baz] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php ++$foo[$bar];",
+                        "<?php $foo[$bar] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php ++$foo[Bar::BAZ];",
+                        "<?php $foo[Bar::BAZ] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php echo $foo[++$i];",
+                        "<?php echo $foo[$i += 1];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php echo ++$foo[$bar[$baz]];",
+                        "<?php echo $foo[$bar[$baz]] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php ++$$foo;",
+                        "<?php $$foo += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php ++$$$$foo;",
+                        "<?php $$$$foo += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php ++${$foo};",
+                        "<?php ${$foo} += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php ++$$${$foo};",
+                        "<?php $$${$foo} += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php ++$a[$b];",
+                        "<?php $a[$b] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php ++$a[++$b];",
+                        "<?php $a[$b += 1] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php foo(++$a);",
+                        "<?php foo($a += 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php foo(++$a, $bar);",
+                        "<?php foo($a += 1, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php ++$foo->{++$a};",
+                        "<?php $foo->{$a += 1} += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php ++${++$a};",
+                        "<?php ${$a += 1} += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php ++$i ?>",
+                        "<?php $i += 1 ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $a = $b ? ++$c : ++$d;",
+                        "<?php $a = $b ? $c += 1 : $d += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php ++$a->{++$b}[++$c];",
+                        "<?php $a->{$b += 1}[$c += 1] += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php (++$i);",
+                        "<?php ($i += 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php (((++$i)));",
+                        "<?php ((($i += 1)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php ++$a->b->$c;",
+                        "<?php $a->b->$c += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php ++$i/* foo */;",
+                        "<?php $i +=/* foo */1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php ++$i/* foo *//* bar */;",
+                        "<?php $i /* foo */ += /* bar */1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php ++$i/** foo *//** bar */;",
+                        "<?php $i /** foo */ += /** bar */1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php ++$i// foo\n;",
+                        "<?php $i += // foo\n1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php --$i;",
+                        "<?php $i -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php --$i;",
+                        "<?php $i-=1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php for ($i = 0; $i < $n; --$i) {};",
+                        "<?php for ($i = 0; $i < $n; $i -= 1) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php --$foo->bar;",
+                        "<?php $foo->bar -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php --$foo->$bar;",
+                        "<?php $foo->$bar -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php --$foo->$$$bar;",
+                        "<?php $foo->$$$bar -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php --$foo[\"bar\"];",
+                        "<?php $foo[\"bar\"] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php --$foo[baz()];",
+                        "<?php $foo[baz()] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php --$foo[$bar->baz];",
+                        "<?php $foo[$bar->baz] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php --$foo[$bar];",
+                        "<?php $foo[$bar] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php --$foo[Bar::BAZ];",
+                        "<?php $foo[Bar::BAZ] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php echo $foo[--$i];",
+                        "<?php echo $foo[$i -= 1];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php echo --$foo->{$bar};",
+                        "<?php echo $foo->{$bar} -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php echo --$foo->{$bar->{$baz}};",
+                        "<?php echo $foo->{$bar->{$baz}} -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php echo --$foo[$bar[$baz]];",
+                        "<?php echo $foo[$bar[$baz]] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php --$$foo;",
+                        "<?php $$foo -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php --$$$$foo;",
+                        "<?php $$$$foo -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php --${$foo};",
+                        "<?php ${$foo} -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php --$$${$foo};",
+                        "<?php $$${$foo} -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php --$a[$b];",
+                        "<?php $a[$b] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php --$a[--$b];",
+                        "<?php $a[$b -= 1] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php foo(--$a);",
+                        "<?php foo($a -= 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php foo(--$a, $bar);",
+                        "<?php foo($a -= 1, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php --$foo->{--$a};",
+                        "<?php $foo->{$a -= 1} -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php --${--$a};",
+                        "<?php ${$a -= 1} -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php --$i ?>",
+                        "<?php $i -= 1 ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php $a = $b ? --$c : --$d;",
+                        "<?php $a = $b ? $c -= 1 : $d -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php --$a->{--$b}[--$c];",
+                        "<?php $a->{$b -= 1}[$c -= 1] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php (--$i);",
+                        "<?php ($i -= 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php (((--$i)));",
+                        "<?php ((($i -= 1)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php --$a->b->$c;",
+                        "<?php $a->b->$c -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php --$i/* foo */;",
+                        "<?php $i -=/* foo */1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php --$i/* foo *//* bar */;",
+                        "<?php $i /* foo */ -= /* bar */1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php --$i/** foo *//** bar */;",
+                        "<?php $i /** foo */ -= /** bar */1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php --$i// foo\n;",
+                        "<?php $i -= // foo\n1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php $i + 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php $i - 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php $i = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php $i = -1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php $i += 1.0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php $i += \"1\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php $i -= 1.0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php $i -= \"1\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php $i += 1 * 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php $i += 1 ** 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php $i += 1 / 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php $i += 1 + 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php $i += 1 - 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php $i += 1 % 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php $i += 1 ?: 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php $i += 1 & 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php $i += 1 ^ 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php $i += 1 >> 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php $i += 1 << 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php $i += 1 && true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php $i += 1 || true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php $i += 1 and true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php $i += 1 or true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php $i += 1 xor true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php $i += 1 === 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php $i += 1 == 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php $i += 1 !== 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php $i += 1 != 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php $i += 1 < 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php $i += 1 > 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php $i += 1 <= 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php $i += 1 >= 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<?php $i += 1 <> 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php $i -= 1 * 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php $i -= 1 ** 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php $i -= 1 / 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php $i -= 1 + 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php $i -= 1 - 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php $i -= 1 % 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php $i -= 1 ?: 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php $i -= 1 & 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 109,
+                    "args": [
+                        "<?php $i -= 1 ^ 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 110,
+                    "args": [
+                        "<?php $i -= 1 >> 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 111,
+                    "args": [
+                        "<?php $i -= 1 << 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 112,
+                    "args": [
+                        "<?php $i -= 1 && true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 113,
+                    "args": [
+                        "<?php $i -= 1 || true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 114,
+                    "args": [
+                        "<?php $i -= 1 and true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 115,
+                    "args": [
+                        "<?php $i -= 1 or true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 116,
+                    "args": [
+                        "<?php $i -= 1 xor true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 117,
+                    "args": [
+                        "<?php $i -= 1 === 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 118,
+                    "args": [
+                        "<?php $i -= 1 == 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 119,
+                    "args": [
+                        "<?php $i -= 1 !== 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 120,
+                    "args": [
+                        "<?php $i -= 1 != 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 121,
+                    "args": [
+                        "<?php $i -= 1 < 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 122,
+                    "args": [
+                        "<?php $i -= 1 > 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 123,
+                    "args": [
+                        "<?php $i -= 1 <= 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 124,
+                    "args": [
+                        "<?php $i -= 1 >= 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 125,
+                    "args": [
+                        "<?php $i -= 1 <> 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 126,
+                    "args": [
+                        "<?php #1\n#2\n++$i#3\n#4\n#5\n#6\n#7\n;#8\n#9",
+                        "<?php #1\n#2\n$i#3\n#4\n+=#5\n#6\n1#7\n;#8\n#9"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 127,
+                    "args": [
+                        "<?php $a -= ($a -= ($a -= (--$a)));",
+                        "<?php $a -= ($a -= ($a -= ($a -= 1)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 128,
+                    "args": [
+                        "<?php --$a[foo($d,foo($c))];",
+                        "<?php $a[foo($d,foo($c))] -= 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 129,
+                    "args": [
+                        "<?php $i *= 1; ++$i;",
+                        "<?php $i *= 1; $i += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 130,
+                    "args": [
+                        "<?php ++A::$b;",
+                        "<?php A::$b += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 131,
+                    "args": [
+                        "<?php ++\\A::$b;",
+                        "<?php \\A::$b += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 132,
+                    "args": [
+                        "<?php ++\\A\\B\\C::$d;",
+                        "<?php \\A\\B\\C::$d += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 133,
+                    "args": [
+                        "<?php ++$a::$b;",
+                        "<?php $a::$b += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 134,
+                    "args": [
+                        "<?php ++$a::$b->$c;",
+                        "<?php $a::$b->$c += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 135,
+                    "args": [
+                        "<?php class Foo {\n                    public static function bar() {\n                        ++self::$v1;\n                        ++static::$v2;\n                    }\n                }",
+                        "<?php class Foo {\n                    public static function bar() {\n                        self::$v1 += 1;\n                        static::$v2 += 1;\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 136,
+                    "args": [
+                        "<?php $i -= 1 ?? 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 137,
+                    "args": [
+                        "<?php $i += 1 ?? 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 138,
+                    "args": [
+                        "<?php $i -= 1 <=> 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 139,
+                    "args": [
+                        "<?php $i += 1 <=> 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 140,
+                    "args": [
+                        "<?php ++$a::$b::$c;",
+                        "<?php $a::$b::$c += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 141,
+                    "args": [
+                        "<?php ++$a->$b::$c;",
+                        "<?php $a->$b::$c += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 142,
+                    "args": [
+                        "<?php ++$a::${$b}::$c;",
+                        "<?php $a::${$b}::$c += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 143,
+                    "args": [
+                        "<?php ++$a->$b::$c->${$d}->${$e}::f(1 + 2 * 3)->$g::$h;",
+                        "<?php $a->$b::$c->${$d}->${$e}::f(1 + 2 * 3)->$g::$h += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 144,
+                    "args": [
+                        "<?php $i += 1_0;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\StandardizeIncrementFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo ++$foo->{$bar};",
+                        "<?php echo $foo->{$bar} += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo ++$foo->{$bar->{$baz}};",
+                        "<?php echo $foo->{$bar->{$baz}} += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php ++$a{$b};",
+                        "<?php $a{$b} += 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php --$a{$b};",
+                        "<?php $a{$b} -= 1;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -207,6 +207,20 @@ fn upstream_fixtures() {
                     input = input.map(|i| i.replace('\n', eol));
                 }
                 let mut config = arg(&["configuration", "config"]);
+                // `if ([] === $configuration) { doTest($expected, $input); configure([...]); doTest($input, $expected); }`
+                // (EmptyLoopBodyFixerTest): the default first, then the literal configuration the other way round.
+                let mut runs = Vec::new();
+                if is_empty_config(&config)
+                    && body.contains("if ([] === $configuration) {")
+                    && body.contains("$this->doTest($input, $expected);")
+                {
+                    runs.push((Value::Null, expected.clone(), input.clone()));
+                    config = literal_after(body, "->configure(", 0).unwrap();
+                    if let Some(i) = input.clone() {
+                        input = Some(expected.clone());
+                        expected = i;
+                    }
+                }
                 if is_empty_config(&config) {
                     config = literal_after(body, "->configure(", 0)
                         .or_else(|| literal_after(body, "$this->testFix(", 2))
@@ -215,75 +229,78 @@ fn upstream_fixtures() {
                 if is_empty_config(&config) {
                     config = Value::Null
                 }
-                let ws = match arg(&["whitespacesConfig"]) {
-                    Value::Object(o) => WhitespacesFixerConfig::new(
-                        o["indent"].as_str().unwrap(),
-                        o["lineEnding"].as_str().unwrap(),
-                    )
-                    .unwrap(),
-                    _ => whitespaces_from_body(body).unwrap_or_default(),
-                };
-                let file = match arg(&["file"]) {
-                    Value::Object(o) => PathBuf::from(o["pathname"].as_str().unwrap()),
-                    _ => PathBuf::from("test.php"),
-                };
-                let mut fixer = fresh(name);
-                if let Err(e) = fixer.configure(&config) {
-                    f += 1;
-                    if verbose {
-                        eprintln!(
-                            "--- {name} {method} case {}: configure({config}) failed: {e}",
-                            case["key"]
+                runs.push((config, expected, input));
+                for (config, expected, input) in runs {
+                    let ws = match arg(&["whitespacesConfig"]) {
+                        Value::Object(o) => WhitespacesFixerConfig::new(
+                            o["indent"].as_str().unwrap(),
+                            o["lineEnding"].as_str().unwrap(),
                         )
-                    }
-                    continue;
-                }
-                fixer.set_whitespaces_config(&ws);
-                let supported = fixer.supports(&file);
-                let mut problems = Vec::new();
-                let mut got_text = Vec::new();
-                if let Some(input) = &input {
-                    let mut tokens = pun_tokens::Tokens::from_code(input.as_bytes());
-                    if supported {
-                        if !fixer.is_candidate(&tokens) {
-                            problems.push("not a candidate for input")
+                        .unwrap(),
+                        _ => whitespaces_from_body(body).unwrap_or_default(),
+                    };
+                    let file = match arg(&["file"]) {
+                        Value::Object(o) => PathBuf::from(o["pathname"].as_str().unwrap()),
+                        _ => PathBuf::from("test.php"),
+                    };
+                    let mut fixer = fresh(name);
+                    if let Err(e) = fixer.configure(&config) {
+                        f += 1;
+                        if verbose {
+                            eprintln!(
+                                "--- {name} {method} case {}: configure({config}) failed: {e}",
+                                case["key"]
+                            )
                         }
+                        continue;
+                    }
+                    fixer.set_whitespaces_config(&ws);
+                    let supported = fixer.supports(&file);
+                    let mut problems = Vec::new();
+                    let mut got_text = Vec::new();
+                    if let Some(input) = &input {
+                        let mut tokens = pun_tokens::Tokens::from_code(input.as_bytes());
+                        if supported {
+                            if !fixer.is_candidate(&tokens) {
+                                problems.push("not a candidate for input")
+                            }
+                            fixer.fix(&file, &mut tokens);
+                        }
+                        let got = tokens.generate_code();
+                        if got != expected.as_bytes() {
+                            problems.push("input did not fix to expected")
+                        }
+                        if !tokens.is_changed() {
+                            problems.push("tokens not marked changed")
+                        }
+                        got_text = got;
+                    }
+                    let mut tokens = pun_tokens::Tokens::from_code(expected.as_bytes());
+                    // AbstractFixer::fix: applyFix only for non-empty, candidate, supported input.
+                    if supported && tokens.count() > 0 && fixer.is_candidate(&tokens) {
                         fixer.fix(&file, &mut tokens);
                     }
-                    let got = tokens.generate_code();
-                    if got != expected.as_bytes() {
-                        problems.push("input did not fix to expected")
+                    let got2 = tokens.generate_code();
+                    if got2 != expected.as_bytes() {
+                        problems.push("expected code changed");
+                        if input.is_none() {
+                            got_text = got2
+                        }
+                    } else if tokens.is_changed() {
+                        problems.push("expected tokens marked changed")
                     }
-                    if !tokens.is_changed() {
-                        problems.push("tokens not marked changed")
-                    }
-                    got_text = got;
-                }
-                let mut tokens = pun_tokens::Tokens::from_code(expected.as_bytes());
-                // AbstractFixer::fix: applyFix only for non-empty, candidate, supported input.
-                if supported && tokens.count() > 0 && fixer.is_candidate(&tokens) {
-                    fixer.fix(&file, &mut tokens);
-                }
-                let got2 = tokens.generate_code();
-                if got2 != expected.as_bytes() {
-                    problems.push("expected code changed");
-                    if input.is_none() {
-                        got_text = got2
-                    }
-                } else if tokens.is_changed() {
-                    problems.push("expected tokens marked changed")
-                }
-                if problems.is_empty() {
-                    p += 1
-                } else {
-                    f += 1;
-                    if verbose {
-                        eprintln!(
-                            "--- {name} {method} case {} ({}) ---\nexpected:\n{expected}\ngot:\n{}",
-                            case["key"],
-                            problems.join(", "),
-                            String::from_utf8_lossy(&got_text)
-                        );
+                    if problems.is_empty() {
+                        p += 1
+                    } else {
+                        f += 1;
+                        if verbose {
+                            eprintln!(
+                                "--- {name} {method} case {} ({}) ---\nexpected:\n{expected}\ngot:\n{}",
+                                case["key"],
+                                problems.join(", "),
+                                String::from_utf8_lossy(&got_text)
+                            );
+                        }
                     }
                 }
             }

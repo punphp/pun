@@ -1,0 +1,1362 @@
+{
+    "fixer": "operator_linebreak",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\OperatorLinebreakFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/OperatorLinebreakFixerTest.php",
+    "case_count": 136,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\OperatorLinebreakFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle equal sign when position is \"beginning\"",
+                    "args": [
+                        "<?php\n$foo\n    = $bar;\n",
+                        "<?php\n$foo =\n    $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle equal sign when position is \"end\"",
+                    "args": [
+                        "<?php\n$foo =\n    $bar;\n",
+                        "<?php\n$foo\n    = $bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle add operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    + $bar;\n",
+                        "<?php\nreturn $foo +\n    $bar;\n",
+                        {
+                            "only_booleans": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle add operator when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo +\n    $bar;\n",
+                        "<?php\nreturn $foo\n    + $bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle uppercase operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    AND $bar;\n",
+                        "<?php\nreturn $foo AND\n    $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle uppercase operator when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo AND\n    $bar;\n",
+                        "<?php\nreturn $foo\n    AND $bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle concatenation operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    .$bar;\n",
+                        "<?php\nreturn $foo.\n    $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle concatenation operator when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo.\n    $bar;\n",
+                        "<?php\nreturn $foo\n    .$bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ternary operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    ? $bar\n    : $baz;\n",
+                        "<?php\nreturn $foo ?\n    $bar :\n    $baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ternary operator when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo ?\n    $bar :\n    $baz;\n",
+                        "<?php\nreturn $foo\n    ? $bar\n    : $baz;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle multiple operators when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    || $bar\n    || $baz;\n",
+                        "<?php\nreturn $foo ||\n    $bar ||\n    $baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle multiple operators when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo ||\n    $bar ||\n    $baz;\n",
+                        "<?php\nreturn $foo\n    || $bar\n    || $baz;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle multiple operators with nested when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    || $bar\n    || ($bar2 || $bar3)\n    || $baz;\n",
+                        "<?php\nreturn $foo ||\n    $bar ||\n    ($bar2 || $bar3) ||\n    $baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle multiple operators with nested when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo ||\n    $bar ||\n    ($bar2 || $bar3) ||\n    $baz;\n",
+                        "<?php\nreturn $foo\n    || $bar\n    || ($bar2 || $bar3)\n    || $baz;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator when no whitespace is before when position is \"beginning\"",
+                    "args": [
+                        "<?php\nfunction foo() {\n    return $a\n        ||$b;\n}\n",
+                        "<?php\nfunction foo() {\n    return $a||\n        $b;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator when no whitespace is before when position is \"end\"",
+                    "args": [
+                        "<?php\nfunction foo() {\n    return $a||\n        $b;\n}\n",
+                        "<?php\nfunction foo() {\n    return $a\n        ||$b;\n}\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator with one-line comments when position is \"beginning\"",
+                    "args": [
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 // Population\n        + 2150 // Ft. above sea level\n        + 1951; // Established\n}\n",
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 + // Population\n        2150 + // Ft. above sea level\n        1951; // Established\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator with one-line comments when position is \"end\"",
+                    "args": [
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 + // Population\n        2150 + // Ft. above sea level\n        1951; // Established\n}\n",
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 // Population\n        + 2150 // Ft. above sea level\n        + 1951; // Established\n}\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator with PHPDoc comments when position is \"beginning\"",
+                    "args": [
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 /** Population */\n        + 2150 /** Ft. above sea level */\n        + 1951; /** Established */\n}\n",
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 + /** Population */\n        2150 + /** Ft. above sea level */\n        1951; /** Established */\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator with PHPDoc comments when position is \"end\"",
+                    "args": [
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 + /** Population */\n        2150 + /** Ft. above sea level */\n        1951; /** Established */\n}\n",
+                        "<?php\nfunction getNewCuyamaTotal() {\n    return 562 /** Population */\n        + 2150 /** Ft. above sea level */\n        + 1951; /** Established */\n}\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator with multiple comments next to each other when position is \"beginning\"",
+                    "args": [
+                        "<?php\nfunction foo() {\n    return isThisTheRealLife() // First comment\n        // Second comment\n        // Third comment\n        || isThisJustFantasy();\n}\n",
+                        "<?php\nfunction foo() {\n    return isThisTheRealLife() || // First comment\n        // Second comment\n        // Third comment\n        isThisJustFantasy();\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator with multiple comments next to each other when position is \"end\"",
+                    "args": [
+                        "<?php\nfunction foo() {\n    return isThisTheRealLife() || // First comment\n        // Second comment\n        // Third comment\n        isThisJustFantasy();\n}\n",
+                        "<?php\nfunction foo() {\n    return isThisTheRealLife() // First comment\n        // Second comment\n        // Third comment\n        || isThisJustFantasy();\n}\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle nested operators when position is \"beginning\"",
+                    "args": [
+                        "<?php\nfunction foo() {\n    return $a\n        && (\n            $b\n            || $c\n        )\n        && $d;\n}\n",
+                        "<?php\nfunction foo() {\n    return $a &&\n        (\n            $b ||\n            $c\n        ) &&\n        $d;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle nested operators when position is \"end\"",
+                    "args": [
+                        "<?php\nfunction foo() {\n    return $a &&\n        (\n            $b ||\n            $c\n        ) &&\n        $d;\n}\n",
+                        "<?php\nfunction foo() {\n    return $a\n        && (\n            $b\n            || $c\n        )\n        && $d;\n}\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Elvis operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    ?: $bar;\n",
+                        "<?php\nreturn $foo ?:\n    $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Elvis operator when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo ?:\n    $bar;\n",
+                        "<?php\nreturn $foo\n    ?: $bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ternary operator inside of switch when position is \"beginning\"",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        return $isOK ? 1 : -1;\n    case (\n            $a\n            ? 2\n            : 3\n        ) :\n        return 23;\n    case $b[\n            $a\n            ? 4\n            : 5\n        ]\n        : return 45;\n}\n",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        return $isOK ? 1 : -1;\n    case (\n            $a ?\n            2 :\n            3\n        ) :\n        return 23;\n    case $b[\n            $a ?\n            4 :\n            5\n        ]\n        : return 45;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ternary operator inside of switch when position is \"end\"",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        return $isOK ? 1 : -1;\n    case (\n            $a ?\n            2 :\n            3\n        ) :\n        return 23;\n    case $b[\n            $a ?\n            4 :\n            5\n        ]\n        : return 45;\n}\n",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        return $isOK ? 1 : -1;\n    case (\n            $a\n            ? 2\n            : 3\n        ) :\n        return 23;\n    case $b[\n            $a\n            ? 4\n            : 5\n        ]\n        : return 45;\n}\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ternary operator with switch inside when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                $a\n                    ? array_map(\n                        function () {\n                            switch (true) {\n                                case 1:\n                                    return true;\n                            }\n                        },\n                        [1, 2, 3]\n                    )\n                    : false;\n            ",
+                        "<?php\n                $a ?\n                    array_map(\n                        function () {\n                            switch (true) {\n                                case 1:\n                                    return true;\n                            }\n                        },\n                        [1, 2, 3]\n                    ) :\n                    false;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ternary operator with switch inside when position is \"end\"",
+                    "args": [
+                        "<?php\n                $a ?\n                    array_map(\n                        function () {\n                            switch (true) {\n                                case 1:\n                                    return true;\n                            }\n                        },\n                        [1, 2, 3]\n                    ) :\n                    false;\n            ",
+                        "<?php\n                $a\n                    ? array_map(\n                        function () {\n                            switch (true) {\n                                case 1:\n                                    return true;\n                            }\n                        },\n                        [1, 2, 3]\n                    )\n                    : false;\n            ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle + operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        + $bar;\n                ",
+                        "<?php\n                    $foo +\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle + operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo +\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        + $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle - operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        - $bar;\n                ",
+                        "<?php\n                    $foo -\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle - operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo -\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        - $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle * operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        * $bar;\n                ",
+                        "<?php\n                    $foo *\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle * operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo *\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        * $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle / operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        / $bar;\n                ",
+                        "<?php\n                    $foo /\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle / operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo /\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        / $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle % operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        % $bar;\n                ",
+                        "<?php\n                    $foo %\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle % operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo %\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        % $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ** operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        ** $bar;\n                ",
+                        "<?php\n                    $foo **\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ** operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo **\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        ** $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle += operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        += $bar;\n                ",
+                        "<?php\n                    $foo +=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle += operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo +=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        += $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle -= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        -= $bar;\n                ",
+                        "<?php\n                    $foo -=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle -= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo -=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        -= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle *= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        *= $bar;\n                ",
+                        "<?php\n                    $foo *=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle *= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo *=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        *= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle /= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        /= $bar;\n                ",
+                        "<?php\n                    $foo /=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle /= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo /=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        /= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle %= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        %= $bar;\n                ",
+                        "<?php\n                    $foo %=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle %= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo %=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        %= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle **= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        **= $bar;\n                ",
+                        "<?php\n                    $foo **=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle **= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo **=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        **= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle = operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        = $bar;\n                ",
+                        "<?php\n                    $foo =\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle = operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo =\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        = $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle & operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        & $bar;\n                ",
+                        "<?php\n                    $foo &\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle & operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo &\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        & $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle | operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        | $bar;\n                ",
+                        "<?php\n                    $foo |\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle | operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo |\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        | $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ^ operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        ^ $bar;\n                ",
+                        "<?php\n                    $foo ^\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ^ operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ^\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        ^ $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle << operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        << $bar;\n                ",
+                        "<?php\n                    $foo <<\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle << operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo <<\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        << $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle >> operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        >> $bar;\n                ",
+                        "<?php\n                    $foo >>\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle >> operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo >>\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        >> $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle &= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        &= $bar;\n                ",
+                        "<?php\n                    $foo &=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle &= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo &=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        &= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle |= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        |= $bar;\n                ",
+                        "<?php\n                    $foo |=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle |= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo |=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        |= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ^= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        ^= $bar;\n                ",
+                        "<?php\n                    $foo ^=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ^= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ^=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        ^= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <<= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        <<= $bar;\n                ",
+                        "<?php\n                    $foo <<=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <<= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo <<=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        <<= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle >>= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        >>= $bar;\n                ",
+                        "<?php\n                    $foo >>=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle >>= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo >>=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        >>= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle == operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        == $bar;\n                ",
+                        "<?php\n                    $foo ==\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle == operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ==\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        == $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle === operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        === $bar;\n                ",
+                        "<?php\n                    $foo ===\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle === operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ===\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        === $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle != operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        != $bar;\n                ",
+                        "<?php\n                    $foo !=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle != operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo !=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        != $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <> operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        <> $bar;\n                ",
+                        "<?php\n                    $foo <>\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <> operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo <>\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        <> $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle !== operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        !== $bar;\n                ",
+                        "<?php\n                    $foo !==\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle !== operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo !==\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        !== $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle < operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        < $bar;\n                ",
+                        "<?php\n                    $foo <\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle < operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo <\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        < $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle > operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        > $bar;\n                ",
+                        "<?php\n                    $foo >\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle > operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo >\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        > $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        <= $bar;\n                ",
+                        "<?php\n                    $foo <=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo <=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        <= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle >= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        >= $bar;\n                ",
+                        "<?php\n                    $foo >=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle >= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo >=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        >= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle and operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        and $bar;\n                ",
+                        "<?php\n                    $foo and\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle and operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo and\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        and $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle or operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        or $bar;\n                ",
+                        "<?php\n                    $foo or\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle or operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo or\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        or $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle xor operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        xor $bar;\n                ",
+                        "<?php\n                    $foo xor\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle xor operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo xor\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        xor $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle && operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        && $bar;\n                ",
+                        "<?php\n                    $foo &&\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle && operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo &&\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        && $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle || operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        || $bar;\n                ",
+                        "<?php\n                    $foo ||\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle || operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ||\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        || $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle . operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        . $bar;\n                ",
+                        "<?php\n                    $foo .\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle . operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo .\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        . $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle .= operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        .= $bar;\n                ",
+                        "<?php\n                    $foo .=\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle .= operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo .=\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        .= $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle -> operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        -> $bar;\n                ",
+                        "<?php\n                    $foo ->\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle -> operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ->\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        -> $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle :: operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        :: $bar;\n                ",
+                        "<?php\n                    $foo ::\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle :: operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ::\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        :: $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ?? operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        ?? $bar;\n                ",
+                        "<?php\n                    $foo ??\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle ?? operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo ??\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        ?? $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <=> operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n                    $foo\n                        <=> $bar;\n                ",
+                        "<?php\n                    $foo <=>\n                        $bar;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle <=> operator when position is \"end\"",
+                    "args": [
+                        "<?php\n                    $foo <=>\n                        $bar;\n                ",
+                        "<?php\n                    $foo\n                        <=> $bar;\n                ",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle => operator when position is \"beginning\"",
+                    "args": [
+                        "<?php\n[$foo\n    => $bar];\n",
+                        "<?php\n[$foo =>\n    $bar];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle => operator when position is \"end\"",
+                    "args": [
+                        "<?php\n[$foo =>\n    $bar];\n",
+                        "<?php\n[$foo\n    => $bar];\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle & operator with constant when position is \"beginning\"",
+                    "args": [
+                        "<?php\n\\Foo::bar\n    & $baz;\n",
+                        "<?php\n\\Foo::bar &\n    $baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle & operator with constant when position is \"end\"",
+                    "args": [
+                        "<?php\n\\Foo::bar &\n    $baz;\n",
+                        "<?php\n\\Foo::bar\n    & $baz;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore add operator when only booleans enabled",
+                    "args": [
+                        "<?php\nreturn $foo\n    +\n    $bar;\n",
+                        null,
+                        {
+                            "only_booleans": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator when on separate line when position is \"beginning\"",
+                    "args": [
+                        "<?php\nreturn $foo\n    || $bar;\n",
+                        "<?php\nreturn $foo\n    ||\n    $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle operator when on separate line when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo ||\n    $bar;\n",
+                        "<?php\nreturn $foo\n    ||\n    $bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Elvis operator with space inside",
+                    "args": [
+                        "<?php\nreturn $foo\n    ?: $bar;\n",
+                        "<?php\nreturn $foo ? :\n    $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Elvis operator with space inside when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo ?:\n    $bar;\n",
+                        "<?php\nreturn $foo\n    ? : $bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Elvis operator with comment inside",
+                    "args": [
+                        "<?php\nreturn $foo/* Lorem ipsum */\n    ?: $bar;\n",
+                        "<?php\nreturn $foo ?/* Lorem ipsum */:\n    $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Elvis operators with comment inside when position is \"end\"",
+                    "args": [
+                        "<?php\nreturn $foo ?:\n    /* Lorem ipsum */$bar;\n",
+                        "<?php\nreturn $foo\n    ?/* Lorem ipsum */: $bar;\n",
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "assign by reference",
+                    "args": [
+                        "<?php\n                $a\n                    = $b;\n                $c =&\n                     $d;\n            ",
+                        "<?php\n                $a =\n                    $b;\n                $c =&\n                     $d;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "passing by reference",
+                    "args": [
+                        "<?php\n                function foo(\n                    &$a,\n                    &$b,\n                    int\n                        &$c,\n                    \\Bar\\Baz\n                        &$d\n                ) {};",
+                        null,
+                        {
+                            "position": "end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple switches",
+                    "args": [
+                        "<?php\n                switch ($foo) {\n                   case 1:\n                      break;\n                   case 2:\n                      break;\n                }\n                switch($bar) {\n                   case 1:\n                      break;\n                   case 2:\n                      break;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return type",
+                    "args": [
+                        "<?php\n            function foo()\n            :\n            bool\n            {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "go to",
+                    "args": [
+                        "<?php\n                prepare_value:\n                $objectsPool[$value] = [$id = \\count($objectsPool)];\n        "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alternative syntax",
+                    "args": [
+                        "<?php\nif (true):\n    echo 1;\nelse:\n    echo 2;\nendif;\n\nwhile (true):\n    echo \"na\";\nendwhile;\n",
+                        null,
+                        {
+                            "position": "beginning"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable type when position is \"end\"",
+                    "args": [
+                        "<?php\n                function foo(\n                    ?int $x,\n                    ?int $y,\n                    ?int $z\n                ) {};",
+                        null,
+                        {
+                            "position": "end"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\OperatorLinebreakFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "handle ?-> operator",
+                    "args": [
+                        "<?php\n                    $foo\n                        ?-> $bar;\n                ",
+                        "<?php\n                    $foo ?->\n                        $bar;\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\OperatorLinebreakFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "pipe operator",
+                    "args": [
+                        "<?php\n$numberOfAdmins = getUsers()\n    |> (fn ($list) => array_filter($list, isAdmin(...)))\n    |> count(...);",
+                        "<?php\n$numberOfAdmins = getUsers() |>\n    (fn ($list) => array_filter($list, isAdmin(...))) |>\n    count(...);"
+                    ]
+                }
+            ]
+        }
+    ]
+}
