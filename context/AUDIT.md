@@ -116,10 +116,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `--watch` shows only "invalid /p/pun.toml" with no line or column, while the first run shows the chain. Errors are
   printed four ways (`main.rs:236-247`, `run.rs:53-60`, `pint_error.rs:12-14`, `watch.rs`). Extract one
   `report_error(&anyhow::Error)`.
-- [ ] 19. I/O errors without the file: `crates/pun-cli/src/migrate.rs:352` (`fs::write(f, new)?`), `lint.rs:50`,
+- [x] 19. I/O errors without the file: `crates/pun-cli/src/migrate.rs:352` (`fs::write(f, new)?`), `lint.rs:50`,
   `crates/pun-config/src/migrate.rs:120` print "Permission denied (os error 13)" alone; `pun-cli/src/migrate.rs:443-458`
   discards PHP's stderr, so a fatal error in `.php-cs-fixer.php` prints `pun: ` with nothing after it. Add
-  `.with_context(|| path)` and fall back to stderr.
+  `.with_context(|| path)` and fall back to stderr. Reproduced (`x Permission denied (os error 13)`, and a bare `x ` for a fatal error);
+  `pun lint --mago` prints no cause chain, so its message carries the OS error itself. Fixed in wf/audit-cli-errors.
 - [x] 20. `crates/pun-fixers/src/fixers/pint_laravel_blade.rs:140-150` (`resources_in`) writes the Prettier worker
   through a temp name that is the same for every rayon thread (`worker.<pid>`), so on a cold temp dir two threads can
   truncate each other's file and one `rename` fails, reporting a Blade file as errored. The guard also checks only
@@ -187,9 +188,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   summary table, conversion, clash checks, ignore-comment rewrites, writes and two output modes, and rebinds `from`
   and `toml` with new meanings (`:264`, `:280`, `:355`). Extract Function per phase and return a `Report` the two
   printers render.
-- [ ] 34. `crates/pun-cli/tests/agent.rs:366` and `watch.rs:194` fake a read error with mode `000`, which root can
+- [x] 34. `crates/pun-cli/tests/agent.rs:366` and `watch.rs:194` fake a read error with mode `000`, which root can
   read, so on this machine (uid 0) `errors` fails and `watch_reformats_like_pint` waits 60 s and fails. Use a
-  directory or a dangling path instead. Likely; not run.
+  directory or a dangling path instead. Likely; not run. Not reproducible as uid 501; the runner never reads a directory or symlink, so the tests
+  now assert the read error only when the mode-000 file really is unreadable. Fixed in wf/audit-cli-errors.
 - [x] 35. `crates/pun-tokens/src/tokens.rs:14-15`: `BlockType(pub u8)` accepts 0 and 16, which panic in
   `block_edges` (`:73-126`); the `1..=15` range is copied in `tokens.rs:131`,
   `pun-fixers/src/analyzers/blocks_analyzer.rs:24` and `fixers/class_reference_name_casing.rs:78`; and
@@ -370,9 +372,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   finds only tests and one helper in `pun-analyse/tests/laravel.rs`), with ~208k fixture lines behind them, and
   `context/plan/analyse.md` §2 says the type model is no longer needed. Delete them, or split `types.rs` along its
   concerns (Tri, model, queries, describe, ConstArray, super-type, combinator) if they stay. Needs a decision.
-- [ ] 70. `crates/pun-cli/src/render/` (~1,500 lines) is compiled under `#![allow(dead_code, unused_imports)]`
+- [x] 70. `crates/pun-cli/src/render/` (~1,500 lines) is compiled under `#![allow(dead_code, unused_imports)]`
   (`mod.rs:7-8`) and is the only user of `pun-problem` in pun-cli. It waits for output.md Build 3; switch to
-  `#![expect(..., reason = "output.md Build 3")]` so it fails once wired, or gate it behind `cfg(test)`.
+  `#![expect(..., reason = "output.md Build 3")]` so it fails once wired, or gate it behind `cfg(test)`. — not reproduced at 6d2441c: 11ce261 put `pun format` on the renderer, `render/mod.rs` has
+  no `allow` left, and `report.rs` and `github.rs` use `pun-problem` too.
 - [ ] 71. `crates/pun-format/src/lib.rs:366-376` (`pun_ignored`, for the removed delegate mode) has no caller, and its
   first doc line belongs to `has_annotation` (`:378`), which has none. Also unused outside tests: `Kind::is_custom`,
   `php_compat::{strtoupper, strcmp, strnatcasecmp}`, `token::is_native_constant`, the names in `TRANSFORMERS`
@@ -417,10 +420,13 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 79. `crates/pun-harness/src/main.rs:82-171` leaks two corpus copies in `/tmp` on any `?` after `copy_tree`
   (its own `missing_pieces` test triggers it), and `process::exit(1)` at `:169`. Use a Drop guard and
   `main() -> Result<ExitCode>`.
-- [ ] 80. Tests that share fixed paths or leak state: `pun-cli/tests/rules_e2e.rs:31-45` and `perf.rs:31-40` write ~200
+- [x] 80. Tests that share fixed paths or leak state: `pun-cli/tests/rules_e2e.rs:31-45` and `perf.rs:31-40` write ~200
   cache files into the real `~/.cache/pun` per run; `pun-phpstan/tests/schema.rs:13` and `config.rs:149-167` reuse
   fixed temp dirs across concurrent runs; `pun-fixers/src/analyzers/active_preset.rs:22-27` mutates a global;
-  `docblock/tests.rs:46-59` swaps the process panic hook. Use per-run temp dirs, `env_clear()` and `catch_unwind`.
+  `docblock/tests.rs:46-59` swaps the process panic hook. Use per-run temp dirs, `env_clear()` and `catch_unwind`. Reproduced: ~/.cache/pun held 13,805 files. rules_e2e and perf now set `XDG_CACHE_HOME`
+  inside the project, the phpstan dirs carry the pid, and docblock's `panics` uses `catch_unwind` alone. The
+  `active_preset` global is not reproduced: no other test in that binary reads it (blade's unit tests pass the preset
+  explicitly). Fixed in wf/audit-cli-errors.
 - [x] 81. Oracle tests disagree on a missing `php`: `pun-tokens/src/php_compat.rs:356-378` says "skipped" but panics,
   while `tests/parity.rs:10-16` and `tests/api.rs:285-296` return silently and pass. One helper, one policy. Reproduced with `php` off PATH: the two
   `php_compat` tests panicked, `api` and `parity` passed without comparing anything. Policy: the oracle is required
