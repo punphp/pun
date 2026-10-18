@@ -4,7 +4,14 @@
 //! branch leaves after the `if`, `&&`/`||`/`!`, `? :`, `match (true)`, variables holding such a check, closures
 //! inheriting their parent's scope, and checks a constructor ends with (remembered in the class's other methods).
 
+use std::collections::HashMap;
+
+use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::symbol::SymbolKind;
 use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
+
+use super::Checker;
 
 /// A `*_exists()` call known to be true; names as the string argument has them, without a leading `\`.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -100,10 +107,10 @@ pub fn falsy(
             | BinaryOperator::Equal(_)
             | BinaryOperator::NotIdentical(_)
             | BinaryOperator::NotEqual(_) => {
-                let flipped = match b.operator {
-                    BinaryOperator::Identical(_) | BinaryOperator::Equal(_) => true,
-                    _ => false,
-                };
+                let flipped = matches!(
+                    b.operator,
+                    BinaryOperator::Identical(_) | BinaryOperator::Equal(_)
+                );
                 match (bool_literal(b.lhs), bool_literal(b.rhs)) {
                     (_, Some(v)) if v != flipped => truthy(b.lhs, var, resolve),
                     (Some(v), _) if v != flipped => truthy(b.rhs, var, resolve),
@@ -211,10 +218,7 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
         _ => resolve(id),
     }
     .to_ascii_lowercase();
-    let arg = match call.argument_list.arguments.first()? {
-        Argument::Positional(a) => a.value,
-        Argument::Named(a) => a.value,
-    };
+    let arg = call.argument_list.arguments.first()?.value();
     if name.trim_start_matches('\\') == "method_exists" {
         let class = match arg {
             Expression::Access(Access::ClassConstant(ClassConstantAccess {
@@ -232,10 +236,7 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
             Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => "$this".to_string(),
             _ => constant_string(arg, resolve)?,
         };
-        let method = match call.argument_list.arguments.get(1)? {
-            Argument::Positional(a) => a.value,
-            Argument::Named(a) => a.value,
-        };
+        let method = call.argument_list.arguments.get(1)?.value();
         let method = constant_string(method, resolve)?;
         return Some(Guard::Method(
             format!("{}::{}", class.trim_start_matches('\\'), method).to_ascii_lowercase(),
@@ -289,4 +290,125 @@ pub fn terminates(s: &Statement) -> bool {
 
 pub fn statements_terminate<'a>(mut s: impl Iterator<Item = &'a Statement<'a>>) -> bool {
     s.any(terminates)
+}
+/// What a function-like body saved of its parent's scope.
+pub(super) struct Saved {
+    guards: Vec<Guard>,
+    marks: Vec<usize>,
+    vars: HashMap<Vec<u8>, Vec<Guard>>,
+}
+
+impl<'a, 'arena> Checker<'a, 'arena> {
+    /// `$this` is `never` here: after `if ($this instanceof Foo) { return; }` in a class that is a Foo (a trait is
+    /// never an instanceof's match).
+    pub(super) fn this_is_never(&self, class: &ClassLikeMetadata) -> bool {
+        self.guards.iter().any(|g| match g {
+            Guard::ThisNotInstanceOf(x) => {
+                self.codebase.get_class_like(x.as_bytes()).is_some_and(|x| {
+                    x.kind != SymbolKind::Trait
+                        && self
+                            .codebase
+                            .is_instance_of(class.name.as_bytes(), x.name.as_bytes())
+                })
+            }
+            _ => false,
+        })
+    }
+
+    /// Guards the statements' early exits leave at their end: `if (!cond) { return; }` leaves `cond`.
+    pub(super) fn exit_guards<'s>(
+        &self,
+        statements: impl Iterator<Item = &'s Statement<'arena>>,
+    ) -> Vec<Guard>
+    where
+        'arena: 's,
+    {
+        let mut guards = Vec::new();
+        for s in statements {
+            if let Statement::If(i) = s
+                && let IfBody::Statement(b) = &i.body
+                && b.else_if_clauses.is_empty()
+                && b.else_clause.is_none()
+                && terminates(b.statement)
+            {
+                // a `$this` check holds in the constructor alone
+                guards.extend(
+                    self.falsy(i.condition)
+                        .into_iter()
+                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_))),
+                );
+            }
+        }
+        guards
+    }
+
+    pub(super) fn truthy(&self, e: &Expression<'arena>) -> Vec<Guard> {
+        truthy(
+            e,
+            &|v| self.vars.get(v).cloned().unwrap_or_default(),
+            &|id| self.resolved(id),
+        )
+    }
+
+    pub(super) fn falsy(&self, e: &Expression<'arena>) -> Vec<Guard> {
+        falsy(
+            e,
+            &|v| self.vars.get(v).cloned().unwrap_or_default(),
+            &|id| self.resolved(id),
+        )
+    }
+
+    /// `isInClassExists($name)`.
+    pub(super) fn in_class_exists(&self, name: &str) -> bool {
+        self.in_exists_call > 0
+            || self
+                .guards
+                .contains(&Guard::Class(name.trim_start_matches('\\').to_string()))
+    }
+
+    /// `isInFunctionExists($name)`.
+    pub(super) fn in_function_exists(&self, name: &str) -> bool {
+        self.guards
+            .contains(&Guard::Function(name.trim_start_matches('\\').to_string()))
+    }
+
+    /// Walks `body` with `extra` guards on top of the current ones.
+    pub(super) fn with_guards(&mut self, extra: Vec<Guard>, body: impl FnOnce(&mut Self)) {
+        let mark = self.guards.len();
+        self.guards.extend(extra);
+        body(self);
+        self.guards.truncate(mark);
+    }
+
+    /// A function or method body: a fresh scope (the constructor's remembered guards in a method).
+    pub(super) fn enter_function(&mut self, guards: Vec<Guard>) {
+        self.saved.push(Saved {
+            guards: std::mem::replace(&mut self.guards, guards),
+            marks: std::mem::take(&mut self.marks),
+            vars: std::mem::take(&mut self.vars),
+        });
+    }
+
+    pub(super) fn leave_function(&mut self) {
+        let s = self.saved.pop().expect("entered");
+        self.guards = s.guards;
+        self.marks = s.marks;
+        self.vars = s.vars;
+    }
+
+    pub(super) fn walk_branch(
+        &mut self,
+        extra: Vec<Guard>,
+        statements: &[&Statement<'arena>],
+    ) -> bool {
+        self.with_guards(extra, |c| {
+            c.marks.push(c.guards.len());
+            for s in statements {
+                c.walk_statement(s, &mut ());
+            }
+            let mark = c.marks.pop().expect("pushed");
+            c.guards.truncate(mark);
+        });
+        statements_terminate(statements.iter().copied())
+    }
 }

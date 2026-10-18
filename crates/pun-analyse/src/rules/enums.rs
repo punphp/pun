@@ -283,7 +283,7 @@ fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Ty
 
 /// EnumCaseOutsideEnumRule.
 pub fn case_outside<'arena>(c: &mut Checker<'_, 'arena>, case: &EnumCase<'arena>) {
-    let in_enum = c.context.is_none()
+    let in_enum = c.trait_context.is_none()
         && c.decls
             .last()
             .is_some_and(|d| d.kind == mago_codex::symbol::SymbolKind::Enum);

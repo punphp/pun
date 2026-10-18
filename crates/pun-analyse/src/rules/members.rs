@@ -2,13 +2,13 @@
 //! its parents and its interfaces. User code comes from Mago's codex; built-in classes from PHPStan's reflection
 //! (data/symbols.json), whose class entries list only the methods each class declares.
 
-use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::visibility::Visibility;
 use mago_word::word;
 use pun_phpstan::symbols;
 
+use super::Checker;
 use super::params::Acceptor;
 
 pub enum Method<'a> {
@@ -92,14 +92,15 @@ impl Method<'_> {
 
 /// `$class->getMethod($name)`, `None` when `hasMethod()` is false (magic methods aside).
 pub fn method<'a>(
-    codebase: &'a CodebaseMetadata,
+    c: &Checker<'a, '_>,
     class: &'a ClassLikeMetadata,
     name: &[u8],
 ) -> Option<Method<'a>> {
+    let codebase = c.codebase;
     let lower = word(name.to_ascii_lowercase());
     let mut current = Some(class);
     while let Some(k) = current {
-        if let Some(m) = declared(codebase, k, &lower) {
+        if let Some(m) = declared(c, k, &lower) {
             return Some(m);
         }
         current = k
@@ -110,23 +111,23 @@ pub fn method<'a>(
         .chain(class.all_parent_interfaces.iter())
         .filter_map(|i| codebase.get_class_like(i.as_bytes()))
         .filter(|i| i.kind.is_interface())
-        .find_map(|i| declared(codebase, i, &lower))
+        .find_map(|i| declared(c, i, &lower))
 }
 
 /// AnnotationsMethodsClassReflectionExtension: a `@method` tag of the class, its traits (declared by the class), its
 /// parents or its interfaces, which `getMethod()` falls back to when the class has no such native method.
 pub fn annotation_method<'a>(
-    codebase: &'a CodebaseMetadata,
+    c: &Checker<'a, '_>,
     class: &'a ClassLikeMetadata,
     name: &[u8],
 ) -> Option<Method<'a>> {
     let lower = word(name.to_ascii_lowercase());
-    tagged(codebase, class, class, &lower, 0)
+    tagged(c, class, class, &lower, 0)
 }
 
 /// findClassReflectionWithMethod().
 fn tagged<'a>(
-    codebase: &'a CodebaseMetadata,
+    c: &Checker<'a, '_>,
     k: &'a ClassLikeMetadata,
     declaring: &'a ClassLikeMetadata,
     lower: &mago_word::Word,
@@ -134,6 +135,7 @@ fn tagged<'a>(
 ) -> Option<Method<'a>> {
     // a cyclic hierarchy is PHPStan's error elsewhere
     (depth <= 64).then_some(())?;
+    let codebase = c.codebase;
     if (k.pseudo_methods.contains(lower) || k.static_pseudo_methods.contains(lower))
         && let Some(f) = codebase
             .function_likes
@@ -146,31 +148,38 @@ fn tagged<'a>(
     k.used_traits
         .iter()
         .filter_map(get)
-        .find_map(|t| tagged(codebase, t, declaring, lower, depth + 1))
+        .find_map(|t| tagged(c, t, declaring, lower, depth + 1))
         .or_else(|| {
             let p = k.direct_parent_class.as_ref().and_then(get)?;
-            tagged(codebase, p, p, lower, depth + 1)
+            tagged(c, p, p, lower, depth + 1)
         })
         .or_else(|| {
             k.all_parent_interfaces
                 .iter()
                 .filter_map(get)
-                .find_map(|i| tagged(codebase, i, i, lower, depth + 1))
+                .find_map(|i| tagged(c, i, i, lower, depth + 1))
         })
 }
 
 /// A method `k` itself declares or takes from a trait (private ones of parents count, as in PHP's reflection).
 fn declared<'a>(
-    codebase: &'a CodebaseMetadata,
+    c: &Checker<'a, '_>,
     k: &'a ClassLikeMetadata,
     lower: &mago_word::Word,
 ) -> Option<Method<'a>> {
+    let codebase = c.codebase;
     if k.flags.is_built_in() {
-        let c = symbols::class(&String::from_utf8_lossy(k.name.as_bytes()))?;
-        let f = c
+        let class = c
+            .builtins
+            .classes
+            .get(&String::from_utf8_lossy(k.name.as_bytes()).to_ascii_lowercase())?;
+        let f = class
             .methods
             .get(String::from_utf8_lossy(lower.as_bytes()).as_ref())?;
-        return Some(Method::Builtin { declaring: c, f });
+        return Some(Method::Builtin {
+            declaring: class,
+            f,
+        });
     }
     // after population `methods` (and get_method()) also cover inherited and trait methods: `k`'s own are the
     // ones written inside its declaration
@@ -203,7 +212,7 @@ fn declared<'a>(
     // a trait's methods are declared by the class using it, for PHPStan; of two traits with the method, the one
     // `insteadof` keeps (the method PHP's reflection declares)
     let declaring = codebase.get_declaring_method(k.name.as_bytes(), lower.as_bytes());
-    traits().find_map(|t| match declared(codebase, t, lower)? {
+    traits().find_map(|t| match declared(c, t, lower)? {
         Method::User { f, .. } => declaring
             .is_none_or(|d| d.span == f.span)
             .then_some(Method::User { declaring: k, f }),

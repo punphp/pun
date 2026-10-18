@@ -11,6 +11,8 @@ use mago_syntax::cst::*;
 use mago_span::HasSpan;
 
 use super::class_names::{self, Pair};
+use super::reflection::Lookup;
+use super::reflection::display;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, members, params};
 
 /// NewStaticRule, then InstantiationRule (level 0: no argument types).
@@ -39,11 +41,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
         }
         Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_) if !in_class => {
             let written = keyword(c);
-            let identifier = match new.class {
-                Expression::Static(_) => "outOfClass.static",
-                Expression::Self_(_) => "outOfClass.self",
-                _ => "outOfClass.parent",
-            };
+            let identifier = super::out_of_class(new.class);
             c.report(
                 new,
                 identifier,
@@ -73,23 +71,17 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
             };
             let parent = scope
                 .direct_parent_class
-                .and_then(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())));
+                .map(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())));
             match parent {
-                Some(p) => (p, false),
-                None => {
-                    let display =
-                        String::from_utf8_lossy(scope.original_name.as_bytes()).into_owned();
-                    let function = c
-                        .functions
-                        .last()
-                        .map(|f| f.name.clone())
-                        .unwrap_or_default();
-                    c.report(
-                        new,
-                        "class.noParent",
-                        format!("{display}::{function}() calls new parent but {display} does not extend any class."),
-                        None,
+                Some(Lookup::Found(p)) => (p, false),
+                Some(Lookup::Opaque) => return,
+                None | Some(Lookup::NotFound) => {
+                    let action = format!(
+                        "{}::{}() calls new parent",
+                        display(scope),
+                        c.function_name()
                     );
+                    c.report_no_parent(new, scope, &action);
                     return;
                 }
             }
@@ -137,14 +129,9 @@ fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
     if class_strings && !strings.is_empty() {
         let concretes: Vec<(String, bool)> = strings
             .iter()
-            .filter_map(|n| c.class_like(n))
+            .filter_map(|n| c.class_like(n).found())
             .filter(|k| !k.flags.is_abstract() && !k.kind.is_interface())
-            .map(|k| {
-                (
-                    String::from_utf8_lossy(k.original_name.as_bytes()).into_owned(),
-                    true,
-                )
-            })
+            .map(|k| (display(k), true))
             .collect();
         if !concretes.is_empty() {
             return concretes;
@@ -166,12 +153,13 @@ fn named<'arena>(
     pair: Pair,
 ) {
     match c.class_like(name) {
-        Some(class) => {
+        Lookup::Found(class) => {
             class_names::check(c, &[pair], true);
             check_class(c, new, class, false, is_name);
         }
-        None if c.in_class_exists(name) => {}
-        None => c.report(
+        Lookup::Opaque => class_names::check(c, &[pair], true),
+        Lookup::NotFound if c.in_class_exists(name) => {}
+        Lookup::NotFound => c.report(
             new,
             "class.notFound",
             format!("Instantiated class {name} not found."),
@@ -188,7 +176,7 @@ fn check_class<'arena>(
     is_name: bool,
 ) {
     let args = new.argument_list.as_ref();
-    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+    let display = display(class);
     let refusal = match class.kind {
         SymbolKind::Trait => Some(("new.trait", format!("Cannot instantiate trait {display}."))),
         SymbolKind::Enum => Some(("new.enum", format!("Cannot instantiate enum {display}."))),
@@ -209,7 +197,7 @@ fn check_class<'arena>(
     if !is_name {
         return;
     }
-    let Some(constructor) = members::method(c.codebase, class, b"__construct") else {
+    let Some(constructor) = members::method(c, class, b"__construct") else {
         if args.is_some_and(|a| !a.arguments.is_empty()) {
             c.report(
                 new,
@@ -223,11 +211,7 @@ fn check_class<'arena>(
     let declaring = constructor.declaring_display();
     let visibility = constructor.visibility();
     if !super::calls::can_call(c, c.class_scope(), &declaring, visibility) {
-        let v = if visibility.is_private() {
-            "private"
-        } else {
-            "protected"
-        };
+        let v = super::restricted(visibility);
         c.report(
             new,
             if visibility.is_private() {
@@ -242,14 +226,14 @@ fn check_class<'arena>(
             None,
         );
     }
-    let counts = args.map_or((0, false, false), params::count);
+    let counts = args.map_or_else(params::Counts::default, params::count);
     params::check(
         c,
-        &params::select(constructor.variants(), counts.0, counts.2),
+        &params::select(constructor.variants(), counts.positional, counts.unpack),
         counts,
         new,
         params::Call {
-            kind: "new",
+            kind: params::CallKind::New,
             subject: &format!("Class {display} constructor"),
             void_message: None,
         },
@@ -268,7 +252,7 @@ fn consistent_constructor(c: &Checker, class: &ClassLikeMetadata) -> bool {
     if consistent {
         return true;
     }
-    let Some(constructor) = members::method(c.codebase, class, b"__construct") else {
+    let Some(constructor) = members::method(c, class, b"__construct") else {
         return false;
     };
     if constructor.is_final() || constructor.is_abstract() {
@@ -280,12 +264,12 @@ fn consistent_constructor(c: &Checker, class: &ClassLikeMetadata) -> bool {
         .iter()
         .chain(class.all_parent_classes.iter())
         .filter_map(|n| c.codebase.get_class_like(n.as_bytes()))
-        .filter_map(|a| members::method(c.codebase, a, b"__construct"))
+        .filter_map(|a| members::method(c, a, b"__construct"))
         .any(|m| m.declared_in_interface() || m.is_abstract())
 }
 
 fn has_constructor(c: &Checker, class: &ClassLikeMetadata) -> bool {
-    members::method(c.codebase, class, b"__construct").is_some()
+    members::method(c, class, b"__construct").is_some()
 }
 
 /// NewStaticRule.
@@ -299,10 +283,9 @@ fn new_static(c: &mut Checker, new: &Instantiation) {
     // in a trait (PHP 8.0+ has abstract trait methods) that declares an abstract constructor
     if has_constructor(c, class)
         && c.php_version >= 80000
-        && c.in_target
-        && let Some(t) = c.context_trait.as_deref()
+        && let Some(t) = c.in_trait()
         && let Some(t) = c.codebase.get_class_like(t.as_bytes())
-        && members::method(c.codebase, t, b"__construct").is_some_and(|m| m.is_abstract())
+        && members::method(c, t, b"__construct").is_some_and(|m| m.is_abstract())
     {
         return;
     }

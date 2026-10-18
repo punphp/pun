@@ -9,6 +9,7 @@ use mago_syntax::cst::*;
 use pun_phpstan::types::Type;
 
 use super::Checker;
+use super::reflection::display;
 
 /// The arrays php-parser has as `List_` (destructuring targets), which are no LiteralArrayNode.
 #[derive(Default)]
@@ -226,13 +227,12 @@ fn key_value(c: &Checker, key: &Expression) -> Option<Key> {
         Expression::Access(Access::ClassConstant(a)) => {
             let class = match a.class {
                 Expression::Identifier(id) => c.resolved(id),
-                Expression::Self_(_) => {
-                    String::from_utf8_lossy(c.class_scope()?.original_name.as_bytes()).into_owned()
-                }
+                Expression::Self_(_) => display(c.class_scope()?),
                 Expression::Parent(_) => {
                     let parent = c.class_scope()?.direct_parent_class?;
                     String::from_utf8_lossy(
-                        c.class_like(&String::from_utf8_lossy(parent.as_bytes()))?
+                        c.class_like(&String::from_utf8_lossy(parent.as_bytes()))
+                            .found()?
                             .original_name
                             .as_bytes(),
                     )
@@ -247,7 +247,7 @@ fn key_value(c: &Checker, key: &Expression) -> Option<Key> {
             if name.value.eq_ignore_ascii_case(b"class") {
                 Key::of_string(class.as_bytes())
             } else {
-                let k = c.class_like(&class)?;
+                let k = c.class_like(&class).found()?;
                 // ponytail: built-in classes' constants (PHP's values per version) are not ported
                 if k.flags.is_built_in() {
                     return None;

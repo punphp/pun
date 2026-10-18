@@ -7,7 +7,7 @@ use mago_span::Span;
 use mago_syntax::cst::*;
 
 use super::Checker;
-use super::names::{Known, known};
+use super::reflection::{Known, known};
 
 /// ClassNameNodePair: a class name as the rule reads it, and the node whose line its errors take.
 pub struct Pair {

@@ -9,6 +9,8 @@ use mago_codex::visibility::Visibility;
 use super::class_names::{self, Pair};
 use super::members;
 use super::params;
+use super::reflection::Lookup;
+use super::reflection::display;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
 /// CallToNonExistentFunctionRule (level 0: no name-case check), then CallToFunctionParametersRule.
@@ -33,7 +35,15 @@ pub fn pipe<'arena>(c: &mut Checker<'_, 'arena>, pipe: &Pipe<'arena>) {
         )
     {
         let first_level = c.is_top_level(pipe.span());
-        named_call(c, id, (1, false, false), first_level);
+        named_call(
+            c,
+            id,
+            params::Counts {
+                positional: 1,
+                ..params::Counts::default()
+            },
+            first_level,
+        );
     }
 }
 
@@ -82,7 +92,7 @@ pub fn function_callable<'arena>(
 fn named_call<'arena>(
     c: &mut Checker<'_, 'arena>,
     id: &Identifier<'arena>,
-    counts: (usize, bool, bool),
+    counts: params::Counts,
     first_level: bool,
 ) {
     let fallback = match id {
@@ -93,14 +103,14 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
-        let acceptor = params::select(variants, counts.0, counts.2);
+        let acceptor = params::select(variants, counts.positional, counts.unpack);
         params::check(
             c,
             &acceptor,
             counts,
             id,
             params::Call {
-                kind: "function",
+                kind: params::CallKind::Function,
                 subject: &format!("Function {display}"),
                 void_message: Some(format!("Result of function {display} (void) is used.")),
             },
@@ -151,8 +161,8 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         return;
     }
     let method_name = String::from_utf8_lossy(name.value).into_owned();
-    let Some(method) = members::method(c.codebase, class, name.value) else {
-        if let Some(method) = members::annotation_method(c.codebase, class, name.value) {
+    let Some(method) = members::method(c, class, name.value) else {
+        if let Some(method) = members::annotation_method(c, class, name.value) {
             // an annotation method is public: only its arguments are checked
             arguments(c, call, name, &method);
             return;
@@ -161,7 +171,7 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         let guard =
             super::scope::Guard::Method(format!("$this::{method_name}").to_ascii_lowercase());
         if c.guards.contains(&guard)
-            || members::method(c.codebase, class, b"__call").is_some()
+            || members::method(c, class, b"__call").is_some()
             || class
                 .pseudo_methods
                 .iter()
@@ -169,7 +179,7 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         {
             return;
         }
-        let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+        let display = display(class);
         c.report(
             name,
             "method.notFound",
@@ -181,11 +191,7 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
     let declaring = method.declaring_display();
     let visibility = method.visibility();
     if !can_call(c, Some(class), &declaring, visibility) {
-        let v = if visibility.is_private() {
-            "private"
-        } else {
-            "protected"
-        };
+        let v = super::restricted(visibility);
         c.report(
             name,
             if visibility.is_private() {
@@ -215,11 +221,11 @@ fn arguments<'arena>(
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), counts.0, counts.2),
+        &params::select(method.variants(), counts.positional, counts.unpack),
         counts,
         name,
         params::Call {
-            kind: "method",
+            kind: params::CallKind::Method,
             subject: &format!("Method {subject}"),
             void_message: Some(format!("Result of method {subject} (void) is used.")),
         },
@@ -244,11 +250,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let mut pair = None;
     let class = match call.class {
         Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) if !in_class => {
-            let identifier = match call.class {
-                Expression::Self_(_) => "outOfClass.self",
-                Expression::Static(_) => "outOfClass.static",
-                _ => "outOfClass.parent",
-            };
+            let identifier = super::out_of_class(call.class);
             let written = written(c, call.class);
             c.report(
                 name,
@@ -268,25 +270,17 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
             };
             let parent = scope
                 .direct_parent_class
-                .and_then(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())));
+                .map(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())));
             match parent {
-                Some(p) => p,
-                None => {
-                    let display =
-                        String::from_utf8_lossy(scope.original_name.as_bytes()).into_owned();
-                    let function = c
-                        .functions
-                        .last()
-                        .map(|f| f.name.clone())
-                        .unwrap_or_default();
-                    c.report(
-                        name,
-                        "class.noParent",
-                        format!(
-                            "{display}::{function}() calls parent::{method_name}() but {display} does not extend any class."
-                        ),
-                        None,
+                Some(Lookup::Found(p)) => p,
+                Some(Lookup::Opaque) => return,
+                None | Some(Lookup::NotFound) => {
+                    let action = format!(
+                        "{}::{}() calls parent::{method_name}()",
+                        display(scope),
+                        c.function_name()
                     );
+                    c.report_no_parent(name, scope, &action);
                     return;
                 }
             }
@@ -294,12 +288,13 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         Expression::Identifier(id) => {
             let class_name = c.resolved(id);
             match c.class_like(&class_name) {
-                Some(k) => {
+                Lookup::Found(k) => {
                     pair = Some(Pair::name(class_name, id.span()));
                     k
                 }
-                None if c.in_class_exists(&class_name) => return,
-                None => {
+                Lookup::Opaque => return,
+                Lookup::NotFound if c.in_class_exists(&class_name) => return,
+                Lookup::NotFound => {
                     c.report(
                         name,
                         "class.notFound",
@@ -312,8 +307,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         }
         _ => return,
     };
-    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
-    let Some(method) = members::method(c.codebase, class, name.value) else {
+    let display = display(class);
+    let Some(method) = members::method(c, class, name.value) else {
         let guarded = match call.class {
             Expression::Static(_) => "static".to_string(),
             Expression::Self_(_) => "self".to_string(),
@@ -325,7 +320,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
                 .static_pseudo_methods
                 .iter()
                 .any(|m| m.as_bytes().eq_ignore_ascii_case(name.value));
-        if !known && members::method(c.codebase, class, b"__callStatic").is_some() {
+        if !known && members::method(c, class, b"__callStatic").is_some() {
             return;
         }
         class_names::check(c, pair.as_slice(), true);
@@ -347,7 +342,10 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     // after "Static call to instance method", PHPStan checks only the arguments
     let mut checked = false;
     if !is_static {
-        let function_static = c.functions.last().and_then(|f| f.method_static);
+        let in_instance_method = c
+            .functions
+            .last()
+            .is_some_and(|f| f.kind == super::FunctionScopeKind::Method { is_static: false });
         let in_subclass = scope_class.is_some_and(|s| {
             s.name
                 .as_bytes()
@@ -355,26 +353,22 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
                 || c.codebase
                     .is_instance_of(s.name.as_bytes(), class.name.as_bytes())
         });
-        if function_static != Some(false) || !in_subclass {
-            if !(declared.eq_ignore_ascii_case("loadhtml") && declaring == "DOMDocument") {
-                checked = true;
-                c.report(
-                    name,
-                    "method.staticCall",
-                    format!("Static call to instance method {declaring}::{declared}()."),
-                    None,
-                );
-            }
+        if (!in_instance_method || !in_subclass)
+            && !(declared.eq_ignore_ascii_case("loadhtml") && declaring == "DOMDocument")
+        {
+            checked = true;
+            c.report(
+                name,
+                "method.staticCall",
+                format!("Static call to instance method {declaring}::{declared}()."),
+                None,
+            );
         }
     }
     let kind = if is_static { "static method" } else { "method" };
     let visibility = method.visibility();
     if !checked && !can_call(c, scope_class, &declaring, visibility) {
-        let v = if visibility.is_private() {
-            "private"
-        } else {
-            "protected"
-        };
+        let v = super::restricted(visibility);
         c.report(
             name,
             if visibility.is_private() {
@@ -406,11 +400,11 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), counts.0, counts.2),
+        &params::select(method.variants(), counts.positional, counts.unpack),
         counts,
         name,
         params::Call {
-            kind: "staticMethod",
+            kind: params::CallKind::StaticMethod,
             subject: &format!("{display_kind} {subject}"),
             void_message: Some(format!("Result of {kind} {subject} (void) is used.")),
         },

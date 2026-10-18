@@ -1,83 +1,16 @@
 //! The rules that check a class name exists where code names one: class constant fetches (ClassConstantRule),
 //! `instanceof`, `catch`, native parameter and return types, `extends`, `implements` and `use` of traits.
 
-use mago_codex::metadata::class_like::ClassLikeMetadata;
-use mago_codex::symbol::SymbolKind;
 use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_word::word;
 
 use super::class_names::{self, Pair};
+use super::reflection::display;
+use super::reflection::{Known, known};
 use super::scope::Guard;
-use super::{Checker, DISCOVERING_SYMBOLS_TIP, builtins};
-
-/// What PHPStan's reflection knows of a class: user code from Mago, built-ins from data/symbols.json.
-#[derive(Clone, Copy)]
-pub enum Known<'a> {
-    User(&'a ClassLikeMetadata),
-    Builtin(&'static pun_phpstan::symbols::Class),
-}
-
-impl Known<'_> {
-    pub fn is_trait(&self) -> bool {
-        matches!(self, Known::User(k) if k.kind == SymbolKind::Trait)
-    }
-
-    pub fn is_interface(&self) -> bool {
-        match self {
-            Known::User(k) => k.kind == SymbolKind::Interface,
-            Known::Builtin(k) => k.is_interface,
-        }
-    }
-
-    pub fn is_enum(&self) -> bool {
-        match self {
-            Known::User(k) => k.kind == SymbolKind::Enum,
-            Known::Builtin(k) => !k.cases.is_empty(),
-        }
-    }
-
-    pub fn is_class(&self) -> bool {
-        !self.is_trait() && !self.is_interface() && !self.is_enum()
-    }
-
-    /// `getClassTypeDescription()`.
-    pub(super) fn type_description(&self) -> &'static str {
-        if self.is_interface() {
-            "Interface"
-        } else if self.is_trait() {
-            "Trait"
-        } else if self.is_enum() {
-            "Enum"
-        } else {
-            "Class"
-        }
-    }
-
-    pub fn display(&self) -> String {
-        match self {
-            Known::User(k) => String::from_utf8_lossy(k.original_name.as_bytes()).into_owned(),
-            Known::Builtin(k) => k.name.clone(),
-        }
-    }
-}
-
-/// `ReflectionProvider::hasClass()` / `getClass()`.
-pub fn known<'a>(c: &Checker<'a, '_>, name: &str) -> Option<Known<'a>> {
-    let name = name.trim_start_matches('\\');
-    if let Some(k) = c
-        .codebase
-        .get_class_like(name.as_bytes())
-        .filter(|k| !k.flags.is_built_in())
-    {
-        return Some(Known::User(k));
-    }
-    builtins()
-        .classes
-        .get(&name.to_ascii_lowercase())
-        .map(Known::Builtin)
-}
+use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
 /// ClassConstantRule for `X::NAME` with a written class and constant name.
 pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstantAccess<'arena>) {
@@ -91,11 +24,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
         .into_owned();
     let (class, described) = match access.class {
         Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) if !in_class => {
-            let identifier = match access.class {
-                Expression::Self_(_) => "outOfClass.self",
-                Expression::Static(_) => "outOfClass.static",
-                _ => "outOfClass.parent",
-            };
+            let identifier = super::out_of_class(access.class);
             c.report(
                 access,
                 identifier,
@@ -108,7 +37,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
             let Some(scope) = c.class_scope() else {
                 return; // ponytail: trait and anonymous class scopes
             };
-            let display = String::from_utf8_lossy(scope.original_name.as_bytes()).into_owned();
+            let display = display(scope);
             let described = if matches!(access.class, Expression::Static(_)) {
                 format!("static({display})")
             } else {
@@ -126,13 +55,10 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
             match parent {
                 Some(p) => (p, p.display()),
                 None => {
-                    let display =
-                        String::from_utf8_lossy(scope.original_name.as_bytes()).into_owned();
-                    c.report(
+                    c.report_no_parent(
                         access,
-                        "class.noParent",
-                        format!("Access to parent::{constant_name} but {display} does not extend any class."),
-                        None,
+                        scope,
+                        &format!("Access to parent::{constant_name}"),
                     );
                     return;
                 }
@@ -222,14 +148,9 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
                 })
                 .last()
                 .unwrap_or(k);
-            let declaring_display =
-                String::from_utf8_lossy(declaring.original_name.as_bytes()).into_owned();
+            let declaring_display = display(declaring);
             if !super::calls::can_call(c, c.class_scope(), &declaring_display, visibility) {
-                let v = if visibility.is_private() {
-                    "private"
-                } else {
-                    "protected"
-                };
+                let v = super::restricted(visibility);
                 c.report(
                     access,
                     if visibility.is_private() {
@@ -247,7 +168,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
             let has = |k: &pun_phpstan::symbols::Class| {
                 k.constants.iter().any(|(n, _)| n == name) || k.cases.iter().any(|n| n == name)
             };
-            let classes = &builtins().classes;
+            let classes = &c.builtins.classes;
             if !has(k)
                 && !k
                     .ancestors
@@ -275,11 +196,8 @@ pub fn instanceof<'arena>(
     match class {
         Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) => {
             if c.classes.is_empty() {
-                let (identifier, lower) = match class {
-                    Expression::Self_(_) => ("outOfClass.self", "self"),
-                    Expression::Static(_) => ("outOfClass.static", "static"),
-                    _ => ("outOfClass.parent", "parent"),
-                };
+                let identifier = super::out_of_class(class);
+                let lower = identifier.trim_start_matches("outOfClass.");
                 c.report(
                     class,
                     identifier,
@@ -687,7 +605,7 @@ pub fn property_type<'arena>(
     let Some(class) = c.class_scope() else {
         return; // ponytail: traits and anonymous classes
     };
-    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+    let display = display(class);
     let mut classes = Vec::new();
     hint_classes(c, hint, &mut classes);
     for name in names {

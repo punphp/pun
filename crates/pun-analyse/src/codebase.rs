@@ -12,6 +12,7 @@ use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_database::file::{File, FileType};
+use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
 use mago_php_version::PHPVersion;
 use mago_prelude::Prelude;
@@ -78,12 +79,20 @@ pub(crate) fn read(path: &Path, file_type: FileType) -> Result<Option<File>, Cou
     )))
 }
 
+/// `file` parsed into `arena`, with its names resolved.
+pub(crate) fn parse<'arena>(
+    arena: &'arena LocalArena,
+    file: &File,
+) -> (&'arena Program<'arena>, ResolvedNames<'arena>) {
+    let program = parse_file(arena, file);
+    (program, NameResolver::new(arena).resolve(program))
+}
+
 /// Scans `file`, then resets `arena`, so one arena serves many files.
 fn scan(arena: &mut LocalArena, file: &File, version: PHPVersion) -> CodebaseMetadata {
     let scanned = {
         let arena = &*arena;
-        let program = parse_file(arena, file);
-        let names = NameResolver::new(arena).resolve(program);
+        let (program, names) = parse(arena, file);
         // Mago's scanner trips a debug assertion (an empty TUnion::from_vec, debug builds only) on an intersection
         // type naming a non-class type, which PHP rejects; scanning again with those types read as `mixed` keeps
         // the file's symbols
@@ -97,8 +106,7 @@ fn scan(arena: &mut LocalArena, file: &File, version: PHPVersion) -> CodebaseMet
                 file.path.clone(),
                 Cow::Owned(mask_intersections(program, &file.contents)),
             );
-            let program = parse_file(arena, &masked);
-            let names = NameResolver::new(arena).resolve(program);
+            let (program, names) = parse(arena, &masked);
             std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                 scan_program(arena, &masked, program, &names, version)
             }))
@@ -145,27 +153,32 @@ fn mask_intersections(program: &Program, contents: &[u8]) -> Vec<u8> {
     contents
 }
 
-/// The prelude for one build: the first build of the process owns a fresh one (a single run keeps one copy, not a
-/// cached one and its clone); later builds clone one built once.
-fn prelude() -> (CodebaseMetadata, SymbolReferences) {
+/// The prelude for one build at `php_version`: the first build of the process owns a fresh one (a single run keeps
+/// one copy, not a cached one and its clone); later builds clone one built once per PHP version.
+fn prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
     static FIRST: AtomicBool = AtomicBool::new(true);
-    static CACHED: LazyLock<(CodebaseMetadata, SymbolReferences)> = LazyLock::new(build_prelude);
+    static PHP84: LazyLock<(CodebaseMetadata, SymbolReferences)> =
+        LazyLock::new(|| build_prelude(80400));
+    static PHP85: LazyLock<(CodebaseMetadata, SymbolReferences)> =
+        LazyLock::new(|| build_prelude(80500));
     if FIRST.swap(false, Ordering::Relaxed) {
-        build_prelude()
+        build_prelude(php_version)
+    } else if php_version >= 80500 {
+        PHP85.clone()
     } else {
-        CACHED.clone()
+        PHP84.clone()
     }
 }
 
-/// Mago's prelude, without the built-ins PHPStan's reflection doesn't know (symbols.json: newer PHP, other
-/// extensions), so a polyfill in vendor declares them as user code.
-fn build_prelude() -> (CodebaseMetadata, SymbolReferences) {
+/// Mago's prelude, without the built-ins PHPStan's reflection at `php_version` doesn't know (symbols.json: newer
+/// PHP, other extensions), so a polyfill in vendor declares them as user code.
+fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
     let Prelude {
         mut metadata,
         symbol_references,
         ..
     } = Prelude::build();
-    let builtins = pun_phpstan::symbols::symbols(pun_phpstan::symbols::PhpVersion::Php85);
+    let builtins = crate::rules::builtins(php_version);
     metadata.class_likes.retain(|name, k| {
         !k.flags.is_built_in()
             || builtins
@@ -233,16 +246,20 @@ pub(crate) fn build_with_sources(
     }
     let index = autoload::Index::new(classes.into_iter());
     // Scanning is most of the time (the vendored files): in rounds, each the psr-4 and psr-0 files the previous one
-    // named, in chunks across the threads, merged in file order, while the prelude is built and PHPStan's 8.4
-    // reflection of built-in classes (symbols::class(), which the rules read) is loaded, rather than by the first file
-    // that asks while the others wait.
-    let php84 = || pun_phpstan::symbols::symbols(pun_phpstan::symbols::PhpVersion::Php84);
+    // named, in chunks across the threads, merged in file order, while the prelude is built and PHPStan's reflection
+    // of built-ins is loaded (at the project's PHP version, which the rules read, and 8.4's, which pun-phpstan's type
+    // system reads), rather than by the first file that asks while the others wait.
+    let php_version = project.php_version;
+    let builtins = move || {
+        crate::rules::builtins(php_version);
+        pun_phpstan::symbols::symbols(pun_phpstan::symbols::PhpVersion::Php84)
+    };
     // PHPStan's API stub (one large file, about a quarter of the run on larastan and pest when scanned after the
     // rounds) is scanned on its own thread as soon as an analysed file names PHPStan, beside the rounds; it is merged
     // after them, as before
     let api = OnceLock::new();
     let (((mut metadata, mut references), _), scanned) = rayon::join(
-        || rayon::join(prelude, php84),
+        || rayon::join(move || prelude(php_version), builtins),
         || {
             let mut loaded = vec![false; files.len()];
             loaded[..eager].fill(true);

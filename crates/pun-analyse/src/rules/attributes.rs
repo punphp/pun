@@ -10,7 +10,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
 use super::class_names::{self, Pair};
-use super::names::{Known, known};
+use super::reflection::{Known, known};
 use super::{Checker, members, params};
 
 pub const TARGET_CLASS: i64 = 1;
@@ -121,7 +121,7 @@ pub fn check<'arena>(
             .iter()
             .flat_map(|a| a.arguments.iter())
             .collect();
-        let Some(constructor) = members::method(c.codebase, class, b"__construct") else {
+        let Some(constructor) = members::method(c, class, b"__construct") else {
             if !arguments.is_empty() {
                 c.report(
                     attribute,
@@ -145,14 +145,18 @@ pub fn check<'arena>(
             .iter()
             .filter(|a| matches!(a, PartialArgument::Positional(_)))
             .count();
-        let counts = (positional, positional < arguments.len(), false);
+        let counts = params::Counts {
+            positional,
+            named: positional < arguments.len(),
+            unpack: false,
+        };
         params::check(
             c,
-            &params::select(constructor.variants(), counts.0, false),
+            &params::select(constructor.variants(), positional, false),
             counts,
             attribute,
             params::Call {
-                kind: "attribute",
+                kind: params::CallKind::Attribute,
                 subject: &format!("Attribute class {} constructor", k.display()),
                 void_message: None,
             },
@@ -282,7 +286,7 @@ fn non_class_attribute_class<'arena>(
     let codebase = c.codebase;
     if codebase
         .get_class_like(display.as_bytes())
-        .and_then(|k| members::method(codebase, k, b"__construct"))
+        .and_then(|k| members::method(c, k, b"__construct"))
         .is_some_and(|m| !m.visibility().is_public())
     {
         c.report(

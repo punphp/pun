@@ -1,0 +1,75 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "builtins.php",
+   "line": 5,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Closure::getCurrent().",
+   "tip": null
+  },
+  {
+   "file": "builtins.php",
+   "line": 6,
+   "identifier": "function.notFound",
+   "message": "Function array_first not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "builtins.php",
+   "line": 7,
+   "identifier": "function.notFound",
+   "message": "Function grapheme_levenshtein not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "builtins.php",
+   "line": 8,
+   "identifier": "function.notFound",
+   "message": "Function pg_service not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "builtins.php",
+   "line": 9,
+   "identifier": "function.notFound",
+   "message": "Function curl_multi_get_handles not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "builtins.php",
+   "line": 10,
+   "identifier": "function.notFound",
+   "message": "Function get_error_handler not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "builtins.php",
+   "line": 11,
+   "identifier": "class.notFound",
+   "message": "Instantiated class IntlListFormatter not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "builtins.php",
+   "line": 12,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Filter\\FilterFailedException not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "builtins.php",
+   "line": 13,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Locale::isRightToLeft().",
+   "tip": null
+  },
+  {
+   "file": "builtins.php",
+   "line": 14,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CurlSharePersistentHandle not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

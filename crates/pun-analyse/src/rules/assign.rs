@@ -12,7 +12,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::symbols::ByRef;
 
-use super::{Checker, builtins, members};
+use super::{Checker, members};
 
 /// What these checks remember during a walk.
 #[derive(Default)]
@@ -370,7 +370,8 @@ fn callee_params(c: &Checker, call: &Callee, n: usize) -> Option<Vec<Param>> {
                         {
                             return Some(of_metadata(f));
                         }
-                        let f = builtins()
+                        let f = c
+                            .builtins
                             .functions
                             .get(&String::from_utf8_lossy(name).to_ascii_lowercase())?;
                         of_builtin(&f.variants, n)
@@ -388,18 +389,18 @@ fn callee_params(c: &Checker, call: &Callee, n: usize) -> Option<Vec<Param>> {
                 }
                 object => object_class(c, object)?,
             };
-            of_method(&members::method(c.codebase, class, name.value)?, n)
+            of_method(&members::method(c, class, name.value)?, n)
         }
         Callee::StaticMethod(m) => {
             let ClassLikeMemberSelector::Identifier(name) = &m.method else {
                 return None;
             };
             let class = named_class(c, m.class).or_else(|| object_class(c, m.class))?;
-            of_method(&members::method(c.codebase, class, name.value)?, n)
+            of_method(&members::method(c, class, name.value)?, n)
         }
         Callee::New(new) => {
             let class = named_class(c, new.class)?;
-            of_method(&members::method(c.codebase, class, b"__construct")?, n)
+            of_method(&members::method(c, class, b"__construct")?, n)
         }
     }
 }
@@ -414,6 +415,7 @@ fn object_class<'a>(
         return None;
     };
     c.class_like(&String::from_utf8_lossy(o.name.as_bytes()))
+        .found()
 }
 
 fn named_class<'a>(
@@ -421,12 +423,12 @@ fn named_class<'a>(
     class: &Expression,
 ) -> Option<&'a mago_codex::metadata::class_like::ClassLikeMetadata> {
     match class {
-        Expression::Identifier(id) => c.class_like(&c.resolved(id)),
+        Expression::Identifier(id) => c.class_like(&c.resolved(id)).found(),
         Expression::Self_(_) | Expression::Static(_) => c.class_scope(),
         Expression::Parent(_) => c
             .class_scope()?
             .direct_parent_class
-            .and_then(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes()))),
+            .and_then(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())).found()),
         _ => None,
     }
 }
@@ -601,7 +603,7 @@ pub fn property_assign_ref(c: &mut Checker, a: &Assignment) {
             .get_declaring_property(holder.name.as_bytes(), &property),
         c.codebase
             .get_declaring_property_class(holder.name.as_bytes(), &property)
-            .and_then(|d| c.class_like(&String::from_utf8_lossy(d.as_bytes()))),
+            .and_then(|d| c.class_like(&String::from_utf8_lossy(d.as_bytes())).found()),
     ) else {
         return;
     };

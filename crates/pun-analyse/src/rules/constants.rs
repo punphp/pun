@@ -12,13 +12,10 @@ use pun_phpstan::resolve::resolve_str;
 use pun_phpstan::types::{Level, Type};
 
 use super::Checker;
+use super::reflection::display;
 
 fn text(b: &[u8]) -> String {
     String::from_utf8_lossy(b).into_owned()
-}
-
-fn display(k: &ClassLikeMetadata) -> String {
-    text(k.original_name.as_bytes())
 }
 
 /// The visibility a declaration's modifiers give (public without one).
@@ -173,10 +170,7 @@ fn conflicting_trait_constants<'arena>(
                 continue;
             };
             // the constant declared here: the class's own, or in a trait walked in its context that trait's
-            let owner = match &c.context_trait {
-                Some(trait_name) if c.in_target => trait_name.as_str(),
-                _ => class_name.as_str(),
-            };
+            let owner = c.in_trait().unwrap_or(class_name.as_str());
             // ponytail: values the codex cannot reduce to a constant scalar (arrays, floats, expressions) are not
             // compared
             // ponytail: of duplicate declarations (a PHP error) the codex keeps the first, PHP's reflection the last

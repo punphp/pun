@@ -16,7 +16,9 @@ use pun_phpstan::types::{Tri, Type, is_super_type_of};
 use super::Checker;
 use super::class_names::{self, Pair};
 use super::declarations::doc_before;
-use super::names::{FunctionKind, Known, known};
+use super::names::FunctionKind;
+use super::reflection::display;
+use super::reflection::{Known, known};
 
 /// The names PHPDoc types resolve against: the namespace and its `use` imports (php-parser's NameScope).
 pub struct State {
@@ -989,7 +991,7 @@ pub fn property<'arena>(
     if c.php_version < 80100 || !unresolvable(c, hint) {
         return;
     }
-    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+    let display = display(class);
     for name in names {
         let property =
             String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
@@ -1007,7 +1009,7 @@ pub fn hooks<'arena>(c: &mut Checker<'_, 'arena>, name: &[u8], list: &PropertyHo
     let Some(class) = c.class_scope() else {
         return;
     };
-    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+    let display = display(class);
     let property = String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
     for hook in list.hooks.iter() {
         let Some(params) = &hook.parameter_list else {

@@ -1,0 +1,5 @@
+parameters:
+    level: 0
+    phpVersion: 80500
+    paths: [builtins.php]
+    scanFiles: [polyfill/array_last.php]

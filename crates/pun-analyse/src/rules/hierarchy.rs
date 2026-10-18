@@ -11,7 +11,7 @@ use mago_syntax::cst::*;
 use super::class_names::{self, Pair};
 use super::declarations::{doc_before, doc_tags, has_tag, is_abstract, is_private};
 use super::members;
-use super::names::{Known, known};
+use super::reflection::{Known, display, known};
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
 /// `ClassReflection::implementsInterface(Serializable::class)`.
@@ -151,10 +151,10 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
     // a trait's own body is walked only in a using class's context
     let decl = c.decls.last().expect("in a class-like");
     let (kind, display) = (decl.kind, decl.display.clone());
-    let in_trait = c.context_trait.clone().filter(|_| c.in_target).map(|t| {
-        c.codebase.get_class_like(t.as_bytes()).map_or(t, |k| {
-            String::from_utf8_lossy(k.original_name.as_bytes()).into_owned()
-        })
+    let in_trait = c.in_trait().map(|t| {
+        c.codebase
+            .get_class_like(t.as_bytes())
+            .map_or_else(|| t.to_string(), super::reflection::display)
     });
     let pairs: Vec<Pair> = u
         .trait_names
@@ -298,7 +298,7 @@ pub fn in_class(c: &mut Checker, at: Span, name: &str) {
     {
         return;
     }
-    let display = String::from_utf8_lossy(k.original_name.as_bytes()).into_owned();
+    let display = display(k);
     let is_enum = k.kind == SymbolKind::Enum;
     let description = if is_enum {
         "Enum"
@@ -319,7 +319,7 @@ pub fn in_class(c: &mut Checker, at: Span, name: &str) {
         {
             continue;
         }
-        let Some(m) = members::method(c.codebase, k, lower_name) else {
+        let Some(m) = members::method(c, k, lower_name) else {
             continue; // a `@method` tag
         };
         let is_abstract = match &m {
@@ -360,7 +360,7 @@ pub fn in_class(c: &mut Checker, at: Span, name: &str) {
         return;
     }
     for magic in ["__serialize", "__unserialize"] {
-        if members::method(c.codebase, k, magic.as_bytes()).is_none() {
+        if members::method(c, k, magic.as_bytes()).is_none() {
             c.report(
                 at,
                 "class.serializable",
@@ -387,7 +387,7 @@ fn inherited_satisfies(
     !own && declaring
         .direct_parent_class
         .and_then(|p| c.codebase.get_class_like(p.as_bytes()))
-        .and_then(|p| members::method(c.codebase, p, lower))
+        .and_then(|p| members::method(c, p, lower))
         .is_some_and(|m| !m.is_abstract() && !m.declared_in_interface())
 }
 

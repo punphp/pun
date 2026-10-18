@@ -7,6 +7,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
 use super::Checker;
+use super::reflection::display;
 
 /// What a scope boundary on [`Checker::frames`] is.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -230,10 +231,11 @@ pub fn constructor_return_type(c: &mut Checker, m: &Method) {
             .map(|(alias, _)| alias.as_bytes().to_ascii_lowercase());
         if let Some(alias) = alias {
             if name == b"__construct" {
-                let t = c.context_trait.clone().unwrap_or_default();
-                let display = c.codebase.get_class_like(t.as_bytes()).map_or(t, |t| {
-                    String::from_utf8_lossy(t.original_name.as_bytes()).into_owned()
-                });
+                let t = c.in_trait().unwrap_or_default().to_string();
+                let display = c
+                    .codebase
+                    .get_class_like(t.as_bytes())
+                    .map_or(t, display);
                 c.report_non_ignorable(
                     m,
                     "constructor.returnType",
@@ -256,7 +258,7 @@ pub fn constructor_return_type(c: &mut Checker, m: &Method) {
     if name != b"__construct" {
         return;
     }
-    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+    let display = display(class);
     c.report_non_ignorable(
         m,
         "constructor.returnType",

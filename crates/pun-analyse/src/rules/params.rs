@@ -75,32 +75,47 @@ pub fn select(variants: Vec<Acceptor>, n: usize, unpack: bool) -> Acceptor {
     }
 }
 
-/// How an argument list counts: (positional arguments, has named arguments, has an unpacked non-constant array).
-pub fn count(args: &ArgumentList) -> (usize, bool, bool) {
-    let mut n = 0;
-    let mut named = false;
-    let mut unpack = false;
-    for arg in args.arguments.iter() {
-        match arg {
-            Argument::Named(_) => named = true,
-            Argument::Positional(p) if p.ellipsis.is_some() => match literal_list(p.value) {
-                Some(Ok(k)) => n += k,
-                Some(Err(())) => named = true,
-                None => unpack = true,
-            },
-            Argument::Positional(_) => n += 1,
-        }
-    }
-    (n, named, unpack)
+/// How an argument list counts.
+#[derive(Clone, Copy, Default)]
+pub struct Counts {
+    pub positional: usize,
+    /// Has named arguments (or unpacks an array with string keys).
+    pub named: bool,
+    /// Unpacks an array that is not a constant one.
+    pub unpack: bool,
 }
 
-/// A literal array's element count when unpacking it is a constant array (`Err`: it has string keys, so it unpacks
-/// to named arguments); `None` when it isn't a constant array.
-fn literal_list(e: &Expression) -> Option<Result<usize, ()>> {
+pub fn count(args: &ArgumentList) -> Counts {
+    let mut counts = Counts::default();
+    for arg in args.arguments.iter() {
+        match arg {
+            Argument::Named(_) => counts.named = true,
+            Argument::Positional(p) if p.ellipsis.is_some() => match unpacked(p.value) {
+                Unpacked::List(k) => counts.positional += k,
+                Unpacked::Named => counts.named = true,
+                Unpacked::Unknown => counts.unpack = true,
+            },
+            Argument::Positional(_) => counts.positional += 1,
+        }
+    }
+    counts
+}
+
+/// What unpacking an expression gives.
+enum Unpacked {
+    /// A constant list of this many elements.
+    List(usize),
+    /// A constant array with string keys: named arguments.
+    Named,
+    /// Not a constant array.
+    Unknown,
+}
+
+fn unpacked(e: &Expression) -> Unpacked {
     let elements: Vec<&ArrayElement> = match e {
         Expression::Array(a) => a.elements.iter().collect(),
         Expression::LegacyArray(a) => a.elements.iter().collect(),
-        _ => return None,
+        _ => return Unpacked::Unknown,
     };
     let mut named = false;
     for el in &elements {
@@ -109,15 +124,29 @@ fn literal_list(e: &Expression) -> Option<Result<usize, ()>> {
             ArrayElement::KeyValue(kv) => {
                 named |= matches!(kv.key, Expression::Literal(Literal::String(_)));
             }
-            _ => return None,
+            _ => return Unpacked::Unknown,
         }
     }
-    Some(if named { Err(()) } else { Ok(elements.len()) })
+    if named {
+        Unpacked::Named
+    } else {
+        Unpacked::List(elements.len())
+    }
+}
+
+/// The calls FunctionCallParametersCheck checks.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum CallKind {
+    Function,
+    Method,
+    StaticMethod,
+    New,
+    Attribute,
 }
 
 /// The messages of one call kind: `subject` is e.g. `Function foo`, `Method Foo::bar()`, `Class Foo constructor`.
 pub struct Call<'s> {
-    pub kind: &'static str,
+    pub kind: CallKind,
     pub subject: &'s str,
     /// `Result of function foo (void) is used.`; `None` for `new`.
     pub void_message: Option<String>,
@@ -127,12 +156,16 @@ pub struct Call<'s> {
 pub fn check(
     c: &mut Checker,
     acceptor: &Acceptor,
-    counts: (usize, bool, bool),
+    counts: Counts,
     at: impl HasSpan + Copy,
     call: Call,
     first_level: bool,
 ) {
-    let (n, named, unpack) = counts;
+    let Counts {
+        positional: n,
+        named,
+        unpack,
+    } = counts;
     if !named {
         let min = acceptor.min();
         let max = (!acceptor.variadic).then_some(acceptor.optional.len());
@@ -164,8 +197,8 @@ pub fn check(
         && acceptor.void
     {
         let identifier = match call.kind {
-            "function" => "function.void",
-            "method" => "method.void",
+            CallKind::Function => "function.void",
+            CallKind::Method => "method.void",
             _ => "staticMethod.void",
         };
         c.report(at, identifier, void, None);

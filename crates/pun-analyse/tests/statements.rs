@@ -64,6 +64,14 @@ fn php_8_5() {
     check("phpstan");
 }
 
+/// Built-in functions, classes and methods new in PHP 8.5 exist only from `phpVersion: 80500` (expected: the
+/// PHPStan phar run outside any Composer project, so no polyfill declares them).
+#[test]
+fn builtins_follow_php_version() {
+    check_in("builtins", "phpstan");
+    check_in("builtins", "phpstan-php84");
+}
+
 /// The casts and the backtick are allowed before PHP 8.5, the (unset) cast before 8.0.
 #[test]
 fn php_7_4() {

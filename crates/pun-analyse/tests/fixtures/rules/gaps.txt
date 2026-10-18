@@ -20,7 +20,6 @@ Properties/PropertyInClassRuleTest::testPhp84FinalPropertyHooks
 Methods/CallMethodsRuleTest::testClosureBind
 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 Methods/CallMethodsRuleTest::testBug3534
-Methods/CallMethodsRuleTest::testBug5460
 Methods/CallMethodsRuleTest::testRequireExtends
 Methods/CallMethodsRuleTest::testBug11559c
 Methods/CallMethodsRuleTest::testDynamicCall

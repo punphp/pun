@@ -10,6 +10,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
 use super::Checker;
+use super::reflection::display;
 
 /// The class-like a member is declared in, as its ClassReflection answers (in a trait walked in a class's context,
 /// that class).
@@ -147,7 +148,7 @@ impl<'arena> Checker<'_, 'arena> {
     pub(super) fn decl_of_class(&mut self, class: &str) -> Option<Decl> {
         let meta = self.codebase.get_class_like(class.as_bytes())?;
         Some(Decl {
-            display: Some(String::from_utf8_lossy(meta.original_name.as_bytes()).into_owned()),
+            display: Some(display(meta)),
             kind: meta.kind,
             is_abstract: meta.flags.is_abstract(),
             is_readonly: meta.flags.is_readonly(),
@@ -291,7 +292,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     if let Some(display) = &display
         && private
         && has(m.modifiers.as_slice(), is_abstract)
-        && c.context.is_none()
+        && c.trait_context.is_none()
         && (class_abstract || kind == SymbolKind::Interface)
     {
         c.report_non_ignorable(

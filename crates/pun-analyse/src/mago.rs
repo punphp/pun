@@ -10,10 +10,8 @@ use mago_codex::reference::SymbolReferences;
 use mago_codex::ttype::TType;
 use mago_database::file::{File, FileType};
 use mago_names::ResolvedNames;
-use mago_names::resolver::NameResolver;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 
 use crate::codebase::{self, CouldNotReadFile, read};
@@ -58,8 +56,7 @@ pub fn run_mago(project: &Project, laravel: Option<Laravel>) -> Result<MagoRun, 
             continue;
         };
         let arena = LocalArena::new();
-        let program = parse_file(&arena, &file);
-        let names = NameResolver::new(&arena).resolve(program);
+        let (program, names) = crate::codebase::parse(&arena, &file);
         let analyzer = Analyzer::new(
             &arena,
             &file,
