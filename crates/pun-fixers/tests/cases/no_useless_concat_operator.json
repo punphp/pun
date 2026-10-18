@@ -1,0 +1,25 @@
+[
+    {
+        "fixer": "no_useless_concat_operator",
+        "config": {
+            "juggle_simple_strings": true
+        },
+        "input": "<?php\n$a = \"$b\" . 'c';\n$a = \"$b\" . ' c';\n$a = 'c' . \"$b\";\n",
+        "expected": "<?php\n$a = \"$b\" . 'c';\n$a = \"$b c\";\n$a = 'c' . \"$b\";\n"
+    },
+    {
+        "fixer": "no_useless_concat_operator",
+        "config": {
+            "juggle_simple_strings": 1
+        },
+        "error": "[no_useless_concat_operator] Invalid configuration: The option \"juggle_simple_strings\" with value 1 is expected to be of type \"bool\", but is of type \"int\"."
+    },
+    {
+        "fixer": "no_useless_concat_operator",
+        "config": {
+            "juggle_simple_strings": true
+        },
+        "input": "<?php\n$a = \"$b\" . '$c';\n$a = \"{$b}\" . '\"c';\n",
+        "expected": "<?php\n$a = \"$b\" . '$c';\n$a = \"{$b}\" . '\"c';\n"
+    }
+]

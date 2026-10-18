@@ -1,0 +1,139 @@
+{
+    "fixer": "phpdoc_annotation_without_dot",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAnnotationWithoutDotFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocAnnotationWithoutDotFixerTest.php",
+    "case_count": 14,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAnnotationWithoutDotFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    /**\n     * Summary.\n     *\n     * Description.\n     *\n     * @param string|null $str   some string\n     * @param string $ip         IPv4 is not lowercased\n     * @param string $a          A\n     * @param string $a_string   a string\n     * @param string $ab         ab\n     * @param string $t34        T34\n     * @param string $s          S§\n     * @param string $genrb      Optional. The path to the \"genrb\" executable\n     * @param string $ellipsis1  Ellipsis is this: ...\n     * @param string $ellipsis2  Ellipsis is this: 。。。\n     * @param string $ellipsis3  Ellipsis is this: …\n     * @param bool   $isStr      Is it a string?\n     * @param int    $int        Some single-line description. With many dots.\n     * @param int    $int        Some multiline\n     *                           description. With many dots.\n     *\n     * @return array result array\n     *\n     * @SomeCustomAnnotation This is important sentence that must not be modified.\n     */",
+                        "<?php\n    /**\n     * Summary.\n     *\n     * Description.\n     *\n     * @param string|null $str   Some string.\n     * @param string $ip         IPv4 is not lowercased.\n     * @param string $a          A.\n     * @param string $a_string   A string.\n     * @param string $ab         Ab.\n     * @param string $t34        T34.\n     * @param string $s          S§.\n     * @param string $genrb      Optional. The path to the \"genrb\" executable\n     * @param string $ellipsis1  Ellipsis is this: ...\n     * @param string $ellipsis2  Ellipsis is this: 。。。\n     * @param string $ellipsis3  Ellipsis is this: …\n     * @param bool   $isStr      Is it a string?\n     * @param int    $int        Some single-line description. With many dots.\n     * @param int    $int        Some multiline\n     *                           description. With many dots.\n     *\n     * @return array Result array。\n     *\n     * @SomeCustomAnnotation This is important sentence that must not be modified.\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "__base64": "PD9waHAKICAgIC8qKgogICAgICogQHZhciBzdHJpbmcgdGhpczogriBpcyBhbiBvZGQgY2hhcmFjdGVyCiAgICAgKiBAdmFyIHN0cmluZyBUaGlzOiCuIGlzIGFuIG9kZCBjaGFyYWN0ZXIgMm5kIHRpbWXjgIIKICAgICAqLw=="
+                        },
+                        {
+                            "__base64": "PD9waHAKICAgIC8qKgogICAgICogQHZhciBzdHJpbmcgVGhpczogriBpcyBhbiBvZGQgY2hhcmFjdGVyLgogICAgICogQHZhciBzdHJpbmcgVGhpczogriBpcyBhbiBvZGQgY2hhcmFjdGVyIDJuZCB0aW1l44CCCiAgICAgKi8="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    /**\n     * @deprecated since version 2. Use emergency() which is PSR-3 compatible.\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    /**\n     * @internal This method is public to be usable as callback. It should not\n     *           be used in user code.\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    /**\n     * @deprecated this is\n     *             deprecated\n     */",
+                        "<?php\n    /**\n     * @deprecated This is\n     *             deprecated.\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    /**\n     * @return bool|null returns `true` if the class has a single-column ID\n     *                   and Returns `false` otherwise\n     */",
+                        "<?php\n    /**\n     * @return bool|null Returns `true` if the class has a single-column ID\n     *                   and Returns `false` otherwise.\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    /**\n     * @throws \\Exception having whitespaces after dot, yet I am fixed\n     */",
+                        "<?php\n    /**\n     * @throws \\Exception having whitespaces after dot, yet I am fixed.   \n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    /**\n     * @throws \\Exception having tabs after dot, yet I am fixed\n     */",
+                        "<?php\n    /**\n     * @throws \\Exception having tabs after dot, yet I am fixed.\t\t\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    /**\n     * Dispatches an event to all registered listeners.\n     *\n     * @param string    $eventName The name of the event to dispatch. The name of the event is\n     *                             the name of the method that is invoked on listeners.\n     * @param EventArgs $eventArgs The event arguments to pass to the event handlers/listeners.\n     *                             If not supplied, the single empty EventArgs instance is used.\n     *\n     * @return bool\n     */\n    function dispatchEvent($eventName, EventArgs $eventArgs = null) {}\n\n    /**\n     * Extract the `object_to_populate` field from the context if it exists\n     * and is an instance of the provided $class.\n     *\n     * @param string $class   The class the object should be\n     * @param array  $context The denormalization context\n     * @param string $key     Key in which to look for the object to populate.\n     *                        Keeps backwards compatibility with `AbstractNormalizer`.\n     *\n     * @return null|object an object if things check out, null otherwise\n     */\n    function extractObjectToPopulate($class, array $context, $key = null) {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n    /**\n     * This is a broken phpdoc - missing asterisk\n     * @param string $str As it is broken, let us not apply the rule to description of parameter.\n\n     */\n    function foo($str) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    /**\n     * @return bool|null Returns `true` if the class has a single-column ID.\n                         Returns `false` otherwise.\n                         That was multilined comment. With plenty of sentenced.\n     */\n    function nothingToDo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n/**\n * @param string $bar τάχιστη\n */\nfunction foo ($bar) {}\n",
+                        "<?php\n/**\n * @param string $bar Τάχιστη.\n */\nfunction foo ($bar) {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    /**\n     * @param Url $url URL is not lowercased\n     */",
+                        "<?php\n    /**\n     * @param Url $url URL is not lowercased.\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n    /**\n     * @param Url URL is not lowercased and note that name of param is ommited\n     */",
+                        "<?php\n    /**\n     * @param Url URL is not lowercased and note that name of param is ommited.\n     */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

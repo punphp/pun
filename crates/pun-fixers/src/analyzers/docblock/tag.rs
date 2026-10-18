@@ -31,7 +31,42 @@ impl Tag {
             }
         })
     }
+
+    /// `valid()`: the name is one of `PSR_STANDARD_TAGS`.
+    pub fn valid(&self) -> bool {
+        PSR_STANDARD_TAGS
+            .iter()
+            .any(|t| t.as_bytes() == self.get_name())
+    }
 }
+
+pub const PSR_STANDARD_TAGS: [&str; 25] = [
+    "api",
+    "author",
+    "category",
+    "copyright",
+    "deprecated",
+    "example",
+    "global",
+    "internal",
+    "license",
+    "link",
+    "method",
+    "package",
+    "param",
+    "property",
+    "property-read",
+    "property-write",
+    "return",
+    "see",
+    "since",
+    "subpackage",
+    "throws",
+    "todo",
+    "uses",
+    "var",
+    "version",
+];
 
 /// The first `/@[a-zA-Z0-9_-]+(?=\s|$)/` match for ASCII content: the `+` must stop at its longest run (a shorter one
 /// is followed by another name byte, never `\s`), so the first `@` whose full run ends at whitespace or the end wins.

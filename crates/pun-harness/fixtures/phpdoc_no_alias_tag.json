@@ -1,0 +1,352 @@
+{
+    "fixer": "phpdoc_no_alias_tag",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoAliasTagFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocNoAliasTagFixerTest.php",
+    "case_count": 25,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoAliasTagFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedMessage);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        {
+                            "replacements": {
+                                "1": "abc"
+                            }
+                        },
+                        "#^\\[phpdoc_no_alias_tag\\] Invalid configuration: Tag to replace must be a string\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "replacements": {
+                                "a": null
+                            }
+                        },
+                        "#^\\[phpdoc_no_alias_tag\\] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string\\[\\]\", but one of the elements is of type \"null\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 2,
+                    "args": [
+                        {
+                            "replacements": {
+                                "see": "link*/"
+                            }
+                        },
+                        "#^\\[phpdoc_no_alias_tag\\] Invalid configuration: Tag \"see\" cannot be replaced by invalid tag \"link\\*\\/\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 3,
+                    "args": [
+                        {
+                            "foo": 123
+                        },
+                        "#^\\[phpdoc_no_alias_tag\\] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"replacements\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 4,
+                    "args": [
+                        {
+                            "replacements": {
+                                "link": "see",
+                                "a": "b",
+                                "see": "link"
+                            }
+                        },
+                        "#^\\[phpdoc_no_alias_tag\\] Invalid configuration: Cannot change tag \"link\" to tag \"see\", as the tag \"see\" is configured to be replaced to \"link\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 5,
+                    "args": [
+                        {
+                            "replacements": {
+                                "b": "see",
+                                "see": "link",
+                                "link": "b"
+                            }
+                        },
+                        "#^\\[phpdoc_no_alias_tag\\] Invalid configuration: Cannot change tag \"b\" to tag \"see\", as the tag \"see\" is configured to be replaced to \"link\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 6,
+                    "args": [
+                        {
+                            "replacements": {
+                                "see": "link",
+                                "link": "b"
+                            }
+                        },
+                        "#^\\[phpdoc_no_alias_tag\\] Invalid configuration: Cannot change tag \"see\" to tag \"link\", as the tag \"link\" is configured to be replaced to \"b\"\\.$#"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoAliasTagFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @see  https://github.com/php-fig/fig-standards/blob/master/proposed/phpdoc.md#710-link-deprecated */",
+                        "<?php /** @link  https://github.com/php-fig/fig-standards/blob/master/proposed/phpdoc.md#710-link-deprecated */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @property mixed $bar */",
+                        "<?php /** @property-write mixed $bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @property mixed $bar */",
+                        "<?php /** @property-read mixed $bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @var string Hello! */",
+                        "<?php /** @type string Hello! */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    /**\n     *\n     */",
+                        null,
+                        {
+                            "replacements": {
+                                "property-read": "property",
+                                "property-write": "property"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    /**\n     * @property string $foo\n     */",
+                        "<?php\n    /**\n     * @property-read string $foo\n     */",
+                        {
+                            "replacements": {
+                                "property-read": "property",
+                                "property-write": "property"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /** @property mixed $bar */",
+                        "<?php /** @property-write mixed $bar */",
+                        {
+                            "replacements": {
+                                "property-read": "property",
+                                "property-write": "property"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    /**\n     *\n     */",
+                        null,
+                        {
+                            "replacements": {
+                                "type": "var"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    /**\n     * @var string Hello!\n     */",
+                        "<?php\n    /**\n     * @type string Hello!\n     */",
+                        {
+                            "replacements": {
+                                "type": "var"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php /** @var string Hello! */",
+                        "<?php /** @type string Hello! */",
+                        {
+                            "replacements": {
+                                "type": "var"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    /**\n     * Initializes this class with the given options.\n     *\n     * @param array $options {\n     *     @var bool   $required Whether this element is required\n     *     @var string $label    The display name for this element\n     * }\n     */",
+                        "<?php\n    /**\n     * Initializes this class with the given options.\n     *\n     * @param array $options {\n     *     @type bool   $required Whether this element is required\n     *     @type string $label    The display name for this element\n     * }\n     */",
+                        {
+                            "replacements": {
+                                "type": "var"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    /**\n     *\n     */",
+                        null,
+                        {
+                            "replacements": {
+                                "var": "type"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    /**\n     * @type string Hello!\n     */",
+                        "<?php\n    /**\n     * @var string Hello!\n     */",
+                        {
+                            "replacements": {
+                                "var": "type"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php /** @type string Hello! */",
+                        "<?php /** @var string Hello! */",
+                        {
+                            "replacements": {
+                                "var": "type"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n    /**\n     * Initializes this class with the given options.\n     *\n     * @param array $options {\n     *     @type bool   $required Whether this element is required\n     *     @type string $label    The display name for this element\n     * }\n     */",
+                        "<?php\n    /**\n     * Initializes this class with the given options.\n     *\n     * @param array $options {\n     *     @var bool   $required Whether this element is required\n     *     @var string $label    The display name for this element\n     * }\n     */",
+                        {
+                            "replacements": {
+                                "var": "type"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php /** @see  https://github.com/php-fig/fig-standards/blob/master/proposed/phpdoc.md#710-link-deprecated */",
+                        "<?php /** @link  https://github.com/php-fig/fig-standards/blob/master/proposed/phpdoc.md#710-link-deprecated */",
+                        {
+                            "replacements": {
+                                "link": "see"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n/**\n * @see example.com\n * @var foo\n *\n * @phpstan-type MyArray array{\n *  '@link': ?string,\n *  \"@type\": string,\n * }\n */\nclass Foo {}",
+                        "<?php\n/**\n * @link example.com\n * @type foo\n *\n * @phpstan-type MyArray array{\n *  '@link': ?string,\n *  \"@type\": string,\n * }\n */\nclass Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    /**\n     * @var int\n     */\n    const BAR = 1;\n\n    /** @var int */\n    const BAZ = 2;\n}",
+                        "<?php\nclass Foo\n{\n    /**\n     * @const int\n     */\n    const BAR = 1;\n\n    /** @const int */\n    const BAZ = 2;\n}",
+                        {
+                            "replacements": {
+                                "const": "var"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,180 @@
+{
+    "fixer": "phpdoc_var_annotation_correct_order",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocVarAnnotationCorrectOrderFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocVarAnnotationCorrectOrderFixerTest.php",
+    "case_count": 20,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocVarAnnotationCorrectOrderFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @param $foo Foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @var Foo $foo */ "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @var $foo $bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @var Foo Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /** @var */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** @var $foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /** @var Bar */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n/**\n * @var Foo $foo\n * @var Bar $bar\n */\n",
+                        "<?php\n/**\n * @var $foo Foo\n * @var $bar Bar\n */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n/**\n * @var Foo $foo Some description\n */\n",
+                        "<?php\n/**\n * @var $foo Foo Some description\n */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php /** @var Foo $foo */",
+                        "<?php /** @var $foo Foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php /** @type Foo $foo */",
+                        "<?php /** @type $foo Foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php /** @var Foo $foo*/",
+                        "<?php /** @var $foo Foo*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php /** @var Foo[] $foos */",
+                        "<?php /** @var $foos Foo[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php /** @Var Foo $foo */",
+                        "<?php /** @Var $foo Foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n/** @var Foo|Bar|mixed|int $someWeirdLongNAME__123 */\n",
+                        "<?php\n/** @var $someWeirdLongNAME__123 Foo|Bar|mixed|int */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n/**\n * @var Foo $bar long description\n *               goes here\n */\n",
+                        "<?php\n/**\n * @var $bar Foo long description\n *               goes here\n */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n/** @var array<int, int> $foo */\n",
+                        "<?php\n/** @var $foo array<int, int> */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n/** @var array<int, int> $foo Array of something */\n",
+                        "<?php\n/** @var $foo array<int, int> Array of something */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n/** @var Foo|array<int, int>|null $foo */\n",
+                        "<?php\n/** @var $foo Foo|array<int, int>|null */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    /**\n                     * @var $bar\n                     */\n                    private $bar;\n                }\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

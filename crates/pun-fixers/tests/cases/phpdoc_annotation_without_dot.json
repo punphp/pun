@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "phpdoc_annotation_without_dot",
+        "input": "<?php\n/** Foo. */\nfunction a() {}\n/**\n * @param string $a Foo.\n   foo\n */\nfunction b($a) {}\n",
+        "expected": "<?php\n/** Foo. */\nfunction a() {}\n/**\n * @param string $a Foo.\n   foo\n */\nfunction b($a) {}\n"
+    },
+    {
+        "fixer": "phpdoc_annotation_without_dot",
+        "input": "<?php\n/**\n * @param string $foo õption.\n * @return int Ãbc.\n */\nfunction b($foo) {}\n",
+        "expected": "<?php\n/**\n * @param string $foo õption\n * @return int ãbc\n */\nfunction b($foo) {}\n"
+    },
+    {
+        "fixer": "phpdoc_annotation_without_dot",
+        "input": "<?php\n/**\n * @param string $a Foo.\n   \n */\nfunction b($a) {}\n/**\n * @return string Foo.\n bar\n */\n",
+        "expected": "<?php\n/**\n * @param string $a Foo.\n   \n */\nfunction b($a) {}\n/**\n * @return string Foo.\n bar\n */\n"
+    }
+]

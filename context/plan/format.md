@@ -69,7 +69,7 @@ PHP-CS-Fixer marks some fixers "risky": they can change behaviour (`final_class`
 ## 5. Rules: what exists
 
 208 format rules in total today (every safe PHP-CS-Fixer fixer plus Pint's two); 40 of them move to lint
-(commands.md §4), leaving 168. 151 are ported natively: 132 of the 168 format rules, 36 left.
+(commands.md §4), leaving 168. 158 are ported natively: 139 of the 168 format rules, 29 left.
 
 | Preset | Rules today | After the 40 move | Not ported |
 | --- | ---: | ---: | ---: |
@@ -119,6 +119,16 @@ pint.json, harness and fuzzer. Speed and memory come first (decided). The steps 
    count and ids, as upstream's collection hash), not the code alone, so a collection with cleared tokens no longer
    reuses stale indices; the ReferenceAnalyzer port leaves out the `CT::T_RETURN_REF` check its only caller cannot
    reach; tests/fixtures.rs runs EmptyLoopBodyFixerTest's "default, then configured the other way round" body.
+   Batch 2 done (wf/format-3, 2026-10-18): the Symfony rules `comments/no-empty`, `operators/no-useless-concat`,
+   `phpdoc/annotation-without-dot`, `phpdoc/no-alias-tag`, `phpdoc/var-order`, `statements/semicolon-after-instruction`,
+   `tags/echo-syntax`; a pint.json with `"preset": "symfony"` now names only the format rules `phpdoc_types_order`,
+   `php_unit_fqcn_annotation`, `simple_to_complex_string_variable` and the lint rules `no_null_property_initialization`,
+   `no_useless_nullsafe_operator`, `phpdoc_to_comment` as unsupported. Assistant's calls: `phpdoc/no-alias-tag`'s
+   default `replacements` is PHP-CS-Fixer 3's (no `const => var`; Pint runs without future mode); the
+   GeneralPhpdocTagRenameFixer code moved to analyzers/ so its proxy builds under `PUN_FIXERS_ONLY`; the
+   NoUselessConcatOperatorFixer port leaves out `operandsCanNotBeMerged`'s first check (the first operand is not a
+   `"..."` with variables), which no caller can reach; tests/fixtures.rs gives a case that omits a trailing argument the
+   parameter's default (NoUselessConcatOperatorFixerTest's `$configuration = ['juggle_simple_strings' => true]`).
 
 After 1.0: the native Blade formatter (Blade stays on Node + Prettier until then) and a Pun reprinting preset.
 

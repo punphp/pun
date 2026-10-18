@@ -120,7 +120,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "comments/align-multiline" = { fix = "safe", ported = true, status = "decided", summary = "Each line of multi-line DocComments must have an asterisk [PSR-5] and must be aligned with the first one." }
 "comments/header" = { fix = "safe", ported = false, status = "decided", summary = "Add, replace or remove header comment." }
 "comments/multiline-delimiters" = { fix = "safe", ported = false, status = "decided", summary = "DocBlocks must start with two asterisks, multiline comments must start with a single asterisk, after the opening slash. Both must end with a single asterisk before the closing slash." }
-"comments/no-empty" = { fix = "safe", ported = false, status = "decided", summary = "There should not be any empty comments." }
+"comments/no-empty" = { fix = "safe", ported = true, status = "decided", summary = "There should not be any empty comments." }
 "comments/no-trailing-whitespace" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must be no trailing whitespace at the end of lines in comments and PHPDocs." }
 "comments/single-line-spacing" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Single-line comments must have proper spacing." }
 "comments/single-line-style" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Single-line comments and multi-line comments with only one line of actual content should use the `//` syntax." }
@@ -171,7 +171,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "operators/new-parentheses" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "All instances created with `new` keyword must (not) be followed by parentheses." }
 "operators/no-space-around-arrow" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be space before or after object operators `->` and `?->`." }
 "operators/no-space-around-double-colon" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must be no space around double colons (also called Scope Resolution Operator or Paamayim Nekudotayim)." }
-"operators/no-useless-concat" = { fix = "safe", ported = false, status = "decided", summary = "There should not be useless concat operations." }
+"operators/no-useless-concat" = { fix = "safe", ported = true, status = "decided", summary = "There should not be useless concat operations." }
 "operators/not-with-space" = { fix = "safe", ported = false, status = "decided", summary = "Logical NOT operators (`!`) should have leading and trailing whitespaces." }
 "operators/not-with-successor-space" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Logical NOT operators (`!`) should have one trailing whitespace." }
 "operators/standardize-increment" = { fix = "safe", ported = true, status = "decided", summary = "Increment and decrement operators should be used if possible." }
@@ -179,11 +179,11 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "operators/ternary-spacing" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Standardize spaces around ternary operator." }
 "operators/unary-spacing" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Unary operators should be placed adjacent to their operands." }
 "phpdoc/align" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "All items of the given PHPDoc tags must be either left-aligned or (by default) aligned vertically." }
-"phpdoc/annotation-without-dot" = { fix = "safe", ported = false, status = "decided", summary = "PHPDoc annotation descriptions should not be a sentence." }
+"phpdoc/annotation-without-dot" = { fix = "safe", ported = true, status = "decided", summary = "PHPDoc annotation descriptions should not be a sentence." }
 "phpdoc/indent" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Docblocks should have the same indentation as the documented subject." }
 "phpdoc/inline-tag" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Fixes PHPDoc inline tags." }
 "phpdoc/line-span" = { fix = "safe", ported = false, status = "decided", summary = "Changes doc blocks from single to multi line, or reversed." }
-"phpdoc/no-alias-tag" = { fix = "safe", ported = false, status = "decided", summary = "No alias PHPDoc tags should be used." }
+"phpdoc/no-alias-tag" = { fix = "safe", ported = true, status = "decided", summary = "No alias PHPDoc tags should be used." }
 "phpdoc/no-blank-line-after" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be blank lines between docblock and the documented element." }
 "phpdoc/no-duplicate-types" = { fix = "safe", ported = false, status = "decided", summary = "Removes duplicate PHPDoc types." }
 "phpdoc/no-empty" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be empty PHPDoc blocks." }
@@ -201,7 +201,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/trim-blank-lines" = { fix = "safe", ported = true, status = "decided", summary = "Removes extra blank lines after summary and after description in PHPDoc." }
 "phpdoc/types" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "The correct case must be used for standard PHP types in PHPDoc." }
 "phpdoc/types-order" = { fix = "safe", ported = false, status = "decided", summary = "Sorts PHPDoc types." }
-"phpdoc/var-order" = { fix = "safe", ported = false, status = "decided", summary = "`@var` and `@type` annotations must have type and name in the correct order." }
+"phpdoc/var-order" = { fix = "safe", ported = true, status = "decided", summary = "`@var` and `@type` annotations must have type and name in the correct order." }
 "phpdoc/var-without-name" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "`@var` and `@type` annotations of classy properties should not contain the name." }
 "phpunit/fqcn-annotation" = { fix = "safe", ported = false, status = "decided", summary = "PHPUnit annotations should be a FQCNs including a root namespace." }
 "statements/blank-line-before" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "An empty line feed must precede any configured statement." }
@@ -215,7 +215,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/numeric-literal-separator" = { fix = "safe", ported = false, status = "decided", summary = "Adds separators to numeric literals of any kind." }
 "statements/octal-notation" = { fix = "safe", ported = false, status = "decided", summary = "Literal octal must be in `0o` notation." }
 "statements/one-per-line" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "There must not be more than one statement per line." }
-"statements/semicolon-after-instruction" = { fix = "safe", ported = false, status = "decided", summary = "Instructions must be terminated with a semicolon." }
+"statements/semicolon-after-instruction" = { fix = "safe", ported = true, status = "decided", summary = "Instructions must be terminated with a semicolon." }
 "statements/single-line-empty-body" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Empty body of class, interface, trait, enum or function must be abbreviated as `{}` and placed on the same line as the previous symbol, separated by a single space." }
 "statements/space-after-semicolon" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Fix whitespace after a semicolon." }
 "statements/space-around-construct" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Ensures a single space after language constructs." }
@@ -229,7 +229,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "strings/no-binary" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "There should not be a binary flag before strings." }
 "strings/single-quote" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Convert double quotes to single quotes for simple strings." }
 "tags/blank-line-after-opening" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Ensure there is no code on the same line as the PHP open tag and it is followed by a blank line." }
-"tags/echo-syntax" = { fix = "safe", ported = false, status = "decided", summary = "Replaces short-echo `<?=` with long format `<?php echo`/`<?php print` syntax, or vice-versa." }
+"tags/echo-syntax" = { fix = "safe", ported = true, status = "decided", summary = "Replaces short-echo `<?=` with long format `<?php echo`/`<?php print` syntax, or vice-versa." }
 "tags/full-opening" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "PHP code must use the long `<?php` tags or short-echo `<?=` tags and not other tag variations." }
 "tags/linebreak-after-opening" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Ensure there is no code on the same line as the PHP open tag." }
 "tags/no-closing" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "The closing `?>` tag MUST be omitted from files containing only PHP." }

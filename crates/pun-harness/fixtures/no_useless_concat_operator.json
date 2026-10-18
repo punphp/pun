@@ -1,0 +1,314 @@
+{
+    "fixer": "no_useless_concat_operator",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NoUselessConcatOperatorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/NoUselessConcatOperatorFixerTest.php",
+    "case_count": 35,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": {
+                        "juggle_simple_strings": true
+                    }
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NoUselessConcatOperatorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = ['juggle_simple_strings' => true]): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "single . single",
+                    "args": [
+                        "<?php $b = 'ab';",
+                        "<?php $b = 'a'.'b';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single . double",
+                    "args": [
+                        "<?php $b = \"ab\";",
+                        "<?php $b = 'a'.\"b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double . single",
+                    "args": [
+                        "<?php $b = \"b\\na\";",
+                        "<?php $b = \"b\\n\".'a';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double . double",
+                    "args": [
+                        "<?php $b = \"bb\";",
+                        "<?php $b = \"b\".\"b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed . encapsed",
+                    "args": [
+                        "<?php $b = \"{$a}{$b}\";",
+                        "<?php $b = \"{$a}\".\"{$b}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed space. encapsed",
+                    "args": [
+                        "<?php $b = \"{$a1} {$b2}\";",
+                        "<?php $b = \"{$a1} \".\"{$b2}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed . space encapsed",
+                    "args": [
+                        "<?php $b = \"{$a} {$b}\";",
+                        "<?php $b = \"{$a}\".\" {$b}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed space. space encapsed",
+                    "args": [
+                        "<?php $b = \"{$a}  {$b}\";",
+                        "<?php $b = \"{$a} \".\" {$b}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed . single",
+                    "args": [
+                        "<?php $b = \"{$a}Z\";",
+                        "<?php $b = \"{$a}\".'Z';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single . encapsed",
+                    "args": [
+                        "<?php $b = \"Y{$a}\";",
+                        "<?php $b = 'Y'.\"{$a}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed spaced. single",
+                    "args": [
+                        "<?php $b = \"{$a}   G\";",
+                        "<?php $b = \"{$a}   \".'G';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single . space encapsed",
+                    "args": [
+                        "<?php $b = \"V {$a}\";",
+                        "<?php $b = 'V'.\" {$a}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed . double",
+                    "args": [
+                        "<?php $b = \"{$a} XX\";",
+                        "<?php $b = \"{$a} \".\"XX\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double . encapsed",
+                    "args": [
+                        "<?php $b = \"XCV{$a}\";",
+                        "<?php $b = \"XCV\".\"{$a}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed spaced . double",
+                    "args": [
+                        "<?php $b = \"{$a} V PO\";",
+                        "<?php $b = \"{$a} V \".\"PO\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double . space encapsed",
+                    "args": [
+                        "<?php $b = \"DSA   XX {$a}\";",
+                        "<?php $b = \"DSA\".\"   XX {$a}\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed followed by simple double quoted 1",
+                    "args": [
+                        "<?php echo \"Hello, {$fruit}s.\";",
+                        "<?php echo 'Hello,'  .  \" {$fruit}s.\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsed followed by simple double quoted 2",
+                    "args": [
+                        "<?php echo \"Hello.He drank some juice made of {$fruit}s.Bye $user!\" /*1*//*2*/ /*3*//*4*/;",
+                        "<?php echo 'Hello.' /*1*/ . /*2*/ \"He drank some juice made of {$fruit}s.\"/*3*/./*4*/\"Bye $user!\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$string = \"foobar\";\necho \"char @ -4 \\\"[$string[-2]]\\\"!\";\n",
+                        "<?php\n$string = \"foobar\";\necho \"char @ -4 \\\"[$string[-2]\".\"]\\\"!\";\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double quote concat double quote + comment",
+                    "args": [
+                        "<?php $fi = \"lk\" /* 1 *//* 2 */ ;",
+                        "<?php $fi = \"l\" /* 1 */ . /* 2 */ \"k\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty concat empty",
+                    "args": [
+                        "<?php $aT = \"\";",
+                        "<?php $aT = \"\".\"\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple fixes",
+                    "args": [
+                        "<?php $f0 = \"abc | defg\";",
+                        "<?php $f0 = \"a\".\"b\".\"c | \".\"d\".\"e\".\"f\".\"g\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "linebreak with indent inside",
+                    "args": [
+                        "<?php\n$text1 = \"intro:   |   |\".\"\n               line 2 indent\";",
+                        "<?php\n$text1 = \"intro:   |\".\"   |\".\"\n               line 2 indent\".\"\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "linebreak with indent inside + comment",
+                    "args": [
+                        "<?php\n$text2 = \"intro:      \".\" #a\n               line 2 indent\";",
+                        "<?php\n$text2 = \"intro:   \".\"   \".\" #a\n               line 2 indent\".\"\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix",
+                    "args": [
+                        "<?php\n                $a0x = $b . \"c\";\n                $a1x = \"c\" . $b;\n                $b2x = foo() . \"X\";\n                $b3x = foo() . 'Y';\n                $b4x = \"Z\" . foo();\n                $b5x = 'b' . foo();\n                $b6x = 'X  \\n ' . \"\\n\\t\";\n                $b7x = \"\\n\\t\" . 'X $a';\n                $b7x = \"abc\". 1;\n                $b7x = \"def\". 1.2;\n                // bin string\n                $f202 = b\"a\".\"b\";\n                $f201 = b\"a\".b\"b\";\n                $f203 = \"a\".B\"b\";\n                echo b\"He drank some juice made of {$fruit}s.\".b\" Sliced the {$fruit}s.\";\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix if the execution result would be different",
+                    "args": [
+                        "<?php\n                echo \"abc $d\" . \"[$e]\";\n                echo \"abc $d\" . \"[3]\";\n                echo \"abc $d\" . '[3]';\n                echo \"abc $d\" . \"->e\";\n                echo \"abc $d\" . '->e';\n                echo \"abc $d\" . \"->$e\";\n                echo \"abc $d\" . \"?->e\";\n                echo \"abc $d\" . \"?->$e\";\n                echo \"abc $d\" . '?->e';\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix if variables would be broken",
+                    "args": [
+                        "<?php\n                echo \"abc $d\" . \"e $f\";\n                echo \"abc $d\" . \"e\";\n                echo \"abc $d\" . \"　e\"; // contains full-width space\n                echo \"abc $d\" . 'e';\n                echo \"abc $d\" . '　e'; // contains full-width space\n                echo \"abc $d\" . \"😃\"; // with emoji\n                echo \"私の名前は$name\" . \"です\"; // multibyte characters (Japanese)\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix if variables would not be broken",
+                    "args": [
+                        "<?php\n                echo \"$a b\";\n                echo \"$a bcde\";\n                echo \"abc ${d}e\";\n                echo \"abc $d-efg\";\n                echo \"$a bcdef\";\n                echo \"abc ${d}ef\";\n                echo \"abc $d-efgh\";\n                echo \"abc $d-$e\";\n            ",
+                        "<?php\n                echo \"$a\" . \" b\";\n                echo \"$a bc\" . \"de\";\n                echo \"abc ${d}\" . \"e\";\n                echo \"abc $d\" . \"-efg\";\n                echo \"$a bc\" . 'def';\n                echo \"abc ${d}\" . 'ef';\n                echo \"abc $d\" . '-efgh';\n                echo \"abc $d\" . \"-$e\";\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single quote concat single quote but with line break after",
+                    "args": [
+                        "<?php $fh = 'x'. // some comment\n'y';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single quote concat single quote but with line break before",
+                    "args": [
+                        "<?php $ff = 'x' // some comment\n.'y';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "linebreak without indent inside",
+                    "args": [
+                        "<?php\n$text3 = \"intro:\".\"\nline 2 indent\" ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "linebreak before concat + comment",
+                    "args": [
+                        "<?php\n$a = 'The first line of some block.'\n.'The second line' // some comment about this line\n.'3rd line'\n;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "concat without linebreak, followed by one with linebreak",
+                    "args": [
+                        "<?php\n$foo = 'ab'\n    . 'c';",
+                        "<?php\n$foo = 'a' . 'b'\n    . 'c';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = \"xy\";",
+                        "<?php $a = \"x\" . 'y';",
+                        {
+                            "juggle_simple_strings": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = \"x\" . 'y';",
+                        null,
+                        {
+                            "juggle_simple_strings": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

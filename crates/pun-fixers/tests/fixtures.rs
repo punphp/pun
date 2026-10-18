@@ -187,9 +187,14 @@ fn upstream_fixtures() {
             let arg_index = |n: &[&str]| params.iter().position(|p| n.contains(p));
             for case in test["cases"].as_array().into_iter().flatten() {
                 let args = case["args"].as_array().cloned().unwrap_or_default();
+                // A case that omits a trailing argument gets the parameter's default (NoUselessConcatOperatorFixerTest's
+                // `array $configuration = ['juggle_simple_strings' => true]`).
                 let arg = |n: &[&str]| {
                     arg_index(n)
-                        .and_then(|i| args.get(i))
+                        .and_then(|i| {
+                            args.get(i)
+                                .or_else(|| test["params"].get(i).map(|p| &p["default"]))
+                        })
                         .cloned()
                         .unwrap_or(Value::Null)
                 };

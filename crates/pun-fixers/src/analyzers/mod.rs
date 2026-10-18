@@ -19,6 +19,7 @@ pub(crate) mod fixer_configuration_resolver;
 pub(crate) mod fully_qualified_name_analyzer;
 pub(crate) mod functions_analyzer;
 pub(crate) mod general_phpdoc_annotation_remove;
+pub(crate) mod general_phpdoc_tag_rename;
 pub(crate) mod goto_label_analyzer;
 pub(crate) mod helpers;
 pub(crate) mod import_processor;

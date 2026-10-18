@@ -1,0 +1,24 @@
+[
+    {
+        "fixer": "echo_tag_syntax",
+        "config": {
+            "format": "short"
+        },
+        "input": "<?php echo 1; ?>\nx\n<?php ",
+        "expected": "<?= 1; ?>\nx\n<?php "
+    },
+    {
+        "fixer": "echo_tag_syntax",
+        "config": {
+            "foo": true
+        },
+        "error": "[echo_tag_syntax] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"format\", \"long_function\", \"shorten_simple_statements_only\"."
+    },
+    {
+        "fixer": "echo_tag_syntax",
+        "config": {
+            "format": "x"
+        },
+        "error": "[echo_tag_syntax] Invalid configuration: The option \"format\" with value \"x\" is invalid. Accepted values are: \"long\", \"short\"."
+    }
+]

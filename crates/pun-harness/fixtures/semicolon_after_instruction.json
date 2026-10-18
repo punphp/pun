@@ -1,0 +1,147 @@
+{
+    "fixer": "semicolon_after_instruction",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\SemicolonAfterInstructionFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Semicolon/SemicolonAfterInstructionFixerTest.php",
+    "case_count": 13,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\SemicolonAfterInstructionFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment",
+                    "args": [
+                        "<?php $a++;//a ?>",
+                        "<?php $a++//a ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment II",
+                    "args": [
+                        "<?php $b++; /**/ ?>",
+                        "<?php $b++ /**/ ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no space",
+                    "args": [
+                        "<?php $b++;?>",
+                        "<?php $b++?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo 123; ?>",
+                        "<?php echo 123 ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo 123;\n\t?>",
+                        "<?php echo 123\n\t?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php ; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php if($a){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php while($a > $b){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php if ($a == 5): ?>\nA is equal to 5\n<?php endif; ?>\n<?php switch ($foo): ?>\n<?php case 1: ?>\n...\n<?php endswitch; ?>",
+                        "<?php if ($a == 5): ?>\nA is equal to 5\n<?php endif; ?>\n<?php switch ($foo): ?>\n<?php case 1: ?>\n...\n<?php endswitch ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php if ($a == 5) { ?>\nA is equal to 5\n<?php } ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open tag with echo",
+                    "args": [
+                        "<?= '1_'; ?> <?php ?><?= 1; ?>",
+                        "<?= '1_' ?> <?php ?><?= 1; ?>"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\SemicolonAfterInstructionFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = [1,2,3]; echo $a{1}; ?>",
+                        "<?php $a = [1,2,3]; echo $a{1} ?>"
+                    ]
+                }
+            ]
+        }
+    ]
+}
