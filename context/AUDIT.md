@@ -254,7 +254,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   236-243`, `migrate.rs:194-198`, `schema.rs:25-33, 511, 581, 597, 226-233, 256` (`Gates::locked("doctrine")` falls
   through to PHPUnit), and `RuleMeta.fix` compared as `== "safe"` in `pun-cli/src/report.rs:398` although
   `pun_problem::Safety` exists. Replace Type Code with Enum (`FormatPreset`, `AnalysePreset`, `Ecosystem`,
-  `FixSafety`) and build error lists from them. Spans crates.
+  `FixSafety`) and build error lists from them. Spans crates. Partly done in wf/audit-config: `AnalysePreset` and
+  `Ecosystem` (`Gates::locked` now matches all four, `doctrine` has no package). `FormatPreset` (`Config.preset`, read
+  as a string in `pun-cli/src/run.rs` and `main.rs`) and `FixSafety` (`pun-cli/src/report.rs:398`) wait for the
+  platform/format tracks that hold those files.
 - [ ] 52. Unreadable files are treated as missing: `crates/pun-config/src/composer.rs:124-126` skips the PHP 8.4 gate
   on any read error, and `crates/pun-analyse/src/codebase.rs:36` with `rules/mod.rs:204-206` reports nothing for an
   unreadable file. Treat only `ErrorKind::NotFound` as absent and propagate the rest with the path. The

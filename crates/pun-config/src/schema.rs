@@ -21,19 +21,84 @@ pub const LINT_SETS: [&str; 8] = [
     "coding-style",
 ];
 
-/// The analyse presets, each including the ones before it.
-pub const ANALYSE_PRESETS: [&str; 5] = ["basic", "essential", "recommended", "strict", "max"];
+/// The analyse presets, each including the ones before it (their order).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AnalysePreset {
+    Basic,
+    Essential,
+    Recommended,
+    Strict,
+    Max,
+}
+
+impl AnalysePreset {
+    pub const ALL: [Self; 5] = [
+        Self::Basic,
+        Self::Essential,
+        Self::Recommended,
+        Self::Strict,
+        Self::Max,
+    ];
+
+    /// The name pun.toml writes.
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Basic => "basic",
+            Self::Essential => "essential",
+            Self::Recommended => "recommended",
+            Self::Strict => "strict",
+            Self::Max => "max",
+        }
+    }
+
+    fn parse(s: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|p| p.name() == s)
+    }
+
+    /// The preset that holds a PHPStan level (0 to 10).
+    fn of_level(level: usize) -> Self {
+        Self::ALL[[0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4][level]]
+    }
+}
+
+impl std::fmt::Display for AnalysePreset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.name())
+    }
+}
 
 /// The type switches each analyse preset turns on, cumulative (PHPStan levels 7-10; mapping.toml `preset_switches`).
-const SWITCHES: [(&str, &str); 4] = [
-    ("strict", "union-types"),
-    ("strict", "nullables"),
-    ("max", "explicit-mixed"),
-    ("max", "implicit-mixed"),
+const SWITCHES: [(AnalysePreset, &str); 4] = [
+    (AnalysePreset::Strict, "union-types"),
+    (AnalysePreset::Strict, "nullables"),
+    (AnalysePreset::Max, "explicit-mixed"),
+    (AnalysePreset::Max, "implicit-mixed"),
 ];
 
-/// The ecosystem groups composer.lock turns on. `doctrine` is a group too, but nothing detects it.
-const ECOSYSTEMS: [&str; 3] = ["laravel", "pest", "phpunit"];
+/// An ecosystem group: its rules run when composer.lock has the package. Nothing detects `doctrine` yet.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Ecosystem {
+    Laravel,
+    Pest,
+    Phpunit,
+    Doctrine,
+}
+
+impl Ecosystem {
+    const ALL: [Self; 4] = [Self::Laravel, Self::Pest, Self::Phpunit, Self::Doctrine];
+
+    /// The group name.
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Laravel => "laravel",
+            Self::Pest => "pest",
+            Self::Phpunit => "phpunit",
+            Self::Doctrine => "doctrine",
+        }
+    }
+}
 
 /// `[files]`: what every command checks.
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
@@ -129,7 +194,7 @@ pub struct Lint {
     /// `[files] exclude` plus `[lint] exclude`.
     pub exclude: Vec<String>,
     /// The ecosystems the lint rules run for: detected in composer.lock and not switched off.
-    pub ecosystems: Vec<String>,
+    pub ecosystems: Vec<Ecosystem>,
     /// Every enabled rule, by ID.
     pub rules: Vec<LintRule>,
     pub overrides: Vec<Override>,
@@ -147,7 +212,7 @@ pub struct AnalyseRule {
 /// The resolved `[analyse]`.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Analyse {
-    pub preset: String,
+    pub preset: AnalysePreset,
     /// `[analyse] paths`, or `[files] paths` when it has none.
     pub paths: Vec<String>,
     /// `[files] exclude` plus `[analyse] exclude`.
@@ -155,7 +220,7 @@ pub struct Analyse {
     pub baseline: Option<String>,
     /// The type switches the preset turns on.
     pub switches: Vec<&'static str>,
-    pub ecosystems: Vec<String>,
+    pub ecosystems: Vec<Ecosystem>,
     /// Every enabled rule, by ID.
     pub rules: Vec<AnalyseRule>,
 }
@@ -222,39 +287,39 @@ pub(crate) struct Gates<'a> {
 }
 
 impl Gates<'_> {
-    /// The locked version of one of [`ECOSYSTEMS`] composer.lock has, `None` when it has none.
-    fn locked(&self, ecosystem: &str) -> Option<Option<Version>> {
+    /// The locked version of an ecosystem's package composer.lock has, `None` when it has none.
+    fn locked(&self, ecosystem: Ecosystem) -> Option<Option<Version>> {
         let l = match ecosystem {
-            "laravel" => &self.composer.laravel,
-            "pest" => &self.composer.pest,
-            _ => &self.composer.phpunit,
+            Ecosystem::Laravel => &self.composer.laravel,
+            Ecosystem::Pest => &self.composer.pest,
+            Ecosystem::Phpunit => &self.composer.phpunit,
+            Ecosystem::Doctrine => return None,
         };
         l.as_ref().map(|l| l.semver)
     }
 
-    /// The ecosystems composer.lock has, minus those `off` switches off.
-    pub(crate) fn ecosystems(&self, off: impl Fn(&str) -> bool) -> Vec<String> {
-        (ECOSYSTEMS.iter())
-            .filter(|e| self.locked(e).is_some() && !off(e))
-            .map(|e| e.to_string())
+    /// The ecosystems composer.lock has, minus those `off` switches off (by group name).
+    pub(crate) fn ecosystems(&self, off: impl Fn(&str) -> bool) -> Vec<Ecosystem> {
+        (Ecosystem::ALL.into_iter())
+            .filter(|e| self.locked(*e).is_some() && !off(e.name()))
             .collect()
     }
 
     /// Whether a rule of `group` runs when only a set or a preset turns it on: an ecosystem group needs its ecosystem
     /// on, an upgrade group (`php-8.4`, `laravel-11`) needs that PHP version or that locked Laravel version.
-    pub(crate) fn allows(&self, group: &str, on: &[String]) -> bool {
+    pub(crate) fn allows(&self, group: &str, on: &[Ecosystem]) -> bool {
         if let Some(v) = group.strip_prefix("php-") {
             return version(v).is_some_and(|v| self.php >= v);
         }
         if let Some(v) = group.strip_prefix("laravel-") {
-            let locked = self.locked("laravel").flatten();
-            return on.iter().any(|e| e == "laravel")
+            let locked = self.locked(Ecosystem::Laravel).flatten();
+            return on.contains(&Ecosystem::Laravel)
                 && version(v)
                     .zip(locked)
                     .is_some_and(|(v, l)| (l.major, l.minor) >= v);
         }
-        if ECOSYSTEMS.contains(&group) || group == "doctrine" {
-            return on.iter().any(|e| e == group);
+        if let Some(e) = Ecosystem::ALL.into_iter().find(|e| e.name() == group) {
+            return on.contains(&e);
         }
         true
     }
@@ -501,29 +566,31 @@ pub(crate) fn analyse(
             .as_integer()
             .and_then(|l| usize::try_from(l).ok())
             .filter(|l| *l <= 10)
-            .map(|l| format!(": level {l} is preset = \"{}\"", preset_of_level(l)))
+            .map(|l| format!(": level {l} is preset = \"{}\"", AnalysePreset::of_level(l)))
             .unwrap_or_default();
+        let presets: Vec<String> = (AnalysePreset::ALL.iter())
+            .map(|p| format!("\"{p}\""))
+            .collect();
         bail!(
-            "{}: [analyse] level: PHPStan's levels are presets in Pun; use preset = \"basic\" | \"essential\" | \"recommended\" | \"strict\" | \"max\"{hint}",
-            path.display()
+            "{}: [analyse] level: PHPStan's levels are presets in Pun; use preset = {}{hint}",
+            path.display(),
+            presets.join(" | ")
         );
     }
     let preset = match t.preset {
-        None => "recommended".to_string(),
-        Some(toml::Value::String(s)) if ANALYSE_PRESETS.contains(&s.as_str()) => s,
+        None => AnalysePreset::Recommended,
+        Some(v) if let Some(p) = v.as_str().and_then(AnalysePreset::parse) => p,
         Some(toml::Value::Integer(l)) if (0..=10).contains(&l) => bail!(
             "{}: [analyse] preset = {l}: PHPStan level {l} is preset = \"{}\"",
             path.display(),
-            preset_of_level(l as usize)
+            AnalysePreset::of_level(l as usize)
         ),
         Some(v) => bail!(
             "{}: [analyse] preset = {v}: expected {}",
             path.display(),
-            list(&ANALYSE_PRESETS)
+            list(&AnalysePreset::ALL.map(AnalysePreset::name))
         ),
     };
-    let rank = |p: &str| ANALYSE_PRESETS.iter().position(|x| *x == p);
-    let max = rank(&preset).unwrap();
 
     let mut groups = BTreeMap::new();
     let mut named = vec![];
@@ -557,8 +624,8 @@ pub(crate) fn analyse(
             Some(g) => *g,
             None => {
                 (e.get("preset").and_then(toml::Value::as_str))
-                    .and_then(rank)
-                    .is_some_and(|r| r <= max)
+                    .and_then(AnalysePreset::parse)
+                    .is_some_and(|p| p <= preset)
                     && gates.allows(group, &ecosystems)
             }
         };
@@ -574,7 +641,7 @@ pub(crate) fn analyse(
     }
     Ok(Analyse {
         switches: (SWITCHES.iter())
-            .filter(|(p, _)| rank(p).unwrap() <= max)
+            .filter(|(p, _)| *p <= preset)
             .map(|(_, s)| *s)
             .collect(),
         preset,
@@ -586,9 +653,4 @@ pub(crate) fn analyse(
             .map(|(id, options)| AnalyseRule { id, options })
             .collect(),
     })
-}
-
-/// The analyse preset that holds a PHPStan level.
-fn preset_of_level(level: usize) -> &'static str {
-    ANALYSE_PRESETS[[0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4][level]]
 }

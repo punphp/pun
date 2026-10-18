@@ -13,8 +13,8 @@ mod schema;
 
 pub use explain::{MAPPING_URL, explain};
 pub use schema::{
-    ANALYSE_PRESETS, Analyse, AnalyseRule, Files, LINT_SETS, Level, Lint, LintRule, LintSetting,
-    Override,
+    Analyse, AnalysePreset, AnalyseRule, Ecosystem, Files, LINT_SETS, Level, Lint, LintRule,
+    LintSetting, Override,
 };
 
 use anyhow::{Context, Result, bail};

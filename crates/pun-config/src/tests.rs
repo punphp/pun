@@ -306,7 +306,7 @@ fn lint_sets() {
     let l = lint(&[("pun.toml", types), ("composer.lock", LARAVEL_LOCK)]);
     assert_eq!(
         (l.rules.len(), l.ecosystems),
-        (79, vec!["laravel".to_string()])
+        (79, vec![crate::Ecosystem::Laravel])
     );
     assert!(ids(&l.rules).contains(&"lint/laravel/add-relation-generics"));
     // The laravel group switched off.
@@ -476,7 +476,7 @@ fn analyse() {
     assert_eq!(
         a,
         Analyse {
-            preset: "recommended".into(),
+            preset: crate::AnalysePreset::Recommended,
             paths: vec!["app".into()],
             exclude: vec!["storage".into()],
             baseline: None,
