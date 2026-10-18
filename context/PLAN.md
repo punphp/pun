@@ -238,8 +238,8 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
 | lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | todo |
-| lint 7: the 428 lint rules for 1.0 native, in usage order (`later = true` rules wait) | todo; 88 of 428 native (batch 1: 13 syntax-only dead-code rules done; batch 2: 14 syntax-only code-quality rules done; batch 3: 11 syntax-only dead-code, early-return and code-quality statement rules done) |
-| lint 7 follow-up (from batch 2): optional code-quality rules TernaryImplodeToImplode, SingularSwitchToIf, TernaryConditionVariableAssignment, SimplifyIfNotNullReturn, ConsecutiveNullCompareReturnsToNullCoalesceQueue | todo |
+| lint 7: the 428 lint rules for 1.0 native, in usage order (`later = true` rules wait) | todo; 98 of 428 native (batch 1: 13 syntax-only dead-code rules done; batch 2: 14 syntax-only code-quality rules done; batch 3: 11 syntax-only dead-code, early-return and code-quality statement rules done; batch 4: 10 code-quality rules done) |
+| lint 7 follow-up (from batch 2): optional code-quality rule ConsecutiveNullCompareReturnsToNullCoalesceQueueRector (`lint/complexity/prefer-coalesce-chain`) | todo |
 | lint 7 follow-up (from batch 2): move crates/pun-lint/src/rules/rector_code_quality.rs's shared helpers (precedence table, in_parent, statements_edit, inverse_node/de_morgan, call_to/args/is_constant/equal) into `crate::syntax` for later batches (syntax.rs is owned by lint 1-2) | todo |
 | lint 7 follow-up (from batch 2): `lint/complexity/prefer-null-coalesce`'s mapping summary describes more than ArrayKeyExistsTernaryThenValueToCoalescing (isset ternaries, if/return chains, foreach lookups); check whether more upstream rules belong to it | todo |
 | lint 7 follow-up (from batch 2): on a colon-body `if (...): ... endif;` Rector reprints the `if` with braces when one statement becomes two, Pun keeps the colon syntax | todo |
@@ -253,6 +253,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 7 follow-up (from batch 3): port `lint/complexity/prefer-inline-array-return` (InlineArrayReturnAssignRector) once class-constant and magic-constant values resolve (ValueResolver) | todo |
 | lint 7 follow-up (from batch 3): merge rules/rector_stmts.rs (a copy of php_parser.rs's token helpers) with batch 1's rules/php_parser.rs and rules/used_variable.rs | todo |
 | lint 7 follow-up (from batch 3): laravel-framework tests/View/Fixtures/section-exception.php: Rector reprints the whole `<?php ... ?>` file, Pun removes only the unreachable statement and its `?>` (a Pun/ fixture); no-else-after-return and no-identical-branches match Rector only after format on colon `if`s and single-statement bodies | todo |
+| lint 7 follow-up (from batch 4): when a `switch` with only a `default` is a whole function body, or an `if`+`return null` pair is a whole `if`/loop body, php-parser reprints the parent; Pun does so only for no-redundant-null-check's function bodies (context/plan/lint.md §7 batch 4) | todo |
 | lint (from mapping): write summaries in rules/mapping.toml for the 286 lint rules added by the one-to-one mapping (several have none) | todo |
 | lint (from mapping): look at the upstream rector-laravel laravel-120 set's RenameMethod bug, and decide whether the livewire-40 set belongs in scope | todo |
 | migrate 4: rector.php | todo |
