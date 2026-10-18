@@ -84,9 +84,21 @@ pub fn snapshot(dir: &Path, skip: impl Fn(&str) -> bool) -> BTreeMap<String, Vec
     out
 }
 
+/// Clears `c`'s environment but for the variables in `keep` and LLVM_PROFILE_FILE (so coverage runs don't drop
+/// .profraw files into the project).
+pub fn clean_env<'c>(c: &'c mut Command, keep: &[&str]) -> &'c mut Command {
+    c.env_clear();
+    for k in keep.iter().chain(&["LLVM_PROFILE_FILE"]) {
+        if let Ok(v) = std::env::var(k) {
+            c.env(k, v);
+        }
+    }
+    c
+}
+
 /// `pun migrate` in `dir`, which must succeed.
 pub fn migrate(dir: &Path) {
-    let out = Command::new(PUN)
+    let out = clean_env(&mut Command::new(PUN), &["PATH", "HOME"])
         .arg("migrate")
         .env("PUN_AGENT", "0")
         .current_dir(dir)

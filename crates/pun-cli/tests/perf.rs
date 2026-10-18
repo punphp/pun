@@ -16,7 +16,7 @@ fn project(name: &str, files: &[(&str, &str)]) -> PathBuf {
 }
 
 fn pun(dir: &Path, env: &[(&str, &str)], args: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_pun"))
+    common::clean_env(&mut Command::new(common::PUN), &["PATH", "HOME"])
         .current_dir(dir)
         .env("PUN_AGENT", "0")
         // The cache under the project, not the user's ~/.cache/pun.

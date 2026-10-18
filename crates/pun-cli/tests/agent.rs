@@ -10,11 +10,9 @@ use std::process::Command;
 
 /// stdout (time normalised) and exit code; only PATH (and coverage's variable) survive from the environment.
 fn run(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, Option<i32>) {
-    let out = Command::new(PUN)
+    let out = common::clean_env(&mut Command::new(PUN), &["PATH"])
         .args(args)
         .current_dir(dir)
-        .env_clear()
-        .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
         .env("COLUMNS", "80")
         .envs(env.iter().copied())
         .output()

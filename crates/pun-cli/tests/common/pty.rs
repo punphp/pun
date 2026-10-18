@@ -15,10 +15,8 @@ pub fn pun_with(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, Str
 
 /// `cmd` in `dir` with only PATH and the coverage profile kept, `PUN_AGENT=0`, and `env`.
 fn run(cmd: &mut Command, dir: &Path, env: &[(&str, &str)]) -> (String, String, Option<i32>) {
-    let out = cmd
+    let out = super::clean_env(cmd, &["PATH"])
         .current_dir(dir)
-        .env_clear()
-        .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
         .env("PUN_AGENT", "0")
         .envs(env.iter().copied())
         .output()

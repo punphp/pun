@@ -64,13 +64,7 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
             c
         }
     };
-    c.current_dir(dir).env_clear();
-    // Keep LLVM_PROFILE_FILE so coverage runs don't drop .profraw files into the project.
-    for k in ["HOME", "LLVM_PROFILE_FILE"] {
-        if let Ok(v) = std::env::var(k) {
-            c.env(k, v);
-        }
-    }
+    common::clean_env(&mut c, &["HOME"]).current_dir(dir);
     c.env("PUN_AGENT", "0").env(
         "PATH",
         o.path

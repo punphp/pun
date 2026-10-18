@@ -106,15 +106,8 @@ fn run(
         );
     }
     let mut c = Command::new(program[0]);
-    c.args(&program[1..])
-        .args(args)
-        .current_dir(dir.join(sub))
-        .env_clear();
-    for k in ["PATH", "LLVM_PROFILE_FILE"] {
-        if let Ok(v) = std::env::var(k) {
-            c.env(k, v);
-        }
-    }
+    c.args(&program[1..]).args(args).current_dir(dir.join(sub));
+    common::clean_env(&mut c, &["PATH"]);
     c.env("HOME", &home)
         .env("PUN_AGENT", "0")
         .env("TMPDIR", &home)

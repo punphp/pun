@@ -64,13 +64,8 @@ fn run(
     stdin: &[u8],
 ) -> (Run, String) {
     let mut c = Command::new(program);
-    c.args(pre).args(args).current_dir(dir).env_clear();
-    // Keep LLVM_PROFILE_FILE so coverage runs don't drop .profraw files into the project.
-    for k in ["PATH", "HOME", "LLVM_PROFILE_FILE"] {
-        if let Ok(v) = std::env::var(k) {
-            c.env(k, v);
-        }
-    }
+    common::clean_env(&mut c, &["PATH", "HOME"]);
+    c.args(pre).args(args).current_dir(dir);
     // Pint names its stdin temp file with uniqid(): concurrent runs sharing /tmp can swap inputs.
     let tmp = dir.with_extension("tmp");
     std::fs::create_dir_all(&tmp).unwrap();
@@ -441,11 +436,9 @@ fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
 }
 
 fn pun_env(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, Option<i32>) {
-    let out = Command::new(env!("CARGO_BIN_EXE_pun"))
+    let out = common::clean_env(&mut Command::new(PUN), &["PATH"])
         .args(args)
         .current_dir(dir)
-        .env_clear()
-        .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
         .env("COLUMNS", "80")
         .env("PUN_AGENT", "0")
         .envs(env.iter().copied())

@@ -32,12 +32,9 @@ fn project(case: &Value, i: usize) -> PathBuf {
 
 /// The binary with the environment Pint ran with when the expectations were recorded (`env -i PATH HOME`).
 fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
-    let out = Command::new(env!("CARGO_BIN_EXE_pun"))
+    let out = common::clean_env(&mut Command::new(common::PUN), &["PATH", "HOME"])
         .args(args)
         .current_dir(dir)
-        .env_clear()
-        .env("PATH", std::env::var("PATH").unwrap_or_default())
-        .env("HOME", std::env::var("HOME").unwrap_or_default())
         // The cache under the run's own directory, not the user's ~/.cache/pun (one file per case otherwise).
         .env("XDG_CACHE_HOME", dir.join(".cache"))
         .env("PUN_AGENT", "0")
