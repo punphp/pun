@@ -180,3 +180,88 @@ fn ignore_comments_drop_errors() {
     );
     assert_eq!(code, Some(1));
 }
+
+/// (stdout, stderr, exit code) of `pun analyse args` in `dir` with `env` on top of [`run`]'s environment.
+fn pun(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, Option<i32>) {
+    let out = clean_env(&mut Command::new(PUN), &["PATH", "HOME"])
+        .current_dir(dir)
+        .env("COLUMNS", "80")
+        .env("PUN_AGENT", "0")
+        .envs(env.iter().copied())
+        .arg("analyse")
+        .args(args)
+        .output()
+        .unwrap();
+    let s = |b: Vec<u8>| String::from_utf8(b).unwrap();
+    (s(out.stdout), s(out.stderr), out.status.code())
+}
+
+/// One analyse error and a malformed `@pun-ignore` on line 8.
+const MALFORMED: &str = "<?php\n\nnamespace App;\n\nfunction f(): void\n{\n    undefined_fn();\n    new Missing(); // @pun-ignore\n}\n";
+
+#[test]
+fn malformed_ignores_show_in_every_output() {
+    let d = sample("malformed", MALFORMED);
+    // Human: the malformed comment is a problem of its own, at the comment (context/plan/output.md §1); no UTF-8
+    // locale here, so ASCII glyphs.
+    let (out, _, code) = pun(&d, &["--color=never"], &[]);
+    assert!(
+        out.contains(" x invalid-ignore-comment  `@pun-ignore` needs one or more rule IDs\n  ,- src/a.php:8:23\n"),
+        "{out}"
+    );
+    assert_eq!(code, Some(1));
+    // GITHUB_ACTIONS: one `::error` workflow command per problem after the human output, at its line and column.
+    let (out, _, _) = pun(&d, &["--color=never"], &[("GITHUB_ACTIONS", "true")]);
+    let annotations: Vec<&str> = out.lines().filter(|l| l.starts_with("::")).collect();
+    assert_eq!(
+        annotations,
+        [
+            "::error file=src/a.php,line=7,col=5,title=analyse/undefined/function::Function undefined_fn not found.",
+            "::error file=src/a.php,line=8,col=5,title=analyse/classes/invalid-new::Instantiated class App\\Missing not found.",
+            "::error file=src/a.php,line=8,col=23,title=invalid-ignore-comment::`@pun-ignore` needs one or more rule IDs",
+        ]
+    );
+    // -q: nothing printed, the exit code still says there are errors.
+    assert_eq!(
+        pun(&d, &["-q"], &[]),
+        (String::new(), String::new(), Some(1))
+    );
+}
+
+#[test]
+fn generate_baseline_to_a_named_file() {
+    let d = sample("baseline-path", ERRORS);
+    let (out, _, code) = pun(&d, &["--generate-baseline", "b.toml", "--color=never"], &[]);
+    assert!(
+        out.contains("Baseline generated with 3 errors in b.toml"),
+        "{out}"
+    );
+    assert_eq!(code, Some(0));
+    assert!(d.join("b.toml").exists());
+    assert!(!d.join("pun-baseline.toml").exists());
+    // -q writes it without a word.
+    assert_eq!(
+        pun(&d, &["--generate-baseline", "-q"], &[]),
+        (String::new(), String::new(), Some(0))
+    );
+    assert!(d.join("pun-baseline.toml").exists());
+}
+
+#[test]
+fn run_errors_exit_2() {
+    // An invalid pun.toml.
+    let d = sample("bad-config", CLEAN);
+    std::fs::write(d.join("pun.toml"), "[analyse]\nnope = 1\n").unwrap();
+    let (out, err, code) = pun(&d, &[], &[]);
+    assert_eq!((out.as_str(), code), ("", Some(2)));
+    assert!(err.contains("unknown field `nope`"), "{err}");
+    // A file that exists but can't be read stops the run, as it stops PHPStan's (CouldNotReadFileException).
+    use std::os::unix::fs::PermissionsExt;
+    let d = sample("unreadable", CLEAN);
+    let file = d.join("src/a.php");
+    std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o000)).unwrap();
+    if std::fs::read(&file).is_err() {
+        let (out, _, code) = pun(&d, &[], &[]);
+        assert_eq!((out.as_str(), code), ("", Some(2)));
+    }
+}

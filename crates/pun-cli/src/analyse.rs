@@ -475,7 +475,7 @@ fn agent_report(analysed: &Analysed) -> String {
                 .replace("entrys", "entries")
         ));
     }
-    let checked = format!("{} files checked", analysed.files);
+    let checked = format!("{} checked", analysed.files);
     agent::render(result, &detail, &checked, &items, false)
 }
 

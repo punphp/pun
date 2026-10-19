@@ -598,3 +598,44 @@ fn prettier_preflight() {
         )
     );
 }
+
+#[test]
+fn analyse_lines() {
+    let toml = "[analyse]\npaths = [\"src\"]\n";
+    let errors =
+        "<?php\n\nfunction f(): void\n{\n    undefined_fn();\n    nope(); // @pun-ignore\n}\n";
+    let d = common::project(
+        "agent",
+        "analyse",
+        &[("pun.toml", toml), ("src/a.php", errors)],
+    );
+    // `path:line rule message` per error; a malformed comment (counted as an error) has no line of its own.
+    assert_eq!(
+        agent(&d, &["analyse"]),
+        (
+            "pun analyse: fail, 3 errors in 1 file (1 checked, Ts)\nsrc/a.php:5 analyse/undefined/function Function undefined_fn not found.\nsrc/a.php:6 analyse/undefined/function Function nope not found.\nsrc/a.php invalid-ignore-comment `@pun-ignore` needs one or more rule IDs\n".into(),
+            Some(1)
+        )
+    );
+    assert_eq!(
+        agent(&d, &["analyse", "--generate-baseline"]),
+        (
+            "pun analyse: ok, baseline pun-baseline.toml written with 2 errors (Ts)\n".into(),
+            Some(0)
+        )
+    );
+    // With the baseline and the errors fixed: a pass that names the stale entries.
+    std::fs::write(
+        d.join("pun.toml"),
+        format!("{toml}baseline = \"pun-baseline.toml\"\n"),
+    )
+    .unwrap();
+    std::fs::write(d.join("src/a.php"), "<?php\n\nfunction f(): void\n{\n}\n").unwrap();
+    assert_eq!(
+        agent(&d, &["analyse"]),
+        (
+            "pun analyse: pass, 2 baseline entries no longer matched (1 checked, Ts)\n".into(),
+            Some(0)
+        )
+    );
+}
