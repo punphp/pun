@@ -1118,8 +1118,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/invalid-parameter-name" = { preset = "basic", ported = true, status = "decided" }
 "functions/invalid-pure" = { preset = "essential", status = "decided" }
 "functions/invalid-pure-method" = { preset = "essential", status = "decided" }
-"functions/invalid-vprintf-arguments" = { preset = "basic", status = "decided" }
-"functions/printf-placeholder-count" = { preset = "basic", status = "decided" }
+"functions/invalid-vprintf-arguments" = { preset = "basic", ported = true, status = "decided" }
+"functions/printf-placeholder-count" = { preset = "basic", ported = true, status = "decided" }
 "functions/unanalysed-inner-function" = { preset = "basic", ported = true, status = "decided" }
 "functions/variadic-not-last" = { preset = "basic", ported = true, status = "decided" }
 "imports/name-already-in-use" = { preset = "basic", ported = true, status = "decided" }

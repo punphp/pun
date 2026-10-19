@@ -14,6 +14,7 @@ mod declared;
 mod doc;
 mod driver;
 mod enums;
+mod function_checks;
 mod functions;
 mod hierarchy;
 mod infer;
@@ -23,6 +24,7 @@ mod members;
 mod missing_types;
 mod names;
 mod params;
+mod printf_helper;
 mod properties;
 mod property_access;
 mod reflection;
@@ -66,6 +68,12 @@ pub const IDENTIFIERS: &[&str] = &[
     "typeAlias.unresolvableType",
     "generics.notGeneric",
     "function.notFound",
+    "argument.printf",
+    "argument.sprintf",
+    "argument.sscanf",
+    "argument.fscanf",
+    "argument.vprintf",
+    "argument.vsprintf",
     "class.notFound",
     "new.static",
     "new.trait",
@@ -1315,6 +1323,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         larastan::function_call(self, call);
+        function_checks::function_call(self, call);
         calls::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
@@ -1353,6 +1362,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
         self.piped.insert(p.callable.span());
         calls::pipe(self, p);
+        function_checks::pipe(self, p);
     }
     fn walk_in_function_partial_application(
         &mut self,

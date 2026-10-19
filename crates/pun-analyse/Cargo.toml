@@ -15,6 +15,8 @@ name = "pun_analyse"
 
 [dependencies]
 pun-phpstan.workspace = true
+pun-tokens.workspace = true
+pcre2.workspace = true
 mago-allocator.workspace = true
 mago-analyzer.workspace = true
 mago-codex.workspace = true

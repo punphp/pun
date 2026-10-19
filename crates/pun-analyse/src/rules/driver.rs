@@ -86,26 +86,20 @@ fn checker<'a, 'arena>(
     sources: &'a Sources,
 ) -> Checker<'a, 'arena> {
     let php_version = project.php_version;
+    let mut typed = super::larastan::typed_expressions(project.larastan.as_ref(), names, program);
+    typed.extend(super::internal::typed_expressions(
+        project.internal.as_ref(),
+        program,
+    ));
+    typed.extend(super::function_checks::typed_expressions(
+        names, codebase, program,
+    ));
     Checker {
         anonymous: anonymous::names(file, program, names, &project.relative_path),
         property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
-        types: infer(
-            arena,
-            file,
-            program,
-            names,
-            codebase,
-            php_version,
-            super::larastan::typed_expressions(project.larastan.as_ref(), names, program)
-                .into_iter()
-                .chain(super::internal::typed_expressions(
-                    project.internal.as_ref(),
-                    program,
-                ))
-                .collect(),
-        ),
+        types: infer(arena, file, program, names, codebase, php_version, typed),
         names,
         codebase,
         classes: Vec::new(),

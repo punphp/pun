@@ -1,0 +1,9 @@
+{
+  "80511": [
+    [9, "argument.sprintf", "Call to sprintf contains 1 placeholder, 0 values given.", null],
+    [10, "argument.printf", "Call to printf contains an invalid placeholder.", null],
+    [12, "argument.vsprintf", "Call to vsprintf contains 1 placeholder, 0 values given.", null],
+    [13, "argument.vprintf", "Call to vprintf contains an invalid placeholder.", null],
+    [18, "argument.printf", "Call to printf contains 1 placeholder, 0 values given.", null]
+  ]
+}
