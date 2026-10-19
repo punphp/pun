@@ -287,3 +287,63 @@ fn overrides_set_levels_and_name_only_ported_rules() {
         "{summary}"
     );
 }
+
+/// (stdout, exit code) of `pun lint --no-cache args` in `dir`, outside agent mode, with `env`.
+fn plain(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, Option<i32>) {
+    let out = clean_env(&mut Command::new(PUN), &["PATH", "HOME"])
+        .current_dir(dir)
+        .env("PUN_AGENT", "0")
+        .envs(env.iter().copied())
+        .args(["lint", "--no-cache"])
+        .args(args)
+        .output()
+        .unwrap();
+    (String::from_utf8(out.stdout).unwrap(), out.status.code())
+}
+
+/// Lint problems in every report: the agent line's fix safety, PHP-CS-Fixer's json (each rule once among the
+/// file's fixers), the github format and the annotations after human output (`::error` workflow commands at the
+/// problem's line and column).
+#[test]
+fn problems_in_every_report() {
+    let toml = "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"strings/no-single-argument-sprintf\" = \"error\"\n\"security/no-eval\" = \"error\"\n";
+    let d = project(
+        "lint",
+        "reports",
+        &[
+            ("pun.toml", toml),
+            (
+                "a.php",
+                "<?php\n$n = sprintf('x');\neval('1;');\neval('2;');\n",
+            ),
+        ],
+    );
+    let sprintf = "`sprintf()` with only a format does nothing; use the format itself.";
+    let (lines, _, code) = agent(&d, &["lint"]);
+    assert_eq!(
+        lines,
+        [
+            format!("a.php:2:6 lint/strings/no-single-argument-sprintf [fix:unsafe] {sprintf}"),
+            "a.php:3:1 lint/security/no-eval Unsafe use of `eval` construct.".into(),
+            "a.php:4:1 lint/security/no-eval Unsafe use of `eval` construct.".into(),
+        ]
+    );
+    assert_eq!(code, Some(1));
+    assert_eq!(
+        plain(&d, &["-v", "--format=json"], &[]),
+        (
+            r#"{"about":"PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.","files":[{"name":"a.php","appliedFixers":["lint\/strings\/no-single-argument-sprintf","lint\/security\/no-eval"]}],"time":{"total":0},"memory":0}"#.into(),
+            Some(1)
+        )
+    );
+    let annotations = format!(
+        "::error file=a.php,line=2,col=6,title=lint/strings/no-single-argument-sprintf::{sprintf}\n::error file=a.php,line=3,col=1,title=lint/security/no-eval::Unsafe use of `eval` construct.\n::error file=a.php,line=4,col=1,title=lint/security/no-eval::Unsafe use of `eval` construct.\n"
+    );
+    assert_eq!(
+        plain(&d, &["--format=github"], &[]),
+        (annotations.clone(), Some(1))
+    );
+    let (out, code) = plain(&d, &["--color=never"], &[("GITHUB_ACTIONS", "true")]);
+    assert!(out.ends_with(&annotations), "{out}");
+    assert_eq!(code, Some(1));
+}
