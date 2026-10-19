@@ -427,19 +427,11 @@ fn has_native_method(c: &Checker, k: &ClassLikeMetadata, name: &str) -> bool {
 }
 
 /// A native property of `k` by name (`$` included) as BetterReflection's `hasProperty()` sees it: declared by the
-/// class, its traits or a parent (a parent's private one excluded); `Some(is_static)`.
+/// class, its traits or a parent (Mago leaves a parent's private one out of `declaring_property_ids`); `Some(is_static)`.
 fn native_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> Option<bool> {
-    let declaring = k.declaring_property_ids.get(&word(property))?;
     let p = c
         .codebase
         .get_declaring_property(k.name.as_bytes(), property)?;
-    let own = declaring.as_bytes().eq_ignore_ascii_case(k.name.as_bytes())
-        || c.codebase
-            .get_class_like(declaring.as_bytes())
-            .is_some_and(|d| d.kind == SymbolKind::Trait);
-    if !own && p.read_visibility.is_private() {
-        return None;
-    }
     Some(p.flags.is_static() || is_static_hooked(c, p))
 }
 

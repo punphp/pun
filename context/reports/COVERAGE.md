@@ -4,7 +4,7 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 3551 | 3551 | 100.00% | ok |
-| punphp-analyse | 15335 | 15290 | 99.71% | ok |
+| punphp-analyse | 15323 | 15323 | 100.00% | ok |
 | punphp-config | 609 | 609 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 996 | 996 | 100.00% | ok |
@@ -17,16 +17,6 @@
 
 Uncovered lines:
 
-- `crates/pun-analyse/src/mago.rs` 98.48% (1 lines): 74
-- `crates/pun-analyse/src/project.rs` 98.48% (3 lines): 113, 128, 141
-- `crates/pun-analyse/src/rules/classes.rs` 99.59% (1 lines): 29
-- `crates/pun-analyse/src/rules/declared.rs` 98.00% (18 lines): 189, 302-306, 383, 434, 713, 715, 758, 783, 862, 900, 929-931, 1099
-- `crates/pun-analyse/src/rules/doc.rs` 99.06% (5 lines): 66, 354, 490, 572, 647
-- `crates/pun-analyse/src/rules/generics.rs` 98.89% (11 lines): 128, 171, 174, 292, 482, 793, 802, 811, 1248-1250
-- `crates/pun-analyse/src/rules/infer.rs` 99.31% (1 lines): 134
-- `crates/pun-analyse/src/rules/missing_types.rs` 99.39% (3 lines): 53, 300, 503
-- `crates/pun-analyse/src/rules/property_access.rs` 99.82% (1 lines): 441
-- `crates/pun-analyse/src/rules/reflection.rs` 99.17% (1 lines): 68
 - `crates/pun-lint/src/rules/prefer_property_over_local_getter.rs` 92.08% (8 lines): 47-48, 89, 105, 111, 133, 136, 146
 - `crates/pun-phpstan/src/types.rs` 98.83% (29 lines): 2321, 2927-2929, 2940, 2973-2976, 3023, 3026, 3031, 3097, 3131, 3137, 3277, 3303, 3314, 3333, 3358-3367
 <!-- coverage:end -->
@@ -41,7 +31,8 @@ Uncovered lines:
 - `crates/pun-cli/src/run.rs:248` the `Status::Lint` arm (the fixers produced code that no longer parses, PHP-CS-Fixer's TYPE_LINT): Pun's fixers port the pinned PHP-CS-Fixer's, and no known input makes them emit a parse error (the trailing-comma and first-class-callable cases tried against Pint are guarded upstream). pun-format's own tests reach `after_fix` with a test fixer.
 - `crates/pun-cli/src/migrate.rs:283` the `preset <name>` source of an unsupported rule when there is no pint.json: every rule of the presets `--preset` takes (laravel, psr12, empty) has a native fixer, so `unsupported` is empty there unless a `PUN_FIXERS_ONLY` build left the preset's fixers out.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
-- `crates/pun-analyse/src/mago.rs:74` and `crates/pun-analyse/src/rules/infer.rs:134` the `catch_unwind` fallbacks that skip a file when Mago's analyser panics: tests/fixtures/mago/debug-panic.php (`int&mixed`) was written to trip Mago's debug assertion (`TUnion::from_vec()` with an empty Vec), but the analyser no longer reaches it and no known input panics it now, and the guard stays so a future panic costs one file, not the run.
+- `crates/pun-analyse/src/rules/infer.rs:134` the `catch_unwind` fallback that drops a file's inferred types when Mago's analyser panics: as for mago.rs:74 below.
+- `crates/pun-analyse/src/mago.rs:74` the `catch_unwind` fallback that skips a file when Mago's analyser panics: tests/fixtures/mago/debug-panic.php (`int&mixed`) was written to trip Mago's debug assertion (`TUnion::from_vec()` with an empty Vec), but the analyser no longer reaches it and no known input panics it now, and the guard stays so a future panic costs one file, not the run.
 - `crates/pun-phpstan/src/symbols.rs:111-113` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.

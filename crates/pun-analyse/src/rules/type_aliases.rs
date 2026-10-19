@@ -383,7 +383,10 @@ impl Scope for AliasScope<'_, '_, '_, '_> {
     /// TypeNodeResolver tries the type aliases (`TypeAliasResolver::resolveTypeAlias()`) just before the templates.
     fn template(&self, name: &str) -> Option<Type> {
         let alias = (!self.bypass)
-            .then(|| self.resolver.local(name, &self.doc.alias_class, &self.names))
+            .then(|| {
+                self.resolver
+                    .local(name, &self.doc.alias_class, &self.names)
+            })
             .flatten();
         alias.or_else(|| self.doc.scope.template(name))
     }

@@ -296,7 +296,8 @@ pub fn method(c: &mut Checker, m: &Method) {
         return;
     }
     let (context, display) = c.member_scope();
-    let declaring = declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let declaring =
+        declaring(c, m.span()).expect("a method is declared by its class or a used trait");
     let name = c
         .renamed
         .as_ref()

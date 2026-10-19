@@ -104,7 +104,9 @@ pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
     }
 }
 
-pub(super) fn piped_function<'ast, 'arena>(pipe: &'ast Pipe<'arena>) -> Option<&'ast Identifier<'arena>> {
+pub(super) fn piped_function<'ast, 'arena>(
+    pipe: &'ast Pipe<'arena>,
+) -> Option<&'ast Identifier<'arena>> {
     if let Expression::PartialApplication(PartialApplication::Function(f)) = pipe.callable
         && let Expression::Identifier(id) = f.function
         && f.argument_list.arguments.len() == 1

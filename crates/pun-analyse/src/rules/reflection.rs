@@ -52,21 +52,11 @@ impl Checker<'_, '_> {
         if k.template_types.is_empty() {
             return display;
         }
-        let scope = super::declared::class_scope(self, k.span, k);
-        let args: Option<Vec<Type>> = k
-            .template_types
-            .keys()
-            .map(|n| {
-                scope
-                    .templates
-                    .get(String::from_utf8_lossy(n.as_bytes()).as_ref())
-                    .cloned()
-            })
+        let args = super::declared::class_templates(self, k)
+            .into_iter()
+            .map(|t| Type::Template(Box::new(t)))
             .collect();
-        match args {
-            Some(args) => Type::Object(display, args).describe(Level::TypeOnly),
-            None => display,
-        }
+        Type::Object(display, args).describe(Level::TypeOnly)
     }
 }
 

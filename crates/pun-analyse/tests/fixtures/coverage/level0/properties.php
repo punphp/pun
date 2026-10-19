@@ -35,3 +35,21 @@ class Response extends \HttpResponse
         return \HttpResponse::$cache;
     }
 }
+
+class PrivateParent
+{
+    private int $hidden = 1;
+
+    private static int $staticHidden = 1;
+}
+
+class PrivateChild extends PrivateParent
+{
+    public function read(): void
+    {
+        echo $this->hidden;
+        echo self::$staticHidden;
+        echo self::$hidden;
+        echo $this->staticHidden;
+    }
+}

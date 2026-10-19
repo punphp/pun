@@ -20,14 +20,6 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
         new_static(c, new);
     }
     let args = new.argument_list.as_ref();
-    // `new Foo(...)`: InstantiationCallableRule's business
-    if args.is_some_and(|a| {
-        a.arguments
-            .iter()
-            .any(|x| matches!(x, Argument::Positional(p) if p.ellipsis.is_some() && matches!(p.value, Expression::Error(_))))
-    }) {
-        return;
-    }
     let keyword = |c: &Checker| {
         String::from_utf8_lossy(&c.file.contents[new.class.span().to_range_usize()]).into_owned()
     };

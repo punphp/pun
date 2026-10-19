@@ -44,6 +44,13 @@
    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
   },
   {
+   "file": "calls.php",
+   "line": 72,
+   "identifier": "callable.notSupported",
+   "message": "Cannot create callable from the new operator.",
+   "tip": null
+  },
+  {
    "file": "properties.php",
    "line": 16,
    "identifier": "property.private",
@@ -62,6 +69,34 @@
    "line": 22,
    "identifier": "property.notFound",
    "message": "Access to an undefined property CoverageProperties\\Child::$nested.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "properties.php",
+   "line": 50,
+   "identifier": "property.private",
+   "message": "Access to private property $hidden of parent class CoverageProperties\\PrivateParent.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 51,
+   "identifier": "staticProperty.private",
+   "message": "Access to private static property $staticHidden of parent class CoverageProperties\\PrivateParent.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 52,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property CoverageProperties\\PrivateChild::$hidden.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 53,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property CoverageProperties\\PrivateChild::$staticHidden.",
    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
   },
   {

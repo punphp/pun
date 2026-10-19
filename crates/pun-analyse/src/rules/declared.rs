@@ -130,7 +130,7 @@ fn templates(doc: &Doc, scope: &NameScope, describe: &str) -> Vec<TemplateType> 
 }
 
 /// A class-like's own `@template` types.
-fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<TemplateType> {
+pub(super) fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<TemplateType> {
     let Some((doc, scopes)) = doc_at(c, k.span) else {
         return Vec::new();
     };
@@ -164,8 +164,7 @@ fn trait_templates(
     let contents = file_contents(c, context.span.file_id).unwrap_or_default();
     let scopes = scopes_of(context.span.file_id, &contents);
     let scope = scope_at(c, context.span, Some(context));
-    for (offset, names) in scopes.trait_uses(context.span.start.offset, context.span.end.offset)
-    {
+    for (offset, names) in scopes.trait_uses(context.span.start.offset, context.span.end.offset) {
         let names_here = scopes.at(*offset);
         let uses_it = names.iter().any(|n| {
             let (resolved, _) =
@@ -178,7 +177,7 @@ fn trait_templates(
         else {
             continue;
         };
-        for node in &Doc::parse(&doc).uses {
+        for node in &Doc::parse(doc).uses {
             if let Type::Object(name, found) = resolve_in(node, &scope)
                 && !found.is_empty()
                 && name.eq_ignore_ascii_case(&trait_name)
@@ -730,7 +729,10 @@ pub fn property(
         let doc = Doc::parse(doc);
         // in a trait, its templates as the class's `@use` tag gives them (else their bounds)
         let mut scope = scope_at(c, at, Some(context));
-        if let Some(t) = c.in_trait().and_then(|t| c.codebase.get_class_like(t.as_bytes())) {
+        if let Some(t) = c
+            .in_trait()
+            .and_then(|t| c.codebase.get_class_like(t.as_bytes()))
+        {
             scope.templates.extend(trait_templates(c, t, context));
         }
         doc.var_types(&scope)
@@ -1091,7 +1093,10 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                         .collect()
                 });
             let mapped = p.generics.keys().filter_map(|ancestor| {
-                Some((ancestor, pun_phpstan::types::ancestor_args(&p, ancestor, &args)?))
+                Some((
+                    ancestor,
+                    pun_phpstan::types::ancestor_args(&p, ancestor, &args)?,
+                ))
             });
             for (ancestor, mapped) in mapped {
                 out.entry(ancestor.clone())

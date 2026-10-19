@@ -66,3 +66,8 @@ class Failure extends \Exception
         return new static('failed');
     }
 }
+
+function newCallable(): void
+{
+    $make = new \stdClass(...);
+}
