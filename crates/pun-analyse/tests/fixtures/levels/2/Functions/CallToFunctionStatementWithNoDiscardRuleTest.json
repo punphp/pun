@@ -1,0 +1,127 @@
+{
+    "test": "Functions/CallToFunctionStatementWithNoDiscardRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/function-call-statement-result-discarded.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 11,
+                    "identifier": "function.resultDiscarded",
+                    "message": "Call to function FunctionCallStatementResultDiscarded\\withSideEffects() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 25,
+                    "identifier": "function.resultDiscarded",
+                    "message": "Call to function FunctionCallStatementResultDiscarded\\differentCase() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 28,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'FunctionCallStateme…' invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 30,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'FunctionCallStateme…' invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 30,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable 'FunctionCallStateme…' on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 35,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(int): array on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 40,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(): 1 on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 45,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(): 1 on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 55,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function FunctionCallStatementResultDiscarded\\canDiscard() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 58,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'FunctionCallStateme…' invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 59,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'FunctionCallStateme…' invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 59,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable 'FunctionCallStateme…' in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 61,
+                    "identifier": "function.resultDiscarded",
+                    "message": "Call to function FunctionCallStatementResultDiscarded\\withSideEffects() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 64,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function FunctionCallStatementResultDiscarded\\canDiscard() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 66,
+                    "identifier": "function.resultDiscarded",
+                    "message": "Call to function FunctionCallStatementResultDiscarded\\withSideEffects() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-result-discarded.php",
+                    "line": 69,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function FunctionCallStatementResultDiscarded\\canDiscard() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

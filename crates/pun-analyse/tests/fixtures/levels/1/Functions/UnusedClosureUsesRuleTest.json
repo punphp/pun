@@ -1,0 +1,85 @@
+{
+    "test": "Functions/UnusedClosureUsesRuleTest",
+    "cases": [
+        {
+            "method": "testUnusedClosureUses",
+            "files": [
+                "Functions/data/unused-closure-uses.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 3,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $anotherUnused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 3,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 4,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $used might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 5,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $usedInClosureUse might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 6,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $unused might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 7,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $anotherUnused might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 10,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $usedInClosureUse.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 22,
+                    "identifier": "include.fileNotFound",
+                    "message": "Path in include() \"foo.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 43,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $container.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses.php",
+                    "line": 44,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $notContainer",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

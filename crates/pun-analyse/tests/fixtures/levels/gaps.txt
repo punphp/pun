@@ -2,3 +2,7 @@
 # FooObjectStorage's `@extends FooObjectStorage<object>` names the class being declared: PHPStan resolves it while
 # building that class's reflection and gets a plain object type, Pun the intersection with iterable<object>.
 2 Generics/ClassAncestorsRuleTest::testRuleExtends
+# Mago callable union contracts and array-shape insertion order; function NoDiscard stays unported (PLAN.md).
+2 Functions/HelperFunctionDiscard::testRule
+# PHPStan synthetic multi-level break has line -1; the public Error line is u32 (PLAN.md).
+4 Exceptions/HelperFinally::testRule

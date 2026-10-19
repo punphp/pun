@@ -1,0 +1,288 @@
+//! OverwrittenExitPointByFinallyRule and the exit points its virtual node reads.
+
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
+
+use super::super::Checker;
+use super::no_discard::unparen;
+
+#[derive(Default)]
+struct Result {
+    always: bool,
+    exits: Vec<(Span, &'static str)>,
+    jumps: Vec<(Span, &'static str, u64)>,
+}
+
+/// PHPStan only builds FinallyExitPointsNode for an always-terminating finally block.
+pub(super) fn check(c: &mut Checker, t: &Try) {
+    if c.level < 4 {
+        return;
+    }
+    let Some(finally) = &t.finally_clause else {
+        return;
+    };
+    let mut after = statements(c, finally.block.statements.as_slice());
+    after
+        .exits
+        .extend(after.jumps.iter().map(|(s, k, _)| (*s, *k)));
+    if !after.always || after.exits.is_empty() {
+        return;
+    }
+    let mut before = statements(c, t.block.statements.as_slice());
+    for catch in &t.catch_clauses {
+        let branch = statements(c, catch.block.statements.as_slice());
+        before.exits.extend(branch.exits);
+        before.jumps.extend(branch.jumps);
+    }
+    before
+        .exits
+        .extend(before.jumps.iter().map(|(s, k, _)| (*s, *k)));
+    if before.exits.is_empty() {
+        return;
+    }
+    for (span, kind) in before.exits {
+        c.report(
+            span,
+            "finally.exitPoint",
+            format!("This {kind} is overwritten by a different one in the finally block below."),
+            None,
+        );
+    }
+    for (span, kind) in after.exits {
+        c.report(
+            span,
+            "finally.exitPoint",
+            format!("The overwriting {kind} is on this line."),
+            None,
+        );
+    }
+}
+
+fn statements(c: &Checker, items: &[Statement]) -> Result {
+    let mut result = Result::default();
+    for item in items {
+        let next = statement(c, item);
+        result.exits.extend(next.exits);
+        result.jumps.extend(next.jumps);
+        if next.always {
+            result.always = true;
+            break;
+        }
+    }
+    result
+}
+
+fn bool_type(c: &Checker, e: &Expression) -> Option<bool> {
+    match unparen(e) {
+        Expression::Literal(Literal::True(_)) => Some(true),
+        Expression::Literal(Literal::False(_) | Literal::Null(_)) => Some(false),
+        _ => c.type_of(e).and_then(|t| {
+            if t.is_always_truthy() {
+                Some(true)
+            } else if t.is_always_falsy() {
+                Some(false)
+            } else {
+                None
+            }
+        }),
+    }
+}
+
+fn statement(c: &Checker, s: &Statement) -> Result {
+    let kind = match s {
+        Statement::Return(_) => Some("return"),
+        Statement::Expression(e) => match unparen(e.expression) {
+            Expression::Throw(_) => Some("throw"),
+            Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => Some("exit point"),
+            _ if c.type_of(e.expression).is_some_and(|t| t.is_never()) => Some("exit point"),
+            _ => None,
+        },
+        _ => None,
+    };
+    if let Some(kind) = kind {
+        return Result {
+            always: true,
+            exits: vec![(s.span(), kind)],
+            ..Result::default()
+        };
+    }
+    match s {
+        Statement::Break(b) => Result {
+            always: true,
+            jumps: vec![(s.span(), "break", level(b.level))],
+            ..Result::default()
+        },
+        Statement::Continue(b) => Result {
+            always: true,
+            jumps: vec![(s.span(), "continue", level(b.level))],
+            ..Result::default()
+        },
+        Statement::Block(b) => statements(c, b.statements.as_slice()),
+        Statement::If(i) => {
+            let mut branches = vec![(Some(i.condition), i.body.statements())];
+            branches.extend(
+                i.body
+                    .else_if_clauses()
+                    .into_iter()
+                    .map(|(e, s)| (Some(e), s)),
+            );
+            if let Some(s) = i.body.else_statements() {
+                branches.push((None, s));
+            }
+            let mut result = Result {
+                always: true,
+                ..Result::default()
+            };
+            let mut exhaustive = false;
+            for (condition, body) in branches {
+                let known = condition.and_then(|e| bool_type(c, e));
+                if known == Some(false) {
+                    continue;
+                }
+                let branch = statements(c, body);
+                result.always &= branch.always;
+                result.exits.extend(branch.exits);
+                result.jumps.extend(branch.jumps);
+                if condition.is_none() || known == Some(true) {
+                    exhaustive = true;
+                    break;
+                }
+            }
+            result.always &= exhaustive;
+            result
+        }
+        Statement::Try(t) => {
+            let mut result = statements(c, t.block.statements.as_slice());
+            for catch in &t.catch_clauses {
+                let branch = statements(c, catch.block.statements.as_slice());
+                result.always &= branch.always;
+                result.exits.extend(branch.exits);
+                result.jumps.extend(branch.jumps);
+            }
+            if let Some(finally) = &t.finally_clause {
+                let branch = statements(c, finally.block.statements.as_slice());
+                result.always |= branch.always;
+                result.exits.extend(branch.exits);
+                result.jumps.extend(branch.jumps);
+            }
+            result
+        }
+        Statement::While(w) => loop_body(c, w.body.statements(), bool_type(c, w.condition), false),
+        Statement::For(f) => loop_body(
+            c,
+            f.body.statements(),
+            f.conditions
+                .iter()
+                .last()
+                .map_or(Some(true), |e| bool_type(c, e)),
+            false,
+        ),
+        Statement::Foreach(f) => loop_body(c, f.body.statements(), None, false),
+        Statement::DoWhile(d) => loop_body(
+            c,
+            std::slice::from_ref(d.statement),
+            bool_type(c, d.condition),
+            true,
+        ),
+        Statement::Switch(s) => {
+            let mut result = Result {
+                always: s.body.has_default_case(),
+                ..Result::default()
+            };
+            let mut fallthrough = false;
+            for case in s.body.cases().iter().rev() {
+                let mut branch = statements(c, case.statements());
+                let breaks = branch.jumps.iter().any(|(_, _, n)| *n == 1);
+                fallthrough = (branch.always || fallthrough) && !breaks;
+                result.always &= fallthrough;
+                branch.jumps.retain_mut(|(_, _, n)| {
+                    *n -= 1;
+                    *n > 0
+                });
+                result.exits.extend(branch.exits);
+                result.jumps.extend(branch.jumps);
+            }
+            result
+        }
+        _ => Result::default(),
+    }
+}
+
+fn loop_body(c: &Checker, s: &[Statement], condition: Option<bool>, do_while: bool) -> Result {
+    if condition == Some(false) && !do_while {
+        return Result::default();
+    }
+    let mut result = statements(c, s);
+    let breaks = result
+        .jumps
+        .iter()
+        .any(|(_, k, n)| *k == "break" && *n == 1);
+    let continues = result
+        .jumps
+        .iter()
+        .any(|(_, k, n)| *k == "continue" && *n == 1);
+    result.always = !breaks && (condition == Some(true) || do_while && result.always && !continues);
+    result.jumps.retain_mut(|(_, _, n)| {
+        *n -= 1;
+        *n > 0
+    });
+    result
+}
+
+fn level(e: Option<&Expression>) -> u64 {
+    match e.map(unparen) {
+        Some(Expression::Literal(Literal::Integer(i))) => i.value.unwrap_or(1),
+        _ => 1,
+    }
+}
+
+/// The expression types NodeScopeResolver reads to find never-returning calls and constant branches.
+pub(super) fn typed(program: &Program) -> Vec<Span> {
+    struct Wanted {
+        spans: Vec<Span>,
+        tries: Vec<Span>,
+    }
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+        fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
+            if t.finally_clause.is_some() {
+                self.tries.push(t.span());
+            }
+        }
+        fn walk_in_statement_expression(
+            &mut self,
+            s: &'ast ExpressionStatement<'arena>,
+            _: &mut (),
+        ) {
+            if matches!(unparen(s.expression), Expression::Call(_)) {
+                self.spans.push(s.expression.span());
+            }
+        }
+        fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
+            self.spans.push(i.condition.span());
+            self.spans
+                .extend(i.body.else_if_clauses().iter().map(|(e, _)| e.span()));
+        }
+        fn walk_in_while(&mut self, w: &'ast While<'arena>, _: &mut ()) {
+            self.spans.push(w.condition.span());
+        }
+        fn walk_in_do_while(&mut self, w: &'ast DoWhile<'arena>, _: &mut ()) {
+            self.spans.push(w.condition.span());
+        }
+        fn walk_in_for(&mut self, f: &'ast For<'arena>, _: &mut ()) {
+            self.spans.extend(f.conditions.iter().map(|e| e.span()));
+        }
+    }
+    let mut wanted = Wanted {
+        spans: Vec::new(),
+        tries: Vec::new(),
+    };
+    wanted.walk_program(program, &mut ());
+    wanted.spans.retain(|s| {
+        wanted
+            .tries
+            .iter()
+            .any(|t| t.start.offset <= s.start.offset && s.end.offset <= t.end.offset)
+    });
+    wanted.spans
+}

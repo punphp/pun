@@ -1,0 +1,120 @@
+{
+    "test": "Methods/CallToStaticMethodStatementWithNoDiscardRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/static-method-call-statement-result-discarded.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 19,
+                    "identifier": "staticMethod.resultDiscarded",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 27,
+                    "identifier": "staticMethod.resultDiscarded",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::differentCase() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 41,
+                    "identifier": "staticMethod.inVoidCast",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 43,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 43,
+                    "identifier": "staticMethod.resultDiscarded",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 44,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 45,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 46,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 46,
+                    "identifier": "staticMethod.inVoidCast",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 48,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 48,
+                    "identifier": "staticMethod.resultDiscarded",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 49,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 50,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 51,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
+                    "line": 51,
+                    "identifier": "staticMethod.inVoidCast",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

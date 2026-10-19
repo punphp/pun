@@ -1,0 +1,127 @@
+{
+    "test": "Methods/CallToMethodStatementWithNoDiscardRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/method-call-statement-result-discarded.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 20,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 21,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 30,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::differentCase() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 45,
+                    "identifier": "method.inVoidCast",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 47,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 47,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 48,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 49,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 50,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 50,
+                    "identifier": "method.inVoidCast",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 52,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 52,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 53,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 54,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\ClassWithInstanceSideEffects::instanceMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 55,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallStatementResultDiscarded\\Foo::canDiscard() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-result-discarded.php",
+                    "line": 55,
+                    "identifier": "method.inVoidCast",
+                    "message": "Call to method MethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

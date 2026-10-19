@@ -1,0 +1,666 @@
+{
+    "test": "Functions/HelperDeadCode",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/helper-dead-code.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 9,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function HelperDeadCode\\outputChecks() has parameter $arguments with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 11,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function print_r() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 12,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function var_export() is always null and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 13,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function highlight_string() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 15,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function print_r() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 16,
+                    "identifier": "arguments.count",
+                    "message": "Function print_r invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 17,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $value (mixed) in call to function print_r.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 19,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $unknown in call to function print_r.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 20,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function print_r() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 20,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $unknown in call to function print_r.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 21,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $value (mixed) in call to function print_r.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 21,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function print_r() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 21,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $unknown in call to function print_r.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 23,
+                    "identifier": "function.notFound",
+                    "message": "Function missing_output not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 24,
+                    "identifier": "argument.unused",
+                    "message": "Argument #3 ($case_insensitive) is ignored since declaration of case-insensitive constants is no longer supported.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 29,
+                    "identifier": "void.pure",
+                    "message": "Function HelperDeadCode\\captures() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 34,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 35,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 36,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 36,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{used: 1}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 37,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 37,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 37,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{used: 1}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 38,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 39,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 41,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (list<mixed>) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 42,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{used: 1, unused: 2}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 43,
+                    "identifier": "require.fileNotFound",
+                    "message": "Path in require() \"missing.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 44,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"missing.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 45,
+                    "identifier": "includeOnce.fileNotFound",
+                    "message": "Path in include_once() \"missing.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 47,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 48,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 48,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 48,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$dynamic('used')\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 51,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\Contract::__construct() has parameter $contract with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 52,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\ImplementsContract::__construct() has parameter $contract with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 54,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\AttributeClass::__construct() has parameter $attribute with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 56,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\NamedAttributeClass::__construct() has parameter $attribute with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 58,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\PositionalAttributeClass::__construct() has parameter $attribute with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 59,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $flags of attribute class Attribute constructor expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 60,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class HelperDeadCode\\InvalidAttributeClass has an unused parameter $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 60,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\InvalidAttributeClass::__construct() has parameter $unused with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 61,
+                    "identifier": "attribute.nonRepeatable",
+                    "message": "Attribute class Attribute is not repeatable but is already present above the class.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 62,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class HelperDeadCode\\DuplicateAttributeClass has an unused parameter $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 62,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\DuplicateAttributeClass::__construct() has parameter $unused with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 63,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\AbstractConstructor::__construct() has parameter $parameter with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 64,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class HelperDeadCode\\Promoted has an unused parameter $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 65,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of an anonymous class has an unused parameter $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 65,
+                    "identifier": "missingType.parameter",
+                    "message": "Method class@anonymous/helper-dead-code.php:65::__construct() has parameter $unused with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 77,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class HelperDeadCode\\ChildClass has an unused parameter $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 77,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\ChildClass::__construct() has parameter $unused with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 77,
+                    "identifier": "missingType.parameter",
+                    "message": "Method HelperDeadCode\\ChildClass::__construct() has parameter $used with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 80,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method HelperDeadCode\\ParentClass::instance() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 81,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to HelperDeadCode\\ParentClass::value() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 81,
+                    "identifier": "staticMethod.resultDiscarded",
+                    "message": "Call to static method HelperDeadCode\\ParentClass::value() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 82,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to HelperDeadCode\\ParentClass::value() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 82,
+                    "identifier": "staticMethod.resultDiscarded",
+                    "message": "Call to static method HelperDeadCode\\ParentClass::value() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 83,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to HelperDeadCode\\ParentClass::value() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 83,
+                    "identifier": "staticMethod.resultDiscarded",
+                    "message": "Call to static method HelperDeadCode\\ParentClass::value() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 84,
+                    "identifier": "method.inVoidCast",
+                    "message": "Call to method HelperDeadCode\\ParentClass::allowed() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 92,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method instance() on HelperDeadCode\\ParentClass|int.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 93,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method instance() on HelperDeadCode\\ParentClass|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 94,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method HelperDeadCode\\ParentClass::instance() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 95,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method object::instance().",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 98,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method value() on HelperDeadCode\\ParentClass|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 99,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method HelperDeadCode\\ParentClass::missing().",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 100,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method value() on an unknown class HelperDeadCode\\MissingClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 102,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 102,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 103,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"(void) $date->modify('+1 day')\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 105,
+                    "identifier": "method.inVoidCast",
+                    "message": "Call to method DateTime::modify() in (void) cast but method allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 121,
+                    "identifier": "argument.unused",
+                    "message": "Argument #3 ($case_insensitive) is ignored since declaration of case-insensitive constants is no longer supported.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 124,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 124,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{used: 1}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 135,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method HelperDeadCode\\Result::value() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 135,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method HelperDeadCode\\Result::value() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 136,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method HelperDeadCode\\Result::value() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 136,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method HelperDeadCode\\Result::value() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 140,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $missing of function HelperDeadCode\\missingMethod() has invalid type HelperDeadCode\\UnknownReceiver.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 142,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method HelperDeadCode\\NoMethods|HelperDeadCode\\ParentClass::instance().",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Call to method instance() on an unknown class HelperDeadCode\\UnknownReceiver.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 145,
+                    "identifier": "void.pure",
+                    "message": "Function HelperDeadCode\\nestedClosure() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 149,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 150,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $unused",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 151,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($used)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 151,
+                    "identifier": "isset.variable",
+                    "message": "Variable $used in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 152,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($used)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 152,
+                    "identifier": "empty.variable",
+                    "message": "Variable $used in empty() always exists and is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 164,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method HelperDeadCode\\Required::value() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 165,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method HelperDeadCode\\Optional::value() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 180,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method HelperDeadCode\\Alpha::VaLuE() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 189,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function strlen() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 189,
+                    "identifier": "arguments.count",
+                    "message": "Function strlen invoked with 3 parameters, 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1053,8 +1053,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/boolean-or-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/call-condition-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/discarded-function-result" = { preset = "basic", status = "decided" }
-"dead-code/discarded-method-result" = { preset = "basic", status = "decided" }
-"dead-code/discarded-static-method-result" = { preset = "basic", status = "decided" }
+"dead-code/discarded-method-result" = { preset = "basic", ported = true, status = "decided" }
+"dead-code/discarded-static-method-result" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/do-while-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/elseif-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/finally-overrides-exit" = { preset = "recommended", status = "decided" }
@@ -1075,7 +1075,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/ternary-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/trait-condition-always-constant" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unreachable-code" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unreachable-code"], status = "decided" }
-"dead-code/unused-argument" = { preset = "basic", status = "decided" }
+"dead-code/unused-argument" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unused-closure-use" = { preset = "basic", status = "decided" }
 "dead-code/unused-constructor-parameter" = { preset = "basic", fixed_by = ["lint/dead-code/no-unused-constructor-param"], status = "decided" }
 "dead-code/unused-function-result" = { preset = "recommended", status = "decided" }
@@ -1088,7 +1088,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-result" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-expression"], status = "decided" }
 "dead-code/unused-static-method-result" = { preset = "recommended", status = "decided" }
 "dead-code/unused-trait" = { preset = "recommended", status = "decided" }
-"dead-code/useless-return-value" = { preset = "recommended", status = "decided" }
+"dead-code/useless-return-value" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/while-always-false" = { preset = "recommended", status = "decided" }
 "dead-code/while-always-true" = { preset = "recommended", status = "decided" }
 "dead-code/xor-always-constant" = { preset = "recommended", status = "decided" }

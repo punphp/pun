@@ -9,6 +9,7 @@ mod calls;
 mod class_names;
 mod classes;
 mod constants;
+mod dead_code;
 mod declarations;
 mod declared;
 mod doc;
@@ -67,6 +68,19 @@ pub const IDENTIFIERS: &[&str] = &[
     "typeAlias.trait",
     "typeAlias.unresolvableType",
     "generics.notGeneric",
+    "argument.unused",
+    "callable.inVoidCast",
+    "callable.resultDiscarded",
+    "closure.unusedUse",
+    "constructor.unusedParameter",
+    "finally.exitPoint",
+    "function.inVoidCast",
+    "function.resultDiscarded",
+    "function.uselessReturnValue",
+    "method.inVoidCast",
+    "method.resultDiscarded",
+    "staticMethod.inVoidCast",
+    "staticMethod.resultDiscarded",
     "function.notFound",
     "argument.printf",
     "argument.sprintf",
@@ -1059,6 +1073,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         declarations::method(self, m, &method);
         hierarchy::method(self, m, &method);
         hierarchy::interface_method_visibility(self, m);
+        dead_code::constructor(self, m, &method);
         missing_types::method(self, m);
         declarations::promoted(
             self,
@@ -1325,6 +1340,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         larastan::function_call(self, call);
         function_checks::function_call(self, call);
         calls::function_call(self, call);
+        dead_code::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
         self.in_exists_call += usize::from(calls::is_class_exists_family(self, call));
@@ -1425,6 +1441,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
         self.mark_top_level(s.expression);
         statements::standalone_throw(self, s);
+        dead_code::statement(self, s);
     }
     fn walk_in_throw(&mut self, t: &'ast Throw<'arena>, _: &mut ()) {
         statements::throw_expression(self, t);
@@ -1505,6 +1522,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         functions::function_like(self, f, &f.parameter_list);
         functions::closure_use(self, f);
         self.larastan_enter_closure(f);
+        dead_code::closure(self, f);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         self.syntax.parents.push(syntax::Parent::Closure);
         self.syntax.by_ref.push(f.ampersand.is_some());
@@ -1553,6 +1571,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, _: &mut ()) {
         through_static::constant(self, a);
         names::class_constant(self, a);
+    }
+    fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
+        dead_code::try_statement(self, t);
     }
     fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {
         statements::noncapturing_catch(self, clause);

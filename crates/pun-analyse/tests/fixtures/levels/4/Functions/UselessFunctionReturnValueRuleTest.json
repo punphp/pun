@@ -1,0 +1,53 @@
+{
+    "test": "Functions/UselessFunctionReturnValueRuleTest",
+    "cases": [
+        {
+            "method": "testUselessReturnValue",
+            "files": [
+                "Functions/data/useless-fn-return.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/useless-fn-return.php",
+                    "line": 47,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function print_r() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/useless-fn-return.php",
+                    "line": 56,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function var_export() is always null and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/useless-fn-return.php",
+                    "line": 64,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function print_r() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUselessReturnValuePhp8",
+            "files": [
+                "Functions/data/useless-fn-return-php8.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/useless-fn-return-php8.php",
+                    "line": 18,
+                    "identifier": "function.uselessReturnValue",
+                    "message": "Return value of function print_r() is always true and the result is printed instead of being returned. Pass in true as parameter #2 $return to return the output instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

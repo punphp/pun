@@ -99,7 +99,7 @@ fn checker<'a, 'arena>(
         property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
-        types: infer(arena, file, program, names, codebase, php_version, typed),
+        types: infer(arena, file, program, names, codebase, php_version, project.level, typed),
         names,
         codebase,
         classes: Vec::new(),

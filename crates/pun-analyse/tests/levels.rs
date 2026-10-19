@@ -9,10 +9,23 @@ use std::path::{Path, PathBuf};
 use pun_analyse::{Project, run};
 use serde_json::Value;
 
-type Key = (String, u32, String, String, Option<String>);
+type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0.
 const PORTED: &[&str] = &[
+    "argument.unused",
+    "callable.inVoidCast",
+    "callable.resultDiscarded",
+    "closure.unusedUse",
+    "constructor.unusedParameter",
+    "finally.exitPoint",
+    "function.inVoidCast",
+    "function.resultDiscarded",
+    "function.uselessReturnValue",
+    "method.inVoidCast",
+    "method.resultDiscarded",
+    "staticMethod.inVoidCast",
+    "staticMethod.resultDiscarded",
     "missingType.parameter",
     "missingType.return",
     "missingType.property",
@@ -60,7 +73,7 @@ fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
 fn key(e: &Value) -> Key {
     (
         e["file"].as_str().unwrap().to_string(),
-        e["line"].as_u64().unwrap() as u32,
+        e["line"].as_i64().unwrap(),
         e["identifier"].as_str().unwrap().to_string(),
         e["message"].as_str().unwrap().to_string(),
         e["tip"].as_str().map(str::to_string),
@@ -129,7 +142,7 @@ fn phpstan_level_fixtures() {
                     .filter(|e| ported(&e.identifier, &e.message))
                     .map(|e| {
                         let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
-                        (file, e.line, e.identifier, e.message, e.tip)
+                        (file, i64::from(e.line), e.identifier, e.message, e.tip)
                     })
                     .collect();
                 let name = format!(
