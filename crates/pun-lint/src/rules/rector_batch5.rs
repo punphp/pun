@@ -230,6 +230,26 @@ pub(crate) fn doc_without_params(doc: &str, names: &[&[u8]]) -> Option<String> {
     Some(out)
 }
 
+/// [`doc_without_params`] for the tags `remove` picks by their text (from the `@` to the end of their description).
+pub(crate) fn doc_without_tags(doc: &str, remove: impl Fn(&str) -> bool) -> Option<String> {
+    let nodes = doc_nodes(doc);
+    let removed: Vec<bool> = nodes
+        .iter()
+        .map(|n| doc[n.start..n.end].starts_with('@') && remove(&doc[n.start..n.end]))
+        .collect();
+    if !removed.contains(&true) {
+        return None;
+    }
+    let Some(edits) = list_removal(&nodes, &removed) else {
+        return Some(String::new());
+    };
+    let mut out = doc.to_string();
+    for edit in edits.iter().rev() {
+        out.replace_range(edit.span.start..edit.span.end, &edit.text);
+    }
+    Some(out)
+}
+
 /// The text and tag nodes of a doc comment: a tag from its `@` to the end of the last line of its description, a
 /// text from its first character to the end of its paragraph. A blank line ends either.
 fn doc_nodes(doc: &str) -> Vec<Span> {

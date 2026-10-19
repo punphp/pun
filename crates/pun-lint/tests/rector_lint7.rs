@@ -271,6 +271,13 @@ fn illegal_constructor_static_call() {
 }
 
 #[test]
+fn remove_null_tag_value_node() {
+    let linter = only(NoNullTagValue);
+    run(&linter, "RemoveNullTagValueNodeRector/Fixture");
+    run(&linter, "RemoveNullTagValueNodeRector/Oracle");
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -324,6 +331,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoStaticConstructorCall),
             &["lint7_report/classes/no-static-constructor-call"],
+        ),
+        (
+            || Box::new(NoNullTagValue),
+            &["rector/RemoveNullTagValueNodeRector"],
         ),
     ];
     for (rule, dirs) in cases {

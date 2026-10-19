@@ -68,6 +68,7 @@ mod no_negated_group;
 mod no_nested_ternary;
 mod no_null_debug_info;
 mod no_null_property_init;
+mod no_null_tag_value;
 mod no_out_of_range_chr;
 mod no_overwritten_assignment;
 mod no_parameter_shadowing;
@@ -233,6 +234,7 @@ pub use no_negated_group::NoNegatedGroup;
 pub use no_nested_ternary::NoNestedTernary;
 pub use no_null_debug_info::NoNullDebugInfo;
 pub use no_null_property_init::NoNullPropertyInit;
+pub use no_null_tag_value::NoNullTagValue;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_parameter_shadowing::NoParameterShadowing;
@@ -499,5 +501,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferVariadicParam),
         Box::new(PreferSpread),
         Box::new(NoStaticConstructorCall),
+        Box::new(NoNullTagValue),
     ]
 }
