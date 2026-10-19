@@ -26,6 +26,7 @@ mod no_compact;
 mod no_concat_assign_new_item;
 mod no_condition_exact_return;
 mod no_dead_php_version_check;
+mod no_debug_calls;
 mod no_double_negation;
 mod no_double_self_assignment;
 mod no_duplicate_array_key;
@@ -43,6 +44,7 @@ mod no_explicit_constructor_call;
 mod no_false_ternary;
 mod no_ffi;
 mod no_finfo_buffer_context;
+mod no_for_init_overwrite;
 mod no_future_php_version_check;
 mod no_global;
 mod no_hash_emoji;
@@ -52,20 +54,25 @@ mod no_insecure_comparison;
 mod no_invalid_open_tag;
 mod no_iterator_to_array_in_foreach;
 mod no_literal_password;
+mod no_loop_variable_overwrite;
+mod no_loose_equality;
 mod no_mirror_assignment;
 mod no_missing_format_argument;
 mod no_mixed_overruled_by_native;
 mod no_multi_assign;
 mod no_negated_and;
 mod no_negated_boolean_literal;
+mod no_negated_comparison;
 mod no_negated_condition;
 mod no_negated_group;
 mod no_nested_ternary;
 mod no_null_debug_info;
 mod no_null_property_init;
+mod no_null_tag_value;
 mod no_out_of_range_chr;
 mod no_overwritten_assignment;
 mod no_parameter_shadowing;
+mod no_parent_call_without_parent;
 mod no_protected_constant_in_final;
 mod no_protected_method_in_final;
 mod no_protected_property_in_final;
@@ -84,6 +91,7 @@ mod no_single_argument_sprintf;
 mod no_single_case_switch;
 mod no_single_item_in_array;
 mod no_sole_value_sprintf;
+mod no_static_constructor_call;
 mod no_swapped_explode_arguments;
 mod no_tainted_data;
 mod no_tautology_ternary;
@@ -96,6 +104,7 @@ mod no_unused_expression;
 mod no_unused_foreach_key;
 mod no_unused_global;
 mod no_unused_label;
+mod no_unused_private_constant;
 mod no_unused_private_method_param;
 mod no_unused_private_property;
 mod no_unused_public_method_param;
@@ -120,8 +129,10 @@ mod prefer_array_find_key;
 mod prefer_array_first_last;
 mod prefer_array_literal;
 mod prefer_boolean_and_or;
+mod prefer_catch_name_from_type;
 mod prefer_clamp;
 mod prefer_coalesce_chain;
+mod prefer_coalesce_over_empty_ternary;
 mod prefer_coalesce_over_foreach;
 mod prefer_compound_assignment;
 mod prefer_early_continue;
@@ -148,15 +159,20 @@ mod prefer_round_mode_enum;
 mod prefer_self_over_static;
 mod prefer_serialize_method;
 mod prefer_simple_condition;
+mod prefer_spread;
 mod prefer_unserialize_method;
+mod prefer_variadic_param;
 mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
 mod rector_stmts;
 mod require_assign_set_padding;
+mod require_attribute_argument_order;
 mod require_is_a_allow_string;
+mod require_named_argument_order;
 mod require_preg_quote_delimiter;
 mod require_statement_padding;
+mod require_strict_function_call;
 mod require_strict_array_search;
 mod side_effect;
 mod syntax_types;
@@ -179,6 +195,7 @@ pub use no_compact::NoCompact;
 pub use no_concat_assign_new_item::NoConcatAssignNewItem;
 pub use no_condition_exact_return::NoConditionExactReturn;
 pub use no_dead_php_version_check::NoDeadPhpVersionCheck;
+pub use no_debug_calls::NoDebugCalls;
 pub use no_double_negation::NoDoubleNegation;
 pub use no_double_self_assignment::NoDoubleSelfAssignment;
 pub use no_duplicate_array_key::NoDuplicateArrayKey;
@@ -196,6 +213,7 @@ pub use no_explicit_constructor_call::NoExplicitConstructorCall;
 pub use no_false_ternary::NoFalseTernary;
 pub use no_ffi::NoFfi;
 pub use no_finfo_buffer_context::NoFinfoBufferContext;
+pub use no_for_init_overwrite::NoForInitOverwrite;
 pub use no_future_php_version_check::NoFuturePhpVersionCheck;
 pub use no_global::NoGlobal;
 pub use no_hash_emoji::NoHashEmoji;
@@ -205,20 +223,25 @@ pub use no_insecure_comparison::NoInsecureComparison;
 pub use no_invalid_open_tag::NoInvalidOpenTag;
 pub use no_iterator_to_array_in_foreach::NoIteratorToArrayInForeach;
 pub use no_literal_password::NoLiteralPassword;
+pub use no_loop_variable_overwrite::NoLoopVariableOverwrite;
+pub use no_loose_equality::NoLooseEquality;
 pub use no_mirror_assignment::NoMirrorAssignment;
 pub use no_missing_format_argument::NoMissingFormatArgument;
 pub use no_mixed_overruled_by_native::NoMixedOverruledByNative;
 pub use no_multi_assign::NoMultiAssign;
 pub use no_negated_and::NoNegatedAnd;
 pub use no_negated_boolean_literal::NoNegatedBooleanLiteral;
+pub use no_negated_comparison::NoNegatedComparison;
 pub use no_negated_condition::NoNegatedCondition;
 pub use no_negated_group::NoNegatedGroup;
 pub use no_nested_ternary::NoNestedTernary;
 pub use no_null_debug_info::NoNullDebugInfo;
 pub use no_null_property_init::NoNullPropertyInit;
+pub use no_null_tag_value::NoNullTagValue;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_parameter_shadowing::NoParameterShadowing;
+pub use no_parent_call_without_parent::NoParentCallWithoutParent;
 pub use no_protected_constant_in_final::NoProtectedConstantInFinal;
 pub use no_protected_method_in_final::NoProtectedMethodInFinal;
 pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
@@ -237,6 +260,7 @@ pub use no_single_argument_sprintf::NoSingleArgumentSprintf;
 pub use no_single_case_switch::NoSingleCaseSwitch;
 pub use no_single_item_in_array::NoSingleItemInArray;
 pub use no_sole_value_sprintf::NoSoleValueSprintf;
+pub use no_static_constructor_call::NoStaticConstructorCall;
 pub use no_swapped_explode_arguments::NoSwappedExplodeArguments;
 pub use no_tainted_data::NoTaintedData;
 pub use no_tautology_ternary::NoTautologyTernary;
@@ -249,6 +273,7 @@ pub use no_unused_expression::NoUnusedExpression;
 pub use no_unused_foreach_key::NoUnusedForeachKey;
 pub use no_unused_global::NoUnusedGlobal;
 pub use no_unused_label::NoUnusedLabel;
+pub use no_unused_private_constant::NoUnusedPrivateConstant;
 pub use no_unused_private_method_param::NoUnusedPrivateMethodParam;
 pub use no_unused_private_property::NoUnusedPrivateProperty;
 pub use no_unused_public_method_param::NoUnusedPublicMethodParam;
@@ -272,8 +297,10 @@ pub use prefer_array_find_key::PreferArrayFindKey;
 pub use prefer_array_first_last::PreferArrayFirstLast;
 pub use prefer_array_literal::PreferArrayLiteral;
 pub use prefer_boolean_and_or::PreferBooleanAndOr;
+pub use prefer_catch_name_from_type::PreferCatchNameFromType;
 pub use prefer_clamp::PreferClamp;
 pub use prefer_coalesce_chain::PreferCoalesceChain;
+pub use prefer_coalesce_over_empty_ternary::PreferCoalesceOverEmptyTernary;
 pub use prefer_coalesce_over_foreach::PreferCoalesceOverForeach;
 pub use prefer_compound_assignment::PreferCompoundAssignment;
 pub use prefer_early_continue::PreferEarlyContinue;
@@ -300,11 +327,16 @@ pub use prefer_round_mode_enum::PreferRoundModeEnum;
 pub use prefer_self_over_static::PreferSelfOverStatic;
 pub use prefer_serialize_method::PreferSerializeMethod;
 pub use prefer_simple_condition::PreferSimpleCondition;
+pub use prefer_spread::PreferSpread;
 pub use prefer_unserialize_method::PreferUnserializeMethod;
+pub use prefer_variadic_param::PreferVariadicParam;
 pub use require_assign_set_padding::RequireAssignSetPadding;
+pub use require_attribute_argument_order::RequireAttributeArgumentOrder;
 pub use require_is_a_allow_string::RequireIsAAllowString;
+pub use require_named_argument_order::RequireNamedArgumentOrder;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
 pub use require_statement_padding::RequireStatementPadding;
+pub use require_strict_function_call::RequireStrictFunctionCall;
 pub use require_strict_array_search::RequireStrictArraySearch;
 pub use types::*;
 
@@ -463,5 +495,21 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoCallUserFuncMethod),
         Box::new(NoMixedOverruledByNative),
         Box::new(NoRequiredAfterOptional),
+        Box::new(NoNegatedComparison),
+        Box::new(PreferCoalesceOverEmptyTernary),
+        Box::new(NoForInitOverwrite),
+        Box::new(NoLooseEquality),
+        Box::new(NoDebugCalls),
+        Box::new(RequireNamedArgumentOrder),
+        Box::new(RequireAttributeArgumentOrder),
+        Box::new(NoLoopVariableOverwrite),
+        Box::new(NoUnusedPrivateConstant),
+        Box::new(PreferVariadicParam),
+        Box::new(PreferSpread),
+        Box::new(NoStaticConstructorCall),
+        Box::new(NoNullTagValue),
+        Box::new(RequireStrictFunctionCall),
+        Box::new(PreferCatchNameFromType),
+        Box::new(NoParentCallWithoutParent),
     ]
 }

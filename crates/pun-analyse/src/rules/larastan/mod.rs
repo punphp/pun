@@ -5,8 +5,13 @@
 mod appends;
 mod calls;
 mod classes;
+mod collections;
+mod collectors;
+mod config;
+mod console;
 mod dispatch;
 mod octane;
+mod relations;
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -25,6 +30,7 @@ use super::Checker;
 pub(crate) use appends::property;
 pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
+pub(crate) use collectors::finish;
 
 pub const IDENTIFIERS: &[&str] = &[
     "larastan.uselessConstructs.with",
@@ -40,6 +46,14 @@ pub const IDENTIFIERS: &[&str] = &[
     "rules.modelAppends",
     "larastan.jobs.noConstructor",
     "larastan.events.noConstructor",
+    "larastan.console.undefinedArgument",
+    "larastan.console.undefinedOption",
+    "larastan.configCollection",
+    "larastan.unnecessaryEnumerableToArrayCall",
+    "larastan.relationExistence",
+    "larastan.noUnnecessaryCollectionCall",
+    "larastan.unusedViews",
+    "larastan.missingTranslations",
 ];
 
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
@@ -66,6 +80,24 @@ pub struct Larastan {
     pub check_model_appends: bool,
     /// The analysed models' database properties, by lowercase class name (filled by [`Larastan::load`]).
     pub(crate) database_properties: HashMap<String, HashSet<String>>,
+    /// `noUnnecessaryCollectionCall` (default true), with `noUnnecessaryCollectionCallOnly` and
+    /// `noUnnecessaryCollectionCallExcept`: the lowercase method names it checks.
+    pub no_unnecessary_collection_call: bool,
+    pub no_unnecessary_collection_call_methods: Vec<String>,
+    /// `noUnnecessaryEnumerableToArrayCalls` (default false).
+    pub no_unnecessary_enumerable_to_array_calls: bool,
+    /// `checkUnusedViews` (default false) and `viewDirectories` (absolute).
+    pub check_unused_views: bool,
+    pub view_directories: Vec<PathBuf>,
+    /// `checkMissingTranslations` (default false) and `translationDirectories` (absolute).
+    pub check_missing_translations: bool,
+    pub translation_directories: Vec<PathBuf>,
+    /// `checkConfigTypes` (default false).
+    pub check_config_types: bool,
+    /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
+    pub(crate) configs: crate::larastan::config::Configs,
+    /// The app's console commands (filled by [`Larastan::load`]).
+    pub(crate) commands: Vec<crate::larastan::console::Command>,
 }
 
 impl Larastan {
@@ -81,6 +113,16 @@ impl Larastan {
             check_auth_calls_when_in_request_scope: false,
             check_model_appends: true,
             database_properties: HashMap::new(),
+            commands: Vec::new(),
+            check_config_types: false,
+            check_unused_views: false,
+            view_directories: Vec::new(),
+            check_missing_translations: false,
+            translation_directories: Vec::new(),
+            no_unnecessary_enumerable_to_array_calls: false,
+            no_unnecessary_collection_call: true,
+            no_unnecessary_collection_call_methods: collections::should_handle(&[], &[]),
+            configs: Default::default(),
         }
     }
 
@@ -90,12 +132,20 @@ impl Larastan {
         project: &crate::Project,
         codebase: &mago_codex::metadata::CodebaseMetadata,
     ) {
-        if self.check_model_appends {
+        if self.check_model_appends || self.no_unnecessary_collection_call {
             let app = crate::Laravel {
                 root: &self.root,
                 parse_casts_method: false,
             };
             self.database_properties = crate::laravel::database_properties(app, project, codebase);
+        }
+        self.commands = crate::larastan::console::commands(project, codebase);
+        if self.check_config_types {
+            self.configs = crate::larastan::config::Configs::load(
+                &self.config_directories,
+                &self.root,
+                codebase,
+            );
         }
     }
 
@@ -128,6 +178,36 @@ impl Larastan {
         larastan.check_auth_calls_when_in_request_scope =
             flag("checkAuthCallsWhenInRequestScope", false);
         larastan.check_model_appends = flag("checkModelAppends", true);
+        larastan.check_config_types = flag("checkConfigTypes", false);
+        larastan.no_unnecessary_enumerable_to_array_calls =
+            flag("noUnnecessaryEnumerableToArrayCalls", false);
+        larastan.no_unnecessary_collection_call = flag("noUnnecessaryCollectionCall", true);
+        larastan.check_unused_views = flag("checkUnusedViews", false);
+        larastan.check_missing_translations = flag("checkMissingTranslations", false);
+        let names = |k: &str| -> Vec<String> {
+            params
+                .get_str(k)
+                .and_then(Value::as_array)
+                .map(|a| {
+                    a.values()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
+        larastan.view_directories = names("viewDirectories")
+            .iter()
+            .map(|d| root.join(d))
+            .collect();
+        larastan.translation_directories = names("translationDirectories")
+            .iter()
+            .map(|d| root.join(d))
+            .collect();
+        larastan.no_unnecessary_collection_call_methods = collections::should_handle(
+            &names("noUnnecessaryCollectionCallOnly"),
+            &names("noUnnecessaryCollectionCallExcept"),
+        );
         Some(larastan)
     }
 }
@@ -137,6 +217,22 @@ impl Larastan {
 #[derive(Default)]
 pub(crate) struct State {
     request: Vec<bool>,
+}
+
+/// `ModelPropertyExtension::hasProperty()`: a database column of the model that no accessor or `@property` tag hides.
+fn has_database_property(c: &Checker, model: &str, column: &str) -> bool {
+    let Some(larastan) = c.larastan else {
+        return false;
+    };
+    !crate::laravel::has_accessor(c.codebase, model, column)
+        && larastan
+            .database_properties
+            .get(&model.to_ascii_lowercase())
+            .is_some_and(|p| p.contains(column))
+        && !c
+            .codebase
+            .get_class_like(model.as_bytes())
+            .is_some_and(|k| appends::property_tag(k, column))
 }
 
 /// `ObjectType($parent)->isSuperTypeOf(ObjectType($class))->yes()`, for lowercase `parent`.
@@ -252,6 +348,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         self.spans.extend(wanted.map(|a| a.value().span()));
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        if self.larastan.check_config_types {
+            self.spans.extend(config::typed(self.names, call));
+        }
+        if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
+            self.spans.push(arg.span());
+            if !matches!(call.class, Expression::Identifier(_)) {
+                self.spans.push(call.class.span());
+            }
+        }
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && dispatch::conditional(m.value)
             && let Some(first) = call.argument_list.arguments.first()
@@ -272,6 +377,23 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        if self.larastan.no_unnecessary_enumerable_to_array_calls
+            && collections::to_array(call).is_some()
+        {
+            self.spans.push(call.object.span());
+        }
+        if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
+            self.spans.extend([arg.span(), call.object.span()]);
+        }
+        if self.larastan.no_unnecessary_collection_call {
+            self.spans.extend(collections::unnecessary_typed(call));
+        }
+        if collectors::typed_method_call(self.larastan, call) {
+            self.spans.push(call.object.span());
+        }
+        if let Some((_, arg)) = console::input_call(call) {
+            self.spans.extend([call.object.span(), arg.span()]);
+        }
         if self.larastan.check_octane_compatibility && octane::is_binding(call) {
             self.spans.push(call.object.span());
         }

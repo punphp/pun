@@ -14,6 +14,7 @@ use anyhow::Result;
 use clap::Args;
 use pun_config::rule_of_identifier;
 use pun_config::{Config, Options};
+use pun_phpstan::php::normalize_path;
 use pun_problem::ignore::Ignores;
 use pun_problem::{Level, LineIndex, Problem, Span};
 use pun_workspace::{Command, Exclusions};
@@ -166,7 +167,8 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
         .filter_map(|e| {
             let rule = rule_of_identifier(&e.identifier)?;
             on.contains(rule).then(|| {
-                let file = PathBuf::from(&e.file);
+                // PHPStan reports, sorts and relativises normalised paths (a configured `../x` included).
+                let file = PathBuf::from(normalize_path(&e.file));
                 Finding {
                     rel: relative(&cfg.root, &file),
                     file,
@@ -189,7 +191,9 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
         false => paths.to_vec(),
         true => cfg.analyse.paths.iter().map(PathBuf::from).collect(),
     };
-    let mut paths: Vec<PathBuf> = configured.iter().map(|p| cfg.root.join(p)).collect();
+    let mut paths: Vec<PathBuf> = (configured.iter())
+        .map(|p| PathBuf::from(normalize_path(&cfg.root.join(p).to_string_lossy())))
+        .collect();
     if paths.is_empty() {
         paths.push(cfg.root.clone());
     }
@@ -233,7 +237,7 @@ fn apply_ignores(findings: &mut Vec<Finding>, root: &Path) -> Vec<Problem> {
 
 /// A malformed `@pun-ignore` comment, as an error.
 /// The engine's rule for an `@pun-ignore` comment without a rule ID (rules.md §4).
-pub(crate) const INVALID_IGNORE: &str = "invalid-ignore-comment";
+const INVALID_IGNORE: &str = "invalid-ignore-comment";
 
 pub(crate) fn ignore_problem(rel: &str, m: &pun_problem::ignore::Malformed) -> Problem {
     Problem {
@@ -428,10 +432,13 @@ fn sources(analysed: &Analysed) -> BTreeMap<PathBuf, (String, LineIndex)> {
 }
 
 pub(crate) fn baseline_note(r: &Renderer, unmatched: usize) -> String {
-    let entries = if unmatched == 1 { "entry" } else { "entries" };
+    let (entries, verb, them) = match unmatched {
+        1 => ("entry", "matches", "it"),
+        _ => ("entries", "match", "them"),
+    };
     let glyph = r.look.paint(render::Role::Warning, r.look.glyph("⚠", "!"));
     format!(
-        "{glyph} {unmatched} baseline {entries} no longer match: run `pun analyse --generate-baseline` to drop them\n"
+        "{glyph} {unmatched} baseline {entries} no longer {verb}: run `pun analyse --generate-baseline` to drop {them}\n"
     )
 }
 
@@ -475,7 +482,7 @@ fn agent_report(analysed: &Analysed) -> String {
                 .replace("entrys", "entries")
         ));
     }
-    let checked = format!("{} files checked", analysed.files);
+    let checked = format!("{} checked", analysed.files);
     agent::render(result, &detail, &checked, &items, false)
 }
 

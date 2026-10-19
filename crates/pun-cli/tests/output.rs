@@ -749,6 +749,25 @@ fn latin1_diffs_like_pint() {
         want.stdout
     );
     assert_eq!(got, want);
+    // The same throw when only the report file is json.
+    let args = [
+        "--test",
+        "-v",
+        "--format=txt",
+        "--output-to-file=r.json",
+        "--output-format=json",
+        "a.php",
+    ];
+    let (mut want, got) = (side(false, &args), side(true, &args));
+    assert_eq!((want.code, got.code), (Some(1), Some(2)));
+    want.code = Some(2);
+    want.stdout = normalise_trace(&want.stdout, &cx.oracle);
+    assert!(
+        want.stdout.contains("[JsonException (5)]"),
+        "{}",
+        want.stdout
+    );
+    assert_eq!(got, want);
 }
 
 /// Run errors exit 2 (output.md §2). Human runs print Pun's run error (output.md §1) on stderr, red with `--ansi`

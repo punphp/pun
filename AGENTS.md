@@ -79,7 +79,7 @@ Pun runs fewer rules than PHPStan level 0, so the counts only show that the tool
 
 Lint mode runs on pinkary and laravel-framework, on the paths of each project's rector.php. Its tools are:
 
-- `rector-ported`: `.oracle/rector-bin` with exactly the Rector classes of pun-lint's rules. The list comes from `check --rules` and `rules/mapping.toml`, so it grows as rules are ported.
+- `rector-ported`: `.oracle/rector-ecosystem` (Rector with rector-laravel) with exactly the Rector classes of pun-lint's rules. The list comes from `check --rules` and `rules/mapping.toml`, so it grows as rules are ported.
 - `rector-full`: the project's own Rector and rector.php. This is a reference row.
 - `pun`: `pun lint` with every native rule.
 - `mago`: `mago lint`.

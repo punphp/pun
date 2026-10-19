@@ -104,7 +104,8 @@ impl Rule for NoRedundantCondition {
                             .unwrap();
                         edits.push(Edit::new(Span::new(at, at), format!("\n{inner}{moved}")));
                     }
-                    Frame::Bare => {
+                    // `Frame::Bare`: a colon-delimited `if` (`Frame::Open`) was skipped above.
+                    _ => {
                         let moved = moved_statements(source, &next.stmts, &inner);
                         let only = node_span(view.stmts.stmts[0]);
                         let text = format!(
@@ -113,7 +114,6 @@ impl Rule for NoRedundantCondition {
                         );
                         edits.push(Edit::new(only, text));
                     }
-                    Frame::Open => continue,
                 }
             }
             edits.extend(remove(source, &list, &[key + 1]));

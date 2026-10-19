@@ -3,6 +3,7 @@
 
 mod autoload;
 mod codebase;
+mod larastan;
 mod laravel;
 mod mago;
 mod project;
@@ -33,6 +34,12 @@ pub struct Error {
 
 /// Identifiers Pun reports. Errors with other identifiers are PHPStan's alone for now.
 pub const IDENTIFIERS: &[&str] = rules::IDENTIFIERS;
+
+/// Whether Pun reports `identifier` at some level: [`IDENTIFIERS`], the level-6 missingType rules, the level-2
+/// generics rules and Larastan's.
+pub fn reports(identifier: &str) -> bool {
+    rules::reports(identifier)
+}
 
 /// Analyses the project the resolved `phpstan.neon` describes.
 pub fn analyse(project_root: &Path, config: &Resolved) -> Result<Vec<Error>, CouldNotReadFile> {
@@ -65,6 +72,7 @@ pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();
+    let errors = rules::larastan_finish(project.larastan.as_ref(), errors);
     let processed = project
         .ignore_errors
         .process(errors, false, &analysed, false);

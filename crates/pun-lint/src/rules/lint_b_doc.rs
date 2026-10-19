@@ -140,9 +140,6 @@ impl<'s> Doc<'s> {
         if !output.starts_with("/**") {
             output.insert_str(0, "/**");
         }
-        if !output.trim_end().ends_with("*/") {
-            output.push_str(" */");
-        }
         output.replace(" \n", "\n")
     }
 }
@@ -198,7 +195,7 @@ fn children(text: &str, tokens: &[(Kind, usize, usize)]) -> Vec<(usize, usize)> 
     let is_tag = |i: usize| {
         let t = tokens[i];
         t.0 == Kind::Other && {
-            let word = text[t.1..t.2].as_bytes();
+            let word = &text.as_bytes()[t.1..t.2];
             word[0] == b'@' && word.get(1).is_some_and(u8::is_ascii_alphabetic)
         }
     };

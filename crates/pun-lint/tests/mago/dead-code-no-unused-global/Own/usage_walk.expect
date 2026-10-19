@@ -1,0 +1,7 @@
+45 47 Global variable `$c` is imported but never used.
+49 51 Global variable `$d` is imported but never used.
+377 379 Global variable `$a` is imported but never used.
+381 383 Global variable `$b` is imported but never used.
+385 387 Global variable `$c` is imported but never used.
+389 391 Global variable `$d` is imported but never used.
+393 395 Global variable `$e` is imported but never used.

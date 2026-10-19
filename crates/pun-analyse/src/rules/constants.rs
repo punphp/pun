@@ -67,9 +67,10 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant
             None,
         );
     }
-    let Some(class) = c.class_scope() else {
-        return;
-    };
+    // class constants are walked inside their class-like (trait bodies only in a class's context)
+    let class = c
+        .class_scope()
+        .expect("a class constant is walked inside its class-like");
     conflicting_trait_constants(c, class, k);
     overriding_constant(c, class, k);
 }

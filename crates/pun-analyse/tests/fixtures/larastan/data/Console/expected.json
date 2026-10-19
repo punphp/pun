@@ -1,0 +1,101 @@
+{
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 on these files copied to app/Console/Commands/Pun of a pinkary checkout (commands registered by its Laravel 13 app)",
+    "errors": [
+        {
+            "file": "AttributeCommand.php",
+            "line": 16,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:attribute\" does not have argument \"unknown\"."
+        },
+        {
+            "file": "BaseCommand.php",
+            "line": 11,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:child-two\" does not have argument \"shared\"."
+        },
+        {
+            "file": "BaseCommand.php",
+            "line": 12,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:child-one\" does not have option \"shared\"."
+        },
+        {
+            "file": "ChildOneCommand.php",
+            "line": 12,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:child-one\" does not have option \"shared\"."
+        },
+        {
+            "file": "ParametersCommand.php",
+            "line": 43,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:parameters\" does not have argument \"third\"."
+        },
+        {
+            "file": "ParametersCommand.php",
+            "line": 43,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:params\" does not have argument \"third\"."
+        },
+        {
+            "file": "ParametersCommand.php",
+            "line": 52,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:parameters\" does not have option \"missing\"."
+        },
+        {
+            "file": "ParametersCommand.php",
+            "line": 52,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:params\" does not have option \"missing\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 17,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:signature\" does not have argument \"missing\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 24,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:signature\" does not have option \"every\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 25,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:signature\" does not have option \"all\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 27,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:signature\" does not have option \"missing\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 38,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:signature\" does not have option \"no-ansi\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 40,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:signature\" does not have option \"isolated\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 41,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:signature\" does not have option \"--queue\"."
+        },
+        {
+            "file": "SignatureCommand.php",
+            "line": 48,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:signature\" does not have option \"nope\"."
+        }
+    ]
+}

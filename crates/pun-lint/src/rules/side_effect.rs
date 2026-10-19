@@ -55,16 +55,16 @@ pub(crate) fn has_side_effect(ancestors: &[Node<'_, '_>], expr: &Expression<'_>)
 
 /// php-parser's `NodeFinder::findFirst`: whether `node` or a node inside it matches.
 pub(crate) fn any_node(node: Node<'_, '_>, f: &dyn Fn(Node<'_, '_>) -> bool) -> bool {
-    if f(node) {
-        return true;
-    }
-    let mut found = false;
-    node.visit_children(|child| {
-        if !found && any_node(child, f) {
-            found = true;
+    // An explicit stack, not recursion: rules call this on whole functions and classes, and a debug build's
+    // recursive walk of one ran out of a 2 MB worker stack on pinkary.
+    let mut stack = vec![node];
+    while let Some(node) = stack.pop() {
+        if f(node) {
+            return true;
         }
-    });
-    found
+        node.visit_children(|child| stack.push(child));
+    }
+    false
 }
 
 /// `SideEffectNodeDetector::detectCallExpr` for one expression (not the ones inside it).

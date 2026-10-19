@@ -1,0 +1,28 @@
+{
+    "test": "Rules/ConfigCollectionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/config-collection-rule.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/config-collection-rule.php",
+                    "line": 11,
+                    "identifier": "larastan.configCollection",
+                    "message": "Config key 'test.foo' is not an array.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/config-collection-rule.php",
+                    "line": 12,
+                    "identifier": "larastan.configCollection",
+                    "message": "Config key 'test.bar' is not an array.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

@@ -4,8 +4,8 @@
 
 use mago_syntax::cst::{
     Argument, ArgumentList, Assignment, AssignmentOperator, BinaryOperator, Call, Expression,
-    ForeachTarget, Hint, Identifier, Instantiation, Literal, MethodBody, NamespaceBody, Node,
-    Statement, UnaryPrefixOperator, UseItem, UseItems, Variable,
+    ForeachTarget, Hint, Identifier, Instantiation, Literal, Method, MethodBody, NamespaceBody,
+    Node, Statement, UnaryPrefixOperator, UseItem, UseItems, Variable,
 };
 use pun_problem::{Edit, Span};
 
@@ -27,16 +27,14 @@ pub fn unpacked(arg: &Argument<'_>) -> bool {
 }
 
 /// The edit php-parser's printer makes when it removes the argument at `index`: the argument and the separator before
-/// it, or, for the first of several, the argument and the text up to the next one.
+/// it, or, for the first, the argument and the text up to the next one (the callers never remove a sole argument).
 pub fn remove_argument(list: &ArgumentList<'_>, index: usize) -> Edit {
     let items = list.arguments.as_slice();
     let span = node_span(&items[index]);
     if index > 0 {
         Edit::new(Span::new(node_span(&items[index - 1]).end, span.end), "")
-    } else if let Some(next) = items.get(1) {
-        Edit::new(Span::new(span.start, node_span(next).start), "")
     } else {
-        Edit::new(span, "")
+        Edit::new(Span::new(span.start, node_span(&items[1]).start), "")
     }
 }
 
@@ -266,11 +264,12 @@ pub fn known<'a>(
 fn top_level(scope: &Node<'_, '_>, assignment: &Assignment<'_>) -> bool {
     let statements = match scope {
         Node::Function(f) => f.body.statements.as_slice(),
-        Node::Method(m) => match &m.body {
-            MethodBody::Concrete(b) => b.statements.as_slice(),
-            MethodBody::Abstract(_) => &[],
-        },
+        Node::Method(Method {
+            body: MethodBody::Concrete(b),
+            ..
+        }) => b.statements.as_slice(),
         Node::Program(p) => p.statements.as_slice(),
+        // `known` asks only for these scopes (an abstract method has no assignments).
         _ => &[],
     };
     let span = node_span(assignment);
@@ -289,8 +288,9 @@ pub enum Constant {
     Null,
 }
 
-/// `ValueResolver::getValue` where the syntax decides it: a literal, `-`/`+` on a number, a constant PHPStan knows the
-/// value of (`PHP_INT_MAX` and the like), or a variable whose one value (see [`known`]) is one of those.
+/// `ValueResolver::getValue` where the syntax decides it: a literal, `-`/`+` on a number, `~` on a number or string, a
+/// constant PHPStan knows the value of (`PHP_INT_MAX` and the like; not the `PHP_FLOAT_*` ones, which it types
+/// `float`), or a variable whose one value (see [`known`]) is one of those.
 pub fn constant(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) -> Option<Constant> {
     let expr = match known(ancestors, expr, at)? {
         Known::Value(v) => v,
@@ -325,16 +325,20 @@ pub fn constant(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) ->
                 _ => None,
             }
         }
+        Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::BitwiseNot(_)) => {
+            match constant(ancestors, u.operand, at)? {
+                Constant::Int(v) => Some(Constant::Int(!v)),
+                Constant::Float(v) => Some(Constant::Int(!(v as i64))),
+                Constant::String(s) => Some(Constant::String(s.iter().map(|b| !b).collect())),
+                _ => None,
+            }
+        }
         Expression::ConstantAccess(c) => {
             let name = String::from_utf8_lossy(c.name.value());
             match name.trim_start_matches('\\') {
                 "PHP_INT_MAX" => Some(Constant::Int(i64::MAX)),
                 "PHP_INT_MIN" => Some(Constant::Int(i64::MIN)),
                 "PHP_INT_SIZE" => Some(Constant::Int(8)),
-                "PHP_FLOAT_EPSILON" => Some(Constant::Float(f64::EPSILON)),
-                "PHP_FLOAT_MAX" => Some(Constant::Float(f64::MAX)),
-                "PHP_FLOAT_MIN" => Some(Constant::Float(f64::MIN_POSITIVE)),
-                "PHP_FLOAT_DIG" => Some(Constant::Int(15)),
                 _ => None,
             }
         }
@@ -702,21 +706,18 @@ pub fn replace_run(source: &str, list: &List<'_>, first: usize, last: usize, new
 /// `File::containsHTML()`, which keeps Rector's `HTMLAverseRectorInterface` rules off a file: an `InlineHTML`
 /// statement anywhere in it (the newline php-parser's `?>` takes is not one). `node` is the visited node.
 pub fn contains_html(node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
-    fn walk(node: Node<'_, '_>, found: &mut bool) {
-        if *found {
-            return;
-        }
+    // An explicit stack, not recursion: a debug build's `visit_children` frame is large enough that a recursive walk
+    // of a whole file overflows a 2 MB worker stack on pinkary.
+    let mut stack = vec![ancestors.first().copied().unwrap_or(node)];
+    while let Some(node) = stack.pop() {
         if let Node::Statement(Statement::Inline(inline)) = node
             && !(matches!(inline.value, b"\n" | b"\r\n") && inline.span.start.offset > 0)
         {
-            *found = true;
-            return;
+            return true;
         }
-        node.visit_children(|child| walk(child, found));
+        node.visit_children(|child| stack.push(child));
     }
-    let mut found = false;
-    walk(ancestors.first().copied().unwrap_or(node), &mut found);
-    found
+    false
 }
 
 /// The number of line breaks in `source[from..to]`.

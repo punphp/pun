@@ -130,7 +130,7 @@ fn templates(doc: &Doc, scope: &NameScope, describe: &str) -> Vec<TemplateType> 
 }
 
 /// A class-like's own `@template` types.
-fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<TemplateType> {
+pub(super) fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<TemplateType> {
     let Some((doc, scopes)) = doc_at(c, k.span) else {
         return Vec::new();
     };
@@ -160,30 +160,29 @@ fn trait_templates(
     }
     let trait_name = original_name(t);
     let mut args: Option<Vec<Type>> = None;
-    if let Some(contents) = file_contents(c, context.span.file_id) {
-        let scopes = scopes_of(context.span.file_id, &contents);
-        let scope = scope_at(c, context.span, Some(context));
-        for (offset, names) in scopes.trait_uses(context.span.start.offset, context.span.end.offset)
-        {
-            let names_here = scopes.at(*offset);
-            let uses_it = names.iter().any(|n| {
-                let (resolved, _) =
-                    names_here.resolve(mago_names::kind::NameKind::Default, n.as_bytes());
-                resolved.eq_ignore_ascii_case(trait_name.as_bytes())
-            });
-            let Some(doc) = uses_it
-                .then(|| doc_before(&contents, *offset as usize))
-                .flatten()
-            else {
-                continue;
-            };
-            for node in &Doc::parse(&doc).uses {
-                if let Type::Object(name, found) = resolve_in(node, &scope)
-                    && !found.is_empty()
-                    && name.eq_ignore_ascii_case(&trait_name)
-                {
-                    args = Some(found);
-                }
+    // (the class's file is an analysed one)
+    let contents = file_contents(c, context.span.file_id).unwrap_or_default();
+    let scopes = scopes_of(context.span.file_id, &contents);
+    let scope = scope_at(c, context.span, Some(context));
+    for (offset, names) in scopes.trait_uses(context.span.start.offset, context.span.end.offset) {
+        let names_here = scopes.at(*offset);
+        let uses_it = names.iter().any(|n| {
+            let (resolved, _) =
+                names_here.resolve(mago_names::kind::NameKind::Default, n.as_bytes());
+            resolved.eq_ignore_ascii_case(trait_name.as_bytes())
+        });
+        let Some(doc) = uses_it
+            .then(|| doc_before(&contents, *offset as usize))
+            .flatten()
+        else {
+            continue;
+        };
+        for node in &Doc::parse(doc).uses {
+            if let Type::Object(name, found) = resolve_in(node, &scope)
+                && !found.is_empty()
+                && name.eq_ignore_ascii_case(&trait_name)
+            {
+                args = Some(found);
             }
         }
     }
@@ -333,8 +332,6 @@ struct Resolved {
     closure_this: HashMap<String, Type>,
     /// `@phpstan-self-out`
     self_out: Option<Type>,
-    /// whether it is a PHPDoc at all (`getResolvedPhpDoc() !== null`)
-    exists: bool,
 }
 
 /// The own PHPDoc of method `m` declared in `class`, `self` being `context`.
@@ -370,7 +367,6 @@ fn resolved_own(
         outs: Doc::named_types(&doc.outs, &scope),
         closure_this: Doc::named_types(&doc.closure_this, &scope),
         self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-        exists: true,
     })
 }
 
@@ -422,7 +418,6 @@ fn builtin_method_doc(
             })
             .collect(),
         ret: doc.ret.as_deref().map(resolve),
-        exists: true,
         ..Resolved::default()
     })
 }
@@ -451,10 +446,8 @@ fn inherit(
         {
             return None;
         }
+        // (a PHPDoc at all: `getResolvedPhpDoc() !== null`)
         let parent_doc = method_doc(c, declaring.0, &lower, depth + 1)?;
-        if !parent_doc.exists {
-            return None;
-        }
         Some(merge(
             current.clone(),
             parent_doc,
@@ -487,10 +480,12 @@ fn inherit(
         ) else {
             continue;
         };
-        if !m.has_docblock || !m.method_metadata.as_ref().is_some_and(|mm| mm.is_abstract) {
-            continue;
-        }
-        let Some(own) = resolved_own(c, m, trait_, class) else {
+        let abstract_with_doc =
+            m.has_docblock && m.method_metadata.as_ref().is_some_and(|mm| mm.is_abstract);
+        let Some(own) = abstract_with_doc
+            .then(|| resolved_own(c, m, trait_, class))
+            .flatten()
+        else {
             continue;
         };
         return Some(merge(
@@ -529,7 +524,6 @@ fn merge(
     constructor: bool,
 ) -> Resolved {
     let mut out = current.unwrap_or_default();
-    out.exists = true;
     // a constructor's parameters map by name (`resolveMethodPhpDocFromParentClass()`)
     let parent_names: Vec<String> = if constructor {
         positional.to_vec()
@@ -605,7 +599,6 @@ pub fn method(
             outs: Doc::named_types(&doc.outs, &scope),
             closure_this: Doc::named_types(&doc.closure_this, &scope),
             self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-            exists: true,
         }
     });
     let positional: Vec<String> = m
@@ -647,7 +640,6 @@ pub fn function(c: &Checker, f: &Function) -> Signature {
                 outs: Doc::named_types(&doc.outs, &scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
                 self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-                exists: true,
             }
         })
         .unwrap_or_default();
@@ -770,13 +762,11 @@ fn is_constructor(k: &ClassLikeMetadata, lower: &[u8]) -> bool {
 
 /// A `= null` default.
 pub fn default_is_null(p: &FunctionLikeParameter) -> bool {
-    matches!(
-        p.default_value.as_ref().map(|d| d.value),
-        Some(Expression::Literal(Literal::Null(_)))
-    ) || matches!(
-        p.default_value.as_ref().map(|d| d.value),
-        Some(Expression::ConstantAccess(a)) if a.name.value().eq_ignore_ascii_case(b"null")
-    )
+    match p.default_value.as_ref().map(|d| d.value) {
+        Some(Expression::Literal(Literal::Null(_))) => true,
+        Some(Expression::ConstantAccess(a)) => a.name.value().eq_ignore_ascii_case(b"null"),
+        _ => false,
+    }
 }
 
 /// A property's `getReadableType()`: the native type, narrowed by its `@var` (inherited from a parent's property
@@ -791,8 +781,14 @@ pub fn property(
     let native = hint.map(|h| native(c, h, Some(context)));
     let mut phpdoc = doc_before(&c.file.contents, at.start.offset as usize).and_then(|doc| {
         let doc = Doc::parse(doc);
-        // (a trait's templates are not in scope: PHPStan reports nothing for a `@var` of one)
-        let scope = scope_at(c, at, Some(context));
+        // in a trait, its templates as the class's `@use` tag gives them (else their bounds)
+        let mut scope = scope_at(c, at, Some(context));
+        if let Some(t) = c
+            .in_trait()
+            .and_then(|t| c.codebase.get_class_like(t.as_bytes()))
+        {
+            scope.templates.extend(trait_templates(c, t, context));
+        }
         doc.var_types(&scope)
             .into_iter()
             .find(|(n, _)| n.is_empty() || n.as_bytes() == name)
@@ -832,14 +828,12 @@ fn inherited_property_doc(
     var.push(b'$');
     var.extend_from_slice(name);
     for parent in parents {
-        let Some(declaring) = parent
+        let Some((declaring, p)) = parent
             .declaring_property_ids
             .get(&mago_word::word(&var))
             .and_then(|k| c.codebase.get_class_like(k.as_bytes()))
+            .and_then(|d| Some((d, d.properties.get(&mago_word::word(&var))?)))
         else {
-            continue;
-        };
-        let Some(p) = declaring.properties.get(&mago_word::word(&var)) else {
             continue;
         };
         if p.read_visibility == mago_codex::visibility::Visibility::Private {
@@ -852,10 +846,21 @@ fn inherited_property_doc(
                 .get(&text(name))
                 .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
         }
-        let Some(span) = p.span else {
-            continue;
-        };
-        let own = doc_at(c, span).and_then(|(doc, _)| {
+        // Mago gives a plain property only its name's span: its declaration starts at the modifiers and type before it
+        // ponytail: not past an attribute, nor to the first item of `public $a, $b`
+        let span = p.span.or_else(|| {
+            let mut span = p.name_span?;
+            let contents = file_contents(c, span.file_id)?;
+            let before = contents[..span.start.offset as usize]
+                .iter()
+                .rev()
+                .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
+                .count();
+            span.start.offset -= before as u32;
+            Some(span)
+        });
+        let own = span.and_then(|span| {
+            let (doc, _) = doc_at(c, span)?;
             let doc = Doc::parse(&doc);
             let scope = scope_at(c, span, Some(declaring));
             doc.var_types(&scope)
@@ -1148,11 +1153,15 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                         })
                         .collect()
                 });
-            for ancestor in p.generics.keys() {
-                if let Some(mapped) = pun_phpstan::types::ancestor_args(&p, ancestor, &args) {
-                    out.entry(ancestor.clone())
-                        .or_insert_with(|| mapped.iter().map(serialize).collect());
-                }
+            let mapped = p.generics.keys().filter_map(|ancestor| {
+                Some((
+                    ancestor,
+                    pun_phpstan::types::ancestor_args(&p, ancestor, &args)?,
+                ))
+            });
+            for (ancestor, mapped) in mapped {
+                out.entry(ancestor.clone())
+                    .or_insert_with(|| mapped.iter().map(serialize).collect());
             }
             out.insert(p.name.clone(), args.iter().map(serialize).collect());
         }

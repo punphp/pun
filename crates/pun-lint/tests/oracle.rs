@@ -230,3 +230,30 @@ fn return_in_constructor_in_parentheses() {
 fn useless_block() {
     check_rule_oracle(rules::NoUselessBlock, "no_useless_block.php.inc");
 }
+
+#[test]
+fn empty_array_identical_on_a_parameter_written_later() {
+    // PHPStan's scope keeps a parameter's native type until a write; one after the check (outside a loop) leaves it.
+    check_rule_oracle(
+        rules::PreferEmptyArrayIdentical,
+        "prefer_empty_array_identical.php.inc",
+    );
+}
+
+#[test]
+fn arrow_function_return_type_of_a_member_of_an_unknown_class() {
+    // Mago types a member of `?Unknown` as `null` and of `new Unknown()` as `never`; PHPStan knows no type for either.
+    check_rule_oracle(
+        rules::AddArrowFunctionReturn,
+        "add_arrow_function_return_type_unknown_class.php.inc",
+    );
+}
+
+#[test]
+fn statement_padding_skips_a_file_with_inline_html() {
+    // NewlineAfterStatementRector is HTML-averse: the `if` would get its blank line without the `<p>` after `?>`.
+    check_rule_oracle(
+        rules::RequireStatementPadding,
+        "require_statement_padding_html.php.inc",
+    );
+}

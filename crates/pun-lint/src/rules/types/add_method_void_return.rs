@@ -55,15 +55,12 @@ impl Rule for AddMethodVoidReturn {
                 return;
             }
         }
-        let modifiers = &method.modifiers;
-        if modifiers
-            .iter()
-            .any(|m| matches!(m, Modifier::Protected(_)))
+        if !scope.is_final
+            && method
+                .modifiers
+                .iter()
+                .any(|m| matches!(m, Modifier::Protected(_)))
         {
-            if !scope.is_final {
-                return;
-            }
-        } else if scope.is_abstract && count == 0 {
             return;
         }
         if scope.is_interface || !has_exclusive_void(body) {
@@ -74,7 +71,10 @@ impl Rule for AddMethodVoidReturn {
         if name != b"__invoke" && MAGIC.iter().any(|m| m.as_bytes() == name) {
             return;
         }
-        let private = modifiers.iter().any(|m| matches!(m, Modifier::Private(_)));
+        let private = method
+            .modifiers
+            .iter()
+            .any(|m| matches!(m, Modifier::Private(_)));
         if !private && is_return_vendor_locked(&facts(ctx), &scope, method.name.value) {
             return;
         }

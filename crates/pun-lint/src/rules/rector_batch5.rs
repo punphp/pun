@@ -36,17 +36,20 @@ pub(crate) fn replace_with<'a>(
     };
     let span = node_span(list.stmts[index]);
     let indent = line_indent(source, span.start);
-    let text = if list.frame == Frame::Bare {
-        // php-parser prints the statements the single statement of a control structure becomes in braces.
-        let inner = format!("{indent}    ");
-        format!(
-            "{{\n{inner}{}\n{indent}}}",
+    if list.frame == Frame::Bare && stmts.len() > 1 {
+        // php-parser prints the statements the single statement of a control structure becomes in braces, after the
+        // header at the control structure's indent; one statement takes its place.
+        let from = source[..span.start].trim_end().len();
+        let outer = line_indent(source, from);
+        let inner = format!("{outer}    ");
+        let text = format!(
+            " {{\n{inner}{}\n{outer}}}",
             moved_statements(source, stmts, &inner)
-        )
-    } else {
-        inserted_statements(source, stmts, indent)
-    };
-    if alone && stmts.len() > 1 && list.frame != Frame::Bare {
+        );
+        return vec![Edit::new(Span::new(from, span.end), text)];
+    }
+    let text = inserted_statements(source, stmts, indent);
+    if alone && stmts.len() > 1 {
         // php-parser's differ sees one removal and several additions (not a replacement), and pArray drops the
         // removed statement with its comments and the whitespace on one side: after it when it is first (the
         // additions wait for the next kept statement), before it otherwise.
@@ -190,8 +193,7 @@ pub(crate) fn merge(mut edits: Vec<Edit>) -> Vec<Edit> {
 pub(crate) fn doc_comment(source: &str, from: usize, start: usize) -> Option<Span> {
     let last = tokens(source, from, start)
         .into_iter()
-        .filter(|t| t.kind.is_comment())
-        .last()?;
+        .rfind(|t| t.kind.is_comment())?;
     (last.kind == TokenKind::DocBlockComment).then(|| Span::new(last.start, last.end))
 }
 
@@ -216,6 +218,26 @@ pub(crate) fn doc_without_params(doc: &str, names: &[&[u8]]) -> Option<String> {
     let removed: Vec<bool> = nodes
         .iter()
         .map(|n| param_tag_name(&doc[n.start..n.end]).is_some_and(|name| names.contains(&name)))
+        .collect();
+    if !removed.contains(&true) {
+        return None;
+    }
+    let Some(edits) = list_removal(&nodes, &removed) else {
+        return Some(String::new());
+    };
+    let mut out = doc.to_string();
+    for edit in edits.iter().rev() {
+        out.replace_range(edit.span.start..edit.span.end, &edit.text);
+    }
+    Some(out)
+}
+
+/// [`doc_without_params`] for the tags `remove` picks by their text (from the `@` to the end of their description).
+pub(crate) fn doc_without_tags(doc: &str, remove: impl Fn(&str) -> bool) -> Option<String> {
+    let nodes = doc_nodes(doc);
+    let removed: Vec<bool> = nodes
+        .iter()
+        .map(|n| doc[n.start..n.end].starts_with('@') && remove(&doc[n.start..n.end]))
         .collect();
     if !removed.contains(&true) {
         return None;
@@ -286,9 +308,11 @@ fn param_tag_name(tag: &str) -> Option<&[u8]> {
     None
 }
 
+type IsModifier = fn(&Modifier<'_>) -> bool;
+
 /// php-parser's `pModifiers`: the modifiers in its order, each followed by a space.
 pub(crate) fn modifiers_text(modifiers: &Sequence<'_, Modifier<'_>>) -> String {
-    let order: [(fn(&Modifier<'_>) -> bool, &str); 8] = [
+    let order: [(IsModifier, &str); 8] = [
         (|m| matches!(m, Modifier::Final(_)), "final "),
         (|m| matches!(m, Modifier::Abstract(_)), "abstract "),
         (|m| matches!(m, Modifier::Public(_)), "public "),
@@ -570,10 +594,7 @@ fn uses_param(node: Node<'_, '_>, name: &[u8]) -> bool {
         }
         Node::FunctionCall(call) if named(call, "compact") => {
             let names = call.argument_list.arguments.iter().any(|a| {
-                let Argument::Positional(a) = a else {
-                    return false;
-                };
-                matches!(value(a.value), Some(Value::Str(s)) if s.as_bytes().eq_ignore_ascii_case(&name[1..]))
+                matches!(value(a.value()), Some(Value::Str(s)) if s.as_bytes().eq_ignore_ascii_case(&name[1..]))
             });
             if names {
                 return true;
@@ -693,7 +714,7 @@ pub(crate) fn remove_members(
     right_brace: mago_span::Span,
     removed: &[bool],
 ) -> Vec<Edit> {
-    let spans: Vec<Span> = members.iter().map(|m| node_span(m)).collect();
+    let spans: Vec<Span> = members.iter().map(node_span).collect();
     let froms: Vec<usize> = (0..spans.len())
         .map(|i| member_from(members, left_brace, i))
         .collect();
@@ -788,9 +809,9 @@ pub(crate) fn native_array(expr: &Expression<'_>, ancestors: &[Node<'_, '_>]) ->
                     matches!(p.hint, Some(Hint::Array(_)))
                         && p.ampersand.is_none()
                         && p.ellipsis.is_none()
+                        // `null` in any case is a literal.
                         && !p.default_value.as_ref().is_some_and(|d| {
                             matches!(unparenthesize(d.value), Expression::Literal(Literal::Null(_)))
-                                || matches!(unparenthesize(d.value), Expression::ConstantAccess(c) if c.name.value().eq_ignore_ascii_case(b"null"))
                         })
                         && writes == Some(0)
                 }
@@ -806,8 +827,7 @@ fn array_property(ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
     let members = ancestors.iter().rev().find_map(|n| match n {
         Node::Class(c) => Some(&c.members),
         Node::AnonymousClass(c) => Some(&c.members),
-        Node::Trait(t) => Some(&t.members),
-        Node::Enum(_) | Node::Interface(_) => None,
+        // A trait's methods run without a class in Rector's scope, so PHPStan knows no property type there.
         _ => None,
     });
     let Some(members) = members else { return false };
@@ -832,13 +852,15 @@ fn function_like<'a>(
     ancestors: &[Node<'a, 'a>],
 ) -> Option<(&'a FunctionLikeParameterList<'a>, Node<'a, 'a>)> {
     ancestors.iter().rev().find_map(|n| match n {
-        Node::Method(m) => match &m.body {
-            MethodBody::Concrete(b) => Some((&m.parameter_list, Node::Block(b))),
-            MethodBody::Abstract(_) => None,
-        },
+        Node::Method(
+            m @ Method {
+                body: MethodBody::Concrete(b),
+                ..
+            },
+        ) => Some((&m.parameter_list, Node::Block(b))),
         Node::Function(f) => Some((&f.parameter_list, Node::Block(&f.body))),
+        // An arrow function holds no statement, so no `foreach` asks from inside one.
         Node::Closure(c) => Some((&c.parameter_list, Node::Block(&c.body))),
-        Node::ArrowFunction(a) => Some((&a.parameter_list, Node::Expression(a.expression))),
         _ => None,
     })
 }

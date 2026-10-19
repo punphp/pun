@@ -1,0 +1,164 @@
+{
+    "test": "Rules/NoUnnecessaryCollectionCallRuleTest",
+    "cases": [
+        {
+            "method": "testNoFalsePositives",
+            "files": [
+                "Rules/data/CorrectCollectionCalls.php"
+            ],
+            "scanned": [],
+            "errors": []
+        },
+        {
+            "method": "testNoFalseNegativesEloquent",
+            "files": [
+                "Rules/data/UnnecessaryCollectionCallsEloquent.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 18,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'pluck' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 23,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'count' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 29,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'pluck' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 34,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'count' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 39,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'first' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 45,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'take' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 50,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'count' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 57,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'isEmpty' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 62,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'first' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 67,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'contains' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 72,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'count' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 78,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'where' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 84,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'diff' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 92,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'modelKeys' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 97,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'containsStrict' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsEloquent.php",
+                    "line": 103,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'sum' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "testNoFalseNegativesQuery",
+            "files": [
+                "Rules/data/UnnecessaryCollectionCallsQuery.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsQuery.php",
+                    "line": 15,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'max' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsQuery.php",
+                    "line": 20,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'isNotEmpty' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/UnnecessaryCollectionCallsQuery.php",
+                    "line": 26,
+                    "identifier": "larastan.noUnnecessaryCollectionCall",
+                    "message": "Called 'pluck' on Laravel collection, but could have been retrieved as a query.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

@@ -18,11 +18,10 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
     };
     let constant_name = String::from_utf8_lossy(constant.value).into_owned();
     let is_class = constant_name.eq_ignore_ascii_case("class");
-    let in_class = !c.classes.is_empty();
     let written = String::from_utf8_lossy(&c.file.contents[access.class.span().to_range_usize()])
         .into_owned();
-    let (class, described) = match access.class {
-        Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) if !in_class => {
+    let (class, described) = match (access.class, c.class_scope()) {
+        (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_), None) => {
             let identifier = super::out_of_class(access.class);
             c.report(
                 access,
@@ -32,10 +31,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
             );
             return;
         }
-        Expression::Self_(_) | Expression::Static(_) => {
-            let Some(scope) = c.class_scope() else {
-                return;
-            };
+        (Expression::Self_(_) | Expression::Static(_), Some(scope)) => {
             let display = c.display(scope);
             let described = if matches!(access.class, Expression::Static(_)) {
                 format!("static({display})")
@@ -44,10 +40,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
             };
             (Known::User(scope), described)
         }
-        Expression::Parent(_) => {
-            let Some(scope) = c.class_scope() else {
-                return;
-            };
+        (Expression::Parent(_), Some(scope)) => {
             let parent = scope
                 .direct_parent_class
                 .and_then(|p| known(c, &String::from_utf8_lossy(p.as_bytes())));
@@ -63,7 +56,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
                 }
             }
         }
-        Expression::Identifier(id) => {
+        (Expression::Identifier(id), _) => {
             let name = c.resolved(id);
             match known(c, &name) {
                 Some(k) => {
@@ -305,6 +298,9 @@ fn hint_classes<'arena>(
 ) {
     match hint {
         Hint::Identifier(id) => out.push((c.resolved(id), id.span())),
+        // outside a class `self` and `static` are classes of that name (ParserNodeTypeToPHPStanType)
+        Hint::Self_(k) if c.class_scope().is_none() => out.push(("self".to_string(), k.span())),
+        Hint::Static(k) if c.class_scope().is_none() => out.push(("static".to_string(), k.span())),
         Hint::Parenthesized(p) => hint_classes(c, p.hint, out),
         Hint::Nullable(n) => hint_classes(c, n.hint, out),
         Hint::Union(u) => {
@@ -408,7 +404,11 @@ fn typehint_pairs(c: &Checker, names: &[(String, Span)], at: Span, at_is_name: b
     names
         .iter()
         .map(|(class, span)| {
-            let original = class_names::original_case(c, *span);
+            // (`self` and `static` outside a class are keywords, not names)
+            let original = match class.as_str() {
+                "self" | "static" => class.clone(),
+                _ => class_names::original_case(c, *span),
+            };
             if original != *class {
                 Pair::name(original, *span)
             } else if at_is_name {
@@ -602,9 +602,10 @@ pub fn property_type<'arena>(
     let Some(hint) = hint else {
         return;
     };
-    let Some(class) = c.class_scope() else {
-        return;
-    };
+    // properties are walked inside their class-like (trait bodies only in a class's context)
+    let class = c
+        .class_scope()
+        .expect("a property is walked inside its class-like");
     let display = c.display(class);
     let mut classes = Vec::new();
     hint_classes(c, hint, &mut classes);

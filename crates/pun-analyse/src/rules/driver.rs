@@ -39,14 +39,14 @@ pub(crate) struct Checks {
     generic_iterable_classes: bool,
     /// [`Project::new_static_in_abstract_class_static_method`].
     new_static_in_abstract_class_static_method: bool,
-    /// [`Project::internal_tag`].
-    internal_tag: bool,
     /// [`Project::relative_path`].
     relative_path: RelativePath,
     /// [`Project::larastan`].
     larastan: Option<super::Larastan>,
     /// The `@internal` method names, at level 2 with `featureToggles.internalTag` (config.level2.neon).
     internal: Option<super::internal::Names>,
+    /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension (config.level0.neon).
+    internal_tag: bool,
 }
 
 impl Checks {
@@ -60,7 +60,6 @@ impl Checks {
             level: project.level,
             generic_iterable_classes: project.check_generic_iterable_classes,
             new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
-            internal_tag: project.internal_tag,
             php_version: project.php_version,
             report_ignores_without_comments: project.report_ignores_without_comments,
             report_unmatched_ignores: project.report_unmatched_ignores,
@@ -68,6 +67,7 @@ impl Checks {
             larastan,
             internal: (project.level >= 2 && project.internal_tag)
                 .then(|| super::internal::Names::of(codebase)),
+            internal_tag: project.internal_tag,
         }
     }
 }
@@ -105,7 +105,16 @@ fn checker<'a, 'arena>(
         property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
-        types: infer(arena, file, program, names, codebase, php_version, project.level, typed),
+        types: infer(
+            arena,
+            file,
+            program,
+            names,
+            codebase,
+            php_version,
+            project.level,
+            typed,
+        ),
         names,
         codebase,
         classes: Vec::new(),
@@ -145,10 +154,10 @@ fn checker<'a, 'arena>(
         level: project.level,
         generic_iterable_classes: project.generic_iterable_classes,
         new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
-        internal_tag: project.internal_tag,
         larastan: project.larastan.as_ref(),
         larastan_state: Default::default(),
         internal: project.internal.as_ref(),
+        internal_tag: project.internal_tag,
         errors: Vec::new(),
     }
 }

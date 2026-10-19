@@ -46,7 +46,7 @@ pub(crate) struct On {
 }
 
 /// Lint rule IDs a ported token fixer backs, to the fixer's name.
-fn token_rules() -> &'static HashMap<&'static str, &'static str> {
+pub(crate) fn token_rules() -> &'static HashMap<&'static str, &'static str> {
     static T: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
         let ported: BTreeSet<&'static str> = pun_fixers::all().iter().map(|f| f.name()).collect();
         (pun_config::fixer_entries().iter())
@@ -173,10 +173,8 @@ impl Plan {
                 match s.level {
                     None => drop(on.remove(&s.id)),
                     Some(l) => {
-                        let options = match s.options.is_null() {
-                            true => on.get(&s.id).map_or(Value::Null, |o| o.options.clone()),
-                            false => s.options.clone(),
-                        };
+                        // pun-config rejects options in an override: the rule keeps its [lint.rules] options.
+                        let options = on.get(&s.id).map_or(Value::Null, |o| o.options.clone());
                         let rule = On {
                             level: level(l),
                             fix: s.fix,
@@ -237,8 +235,7 @@ fn targets(name: &str) -> Result<Vec<String>> {
 
 /// Whether `lint/<group>` names a group of rules/mapping.toml's `[meta.groups]`.
 fn is_group(id: &str) -> bool {
-    let Some(group) = id.strip_prefix("lint/") else {
-        return false;
-    };
-    !group.contains('/') && pun_config::groups().iter().any(|g| g == group)
+    (id.strip_prefix("lint/")).is_some_and(|group| {
+        !group.contains('/') && pun_config::groups().iter().any(|g| g == group)
+    })
 }

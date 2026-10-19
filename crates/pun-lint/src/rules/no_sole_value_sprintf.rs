@@ -90,18 +90,13 @@ pub(crate) fn is_string(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bo
     let Expression::Variable(Variable::Direct(v)) = unparenthesize(expr) else {
         return false;
     };
-    let Some(body) = ancestors
-        .iter()
-        .rev()
-        .find(|n| matches!(n, Node::Function(_) | Node::Method(_) | Node::Closure(_)))
-    else {
+    let Some((body, params)) = ancestors.iter().rev().find_map(|n| match n {
+        Node::Function(f) => Some((n, &f.parameter_list)),
+        Node::Method(m) => Some((n, &m.parameter_list)),
+        Node::Closure(c) => Some((n, &c.parameter_list)),
+        _ => None,
+    }) else {
         return false;
-    };
-    let params = match body {
-        Node::Function(f) => &f.parameter_list,
-        Node::Method(m) => &m.parameter_list,
-        Node::Closure(c) => &c.parameter_list,
-        _ => unreachable!(),
     };
     let param = params.parameters.iter().find(|p| p.variable.name == v.name);
     if param.is_some_and(|p| !matches!(p.hint, Some(Hint::String(_)))) {

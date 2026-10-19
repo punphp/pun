@@ -259,6 +259,9 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
             for r in &mut natives {
                 configure(&cfg, r.as_mut())?;
             }
+            if natives.iter().any(|r| r.id().starts_with("lint/types/")) {
+                project_codebase(&cfg)?;
+            }
             natives
         }
         false => vec![],
@@ -409,6 +412,27 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     Ok(if crashed { 2 } else { u8::from(failed) })
 }
 
+/// The `types` rules look classes up in the project's other files, as Rector's PHPStan reflection does: scan every
+/// file `pun lint` would check (not only the ones named on the command line) into the codebase they share.
+/// ponytail: vendor/ isn't scanned, so a parent class from a package stays unknown; scan Composer's autoload on demand
+/// as pun-analyse's project.rs does when the residuals need it.
+fn project_codebase(cfg: &Config) -> Result<()> {
+    use pun_lint::rules::facts;
+    let files = pun_workspace::files(cfg, Some(pun_workspace::Command::Lint), &[])?;
+    let sources: Vec<(String, String)> = (files.par_iter())
+        .filter_map(|f| {
+            let rel = f.strip_prefix(&cfg.root).unwrap_or(f);
+            Some((
+                rel.to_string_lossy().into_owned(),
+                std::fs::read_to_string(f).ok()?,
+            ))
+        })
+        .collect();
+    let codebase = facts::project_codebase(&sources, cfg.php_version().to_id());
+    facts::set_project_codebase(Some(codebase));
+    Ok(())
+}
+
 /// The threads that read the files (context/plan/lint.md, perf lint 4): opening files on more than about four
 /// threads at once slows each open on macOS, so a few threads read and every core checks what they read.
 const READERS: usize = 3;
@@ -426,11 +450,10 @@ fn read_in_parallel<T: Send>(
         for _ in 0..READERS.min(files.len()) {
             let (tx, next) = (tx.clone(), &next);
             s.spawn(move || {
-                while let Some(path) = files.get(next.fetch_add(1, Ordering::Relaxed)) {
-                    if tx.send((path, std::fs::read(path))).is_err() {
-                        break;
-                    }
-                }
+                // Stops early only when the receiver is gone (the processing panicked).
+                while let Some(path) = files.get(next.fetch_add(1, Ordering::Relaxed))
+                    && tx.send((path, std::fs::read(path))).is_ok()
+                {}
             });
         }
         drop(tx);
@@ -460,13 +483,10 @@ fn token_rules(on: &BTreeMap<String, On>, fix: bool, pending: bool) -> Vec<Rule>
         .collect()
 }
 
-/// A native problem's rule ID as the `'static` string the reports list fixers by.
+/// A fixed native problem's rule ID as the `'static` string the reports list fixers by: a native rule, else the
+/// unused-ignore check (a malformed ignore has no fix).
 fn static_id(rule: &str) -> &'static str {
-    match lint_plan::native_rules().get(rule) {
-        Some(id) => id,
-        None if rule == lint_plan::UNUSED_IGNORE => lint_plan::UNUSED_IGNORE,
-        None => crate::analyse::INVALID_IGNORE,
-    }
+    (lint_plan::native_rules().get(rule).copied()).unwrap_or(lint_plan::UNUSED_IGNORE)
 }
 
 /// One round of the native rules' problems, as the file's levels and comments leave them: rules that are off for
@@ -669,10 +689,7 @@ fn process_file(
     }
     let warned: Vec<&'static str> = (token_on.iter())
         .filter(|(_, o)| o.level == pun_problem::Level::Warning)
-        .filter_map(|(id, _)| match lint_plan::engine(id) {
-            Some(Engine::Token(fixer)) => Some(fixer),
-            _ => None,
-        })
+        .filter_map(|(id, _)| lint_plan::token_rules().get(id.as_str()).copied())
         .collect();
     r.warned = warned.clone();
 

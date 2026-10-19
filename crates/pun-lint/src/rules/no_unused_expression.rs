@@ -17,7 +17,9 @@ use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
 use super::rector_batch5::doc_comment;
-use super::rector_stmts::{Frame, HOLDERS, body_list, holder_list, line_indent, remove};
+use super::rector_stmts::{
+    Frame, HOLDERS, block_list, body_list, holder_list, line_indent, remove,
+};
 use super::side_effect::any_node;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -56,13 +58,16 @@ impl Rule for NoUnusedExpression {
         }
         let mut living = Vec::new();
         keep_living(ancestors, expr, &mut living);
-        if living.len() == 1 && std::ptr::eq(living[0], expr) {
+        // php-parser has no node for parentheses, so `(foo());` is the call itself.
+        if living.len() == 1 && std::ptr::eq(living[0], unparenthesize(expr)) {
             return;
         }
         // The statement's place: an item of a statement list, or the one statement of a control structure's body.
         let (list, key) = if HOLDERS.contains(&grand.kind()) {
-            let Some(list) = holder_list(source, *grand, &ancestors[..ancestors.len() - 2]) else {
-                return;
+            // Rector removes the statement wherever it is, in a property hook's body too, where `holder_list` has none.
+            let list = match grand {
+                Node::Block(block) => block_list(source, block),
+                _ => holder_list(source, *grand, &ancestors[..ancestors.len() - 2]).unwrap(),
             };
             let key = list
                 .stmts
@@ -145,8 +150,8 @@ fn declared_property(scope: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
         _ => return false,
     };
     let Some(members) = scope.iter().rev().find_map(|n| match n {
+        // A trait's methods run without a class in Rector's scope, so it keeps their fetches.
         Node::Class(c) => Some(&c.members),
-        Node::Trait(t) => Some(&t.members),
         Node::Enum(e) => Some(&e.members),
         Node::AnonymousClass(c) => Some(&c.members),
         _ => None,
@@ -294,23 +299,21 @@ fn may_be_object(scope: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
     if v.name == b"$this" {
         return true;
     }
-    let Some(body) = scope.iter().rev().find(|n| {
-        matches!(
-            n,
-            Node::Function(_)
-                | Node::Method(_)
-                | Node::Closure(_)
-                | Node::ArrowFunction(_)
-                | Node::Program(_)
-        )
-    }) else {
-        return false;
-    };
+    // The statement's function, or the file (an arrow function holds no statement).
+    let body = scope
+        .iter()
+        .rev()
+        .find(|n| {
+            matches!(
+                n,
+                Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::Program(_)
+            )
+        })
+        .unwrap();
     let parameters = match body {
         Node::Function(f) => Some(&f.parameter_list),
         Node::Method(m) => Some(&m.parameter_list),
         Node::Closure(c) => Some(&c.parameter_list),
-        Node::ArrowFunction(a) => Some(&a.parameter_list),
         _ => None,
     };
     if parameters.is_some_and(|list| {

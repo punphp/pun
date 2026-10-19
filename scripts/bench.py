@@ -257,7 +257,10 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
             "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in native_rules()))
         (work / "pun-bench-rector.php").write_text(
             "<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
-            f"    ->withPaths([{paths}])\n    ->withRules([{rules}])\n    ->withPhpVersion(80400);\n")
+            f"    ->withPaths([{paths}])\n    ->withRules([{rules}])\n    ->withPhpVersion(80400)\n"
+            # Rector's 120 s per batch of files times out on a busy machine, and a timed-out batch's files go
+            # unprocessed.
+            "    ->withParallel(timeoutSeconds: 900);\n")
 
 
 def native_rules() -> list[str]:

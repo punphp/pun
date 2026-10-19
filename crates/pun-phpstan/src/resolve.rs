@@ -625,8 +625,15 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
         return Type::Object(class_name, types);
     };
     let iterable = main.is_iterable().yes();
-    // ponytail: template defaults are not filled in for missing arguments; no built-in class can miss one (only
-    // FFI\CData has a default, on its only template). Add for user-defined classes.
+    // the defaults of the templates after the given arguments (a required one is skipped, not filled)
+    let defaults: Vec<Type> = reflection
+        .templates
+        .iter()
+        .skip(types.len())
+        .filter_map(|t| t.default.as_deref())
+        .map(|d| resolve_str(d, Some(&class_name)))
+        .collect();
+    types.extend(defaults);
     if !reflection.templates.is_empty() {
         if ["Traversable", "IteratorAggregate", "Iterator"].contains(&class_name.as_str())
             && types.len() == 1

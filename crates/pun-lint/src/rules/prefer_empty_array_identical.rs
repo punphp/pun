@@ -119,10 +119,10 @@ fn narrowed(
     }
     let body = ancestors.iter().rev().find_map(|n| match n {
         Node::Function(f) => Some(&f.body),
-        Node::Method(m) => match &m.body {
-            MethodBody::Concrete(b) => Some(b),
-            _ => None,
-        },
+        Node::Method(Method {
+            body: MethodBody::Concrete(b),
+            ..
+        }) => Some(b),
         Node::Closure(c) => Some(&c.body),
         _ => None,
     });

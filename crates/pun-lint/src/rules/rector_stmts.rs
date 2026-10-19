@@ -789,8 +789,7 @@ fn by_ref_use(clause: &ClosureUseClause<'_>, name: &[u8]) -> bool {
 pub fn has_var_tag(source: &str, comments_start: usize, statement_start: usize) -> bool {
     let Some(doc) = tokens(source, comments_start, statement_start)
         .into_iter()
-        .filter(|t| t.kind == TokenKind::DocBlockComment)
-        .last()
+        .rfind(|t| t.kind == TokenKind::DocBlockComment)
     else {
         return false;
     };

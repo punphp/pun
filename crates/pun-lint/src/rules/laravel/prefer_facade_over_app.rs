@@ -47,14 +47,14 @@ impl Rule for PreferFacadeOverApp {
                 .unwrap_or_else(|| String::from_utf8_lossy(id.value).into_owned()),
             (Some(id), _) => {
                 let value = String::from_utf8_lossy(id.value());
-                if value.starts_with("namespace\\") {
+                if let Some(rest) = value.strip_prefix("namespace\\") {
                     if ancestors
                         .iter()
                         .any(|n| matches!(n, Node::Namespace(ns) if ns.name.is_some()))
                     {
                         return;
                     }
-                    value[10..].to_string()
+                    rest.to_string()
                 } else {
                     value.trim_start_matches('\\').to_string()
                 }

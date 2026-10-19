@@ -1,0 +1,149 @@
+{
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 with checkConfigTypes, on ConfigCases.php copied to app/Pun of a pinkary checkout and config/ added to its config directory",
+    "errors": [
+        {
+            "file": "ConfigCases.php",
+            "line": 11,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.string' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 13,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.int' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 14,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.float' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 15,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.true' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 16,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.null' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 17,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.env' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 18,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.path' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 19,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.concat' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 20,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.class' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 21,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.interpolated' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 24,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.nested.string' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 26,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.nested.5' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 29,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.string.deeper' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 30,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.missing' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 31,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.7' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 33,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'nope.key' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 34,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punnested.value' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 35,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'nested/punnested.value' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 36,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlist.a' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 37,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc.a' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 39,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'puncall.a' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 41,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.list' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 42,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.string' is not an array."
+        },
+        {
+            "file": "ConfigCases.php",
+            "line": 48,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pun.int' is not an array."
+        }
+    ]
+}

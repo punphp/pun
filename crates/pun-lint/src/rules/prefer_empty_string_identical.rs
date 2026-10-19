@@ -7,6 +7,7 @@
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety};
 
+use super::lint_b_helpers::{unpacked, value};
 use super::no_sole_value_sprintf::is_string;
 use super::rector_batch5::called_function_name;
 use crate::syntax::{node_span, unparenthesize};
@@ -58,14 +59,15 @@ impl Rule for PreferEmptyStringIdentical {
             BinaryOperator::LessThan(_) if call_on_left => return,
             _ => {}
         }
-        let Some(Argument::Positional(arg)) = call.argument_list.arguments.first() else {
+        // `getArgs()[0]`, named or not; Rector also takes an unpacked one, which changes the meaning.
+        let Some(arg) = call.argument_list.arguments.first() else {
             return;
         };
-        if arg.ellipsis.is_some() {
+        if unpacked(arg) {
             return;
         }
         let source = ctx.source;
-        let value = unparenthesize(arg.value);
+        let value = unparenthesize(value(arg));
         let s = node_span(value);
         let text = &source[s.start..s.end];
         let subject = if is_string(ancestors, value) {

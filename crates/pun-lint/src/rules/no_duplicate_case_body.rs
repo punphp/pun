@@ -64,11 +64,11 @@ impl Rule for NoDuplicateCaseBody {
             };
             let mut without_stmts: Vec<usize> = Vec::new();
             let mut equal_cases: Vec<usize> = Vec::new();
-            for inner in 0..cases.len() {
+            for (inner, slot) in body.iter_mut().enumerate() {
                 if processed.contains(&inner) {
                     continue;
                 }
-                let Some(inner_body) = body[inner] else {
+                let Some(inner_body) = *slot else {
                     without_stmts.push(inner);
                     continue;
                 };
@@ -77,7 +77,7 @@ impl Rule for NoDuplicateCaseBody {
                         equal_cases.push(w);
                         processed.push(w);
                     }
-                    body[inner] = None;
+                    *slot = None;
                     equal_cases.push(inner);
                     processed.push(inner);
                 }

@@ -27,3 +27,13 @@ class Child extends Coll
 class Plain extends Coll
 {
 }
+
+/**
+ * @template A
+ * @template B
+ * @template C = int
+ * @template D
+ */
+class Defaults
+{
+}

@@ -1,7 +1,6 @@
-//! RestrictedFunctionUsageRule, RestrictedFunctionCallableUsageRule and RestrictedClassConstantUsageRule with the
-//! RestrictedInternal*UsageExtensions of config.level0.neon (under `featureToggles.internalTag`): using an
-//! `@internal` function or class constant, or a constant of an `@internal` class-like, from outside the root
-//! namespace that declares it.
+//! RestrictedClassConstantUsageRule with RestrictedInternalClassConstantUsageExtension (config.level0.neon, under
+//! `featureToggles.internalTag`): using an `@internal` class constant, or a constant of an `@internal` class-like,
+//! from outside the root namespace that declares it.
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
@@ -11,52 +10,6 @@ use mago_syntax::cst::*;
 use super::Checker;
 use super::constants::declaring;
 use super::internal::{root_namespace, should_be_reported};
-
-/// `f(...)`: FuncCall.
-pub fn function_call(c: &mut Checker, call: &FunctionCall) {
-    function(c, call, call.function);
-}
-
-/// `f(...)`: FunctionCallableNode.
-pub fn function_callable(c: &mut Checker, f: &FunctionPartialApplication) {
-    let whole = f.function.span().join(f.argument_list.span());
-    let callable = matches!(
-        f.argument_list.arguments.iter().collect::<Vec<_>>().as_slice(),
-        [PartialArgument::VariadicPlaceholder(_)]
-    );
-    if callable || c.piped.contains(&whole) {
-        function(c, whole, f.function);
-    }
-}
-
-/// RestrictedInternalFunctionUsageExtension on the function `name` names.
-fn function(c: &mut Checker, at: impl HasSpan, name: &Expression) {
-    let Expression::Identifier(id) = name else {
-        return;
-    };
-    if !c.internal_tag {
-        return;
-    }
-    let fallback = match id {
-        Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
-        _ => None,
-    };
-    let Some(f) = std::iter::once(c.names.get(&id.span()))
-        .chain(fallback)
-        .find_map(|n| c.codebase.get_function(n))
-    else {
-        return;
-    };
-    let name = String::from_utf8_lossy(f.original_name.as_bytes()).into_owned();
-    if !f.flags.is_internal() || !should_be_reported(c, &name) {
-        return;
-    }
-    let message = match root_namespace(&name) {
-        None => format!("Call to internal function {name}()."),
-        Some(ns) => format!("Call to internal function {name}() from outside its root namespace {ns}."),
-    };
-    c.report(at, "function.internal", message, None);
-}
 
 /// `X::NAME`.
 pub fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {

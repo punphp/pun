@@ -1,0 +1,6 @@
+# `\App\User::first()` needs Larastan's ModelForwardsCallsExtension (Model::__callStatic to Builder<static>)
+Rules/RelationExistenceRuleTest::testRule
+# Model forwarding (`User::where()`, `User::firstOrFail()`), the DB facade's query builder, and the database columns
+# of models outside the analysed files (App\User is a scanned stub here)
+Rules/NoUnnecessaryCollectionCallRuleTest::testNoFalseNegativesEloquent
+Rules/NoUnnecessaryCollectionCallRuleTest::testNoFalseNegativesQuery

@@ -186,8 +186,8 @@ fn direct_return_new(
         .iter()
         .map(|t| match t {
             NewType::Class(class) => Some(format!("\\{class}")),
-            NewType::SelfType => Some("self".to_string()),
-            NewType::Static => Some("static".to_string()),
+            // Rector writes `new static` as `self` in a union.
+            NewType::SelfType | NewType::Static => Some("self".to_string()),
             NewType::Anonymous(_) => None,
         })
         .collect();
