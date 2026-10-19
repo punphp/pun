@@ -37,6 +37,7 @@ mod properties;
 mod readonly_init;
 mod property_access;
 mod property_hooks;
+mod require_ancestors;
 mod reflection;
 mod restricted_functions;
 mod scope;
@@ -180,6 +181,11 @@ pub const IDENTIFIERS: &[&str] = &[
     "propertySetHook.noAssign",
     "staticMethod.dynamicCall",
     "method.nameCase",
+    "constant.notFound",
+    "class.missingExtends",
+    "class.missingImplements",
+    "property.uninitialized",
+    "filterVar.nullOnFailureAndThrowOnFailure",
     "constructor.returnType",
     "cast.deprecated",
     "cast.unset",
@@ -676,6 +682,8 @@ pub struct Checker<'a, 'arena> {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with `featureToggles.unusedLabel`.
     unused_label: bool,
+    /// UninitializedPropertyRule: `checkUninitializedProperties`.
+    uninitialized_properties: bool,
     /// The phpstan-strict-rules switches.
     strict: crate::StrictRules,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
@@ -996,6 +1004,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, class.span(), k);
+            require_ancestors::check(self, class.span(), k);
             hierarchy::allowed_subtypes(self, class.span(), k);
             readonly_init::class(self, k, class.members.as_slice());
         }
@@ -1085,6 +1094,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, e.span(), k);
+            require_ancestors::check(self, e.span(), k);
             hierarchy::allowed_subtypes(self, e.span(), k);
         }
         type_aliases::class_like(self, e.span());
@@ -1220,6 +1230,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, a.span(), k);
+            require_ancestors::check(self, a.span(), k);
             hierarchy::allowed_subtypes(self, a.span(), k);
             readonly_init::class(self, k, a.members.as_slice());
         }
@@ -1414,7 +1425,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             attributes::TARGET_METHOD,
             "method",
         );
-        let guards = if m.name.value.eq_ignore_ascii_case(b"__construct") {
+        // a static method can run before any instance exists
+        let guards = if m.name.value.eq_ignore_ascii_case(b"__construct")
+            || m.modifiers.iter().any(|m| matches!(m, Modifier::Static(_)))
+        {
             Vec::new()
         } else {
             self.classes
@@ -1611,6 +1625,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
         self.in_exists_call += usize::from(calls::is_class_exists_family(self, call));
+        self.guards.extend(self.define_guard(call));
     }
     fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         self.in_exists_call -= usize::from(calls::is_class_exists_family(self, call));
@@ -1982,6 +1997,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_constant_access(&mut self, a: &'ast ConstantAccess<'arena>, _: &mut ()) {
         deprecations::constant_fetch(self, a.span(), &a.name);
+        names::constant_fetch(self, &a.name);
     }
     fn walk_in_magic_constant(&mut self, m: &'ast MagicConstant<'arena>, _: &mut ()) {
         statements::magic_constant(self, m);

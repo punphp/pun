@@ -38,3 +38,5 @@ Classes/DuplicateTraitDeclarationRuleTest::testBug14250
 Properties/AccessStaticPropertiesInAssignRuleTest::testRuleExpressionNames
 # an anonymous class's getName() hashes its path relative to the working directory, which the export ran from elsewhere
 Classes/ExistingClassInClassExtendsRuleTest::testEnums
+# FILTER_THROW_ON_FAILURE (PHP 8.5) is missing from Mago's prelude, so a variable holding it has no constant value
+Functions/FilterVarRuleTest::testRule

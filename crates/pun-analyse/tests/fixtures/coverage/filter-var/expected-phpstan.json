@@ -1,0 +1,40 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "flags.php",
+   "line": 8,
+   "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+   "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 9,
+   "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+   "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 13,
+   "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+   "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 18,
+   "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+   "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+   "tip": null
+  },
+  {
+   "file": "flags.php",
+   "line": 19,
+   "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+   "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+   "tip": null
+  }
+ ]
+}

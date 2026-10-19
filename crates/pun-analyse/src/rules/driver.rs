@@ -54,6 +54,8 @@ pub(crate) struct Checks {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with [`Project::unused_label`].
     unused_label: bool,
+    /// [`Project::check_uninitialized_properties`].
+    uninitialized_properties: bool,
     /// [`Project::strict_rules`].
     pub(super) strict: crate::StrictRules,
 }
@@ -82,6 +84,7 @@ impl Checks {
             deprecations: project.deprecation_rules,
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
+            uninitialized_properties: project.check_uninitialized_properties,
             strict: project.strict_rules,
         }
     }
@@ -178,6 +181,7 @@ fn checker<'a, 'arena>(
         deprecations: project.deprecations,
         bleeding_edge: project.bleeding_edge,
         unused_label: project.unused_label,
+        uninitialized_properties: project.uninitialized_properties,
         strict: project.strict,
         closure_bind: 0,
         errors: Vec::new(),

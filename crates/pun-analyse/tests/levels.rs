@@ -118,6 +118,9 @@ const PORTED: &[&str] = &[
     "trait.unused",
     "propertyGetHook.noRead",
     "propertySetHook.noAssign",
+    "constant.notFound",
+    "class.missingExtends",
+    "class.missingImplements",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).
