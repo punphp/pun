@@ -256,6 +256,119 @@
             ]
         },
         {
+            "method": "Dispatch",
+            "files": [
+                "Pun/Dispatch.php"
+            ],
+            "errors": [
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 18,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Job constructor invoked with 0 parameters in Pun\\Dispatch\\Job::dispatch(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 19,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Job constructor invoked with 0 parameters in Pun\\Dispatch\\Job::dispatch(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 27,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Job constructor invoked with 0 parameters in Pun\\Dispatch\\Job::dispatch(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 72,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Job constructor invoked with 0 parameters in Pun\\Dispatch\\Job::dispatch(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 76,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Job constructor invoked with 0 parameters in Pun\\Dispatch\\Job::dispatch(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 80,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\ChildJob constructor invoked with 0 parameters in Pun\\Dispatch\\ChildJob::dispatch(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 81,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Variadic constructor invoked with 0 parameters in Pun\\Dispatch\\Variadic::dispatch(), at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 82,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Exact constructor invoked with 0 parameters in Pun\\Dispatch\\Exact::dispatch(), 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 83,
+                    "identifier": "arguments.count",
+                    "message": "Event class Pun\\Dispatch\\Event constructor invoked with 0 parameters in Pun\\Dispatch\\Event::dispatch(), 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 84,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Pun\\Dispatch\\Event::dispatchSync().",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 85,
+                    "identifier": "arguments.count",
+                    "message": "Static method Pun\\Dispatch\\Job::dispatchIf() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 87,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Job constructor invoked with 0 parameters in Pun\\Dispatch\\Job::dispatchIf(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 89,
+                    "identifier": "arguments.count",
+                    "message": "Job class Pun\\Dispatch\\Job constructor invoked with 0 parameters in Pun\\Dispatch\\Job::dispatchIf(), 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 91,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Pun\\Dispatch\\Bare does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Dispatch.php",
+                    "line": 92,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Pun\\Dispatch\\Bare does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                }
+            ]
+        },
+        {
             "method": "Models",
             "files": [
                 "Pun/Models.php"
