@@ -68,7 +68,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
 
 ## P1: Misleading
 
-- [ ] 11. `crates/pun-cli/src/run.rs:224-238`, `report.rs:769-780` and `report.rs:32` (`FileResult.diff: String`)
+- [x] 11. `crates/pun-cli/src/run.rs:224-238`, `report.rs:769-780` and `report.rs:32` (`FileResult.diff: String`)
   round-trip the byte diff from `php_diff::unified` through `String::from_utf8_lossy`, so `-v` and the
   txt/junit/xml diffs print U+FFFD for every non-UTF-8 byte of a Latin-1 file, and paths go through
   `to_string_lossy` (`run.rs:184-188`). Keep diffs and paths as bytes until the console boundary. Not checked against
@@ -77,7 +77,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   JsonReporter.php line 63: Malformed UTF-8 characters, possibly incorrectly encoded" (`[JsonException (5)]`) where Pun
   prints `\ufffd`, so the fix also needs that abort; gitlab, checkstyle and agent have no diff. The path half can't be
   reproduced on macOS (APFS refuses non-UTF-8 names). Deferred: `run.rs`, `report.rs`, `fix_report.rs` and
-  `console.rs` are claimed by the platform/format track; the console part can reuse item 12's `format_bytes`.
+  `console.rs` are claimed by the platform/format track; the console part can reuse item 12's `format_bytes`. Fixed in 4812102: diffs keep their bytes to the output (`console::carry`/`raw`), txt, junit and xml match Pint on a Latin-1 file and json -v aborts with its JsonException box (`latin1_diffs_like_pint`).
 - [ ] 12. `crates/pun-format/src/php_parser.rs:333-338`, `lib.rs:389-393` (`LintError.message: String`) and
   `fixer_annotation.rs:99-106` build parse-error and annotation messages with `from_utf8_lossy`, so a token cut at
   byte 30 inside `é`, or any Latin-1 byte, prints `�` where PHP prints the raw bytes. Keep messages as `Vec<u8>`
@@ -191,13 +191,13 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [x] 29. `crates/pun-cli/src/main.rs:210` and `lint.rs:24`: `pun lint --mago` parses every `FormatArgs` flag and then
   drops them, so `--dirty`, `--fix` and `--format=json` silently do nothing. Give it its own args or
   `conflicts_with_all`. Fixed in 0af1ad4: `pun lint --mago` and the `mago-lint` feature are removed; `pun lint` runs the native rules, Mago's Laravel ones among them.
-- [ ] 30. Report formats are strings: `main.rs:133-141` (`Option<String>`, help lists 3 of 7), `report.rs:662-745`
+- [x] 30. Report formats are strings: `main.rs:133-141` (`Option<String>`, help lists 3 of 7), `report.rs:662-745`
   (`match format`), `run.rs:317` and `report.rs:260,297` (`format.is_none()` as a mode), `list_files.rs:23,37-41`, and
   `report.rs:371-379` compares `agent::cmd()` with `"format"`. Replace Type Code with Enum `ReportFormat` (`FromStr`),
   parsed where `emit` runs today so Pint's "Format [x] is not supported." keeps its place. Still held at 8cc3efa
   (the help now lists all eight); the `agent::cmd()` checks are in `human()` and `agent()`, and `Ctx` could carry the
-  `Stage` instead. Deferred: `main.rs`, `run.rs` and `report.rs` are claimed by the platform/format track.
-- [ ] 31. `crates/pun-cli/src/pint_error.rs:59-120` recovers error kinds by matching message text produced in
+  `Stage` instead. Deferred: `main.rs`, `run.rs` and `report.rs` are claimed by the platform/format track. Fixed in 4812102: `report::ReportFormat` (`FromStr`), parsed in `emit` where Pint aborts.
+- [x] 31. `crates/pun-cli/src/pint_error.rs:59-120` recovers error kinds by matching message text produced in
   `run.rs:203,259-262`, `pun-workspace/src/lib.rs:87,215,252,263` and pun-format, so rewording any of them silently
   changes the Pint box's class, file and line. A caller branches on the kind, so a typed `PintError` downcast with
   `downcast_ref` earns its keep. Spans crates. Still held at 8cc3efa. Partly done in 093609e:
@@ -205,7 +205,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   returns `AnnotationError` (`NotEnabled`, `Analysing { path, message }`, `UndefinedArrayKey`), same messages. Waits:
   `pint_error.rs` and `run.rs` belong to the platform/format track, so pun-cli still matches the text; the switch
   (`Thrown::of(&anyhow::Error)` by `downcast_ref`, a `PintError` for the read/write/report-file errors) lands once
-  that claim is released.
+  that claim is released. Fixed in 4812102: `Thrown::of` downcasts `FinderError`, `AnnotationError` and pun-cli's `PintError` (read/write), the report-file error sets `ReportNotWritable`; no text matching is left.
 - [x] 32. `crates/pun-cli/src/run.rs:50-364`: `format` is 315 lines with a 100-line `process` closure, returns
   `type Processed = (FileResult, Option<String>, bool, Option<FileResult>)` read as `.0`/`.2`, and
   `pint_error.rs:123-124` is generic only to accept that tuple; `lint_fixers: Vec<(Rule, bool, bool)>` and
