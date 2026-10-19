@@ -43,13 +43,9 @@ impl Rule for NoNegatedCondition {
         };
         let (reported, help, condition_edit) = match condition {
             Expression::UnaryPrefix(UnaryPrefix { operator, operand }) if operator.is_not() => {
-                let operand_text =
-                    &ctx.source[span(operand.span()).start..span(operand.span()).end];
-                let text = if matches!(operand, Expression::Assignment(_)) {
-                    format!("({operand_text})")
-                } else {
-                    operand_text.to_string()
-                };
+                // A bare `!$a = …` operand cannot reach here: the assignment takes the whole ternary as its value.
+                let text =
+                    ctx.source[span(operand.span()).start..span(operand.span()).end].to_string();
                 (
                     span(condition.span()),
                     "Remove the `!` and swap the `then` and `else` branches.",

@@ -145,6 +145,12 @@ fn unwrap_future_compatible_if_php_version() {
         &only(rules::NoFuturePhpVersionCheck, 80400),
         "UnwrapFutureCompatibleIfPhpVersionRector/Oracle",
     );
+    // Where Rector crashes on an unknown sign, or decides a check on a call's value or an unknown sign; the expected
+    // code (left alone) is derived by hand.
+    run(
+        &only(rules::NoFuturePhpVersionCheck, 80400),
+        "UnwrapFutureCompatibleIfPhpVersionRector/Pun",
+    );
 }
 
 #[test]
