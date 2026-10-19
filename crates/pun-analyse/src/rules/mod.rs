@@ -17,6 +17,7 @@ mod driver;
 mod enums;
 mod function_checks;
 mod functions;
+mod generics;
 mod hierarchy;
 mod infer;
 mod internal;
@@ -511,6 +512,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         debug_assert!(
             IDENTIFIERS.contains(&identifier)
                 || missing_types::IDENTIFIERS.contains(&identifier)
+                || generics::IDENTIFIERS.contains(&identifier)
                 || larastan::IDENTIFIERS.contains(&identifier),
             "{identifier} is not in IDENTIFIERS"
         );
@@ -762,6 +764,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         type_aliases::class_like(self, class.span());
         missing_types::class(self, class);
+        generics::class(self, class);
         larastan::class(self, class);
         constants::read_only_class(self, class.span(), class.modifiers.as_slice(), false);
     }
@@ -806,6 +809,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         type_aliases::class_like(self, i.span());
         missing_types::interface(self, i);
+        generics::interface(self, i);
     }
     fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -848,6 +852,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         type_aliases::class_like(self, e.span());
         missing_types::enum_(self, e);
+        generics::enum_(self, e);
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -865,6 +870,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             let name = self.resolved_span(t.name.span);
             type_aliases::trait_definition(self, t.span(), &name);
             missing_types::trait_(self, t);
+            generics::trait_(self, t);
             return;
         };
         let name = self.resolved_span(t.name.span);
@@ -979,6 +985,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::in_class(self, a.span(), k);
             hierarchy::allowed_subtypes(self, a.span(), k);
         }
+        generics::anonymous(self, a, &name, &display);
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
     }
 
@@ -987,6 +994,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         functions::inner_function(self, f);
         self.larastan_enter_function(&f.parameter_list);
         missing_types::function(self, f);
+        generics::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
         self.push_frame(FrameKind::Named);
         let name = self.resolved_span(f.name.span);
@@ -1075,6 +1083,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         hierarchy::interface_method_visibility(self, m);
         dead_code::constructor(self, m, &method);
         missing_types::method(self, m);
+        generics::method(self, m, &method);
         declarations::promoted(
             self,
             m.span(),
@@ -1460,6 +1469,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_trait_use(&mut self, u: &'ast mago_syntax::cst::TraitUse<'arena>, _: &mut ()) {
         hierarchy::trait_use(self, u);
+        generics::trait_use(self, u);
     }
     fn walk_in_use(&mut self, u: &'ast Use<'arena>, _: &mut ()) {
         names::use_functions(self, u);
