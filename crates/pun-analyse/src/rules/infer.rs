@@ -18,7 +18,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
-use super::{Checker, assign};
+use super::{Checker, assign, dead_code};
 
 /// The expressions whose type a rule reads: the class of `new $expr`, the object or class expression of a call whose
 /// by-reference parameters matter, the expression of an `instanceof` naming a trait.
@@ -26,9 +26,24 @@ struct TypedExpressions<'n, 'arena> {
     spans: Vec<Span>,
     names: &'n ResolvedNames<'arena>,
     codebase: &'n CodebaseMetadata,
+    level: u8,
+    php_version: u32,
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> {
+    fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, _: &mut ()) {
+        if self.level >= 1 {
+            self.spans.extend(dead_code::typed_variable(v));
+        }
+    }
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        self.spans
+            .extend(dead_code::typed_arguments(call, self.names, self.level));
+    }
+    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+        self.spans
+            .extend(dead_code::typed_statement(s, self.level, self.php_version));
+    }
     fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
         // `$this` is described without its type
         if matches!(b.operator, BinaryOperator::Instanceof(_))
@@ -72,6 +87,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for TypedExpressions<'_, 'arena> 
 }
 
 /// Runs Mago's analyzer over the file when a rule needs an expression's type (most files need none).
+#[allow(clippy::too_many_arguments)]
 pub(super) fn infer<'arena>(
     arena: &'arena LocalArena,
     file: &File,
@@ -79,12 +95,15 @@ pub(super) fn infer<'arena>(
     names: &ResolvedNames<'arena>,
     codebase: &CodebaseMetadata,
     php_version: u32,
+    level: u8,
     extra: Vec<Span>,
 ) -> HashMap<Span, TUnion> {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
         names,
         codebase,
+        level,
+        php_version,
     };
     wanted.walk_program(program, &mut ());
     let mut wanted = wanted.spans;

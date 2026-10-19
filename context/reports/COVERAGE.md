@@ -4,7 +4,7 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 3551 | 3551 | 100.00% | ok |
-| punphp-analyse | 3547 | 3497 | 98.59% | ok |
+| punphp-analyse | 12431 | 11987 | 96.43% | ok |
 | punphp-config | 609 | 609 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 996 | 996 | 100.00% | ok |
@@ -17,14 +17,28 @@
 
 Uncovered lines:
 
-- `crates/pun-analyse/src/project.rs` 99.40% (1 lines): 96
-- `crates/pun-analyse/src/rules/calls.rs` 98.77% (4 lines): 62, 177, 184, 241
-- `crates/pun-analyse/src/rules/classes.rs` 98.28% (4 lines): 56, 67, 71, 96
-- `crates/pun-analyse/src/rules/members.rs` 97.20% (3 lines): 64, 81, 160
-- `crates/pun-analyse/src/rules/mod.rs` 97.42% (20 lines): 226, 257, 313, 386, 855-860, 862-865, 1065-1070
-- `crates/pun-analyse/src/rules/names.rs` 97.56% (11 lines): 94, 106, 241-247, 260, 328
-- `crates/pun-analyse/src/rules/params.rs` 98.08% (2 lines): 102, 112
-- `crates/pun-analyse/src/rules/scope.rs` 96.03% (5 lines): 43, 53-54, 146, 154
+- `crates/pun-analyse/src/laravel/mod.rs` 99.19% (3 lines): 506, 512-513
+- `crates/pun-analyse/src/mago.rs` 98.48% (1 lines): 74
+- `crates/pun-analyse/src/project.rs` 98.40% (3 lines): 111, 134-135
+- `crates/pun-analyse/src/relative_path.rs` 98.68% (1 lines): 18
+- `crates/pun-analyse/src/rules/calls.rs` 97.97% (7 lines): 72, 179, 199, 264, 268, 275, 294
+- `crates/pun-analyse/src/rules/classes.rs` 98.00% (5 lines): 29, 54, 65, 69, 76
+- `crates/pun-analyse/src/rules/constants.rs` 99.71% (1 lines): 71
+- `crates/pun-analyse/src/rules/declared.rs` 85.87% (119 lines): 138, 149, 159, 170, 177, 188, 194-196, 199-201, 205, 207-209, 212-213, 264-268, 347, 358, 362, 400, 422, 466-467, 469-470, 542-545, 622-625, 647, 655, 682, 684, 724, 746, 749, 752, 760-762, 764-772, 783-799, 802-804, 806-807, 810-820, 834, 855, 863-869, 871, 873, 875-886, 917, 1028, 1054
+- `crates/pun-analyse/src/rules/doc.rs` 67.15% (160 lines): 66, 82, 89, 110-129, 132, 134-136, 139-144, 146-158, 160-161, 163, 165, 167-173, 175-180, 182-190, 192-202, 204-210, 212, 214-215, 217-223, 331-333, 338-339, 341-345, 347-349, 377-383, 409-411, 416-417, 419-420, 423-430, 466, 479, 494, 500-503, 542, 580-582, 587-590, 592-597, 599, 601, 633, 638
+- `crates/pun-analyse/src/rules/driver.rs` 99.46% (1 lines): 190
+- `crates/pun-analyse/src/rules/hierarchy.rs` 99.73% (1 lines): 279
+- `crates/pun-analyse/src/rules/infer.rs` 99.31% (1 lines): 133
+- `crates/pun-analyse/src/rules/members.rs` 98.77% (2 lines): 72, 227
+- `crates/pun-analyse/src/rules/missing_types.rs` 85.01% (76 lines): 53, 57-61, 96, 154, 156, 308, 311, 378, 417, 459, 468-471, 473-476, 482-485, 489-491, 495-504, 506-509, 512-523, 525-527, 530-532, 535, 539, 541-542, 548-551, 554-556, 559, 575, 587, 596
+- `crates/pun-analyse/src/rules/mod.rs` 98.40% (18 lines): 1070, 1141-1146, 1148-1151, 1545-1550, 1657
+- `crates/pun-analyse/src/rules/names.rs` 98.15% (10 lines): 37, 49, 178-184, 606
+- `crates/pun-analyse/src/rules/params.rs` 97.64% (3 lines): 114, 147, 157
+- `crates/pun-analyse/src/rules/property_access.rs` 96.49% (20 lines): 73, 244, 289, 393, 397, 406, 441, 456, 473, 525, 623, 640, 654, 675-677, 680, 695, 698, 763
+- `crates/pun-analyse/src/rules/reflection.rs` 97.52% (3 lines): 44, 69, 192
+- `crates/pun-analyse/src/rules/scope.rs` 98.63% (4 lines): 84, 94-95, 275
+- `crates/pun-analyse/src/rules/signatures.rs` 99.87% (1 lines): 1008
+- `crates/pun-analyse/src/rules/statements.rs` 98.67% (4 lines): 249-251, 253
 - `crates/pun-lint/src/rules/prefer_property_over_local_getter.rs` 92.08% (8 lines): 47-48, 89, 105, 111, 133, 136, 146
 - `crates/pun-phpstan/src/types.rs` 98.83% (29 lines): 2321, 2927-2929, 2940, 2973-2976, 3023, 3026, 3031, 3097, 3131, 3137, 3277, 3303, 3314, 3333, 3358-3367
 <!-- coverage:end -->

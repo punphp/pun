@@ -13,6 +13,14 @@ type Key = (String, u32, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0.
 const PORTED: &[&str] = &[
+    "argument.unused",
+    "closure.unusedUse",
+    "constructor.unusedParameter",
+    "function.uselessReturnValue",
+    "method.inVoidCast",
+    "method.resultDiscarded",
+    "staticMethod.inVoidCast",
+    "staticMethod.resultDiscarded",
     "missingType.parameter",
     "missingType.return",
     "missingType.property",

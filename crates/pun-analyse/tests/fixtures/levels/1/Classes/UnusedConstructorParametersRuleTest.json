@@ -1,0 +1,135 @@
+{
+    "test": "Classes/UnusedConstructorParametersRuleTest",
+    "cases": [
+        {
+            "method": "testUnusedConstructorParametersNoExactLine",
+            "files": [
+                "Classes/data/unused-constructor-parameters.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 11,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $anotherUnusedParameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 11,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $unusedParameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 27,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 30,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $usedParameterInClosureUse.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnusedConstructorParameters",
+            "files": [
+                "Classes/data/unused-constructor-parameters.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 11,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $anotherUnusedParameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 11,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParameters\\Foo has an unused parameter $unusedParameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 27,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/unused-constructor-parameters.php",
+                    "line": 30,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $usedParameterInClosureUse.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPromotedProperties",
+            "files": [
+                "Classes/data/unused-constructor-parameters-promoted-properties.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1917",
+            "files": [
+                "Classes/data/bug-1917.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7165",
+            "files": [
+                "Classes/data/bug-7165.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10865",
+            "files": [
+                "Classes/data/bug-10865.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11454",
+            "files": [
+                "Classes/data/bug-11454.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testParameterUsedInIncludedFile",
+            "files": [
+                "Classes/data/unused-constructor-parameters-include.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

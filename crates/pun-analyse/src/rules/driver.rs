@@ -98,6 +98,7 @@ fn checker<'a, 'arena>(
             names,
             codebase,
             php_version,
+            project.level,
             super::larastan::typed_expressions(project.larastan.as_ref(), names, program)
                 .into_iter()
                 .chain(super::internal::typed_expressions(
