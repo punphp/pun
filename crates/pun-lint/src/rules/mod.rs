@@ -2,12 +2,17 @@
 
 mod add_csv_escape_argument;
 mod laravel;
+mod lint_b_early_exit;
 mod lint_b_foreach;
 mod lint_b_helpers;
+mod lint_b_names;
+mod lint_b_security;
 mod mago_const_value;
 mod mago_usage;
 mod no_and_assignment;
 mod no_and_true;
+mod no_array_accumulation_in_loop;
+mod no_assign_in_argument;
 mod no_assign_in_condition;
 mod no_assign_in_ternary_branch;
 mod no_cast_in_concat;
@@ -19,25 +24,37 @@ mod no_double_self_assignment;
 mod no_duplicate_array_key;
 mod no_duplicate_case_body;
 mod no_duplicate_match_arm;
+mod no_dynamic_name;
 mod no_else_after_return;
+mod no_empty;
 mod no_empty_block;
 mod no_empty_catch;
 mod no_empty_loop;
+mod no_eval;
+mod no_explicit_constructor_call;
+mod no_ffi;
 mod no_finfo_buffer_context;
 mod no_future_php_version_check;
+mod no_global;
+mod no_hash_emoji;
 mod no_identical_branches;
 mod no_implode_ternary;
+mod no_insecure_comparison;
 mod no_invalid_open_tag;
 mod no_iterator_to_array_in_foreach;
+mod no_literal_password;
 mod no_mirror_assignment;
+mod no_missing_format_argument;
 mod no_negated_and;
 mod no_negated_boolean_literal;
 mod no_negated_condition;
 mod no_negated_group;
+mod no_nested_ternary;
 mod no_null_debug_info;
 mod no_null_property_init;
 mod no_out_of_range_chr;
 mod no_overwritten_assignment;
+mod no_parameter_shadowing;
 mod no_redundant_condition;
 mod no_redundant_final_const;
 mod no_redundant_null_check;
@@ -45,12 +62,18 @@ mod no_redundant_promoted_assign;
 mod no_redundant_property_default;
 mod no_redundant_readonly_property;
 mod no_redundant_write_visibility;
+mod no_request_variable;
 mod no_return_in_constructor;
+mod no_short_ternary;
 mod no_single_argument_sprintf;
 mod no_single_case_switch;
 mod no_single_item_in_array;
+mod no_swapped_explode_arguments;
+mod no_tainted_data;
 mod no_tautology_ternary;
+mod no_underscore_class;
 mod no_unreachable_code;
+mod no_unreachable_loop;
 mod no_unsafe_finally;
 mod no_unused_closure_variable;
 mod no_unused_expression;
@@ -66,6 +89,8 @@ mod no_useless_block;
 mod no_useless_catch;
 mod no_useless_condition;
 mod no_useless_continue;
+mod no_variable_variable;
+mod no_void_reference_return;
 mod php_parser;
 mod prefer_absolute_include;
 mod prefer_array_all;
@@ -80,6 +105,7 @@ mod prefer_clamp;
 mod prefer_coalesce_chain;
 mod prefer_coalesce_over_foreach;
 mod prefer_compound_assignment;
+mod prefer_early_continue;
 mod prefer_early_return;
 mod prefer_early_return_of_variable;
 mod prefer_early_return_over_prepared_value;
@@ -88,6 +114,7 @@ mod prefer_func_num_args;
 mod prefer_in_array;
 mod prefer_in_array_over_foreach;
 mod prefer_in_array_over_search;
+mod prefer_instanceof_stringable;
 mod prefer_new_self;
 mod prefer_not_in_array;
 mod prefer_null_coalesce;
@@ -100,6 +127,7 @@ mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
 mod rector_stmts;
+mod require_preg_quote_delimiter;
 mod side_effect;
 mod used_variable;
 mod no_sole_value_sprintf;
@@ -110,6 +138,8 @@ pub use add_csv_escape_argument::AddCsvEscapeArgument;
 pub use laravel::*;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
+pub use no_array_accumulation_in_loop::NoArrayAccumulationInLoop;
+pub use no_assign_in_argument::NoAssignInArgument;
 pub use no_assign_in_condition::NoAssignInCondition;
 pub use no_assign_in_ternary_branch::NoAssignInTernaryBranch;
 pub use no_cast_in_concat::NoCastInConcat;
@@ -121,25 +151,37 @@ pub use no_double_self_assignment::NoDoubleSelfAssignment;
 pub use no_duplicate_array_key::NoDuplicateArrayKey;
 pub use no_duplicate_case_body::NoDuplicateCaseBody;
 pub use no_duplicate_match_arm::NoDuplicateMatchArm;
+pub use no_dynamic_name::NoDynamicName;
 pub use no_else_after_return::NoElseAfterReturn;
+pub use no_empty::NoEmpty;
 pub use no_empty_block::NoEmptyBlock;
 pub use no_empty_catch::NoEmptyCatch;
 pub use no_empty_loop::NoEmptyLoop;
+pub use no_eval::NoEval;
+pub use no_explicit_constructor_call::NoExplicitConstructorCall;
+pub use no_ffi::NoFfi;
 pub use no_finfo_buffer_context::NoFinfoBufferContext;
 pub use no_future_php_version_check::NoFuturePhpVersionCheck;
+pub use no_global::NoGlobal;
+pub use no_hash_emoji::NoHashEmoji;
 pub use no_identical_branches::NoIdenticalBranches;
 pub use no_implode_ternary::NoImplodeTernary;
+pub use no_insecure_comparison::NoInsecureComparison;
 pub use no_invalid_open_tag::NoInvalidOpenTag;
 pub use no_iterator_to_array_in_foreach::NoIteratorToArrayInForeach;
+pub use no_literal_password::NoLiteralPassword;
 pub use no_mirror_assignment::NoMirrorAssignment;
+pub use no_missing_format_argument::NoMissingFormatArgument;
 pub use no_negated_and::NoNegatedAnd;
 pub use no_negated_boolean_literal::NoNegatedBooleanLiteral;
 pub use no_negated_condition::NoNegatedCondition;
 pub use no_negated_group::NoNegatedGroup;
+pub use no_nested_ternary::NoNestedTernary;
 pub use no_null_debug_info::NoNullDebugInfo;
 pub use no_null_property_init::NoNullPropertyInit;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
+pub use no_parameter_shadowing::NoParameterShadowing;
 pub use no_redundant_condition::NoRedundantCondition;
 pub use no_redundant_final_const::NoRedundantFinalConst;
 pub use no_redundant_null_check::NoRedundantNullCheck;
@@ -147,12 +189,18 @@ pub use no_redundant_promoted_assign::NoRedundantPromotedAssign;
 pub use no_redundant_property_default::NoRedundantPropertyDefault;
 pub use no_redundant_readonly_property::NoRedundantReadonlyProperty;
 pub use no_redundant_write_visibility::NoRedundantWriteVisibility;
+pub use no_request_variable::NoRequestVariable;
 pub use no_return_in_constructor::NoReturnInConstructor;
+pub use no_short_ternary::NoShortTernary;
 pub use no_single_argument_sprintf::NoSingleArgumentSprintf;
 pub use no_single_case_switch::NoSingleCaseSwitch;
 pub use no_single_item_in_array::NoSingleItemInArray;
+pub use no_swapped_explode_arguments::NoSwappedExplodeArguments;
+pub use no_tainted_data::NoTaintedData;
 pub use no_tautology_ternary::NoTautologyTernary;
+pub use no_underscore_class::NoUnderscoreClass;
 pub use no_unreachable_code::NoUnreachableCode;
+pub use no_unreachable_loop::NoUnreachableLoop;
 pub use no_unsafe_finally::NoUnsafeFinally;
 pub use no_unused_closure_variable::NoUnusedClosureVariable;
 pub use no_unused_expression::NoUnusedExpression;
@@ -168,6 +216,8 @@ pub use no_useless_block::NoUselessBlock;
 pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_continue::NoUselessContinue;
+pub use no_variable_variable::NoVariableVariable;
+pub use no_void_reference_return::NoVoidReferenceReturn;
 pub use prefer_absolute_include::PreferAbsoluteInclude;
 pub use prefer_array_all::PreferArrayAll;
 pub use prefer_array_any::PreferArrayAny;
@@ -181,6 +231,7 @@ pub use prefer_clamp::PreferClamp;
 pub use prefer_coalesce_chain::PreferCoalesceChain;
 pub use prefer_coalesce_over_foreach::PreferCoalesceOverForeach;
 pub use prefer_compound_assignment::PreferCompoundAssignment;
+pub use prefer_early_continue::PreferEarlyContinue;
 pub use prefer_early_return::PreferEarlyReturn;
 pub use prefer_early_return_of_variable::PreferEarlyReturnOfVariable;
 pub use prefer_early_return_over_prepared_value::PreferEarlyReturnOverPreparedValue;
@@ -189,6 +240,7 @@ pub use prefer_func_num_args::PreferFuncNumArgs;
 pub use prefer_in_array::PreferInArray;
 pub use prefer_in_array_over_foreach::PreferInArrayOverForeach;
 pub use prefer_in_array_over_search::PreferInArrayOverSearch;
+pub use prefer_instanceof_stringable::PreferInstanceofStringable;
 pub use prefer_new_self::PreferNewSelf;
 pub use prefer_not_in_array::PreferNotInArray;
 pub use prefer_null_coalesce::PreferNullCoalesce;
@@ -200,6 +252,7 @@ pub use prefer_simple_condition::PreferSimpleCondition;
 pub use no_sole_value_sprintf::NoSoleValueSprintf;
 pub use no_compact::NoCompact;
 pub use require_is_a_allow_string::RequireIsAAllowString;
+pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
 
 use crate::Rule;
 
@@ -306,5 +359,30 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferArrayAny),
         Box::new(PreferArrayFind),
         Box::new(PreferArrayFindKey),
+        Box::new(NoEval),
+        Box::new(NoGlobal),
+        Box::new(NoRequestVariable),
+        Box::new(NoDynamicName),
+        Box::new(NoUnderscoreClass),
+        Box::new(NoVoidReferenceReturn),
+        Box::new(NoNestedTernary),
+        Box::new(NoEmpty),
+        Box::new(NoShortTernary),
+        Box::new(NoVariableVariable),
+        Box::new(NoExplicitConstructorCall),
+        Box::new(NoAssignInArgument),
+        Box::new(NoSwappedExplodeArguments),
+        Box::new(RequirePregQuoteDelimiter),
+        Box::new(NoFfi),
+        Box::new(NoInsecureComparison),
+        Box::new(NoLiteralPassword),
+        Box::new(NoHashEmoji),
+        Box::new(NoMissingFormatArgument),
+        Box::new(NoParameterShadowing),
+        Box::new(NoUnreachableLoop),
+        Box::new(PreferInstanceofStringable),
+        Box::new(NoArrayAccumulationInLoop),
+        Box::new(PreferEarlyContinue),
+        Box::new(NoTaintedData),
     ]
 }
