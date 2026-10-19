@@ -2,6 +2,55 @@
  "general": [],
  "errors": [
   {
+   "file": "src/App/Callables.php",
+   "line": 10,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $secret of method App\\Callables::make() has typehint with internal class Vendor\\Pkg\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Callables.php",
+   "line": 12,
+   "identifier": "method.internal",
+   "message": "Call to internal method Vendor\\Pkg\\Lib::hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Callables.php",
+   "line": 14,
+   "identifier": "staticMethod.internal",
+   "message": "Call to internal static method Vendor\\Pkg\\Lib::hiddenStatic() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Callables.php",
+   "line": 15,
+   "identifier": "method.internalClass",
+   "message": "Call to method run() of internal class Vendor\\Pkg\\Secret from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Callables.php",
+   "line": 16,
+   "identifier": "staticMethod.internalClass",
+   "message": "Call to static method make() of internal class Vendor\\Pkg\\Secret from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Callables.php",
+   "line": 18,
+   "identifier": "staticMethod.internal",
+   "message": "Call to internal static method Vendor\\Pkg\\Lib::hiddenStatic() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Callables.php",
+   "line": 19,
+   "identifier": "staticMethod.internal",
+   "message": "Call to internal static method Vendor\\Pkg\\Lib::hiddenStatic() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
    "file": "src/App/More.php",
    "line": 12,
    "identifier": "parameter.internalEnum",

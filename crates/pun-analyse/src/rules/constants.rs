@@ -401,7 +401,7 @@ fn find_prototype<'a>(
 
 /// `getDeclaringClass()` of a constant `k` has: the class-like whose declaration holds it, or the class using the
 /// trait that does.
-fn declaring<'a>(
+pub(super) fn declaring<'a>(
     c: &Checker<'a, '_>,
     k: &'a ClassLikeMetadata,
     constant: &ClassLikeConstantMetadata,

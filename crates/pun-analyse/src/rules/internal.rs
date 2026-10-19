@@ -70,17 +70,34 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Typed<'_> {
         }
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        if let ClassLikeMemberSelector::Identifier(id) = &call.method
+        self.static_class(call.class, &call.method);
+    }
+    fn walk_in_method_partial_application(&mut self, m: &'ast MethodPartialApplication<'arena>, _: &mut ()) {
+        if let ClassLikeMemberSelector::Identifier(id) = &m.method
+            && self.names.contains(id.value)
+        {
+            self.spans.push(m.object.span());
+        }
+    }
+    fn walk_in_static_method_partial_application(
+        &mut self,
+        m: &'ast StaticMethodPartialApplication<'arena>,
+        _: &mut (),
+    ) {
+        self.static_class(m.class, &m.method);
+    }
+}
+
+impl Typed<'_> {
+    fn static_class(&mut self, class: &Expression, method: &ClassLikeMemberSelector) {
+        if let ClassLikeMemberSelector::Identifier(id) = method
             && self.names.contains(id.value)
             && !matches!(
-                call.class,
-                Expression::Identifier(_)
-                    | Expression::Self_(_)
-                    | Expression::Static(_)
-                    | Expression::Parent(_)
+                class,
+                Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
             )
         {
-            self.spans.push(call.class.span());
+            self.spans.push(class.span());
         }
     }
 }
@@ -135,13 +152,36 @@ pub fn method_call(
 
 /// `Name::name()`, `self::`/`static::`/`parent::name()` and `$expr::name()`.
 pub fn static_method_call(c: &mut Checker, call: &StaticMethodCall) {
-    let ClassLikeMemberSelector::Identifier(id) = &call.method else {
+    static_method(c, call.span(), call.class, &call.method);
+}
+
+/// `$obj->name(...)` (RestrictedMethodCallableUsageRule).
+pub fn method_callable(c: &mut Checker, m: &MethodPartialApplication) {
+    if is_callable(&m.argument_list) {
+        method_call(c, m.span(), m.object, &m.method);
+    }
+}
+
+/// `Name::name(...)` (RestrictedStaticMethodCallableUsageRule).
+pub fn static_method_callable(c: &mut Checker, m: &StaticMethodPartialApplication) {
+    if is_callable(&m.argument_list) {
+        static_method(c, m.span(), m.class, &m.method);
+    }
+}
+
+/// A first-class callable's `(...)`.
+fn is_callable(args: &PartialArgumentList) -> bool {
+    matches!(args.arguments.iter().collect::<Vec<_>>().as_slice(), [PartialArgument::VariadicPlaceholder(_)])
+}
+
+fn static_method(c: &mut Checker, span: Span, class: &Expression, method: &ClassLikeMemberSelector) {
+    let ClassLikeMemberSelector::Identifier(id) = method else {
         return;
     };
     if !c.internal.is_some_and(|n| n.contains(id.value)) {
         return;
     }
-    let classes = match call.class {
+    let classes = match class {
         Expression::Identifier(name) => c
             .codebase
             .get_class_like(c.resolved(name).as_bytes())
@@ -172,7 +212,7 @@ pub fn static_method_call(c: &mut Checker, call: &StaticMethodCall) {
         {
             continue;
         }
-        c.report(call.span(), &identifier, message, None);
+        c.report(span, &identifier, message, None);
     }
 }
 

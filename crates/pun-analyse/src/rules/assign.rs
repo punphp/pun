@@ -452,19 +452,23 @@ fn normalized_arg<'e, 'arena>(
 /// FuncCallHandler's processVirtualAssign() of a built-in's array argument after processArgs() (array_walk with a
 /// by-reference closure, array_pop, sort and the rest).
 pub fn function_virtual_assign(c: &mut Checker, call: &FunctionCall) {
+    if let Some(array) = virtual_assigned(c, call) {
+        assign_var(c, array, true);
+    }
+}
+
+/// The argument [`function_virtual_assign()`] assigns.
+pub(super) fn virtual_assigned<'e, 'arena>(c: &Checker, call: &'e FunctionCall<'arena>) -> Option<&'e Expression<'arena>> {
     let Expression::Identifier(id) = call.function else {
-        return;
+        return None;
     };
     let fallback = match id {
         Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
         _ => None,
     };
-    let Some((name, _)) = std::iter::once(c.names.get(&id.span()))
+    let (name, _) = std::iter::once(c.names.get(&id.span()))
         .chain(fallback)
-        .find_map(|n| c.function(n))
-    else {
-        return;
-    };
+        .find_map(|n| c.function(n))?;
     let args = &call.argument_list;
     let min = match name.as_str() {
         "array_walk" => {
@@ -474,21 +478,19 @@ pub fn function_virtual_assign(c: &mut Checker, call: &FunctionCall) {
                     if k.parameter_list.parameters.first().is_some_and(|p| p.ampersand.is_some())
             );
             if !by_ref_closure {
-                return;
+                return None;
             }
             2
         }
         "array_push" | "array_unshift" | "array_splice" => 2,
         "array_pop" | "array_shift" | "shuffle" | "sort" | "rsort" | "usort" | "natcasesort"
         | "natsort" | "arsort" | "asort" | "ksort" | "krsort" | "uasort" | "uksort" => 1,
-        _ => return,
+        _ => return None,
     };
     if args.arguments.len() < min {
-        return;
+        return None;
     }
-    if let Some(array) = normalized_arg(args, 0, b"array") {
-        assign_var(c, array, true);
-    }
+    normalized_arg(args, 0, b"array")
 }
 
 /// processArgs() for arguments passed by reference to a parameter that creates a new variable: a `[]` argument is
@@ -527,6 +529,24 @@ pub fn arguments(c: &mut Checker, call: Callee) {
             assign_var(c, value, true);
         }
     }
+}
+
+/// Whether each of function call `f`'s arguments is passed by reference (empty when the function is unknown).
+pub(super) fn by_ref_arguments(c: &Checker, f: &FunctionCall) -> Vec<bool> {
+    let args = &f.argument_list.arguments;
+    let Some(params) = callee_params(c, &Callee::Function(f), args.len()) else {
+        return Vec::new();
+    };
+    args.iter()
+        .enumerate()
+        .map(|(i, arg)| {
+            let param = match arg {
+                Argument::Named(a) => params.iter().find(|p| p.name == a.name.value),
+                Argument::Positional(_) => params.get(i).or_else(|| params.last().filter(|p| p.variadic)),
+            };
+            param.is_some_and(|p| p.by_ref)
+        })
+        .collect()
 }
 
 /// An argument whose parameter decides an error: a `[]` fetch or a dim-fetch chain on `$this`.

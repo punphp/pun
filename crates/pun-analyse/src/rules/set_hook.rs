@@ -3,10 +3,11 @@
 //! checks) is off below level 3.
 
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Level, is_super_type_of};
+use pun_phpstan::types::{Level, NeverKind, Type, is_super_type_of};
 
 use super::Checker;
 use super::declared;
+use super::signatures;
 
 /// The hooks `list` of property `name` (with its `$`) declared with the native type `hint`.
 pub fn hooks<'arena>(
@@ -34,8 +35,16 @@ pub fn hooks<'arena>(
                 "Parameter ${parameter_name} of set hook does not have a native type but the property {class}::${property} does."
             ),
             (Some(theirs), Some(ours)) => {
-                let theirs = declared::native(c, theirs, Some(k));
-                let ours = declared::native(c, ours, Some(k));
+                // an intersection TypeCombinator::intersect() turns into an implicit never
+                let resolve = |c: &Checker, hint: &Hint| {
+                    if signatures::unresolvable(c, hint) {
+                        Type::Never(NeverKind::Implicit)
+                    } else {
+                        declared::native(c, hint, Some(k))
+                    }
+                };
+                let theirs = resolve(c, theirs);
+                let ours = resolve(c, ours);
                 if is_super_type_of(&ours, &theirs).yes() {
                     continue;
                 }

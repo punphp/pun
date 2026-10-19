@@ -2,6 +2,13 @@
  "general": [],
  "errors": [
   {
+   "file": "versions80/DynamicFetch.php",
+   "line": 11,
+   "identifier": "classConstant.dynamicFetch",
+   "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
    "file": "versions80/Old.php",
    "line": 7,
    "identifier": "property.inInterface",

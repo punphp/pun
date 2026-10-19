@@ -2,6 +2,90 @@
  "general": [],
  "errors": [
   {
+   "file": "bleeding/internal-usage.php",
+   "line": 60,
+   "identifier": "function.internal",
+   "message": "Call to internal function InternalLib\\Sub\\helper() from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 62,
+   "identifier": "function.internal",
+   "message": "Call to internal function InternalLib\\Sub\\helper() from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 63,
+   "identifier": "classConstant.internalClass",
+   "message": "Access to constant VALUE of internal class InternalLib\\Sub\\Hidden from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 64,
+   "identifier": "classConstant.internal",
+   "message": "Access to internal constant InternalLib\\Sub\\Visible::SECRET from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 66,
+   "identifier": "classConstant.internal",
+   "message": "Access to internal constant InternalLib\\Sub\\Visible::SECRET from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 68,
+   "identifier": "classConstant.internalInterface",
+   "message": "Access to constant FROM_INTERFACE of internal interface InternalLib\\Sub\\HiddenInterface from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 69,
+   "identifier": "classConstant.internalEnum",
+   "message": "Access to constant E of internal enum InternalLib\\Sub\\HiddenEnum from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 70,
+   "identifier": "classConstant.internalEnum",
+   "message": "Access to constant A of internal enum InternalLib\\Sub\\HiddenEnum from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 71,
+   "identifier": "classConstant.internalClass",
+   "message": "Access to constant on internal class InternalLib\\Sub\\Hidden.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 79,
+   "identifier": "classConstant.internal",
+   "message": "Access to internal constant InternalLib\\Sub\\Visible::SECRET from outside its root namespace InternalLib.",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 99,
+   "identifier": "function.internal",
+   "message": "Call to internal function global_helper().",
+   "tip": null
+  },
+  {
+   "file": "bleeding/internal-usage.php",
+   "line": 100,
+   "identifier": "classConstant.internalClass",
+   "message": "Access to constant G of internal class GlobalHidden.",
+   "tip": null
+  },
+  {
    "file": "bleeding/new-static-in-abstract-class-static-method.php",
    "line": 10,
    "identifier": "new.static",

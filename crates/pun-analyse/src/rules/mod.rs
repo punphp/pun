@@ -12,6 +12,7 @@ mod constants;
 mod dead_code;
 mod declarations;
 mod declared;
+mod dynamic_fetch;
 mod doc;
 mod driver;
 mod enums;
@@ -21,6 +22,7 @@ mod generics;
 mod hierarchy;
 mod infer;
 mod internal;
+mod internal_usage;
 mod larastan;
 mod members;
 mod missing_types;
@@ -31,6 +33,7 @@ mod overriding_property;
 mod params;
 mod printf_helper;
 mod properties;
+mod readonly_init;
 mod property_access;
 mod reflection;
 mod restricted_functions;
@@ -41,6 +44,7 @@ mod statements;
 mod syntax;
 mod through_static;
 mod type_aliases;
+mod write_only;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -378,6 +382,18 @@ pub const IDENTIFIERS: &[&str] = &[
     "property.extraNativeType",
     "propertySetHook.nativeParameterType",
     "new.staticInAbstractClassStaticMethod",
+    "property.uninitializedReadonly",
+    "assign.readOnlyProperty",
+    "property.uninitializedReadonlyByPhpDoc",
+    "assign.readOnlyPropertyByPhpDoc",
+    "property.writeOnly",
+    "classConstant.dynamicFetch",
+    "classConstant.nameType",
+    "classConstant.internal",
+    "classConstant.internalClass",
+    "classConstant.internalInterface",
+    "classConstant.internalTrait",
+    "classConstant.internalEnum",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -825,6 +841,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, class.span(), k);
             hierarchy::allowed_subtypes(self, class.span(), k);
+            if self.trait_context.is_none() {
+                readonly_init::class(self, k, class.members.as_slice());
+            }
         }
         type_aliases::class_like(self, class.span());
         missing_types::class(self, class);
@@ -1048,6 +1067,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, a.span(), k);
             hierarchy::allowed_subtypes(self, a.span(), k);
+            if self.trait_context.is_none() {
+                readonly_init::class(self, k, a.members.as_slice());
+            }
         }
         generics::anonymous(self, a, &name, &display);
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
@@ -1398,6 +1420,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
         property_access::read(self, p);
+        write_only::read(self, p.span(), p.object, &p.property);
+    }
+    fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
+        write_only::null_safe(self, p);
     }
     fn walk_in_static_property_access(
         &mut self,
@@ -1477,6 +1503,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         _: &mut (),
     ) {
         statements::first_class_callable(self, m.span(), &m.argument_list);
+        internal::method_callable(self, m);
     }
     fn walk_in_static_method_partial_application(
         &mut self,
@@ -1484,6 +1511,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         _: &mut (),
     ) {
         statements::first_class_callable(self, m.span(), &m.argument_list);
+        internal::static_method_callable(self, m);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
         through_static::method(self, call);
@@ -1654,6 +1682,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, _: &mut ()) {
         through_static::constant(self, a);
         names::class_constant(self, a);
+        dynamic_fetch::class_constant(self, a);
+        internal_usage::class_constant(self, a);
     }
     fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
         dead_code::try_statement(self, t);
