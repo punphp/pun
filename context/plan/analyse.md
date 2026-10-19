@@ -410,3 +410,17 @@ silent):
   drive prefixes are not ported.
 - A trait walked in an anonymous class's context is labelled `T.php (in context of class@anonymous/...)`, without
   `class ` (MutatingScope::getFileDescription()).
+
+Assistant's calls in analyse 3k (property access, property_access.rs, 2026-10-19; the plan was silent):
+- AccessPropertiesRule and AccessPropertiesInAssignRule check `$this->x` only (checkThisOnly below level 2). A class
+  with a native `__get`/`__set` is never reported (reportMagicProperties is off at level 0). The narrowing that hides
+  a read is ported as scope keys: assignments, isset/empty chains, comparison and instanceof operands, a function
+  call's first argument, a true `property_exists($this, 'x')`, `if`, `while` bodies, `?:` and `&&`.
+- AccessStaticPropertiesRule is ported for `self::`, `static::`, `parent::` and named classes. `$expr::$x` and a
+  dynamic name wait for expression types. `isset(self::$x)` on a class without `$x` is still reported, and so is a
+  read after `self::$x = ...` (both oracle-checked). A static hooked property counts as static, as in PHPStan's
+  reflection, although Mago drops the flag.
+- `$this++` or `--$this` stops the `$this` checks for the rest of the function. `$this[] = ...` on a class without
+  ArrayAccess, which PHPStan then describes as `ArrayAccess&C`, is not ported.
+- `(function () {...})->bindTo()` keeps the scope's `$this` (oracle-checked). Only `->call()` and `Closure::bind()`
+  rebind it. An anonymous class's constructor arguments are walked in the enclosing scope.

@@ -144,3 +144,11 @@ fn declarations_readonly_php_8_0() {
 fn anonymous_classes() {
     check_in("anonymous", "phpstan");
 }
+
+/// AccessPropertiesRule, AccessPropertiesInAssignRule and AccessStaticPropertiesRule: undefined, parent-private and static
+/// properties, the contexts that allow an undefined one (`isset()`, `??`, `unset()`), narrowing conditions,
+/// assignments, closures, magic and dynamic classes, generic classes and traits.
+#[test]
+fn property_access() {
+    check_in("properties", "phpstan");
+}

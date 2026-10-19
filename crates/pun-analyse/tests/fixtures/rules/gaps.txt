@@ -40,3 +40,5 @@ Keywords/DeclareStrictTypesRuleTest::testNested
 Arrays/DuplicateKeysInLiteralArraysRuleTest::testDuplicateKeys
 # classConstant.value on a trait's duplicate constants (a PHP error): PHP's reflection keeps the last, the codex the first
 Classes/DuplicateTraitDeclarationRuleTest::testBug14250
+# a dynamic static property name (`self::${$property}`) needs the name's constant string types
+Properties/AccessStaticPropertiesInAssignRuleTest::testRuleExpressionNames

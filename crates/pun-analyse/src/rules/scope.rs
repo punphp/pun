@@ -26,10 +26,40 @@ pub enum Guard {
     ThisNotInstanceOf(String),
     /// `PHP_VERSION_ID` compared with an integer: its range here, bounds inclusive (`None` unbounded).
     PhpVersion(Option<i64>, Option<i64>),
+    /// An expression with a type in the scope (`hasExpressionType()`), by its key (`$this->name`).
+    Expr(String),
 }
 
 /// Guards from `expr` being true. `var` looks a variable's remembered guards up.
 pub fn truthy(
+    expr: &Expression,
+    var: &dyn Fn(&[u8]) -> Vec<Guard>,
+    resolve: &dyn Fn(&Identifier) -> String,
+) -> Vec<Guard> {
+    let mut guards = truthy_of(expr, var, resolve);
+    if !compound(expr) {
+        super::property_access::narrowed(expr, true, resolve, &mut guards);
+    }
+    guards
+}
+
+/// `!`, `&&`, `||` and parentheses, whose operands narrow on their own.
+fn compound(expr: &Expression) -> bool {
+    match expr {
+        Expression::Parenthesized(_) => true,
+        Expression::UnaryPrefix(u) => matches!(u.operator, UnaryPrefixOperator::Not(_)),
+        Expression::Binary(b) => matches!(
+            b.operator,
+            BinaryOperator::And(_)
+                | BinaryOperator::LowAnd(_)
+                | BinaryOperator::Or(_)
+                | BinaryOperator::LowOr(_)
+        ),
+        _ => false,
+    }
+}
+
+fn truthy_of(
     expr: &Expression,
     var: &dyn Fn(&[u8]) -> Vec<Guard>,
     resolve: &dyn Fn(&Identifier) -> String,
@@ -77,6 +107,18 @@ pub fn truthy(
 
 /// Guards from `expr` being false.
 pub fn falsy(
+    expr: &Expression,
+    var: &dyn Fn(&[u8]) -> Vec<Guard>,
+    resolve: &dyn Fn(&Identifier) -> String,
+) -> Vec<Guard> {
+    let mut guards = falsy_of(expr, var, resolve);
+    if !compound(expr) {
+        super::property_access::narrowed(expr, false, resolve, &mut guards);
+    }
+    guards
+}
+
+fn falsy_of(
     expr: &Expression,
     var: &dyn Fn(&[u8]) -> Vec<Guard>,
     resolve: &dyn Fn(&Identifier) -> String,

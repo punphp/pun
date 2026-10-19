@@ -4,6 +4,7 @@
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use pun_phpstan::symbols::{self, PhpVersion, Symbols};
+use pun_phpstan::types::{Level, Type};
 
 use mago_allocator::LocalArena;
 
@@ -43,6 +44,30 @@ impl Checker<'_, '_> {
             }
         }
         String::from_utf8_lossy(name).into_owned()
+    }
+
+    /// `describe(VerbosityLevel::typeOnly())` of the static object type of `$this` in class `k`: its name, with its
+    /// template types as arguments.
+    pub(super) fn describe_object(&self, k: &ClassLikeMetadata) -> String {
+        let display = self.display(k);
+        if k.template_types.is_empty() {
+            return display;
+        }
+        let scope = super::declared::class_scope(self, k.span, k);
+        let args: Option<Vec<Type>> = k
+            .template_types
+            .keys()
+            .map(|n| {
+                scope
+                    .templates
+                    .get(String::from_utf8_lossy(n.as_bytes()).as_ref())
+                    .cloned()
+            })
+            .collect();
+        match args {
+            Some(args) => Type::Object(display, args).describe(Level::TypeOnly),
+            None => display,
+        }
     }
 }
 

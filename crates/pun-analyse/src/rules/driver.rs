@@ -17,7 +17,8 @@ use pun_phpstan::ignore::{
 };
 
 use super::{
-    Checker, anonymous, arrays, assign, class_names, infer::infer, reflection, signatures, syntax,
+    Checker, anonymous, arrays, assign, class_names, infer::infer, property_access, reflection,
+    signatures, syntax,
 };
 use crate::Project;
 use crate::codebase::{Sources, parse};
@@ -76,6 +77,7 @@ fn checker<'a, 'arena>(
     let php_version = project.php_version;
     Checker {
         anonymous: anonymous::names(file, program, names, &project.relative_path),
+        property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
         types: infer(arena, file, program, names, codebase, php_version),

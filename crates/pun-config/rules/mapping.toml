@@ -1315,8 +1315,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/write-to-readonly-property" = { preset = "basic", status = "decided" }
 "types/yield-from-non-iterable" = { preset = "essential", status = "decided" }
 "types/yield-outside-function" = { preset = "essential", status = "decided" }
-"undefined/assigned-property" = { preset = "basic", status = "decided" }
-"undefined/assigned-static-property" = { preset = "basic", status = "decided" }
+"undefined/assigned-property" = { preset = "basic", ported = true, status = "decided" }
+"undefined/assigned-static-property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/class-constant" = { preset = "basic", status = "decided" }
 "undefined/compact-variable" = { preset = "basic", status = "decided" }
 "undefined/constant" = { preset = "basic", status = "decided" }
@@ -1328,9 +1328,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "undefined/instanceof-class" = { preset = "basic", ported = true, status = "decided" }
 "undefined/method" = { preset = "basic", status = "decided" }
 "undefined/offset" = { preset = "essential", status = "decided" }
-"undefined/property" = { preset = "basic", status = "decided" }
+"undefined/property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/static-method" = { preset = "basic", status = "decided" }
-"undefined/static-property" = { preset = "basic", status = "decided" }
+"undefined/static-property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/trait" = { preset = "basic", ported = true, status = "decided" }
 "undefined/variable" = { preset = "basic", status = "decided" }
 

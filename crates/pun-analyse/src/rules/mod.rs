@@ -22,6 +22,7 @@ mod missing_types;
 mod names;
 mod params;
 mod properties;
+mod property_access;
 mod reflection;
 mod scope;
 mod signatures;
@@ -188,6 +189,13 @@ pub const IDENTIFIERS: &[&str] = &[
     "property.hookWithoutBody",
     "property.abstractPrivate",
     "property.finalPrivate",
+    "property.notFound",
+    "property.private",
+    "staticProperty.nonStaticAccess",
+    "staticProperty.notFound",
+    "staticProperty.private",
+    "staticProperty.protected",
+    "property.staticAccess",
     "property.finalPrivateHook",
     "property.abstractFinal",
     "property.hookReadOnly",
@@ -325,6 +333,7 @@ pub struct Checker<'a, 'arena> {
     file: &'a File,
     /// The display names of the file's anonymous classes, by their codex name (see [`anonymous::names()`]).
     anonymous: HashMap<Vec<u8>, String>,
+    property_access: property_access::State,
     relative_path: &'a crate::relative_path::RelativePath,
     /// Mago's inferred types of the expressions rules ask about (see [`typed_expressions()`]).
     types: HashMap<Span, TUnion>,
@@ -345,7 +354,8 @@ pub struct Checker<'a, 'arena> {
     top_level: HashSet<(u32, u32)>,
     /// `f(...)` on the right of `|>`: analysed as the call `f($x)`, not as a first-class callable.
     piped: HashSet<Span>,
-    /// Closures whose `$this` is rebound (`->call()`, `->bind()`, `->bindTo()`, `Closure::bind()`).
+    /// Closures whose `$this` is rebound: `(function () {...})->call($o)` (MethodCallHandler) and `Closure::bind()`
+    /// (StaticCallHandler); `->bindTo()` keeps the scope's `$this` (oracle-checked).
     rebound: HashSet<Span>,
     /// `Error::file`: the path, or `T.php (in context of class C)` inside a trait analysed for class C.
     label: String,
@@ -816,6 +826,29 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.classes.truncate(saved);
         self.decls.pop();
     }
+    // the constructor arguments are evaluated in the enclosing scope, before the class is entered
+    fn walk_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, c: &mut ()) {
+        if let Some(arguments) = &a.argument_list {
+            self.walk_partial_argument_list(arguments, c);
+        }
+        self.walk_in_anonymous_class(a, c);
+        for attribute_list in &a.attribute_lists {
+            self.walk_attribute_list(attribute_list, c);
+        }
+        for modifier in &a.modifiers {
+            self.walk_modifier(modifier, c);
+        }
+        if let Some(extends) = &a.extends {
+            self.walk_extends(extends, c);
+        }
+        if let Some(implements) = &a.implements {
+            self.walk_implements(implements, c);
+        }
+        for member in &a.members {
+            self.walk_class_like_member(member, c);
+        }
+        self.walk_out_anonymous_class(a, c);
+    }
     fn walk_in_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, _: &mut ()) {
         names::class_hierarchy(
             self,
@@ -864,6 +897,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+        self.enter_this(false);
         functions::inner_function(self, f);
         missing_types::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
@@ -918,12 +952,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
+        self.leave_this();
         self.syntax.by_ref.pop();
         self.pop_frame();
         self.leave_function();
         self.functions.pop();
     }
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+        self.enter_this(!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))));
         functions::function_like(self, m, &m.parameter_list);
         statements::constructor_return_type(self, m);
         self.push_frame(FrameKind::Named);
@@ -1047,6 +1083,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
+        self.leave_this();
         self.syntax.by_ref.pop();
         self.pop_frame();
         self.leave_function();
@@ -1171,6 +1208,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+        property_access::assign(self, a);
         assign::assignment(self, a);
         assign::property_assign_ref(self, a);
         if let AssignmentOperator::Assign(_) = a.operator {
@@ -1184,6 +1222,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 self.vars.insert(v.name.to_vec(), guards);
             }
         }
+    }
+    fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+        property_access::assigned(self, a);
+    }
+    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
+        property_access::read(self, p);
+    }
+    fn walk_in_static_property_access(
+        &mut self,
+        p: &'ast StaticPropertyAccess<'arena>,
+        _: &mut (),
+    ) {
+        property_access::static_read(self, p);
     }
     fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -1211,7 +1262,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
-            && [&b"call"[..], b"bind", b"bindto"].contains(&m.value.to_ascii_lowercase().as_slice())
+            && m.value.eq_ignore_ascii_case(b"call")
         {
             self.rebind(call.object);
         }
@@ -1260,6 +1311,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     // ponytail: a rebound closure gets no class scope (PHPStan checks it against the bound object's class)
     fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        self.leave_this();
         self.syntax.parents.pop();
         self.syntax.by_ref.pop();
         self.pop_frame();
@@ -1268,6 +1320,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
     fn walk_out_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        self.leave_this();
         self.pop_frame();
         if self.rebound.contains(&f.span()) {
             self.classes.pop();
@@ -1352,6 +1405,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         attributes::constant(self, k);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        self.enter_closure_this(f.r#static.is_some());
         functions::function_like(self, f, &f.parameter_list);
         functions::closure_use(self, f);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
@@ -1408,6 +1462,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::catch(self, clause);
     }
     fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        self.enter_closure_this(f.r#static.is_some());
         functions::function_like(self, f, &f.parameter_list);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         syntax::arrow_function(self, f);
@@ -1480,6 +1535,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.namespaces.pop();
     }
     fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+        self.enter_this(true);
         attributes::property_hook(self, h);
         if let Some(params) = &h.parameter_list {
             functions::function_like(self, h, params);
@@ -1490,6 +1546,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.push_frame(FrameKind::Named);
     }
     fn walk_out_property_hook(&mut self, _: &'ast PropertyHook<'arena>, _: &mut ()) {
+        self.leave_this();
         self.syntax.by_ref.pop();
         self.pop_frame();
     }
@@ -1535,10 +1592,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             UnaryPrefixOperator::PreIncrement(_) | UnaryPrefixOperator::PreDecrement(_)
         ) {
             assign::increment(self, u.operand);
+            self.incremented(u.operand);
         }
     }
     fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
         assign::increment(self, u.operand);
+        self.incremented(u.operand);
     }
     fn walk_out_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {
         self.syntax.parents.pop();
@@ -1557,10 +1616,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_out_foreach(&mut self, _: &'ast Foreach<'arena>, _: &mut ()) {
         self.syntax.parents.pop();
     }
-    fn walk_in_while(&mut self, _: &'ast While<'arena>, _: &mut ()) {
+    fn walk_while(&mut self, w: &'ast While<'arena>, c: &mut ()) {
         self.syntax.parents.push(syntax::Parent::Loop);
-    }
-    fn walk_out_while(&mut self, _: &'ast While<'arena>, _: &mut ()) {
+        self.walk_expression(w.condition, c);
+        // the body starts where the condition held
+        let statements: Vec<&Statement<'arena>> = match &w.body {
+            WhileBody::Statement(s) => vec![s],
+            WhileBody::ColonDelimited(b) => b.statements.iter().collect(),
+        };
+        let guards = self.truthy(w.condition);
+        self.walk_branch(guards, &statements);
         self.syntax.parents.pop();
     }
     fn walk_in_do_while(&mut self, _: &'ast DoWhile<'arena>, _: &mut ()) {

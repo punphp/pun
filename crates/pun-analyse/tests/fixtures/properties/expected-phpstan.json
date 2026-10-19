@@ -1,0 +1,327 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "access.php",
+   "line": 23,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$missing.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 24,
+   "identifier": "property.private",
+   "message": "Access to private property $secret of parent class Props\\ParentClass.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 25,
+   "identifier": "staticProperty.nonStaticAccess",
+   "message": "Non-static access to static property Props\\ParentClass::$counter.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 28,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$flag.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 41,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$created.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 43,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$items.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 45,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$total.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 46,
+   "identifier": "property.private",
+   "message": "Access to private property $secret of parent class Props\\ParentClass.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 47,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$first.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 47,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$second.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 50,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$branch.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 52,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$branch.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 57,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 63,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$inClosure.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 66,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 68,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Child<TKey of int|string, TValue>::$inArrow.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 76,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Sealed::$absent.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 77,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Sealed::$absent.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 103,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Dynamic::$untagged.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 114,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Tagged::$tagged.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 133,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 147,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property static(Props\\Statics)::$missingStatic.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 148,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Props\\Statics::$missingSelf.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 149,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property Props\\Statics::$instance.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 152,
+   "identifier": "class.notFound",
+   "message": "Access to static property $nothing on an unknown class Props\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "access.php",
+   "line": 153,
+   "identifier": "class.nameCase",
+   "message": "Class Props\\Statics referenced with incorrect case: Props\\statics.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 154,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Props\\Statics::$maybe.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 155,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Props\\Statics::$assigned.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 156,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Props\\Statics::$assigned.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 171,
+   "identifier": "staticProperty.private",
+   "message": "Access to private property $secret of class Props\\Hidden.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 172,
+   "identifier": "staticProperty.protected",
+   "message": "Access to protected property $guarded of class Props\\Hidden.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 173,
+   "identifier": "class.noParent",
+   "message": "Props\\Outsider::read() accesses parent::$none but Props\\Outsider does not extend any class.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 181,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Props\\FinalStatics::$absent.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 185,
+   "identifier": "outOfClass.self",
+   "message": "Accessing self::$outside outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 186,
+   "identifier": "outOfClass.parent",
+   "message": "Accessing parent::$outside outside of class scope.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 195,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Narrowing::$looped.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 200,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Narrowing::$negated.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 206,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property static(Props\\Narrowing)::$checked.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 214,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Props\\Narrowing::$named.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 216,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property stdClass::$crate.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 222,
+   "identifier": "attribute.notFound",
+   "message": "Attribute class Props\\Deprecated does not exist.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 223,
+   "identifier": "property.hookedStatic",
+   "message": "Hooked properties cannot be static.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 224,
+   "identifier": "staticProperty.nonStaticAccess",
+   "message": "Non-static access to static property Props\\HookedStatic::$value.",
+   "tip": null
+  },
+  {
+   "file": "access.php",
+   "line": 232,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Rebinding::$boundTo.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php",
+   "line": 239,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\Rebinding::$outer.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "access.php (in context of class Props\\WithTrait)",
+   "line": 122,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Props\\WithTrait::$viaTrait.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  }
+ ]
+}
