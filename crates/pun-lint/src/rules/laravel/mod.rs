@@ -12,6 +12,7 @@ mod prefer_abort_if;
 mod prefer_back_helper;
 mod prefer_env_helper;
 mod prefer_exception_class_string;
+mod prefer_facade_over_app;
 mod prefer_nullsafe;
 mod prefer_report_if;
 mod prefer_request_server;
@@ -27,6 +28,7 @@ pub use prefer_abort_if::PreferAbortIf;
 pub use prefer_back_helper::PreferBackHelper;
 pub use prefer_env_helper::PreferEnvHelper;
 pub use prefer_exception_class_string::PreferExceptionClassString;
+pub use prefer_facade_over_app::PreferFacadeOverApp;
 pub use prefer_nullsafe::PreferNullsafe;
 pub use prefer_report_if::PreferReportIf;
 pub use prefer_request_server::PreferRequestServer;
@@ -63,6 +65,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferAbortIf),
         Box::new(PreferReportIf),
         Box::new(PreferThrowIf),
+        Box::new(PreferFacadeOverApp),
     ]
 }
 

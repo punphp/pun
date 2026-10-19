@@ -481,7 +481,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-error-bag-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the errorBag property to use the ErrorBag attribute" }
 "laravel/prefer-exception-class-string" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "changes use of a new throw instance to class string" }
 "laravel/prefer-explicit-json-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change method calls from $this->json to $this->postJson, $this->putJson, etc." }
-"laravel/prefer-facade-over-app" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Change app() func calls to facade calls" }
+"laravel/prefer-facade-over-app" = { fix = "unsafe", ported = true, status = "decided", summary = "Change app() func calls to facade calls" }
 "laravel/prefer-fail-on-timeout-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the failOnTimeout property to use the FailOnTimeout attribute" }
 "laravel/prefer-fake-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use the fake() helper instead of $this->faker." }
 "laravel/prefer-fillable-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes model fillable property to use the fillable attribute" }

@@ -45,10 +45,12 @@ Uncovered lines:
 - `crates/pun-lint/src/rules/laravel/prefer_request_server.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
 - `crates/pun-lint/src/rules/laravel/prefer_sleep_facade.rs:33` the non-target node guard: `Linter` dispatches only ExpressionStatement for this rule.
 - `crates/pun-lint/src/rules/laravel/names.rs:20` a scope without a Program ancestor: every class-name lookup comes from a parsed file's walk, whose first ancestor is Program.
+- `crates/pun-lint/src/rules/laravel/prefer_facade_over_app.rs:29` the non-target node guard: `Linter` dispatches only FunctionCall for this rule.
 
 ## Not measured
 
 - `crates/pun-cli/src/lint.rs` (`pun lint --mago`) is compiled only with the optional `mago-lint` feature. That feature pulls in about 65k lines of mago-linter, so `scripts/coverage.sh` builds the default features and this file never appears in the LCOV report. It is not counted as an exclusion because no line is skipped; the whole module is absent.
+- `punphp-lint` after the helper-forge-rqdv facade batch: the full rerun is blocked by 28 missing modules referenced by the shared registry. An isolated instrumented build of the current production Laravel files against the unchanged, previously built engine covers all 65 reachable lines of `prefer_facade_over_app.rs` through the upstream fixtures, Rector edge cases and Pinkary corpus. The generated whole-crate row above is the earlier `scripts/coverage.sh punphp-lint` result, not a measurement of the merged registry.
 
 ## Known deviations found while testing
 

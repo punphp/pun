@@ -12,9 +12,9 @@ use lint_c::run_class;
 use pun_lint::Rule;
 use pun_lint::rules::{
     NoNegatedBlankFilled, PreferAbortIf, PreferBackHelper, PreferEnvHelper,
-    PreferExceptionClassString, PreferNullsafe, PreferReportIf, PreferRequestServer,
-    PreferSessionFacade, PreferSleepFacade, PreferStrStartsWith, PreferThrowIf,
-    PreferToRouteHelper, PreferToday,
+    PreferExceptionClassString, PreferFacadeOverApp, PreferNullsafe, PreferReportIf,
+    PreferRequestServer, PreferSessionFacade, PreferSleepFacade, PreferStrStartsWith,
+    PreferThrowIf, PreferToRouteHelper, PreferToday,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -106,4 +106,9 @@ fn report_if() {
 #[test]
 fn throw_if() {
     check(PreferThrowIf, "ThrowIfRector");
+}
+
+#[test]
+fn helper_func_call_to_facade_class() {
+    check(PreferFacadeOverApp, "HelperFuncCallToFacadeClassRector");
 }
