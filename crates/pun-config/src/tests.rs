@@ -1564,7 +1564,7 @@ fn analyse_parameters() {
     for g in &groups {
         toml.push_str(&format!("{g} = \"off\"\n"));
     }
-    toml.push_str("\"undefined/constant\" = \"on\"\n\"types/by-ref-foreach-on-expression\" = \"on\"\n\"classes/uninitialized-property\" = { additional-constructors = [\"A::init\"] }\n\"undefined/property\" = { check-dynamic-properties = true }\n");
+    toml.push_str("\"undefined/constant\" = \"on\"\n\"types/by-ref-foreach-on-expression\" = \"on\"\n\"classes/uninitialized-property\" = { additional-constructors = [\"A::init\"] }\n\"undefined/property\" = { check-dynamic-properties = true }\n\"deprecated/constant\" = \"on\"\n");
     let d = dir(&[("pun.toml", &toml)]);
     let a = load(&d, &Options::default()).unwrap().analyse;
     assert_eq!(a.level(), 1);
@@ -1581,6 +1581,8 @@ fn analyse_parameters() {
     );
     assert_eq!(get("additionalConstructors"), Some(list(&["A::init"])));
     assert_eq!(get("checkDynamicProperties"), Some(V::Bool(true)));
+    // FetchingDeprecatedConstRule is phpstan-deprecation-rules'
+    assert_eq!(get("deprecationRulesInstalled"), Some(V::Bool(true)));
     let toggles = get("featureToggles").unwrap();
     let toggle = |k: &str| toggles.as_array().unwrap().get_str(k).cloned();
     assert_eq!(toggle("assignToByRefForeachExpr"), Some(V::Bool(true)));
@@ -1625,6 +1627,7 @@ fn analyse_parameters() {
         .analyse
         .parameters(&d);
     assert_eq!(p.get_str("checkClassCaseSensitivity"), Some(&V::Bool(true)));
+    assert_eq!(p.get_str("deprecationRulesInstalled"), Some(&V::Bool(false)));
 }
 
 /// Larastan 3 requires `illuminate/*` `^11.44.2 || ^12.4.1 || ^13` (its composer.json); with it, its gated rules'

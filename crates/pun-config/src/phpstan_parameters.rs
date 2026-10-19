@@ -97,6 +97,15 @@ impl Analyse {
                 }
             }
         }
+        // phpstan-deprecation-rules' rules.neon sets it: included when one of its rules is on.
+        let deprecations = classes.values().any(|e| {
+            e.get("package").and_then(toml::Value::as_str) == Some("phpstan-deprecation-rules")
+                && (e.get("pun").and_then(toml::Value::as_str)).is_some_and(|p| on.contains(p))
+        });
+        p.set(
+            Key::from("deprecationRulesInstalled"),
+            Value::Bool(deprecations),
+        );
         // An option `pun migrate` wrote from a changed parameter, on a rule that runs.
         for (name, e) in mapping::section(&["phpstan-parameters"]).table() {
             let (Some(option), Some(rules)) = (
