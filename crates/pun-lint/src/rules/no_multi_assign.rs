@@ -35,9 +35,7 @@ impl Rule for NoMultiAssign {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Statement(stmt) = node else {
-            return;
-        };
+        let Node::Statement(stmt) = node else { return };
         let Some(lines) = split(ctx, stmt) else {
             return;
         };

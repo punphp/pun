@@ -36,9 +36,8 @@ impl Rule for PreferArrayFirstLast {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::ArrayAccess(fetch) = node else {
-            return;
-        };
+        let Node::ArrayAccess(f) = node else { return };
+        let fetch = f;
         let text = |e: &Expression<'_>| {
             let e = unparenthesize(e);
             &ctx.source[node_span(e).start..node_span(e).end]

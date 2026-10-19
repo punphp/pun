@@ -117,6 +117,11 @@ fn privatize_local_getter_to_property() {
         80400,
         "PrivatizeLocalGetterToPropertyRector/Oracle",
     );
+    run(
+        rules::PreferPropertyOverLocalGetter,
+        80400,
+        "PrivatizeLocalGetterToPropertyRector/Pun",
+    );
 }
 
 #[test]

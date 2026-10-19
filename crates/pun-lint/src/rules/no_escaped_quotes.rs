@@ -29,12 +29,9 @@ impl Rule for NoEscapedQuotes {
         _ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::LiteralString(string) = node else {
-            return;
-        };
-        let Some(value) = string.value else {
-            return;
-        };
+        let Node::LiteralString(s) = node else { return };
+        let string = s;
+        let Some(value) = string.value else { return };
         // HAS_NON_PRINTABLE_CHARS and ESCAPED_CHAR_REGEX (`\n` and `\t` are among the former).
         if value
             .iter()

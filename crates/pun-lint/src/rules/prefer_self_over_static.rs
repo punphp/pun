@@ -32,9 +32,7 @@ impl Rule for PreferSelfOverStatic {
         _ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Class(class) = node else {
-            return;
-        };
+        let Node::Class(class) = node else { return };
         let is_final = class
             .modifiers
             .iter()

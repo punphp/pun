@@ -14,9 +14,8 @@ use crate::syntax::node_span;
 
 /// The class when it is `final`, extends nothing and uses no trait.
 pub fn final_class<'a>(node: Node<'a, '_>) -> Option<&'a Class<'a>> {
-    let Node::Class(class) = node else {
-        return None;
-    };
+    let Node::Class(c) = node else { return None };
+    let class = c;
     let is_final = class
         .modifiers
         .iter()

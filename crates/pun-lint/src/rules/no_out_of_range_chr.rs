@@ -34,9 +34,8 @@ impl Rule for NoOutOfRangeChr {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
+        let Node::FunctionCall(c) = node else { return };
+        let call = c;
         if !named(call, "chr") {
             return;
         }

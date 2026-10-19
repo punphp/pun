@@ -36,17 +36,14 @@ impl Rule for PreferPropertyOverLocalGetter {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let (members, is_final) = match node {
-            Node::Class(class) => (
-                &class.members,
-                class
-                    .modifiers
-                    .iter()
-                    .any(|m| matches!(m, Modifier::Final(_))),
-            ),
-            Node::AnonymousClass(class) => (&class.members, false),
-            _ => return,
-        };
+        let is_final = matches!(node, Node::Class(class)
+            if class.modifiers.iter().any(|m| matches!(m, Modifier::Final(_))));
+        let mut members = Vec::new();
+        node.visit_children(|child| {
+            if let Node::ClassLikeMember(member) = child {
+                members.push(member);
+            }
+        });
         let methods: Vec<&Method> = members
             .iter()
             .filter_map(|m| match m {
@@ -55,7 +52,7 @@ impl Rule for PreferPropertyOverLocalGetter {
             })
             .collect();
         let mut edits = Vec::new();
-        for member in members.iter() {
+        for member in members {
             node_calls(Node::ClassLikeMember(member), &mut |call| {
                 if let Some(fetch) = getter_fetch(ctx, call, &methods, is_final) {
                     edits.push(Edit::new(node_span(call), text(ctx, fetch).to_string()));

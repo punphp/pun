@@ -35,9 +35,8 @@ impl Rule for PreferClamp {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(outer) = node else {
-            return;
-        };
+        let Node::FunctionCall(o) = node else { return };
+        let outer = o;
         let (outer_is_max, inner_name) = if named(outer, "max") {
             (true, "min")
         } else if named(outer, "min") {
