@@ -1,0 +1,40 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "bleeding/new-static-in-abstract-class-static-method.php",
+   "line": 10,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "bleeding/new-static-in-abstract-class-static-method.php",
+   "line": 15,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "bleeding/new-static-in-abstract-class-static-method.php",
+   "line": 25,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "bleeding/new-static-in-abstract-class-static-method.php",
+   "line": 30,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "bleeding/new-static-in-abstract-class-static-method.php",
+   "line": 30,
+   "identifier": "new.staticInAbstractClassStaticMethod",
+   "message": "Unsafe usage of new static() in abstract class NewStaticInAbstractClassStaticMethod\\Bar in static method staticDoFoo().",
+   "tip": "Direct call to NewStaticInAbstractClassStaticMethod\\Bar::staticDoFoo() would crash because an abstract class cannot be instantiated."
+  }
+ ]
+}

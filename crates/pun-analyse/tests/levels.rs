@@ -11,7 +11,7 @@ use serde_json::Value;
 
 type Key = (String, i64, String, String, Option<String>);
 
-/// The identifiers of the rules ported above level 0.
+/// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
     "argument.unused",
     "callable.inVoidCast",
@@ -48,6 +48,36 @@ const PORTED: &[&str] = &[
     "method.shadowTemplate",
     "methodTag.shadowTemplate",
     "enum.generic",
+    "method.parentMethodFinal",
+    "method.parentMethodFinalByPhpDoc",
+    "method.abstractOverridingNonAbstract",
+    "method.override",
+    "method.nonStatic",
+    "method.static",
+    "method.tentativeReturnType",
+    "method.childReturnType",
+    "method.childParameterType",
+    "parameter.missing",
+    "parameter.byRef",
+    "parameter.notByRef",
+    "parameter.notOptional",
+    "parameter.notVariadic",
+    "property.override",
+    "property.nonStatic",
+    "property.static",
+    "property.readWrite",
+    "property.readOnly",
+    "property.notReadable",
+    "property.notWritable",
+    "property.abstractOverridingNonAbstractHook",
+    "property.visibility",
+    "property.parentPropertyFinal",
+    "property.parentPropertyFinalByPhpDoc",
+    "property.missingNativeType",
+    "property.nativeType",
+    "property.extraNativeType",
+    "propertySetHook.nativeParameterType",
+    "new.staticInAbstractClassStaticMethod",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).

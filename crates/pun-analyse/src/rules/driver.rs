@@ -37,6 +37,8 @@ pub(crate) struct Checks {
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
     level: u8,
     generic_iterable_classes: bool,
+    /// [`Project::new_static_in_abstract_class_static_method`].
+    new_static_in_abstract_class_static_method: bool,
     /// [`Project::relative_path`].
     relative_path: RelativePath,
     /// [`Project::larastan`].
@@ -57,6 +59,7 @@ impl Checks {
             check_class_case_sensitivity: project.check_class_case_sensitivity,
             level: project.level,
             generic_iterable_classes: project.check_generic_iterable_classes,
+            new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
             php_version: project.php_version,
             report_ignores_without_comments: project.report_ignores_without_comments,
             report_unmatched_ignores: project.report_unmatched_ignores,
@@ -150,6 +153,7 @@ fn checker<'a, 'arena>(
         case_sensitivity: project.check_class_case_sensitivity,
         level: project.level,
         generic_iterable_classes: project.generic_iterable_classes,
+        new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
         larastan: project.larastan.as_ref(),
         larastan_state: Default::default(),
         internal: project.internal.as_ref(),

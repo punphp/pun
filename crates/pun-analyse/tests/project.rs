@@ -91,6 +91,12 @@ fn declaration_rules_by_php_version() {
     check("phpstan-versions-80400");
 }
 
+/// The rules bleedingEdge turns on through `featureToggles` (NewStaticInAbstractClassStaticMethodRule's own test).
+#[test]
+fn feature_toggles() {
+    check("phpstan-bleeding");
+}
+
 /// A file that exists but can't be read stops the run with its path, as it stops PHPStan's ("Could not read file:
 /// <path>" for a chmod 000 file); a directory stands in for one, since root reads any file. A file that is gone is
 /// skipped.

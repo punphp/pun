@@ -25,6 +25,9 @@ mod larastan;
 mod members;
 mod missing_types;
 mod names;
+mod new_static_abstract;
+mod overriding;
+mod overriding_property;
 mod params;
 mod printf_helper;
 mod properties;
@@ -32,6 +35,7 @@ mod property_access;
 mod reflection;
 mod restricted_functions;
 mod scope;
+mod set_hook;
 mod signatures;
 mod statements;
 mod syntax;
@@ -342,6 +346,36 @@ pub const IDENTIFIERS: &[&str] = &[
     "callable.notSupported",
     "array.duplicateKey",
     "property.assignByRef",
+    "method.parentMethodFinal",
+    "method.parentMethodFinalByPhpDoc",
+    "method.abstractOverridingNonAbstract",
+    "method.override",
+    "method.nonStatic",
+    "method.static",
+    "method.tentativeReturnType",
+    "method.childReturnType",
+    "method.childParameterType",
+    "parameter.missing",
+    "parameter.byRef",
+    "parameter.notByRef",
+    "parameter.notOptional",
+    "parameter.notVariadic",
+    "property.override",
+    "property.nonStatic",
+    "property.static",
+    "property.readWrite",
+    "property.readOnly",
+    "property.notReadable",
+    "property.notWritable",
+    "property.abstractOverridingNonAbstractHook",
+    "property.visibility",
+    "property.parentPropertyFinal",
+    "property.parentPropertyFinalByPhpDoc",
+    "property.missingNativeType",
+    "property.nativeType",
+    "property.extraNativeType",
+    "propertySetHook.nativeParameterType",
+    "new.staticInAbstractClassStaticMethod",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -465,6 +499,8 @@ pub struct Checker<'a, 'arena> {
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.
     level: u8,
     generic_iterable_classes: bool,
+    /// [`driver::Checks`]'s `featureToggles.newStaticInAbstractClassStaticMethod`.
+    new_static_in_abstract_class_static_method: bool,
     /// [`driver::Checks`]'s Larastan switches, when the config includes Larastan.
     larastan: Option<&'a Larastan>,
     larastan_state: larastan::State,
@@ -625,9 +661,17 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && trait_span.start.offset <= f.span.start.offset
                 && f.span.end.offset <= trait_span.end.offset
         };
-        self.codebase
-            .get_class_like(class.as_bytes())
-            .and_then(|k| members::method(self, k, name.as_bytes()))
+        let Some(k) = self.codebase.get_class_like(class.as_bytes()) else {
+            return false;
+        };
+        // BetterReflection's own cases(), and a backed enum's from() and tryFrom(), replace an enum's others
+        let lower = name.to_ascii_lowercase();
+        if k.kind == SymbolKind::Enum
+            && (lower == "cases" || (k.enum_type.is_some() && (lower == "from" || lower == "tryfrom")))
+        {
+            return true;
+        }
+        members::method(self, k, name.as_bytes())
             .is_some_and(|m| !matches!(m, members::Method::User { f, .. } if this_trait(f)))
     }
 
@@ -1089,6 +1133,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             signatures::property(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
             if let Some(hooks) = &p.hooks {
                 signatures::hooks(self, p.variable.name, hooks);
+                set_hook::hooks(self, p.variable.name, p.hint.as_ref(), hooks);
             }
         }
         // a trait method under its `as` alias
@@ -1098,6 +1143,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         };
         declarations::method(self, m, &method);
         hierarchy::method(self, m, &method);
+        overriding::method(self, m, &method);
         hierarchy::interface_method_visibility(self, m);
         dead_code::constructor(self, m, &method);
         missing_types::method(self, m);
@@ -1380,6 +1426,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, _: &mut ()) {
+        new_static_abstract::instantiation(self, new);
         if statements::instantiation_callable(self, new) {
             return;
         }
@@ -1506,6 +1553,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         signatures::property(self, p.span(), p.hint(), &names);
         if let Property::Hooked(h) = p {
             signatures::hooks(self, h.item.variable().name, &h.hook_list);
+            set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
         }
         properties::property(self, p);
         missing_types::property(self, p);
