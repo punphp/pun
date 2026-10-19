@@ -237,7 +237,7 @@ fn apply_ignores(findings: &mut Vec<Finding>, root: &Path) -> Vec<Problem> {
 
 /// A malformed `@pun-ignore` comment, as an error.
 /// The engine's rule for an `@pun-ignore` comment without a rule ID (rules.md §4).
-pub(crate) const INVALID_IGNORE: &str = "invalid-ignore-comment";
+const INVALID_IGNORE: &str = "invalid-ignore-comment";
 
 pub(crate) fn ignore_problem(rel: &str, m: &pun_problem::ignore::Malformed) -> Problem {
     Problem {

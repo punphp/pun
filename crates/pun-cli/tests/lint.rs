@@ -347,3 +347,34 @@ fn problems_in_every_report() {
     assert!(out.ends_with(&annotations), "{out}");
     assert_eq!(code, Some(1));
 }
+
+/// A token lint rule (PHP-CS-Fixer's `no_alias_functions`, `style/no-alias-function`) beside native ones: an ignore
+/// naming it is not judged unused (its problems are per file, not per line), the native problems' positions are in
+/// the code after its fix (as the snippet shows it), and at `warn` it fails the run only with `--deny-warnings`.
+#[test]
+fn token_rules_beside_native_ones() {
+    let toml = "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"style/no-alias-function\" = \"warn\"\n\"comments/no-unused-ignore\" = \"error\"\n\"security/no-eval\" = \"error\"\n";
+    let ignore = "<?php\n$a = 1; // @pun-ignore lint/style/no-alias-function\n";
+    let d = project(
+        "lint",
+        "token",
+        &[
+            ("pun.toml", toml),
+            ("a.php", &format!("{ignore}$n = sizeof($a); eval('1;');\n")),
+        ],
+    );
+    let alias = "a.php lint/style/no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.";
+    // `$n = count($a); eval` puts eval at column 17 (at 18 before the fix).
+    let (lines, _, code) = agent(&d, &["lint"]);
+    assert_eq!(
+        lines,
+        [
+            "a.php:3:17 lint/security/no-eval Unsafe use of `eval` construct.",
+            alias
+        ]
+    );
+    assert_eq!(code, Some(1));
+    std::fs::write(d.join("a.php"), format!("{ignore}$n = sizeof($a);\n")).unwrap();
+    assert_eq!(agent(&d, &["lint"]).2, Some(0));
+    assert_eq!(agent(&d, &["lint", "--deny-warnings"]).2, Some(1));
+}

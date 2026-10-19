@@ -460,13 +460,10 @@ fn token_rules(on: &BTreeMap<String, On>, fix: bool, pending: bool) -> Vec<Rule>
         .collect()
 }
 
-/// A native problem's rule ID as the `'static` string the reports list fixers by.
+/// A fixed native problem's rule ID as the `'static` string the reports list fixers by: a native rule, else the
+/// unused-ignore check (a malformed ignore has no fix).
 fn static_id(rule: &str) -> &'static str {
-    match lint_plan::native_rules().get(rule) {
-        Some(id) => id,
-        None if rule == lint_plan::UNUSED_IGNORE => lint_plan::UNUSED_IGNORE,
-        None => crate::analyse::INVALID_IGNORE,
-    }
+    (lint_plan::native_rules().get(rule).copied()).unwrap_or(lint_plan::UNUSED_IGNORE)
 }
 
 /// One round of the native rules' problems, as the file's levels and comments leave them: rules that are off for
