@@ -52,13 +52,9 @@ impl Fixer for NoSpacesAroundOffsetFixer {
                 continue;
             }
             if inside {
-                // `$a{0}` (CT_ARRAY_INDEX_BRACE_OPEN) is a parse error since PHP 8, kept for parity with upstream
-                let block_type = if token.equals("[", true) {
-                    Tokens::BLOCK_TYPE_INDEX_BRACKET
-                } else {
-                    Tokens::BLOCK_TYPE_INDEX_BRACE
-                };
-                let end_index = tokens.find_block_end(block_type, index);
+                // Upstream's index-brace branch (`$a{0}`) can't run: PHP 8 rejects that syntax, and no transformer
+                // makes CT_ARRAY_INDEX_BRACE_OPEN.
+                let end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_INDEX_BRACKET, index);
                 if tokens[index + 1].is_whitespace(Some(b" \t")) {
                     tokens.clear_at(index + 1);
                 }

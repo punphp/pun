@@ -46,5 +46,13 @@
             "on_multiline": 1
         },
         "error": "[method_argument_space] Invalid configuration: The option \"on_multiline\" with value 1 is invalid. Accepted values are: \"ignore\", \"ensure_single_line\", \"ensure_fully_multiline\", \"ensure_single_line_for_single_argument\"."
+    },
+    {
+        "fixer": "method_argument_space",
+        "config": {
+            "on_multiline": "ensure_single_line"
+        },
+        "input": "<?php\nfoo(/* a */\n    $b,\n    $c\n);\n",
+        "expected": "<?php\nfoo(/* a */$b, $c);\n"
     }
 ]

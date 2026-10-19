@@ -344,13 +344,10 @@ impl MethodArgumentSpaceFixer {
             } else if tokens[index].equals("}", true) {
                 index = tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, index);
             } else if tokens[index].is_whitespace(None) {
-                let previous_token = &tokens[index - 1];
-                if !(previous_token.is_comment()
-                    && !previous_token.get_content().starts_with(b"/*"))
-                {
-                    let content = Preg::replace("/\\R\\h*/", "", tokens[index].get_content());
-                    tokens.ensure_whitespace_at_index(index, 0, &content);
-                }
+                // Upstream skips whitespace after a `//` comment here, but any top-level comment already made
+                // argument_content_is_multiline return early, so that check never fires.
+                let content = Preg::replace("/\\R\\h*/", "", tokens[index].get_content());
+                tokens.ensure_whitespace_at_index(index, 0, &content);
             }
             index -= 1;
         }
