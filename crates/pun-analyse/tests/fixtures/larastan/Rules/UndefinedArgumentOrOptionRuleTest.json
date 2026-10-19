@@ -1,0 +1,226 @@
+{
+    "test": "Rules/UndefinedArgumentOrOptionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "application/app/Console/Commands/FooCommand.php",
+                "application/app/Console/Commands/BarCommand.php",
+                "application/app/Console/Commands/BazCommand.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "application/app/Console/Commands/BarCommand.php",
+                    "line": 17,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{argumentArray: array<int, string>}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BarCommand.php",
+                    "line": 18,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{argumentArray: array<int, string>}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BarCommand.php",
+                    "line": 19,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array<int, string>, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BarCommand.php",
+                    "line": 21,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BarCommand.php",
+                    "line": 25,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array<int, string|null>, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BarCommand.php",
+                    "line": 27,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BazCommand.php",
+                    "line": 17,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{optionalArgumentArray: array<int, string>}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BazCommand.php",
+                    "line": 18,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{optionalArgumentArray: array<int, string>}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BazCommand.php",
+                    "line": 19,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array<int, string>, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/BazCommand.php",
+                    "line": 21,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 17,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{argument: string, optionalArg: string|null, optionalArgWithDefault: string}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 18,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array{argument: string, optionalArg: string|null, optionalArgWithDefault: string}, actual: array<array|bool|float|int|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 19,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 20,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string|null, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 21,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 24,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 25,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 26,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 27,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type false, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 31,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type bool, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 32,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type bool, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 33,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type string|null, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 34,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type bool, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 35,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type bool, actual: array|bool|float|int|string|null",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 38,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 39,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 40,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 41,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 42,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type true, actual: bool",
+                    "tip": null
+                },
+                {
+                    "file": "application/app/Console/Commands/FooCommand.php",
+                    "line": 43,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type false, actual: bool",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

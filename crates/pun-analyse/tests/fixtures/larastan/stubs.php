@@ -198,6 +198,91 @@ namespace App {
     }
 }
 
+namespace Symfony\Component\Console\Command {
+    class Command
+    {
+        protected function configure()
+        {
+        }
+
+        public function addArgument(string $name, ?int $mode = null, string $description = '', mixed $default = null): static
+        {
+        }
+
+        public function addOption(string $name, string|array|null $shortcut = null, ?int $mode = null, string $description = '', mixed $default = null): static
+        {
+        }
+    }
+}
+
+namespace Symfony\Component\Console\Attribute {
+    #[\Attribute(\Attribute::TARGET_CLASS)]
+    class AsCommand
+    {
+        public function __construct(public string $name, public ?string $description = null, array $aliases = [], bool $hidden = false)
+        {
+        }
+    }
+}
+
+namespace Symfony\Component\Console\Input {
+    class InputArgument
+    {
+        public const REQUIRED = 1;
+        public const OPTIONAL = 2;
+        public const IS_ARRAY = 4;
+
+        public function __construct(string $name, ?int $mode = null, string $description = '', mixed $default = null)
+        {
+        }
+    }
+
+    class InputOption
+    {
+        public const VALUE_NONE = 1;
+        public const VALUE_REQUIRED = 2;
+        public const VALUE_OPTIONAL = 4;
+        public const VALUE_IS_ARRAY = 8;
+
+        public function __construct(string $name, string|array|null $shortcut = null, ?int $mode = null, string $description = '', mixed $default = null)
+        {
+        }
+    }
+}
+
+namespace Illuminate\Contracts\Console {
+    interface Isolatable
+    {
+    }
+}
+
+namespace Illuminate\Console {
+    class Command extends \Symfony\Component\Console\Command\Command
+    {
+        protected $signature;
+        protected $name;
+        protected $aliases;
+
+        public function argument($key = null)
+        {
+        }
+
+        public function option($key = null)
+        {
+        }
+
+        protected function getArguments()
+        {
+            return [];
+        }
+
+        protected function getOptions()
+        {
+            return [];
+        }
+    }
+}
+
 namespace {
     function with($value, ?callable $callback = null)
     {
@@ -210,6 +295,14 @@ namespace {
     }
 
     function env($key, $default = null)
+    {
+    }
+
+    /**
+     * @param  string  $path
+     * @return string
+     */
+    function storage_path($path = '')
     {
     }
 

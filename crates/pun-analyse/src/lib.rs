@@ -3,6 +3,7 @@
 
 mod autoload;
 mod codebase;
+mod larastan;
 mod laravel;
 mod mago;
 mod project;

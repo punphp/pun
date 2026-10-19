@@ -5,6 +5,8 @@
 mod appends;
 mod calls;
 mod classes;
+mod config;
+mod console;
 mod dispatch;
 mod octane;
 
@@ -40,6 +42,9 @@ pub const IDENTIFIERS: &[&str] = &[
     "rules.modelAppends",
     "larastan.jobs.noConstructor",
     "larastan.events.noConstructor",
+    "larastan.console.undefinedArgument",
+    "larastan.console.undefinedOption",
+    "larastan.configCollection",
 ];
 
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
@@ -66,6 +71,12 @@ pub struct Larastan {
     pub check_model_appends: bool,
     /// The analysed models' database properties, by lowercase class name (filled by [`Larastan::load`]).
     pub(crate) database_properties: HashMap<String, HashSet<String>>,
+    /// `checkConfigTypes` (default false).
+    pub check_config_types: bool,
+    /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
+    pub(crate) configs: crate::larastan::config::Configs,
+    /// The app's console commands (filled by [`Larastan::load`]).
+    pub(crate) commands: Vec<crate::larastan::console::Command>,
 }
 
 impl Larastan {
@@ -81,6 +92,9 @@ impl Larastan {
             check_auth_calls_when_in_request_scope: false,
             check_model_appends: true,
             database_properties: HashMap::new(),
+            commands: Vec::new(),
+            check_config_types: false,
+            configs: Default::default(),
         }
     }
 
@@ -96,6 +110,14 @@ impl Larastan {
                 parse_casts_method: false,
             };
             self.database_properties = crate::laravel::database_properties(app, project, codebase);
+        }
+        self.commands = crate::larastan::console::commands(project, codebase);
+        if self.check_config_types {
+            self.configs = crate::larastan::config::Configs::load(
+                &self.config_directories,
+                &self.root,
+                codebase,
+            );
         }
     }
 
@@ -128,6 +150,7 @@ impl Larastan {
         larastan.check_auth_calls_when_in_request_scope =
             flag("checkAuthCallsWhenInRequestScope", false);
         larastan.check_model_appends = flag("checkModelAppends", true);
+        larastan.check_config_types = flag("checkConfigTypes", false);
         Some(larastan)
     }
 }
@@ -252,6 +275,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         self.spans.extend(wanted.map(|a| a.value().span()));
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        if self.larastan.check_config_types {
+            self.spans.extend(config::typed(self.names, call));
+        }
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && dispatch::conditional(m.value)
             && let Some(first) = call.argument_list.arguments.first()
@@ -272,6 +298,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        if let Some((_, arg)) = console::input_call(call) {
+            self.spans.extend([call.object.span(), arg.span()]);
+        }
         if self.larastan.check_octane_compatibility && octane::is_binding(call) {
             self.spans.push(call.object.span());
         }

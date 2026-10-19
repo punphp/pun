@@ -27,6 +27,9 @@ const PORTED: &[&str] = &[
     "rules.modelAppends",
     "larastan.jobs.noConstructor",
     "larastan.events.noConstructor",
+    "larastan.console.undefinedArgument",
+    "larastan.console.undefinedOption",
+    "larastan.configCollection",
 ];
 
 /// Whether the test compares an error: one of a ported rule, or the dispatch rule's argument count (core
@@ -79,6 +82,7 @@ fn larastan_rule_fixtures() {
     larastan.check_octane_compatibility = true;
     larastan.check_model_method_visibility = true;
     larastan.check_auth_calls_when_in_request_scope = true;
+    larastan.check_config_types = true;
     let mut failing = BTreeSet::new();
     let mut details = Vec::new();
     let mut compared = 0;
@@ -237,4 +241,81 @@ fn larastan_switches_from_the_config() {
     assert_eq!(l.config_directories, ["/app/modules/*/config"]);
     let defaults = switches("parameters:\n\tnoModelMake: true\n").unwrap();
     assert_eq!(defaults.config_directories, ["/app/config"]);
+}
+
+/// Errors with identifiers starting with `prefix` on the PHP files of `dir`, against the PHPStan + Larastan errors in
+/// its expected.json (from a run in a real Laravel app, pinkary, as its `how` says).
+fn oracle_case(dir: &Path, larastan: Larastan, prefix: &str) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    let expected: Value =
+        serde_json::from_str(&std::fs::read_to_string(dir.join("expected.json")).unwrap()).unwrap();
+    let want: BTreeSet<(String, u32, String, String)> = expected["errors"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| {
+            (
+                e["file"].as_str().unwrap().to_string(),
+                e["line"].as_u64().unwrap() as u32,
+                e["identifier"].as_str().unwrap().to_string(),
+                e["message"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
+        .unwrap()
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|x| x == "php"))
+        .collect();
+    files.sort();
+    let mut project = Project::new(files, scanned(&root));
+    project.larastan = Some(larastan);
+    let got: BTreeSet<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .filter(|e| e.identifier.starts_with(prefix))
+        .map(|e| {
+            let file = Path::new(&e.file)
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .into_owned();
+            (file, e.line, e.identifier, e.message)
+        })
+        .collect();
+    assert_eq!(got, want);
+}
+
+/// UndefinedArgumentOrOptionRule on the commands of tests/fixtures/larastan/data/Console, registered in pinkary's
+/// app/Console/Commands.
+#[test]
+fn larastan_console_commands() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    oracle_case(
+        &root.join("data/Console"),
+        Larastan::new(&root.join("application")),
+        "larastan.console.",
+    );
+}
+
+/// ConfigCollectionRule on tests/fixtures/larastan/data/Config, whose config/ is the app's config directory.
+#[test]
+fn larastan_config_collection() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan/data/Config");
+    let mut larastan = Larastan::new(&dir);
+    larastan.check_config_types = true;
+    oracle_case(&dir, larastan.clone(), "larastan.configCollection");
+    // configured directories without config files fall back to config_path()
+    larastan.config_directories = vec![dir.join("missing").to_string_lossy().into_owned()];
+    oracle_case(&dir, larastan.clone(), "larastan.configCollection");
+    // off by default
+    let mut project = Project::new(vec![dir.join("ConfigCases.php")], Vec::new());
+    project.larastan = Some(Larastan::new(&dir));
+    assert!(
+        run(&project)
+            .unwrap()
+            .iter()
+            .all(|e| e.identifier != "larastan.configCollection")
+    );
 }

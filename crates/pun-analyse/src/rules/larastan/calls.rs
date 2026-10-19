@@ -228,6 +228,7 @@ pub(crate) fn static_method_call<'arena>(
         return;
     };
     super::dispatch::check(c, call);
+    super::config::check(c, call);
     let ClassLikeMemberSelector::Identifier(method) = &call.method else {
         return;
     };
@@ -301,6 +302,7 @@ pub(crate) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall
     let Some(larastan) = c.larastan else {
         return;
     };
+    super::console::check(c, call);
     if larastan.check_octane_compatibility {
         octane::check(c, call);
     }

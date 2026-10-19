@@ -57,6 +57,7 @@ use crate::codebase::Sources;
 use scope::{Guard, Saved};
 use statements::{Frame, FrameKind};
 
+pub(crate) use doc::{doc_before, tags as doc_tags};
 pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
 pub(crate) use reflection::builtins;
