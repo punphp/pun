@@ -141,16 +141,16 @@ impl Project {
                 .and_then(Value::as_array)
                 .and_then(|t| t.get_str("checkGenericIterableClasses"))
                 == Some(&Value::Bool(true)),
-            relative_path: RelativePath::of(&paths),
-            larastan: crate::Larastan::from_params(root, params),
-        }
-    }
-
             internal_tag: params
                 .get_str("featureToggles")
                 .and_then(Value::as_array)
                 .and_then(|t| t.get_str("internalTag"))
                 == Some(&Value::Bool(true)),
+            relative_path: RelativePath::of(&paths),
+            larastan: crate::Larastan::from_params(root, params),
+        }
+    }
+
     /// PHPStan's defaults (no `ignoreErrors`, unmatched ignores reported) over the given files.
     pub fn new(analysed: Vec<PathBuf>, scanned: Vec<PathBuf>) -> Project {
         let paths: Vec<String> = analysed.iter().map(|p| absolute(p)).collect();
@@ -166,12 +166,12 @@ impl Project {
             check_class_case_sensitivity: false,
             level: 0,
             check_generic_iterable_classes: false,
+            internal_tag: false,
             larastan: None,
         }
     }
 }
 
-            internal_tag: false,
 /// A psr-4 or psr-0 file and the class its path holds.
 pub struct Autoloaded {
     pub path: PathBuf,
