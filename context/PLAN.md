@@ -14,13 +14,9 @@ agents and helper branches are stopped and merged; there is nothing in flight.
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   Docs pushes are blocked by this runner's GitHub authentication; no docs commit has been published.
 - **Green on main:** `cargo test -p punphp-analyse` (levels included; the generics wiring from salvage/handoff is applied).
-- **Salvage refs on origin** (not branches to work on; read, port what is missing, then delete the ref):
-  `salvage/handoff` (format-handoff: heredoc_closing_marker + fixtures, the inline `Content` type and fmtbench;
-  generics-wiring.diff; the audit item 12 and 83 patches), `salvage/stash-ef0bb7f` (edits lost in a shared-tree
-  reset on 2026-10-19, mostly redone; diff each file against main), `salvage/stash-0b0ef5b` (2026-10-17 pun-cli and
-  blade WIP).
+- **Salvage ref on origin:** `salvage/stash-0b0ef5b` (Blade Prettier probe; §3 "perf format" row). Delete it once that row lands.
 - **Priorities, in order:** (1) done; (2) the `pun lint` stack overflow on pinkary (Track B), then lint
-  vs Rector end to end; (3) coverage back to 100% in pun-lint, pun-analyse, punphp; (4) analyse level 0, then the
+  vs Rector end to end; (3) coverage back to 100% in pun-lint (pun-analyse and punphp are at 100%); (4) analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
 - **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, CI re-enable.
