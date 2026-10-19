@@ -302,14 +302,16 @@ items marked "not checked against Pint" still need one oracle run before the fix
   section order and on no value line starting with `[`. Extract Function `section(name)` with one lazily parsed value
   per section. `crates/pun-config/src/mapping.rs` splits the file at the lines TOML reads as headers. Fixed in
   f498858.
-- [ ] 51. Presets, ecosystems and fix safety are strings matched in several places: `pun-config/src/lib.rs:28-51,
+- [x] 51. Presets, ecosystems and fix safety are strings matched in several places: `pun-config/src/lib.rs:28-51,
   236-243`, `migrate.rs:194-198`, `schema.rs:25-33, 511, 581, 597, 226-233, 256` (`Gates::locked("doctrine")` falls
   through to PHPUnit), and `RuleMeta.fix` compared as `== "safe"` in `pun-cli/src/report.rs:398` although
   `pun_problem::Safety` exists. Replace Type Code with Enum (`FormatPreset`, `AnalysePreset`, `Ecosystem`,
   `FixSafety`) and build error lists from them. Spans crates. Partly done in 0be9ca3: `AnalysePreset` and
   `Ecosystem` (`Gates::locked` now matches all four, `doctrine` has no package). `FormatPreset` (`Config.preset`, read
   as a string in `pun-cli/src/run.rs` and `main.rs`) and `FixSafety` (`pun-cli/src/report.rs:398`) wait for the
-  platform/format tracks that hold those files.
+  platform/format tracks that hold those files. Fixed in 66033b9: `Config.preset` is a `FormatPreset` and
+  `RuleMeta.fix` a `FixSafety`; both still compare with a string, so report.rs's `== "safe"` keeps compiling until
+  platform matches the variant (PLAN.md request row).
 - [x] 52. Unreadable files are treated as missing: `crates/pun-config/src/composer.rs:124-126` skips the PHP 8.4 gate
   on any read error, and `crates/pun-analyse/src/codebase.rs:36` with `rules/mod.rs:204-206` reports nothing for an
   unreadable file. Treat only `ErrorKind::NotFound` as absent and propagate the rest with the path. The
@@ -321,7 +323,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 53. The PHP target version has six representations: `Config.php: String`, `(u64, u64)` in
   `pun-config/src/schema.rs:220,264`, `composer::Version`, `constraint::V` (bridged by `From`), and `u32` ids in
   `pun-lint/src/lib.rs:28,136` and `pun-analyse/src/project.rs:21`. One `PhpVersion` in pun-config with `FromStr`,
-  `Display` and `to_id()`. Spans crates. Needs a decision.
+  `Display` and `to_id()`. Spans crates. Needs a decision. Partly done in 66033b9: `pun_config::PhpVersion`
+  (`FromStr`, `Display`, `to_id()`) replaces `(u64, u64)` in the gates and `Composer::php_version()`'s string, and
+  `Config::php_version()` returns it; `Config.php` stays a string until pun-cli reads `php_version().to_id()` (PLAN.md
+  request row), and pun-analyse's `u32` comes from PHPStan's `phpVersion`.
 - [ ] 54. `crates/pun-lint/src/lib.rs:25,164,217` and `pun-problem`'s `apply_fixes` take source as `&str`, so a
   Latin-1 file that `pun format` handles can't be linted (the examples `continue` past it). Take `&[u8]`, as Mago's
   parser and `Pipeline::run` do. Spans crates.
