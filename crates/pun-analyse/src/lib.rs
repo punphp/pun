@@ -18,7 +18,7 @@ use rayon::prelude::*;
 pub use codebase::CouldNotReadFile;
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
-pub use project::{Project, Reported};
+pub use project::{Project, Reported, StrictRules};
 pub use relative_path::RelativePath;
 pub use rules::Larastan;
 
@@ -26,7 +26,8 @@ pub use rules::Larastan;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Error {
     pub file: String,
-    pub line: u32,
+    /// PHPStan's `-1` for a node without a position (a synthetic `break`).
+    pub line: i64,
     pub identifier: String,
     pub message: String,
     pub tip: Option<String>,
@@ -81,6 +82,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
         .analysed
         .par_iter()
         .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
+        .chain(rules::unused_traits(project, &codebase, &sources))
         .collect();
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));
@@ -95,7 +97,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
         .into_iter()
         .map(|e| Error {
             file: e.file,
-            line: e.line.map_or(0, |l| l as u32),
+            line: e.line.unwrap_or(0),
             identifier: e.identifier.unwrap_or_default(),
             message: e.message,
             tip: e.tip,

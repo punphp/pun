@@ -461,3 +461,19 @@ Helper queue 4, printf rules (helper-forge-rqdv, 2026-10-19):
   produces zero differences for these six identifiers. This is not whole-analyser corpus parity.
 - FilterVarRule remains unported: Mago infers `FILTER_THROW_ON_FAILURE` as mixed, so its bitwise flags value is
   unknown. PLAN.md records the request to supply version-specific builtin constants to inference.
+
+Assistant's calls in analyse 3m (strict-rules and the level-3 property-hook rules, strict.rs and property_hooks.rs,
+2026-10-19; the plan was silent):
+- phpstan-strict-rules' ported rules run when the PHPStan config sets their `strictRules.*` switch (`allRules`
+  expanded by the config resolver); Pun reads no other strict-rules parameter yet (PLAN.md).
+- DynamicCallOnStaticMethodsRule checks `$this` (also `$this?->`) below level 2 and Mago's type of any object from
+  level 2: `null` is dropped below level 8 and union members without the method below level 7, as
+  RuleLevelHelper::findTypeToCheck() does. The objects are typed only for method names some class declares static.
+- ClosureUsesThisRule reads Mago's type of each imported variable: one named object flagged `$this` is PHPStan's
+  ThisType. A closure inside the arguments of `Closure::bind()` is skipped (`isInClosureBind()`).
+- RequireParentConstructCallRule names an anonymous class by `getName()` (AnonymousClass and the md5, oracle-checked)
+  and follows php-parser's `stmts` (if bodies, loops, try, blocks, declare, named functions, closure statements),
+  not `else`, `catch`, `switch` or a closure assigned to a variable.
+- WrongCaseOfInheritedMethodRule prints a generic parent as its ancestor display (`ArrayObject<(int|string),mixed>`).
+- SetNonVirtualPropertyHookAssignRule's flow is the approximation PLAN.md lists; a hook of a trait's property reports
+  in the using class's file without "in context of", as ClassPropertiesNode does.

@@ -161,7 +161,11 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
         .iter()
         .map(|id| Pair::name(c.resolved(id), id.span()))
         .collect();
-    class_names::check(c, &pairs, true);
+    let class = c
+        .class_scope()
+        .filter(|k| !k.name.as_bytes().starts_with(b"{anonymous-class:"))
+        .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned());
+    class_names::check_at(c, &pairs, Some(&class_names::Location::TraitUse { class }), true);
     // (an interface is never a trait's context)
     if kind == SymbolKind::Interface {
         let display = display.expect("a named interface");
@@ -522,17 +526,7 @@ pub fn allowed_subtypes(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
         )
         .collect();
     // getName(): an anonymous class's internal name
-    let class_name = match c.display(k) {
-        d if k.original_name.as_bytes().starts_with(b"{anonymous-class:") => {
-            let file = c
-                .files
-                .get(&k.span.file_id)
-                .map(|p| crate::relative_path::absolute(p))
-                .unwrap_or_default();
-            super::anonymous::internal_name(&d, &file, c.relative_path)
-        }
-        d => d,
-    };
+    let class_name = c.class_name(k);
     let kind = match k.kind {
         SymbolKind::Interface => "interface",
         SymbolKind::Enum => "enum",

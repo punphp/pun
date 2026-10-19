@@ -1,0 +1,551 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "bug-12951-constant.php",
+   "line": 6,
+   "identifier": "class.notFound",
+   "message": "Access to constant NUMERIC_COLLATION on an unknown class Bug12951Core\\NumberFormatter.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-12951-constant.php",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Access to constant NUMERIC_COLLATION on an unknown class Bug12951Polyfill\\NumberFormatter.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-12951-constructor.php",
+   "line": 6,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Bug12951Core\\NumberFormatter not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-12951-constructor.php",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Bug12951Polyfill\\NumberFormatter not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-12951-static-method.php",
+   "line": 6,
+   "identifier": "class.notFound",
+   "message": "Call to static method doBar() on an unknown class Bug12951Core\\NumberFormatter.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-12951-static-method.php",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Call to static method doBar() on an unknown class Bug12951Polyfill\\NumberFormatter.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-12951-static-property.php",
+   "line": 6,
+   "identifier": "class.notFound",
+   "message": "Access to static property $prop on an unknown class Bug12951Core\\NumberFormatter.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "bug-12951-static-property.php",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Access to static property $prop on an unknown class Bug12951Polyfill\\NumberFormatter.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class-constant-access-on-internal-subclass.php",
+   "line": 27,
+   "identifier": "classConstant.internalClass",
+   "message": "Access to constant FOO on internal class ClassConstantAccessOnInternalSubclassOne\\Bar.",
+   "tip": null
+  },
+  {
+   "file": "class-constant-access-on-internal-subclass.php",
+   "line": 28,
+   "identifier": "classConstant.internalClass",
+   "message": "Access to constant BAR of internal class ClassConstantAccessOnInternalSubclassOne\\Bar from outside its root namespace ClassConstantAccessOnInternalSubclassOne.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 88,
+   "identifier": "class.extendsInternalClass",
+   "message": "Class AppNames\\Child extends internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 88,
+   "identifier": "class.implementsInternalInterface",
+   "message": "Class AppNames\\Child implements internal interface VendorNames\\SecretInterface.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 90,
+   "identifier": "traitUse.internalTrait",
+   "message": "Usage of internal trait VendorNames\\SecretTrait in class AppNames\\Child.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 92,
+   "identifier": "property.internalClass",
+   "message": "Property $property references internal class VendorNames\\Secret in its type.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 94,
+   "identifier": "attribute.internalClass",
+   "message": "Attribute references internal class VendorNames\\SecretAttribute.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 95,
+   "identifier": "parameter.internalInterface",
+   "message": "Parameter $i of method AppNames\\Child::run() has typehint with internal interface VendorNames\\SecretInterface.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 95,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $s of method AppNames\\Child::run() has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 95,
+   "identifier": "return.internalClass",
+   "message": "Return type of method AppNames\\Child::run() has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 95,
+   "identifier": "return.internalEnum",
+   "message": "Return type of method AppNames\\Child::run() has typehint with internal enum VendorNames\\SecretEnum.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 97,
+   "identifier": "instanceof.internalClass",
+   "message": "Instanceof references internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 100,
+   "identifier": "catch.internalClass",
+   "message": "Catching internal class VendorNames\\SecretException.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 102,
+   "identifier": "staticMethod.internalClass",
+   "message": "Call to static method make() of internal class VendorNames\\Secret from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 103,
+   "identifier": "staticProperty.internalClass",
+   "message": "Access to static property $count of internal class VendorNames\\Secret from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 104,
+   "identifier": "staticProperty.internal",
+   "message": "Access to internal static property VendorNames\\Secret::$hidden from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 105,
+   "identifier": "classConstant.internalClass",
+   "message": "Access to constant PUBLIC of internal class VendorNames\\Secret from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 106,
+   "identifier": "method.internalClass",
+   "message": "Call to method __toString() of internal class VendorNames\\Secret from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 107,
+   "identifier": "property.internalClass",
+   "message": "Access to property $name of internal class VendorNames\\Secret from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 109,
+   "identifier": "method.internal",
+   "message": "Call to internal method VendorNames\\Open::__toString() from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 110,
+   "identifier": "property.internal",
+   "message": "Access to internal property VendorNames\\Open::$hiddenProperty from outside its root namespace VendorNames.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 111,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $x of anonymous function has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 111,
+   "identifier": "return.internalClass",
+   "message": "Return type of anonymous function has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 114,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $x of anonymous function has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 114,
+   "identifier": "return.internalClass",
+   "message": "Return type of anonymous function has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 115,
+   "identifier": "class.extendsInternalClass",
+   "message": "Anonymous class extends internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 115,
+   "identifier": "class.implementsInternalInterface",
+   "message": "Anonymous class implements internal interface VendorNames\\SecretInterface.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 116,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $x of method anonymous() in anonymous class has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 116,
+   "identifier": "return.internalClass",
+   "message": "Return type of method anonymous() in anonymous class has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 121,
+   "identifier": "new.internalClass",
+   "message": "Instantiation of internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 125,
+   "identifier": "interface.extendsInternalInterface",
+   "message": "Interface AppNames\\ChildInterface extends internal interface VendorNames\\SecretInterface.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 129,
+   "identifier": "enum.implementsInternalInterface",
+   "message": "Enum AppNames\\ChildEnum implements internal interface VendorNames\\SecretInterface.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 134,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $s of function AppNames\\helper() has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "class-names.php",
+   "line": 134,
+   "identifier": "return.internalClass",
+   "message": "Return type of function AppNames\\helper() has typehint with internal class VendorNames\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "no-namespace.php",
+   "line": 38,
+   "identifier": "method.internal",
+   "message": "Call to internal method ClassInternal::internalMethod().",
+   "tip": null
+  },
+  {
+   "file": "no-namespace.php",
+   "line": 39,
+   "identifier": "staticMethod.internal",
+   "message": "Call to internal static method ClassInternal::internalStaticMethod().",
+   "tip": null
+  },
+  {
+   "file": "no-namespace.php",
+   "line": 41,
+   "identifier": "classConstant.internal",
+   "message": "Access to internal constant ClassInternal::INTERNAL_CONSTANT.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 49,
+   "identifier": "property.internal",
+   "message": "Access to internal property PropertyInternalTagOne\\Foo::$internal from outside its root namespace PropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 53,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class PropertyInternalTagOne\\FooInternal.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 54,
+   "identifier": "property.internalClass",
+   "message": "Access to property $foo of internal class PropertyInternalTagOne\\FooInternal from outside its root namespace PropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 62,
+   "identifier": "property.internal",
+   "message": "Access to internal property PropertyInternalTagOne\\Foo::$internal from outside its root namespace PropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 66,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class PropertyInternalTagOne\\FooInternal.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 67,
+   "identifier": "property.internalClass",
+   "message": "Access to property $foo of internal class PropertyInternalTagOne\\FooInternal from outside its root namespace PropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 89,
+   "identifier": "property.internal",
+   "message": "Access to internal property FooWithInternalPropertyWithoutNamespace::$internal.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 93,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class FooInternalWithPropertyWithoutNamespace.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 94,
+   "identifier": "property.internalClass",
+   "message": "Access to property $foo of internal class FooInternalWithPropertyWithoutNamespace.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 102,
+   "identifier": "property.internal",
+   "message": "Access to internal property FooWithInternalPropertyWithoutNamespace::$internal.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 106,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class FooInternalWithPropertyWithoutNamespace.",
+   "tip": null
+  },
+  {
+   "file": "property-internal-tag.php",
+   "line": 107,
+   "identifier": "property.internalClass",
+   "message": "Access to property $foo of internal class FooInternalWithPropertyWithoutNamespace.",
+   "tip": null
+  },
+  {
+   "file": "pun-constants.php",
+   "line": 27,
+   "identifier": "classConstant.internal",
+   "message": "Access to internal constant PunInternalConstants\\Base::HIDDEN from outside its root namespace PunInternalConstants.",
+   "tip": null
+  },
+  {
+   "file": "pun-constants.php",
+   "line": 31,
+   "identifier": "classConstant.internal",
+   "message": "Access to internal constant PunInternalConstants\\Base::HIDDEN from outside its root namespace PunInternalConstants.",
+   "tip": null
+  },
+  {
+   "file": "pun-constants.php",
+   "line": 32,
+   "identifier": "class.notFound",
+   "message": "Access to constant HIDDEN on an unknown class PunOther\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "pun-constants.php",
+   "line": 33,
+   "identifier": "classConstant.internalTrait",
+   "message": "Access to constant IN_TRAIT of internal trait PunInternalConstants\\InternalTrait from outside its root namespace PunInternalConstants.",
+   "tip": null
+  },
+  {
+   "file": "pun-constants.php",
+   "line": 33,
+   "identifier": "classConstant.onTrait",
+   "message": "Cannot access constant IN_TRAIT on trait PunInternalConstants\\InternalTrait.",
+   "tip": null
+  },
+  {
+   "file": "static-method-call-on-internal-subclass.php",
+   "line": 33,
+   "identifier": "staticMethod.internalClass",
+   "message": "Call to static method doFoo() on internal class StaticMethodCallOnInternalSubclassOne\\Bar.",
+   "tip": null
+  },
+  {
+   "file": "static-method-call-on-internal-subclass.php",
+   "line": 34,
+   "identifier": "staticMethod.internalClass",
+   "message": "Call to static method doBar() of internal class StaticMethodCallOnInternalSubclassOne\\Bar from outside its root namespace StaticMethodCallOnInternalSubclassOne.",
+   "tip": null
+  },
+  {
+   "file": "static-property-access-on-internal-subclass.php",
+   "line": 27,
+   "identifier": "staticProperty.internalClass",
+   "message": "Access to static property $foo on internal class StaticPropertyAccessOnInternalSubclassOne\\Bar.",
+   "tip": null
+  },
+  {
+   "file": "static-property-access-on-internal-subclass.php",
+   "line": 28,
+   "identifier": "staticProperty.internalClass",
+   "message": "Access to static property $bar of internal class StaticPropertyAccessOnInternalSubclassOne\\Bar from outside its root namespace StaticPropertyAccessOnInternalSubclassOne.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 49,
+   "identifier": "staticProperty.internal",
+   "message": "Access to internal static property StaticPropertyInternalTagOne\\Foo::$internal from outside its root namespace StaticPropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 53,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class StaticPropertyInternalTagOne\\FooInternal.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 54,
+   "identifier": "staticProperty.internalClass",
+   "message": "Access to static property $foo of internal class StaticPropertyInternalTagOne\\FooInternal from outside its root namespace StaticPropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 62,
+   "identifier": "staticProperty.internal",
+   "message": "Access to internal static property StaticPropertyInternalTagOne\\Foo::$internal from outside its root namespace StaticPropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 66,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class StaticPropertyInternalTagOne\\FooInternal.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 67,
+   "identifier": "staticProperty.internalClass",
+   "message": "Access to static property $foo of internal class StaticPropertyInternalTagOne\\FooInternal from outside its root namespace StaticPropertyInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 89,
+   "identifier": "staticProperty.internal",
+   "message": "Access to internal static property FooWithInternalStaticPropertyWithoutNamespace::$internal.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 93,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class FooInternalWithStaticPropertyWithoutNamespace.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 94,
+   "identifier": "staticProperty.internalClass",
+   "message": "Access to static property $foo of internal class FooInternalWithStaticPropertyWithoutNamespace.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 102,
+   "identifier": "staticProperty.internal",
+   "message": "Access to internal static property FooWithInternalStaticPropertyWithoutNamespace::$internal.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 106,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $foo of anonymous function has typehint with internal class FooInternalWithStaticPropertyWithoutNamespace.",
+   "tip": null
+  },
+  {
+   "file": "static-property-internal-tag.php",
+   "line": 107,
+   "identifier": "staticProperty.internalClass",
+   "message": "Access to static property $foo of internal class FooInternalWithStaticPropertyWithoutNamespace.",
+   "tip": null
+  }
+ ]
+}

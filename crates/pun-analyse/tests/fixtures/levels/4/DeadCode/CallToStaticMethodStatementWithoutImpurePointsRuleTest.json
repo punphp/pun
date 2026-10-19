@@ -1,0 +1,168 @@
+{
+    "test": "DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "DeadCode/data/call-to-static-method-without-impure-points.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 6,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\X::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 7,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\X::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 10,
+                    "identifier": "arguments.count",
+                    "message": "Static method CallToStaticMethodWithoutImpurePoints\\X::funcWithRef() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 16,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallToStaticMethodWithoutImpurePoints\\X referenced with incorrect case: CallToStaticMethodWithoutImpurePoints\\x.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 16,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\X::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 18,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\y::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 20,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\y::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 21,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\SubSubY::mySubSubFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 22,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\SubSubY::mySubSubCallSelfFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 23,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\SubSubY::mySubSubCallParentFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 24,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\SubSubY::mySubSubCallStaticFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 48,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\y::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 53,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\y::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 58,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePoints\\y::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points.php",
+                    "line": 108,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property CallToStaticMethodWithoutImpurePoints\\ParentWithConstructor::$i is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testThrows",
+            "files": [
+                "DeadCode/data/call-to-static-method-without-impure-points-throws.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points-throws.php",
+                    "line": 20,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points-throws.php",
+                    "line": 34,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePointsThrows\\Foo::noThrowsStatic() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "DeadCode/data/call-to-static-method-without-impure-points-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points-pipe.php",
+                    "line": 16,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePointsPipe\\Foo::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-static-method-without-impure-points-pipe.php",
+                    "line": 17,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToStaticMethodWithoutImpurePointsPipe\\Foo::doFoo() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

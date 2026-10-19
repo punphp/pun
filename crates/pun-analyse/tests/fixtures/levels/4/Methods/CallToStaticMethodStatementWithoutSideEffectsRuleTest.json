@@ -1,0 +1,194 @@
+{
+    "test": "Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/static-method-call-statement-no-side-effects.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects.php",
+                    "line": 23,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to method DateTime::format() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhpDoc",
+            "files": [
+                "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 54,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to StaticMethodCallStatementNoSideEffects\\BzzStatic::regular() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 55,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method StaticMethodCallStatementNoSideEffects\\BzzStatic::pure1() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 56,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method StaticMethodCallStatementNoSideEffects\\BzzStatic::pure2() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 57,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method StaticMethodCallStatementNoSideEffects\\BzzStatic::pure3() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 58,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method StaticMethodCallStatementNoSideEffects\\BzzStatic::pure4() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 59,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method StaticMethodCallStatementNoSideEffects\\BzzStatic::pure5() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 85,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method StaticMethodCallStatementNoSideEffects\\PureThrows::pureAndThrowsVoid() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4455",
+            "files": [
+                "Methods/data/bug-4455-static.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12224",
+            "files": [
+                "Methods/data/bug-12224.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallables",
+            "files": [
+                "Methods/data/first-class-callable-static-method-without-side-effect.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/first-class-callable-static-method-without-side-effect.php",
+                    "line": 12,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method FirstClassCallableStaticMethodWithoutSideEffect\\Foo::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/first-class-callable-static-method-without-side-effect.php",
+                    "line": 36,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method FirstClassCallableStaticMethodWithoutSideEffect\\Bar::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/first-class-callable-static-method-without-side-effect.php",
+                    "line": 39,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method FirstClassCallableStaticMethodWithoutSideEffect\\Bar::doBar() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10819",
+            "files": [
+                "Methods/data/bug-10819.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDynamicStaticCall",
+            "files": [
+                "Methods/data/dynamic-static-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/dynamic-static-call.php",
+                    "line": 32,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method DynamicStaticCall\\Foo::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-static-call.php",
+                    "line": 33,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method DynamicStaticCall\\FinalFoo::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-static-call.php",
+                    "line": 34,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method DynamicStaticCall\\Bar::finalFoo() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "Methods/data/static-method-call-without-side-effect-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-method-call-without-side-effect-pipe.php",
+                    "line": 33,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method StaticMethodCallWithoutSideEffectPipe\\Foo::doPure() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-call-without-side-effect-pipe.php",
+                    "line": 34,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to StaticMethodCallWithoutSideEffectPipe\\Foo::doMaybePure() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

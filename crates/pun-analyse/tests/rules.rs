@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use pun_analyse::{IDENTIFIERS, Project, run};
 use serde_json::Value;
 
-type Key = (String, u32, String, String, Option<String>);
+type Key = (String, i64, String, String, Option<String>);
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
     for e in std::fs::read_dir(dir).unwrap().flatten() {
@@ -62,7 +62,7 @@ fn phpstan_rule_fixtures() {
                 .map(|e| {
                     (
                         e["file"].as_str().unwrap().to_string(),
-                        e["line"].as_u64().unwrap() as u32,
+                        e["line"].as_i64().unwrap(),
                         e["identifier"].as_str().unwrap().to_string(),
                         e["message"].as_str().unwrap().to_string(),
                         e["tip"].as_str().map(str::to_string),

@@ -1,0 +1,77 @@
+{
+    "test": "DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "DeadCode/data/call-to-constructor-without-impure-points.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-constructor-without-impure-points.php",
+                    "line": 15,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new CallToConstructorWithoutImpurePoints\\Foo() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTransitive",
+            "files": [
+                "DeadCode/data/call-to-constructor-without-impure-points-transitive.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-constructor-without-impure-points-transitive.php",
+                    "line": 25,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToConstructorWithoutImpurePointsTransitive\\pureFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-constructor-without-impure-points-transitive.php",
+                    "line": 26,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallToConstructorWithoutImpurePointsTransitive\\Helper::pureStatic() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-constructor-without-impure-points-transitive.php",
+                    "line": 42,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new CallToConstructorWithoutImpurePointsTransitive\\PureCtor() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testThrows",
+            "files": [
+                "DeadCode/data/call-to-constructor-without-impure-points-throws.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-constructor-without-impure-points-throws.php",
+                    "line": 20,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "DeadCode/data/call-to-constructor-without-impure-points-throws.php",
+                    "line": 39,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new CallToConstructorWithoutImpurePointsThrows\\NoThrows() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

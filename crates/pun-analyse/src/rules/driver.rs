@@ -35,7 +35,7 @@ pub(crate) struct Checks {
     /// `*.nameCase` only with it on. Set from [`Project::check_class_case_sensitivity`], which the presets will set.
     check_class_case_sensitivity: bool,
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
-    level: u8,
+    pub(super) level: u8,
     generic_iterable_classes: bool,
     /// [`Project::new_static_in_abstract_class_static_method`].
     new_static_in_abstract_class_static_method: bool,
@@ -43,12 +43,23 @@ pub(crate) struct Checks {
     relative_path: RelativePath,
     /// [`Project::larastan`].
     larastan: Option<super::Larastan>,
-    /// The `@internal` method names, at level 2 with `featureToggles.internalTag` (config.level2.neon).
+    /// The member names the restricted-usage extensions can report (whose expressions get typed), when one runs.
     internal: Option<super::internal::Names>,
-    /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension (config.level0.neon).
+    /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension & co. (config.level0.neon).
     internal_tag: bool,
     /// [`Project::reported`].
     reported: Option<crate::project::Reported>,
+    /// [`Project::precise_unused_parameter_line`].
+    precise_unused_parameter_line: bool,
+    /// The method and property extensions of `featureToggles.internalTag`, at level 2 (config.level2.neon).
+    internal_members: bool,
+    /// [`Project::deprecation_rules`] and [`Project::bleeding_edge`].
+    deprecations: bool,
+    bleeding_edge: bool,
+    /// UnusedLabelRule: level 4 with [`Project::unused_label`].
+    unused_label: bool,
+    /// [`Project::strict_rules`].
+    pub(super) strict: crate::StrictRules,
 }
 
 impl Checks {
@@ -62,6 +73,7 @@ impl Checks {
 
 impl Checks {
     pub(crate) fn of(project: &Project, codebase: &CodebaseMetadata) -> Checks {
+        let internal_members = project.level >= 2 && project.internal_tag;
         let mut larastan = project.larastan.clone();
         if let Some(l) = &mut larastan {
             l.load(project, codebase);
@@ -76,10 +88,16 @@ impl Checks {
             report_unmatched_ignores: project.report_unmatched_ignores,
             relative_path: project.relative_path.clone(),
             larastan,
-            internal: (project.level >= 2 && project.internal_tag)
-                .then(|| super::internal::Names::of(codebase)),
+            internal: (internal_members || project.deprecation_rules)
+                .then(|| super::internal::Names::of(codebase, project.php_version, internal_members, project.deprecation_rules)),
             internal_tag: project.internal_tag,
             reported: project.reported.clone(),
+            precise_unused_parameter_line: project.precise_unused_parameter_line,
+            internal_members,
+            deprecations: project.deprecation_rules,
+            bleeding_edge: project.bleeding_edge,
+            unused_label: project.level >= 4 && project.unused_label,
+            strict: project.strict_rules,
         }
     }
 }
@@ -112,6 +130,7 @@ fn checker<'a, 'arena>(
     typed.extend(super::function_checks::typed_expressions(
         names, codebase, program,
     ));
+    typed.extend(super::strict::typed_expressions(project, codebase, program));
     Checker {
         anonymous: anonymous::names(file, program, names, &project.relative_path),
         property_access: property_access::state(program),
@@ -170,6 +189,14 @@ fn checker<'a, 'arena>(
         larastan_state: Default::default(),
         internal: project.internal.as_ref(),
         internal_tag: project.internal_tag,
+        precise_unused_parameter_line: project.precise_unused_parameter_line,
+        unreachable: HashSet::new(),
+        internal_members: project.internal_members,
+        deprecations: project.deprecations,
+        bleeding_edge: project.bleeding_edge,
+        unused_label: project.unused_label,
+        strict: project.strict,
+        closure_bind: 0,
         errors: Vec::new(),
     }
 }

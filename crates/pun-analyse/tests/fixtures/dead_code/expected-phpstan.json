@@ -1,0 +1,208 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 5,
+   "identifier": "method.unused",
+   "message": "Method class@anonymous/anonymous-in-trait.php:4::unused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 5,
+   "identifier": "method.unused",
+   "message": "Method class@anonymous/anonymous-in-trait.php:4::unused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 5,
+   "identifier": "method.unused",
+   "message": "Method class@anonymous/anonymous-in-trait.php:4::unused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 6,
+   "identifier": "property.onlyWritten",
+   "message": "Property class@anonymous/anonymous-in-trait.php:4::$x is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 6,
+   "identifier": "property.onlyWritten",
+   "message": "Property class@anonymous/anonymous-in-trait.php:4::$x is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 6,
+   "identifier": "property.onlyWritten",
+   "message": "Property class@anonymous/anonymous-in-trait.php:4::$x is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 17,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$keyed is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 21,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$fresh is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 23,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$name is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 24,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$onArray is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 25,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$onOther is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 27,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$skipped is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 45,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $onArray on array.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 47,
+   "identifier": "class.notFound",
+   "message": "Access to static property $onUnknown on an unknown class Nowhere\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 53,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 82,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 91,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 100,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 109,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 118,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 16,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class DeadCodeFixture\\Toggles has an unused parameter $unused.",
+   "tip": null
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 18,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Toggles::$promoted is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 22,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $a.",
+   "tip": null
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 26,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$f()\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/traits.php",
+   "line": 6,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCodeFixture\\NeverUsed is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 11,
+   "identifier": "attribute.trait",
+   "message": "Trait cannot be an Attribute class.",
+   "tip": null
+  },
+  {
+   "file": "src/traits.php",
+   "line": 14,
+   "identifier": "classConstant.unused",
+   "message": "Constant DeadCodeFixture\\UsesTrait::TRAIT_CONST is unused.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 24,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCodeFixture\\UsedByTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 28,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCodeFixture\\Outer is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  }
+ ]
+}

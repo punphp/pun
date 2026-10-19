@@ -3,6 +3,10 @@
 mod finally;
 mod function_discard;
 mod no_discard;
+mod unreachable;
+mod unused_private;
+
+pub(super) use unreachable::find as unreachable_statements;
 
 use std::collections::HashSet;
 
@@ -22,8 +26,12 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
     if level < 4 {
         return Vec::new();
     }
-    finally::typed(program)
+    let mut spans = finally::typed(program);
+    spans.extend(unused_private::typed(program));
+    spans
 }
+
+pub(super) use unused_private::class as unused_private;
 
 pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);
@@ -126,8 +134,13 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
     let used = used_variables(c, &closure.body);
     for capture in uses.variables.iter() {
         if !used.contains(capture.variable.name) && !used.contains(b"*".as_slice()) {
+            let at = if c.precise_unused_parameter_line {
+                capture.variable.span()
+            } else {
+                closure.span()
+            };
             c.report(
-                closure,
+                at,
                 "closure.unusedUse",
                 format!(
                     "Anonymous function has an unused use {}.",
@@ -193,8 +206,13 @@ pub(super) fn constructor(c: &mut Checker, method: &Method, name: &str) {
             && !used.contains(param.variable.name)
             && !used.contains(b"*".as_slice())
         {
+            let at = if c.precise_unused_parameter_line {
+                param.variable.span()
+            } else {
+                method.span()
+            };
             c.report(
-                method,
+                at,
                 "constructor.unusedParameter",
                 format!(
                     "Constructor of {subject} has an unused parameter {}.",

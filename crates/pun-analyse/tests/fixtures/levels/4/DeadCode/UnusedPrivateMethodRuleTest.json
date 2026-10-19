@@ -1,0 +1,265 @@
+{
+    "test": "DeadCode/UnusedPrivateMethodRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "DeadCode/data/unused-private-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 8,
+                    "identifier": "method.unused",
+                    "message": "Method UnusedPrivateMethod\\Foo::doFoo() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 13,
+                    "identifier": "method.unused",
+                    "message": "Method UnusedPrivateMethod\\Foo::doBar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 15,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method UnusedPrivateMethod\\Foo::doBaz() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 20,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to UnusedPrivateMethod\\Foo::calledStatically() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 30,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method UnusedPrivateMethod\\Foo::staticMethod() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 31,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to UnusedPrivateMethod\\Foo::anotherStaticMethod() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 44,
+                    "identifier": "method.unused",
+                    "message": "Static method UnusedPrivateMethod\\Foo::unusedStaticMethod() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 59,
+                    "identifier": "method.unused",
+                    "message": "Method UnusedPrivateMethod\\Bar::doBaz() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 99,
+                    "identifier": "method.unused",
+                    "message": "Method UnusedPrivateMethod\\Lorem::doBaz() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 142,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method UnusedPrivateMethod\\UsingFooTrait::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 143,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method UnusedPrivateMethod\\UsingFooTrait::doLorem() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 177,
+                    "identifier": "method.unused",
+                    "message": "Method UnusedPrivateMethod\\IgnoredByExtension::foo() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-method.php",
+                    "line": 181,
+                    "identifier": "method.unused",
+                    "message": "Method UnusedPrivateMethod\\IgnoredByExtension::bar() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3630",
+            "files": [
+                "DeadCode/data/bug-3630.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNullsafe",
+            "files": [
+                "DeadCode/data/nullsafe-unused-private-method.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallable",
+            "files": [
+                "DeadCode/data/callable-unused-private-method.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "DeadCode/data/unused-private-method-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/unused-private-method-enum.php",
+                    "line": 18,
+                    "identifier": "method.unused",
+                    "message": "Method UnusedPrivateMethodEnunm\\Foo::doBaz() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7389",
+            "files": [
+                "DeadCode/data/bug-7389.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-7389.php",
+                    "line": 11,
+                    "identifier": "method.unused",
+                    "message": "Method Bug7389\\HelloWorld::getTest() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-7389.php",
+                    "line": 23,
+                    "identifier": "method.unused",
+                    "message": "Method Bug7389\\HelloWorld::getTest1() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8346",
+            "files": [
+                "DeadCode/data/bug-8346.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFalsePositiveWithTraitUse",
+            "files": [
+                "DeadCode/data/unused-method-false-positive-with-trait.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6039",
+            "files": [
+                "DeadCode/data/bug-6039.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9765",
+            "files": [
+                "DeadCode/data/bug-9765.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 11,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 38,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 40,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 61,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11802",
+            "files": [
+                "DeadCode/data/bug-11802b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-11802b.php",
+                    "line": 10,
+                    "identifier": "method.unused",
+                    "message": "Method Bug11802b\\HelloWorld::doBar() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14880",
+            "files": [
+                "DeadCode/data/bug-14880.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}
