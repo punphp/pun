@@ -206,11 +206,12 @@ pub fn compose(root: &Path, parts: &mut Parts, rector: &Rector) -> Result<Reconc
         }
         if on.contains(&id.as_str()) {
             out.waiting += usize::from(!ported(id));
-        } else if super::require_lint(parts, id) {
-            out.on += 1;
         } else {
+            let turned_on = super::require_lint(parts, id);
+            out.on += usize::from(turned_on);
             let why = "not supported by Pun yet".to_string();
-            out.unsupported.push((class.clone(), why));
+            out.unsupported
+                .extend((!turned_on).then(|| (class.clone(), why)));
         }
     }
     for id in on {
