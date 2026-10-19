@@ -26,6 +26,7 @@ mod no_compact;
 mod no_concat_assign_new_item;
 mod no_condition_exact_return;
 mod no_dead_php_version_check;
+mod no_debug_calls;
 mod no_double_negation;
 mod no_double_self_assignment;
 mod no_duplicate_array_key;
@@ -43,6 +44,7 @@ mod no_explicit_constructor_call;
 mod no_false_ternary;
 mod no_ffi;
 mod no_finfo_buffer_context;
+mod no_for_init_overwrite;
 mod no_future_php_version_check;
 mod no_global;
 mod no_hash_emoji;
@@ -52,6 +54,7 @@ mod no_insecure_comparison;
 mod no_invalid_open_tag;
 mod no_iterator_to_array_in_foreach;
 mod no_literal_password;
+mod no_loose_equality;
 mod no_mirror_assignment;
 mod no_missing_format_argument;
 mod no_mixed_overruled_by_native;
@@ -156,7 +159,9 @@ mod rector_code_quality;
 mod rector_conditions;
 mod rector_stmts;
 mod require_assign_set_padding;
+mod require_attribute_argument_order;
 mod require_is_a_allow_string;
+mod require_named_argument_order;
 mod require_preg_quote_delimiter;
 mod require_statement_padding;
 mod require_strict_array_search;
@@ -181,6 +186,7 @@ pub use no_compact::NoCompact;
 pub use no_concat_assign_new_item::NoConcatAssignNewItem;
 pub use no_condition_exact_return::NoConditionExactReturn;
 pub use no_dead_php_version_check::NoDeadPhpVersionCheck;
+pub use no_debug_calls::NoDebugCalls;
 pub use no_double_negation::NoDoubleNegation;
 pub use no_double_self_assignment::NoDoubleSelfAssignment;
 pub use no_duplicate_array_key::NoDuplicateArrayKey;
@@ -198,6 +204,7 @@ pub use no_explicit_constructor_call::NoExplicitConstructorCall;
 pub use no_false_ternary::NoFalseTernary;
 pub use no_ffi::NoFfi;
 pub use no_finfo_buffer_context::NoFinfoBufferContext;
+pub use no_for_init_overwrite::NoForInitOverwrite;
 pub use no_future_php_version_check::NoFuturePhpVersionCheck;
 pub use no_global::NoGlobal;
 pub use no_hash_emoji::NoHashEmoji;
@@ -207,6 +214,7 @@ pub use no_insecure_comparison::NoInsecureComparison;
 pub use no_invalid_open_tag::NoInvalidOpenTag;
 pub use no_iterator_to_array_in_foreach::NoIteratorToArrayInForeach;
 pub use no_literal_password::NoLiteralPassword;
+pub use no_loose_equality::NoLooseEquality;
 pub use no_mirror_assignment::NoMirrorAssignment;
 pub use no_missing_format_argument::NoMissingFormatArgument;
 pub use no_mixed_overruled_by_native::NoMixedOverruledByNative;
@@ -306,7 +314,9 @@ pub use prefer_serialize_method::PreferSerializeMethod;
 pub use prefer_simple_condition::PreferSimpleCondition;
 pub use prefer_unserialize_method::PreferUnserializeMethod;
 pub use require_assign_set_padding::RequireAssignSetPadding;
+pub use require_attribute_argument_order::RequireAttributeArgumentOrder;
 pub use require_is_a_allow_string::RequireIsAAllowString;
+pub use require_named_argument_order::RequireNamedArgumentOrder;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
 pub use require_statement_padding::RequireStatementPadding;
 pub use require_strict_array_search::RequireStrictArraySearch;
@@ -469,5 +479,10 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoRequiredAfterOptional),
         Box::new(NoNegatedComparison),
         Box::new(PreferCoalesceOverEmptyTernary),
+        Box::new(NoForInitOverwrite),
+        Box::new(NoLooseEquality),
+        Box::new(NoDebugCalls),
+        Box::new(RequireNamedArgumentOrder),
+        Box::new(RequireAttributeArgumentOrder),
     ]
 }

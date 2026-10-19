@@ -1,6 +1,11 @@
 //! Upstream fixtures for the lint 7 small rules, laid out as in tests/rector.rs: Fixture/ verbatim from rector-src
 //! 2.6.1, Oracle/ with what Rector 2.6.1 (`.oracle/rector-bin`, the rule alone) wrote. Each must pass as
 //! `pun lint --fix == expected` and `format(pun lint --fix) == format(expected)`.
+//!
+//! tests/lint7_report/<group>/<name>/*.php.inc is an input, `-----`, and what the upstream tool reported for it, one
+//! problem a line: `line: message` as PHPStan 2.2.7 with phpstan-strict-rules 2.0.12 (level 0, only that strict rule
+//! on, `--error-format=json`, filtered to the rule's identifier) reports them, sorted by line and message as PHPStan
+//! sorts them.
 
 use std::path::{Path, PathBuf};
 
@@ -51,10 +56,20 @@ fn laravel() -> Pipeline {
 }
 
 fn run(linter: &Linter, dir: &str) {
+    run_with_sources(linter, dir, &[]);
+}
+
+/// [`run`] with the symbols of tests/rector/`sources`/*.php known, as Rector's tests autoload a fixture's Source/.
+fn run_with_sources(linter: &Linter, dir: &str, sources: &[&str]) {
     let pipeline = laravel();
+    let mut extra = Vec::new();
+    for source in sources {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector").join(source);
+        extra.push((path.display().to_string(), std::fs::read_to_string(&path).unwrap()));
+    }
     for (path, input, expected) in fixtures(dir) {
         let name = path.file_name().unwrap().to_string_lossy();
-        let fixed = linter.fix(&path, &input).unwrap();
+        let fixed = facts::with_sources(extra.clone(), || linter.fix(&path, &input)).unwrap();
         assert_eq!(fixed.source, expected, "{name}: lint --fix");
         assert_eq!(
             format(&pipeline, &fixed.source),
@@ -81,4 +96,83 @@ fn ternary_empty_array_array_dim_fetch_to_coalesce() {
     let linter = only(PreferCoalesceOverEmptyTernary);
     run(&linter, "TernaryEmptyArrayArrayDimFetchToCoalesceRector/Fixture");
     run(&linter, "TernaryEmptyArrayArrayDimFetchToCoalesceRector/Oracle");
+}
+
+/// Checks the report cases of `rule` in tests/lint7_report/`dir`.
+fn report(rule: impl Rule + 'static, dir: &str) {
+    report_as(rule, dir, false);
+}
+
+/// [`report`], with `line:column: message` lines when `column` is set (Mago's `--reporting-format emacs`).
+fn report_as(rule: impl Rule + 'static, dir: &str, column: bool) {
+    let linter = only(rule);
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/lint7_report")
+        .join(dir);
+    let mut paths: Vec<_> = std::fs::read_dir(&dir)
+        .unwrap()
+        .map(|e| e.unwrap().path())
+        .collect();
+    paths.sort();
+    assert!(!paths.is_empty(), "no cases in {}", dir.display());
+    for path in paths {
+        let content = std::fs::read_to_string(&path).unwrap();
+        let (input, expected) = content.split_once("-----\n").unwrap();
+        let mut got: Vec<(usize, String)> = linter
+            .check(&path, input)
+            .unwrap()
+            .into_iter()
+            .filter(|p| p.fix.is_none())
+            .map(|p| {
+                let line_start = input[..p.span.start].rfind('\n').map_or(0, |i| i + 1);
+                let line = input[..p.span.start].matches('\n').count() + 1;
+                let at = if column {
+                    format!("{line}:{}", input[line_start..p.span.start].chars().count() + 1)
+                } else {
+                    line.to_string()
+                };
+                (line, format!("{at}: {}", p.message))
+            })
+            .collect();
+        got.sort();
+        let got: String = got.iter().map(|(_, m)| format!("{m}\n")).collect();
+        assert_eq!(got, expected, "{}", path.display());
+    }
+}
+
+#[test]
+fn overwrite_variables_with_for_loop_init() {
+    report(NoForInitOverwrite, "control-flow/no-for-init-overwrite");
+}
+
+#[test]
+fn disallowed_loose_comparison() {
+    report(NoLooseEquality, "operators/no-loose-equality");
+}
+
+#[test]
+fn no_debug_symbols() {
+    // Mago's reports: the calls without a fix.
+    report_as(NoDebugCalls, "security/no-debug-calls", true);
+}
+
+#[test]
+fn remove_debug_expectations() {
+    run(&only(NoDebugCalls), "RemoveDebugExpectationsRector/Oracle");
+}
+
+#[test]
+fn sort_call_like_named_args() {
+    let linter = only(RequireNamedArgumentOrder);
+    let source = ["SortCallLikeNamedArgsRector/Source/MyAttribute.php"];
+    run_with_sources(&linter, "SortCallLikeNamedArgsRector/Fixture", &source);
+    run(&linter, "SortCallLikeNamedArgsRector/Oracle");
+}
+
+#[test]
+fn sort_attribute_named_args() {
+    let linter = only(RequireAttributeArgumentOrder);
+    let source = ["SortAttributeNamedArgsRector/Source/MyAttribute.php"];
+    run_with_sources(&linter, "SortAttributeNamedArgsRector/Fixture", &source);
+    run(&linter, "SortAttributeNamedArgsRector/Oracle");
 }
