@@ -314,9 +314,9 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
 | analyse: enable Larastan from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
 | analyse 8: result cache | todo |
-| migrate 5 follow-up: rewrite `@phpstan-ignore*` comments to `@pun-ignore` with Pun IDs; carry phpstan-parameters into rule options (they are named and skipped today) | todo |
-| migrate 6: on a terminal, offer the closest analyse preset with the count of errors the switch would report | todo |
-| migrate 4 follow-up: Rector rules registered with a configuration (`withConfiguredRule`) are named and skipped; carry their configuration into the Pun rule's options | todo |
+| migrate 5 follow-up: rewrite `@phpstan-ignore*` comments to `@pun-ignore` with Pun IDs; carry phpstan-parameters into rule options (they are named and skipped today) | doing (claimed by config) |
+| migrate 6: on a terminal, offer the closest analyse preset with the count of errors the switch would report | doing (claimed by config) |
+| migrate 4 follow-up: Rector rules registered with a configuration (`withConfiguredRule`) are named and skipped; carry their configuration into the Pun rule's options | doing (claimed by config) |
 | platform request (from config): pun-harness runs `pun migrate` without `--from`; rector.php and phpstan.neon migrate now too, so pass `--from pint` (or the project's format config) to keep comparing with Pint | request |
 | analyse request (from config, migrate 5): honour `[analyse] stubs` and `[[analyse.ignore]]` (`Config.analyse.stubs` and `.ignore`: rule, identifier, `message` as a PCRE pattern, `raw-message`, paths as fnmatch, `count`), which `pun migrate` writes from phpstan.neon | request |
 | platform request (from config, AUDIT 51 and 53): use `cfg.php_version().to_id()` for pun-lint instead of `analyse::php_version_id(&cfg.php)`, and match `pun_config::rule(id).fix` as `FixSafety` in report.rs instead of comparing strings; pun-config then turns `Config.php` into a `PhpVersion` | request |
