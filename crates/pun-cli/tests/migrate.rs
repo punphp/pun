@@ -415,8 +415,19 @@ fn checklist_on_a_terminal() {
         out.contains("Migrate which configs? (space toggles, enter confirms)"),
         "{out}"
     );
-    // dialoguer's ColorfulTheme, as `pun init` has.
-    assert!(out.contains("❯ ✔ Pint          pint.json\n  ✔ PHPStan       phpstan.neon\n  ✔ Rector        rector.php\n"), "{out}");
+    // dialoguer's ColorfulTheme, as `pun init` has (without colour it draws no cursor): all checked, then PHPStan not.
+    assert!(
+        out.contains(
+            "✔ Pint          pint.json\n✔ PHPStan       phpstan.neon\n✔ Rector        rector.php\n"
+        ),
+        "{out}"
+    );
+    assert!(
+        out.contains(
+            "✔ Pint          pint.json\n⬚ PHPStan       phpstan.neon\n✔ Rector        rector.php\n"
+        ),
+        "{out}"
+    );
     assert!(
         out.ends_with(
             " ok pint.json     -> [format] preset empty, 1 rule changed, 1 rule -> [lint]\n - phpstan.neon  not selected\n ! rector.php    not read: run `composer install` so Pun can read it with Rector; left untouched\n ok Wrote pun.toml\n"

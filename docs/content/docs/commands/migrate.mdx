@@ -65,7 +65,7 @@ Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.p
   </Step>
   <Step title="rector.php">
 
-Read through the project's own Rector with the system PHP (run `composer install` first). Rector's prepared sets become `[lint] sets` one to one (`type-declaration` is `types`) and its PHP sets the `modernize` set. Every rule Rector runs is matched to its Pun rule; then `[lint.rules]` gets `"error"` for each one no set turns on and `"off"` for each set rule Rector didn't run, so `pun lint` runs exactly Rector's rules. A rule skipped for some paths is off in a `[[lint.overrides]]`, a skipped path goes to `[lint] exclude`, and files outside `withPaths()` are excluded. Custom rules, configured rules, and the upgrade rules below Pun's PHP 8.4 floor are named and skipped.
+Read through the project's own Rector with the system PHP (run `composer install` first). Rector's prepared sets become `[lint] sets` one to one (`type-declaration` is `types`) and its PHP sets the `modernize` set. Every rule Rector runs is matched to its Pun rule; then `[lint.rules]` gets `"error"` for each one no set turns on and `"off"` for each set rule Rector didn't run, so `pun lint` runs exactly Rector's rules. A rule skipped for some paths is off in a `[[lint.overrides]]`, a skipped path goes to `[lint] exclude`, and files outside `withPaths()` are excluded. A Rector rule that is a format rule in Pun (such as `CommonNotEqualRector`, `format/operators/standardize-not-equals`) is left to `[format]`, and named when the format config doesn't run it. Custom rules, configured rules, and the upgrade rules below Pun's PHP 8.4 floor are named and skipped.
 
   </Step>
   <Step title="phpstan.neon">

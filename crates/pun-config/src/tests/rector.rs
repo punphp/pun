@@ -10,6 +10,7 @@ const MIRROR: &str = "Rector\\DeadCode\\Rector\\Expression\\SimplifyMirrorAssign
 const PROMOTION: &str =
     "Rector\\Php80\\Rector\\Class_\\ClassPropertyAssignToConstructorPromotionRector";
 const RENAME: &str = "Rector\\Renaming\\Rector\\FuncCall\\RenameFunctionRector";
+const NOT_EQUAL: &str = "Rector\\CodeQuality\\Rector\\NotEqual\\CommonNotEqualRector";
 
 fn strings(v: &[&str]) -> Vec<String> {
     v.iter().map(|s| s.to_string()).collect()
@@ -30,10 +31,11 @@ fn reads_sets_rules_and_skips() {
             MIRROR,
             AND_TRUE,
             FOREACH,
+            NOT_EQUAL,
         ]),
         configured: strings(&[RENAME]),
         skip_rules: serde_json::from_value(
-            json!({ MIRROR: null, AND_TRUE: [at("tests"), at("app/Legacy.php")] }),
+            json!({ MIRROR: null, AND_TRUE: [at("tests"), at("app/Legacy.php")], NOT_EQUAL: [at("tests")] }),
         )
         .unwrap(),
         skip_paths: vec![at("legacy"), "*/Fixtures/*".into()],
@@ -61,6 +63,10 @@ fn reads_sets_rules_and_skips() {
                 "RemoveUnusedForeachKeyRector"
             ),
             ("lint/dead-code/no-and-true", "RemoveAndTrueRector"),
+            (
+                "format/operators/standardize-not-equals",
+                "CommonNotEqualRector"
+            ),
         ]
     );
     let unsupported: Vec<(&str, &str)> = (r.unsupported.iter())
@@ -186,13 +192,40 @@ fn composes_the_difference_with_the_sets() {
     assert_eq!(done.off, text.matches("= \"off\"\n").count());
     assert!(done.off > 0);
 
-    // No prepared set and no skip: no empty `sets` or `exclude` line.
-    let mut parts = Parts {
-        format: "preset = \"empty\"\n".into(),
-        ..Parts::default()
+    // No prepared set and no skip: no empty `sets` or `exclude` line. A Rector rule that is a format rule in Pun
+    // writes nothing: the laravel preset runs standardize-not-equals (docs/presets/laravel.json), an empty one is named.
+    let not_equal = Rector {
+        want: vec![(
+            id("format/operators/standardize-not-equals"),
+            id("CommonNotEqualRector"),
+        )],
+        ..Rector::default()
     };
-    compose(&root, &mut parts, &Rector::default()).unwrap();
-    assert!(!parts.render().contains("[lint]\n"), "{}", parts.render());
+    for (preset, unsupported) in [
+        ("laravel", vec![]),
+        (
+            "empty",
+            vec![(
+                id("CommonNotEqualRector"),
+                id(
+                    "the format rule `format/operators/standardize-not-equals` in Pun; turn it on in [format.rules]",
+                ),
+            )],
+        ),
+    ] {
+        let mut parts = Parts {
+            format: format!("preset = \"{preset}\"\n"),
+            ..Parts::default()
+        };
+        let done = compose(&root, &mut parts, &not_equal).unwrap();
+        assert_eq!((done.on, done.unsupported), (0, unsupported));
+        assert!(!parts.render().contains("[lint]\n"), "{}", parts.render());
+        assert!(
+            !parts.render().contains("standardize"),
+            "{}",
+            parts.render()
+        );
+    }
 }
 
 /// mapping.toml's `ported` flag of a rule.

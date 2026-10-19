@@ -141,7 +141,10 @@ pub fn from_rector(root: &Path, r: &RectorConfig) -> Rector {
             continue;
         }
         let id = pun.unwrap().to_string();
-        if let Some(paths) = skip.and_then(Value::as_array) {
+        // A format rule in Pun has no lint override; [`compose`] checks the format config runs it.
+        if let Some(paths) = skip.and_then(Value::as_array)
+            && id.starts_with("lint/")
+        {
             let paths = (paths.iter().filter_map(Value::as_str))
                 .map(|p| relative(root, p))
                 .collect();
@@ -164,7 +167,8 @@ pub struct Reconciled {
     pub off: usize,
     /// Rector rules whose Pun rule is not ported yet: the sets turn them on once it is.
     pub waiting: usize,
-    /// Rector rules no set covers whose Pun rule is not ported yet: (class short name, why).
+    /// Rector rules no set covers whose Pun rule is not ported yet, and those that are format rules the format config
+    /// doesn't run: (class short name, why).
     pub unsupported: Vec<(String, String)>,
 }
 
@@ -189,6 +193,14 @@ pub fn compose(root: &Path, parts: &mut Parts, rector: &Rector) -> Result<Reconc
         .collect();
     let want: HashSet<&str> = rector.want.iter().map(|w| w.0.as_str()).collect();
     for (id, class) in &rector.want {
+        if !id.starts_with("lint/") {
+            // Rector's coding-style rules that are format rules in Pun: the format config decides whether they run.
+            let runs = (cfg.rules.iter()).any(|r| crate::rule_of(&r.name) == Some(id.as_str()));
+            let why = format!("the format rule `{id}` in Pun; turn it on in [format.rules]");
+            out.unsupported
+                .extend((!runs).then(|| (class.clone(), why)));
+            continue;
+        }
         if given.contains(id) {
             continue;
         }
