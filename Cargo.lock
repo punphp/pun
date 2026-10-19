@@ -1369,7 +1369,9 @@ dependencies = [
  "mago-span",
  "mago-syntax",
  "mago-word",
+ "pcre2",
  "punphp-phpstan",
+ "punphp-tokens",
  "rayon",
  "serde_json",
 ]

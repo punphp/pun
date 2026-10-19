@@ -34,6 +34,8 @@ Errors carry Pun's own IDs, `analyse/<group>/<name>`: `analyse/undefined/method`
 $user->fullName(); // @pun-ignore analyse/undefined/method -- added by a macro
 ```
 
+`functions/printf-placeholder-count` checks `printf`, `sprintf`, `sscanf`, and `fscanf` for invalid placeholders and argument counts. `functions/invalid-vprintf-arguments` checks `vprintf` and `vsprintf` against known array sizes, including optional items. Both rules belong to the `basic` preset.
+
 ## Files
 
 `pun analyse` checks `[analyse] paths` (else `[files] paths`, else the project) or the paths you give it, without Blade templates and Pint's default directories (`bootstrap/cache`, `build`, `node_modules`, `storage`). `[analyse] exclude` globs drop files from the analysis and from the symbol scan, like PHPStan's `excludePaths`.

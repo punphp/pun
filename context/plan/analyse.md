@@ -440,3 +440,19 @@ Assistant's calls in analyse 3l (sealed hierarchies, interface method visibility
   method counts, because `getMethod()` finds it. A parent's private property or constant does not, because the
   class does not have it. A trait's member is reported on the using class. tests/fixtures/through-static is their
   level-2 oracle fixture; their rule tests join tests/levels.rs once its level-2 export lands.
+
+Helper queue 4, printf rules (helper-forge-rqdv, 2026-10-19):
+- PrintfParametersRule and PrintfArrayParametersRule read the format and values from the existing per-file Mago
+  inference run. Namespaced functions and imported aliases resolve before a built-in name is matched.
+- PrintfHelper uses PHPStan 2.2.7's PCRE pattern. Scanf counts port PHP 8.5's `ValidateFormat(format, 0)`, including
+  suppression, positional indices, sets, NUL termination and invalid formats. PHPStan uses its runtime's `sscanf`
+  even when the project's target PHP version is older.
+- Array sizes follow PHPStan's constant/range comparison. Disjoint sizes stay a union rather than becoming their
+  hull, and unknown arrays are skipped. The oracle cases cover optional keys and adjacent/disjoint size unions.
+- All 37 analyser tests pass, including the upstream rule fixtures. The public regression test compares PHP 7.4
+  and 8.5 targets with PHPStan output in `tests/fixtures/function_checks.json`; `function_pipe.json` covers named
+  first-class callables after `|>`, reported at the right-hand callable's line, as PHPStan's PipeHandler does.
+  Both new rule files have 100% line coverage (233 and 126 lines). Core level-0 analysis of laravel-framework/src, without vendor dependencies,
+  produces zero differences for these six identifiers. This is not whole-analyser corpus parity.
+- FilterVarRule remains unported: Mago infers `FILTER_THROW_ON_FAILURE` as mixed, so its bitwise flags value is
+  unknown. PLAN.md records the request to supply version-specific builtin constants to inference.
