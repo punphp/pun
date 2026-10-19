@@ -1,7 +1,8 @@
 //! `pun analyse --format=<f>`: PHPStan 2.2.7's error formatters, byte for byte
 //! (.oracle/phpstan-src/src/Command/ErrorFormatter/*.php). `json` and `raw` print absolute paths, the others paths
-//! relative to the project root (PHPStan's simple relative path helper, the cwd being the root). Every Pun error is
-//! file-specific and ignorable; PHPStan's not-file-specific errors and warnings have no Pun counterpart.
+//! relative to the project root (PHPStan's simple relative path helper, the cwd being the root). The errors about
+//! ignores can't be ignored, and an unmatched `ignoreErrors` entry has no line (or, without a file path, no file:
+//! a not-file-specific error). PHPStan's warnings have no Pun counterpart.
 
 use crate::analyse::Finding;
 use crate::console;
@@ -31,20 +32,24 @@ pub(crate) struct Context<'a> {
     pub(crate) root: &'a Path,
     /// The analysed paths (absolute), for `table`'s relative paths.
     pub(crate) paths: &'a [PathBuf],
+    /// The not-file-specific errors.
+    pub(crate) general: &'a [String],
+    /// pun.toml, relative to the root: teamcity's file for the not-file-specific errors (PHPStan's config file).
+    pub(crate) config: Option<String>,
 }
 
 /// The report in `format`.
 pub(crate) fn render(format: &str, findings: &[Finding], cx: &Context) -> Result<String> {
-    let verbose = cx.verbose;
+    let (verbose, general) = (cx.verbose, cx.general);
     Ok(match format {
-        "raw" => raw(findings, verbose),
-        "json" => json(findings, false),
-        "prettyJson" => json(findings, true),
-        "checkstyle" => checkstyle(findings),
-        "junit" => junit(findings),
-        "gitlab" => gitlab(findings),
-        "github" => github(findings),
-        "teamcity" => teamcity(findings),
+        "raw" => raw(findings, general, verbose),
+        "json" => json(findings, general, false),
+        "prettyJson" => json(findings, general, true),
+        "checkstyle" => checkstyle(findings, general),
+        "junit" => junit(findings, general),
+        "gitlab" => gitlab(findings, general),
+        "github" => github(findings, general),
+        "teamcity" => teamcity(findings, general, cx.config.as_deref()),
         "table" => table(findings, cx, console::width()),
         _ => bail!(
             "Error formatter \"{format}\" not found. Available error formatters are: {}",
@@ -53,11 +58,21 @@ pub(crate) fn render(format: &str, findings: &[Finding], cx: &Context) -> Result
     })
 }
 
-/// RawErrorFormatter: `file:line:message`, with ` [identifier=x]` under `-v`.
-fn raw(findings: &[Finding], verbose: bool) -> String {
+/// `getLine() ?? ''` (`(string) null`).
+fn line(f: &Finding) -> String {
+    f.line().map(|l| l.to_string()).unwrap_or_default()
+}
+
+/// RawErrorFormatter: `?:?:message` per not-file-specific error, then `file:line:message`, with ` [identifier=x]`
+/// under `-v`.
+fn raw(findings: &[Finding], general: &[String], verbose: bool) -> String {
     let mut out = String::new();
+    for g in general {
+        let _ = writeln!(out, "?:?:{g}");
+    }
     for f in findings {
-        let _ = write!(out, "{}:{}:{}", f.file.display(), f.line, f.message);
+        let at = f.line().map_or("?".to_string(), |l| l.to_string());
+        let _ = write!(out, "{}:{at}:{}", f.file.display(), f.message);
         if verbose {
             let _ = write!(out, " [identifier={}]", f.identifier);
         }
@@ -82,7 +97,7 @@ fn encode(value: &serde_json::Value, pretty: bool) -> String {
 }
 
 /// JsonErrorFormatter: totals, then the messages per file (absolute paths).
-fn json(findings: &[Finding], pretty: bool) -> String {
+fn json(findings: &[Finding], general: &[String], pretty: bool) -> String {
     use serde_json::{Map, Value, json};
     let mut files = Map::new();
     for f in findings {
@@ -92,8 +107,8 @@ fn json(findings: &[Finding], pretty: bool) -> String {
         entry["errors"] = json!(entry["errors"].as_u64().unwrap_or(0) + 1);
         let mut message = Map::new();
         message.insert("message".into(), json!(f.message));
-        message.insert("line".into(), json!(f.line));
-        message.insert("ignorable".into(), json!(true));
+        message.insert("line".into(), json!(f.line()));
+        message.insert("ignorable".into(), json!(f.ignorable()));
         if let Some(tip) = &f.tip {
             message.insert("tip".into(), json!(tip));
         }
@@ -104,9 +119,9 @@ fn json(findings: &[Finding], pretty: bool) -> String {
             .push(Value::Object(message));
     }
     let value = json!({
-        "totals": { "errors": 0, "file_errors": findings.len() },
+        "totals": { "errors": general.len(), "file_errors": findings.len() },
         "files": files,
-        "errors": [],
+        "errors": general,
     });
     encode(&value, pretty)
 }
@@ -119,8 +134,9 @@ fn xml(text: &str) -> String {
         .replace('"', "&quot;")
 }
 
-/// CheckstyleErrorFormatter: one `<file>` per file in error order, column 1.
-fn checkstyle(findings: &[Finding]) -> String {
+/// CheckstyleErrorFormatter: one `<file>` per file in error order, column 1; the not-file-specific errors in a
+/// `<file>` without a name.
+fn checkstyle(findings: &[Finding], general: &[String]) -> String {
     let mut out = String::from("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<checkstyle>\n");
     let mut files: Vec<(&str, Vec<&Finding>)> = vec![];
     for f in findings {
@@ -135,10 +151,17 @@ fn checkstyle(findings: &[Finding]) -> String {
             let _ = writeln!(
                 out,
                 "  <error line=\"{}\" column=\"1\" severity=\"error\" message=\"{}\" source=\"{}\" />",
-                f.line,
+                line(f),
                 xml(&f.message),
                 xml(&f.identifier)
             );
+        }
+        out.push_str("</file>\n");
+    }
+    if !general.is_empty() {
+        out.push_str("<file>\n");
+        for g in general {
+            let _ = writeln!(out, "  <error severity=\"error\" message=\"{}\" />", xml(g));
         }
         out.push_str("</file>\n");
     }
@@ -146,9 +169,10 @@ fn checkstyle(findings: &[Finding]) -> String {
     out
 }
 
-/// JunitErrorFormatter: one failing test case per error, or one passing `phpstan` case.
-fn junit(findings: &[Finding]) -> String {
-    let n = findings.len();
+/// JunitErrorFormatter: one failing test case per error (`General error` without a file), or one passing `phpstan`
+/// case.
+fn junit(findings: &[Finding], general: &[String]) -> String {
+    let n = findings.len() + general.len();
     let mut out = format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><testsuite failures=\"{n}\" name=\"phpstan\" tests=\"{}\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"https://raw.githubusercontent.com/junit-team/junit5/r5.5.1/platform-tests/src/test/resources/jenkins-junit.xsd\">",
         n.max(1)
@@ -157,8 +181,15 @@ fn junit(findings: &[Finding]) -> String {
         let _ = write!(
             out,
             "<testcase name=\"{}\"><failure type=\"ERROR\" message=\"{}\" /></testcase>",
-            xml(&format!("{}:{}", f.rel, f.line)),
+            xml(&format!("{}:{}", f.rel, line(f))),
             xml(&f.message)
+        );
+    }
+    for g in general {
+        let _ = write!(
+            out,
+            "<testcase name=\"General error\"><failure type=\"ERROR\" message=\"{}\" /></testcase>",
+            xml(g)
         );
     }
     if n == 0 {
@@ -168,42 +199,62 @@ fn junit(findings: &[Finding]) -> String {
     out
 }
 
-/// GitlabErrorFormatter: a pretty JSON list; the fingerprint is the sha256 of the absolute path, line and message.
-fn gitlab(findings: &[Finding]) -> String {
-    let list: Vec<serde_json::Value> = findings
+/// GitlabErrorFormatter: a pretty JSON list; the fingerprint is the sha256 of the absolute path, line and message
+/// (of the message alone without a file).
+fn gitlab(findings: &[Finding], general: &[String]) -> String {
+    let sha = |s: String| -> String {
+        Sha256::digest(s)
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect()
+    };
+    let mut list: Vec<serde_json::Value> = findings
         .iter()
         .map(|f| {
-            let digest = Sha256::digest(format!("{}{}{}", f.file.display(), f.line, f.message));
-            let fingerprint: String = digest.iter().map(|b| format!("{b:02x}")).collect();
             serde_json::json!({
                 "description": f.message,
                 "check_name": f.identifier,
-                "fingerprint": fingerprint,
-                "severity": "major",
+                "fingerprint": sha(format!("{}{}{}", f.file.display(), line(f), f.message)),
+                "severity": if f.ignorable() { "major" } else { "blocker" },
                 "location": { "path": f.rel, "lines": { "begin": f.line } },
             })
         })
         .collect();
+    list.extend(general.iter().map(|g| {
+        serde_json::json!({
+            "description": g,
+            "fingerprint": sha(g.clone()),
+            "severity": "major",
+            "location": { "path": "", "lines": { "begin": 0 } },
+        })
+    }));
     encode(&serde_json::Value::Array(list), true)
 }
 
-/// GithubErrorFormatter: `::error file=…,line=…,col=0::message`, newlines as `%0A` and `@mentions` in backticks.
-fn github(findings: &[Finding]) -> String {
+/// GithubErrorFormatter: `::error file=…,line=…,col=0::message` (`::error ::message` without a file), newlines as
+/// `%0A` and `@mentions` in backticks.
+fn github(findings: &[Finding], general: &[String]) -> String {
+    let message = |m: &str| crate::github::mentions(&m.replace('\n', "%0A"));
     let mut out = String::new();
     for f in findings {
-        let message = crate::github::mentions(&f.message.replace('\n', "%0A"));
         let _ = writeln!(
             out,
-            "::error file={},line={},col=0::{message}",
-            f.rel, f.line
+            "::error file={},line={},col=0::{}",
+            f.rel,
+            line(f),
+            message(&f.message)
         );
+    }
+    for g in general {
+        let _ = writeln!(out, "::error ::{}", message(g));
     }
     out
 }
 
-/// TeamcityErrorFormatter: nothing without errors; else the inspection type and one inspection per error.
-fn teamcity(findings: &[Finding]) -> String {
-    if findings.is_empty() {
+/// TeamcityErrorFormatter: nothing without errors; else the inspection type and one inspection per error (on the
+/// config file without one, `.` with none).
+fn teamcity(findings: &[Finding], general: &[String], config: Option<&str>) -> String {
+    if findings.is_empty() && general.is_empty() {
         return String::new();
     }
     let escape = |s: &str| {
@@ -224,14 +275,26 @@ fn teamcity(findings: &[Finding]) -> String {
         "##teamcity[inspectionType id='phpstan' name='phpstan' category='phpstan' description='phpstan Inspection']\n",
     );
     for f in findings {
-        let message = format!("{} (🪪 {})", f.message, f.identifier);
+        let message = match f.ignorable() {
+            true => format!("{} (🪪 {})", f.message, f.identifier),
+            false => f.message.clone(),
+        };
         let _ = writeln!(
             out,
-            "##teamcity[inspection typeId='phpstan' message='{}' file='{}' line='{}' SEVERITY='ERROR' ignorable='1' tip='{}']",
+            "##teamcity[inspection typeId='phpstan' message='{}' file='{}' line='{}' SEVERITY='ERROR' ignorable='{}' tip='{}']",
             escape(&message),
             escape(&f.rel),
-            f.line,
+            line(f),
+            if f.ignorable() { "1" } else { "" },
             escape(f.tip.as_deref().unwrap_or(""))
+        );
+    }
+    for g in general {
+        let _ = writeln!(
+            out,
+            "##teamcity[inspection typeId='phpstan' message='{}' file='{}' SEVERITY='ERROR']",
+            escape(g),
+            escape(config.unwrap_or("."))
         );
     }
     out
@@ -242,7 +305,7 @@ fn teamcity(findings: &[Finding]) -> String {
 /// the analysed paths' common directory (PHPStan's fuzzy relative path).
 fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
     let style = crate::table::Style::new(width);
-    if findings.is_empty() {
+    if findings.is_empty() && cx.general.is_empty() {
         return style.block("OK", "No errors", 0);
     }
     let mut out = String::new();
@@ -253,24 +316,34 @@ fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
             None => files.push((&f.rel, vec![f])),
         }
     }
-    let tables = files.len();
+    let mut tables = files.len();
     for (_, list) in files {
         let rows: Vec<[String; 2]> = list
             .iter()
             .map(|f| {
                 let mut message = format!("{}\n🪪  {}", f.message, f.identifier);
+                if !f.ignorable() {
+                    message.push_str(" (non-ignorable)");
+                }
                 // ponytail: PHPStan puts 💡 before each line of a multi-line tip (less its leading ` •`); Pun's tips
                 // are one line, so add that when a rule reports a bulleted tip.
                 if let Some(tip) = &f.tip {
                     message.push_str(&format!("\n💡  {tip}"));
                 }
-                [f.line.to_string(), message]
+                [line(f), message]
             })
             .collect();
         let shown = fuzzy_relative(cx.root, cx.paths, &list[0].file);
         out.push_str(&style.table(["Line", &shown], &rows));
     }
-    let n = findings.len();
+    if !cx.general.is_empty() {
+        let rows: Vec<[String; 2]> = (cx.general.iter())
+            .map(|g| [String::new(), g.clone()])
+            .collect();
+        out.push_str(&style.table(["", "Error"], &rows));
+        tables += 1;
+    }
+    let n = findings.len() + cx.general.len();
     let found = if n == 1 {
         "Found 1 error".to_string()
     } else {

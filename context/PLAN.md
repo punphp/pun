@@ -338,10 +338,11 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse (from mapping): revisit the Symfony and phpstanApi exclusions if the scope widens | todo |
 | analyse 6: Larastan with the seven improvements | todo |
 | analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
-| analyse: enable Larastan from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
 | analyse 8: result cache | todo |
-| analyse/lint (from config, migrate 4-5 follow-ups): `pun migrate` now writes Rector configurations and changed PHPStan parameters as rule options (mapping.toml [phpstan-parameters]); the rules should read them once ported | todo |
-| analyse (from migrate 5): honour `[analyse] stubs` and `[[analyse.ignore]]` (`Config.analyse.stubs` and `.ignore`: rule, identifier, `message` as a PCRE pattern, `raw-message`, paths as fnmatch, `count`), which `pun migrate` writes from phpstan.neon | todo |
+| lint (from config, migrate 4-5 follow-ups): `pun migrate` writes Rector configurations as rule options; the lint rules should read them once ported (analyse reads its [phpstan-parameters] options through `Analyse::parameters`) | todo |
+| analyse follow-up (from config): a stub of an analysed (Host) class: Mago leaves a user-defined class unpatched (`apply_patches_pass`), PHPStan's stub wins; stubs of vendor classes apply alike | todo |
+| analyse follow-up (from config): `pun check` (run.rs) drops `Analysed.general` (unmatched `[[analyse.ignore]]` entries without a file path) and doesn't stop on "No rules detected"; `pun analyse` reports both | todo |
+| analyse follow-up (from config): bleedingEdge's behaviour toggles (`internalTag`, `checkGenericIterableClasses`, ...) stay off, as migrate reports; only the toggles that gate a rule class follow the rule. Pinkary at `level: max` with Larastan + bleedingEdge, migrated: PHPStan 1 error (array.invalidKey, not ported), Pun 1 (`Blade::render()` class.notFound, facade aliases of analyse 6). With five `ignoreErrors` entries added and migrated (identifier+path, message+path+count, unmatched message+path, rawMessage+paths, bare pattern) the JSON reports are byte-identical except where those two residuals move an ignore (`ignore.unmatched` vs `ignore.count`) | todo |
 
 **Gate:** the same errors as PHPStan + Larastan (file, line, identifier) on the corpus, at every preset.
 
