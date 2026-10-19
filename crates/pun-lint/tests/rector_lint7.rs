@@ -235,6 +235,20 @@ fn remove_unused_private_class_constant() {
 }
 
 #[test]
+fn func_get_args_to_variadic_param() {
+    let linter = only(PreferVariadicParam);
+    run(&linter, "FuncGetArgsToVariadicParamRector/Fixture");
+    run(&linter, "FuncGetArgsToVariadicParamRector/Oracle");
+    // `VARIADIC_PARAM`: PHP 5.6.
+    let path = Path::new("old.php");
+    let code = "<?php function f() { $args = func_get_args(); }\n";
+    let old = Linter::new(vec![Box::new(PreferVariadicParam)], 50500);
+    assert!(old.fix(path, code).unwrap().applied.is_empty());
+    let new = Linter::new(vec![Box::new(PreferVariadicParam)], 50600);
+    assert!(!new.fix(path, code).unwrap().applied.is_empty());
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -276,6 +290,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoUnusedPrivateConstant),
             &["rector/RemoveUnusedPrivateClassConstantRector"],
+        ),
+        (
+            || Box::new(PreferVariadicParam),
+            &["rector/FuncGetArgsToVariadicParamRector"],
         ),
     ];
     for (rule, dirs) in cases {

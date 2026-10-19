@@ -156,6 +156,7 @@ mod prefer_self_over_static;
 mod prefer_serialize_method;
 mod prefer_simple_condition;
 mod prefer_unserialize_method;
+mod prefer_variadic_param;
 mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
@@ -317,6 +318,7 @@ pub use prefer_self_over_static::PreferSelfOverStatic;
 pub use prefer_serialize_method::PreferSerializeMethod;
 pub use prefer_simple_condition::PreferSimpleCondition;
 pub use prefer_unserialize_method::PreferUnserializeMethod;
+pub use prefer_variadic_param::PreferVariadicParam;
 pub use require_assign_set_padding::RequireAssignSetPadding;
 pub use require_attribute_argument_order::RequireAttributeArgumentOrder;
 pub use require_is_a_allow_string::RequireIsAAllowString;
@@ -490,5 +492,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireAttributeArgumentOrder),
         Box::new(NoLoopVariableOverwrite),
         Box::new(NoUnusedPrivateConstant),
+        Box::new(PreferVariadicParam),
     ]
 }

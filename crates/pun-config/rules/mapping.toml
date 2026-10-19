@@ -858,7 +858,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-spread" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace `call_user_func_array()` with variadic" }
 "style/prefer-static-private-method" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Converts private methods to `static` where possible." }
 "style/prefer-str-contains" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible." }
-"style/prefer-variadic-param" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Refactor `func_get_args()` in to a variadic param" }
+"style/prefer-variadic-param" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `func_get_args()` in to a variadic param" }
 "style/prefer-while-loop" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Suggests using a `while` loop instead of a `for` loop when the `for` loop does not have any" }
 "style/require-assign-set-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add extra space before new assign set" }
 "style/require-create-from-format-bang" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "The first argument of `DateTime::createFromFormat` method must start with `!`." }
