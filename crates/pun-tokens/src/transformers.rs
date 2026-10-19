@@ -84,7 +84,7 @@ pub fn tokenize_name(name: &[u8]) -> Vec<Token> {
     for part in parts {
         out.push(Token {
             id: Some(T_STRING),
-            content: part.to_vec(),
+            content: part.into(),
         });
         out.push(Token::new(T_NS_SEPARATOR, "\\"));
     }
@@ -158,7 +158,7 @@ fn whitespacy_comment(tokens: &mut Tokens, index: usize) {
     let whitespaces = token.content[trimmed.len()..].to_vec();
     let new = Token {
         id: token.id,
-        content: trimmed.to_vec(),
+        content: trimmed.into(),
     };
     tokens.set(index, new);
     if index + 1 < tokens.len() && tokens[index + 1].is_whitespace(None) {

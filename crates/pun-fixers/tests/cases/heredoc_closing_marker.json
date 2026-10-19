@@ -1,0 +1,37 @@
+[
+    {
+        "fixer": "heredoc_closing_marker",
+        "config": {
+            "reserved_closing_markers": [
+                "foo",
+                "Foo"
+            ]
+        },
+        "input": "<?php\n$a = <<<foo\nx\nfoo;\n",
+        "expected": "<?php\n$a = <<<Foo\nx\nFoo;\n"
+    },
+    {
+        "fixer": "heredoc_closing_marker",
+        "config": {
+            "reserved_closing_markers": [
+                "A_"
+            ]
+        },
+        "input": "<?php\n$a = <<<A_\nx\nA_;\n",
+        "expected": "<?php\n$a = <<<A_\nx\nA_;\n"
+    },
+    {
+        "fixer": "heredoc_closing_marker",
+        "config": {
+            "closing_marker": 1
+        },
+        "error": "[heredoc_closing_marker] Invalid configuration: The option \"closing_marker\" with value 1 is expected to be of type \"string\", but is of type \"int\"."
+    },
+    {
+        "fixer": "heredoc_closing_marker",
+        "config": {
+            "foo": 1
+        },
+        "error": "[heredoc_closing_marker] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"closing_marker\", \"explicit_heredoc_style\", \"reserved_closing_markers\"."
+    }
+]

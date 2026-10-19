@@ -229,7 +229,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| format 3: fewer allocations per token (inline Content type; second attempt compiled across pun-tokens/format/fixers but was not tested or measured before the stop: `Content` (22 bytes inline, else boxed, 24 bytes) is in the `salvage/handoff` branch (salvage/format-handoff/content.rs), wiring = `pub content: Content`, constructors take `impl Into<Content>`, `found_contents: HashMap<Content, i64>` via `Borrow<[u8]>`, `r.text.into()` in `set_code`; measure with fmtbench.rs there) | todo |
 | format 4-5: memory target; 8-core benchmark in CI (laravel-framework under 1 s cold) | todo |
 | format 4-5 follow-up (from bench, needs Pushpak): BENCH=format runs Pint with Xdebug loaded on this Mac; set XDEBUG_MODE=off as the analyse and lint modes do (changes format-mode behaviour of scripts/bench.py) | todo |
 | format 6: swap `vendor/bin/pint` for Pun in Pinkary's CI | todo |

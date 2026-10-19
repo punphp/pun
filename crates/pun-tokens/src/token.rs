@@ -7,7 +7,7 @@ use crate::kind::Kind::{self, *};
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Token {
     pub id: Option<Kind>,
-    pub content: Vec<u8>,
+    pub content: crate::Content,
 }
 
 /// Upstream's "token prototype" for `equals`: `'('`, `[T_STRING]`, `[T_STRING, 'foo']`.
@@ -190,7 +190,7 @@ const DEFAULT_WHITESPACES: &[u8] = b" \t\n\r\0\x0B";
 
 impl Token {
     /// `new Token([$id, $content])`.
-    pub fn new(id: Kind, content: impl Into<Vec<u8>>) -> Token {
+    pub fn new(id: Kind, content: impl Into<crate::Content>) -> Token {
         let content = content.into();
         debug_assert!(
             !content.is_empty(),
@@ -203,7 +203,7 @@ impl Token {
     }
 
     /// `new Token($isArray ? [$id, $content] : $content)`: `Token::new` for an id, else `Token::char`.
-    pub fn with_id(id: Option<Kind>, content: impl Into<Vec<u8>>) -> Token {
+    pub fn with_id(id: Option<Kind>, content: impl Into<crate::Content>) -> Token {
         match id {
             Some(id) => Token::new(id, content),
             None => Token::char(content),
@@ -211,7 +211,7 @@ impl Token {
     }
 
     /// `new Token($content)` (non-array token).
-    pub fn char(content: impl Into<Vec<u8>>) -> Token {
+    pub fn char(content: impl Into<crate::Content>) -> Token {
         Token {
             id: None,
             content: content.into(),
