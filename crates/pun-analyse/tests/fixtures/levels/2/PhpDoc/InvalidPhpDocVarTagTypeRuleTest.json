@@ -1,0 +1,401 @@
+{
+    "test": "PhpDoc/InvalidPhpDocVarTagTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/invalid-var-tag-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 13,
+                    "identifier": "varTag.unresolvableType",
+                    "message": "PHPDoc tag @var for variable $test contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 16,
+                    "identifier": "varTag.unresolvableType",
+                    "message": "PHPDoc tag @var contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 20,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidVarTagType\\aray.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 20,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type InvalidVarTagType\\aray is not subtype of native type InvalidVarTagType\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 22,
+                    "identifier": "varTag.unresolvableType",
+                    "message": "PHPDoc tag @var for variable $value contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 27,
+                    "identifier": "varTag.unresolvableType",
+                    "message": "PHPDoc tag @var for variable $staticVar contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 31,
+                    "identifier": "class.nameCase",
+                    "message": "Class InvalidVarTagType\\Foo referenced with incorrect case: InvalidVarTagType\\foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 34,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type InvalidVarTagType\\FooTrait is not subtype of native type InvalidVarTagType\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 34,
+                    "identifier": "varTag.trait",
+                    "message": "PHPDoc tag @var for variable $test has invalid type InvalidVarTagType\\FooTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 37,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 40,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDoc\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 40,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 43,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 46,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 46,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 49,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 49,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 52,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 52,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 55,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 55,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 58,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 61,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 61,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 64,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 64,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 67,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 67,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 70,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 70,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 73,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 73,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 76,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGenericWithDefault.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 76,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 79,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $test contains unknown class InvalidPhpDocDefinitions\\FooGenericWithSomeDefaults.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 79,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 85,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $foo contains unknown class InvalidVarTagType\\Blabla.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 101,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidVarTagType\\Bar::$foo has unknown class InvalidVarTagType\\Blabla as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 109,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant InvalidVarTagType\\Baz::FOO with type *NEVER* is incompatible with value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-var-tag-type.php",
+                    "line": 109,
+                    "identifier": "classConstant.unresolvableType",
+                    "message": "PHPDoc tag @var for constant InvalidVarTagType\\Baz::FOO contains unresolvable type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4486",
+            "files": [
+                "PhpDoc/data/bug-4486.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-4486.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $one contains unknown class Some\\Namespaced\\ClassName1.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/bug-4486.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $two contains unknown class Some\\Namespaced\\ClassName2.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/bug-4486.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $three contains unknown class Some\\Namespaced\\ClassName1.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4486Namespace",
+            "files": [
+                "PhpDoc/data/bug-4486-ns.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-4486-ns.php",
+                    "line": 6,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $one contains unknown class Bug4486Namespace\\ClassName1.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/bug-4486-ns.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $two contains unknown class Bug4486Namespace\\ClassName1.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6252",
+            "files": [
+                "PhpDoc/data/bug-6252.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6348",
+            "files": [
+                "PhpDoc/data/bug-6348.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14206",
+            "files": [
+                "PhpDoc/data/bug-14206.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9055",
+            "files": [
+                "PhpDoc/data/bug-9055.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-9055.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $x contains unknown class Bug9055\\uncheckedNotExisting.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

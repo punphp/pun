@@ -205,6 +205,9 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 let key = item.key.as_ref().map(|k| match k {
                     ShapeKey::Int(i) => Type::ConstInt(int_value(i)),
                     ShapeKey::Str(s) | ShapeKey::Ident(s) => Type::ConstString(s.clone()),
+                    ShapeKey::Fetch(class, name) => {
+                        constant(&ConstExpr::Fetch(class.clone(), name.clone()), scope)
+                    }
                 });
                 explicit.extend(key.clone());
                 builder.set(key, r(&item.value), item.optional);
@@ -265,6 +268,8 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 .collect(),
         ),
         Node::Const(c) => constant(c, scope),
+        // ponytail: PHPStan's OffsetAccessType is not modelled
+        Node::OffsetAccess(..) => Type::Error,
     }
 }
 
@@ -721,6 +726,8 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
         ConstExpr::Int(i) => Type::ConstInt(int_value(i)),
         ConstExpr::Float(f) => Type::ConstFloat(f.replace('_', "").parse().unwrap_or(0.0)),
         ConstExpr::Str(s) => Type::ConstString(s.clone()),
+        // PHPStan throws ShouldNotHappenException here (a bare `null` is an identifier); see COVERAGE.md
+        ConstExpr::True | ConstExpr::False | ConstExpr::Null | ConstExpr::Array(_) => Type::Error,
         ConstExpr::Fetch(class_name, name) => {
             let is_static = class.is_some() && class_name.eq_ignore_ascii_case("static");
             let class_name = match (class, class_name.to_ascii_lowercase().as_str()) {

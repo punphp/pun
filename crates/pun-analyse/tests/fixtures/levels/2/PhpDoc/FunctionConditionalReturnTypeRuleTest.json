@@ -1,0 +1,330 @@
+{
+    "test": "PhpDoc/FunctionConditionalReturnTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/function-conditional-return-type.php"
+            ],
+            "scan": [
+                "PhpDoc/data/function-conditional-return-type.php"
+            ],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 18,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionConditionalReturnType\\fill2() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 18,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill2() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 28,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionConditionalReturnType\\fill3() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 28,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill3() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 37,
+                    "identifier": "class.notFound",
+                    "message": "Function FunctionConditionalReturnType\\doFoo() has invalid return type FunctionConditionalReturnType\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 37,
+                    "identifier": "class.notFound",
+                    "message": "Function FunctionConditionalReturnType\\doFoo() has invalid return type FunctionConditionalReturnType\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 37,
+                    "identifier": "conditionalType.subjectNotFound",
+                    "message": "Conditional return type uses subject type stdClass which is not part of PHPDoc @template tags.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 37,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\doFoo() should return FunctionConditionalReturnType\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 45,
+                    "identifier": "class.notFound",
+                    "message": "Function FunctionConditionalReturnType\\doFoo3() has invalid return type FunctionConditionalReturnType\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 45,
+                    "identifier": "class.notFound",
+                    "message": "Function FunctionConditionalReturnType\\doFoo3() has invalid return type FunctionConditionalReturnType\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 45,
+                    "identifier": "parameter.notFound",
+                    "message": "Conditional return type references unknown parameter $j.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 45,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\doFoo3() should return FunctionConditionalReturnType\\Bar|FunctionConditionalReturnType\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 53,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"int is int\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill4() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 63,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"T of int is int\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 63,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionConditionalReturnType\\fill5() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 63,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 63,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill5() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 73,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"T of int is int\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 73,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionConditionalReturnType\\fill6() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 73,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 73,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill6() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 81,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"int is not int\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 81,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill7() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 89,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"int is string\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 89,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill8() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 99,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"T of int is string\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 99,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionConditionalReturnType\\fill9() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 99,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 99,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill9() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 109,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"T of int is string\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 109,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionConditionalReturnType\\fill10() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 109,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 109,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill10() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 117,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"int is not string\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-conditional-return-type.php",
+                    "line": 117,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionConditionalReturnType\\fill11() should return array but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8609",
+            "files": [
+                "PhpDoc/data/bug-8609-function.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallableTypePredicate",
+            "files": [
+                "PhpDoc/data/callable-type-predicate-rule.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/callable-type-predicate-rule.php",
+                    "line": 16,
+                    "identifier": "parameter.notFound",
+                    "message": "Conditional return type references unknown parameter $valeu.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/callable-type-predicate-rule.php",
+                    "line": 24,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"int is int\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/callable-type-predicate-rule.php",
+                    "line": 32,
+                    "identifier": "parameter.notFound",
+                    "message": "Conditional return type references unknown parameter $value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -6,3 +6,20 @@
 2 Functions/HelperFunctionDiscard::testRule
 # PHPStan synthetic multi-level break has line -1; the public Error line is u32 (PLAN.md).
 4 Exceptions/HelperFinally::testRule
+# generics.* / parameter.notByRef errors of the level-2 PHPDoc tag rules not ported yet (MethodTagRule, MixinRule,
+# PropertyTagRule, Incompatible*PhpDocTypeRule, MethodAssertRule; PLAN.md "analyse phpdoc/operators").
+2 Classes/MethodTagRuleTest::testRule
+2 Classes/MixinRuleTest::testRule
+2 Classes/PropertyTagRuleTest::testRule
+2 PhpDoc/IncompatibleClassConstantPhpDocTypeRuleTest::testRule
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testEnums
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testParamOut
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testGenericCallables
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testParamClosureThis
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testGenericStatic
+2 PhpDoc/IncompatiblePropertyHookPhpDocTypeRuleTest::testRule
+2 PhpDoc/IncompatiblePropertyPhpDocTypeRuleTest::testGenericCallables
+2 PhpDoc/MethodAssertRuleTest::testRule
+# Pun reports generics.notSupportedBound / generics.notSubtype on these templates where PHPStan does not.
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug13652
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug9708

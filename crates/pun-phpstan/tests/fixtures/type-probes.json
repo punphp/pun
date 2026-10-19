@@ -1168,6 +1168,36 @@
     ],
     [
         null,
+        "array{DateTimeInterface::ATOM: int}",
+        "array{'Y-m-d\\TH:i:sP': int}",
+        "array{'Y-m-d\\TH:i:sP': int}",
+        "array<string, int>",
+        null,
+        [
+            "'Y-m-d\\\\TH:i:sP'",
+            "int"
+        ]
+    ],
+    [
+        null,
+        "int['a']",
+        "*ERROR*",
+        "mixed",
+        "mixed",
+        null,
+        null
+    ],
+    [
+        null,
+        "null::FOO",
+        "*ERROR*",
+        "mixed",
+        "mixed",
+        null,
+        null
+    ],
+    [
+        null,
         "callable(int): void|callable(string): void",
         "(callable(int): void)|(callable(string): void)",
         "(callable(int): void)|(callable(string): void)",

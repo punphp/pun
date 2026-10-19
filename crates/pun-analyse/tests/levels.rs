@@ -104,15 +104,37 @@ const PORTED: &[&str] = &[
     "classConstant.internalTrait",
     "classConstant.internalEnum",
     "function.internal",
+    "phpDoc.parseError",
+    "phpDoc.phpstanTag",
+    "requireExtends.duplicate",
+    "requireExtends.nonObject",
+    "requireExtends.interface",
+    "requireExtends.trait",
+    "requireExtends.enum",
+    "requireExtends.finalClass",
+    "requireExtends.onClass",
+    "requireExtends.onEnum",
+    "requireImplements.nonObject",
+    "requireImplements.class",
+    "requireImplements.trait",
+    "requireImplements.enum",
+    "requireImplements.onClass",
+    "requireImplements.onEnum",
+    "requireImplements.onInterface",
+    "sealed.onEnum",
+    "sealed.nonObject",
 ];
 
-/// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).
+/// The `class.notFound` messages of the level-2 Generics and PHPDoc tag rules (other rules report the identifier at every level).
 const GENERICS_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @template ",
     "PHPDoc tag @method template ",
     "PHPDoc tag @extends has invalid type",
     "PHPDoc tag @implements has invalid type",
     "PHPDoc tag @use has invalid type",
+    "PHPDoc tag @phpstan-require-extends contains unknown class",
+    "PHPDoc tag @phpstan-require-implements contains unknown class",
+    "PHPDoc tag @phpstan-sealed contains unknown class",
 ];
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {

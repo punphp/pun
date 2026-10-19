@@ -1,0 +1,14 @@
+{
+    "test": "Classes/MixinTraitRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/mixin-trait.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

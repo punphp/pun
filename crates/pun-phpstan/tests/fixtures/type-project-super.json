@@ -38,5 +38,25 @@
         "Coll",
         "Plain",
         "Yes"
+    ],
+    [
+        "Coll",
+        "Tr",
+        "No"
+    ],
+    [
+        "Tr",
+        "Coll",
+        "No"
+    ],
+    [
+        "Tr",
+        "Tr",
+        "Yes"
+    ],
+    [
+        "Tr&\\stdClass",
+        "Tr",
+        "No"
     ]
 ]

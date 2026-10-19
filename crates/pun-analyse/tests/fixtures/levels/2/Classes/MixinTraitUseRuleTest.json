@@ -1,0 +1,22 @@
+{
+    "test": "Classes/MixinTraitUseRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/mixin-trait-use.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/mixin-trait-use.php (in context of class MixinTraitUse\\Usages)",
+                    "line": 22,
+                    "identifier": "mixin.unresolvableType",
+                    "message": "PHPDoc tag @mixin contains unresolvable type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

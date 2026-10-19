@@ -4,20 +4,27 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5290 | 5290 | 100.00% | ok |
-| punphp-analyse | 16913 | 16913 | 100.00% | ok |
+| punphp-analyse | 19591 | 19477 | 99.42% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 18425 | 18425 | 100.00% | ok |
-| punphp-phpstan | 7192 | 7163 | 99.60% | ok |
+| punphp-phpstan | 8196 | 8196 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
 
 Uncovered lines:
 
-- `crates/pun-phpstan/src/types.rs` 98.83% (29 lines): 2321, 2927-2929, 2940, 2973-2976, 3023, 3026, 3031, 3097, 3131, 3137, 3277, 3303, 3314, 3333, 3358-3367
+- `crates/pun-analyse/src/rules/declared.rs` 99.26% (7 lines): 278, 286, 294, 300-303
+- `crates/pun-analyse/src/rules/internal_usage.rs` 95.00% (4 lines): 32, 35, 77, 87
+- `crates/pun-analyse/src/rules/mod.rs` 99.76% (3 lines): 687, 852, 1082
+- `crates/pun-analyse/src/rules/new_static_abstract.rs` 95.24% (1 lines): 15
+- `crates/pun-analyse/src/rules/overriding.rs` 96.39% (29 lines): 352, 358, 390, 866, 905-910, 1047, 1056-1073
+- `crates/pun-analyse/src/rules/overriding_property.rs` 98.82% (4 lines): 187-188, 258, 261
+- `crates/pun-analyse/src/rules/readonly_init.rs` 92.91% (65 lines): 166, 250, 264-272, 279, 283-287, 291, 295, 313, 331, 335, 343, 348, 356, 361, 369, 404, 454, 461, 551-552, 554-556, 608-609, 617, 642, 646, 659, 668, 731-744, 795, 1026, 1058, 1141-1143, 1155, 1189, 1250
+- `crates/pun-analyse/src/rules/set_hook.rs` 97.06% (1 lines): 20
 <!-- coverage:end -->
 
 ## Exclusions
@@ -32,6 +39,7 @@ Uncovered lines:
 - `crates/pun-cli/src/run.rs:887` the panic hook's call of the default hook: it prints a panic outside a file's isolated fixing, which only a Pun bug causes; every panic a test can trigger is a fixer's, inside `isolated`.
 - `crates/pun-cli/src/pint_error.rs:77` `Thrown::of`'s fallback to Laravel Zero's ConsoleException for an untyped error: every error a format, lint or check run can hit today is typed (Finder, annotation, read/write) or already an `Abort`, so the fallback only guards future errors.
 - `crates/pun-cli/src/watch.rs:56` the watch channel's `Disconnected`: the notify watcher holds the sender and lives as long as the loop, so the channel never disconnects while it waits.
+- `crates/pun-phpstan/src/resolve.rs:730` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
 - `crates/pun-cli/src/migrate.rs:557` closest_preset's "nothing to switch" return: every PHPStan level leaves some rules of its closest Pun preset off (level 0: the basic preset's 11-12 non-level-0 rules, with or without bleedingEdge), so a migrated `[analyse]` always has on/off lines.
 - `crates/pun-analyse/src/laravel/mod.rs:464-471` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.

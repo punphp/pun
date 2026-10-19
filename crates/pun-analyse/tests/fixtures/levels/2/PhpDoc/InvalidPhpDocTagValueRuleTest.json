@@ -1,0 +1,325 @@
+{
+    "test": "PhpDoc/InvalidPhpDocTagValueRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/invalid-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 6,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (): Unexpected token \"\\n * \", expected type at offset 13 on line 2",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 9,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (A & B | C $paramNameA): Unexpected token \"|\", expected variable at offset 72 on line 5",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 10,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value ((A & B $paramNameB): Unexpected token \"$paramNameB\", expected ')' at offset 105 on line 6",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 11,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (~A & B $paramNameC): Unexpected token \"~A\", expected type at offset 127 on line 7",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 13,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value (): Unexpected token \"\\n * \", expected type at offset 156 on line 9",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 14,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value ($invalid): Unexpected token \"$invalid\", expected type at offset 165 on line 10",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 15,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value ($invalid Foo): Unexpected token \"$invalid\", expected type at offset 182 on line 11",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 17,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @return has invalid value (): Unexpected token \"\\n * \", expected type at offset 208 on line 13",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 18,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @return has invalid value ([int, string]): Unexpected token \"[\", expected type at offset 220 on line 14",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 19,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @return has invalid value (A & B | C): Unexpected token \"|\", expected TOKEN_OTHER at offset 251 on line 15",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 25,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $valid",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 28,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value (\\\\Foo|\\Bar $test): Unexpected token \"\\\\\\\\Foo|\\\\Bar\", expected type at offset 9 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 29,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\foo() should return InvalidPhpDoc\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 58,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value (callable(int)): Unexpected token \"(\", expected TOKEN_HORIZONTAL_WS at offset 17 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 61,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value ((Foo|Bar): Unexpected token \"*/\", expected ')' at offset 18 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 71,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @throws has invalid value ((\\Exception): Unexpected token \"*/\", expected ')' at offset 24 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 80,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value ((Foo|Bar): Unexpected token \"*/\", expected ')' at offset 18 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 88,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value ((Foo&): Unexpected token \"*/\", expected type at offset 15 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 91,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value ((Foo&): Unexpected token \"*/\", expected type at offset 15 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 101,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value ((Foo&): Unexpected token \"*/\", expected type at offset 15 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc.php",
+                    "line": 102,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4731",
+            "files": [
+                "PhpDoc/data/bug-4731.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4731WithoutFirstTag",
+            "files": [
+                "PhpDoc/data/bug-4731-no-first-tag.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-4731-no-first-tag.php",
+                    "line": 38,
+                    "identifier": "class.notFound",
+                    "message": "Type alias PARTSTRUCTURE contains unknown class Bug4731NoFirstTag\\PARTSTRUCTURE_PARAM.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInvalidTypeInTypeAlias",
+            "files": [
+                "PhpDoc/data/invalid-type-type-alias.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-type-type-alias.php",
+                    "line": 7,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @phpstan-type InvalidFoo has invalid value: Unexpected token \"{\", expected TOKEN_PHPDOC_EOL at offset 65 on line 3",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-type-type-alias.php",
+                    "line": 15,
+                    "identifier": "typeAlias.duplicate",
+                    "message": "Type alias Foo already exists as a class in scope of InvalidTypeInTypeAlias\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIgnoreWithinPhpDoc",
+            "files": [
+                "PhpDoc/data/ignore-line-within-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/ignore-line-within-phpdoc.php",
+                    "line": 26,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $valid",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAssignOperator",
+            "files": [
+                "PhpDoc/data/invalid-phpdoc-assign-operator.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc-assign-operator.php",
+                    "line": 8,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value (\\\\Foo|\\Bar $test): Unexpected token \"\\\\\\\\Foo|\\\\Bar\", expected type at offset 9 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc-assign-operator.php",
+                    "line": 9,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc-assign-operator.php",
+                    "line": 9,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $test on left side of ??= is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6299",
+            "files": [
+                "PhpDoc/data/bug-6299.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-6299.php",
+                    "line": 10,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @phpstan-return has invalid value (array{'numeric': stdClass[], 'branches': array{'names': string[], 'exclude': bool}}}|int): Unexpected token \"}\", expected TOKEN_HORIZONTAL_WS at offset 107 on line 2",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6692",
+            "files": [
+                "PhpDoc/data/bug-6692.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-6692.php",
+                    "line": 11,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @return has invalid value ($this<string>): Unexpected token \"<\", expected TOKEN_HORIZONTAL_WS at offset 21 on line 2",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "PhpDoc/data/invalid-phpdoc-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc-property-hooks.php",
+                    "line": 9,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @return has invalid value (Test(): Unexpected token \"(\", expected TOKEN_HORIZONTAL_WS at offset 16 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpdoc-property-hooks.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property InvalidPhpDocPropertyHooks\\Foo::$i should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

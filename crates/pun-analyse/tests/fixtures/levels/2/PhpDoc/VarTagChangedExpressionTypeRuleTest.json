@@ -1,0 +1,247 @@
+{
+    "test": "PhpDoc/VarTagChangedExpressionTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/var-tag-changed-expr-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/var-tag-changed-expr-type.php",
+                    "line": 17,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/var-tag-changed-expr-type.php",
+                    "line": 54,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/var-tag-changed-expr-type.php",
+                    "line": 73,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAssignOfDifferentVariable",
+            "files": [
+                "PhpDoc/data/wrong-var-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string|null is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 23,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type SplObjectStorage<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 26,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 38,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Iterator<mixed, int> is not subtype of native type array.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBaz() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 66,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsListOfIntegers() should return list<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 74,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsIteratorOfIntegers() should return Iterator<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 80,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsArrayOfIntegers() should return array<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 99,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 109,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 148,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 167,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::arrayOfLists() should return array<list<string|null>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 186,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type PHPStan\\Type\\Type|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 189,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType|null but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 192,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 195,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\ObjectType|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 201,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\Type|null is not subtype of native type PHPStan\\Type\\ObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 204,
+                    "identifier": "varTag.type",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\ObjectType|null is not subtype of type PHPStan\\Type\\Generic\\GenericObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 207,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBar() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 212,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBaz() should return PHPStan\\Type\\ObjectType|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 220,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBazPhpDoc() should return PHPStan\\Type\\Generic\\GenericObjectType|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10130",
+            "files": [
+                "PhpDoc/data/bug-10130.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12708",
+            "files": [
+                "PhpDoc/data/bug-12708.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-12708.php",
+                    "line": 12,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type list<string> is not subtype of native type array{1: 'b', 2: 'c'}.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-12708.php",
+                    "line": 18,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type list<string> is not subtype of native type array{0: 'a', 2: 'c'}.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-12708.php",
+                    "line": 24,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type list<string> is not subtype of native type array{-1: 'z', 0: 'a', 1: 'b', 2: 'c'}.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-12708.php",
+                    "line": 30,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type list<string> is not subtype of native type array{0: 'a', -1: 'z', 1: 'b', 2: 'c'}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

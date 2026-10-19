@@ -1,0 +1,19 @@
+[
+    [
+        "Coll|Child<int>|int",
+        []
+    ],
+    [
+        "Coll&\\Countable",
+        [
+            "PunProbe\\Coll",
+            "Countable"
+        ]
+    ],
+    [
+        "Coll|Coll<int, int>",
+        [
+            "PunProbe\\Coll"
+        ]
+    ]
+]

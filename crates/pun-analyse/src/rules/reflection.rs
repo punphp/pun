@@ -86,6 +86,14 @@ impl Known<'_> {
         }
     }
 
+    /// `isFinal()`: the keyword or an `@final` tag (Mago's flag holds both).
+    pub(super) fn is_final(&self) -> bool {
+        match self {
+            Known::User(k) => k.flags.is_final(),
+            Known::Builtin(k) => k.is_final,
+        }
+    }
+
     pub(super) fn is_class(&self) -> bool {
         !self.is_trait() && !self.is_interface() && !self.is_enum()
     }

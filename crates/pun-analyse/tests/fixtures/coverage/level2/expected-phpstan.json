@@ -114,6 +114,55 @@
    "tip": null
   },
   {
+   "file": "phpdoc_tags.php",
+   "line": 10,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-elseif",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 14,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-else",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 20,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-colon-elseif",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 23,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-colon-else",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 27,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @Foo has invalid value ((1 2) @phpstan-unknown): Unexpected token \"2\", expected ')' at offset 11 on line 1",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 32,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @phpstan-require-extends has invalid value (): Unexpected token \"\\n \", expected type at offset 31 on line 2",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 41,
+   "identifier": "sealed.nonObject",
+   "message": "PHPDoc tag @phpstan-sealed contains non-object type int.",
+   "tip": null
+  },
+  {
    "file": "uses.php",
    "line": 30,
    "identifier": "trait.notFound",

@@ -37,3 +37,7 @@ class Plain extends Coll
 class Defaults
 {
 }
+
+trait Tr
+{
+}

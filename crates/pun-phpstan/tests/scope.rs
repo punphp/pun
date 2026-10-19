@@ -118,6 +118,10 @@ fn class(name: &str) -> Option<Arc<Class>> {
             &[],
             HashMap::new(),
         ))),
+        "PunProbe\\Tr" => Some(Arc::new(Class {
+            is_trait: true,
+            ..class(name, &[], Vec::new(), &[], HashMap::new())
+        })),
         "PunProbe\\Defaults" => Some(Arc::new(class(
             name,
             &[],
@@ -327,4 +331,47 @@ fn generic_argument_variance() {
         phpdoc::parse("ArrayIterator<int, covariant string>").unwrap(),
         phpdoc::parse("ArrayIterator<int, string>").unwrap()
     );
+}
+
+/// `tryResolvePseudoTypeClassType()`: `use Foo as integer;` makes `integer` that class; in a namespace a keyword
+/// that names no class of it stays the keyword.
+#[test]
+fn pseudo_type_keywords_imported_or_namespaced() {
+    struct Imported;
+    impl Scope for Imported {
+        fn parent(&self) -> Option<String> {
+            None
+        }
+        fn resolve_name(&self, name: &str) -> String {
+            qualify(name)
+        }
+        fn has_use_alias(&self, name: &str) -> bool {
+            name == "integer"
+        }
+        fn in_namespace(&self) -> bool {
+            true
+        }
+    }
+    let describe =
+        |s: &str| resolve_in(&phpdoc::parse(s).unwrap(), &Imported).describe(Level::Precise);
+    assert_eq!(describe("integer"), "PunProbe\\integer");
+    assert_eq!(describe("scalar"), "bool|float|int|string");
+}
+
+#[test]
+fn object_class_names() {
+    let f = fixture("type-object-class-names.json");
+    symbols::with_classes(&class, || {
+        for row in f.as_array().unwrap() {
+            let input = row[0].as_str().unwrap();
+            let want: Vec<String> = row[1]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|n| n.as_str().unwrap().to_string())
+                .collect();
+            let ty = resolve_in(&phpdoc::parse(input).unwrap(), &InNamespace);
+            assert_eq!(ty.object_class_names(), want, "{input}");
+        }
+    });
 }
