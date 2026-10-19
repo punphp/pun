@@ -152,3 +152,11 @@ fn anonymous_classes() {
 fn property_access() {
     check_in("properties", "phpstan");
 }
+
+/// AllowedSubTypesRule (`@phpstan-sealed`, `@psalm-inheritors`), MethodVisibilityInInterfaceRule and
+/// DuplicateTraitDeclarationRule (reported in each using class's context). The anonymous class's hashed name is the
+/// oracle's from this crate's directory, the working directory of `cargo test`.
+#[test]
+fn hierarchy() {
+    check_in("hierarchy", "phpstan");
+}

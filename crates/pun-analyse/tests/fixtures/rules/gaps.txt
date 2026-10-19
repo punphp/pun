@@ -42,3 +42,9 @@ Arrays/DuplicateKeysInLiteralArraysRuleTest::testDuplicateKeys
 Classes/DuplicateTraitDeclarationRuleTest::testBug14250
 # a dynamic static property name (`self::${$property}`) needs the name's constant string types
 Properties/AccessStaticPropertiesInAssignRuleTest::testRuleExpressionNames
+# method.visibility of OverridingMethodRule and ConsistentConstructorRule (not ported; MethodVisibilityInInterfaceRule is)
+Methods/ConsistentConstructorRuleTest::testBug12137
+Methods/OverridingMethodRuleTest::testOverridingFinalMethod#0
+Methods/OverridingMethodRuleTest::testOverridingFinalMethod#1
+# an anonymous class's getName() hashes its path relative to the working directory, which the export ran from elsewhere
+Classes/ExistingClassInClassExtendsRuleTest::testEnums

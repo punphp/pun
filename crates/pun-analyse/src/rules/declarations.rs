@@ -209,6 +209,25 @@ pub fn duplicates<'arena>(c: &mut Checker<'_, 'arena>, members: &[ClassLikeMembe
         SymbolKind::Enum => "enum",
         _ => "class",
     };
+    duplicates_as(c, members, kind, &display);
+}
+
+/// DuplicateTraitDeclarationRule: the same checks on a trait, walked in the context of each class using it.
+pub fn trait_duplicates<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    members: &[ClassLikeMember<'arena>],
+    display: &str,
+) {
+    duplicates_as(c, members, "trait", display);
+}
+
+/// DuplicateDeclarationHelper::checkClassLike().
+fn duplicates_as<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    members: &[ClassLikeMember<'arena>],
+    kind: &str,
+    display: &str,
+) {
     let mut constants = HashSet::new();
     for m in members {
         match m {

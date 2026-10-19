@@ -424,3 +424,15 @@ Assistant's calls in analyse 3k (property access, property_access.rs, 2026-10-19
   ArrayAccess, which PHPStan then describes as `ArrayAccess&C`, is not ported.
 - `(function () {...})->bindTo()` keeps the scope's `$this` (oracle-checked). Only `->call()` and `Closure::bind()`
   rebind it. An anonymous class's constructor arguments are walked in the enclosing scope.
+
+Assistant's calls in analyse 3l (sealed hierarchies, interface method visibility and trait duplicates, hierarchy.rs,
+2026-10-19; the plan was silent):
+- AllowedSubTypesRule reads the last `@psalm-inheritors`/`@phpstan-sealed` tag (in that order) that parses, resolved in
+  the parent's name scope, plus the parent itself when it is a concrete class. An enum parent allows only its cases.
+  Names are compared exactly, as `getObjectClassNames() === [$className]` does.
+- An anonymous class's `getName()` is `AnonymousClass` and the md5 of `<path>:<line>[:<index>]`, with the path from
+  SimpleRelativePathHelper (relative to the working directory, not the fuzzy display path). The rule-fixture export ran
+  from another directory, so that case stays in gaps.txt; tests/fixtures/hierarchy holds oracle hashes for the crate
+  directory, the working directory of `cargo test`.
+- DuplicateTraitDeclarationRule reports in each using class's context, as InTraitNode does; an unused trait is never
+  checked.

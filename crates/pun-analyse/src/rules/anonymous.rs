@@ -76,3 +76,81 @@ pub(crate) fn names(
     }
     out
 }
+
+/// `ClassReflection::getName()` of an anonymous class declared in `file` (absolute), from its display name
+/// `<parent>@anonymous/<path>:<line>[:<index>]`: AnonymousClassNameHelper's `AnonymousClass` followed by the md5 of
+/// `<path>:<line>[:<index>]`, the path relative to the working directory (SimpleRelativePathHelper).
+pub(crate) fn internal_name(display: &str, file: &str, relative: &RelativePath) -> String {
+    let fuzzy = display
+        .split_once("@anonymous/")
+        .map_or(display, |(_, k)| k);
+    // the line and index follow the last `:` pair of the fuzzy path
+    let at = fuzzy
+        .rsplit_once(':')
+        .map(|(head, tail)| match head.rsplit_once(':') {
+            Some((_, line)) if line.bytes().all(|b| b.is_ascii_digit()) && !line.is_empty() => {
+                format!("{line}:{tail}")
+            }
+            _ => tail.to_string(),
+        })
+        .unwrap_or_default();
+    let key = format!("{}:{at}", relative.simple(file));
+    let digest = md5(key.as_bytes());
+    let hex: String = digest.iter().map(|b| format!("{b:02x}")).collect();
+    format!("AnonymousClass{hex}")
+}
+
+/// RFC 1321 MD5.
+fn md5(input: &[u8]) -> [u8; 16] {
+    const S: [u32; 64] = [
+        7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5,
+        9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10,
+        15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+    ];
+    // K[i] = floor(abs(sin(i + 1)) * 2^32)
+    let k: Vec<u32> = (0..64)
+        .map(|i| (((i + 1) as f64).sin().abs() * 4_294_967_296.0) as u32)
+        .collect();
+    let mut message = input.to_vec();
+    message.push(0x80);
+    while message.len() % 64 != 56 {
+        message.push(0);
+    }
+    message.extend_from_slice(&((input.len() as u64).wrapping_mul(8)).to_le_bytes());
+    let mut state: [u32; 4] = [0x6745_2301, 0xefcd_ab89, 0x98ba_dcfe, 0x1032_5476];
+    for chunk in message.chunks(64) {
+        let m: Vec<u32> = chunk
+            .chunks(4)
+            .map(|w| u32::from_le_bytes([w[0], w[1], w[2], w[3]]))
+            .collect();
+        let [mut a, mut b, mut c, mut d] = state;
+        for i in 0..64 {
+            let (f, g) = match i / 16 {
+                0 => ((b & c) | (!b & d), i),
+                1 => ((d & b) | (!d & c), (5 * i + 1) % 16),
+                2 => (b ^ c ^ d, (3 * i + 5) % 16),
+                _ => (c ^ (b | !d), (7 * i) % 16),
+            };
+            let rotated = a
+                .wrapping_add(f)
+                .wrapping_add(k[i])
+                .wrapping_add(m[g])
+                .rotate_left(S[i]);
+            a = d;
+            d = c;
+            c = b;
+            b = b.wrapping_add(rotated);
+        }
+        state = [
+            state[0].wrapping_add(a),
+            state[1].wrapping_add(b),
+            state[2].wrapping_add(c),
+            state[3].wrapping_add(d),
+        ];
+    }
+    let mut out = [0u8; 16];
+    for (i, word) in state.iter().enumerate() {
+        out[i * 4..i * 4 + 4].copy_from_slice(&word.to_le_bytes());
+    }
+    out
+}

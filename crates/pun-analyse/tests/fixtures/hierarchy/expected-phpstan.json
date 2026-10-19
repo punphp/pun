@@ -1,0 +1,131 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "a.php",
+   "line": 33,
+   "identifier": "method.visibility",
+   "message": "Method Hier\\I::a() cannot use non-public visibility in interface.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 34,
+   "identifier": "method.visibility",
+   "message": "Method Hier\\I::b() cannot use non-public visibility in interface.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 36,
+   "identifier": "method.visibility",
+   "message": "Method Hier\\I::d() cannot use non-public visibility in interface.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 45,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type Hier\\S2 is not allowed to be a subtype of Hier\\Sealed.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 54,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type Hier\\S4 is not allowed to be a subtype of Hier\\SI.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 62,
+   "identifier": "enum.disallowedSubtype",
+   "message": "Type Hier\\E is not allowed to be a subtype of Hier\\SI.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 67,
+   "identifier": "interface.disallowedSubtype",
+   "message": "Type Hier\\SubI is not allowed to be a subtype of Hier\\SI.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 77,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type Hier\\Late is not allowed to be a subtype of Hier\\Both.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 82,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type Hier\\Plain is not allowed to be a subtype of Hier\\SealedSelf.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 84,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type AnonymousClass0f3db53c1d0cf29e3a7ac16541a1a2bc is not allowed to be a subtype of Hier\\Sealed.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 85,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type AnonymousClassd4121bd2663bc898a9325f3a9cbd0f50 is not allowed to be a subtype of Hier\\Sealed.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 85,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type AnonymousClass37a0991f9863af0bf9ba297f90d25ce0 is not allowed to be a subtype of Hier\\Sealed.",
+   "tip": null
+  },
+  {
+   "file": "a.php (in context of class Hier\\C1)",
+   "line": 8,
+   "identifier": "trait.duplicateConstant",
+   "message": "Cannot redeclare constant Hier\\T::A.",
+   "tip": null
+  },
+  {
+   "file": "a.php (in context of class Hier\\C1)",
+   "line": 10,
+   "identifier": "trait.duplicateProperty",
+   "message": "Cannot redeclare property Hier\\T::$p.",
+   "tip": null
+  },
+  {
+   "file": "a.php (in context of class Hier\\C1)",
+   "line": 12,
+   "identifier": "trait.duplicateMethod",
+   "message": "Cannot redeclare method Hier\\T::M().",
+   "tip": null
+  },
+  {
+   "file": "a.php (in context of class Hier\\C2)",
+   "line": 8,
+   "identifier": "trait.duplicateConstant",
+   "message": "Cannot redeclare constant Hier\\T::A.",
+   "tip": null
+  },
+  {
+   "file": "a.php (in context of class Hier\\C2)",
+   "line": 10,
+   "identifier": "trait.duplicateProperty",
+   "message": "Cannot redeclare property Hier\\T::$p.",
+   "tip": null
+  },
+  {
+   "file": "a.php (in context of class Hier\\C2)",
+   "line": 12,
+   "identifier": "trait.duplicateMethod",
+   "message": "Cannot redeclare method Hier\\T::M().",
+   "tip": null
+  }
+ ]
+}

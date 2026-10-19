@@ -983,9 +983,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/conflicting-trait-constant" = { preset = "basic", ported = true, status = "decided" }
 "classes/constant-in-trait" = { preset = "basic", ported = true, status = "decided" }
 "classes/constructor-with-return-type" = { preset = "basic", ported = true, status = "decided" }
-"classes/disallowed-subtype" = { preset = "basic", status = "decided" }
+"classes/disallowed-subtype" = { preset = "basic", ported = true, status = "decided" }
 "classes/duplicate-declaration" = { preset = "basic", ported = true, status = "decided" }
-"classes/duplicate-trait-member" = { preset = "basic", status = "decided" }
+"classes/duplicate-trait-member" = { preset = "basic", ported = true, status = "decided" }
 "classes/dynamic-static-call" = { preset = "strict", status = "decided" }
 "classes/dynamic-static-callable" = { preset = "strict", status = "decided" }
 "classes/enum-case-outside-enum" = { preset = "basic", ported = true, status = "decided" }
@@ -1029,7 +1029,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/missing-serialize-methods" = { preset = "basic", ported = true, status = "decided" }
 "classes/new-as-callable" = { preset = "basic", ported = true, status = "decided" }
 "classes/new-static-in-abstract" = { preset = "basic", status = "decided" }
-"classes/non-public-interface-method" = { preset = "basic", status = "decided" }
+"classes/non-public-interface-method" = { preset = "basic", ported = true, status = "decided" }
 "classes/private-consistent-constructor" = { preset = "basic", ported = true, status = "decided" }
 "classes/read-write-only-property" = { preset = "basic", status = "decided" }
 "classes/readonly-class-not-supported" = { preset = "basic", ported = true, status = "decided" }

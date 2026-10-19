@@ -97,6 +97,15 @@ impl RelativePath {
         out.extend(&parts[i..]);
         out.join("/")
     }
+
+    /// SimpleRelativePathHelper::getRelativePath(): `filename` below the working directory, else as it is.
+    pub(crate) fn simple(&self, filename: &str) -> String {
+        let rest = (!self.cwd.is_empty())
+            .then(|| filename.strip_prefix(self.cwd.as_str()))
+            .flatten();
+        rest.map_or(filename, |r| r.get(1..).unwrap_or(""))
+            .replace('\\', "/")
+    }
 }
 
 /// An absolute path as PHPStan's FileHelper prints it.

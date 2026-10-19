@@ -244,6 +244,13 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.nonAbstract",
     "consistentConstructor.private",
     "sealed.onTrait",
+    "class.disallowedSubtype",
+    "interface.disallowedSubtype",
+    "enum.disallowedSubtype",
+    "method.visibility",
+    "trait.duplicateConstant",
+    "trait.duplicateProperty",
+    "trait.duplicateMethod",
     "property.callableType",
     "class.serializable",
     "parameter.requiredAfterOptional",
@@ -702,6 +709,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &name,
         );
         hierarchy::in_class(self, class.span(), &name);
+        hierarchy::allowed_subtypes(self, class.span(), &name);
         missing_types::class(self, class);
         larastan::class(self, class);
         constants::read_only_class(self, class.span(), class.modifiers.as_slice(), false);
@@ -742,6 +750,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             false,
             &name,
         );
+        hierarchy::allowed_subtypes(self, i.span(), &name);
         missing_types::interface(self, i);
     }
     fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
@@ -780,6 +789,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &name,
         );
         hierarchy::in_class(self, e.span(), &name);
+        hierarchy::allowed_subtypes(self, e.span(), &name);
         missing_types::enum_(self, e);
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
@@ -813,6 +823,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.classes[saved].name = Some(class.clone());
         self.decls.push(decl);
         self.in_target = true;
+        let display = self
+            .codebase
+            .get_class_like(name.as_bytes())
+            .map_or_else(|| name.clone(), |k| self.display(k));
+        declarations::trait_duplicates(self, t.members.as_slice(), &display);
         attributes::trait_in_context(self, t);
         for member in t.members.iter() {
             if let ClassLikeMember::Method(m) = member {
@@ -901,6 +916,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &display,
         );
         hierarchy::in_class(self, a.span(), &name);
+        hierarchy::allowed_subtypes(self, a.span(), &name);
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
     }
 
@@ -994,6 +1010,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         };
         declarations::method(self, m, &method);
         hierarchy::method(self, m, &method);
+        hierarchy::interface_method_visibility(self, m);
         missing_types::method(self, m);
         declarations::promoted(
             self,

@@ -483,3 +483,110 @@ fn names_callable(hint: &Hint) -> bool {
         _ => false,
     }
 }
+
+/// MethodVisibilityInInterfaceRule: a private or protected method declared in an interface.
+pub fn interface_method_visibility<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>) {
+    let Some(decl) = c.decls.last() else {
+        return;
+    };
+    if decl.kind != SymbolKind::Interface || c.trait_context.is_some() {
+        return;
+    }
+    let non_public = m
+        .modifiers
+        .iter()
+        .any(|x| matches!(x, Modifier::Private(_) | Modifier::Protected(_)));
+    let Some(display) = decl.display.clone().filter(|_| non_public) else {
+        return;
+    };
+    let name = String::from_utf8_lossy(m.name.value);
+    c.report_non_ignorable(
+        m,
+        "method.visibility",
+        format!("Method {display}::{name}() cannot use non-public visibility in interface."),
+        None,
+    );
+}
+
+/// AllowedSubTypesRule on the class-like `name` declared at `at`: each direct parent (interfaces, then the parent
+/// class) that lists its allowed subtypes must list this one.
+pub fn allowed_subtypes(c: &mut Checker, at: Span, name: &str) {
+    let Some(k) = c.codebase.get_class_like(name.as_bytes()) else {
+        return;
+    };
+    // getImmediateInterfaces() holds interfaces only (an enum named in `implements` is reported elsewhere)
+    let parents: Vec<&ClassLikeMetadata> = k
+        .direct_parent_interfaces
+        .iter()
+        .filter_map(|n| c.codebase.get_class_like(n.as_bytes()))
+        .filter(|p| p.kind == SymbolKind::Interface)
+        .chain(
+            k.direct_parent_class
+                .iter()
+                .filter_map(|n| c.codebase.get_class_like(n.as_bytes())),
+        )
+        .collect();
+    // getName(): an anonymous class's internal name
+    let class_name = match c.display(k) {
+        d if k.original_name.as_bytes().starts_with(b"{anonymous-class:") => {
+            let file = c
+                .files
+                .get(&k.span.file_id)
+                .map(|p| crate::relative_path::absolute(p))
+                .unwrap_or_default();
+            super::anonymous::internal_name(&d, &file, c.relative_path)
+        }
+        d => d,
+    };
+    let kind = match k.kind {
+        SymbolKind::Interface => "interface",
+        SymbolKind::Enum => "enum",
+        SymbolKind::Trait => "trait",
+        _ => "class",
+    };
+    for parent in parents {
+        let Some(allowed) = allowed_sub_types(c, parent) else {
+            continue;
+        };
+        if allowed.iter().any(|t| match t {
+            pun_phpstan::types::Type::Object(n, _) => *n == class_name,
+            _ => false,
+        }) {
+            continue;
+        }
+        let message = format!(
+            "Type {class_name} is not allowed to be a subtype of {}.",
+            c.display(parent)
+        );
+        c.report(at, &format!("{kind}.disallowedSubtype"), message, None);
+    }
+}
+
+/// `ClassReflection::getAllowedSubTypes()` through SealedAllowedSubTypesClassReflectionExtension: the last
+/// `@psalm-inheritors`/`@phpstan-sealed` tag's types (a union's members), plus the class itself when it can be
+/// instantiated. An enum allows only its cases, so no class-like.
+fn allowed_sub_types(c: &Checker, k: &ClassLikeMetadata) -> Option<Vec<pun_phpstan::types::Type>> {
+    use pun_phpstan::types::Type;
+    if k.kind == SymbolKind::Enum {
+        // EnumAllowedSubTypesClassReflectionExtension: only the enum's cases
+        return Some(Vec::new());
+    }
+    let contents = c.file_contents(k.span.file_id)?;
+    let doc = doc_before(&contents, k.span.start.offset as usize)?;
+    let tags = super::doc::tags(doc);
+    // getSealedTagValues() skips a tag whose type does not parse
+    let last = ["@psalm-inheritors", "@phpstan-sealed"]
+        .iter()
+        .flat_map(|name| tags.iter().filter(move |(t, _)| t == name))
+        .filter_map(|(_, v)| pun_phpstan::phpdoc::parse_prefix(v).ok())
+        .last()?;
+    let scope = super::declared::class_scope(c, k.span, k);
+    let mut types = match pun_phpstan::resolve::resolve_in(&last.0, &scope) {
+        Type::Union(members) => members,
+        t => vec![t],
+    };
+    if k.kind == SymbolKind::Class && !k.flags.is_abstract() {
+        types.push(Type::Object(super::declared::original_name(k), Vec::new()));
+    }
+    Some(types)
+}
