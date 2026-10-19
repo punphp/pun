@@ -149,7 +149,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
     }
 
     fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {}
     fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
     fn walk_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {}
     fn walk_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {}
@@ -198,7 +197,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Declarations<'arena> {
     }
 
     fn walk_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {}
-    fn walk_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {}
     fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
     fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
     fn walk_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {}
