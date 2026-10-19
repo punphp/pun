@@ -1,0 +1,4 @@
+<?php
+
+$parts = explode(',', 'hello');
+-----
