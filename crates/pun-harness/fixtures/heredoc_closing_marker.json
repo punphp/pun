@@ -1,0 +1,163 @@
+{
+    "fixer": "heredoc_closing_marker",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\HeredocClosingMarkerFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/HeredocClosingMarkerFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\HeredocClosingMarkerFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc",
+                    "args": [
+                        "<?php $a = <<<EOD\nxxx EOD xxx\nEOD;",
+                        "<?php $a = <<<TEST\nxxx EOD xxx\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nowdoc",
+                    "args": [
+                        "<?php $a = <<<'EOD'\nxxx EOD xxx\nEOD;",
+                        "<?php $a = <<<'TEST'\nxxx EOD xxx\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w custom preferred closing marker",
+                    "args": [
+                        "<?php $a = <<<EOF\nxxx\nEOF;",
+                        "<?php $a = <<<TEST\nxxx\nTEST;",
+                        {
+                            "closing_marker": "EOF"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w custom explicit style",
+                    "args": [
+                        "<?php $a = <<<\"EOD\"\nxxx\nEOD;\n$b = <<<\"EOD\"\nxxx2\nEOD;\n$b = <<<'EOD'\nxxx3\nEOD;",
+                        "<?php $a = <<<TEST\nxxx\nTEST;\n$b = <<<\"TEST\"\nxxx2\nTEST;\n$b = <<<'TEST'\nxxx3\nTEST;",
+                        {
+                            "explicit_heredoc_style": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w b",
+                    "args": [
+                        "<?php $a = b<<<EOD\nxxx EOD xxx\nEOD;",
+                        "<?php $a = b<<<TEST\nxxx EOD xxx\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w B",
+                    "args": [
+                        "<?php $a = B<<<EOD\nxxx EOD xxx\nEOD;",
+                        "<?php $a = B<<<TEST\nxxx EOD xxx\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc and reserved closing marker",
+                    "args": [
+                        "<?php $a = <<<PHP\nxxx\nPHP;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc and reserved closing marker - different case",
+                    "args": [
+                        "<?php $a = <<<PHP\nxxx\nPHP;\n$a = <<<PHP\nPHP;",
+                        "<?php $a = <<<php\nxxx\nphp;\n$a = <<<Php\nPhp;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc and reserved custom closing marker",
+                    "args": [
+                        "<?php $a = <<<Žlutý\nxxx\nŽlutý;\n$aNormCase = <<<Žlutý\nxxx\nŽlutý;\n$aNormCase = <<<Žlutý\nxxx\nŽlutý;\n$b = <<<EOD\nxxx2\nEOD;\n$c = <<<EOD\nxxx3\nEOD;",
+                        "<?php $a = <<<Žlutý\nxxx\nŽlutý;\n$aNormCase = <<<ŽluTý\nxxx\nŽluTý;\n$aNormCase = <<<ŽLUTÝ\nxxx\nŽLUTÝ;\n$b = <<<Žlutý2\nxxx2\nŽlutý2;\n$c = <<<PHP\nxxx3\nPHP;",
+                        {
+                            "reserved_closing_markers": [
+                                "Žlutý"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no longer colliding reserved marker recovery",
+                    "args": [
+                        "<?php\n$a = <<<CSS\n    CSS;\n$a = <<<CSS\n    CSS;\n$a = <<<CSS_\n    CSS\n    CSS_;\n$a = <<<CSS\n    CSS_\n    CSS;",
+                        "<?php\n$a = <<<CSS_\n    CSS_;\n$a = <<<CSS__\n    CSS__;\n$a = <<<CSS__\n    CSS\n    CSS__;\n$a = <<<CSS__\n    CSS_\n    CSS__;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w content starting with preferred closing marker",
+                    "args": [
+                        "<?php $a = <<<EOD_\nEOD xxx\nEOD_;",
+                        "<?php $a = <<<TEST\nEOD xxx\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w content starting with whitespace and preferred closing marker",
+                    "args": [
+                        "<?php $a = <<<EOD_\n EOD xxx\nEOD_;",
+                        "<?php $a = <<<TEST\n EOD xxx\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w content starting with preferred closing marker and single quote",
+                    "args": [
+                        "<?php $a = <<<EOD_\nEOD'\nEOD_;",
+                        "<?php $a = <<<TEST\nEOD'\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w content starting with preferred closing marker and semicolon",
+                    "args": [
+                        "<?php $a = <<<EOD_\nEOD;\nEOD_;",
+                        "<?php $a = <<<TEST\nEOD;\nTEST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc /w content ending with preferred closing marker",
+                    "args": [
+                        "<?php $a = <<<EOD\nxxx EOD\nEOD;",
+                        "<?php $a = <<<TEST\nxxx EOD\nTEST;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

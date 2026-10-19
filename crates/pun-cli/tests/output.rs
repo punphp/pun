@@ -1311,10 +1311,10 @@ fn run_errors_exit_2() {
     // An unported rule names pun.toml, the rule and the way out.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/heredoc-closing-marker\" = true\n",
+        "[format]\npreset = \"empty\"\n[lint.rules]\n\"complexity/no-boolean-flag-parameter\" = \"error\"\n",
     )
     .unwrap();
-    let line = "✖ pun.toml  rule not supported by Pun yet: `format/strings/heredoc-closing-marker`";
+    let line = "✖ pun.toml  rule not supported by Pun yet: `lint/complexity/no-boolean-flag-parameter`";
     let hint = "  remove it from pun.toml to run the other rules\n";
     assert_eq!(
         pun(&["check", "--color=never"]),
