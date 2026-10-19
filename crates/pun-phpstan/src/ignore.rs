@@ -98,8 +98,9 @@ fn stringify(e: &Value) -> String {
         (None, Some(r)) => format!("\"{}\"", r.to_php_string().unwrap_or_default()),
         _ => String::new(),
     };
-    // (`identifiers` never reaches here: initialize() expanded it to `identifier`.)
-    if let Some(ids) = str_of(isset(e, "identifier")) {
+    // (`identifiers` never reaches here: initialize() expanded it to `identifier`.) Pun's `rule` shows as the
+    // identifier does when there is none.
+    if let Some(ids) = str_of(isset(e, "identifier").or_else(|| isset(e, "rule"))) {
         message = if message.is_empty() {
             ids
         } else {
@@ -124,6 +125,14 @@ fn stringify(e: &Value) -> String {
     message
 }
 
+/// An entry's `message`, `rawMessage`, `identifier` and (Pun's) `rule`.
+type Fields = (
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+);
+
 /// `IgnoredErrorHelper::initialize()`'s result over the resolved `ignoreErrors` and `reportUnmatchedIgnoredErrors`.
 pub struct IgnoredErrors {
     /// `getErrors()`: config entries PHPStan rejects here (reported before analysis).
@@ -135,6 +144,8 @@ pub struct IgnoredErrors {
     other: Vec<usize>,
     report_unmatched: bool,
     regexes: RefCell<HashMap<String, Option<Regex>>>,
+    /// The Pun rule of an identifier, for entries with Pun's `rule` key (`[[analyse.ignore]] rule`).
+    rule_of: fn(&str) -> Option<&'static str>,
 }
 
 /// `IgnoredErrorHelperResult::process()`'s result.
@@ -174,6 +185,7 @@ impl IgnoredErrors {
                     "rawMessages",
                     "identifier",
                     "identifiers",
+                    "rule",
                 ];
                 if keys.iter().all(|k| isset(entry, k).is_none()) {
                     errors.push(format!(
@@ -197,7 +209,7 @@ impl IgnoredErrors {
         let mut uniqued: Vec<Value> = Vec::new();
         let mut keyed: HashMap<String, usize> = HashMap::new();
         for entry in expanded {
-            let fields = ["message", "rawMessage", "identifier"];
+            let fields = ["message", "rawMessage", "identifier", "rule"];
             let Some(path) =
                 isset(&entry, "path").filter(|_| fields.iter().any(|k| isset(&entry, k).is_some()))
             else {
@@ -238,6 +250,9 @@ impl IgnoredErrors {
                 "identifier".into(),
                 isset(&entry, "identifier").cloned().unwrap_or(Value::Null),
             );
+            if let Some(rule) = isset(&entry, "rule") {
+                merged.set("rule".into(), rule.clone());
+            }
             merged.set("count".into(), Value::Int(count(prev) + count(&entry)));
             merged.set("reportUnmatched".into(), report);
             uniqued[at] = Value::Array(merged);
@@ -269,19 +284,22 @@ impl IgnoredErrors {
             other,
             report_unmatched,
             regexes: RefCell::default(),
+            rule_of: |_| None,
         }
     }
 
+    /// Pun's `rule` key: an entry with one ignores only errors whose identifier `rule_of` maps to that rule.
+    pub fn with_rules(self, rule_of: fn(&str) -> Option<&'static str>) -> IgnoredErrors {
+        IgnoredErrors { rule_of, ..self }
+    }
+
     /// `IgnoredError::shouldIgnore()`
-    fn should_ignore(
-        &self,
-        error: &Error,
-        pattern: Option<String>,
-        raw: Option<String>,
-        identifier: Option<String>,
-        path: Option<String>,
-    ) -> bool {
+    fn should_ignore(&self, error: &Error, fields: &Fields, path: Option<String>) -> bool {
+        let (pattern, raw, identifier, rule) = fields.clone();
         if identifier.is_some() && error.identifier != identifier {
+            return false;
+        }
+        if rule.is_some_and(|r| error.identifier.as_deref().and_then(self.rule_of) != Some(&r)) {
             return false;
         }
         if let Some(pattern) = pattern {
@@ -331,18 +349,16 @@ impl IgnoredErrors {
         // Returns whether the error stays reported.
         let mut process_one = |error: &Error, i: usize, string_errors: &mut Vec<String>| -> bool {
             let ignore = &self.entries[i].0;
-            let fields = || {
-                (
-                    str_of(isset(ignore, "message")),
-                    str_of(isset(ignore, "rawMessage")),
-                    str_of(isset(ignore, "identifier")),
-                )
-            };
+            let fields: Fields = (
+                str_of(isset(ignore, "message")),
+                str_of(isset(ignore, "rawMessage")),
+                str_of(isset(ignore, "identifier")),
+                str_of(isset(ignore, "rule")),
+            );
             let mut ignored = false;
             if let Value::Array(_) = ignore {
                 if let Some(path) = str_of(isset(ignore, "path")) {
-                    let (m, r, id) = fields();
-                    ignored = self.should_ignore(error, m, r, id, Some(path));
+                    ignored = self.should_ignore(error, &fields, Some(path));
                     if ignored {
                         if let Some(Value::Int(count)) = isset(ignore, "count") {
                             let (real, _) = real_counts.entry(i).or_insert((0, *count));
@@ -359,8 +375,7 @@ impl IgnoredErrors {
                     }
                 } else if let Some(Value::Array(paths)) = isset(ignore, "paths") {
                     for (j, path) in paths.iter() {
-                        let (m, r, id) = fields();
-                        ignored = self.should_ignore(error, m, r, id, path.to_php_string());
+                        ignored = self.should_ignore(error, &fields, path.to_php_string());
                         if !ignored {
                             continue;
                         }
@@ -375,14 +390,14 @@ impl IgnoredErrors {
                         break;
                     }
                 } else {
-                    let (m, r, id) = fields();
-                    ignored = self.should_ignore(error, m, r, id, None);
+                    ignored = self.should_ignore(error, &fields, None);
                     if ignored {
                         unmatched[i] = None;
                     }
                 }
             } else {
-                ignored = self.should_ignore(error, ignore.to_php_string(), None, None, None);
+                let fields = (ignore.to_php_string(), None, None, None);
+                ignored = self.should_ignore(error, &fields, None);
                 if ignored {
                     unmatched[i] = None;
                 }
