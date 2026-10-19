@@ -315,9 +315,14 @@ fn remove_next_same_value_condition() {
 #[test]
 fn remove_dead_loop() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoEmptyLoop, 80400),
-        "RemoveDeadLoopRector/Fixture",
+    let linter = only(rules::NoEmptyLoop, 80400);
+    run(&linter, "RemoveDeadLoopRector/Fixture");
+    // The empty block that replaces a loop that was a braceless body: php-parser prints it on the `if` line, Pun's edit
+    // keeps it on the loop's own line.
+    run_with_whitespace_exceptions(
+        &linter,
+        "RemoveDeadLoopRector/Oracle",
+        &["dead_loop_braceless.php.inc"],
     );
 }
 

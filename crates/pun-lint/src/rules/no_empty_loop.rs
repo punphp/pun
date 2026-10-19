@@ -8,7 +8,7 @@ use mago_syntax::cst::*;
 use pun_problem::{Fix, Safety};
 
 use super::rector_stmts::{
-    HOLDERS, List, body_list, holder_list, is_plain_assign, open_list, remove,
+    HOLDERS, List, block_list, body_list, holder_list, is_plain_assign, open_list, remove,
 };
 use super::side_effect::has_side_effect;
 use crate::syntax::node_span;
@@ -58,8 +58,10 @@ impl Rule for NoEmptyLoop {
         }
         // The loop's place: an item of a statement list, or the one statement of a control structure's body.
         let edits = if HOLDERS.contains(&grand.kind()) {
-            let Some(list) = holder_list(source, *grand, &ancestors[..ancestors.len() - 2]) else {
-                return;
+            // Rector removes the loop wherever it is, in a property hook's body too, where `holder_list` has none.
+            let list = match grand {
+                Node::Block(block) => block_list(source, block),
+                _ => holder_list(source, *grand, &ancestors[..ancestors.len() - 2]).unwrap(),
             };
             let key = list
                 .stmts
