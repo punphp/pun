@@ -4,8 +4,8 @@
 
 use mago_syntax::cst::{
     Argument, ArgumentList, Assignment, AssignmentOperator, BinaryOperator, Call, Expression,
-    ForeachTarget, Hint, Identifier, Instantiation, Literal, MethodBody, NamespaceBody, Node,
-    Statement, UnaryPrefixOperator, UseItem, UseItems, Variable,
+    ForeachTarget, Hint, Identifier, Instantiation, Literal, Method, MethodBody, NamespaceBody,
+    Node, Statement, UnaryPrefixOperator, UseItem, UseItems, Variable,
 };
 use pun_problem::{Edit, Span};
 
@@ -264,11 +264,12 @@ pub fn known<'a>(
 fn top_level(scope: &Node<'_, '_>, assignment: &Assignment<'_>) -> bool {
     let statements = match scope {
         Node::Function(f) => f.body.statements.as_slice(),
-        Node::Method(m) => match &m.body {
-            MethodBody::Concrete(b) => b.statements.as_slice(),
-            MethodBody::Abstract(_) => &[],
-        },
+        Node::Method(Method {
+            body: MethodBody::Concrete(b),
+            ..
+        }) => b.statements.as_slice(),
         Node::Program(p) => p.statements.as_slice(),
+        // `known` asks only for these scopes (an abstract method has no assignments).
         _ => &[],
     };
     let span = node_span(assignment);

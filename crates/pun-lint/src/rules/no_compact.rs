@@ -154,7 +154,9 @@ fn names(expr: &Expression<'_>) -> Option<Vec<String>> {
     elements
         .iter()
         .map(|e| match e {
+            // `compact()` reads the values; a key does not matter.
             ArrayElement::Value(v) => name(v.value),
+            ArrayElement::KeyValue(kv) => name(kv.value),
             _ => None,
         })
         .collect()
