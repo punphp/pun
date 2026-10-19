@@ -17,6 +17,7 @@ mod enums;
 mod functions;
 mod hierarchy;
 mod infer;
+mod internal;
 mod larastan;
 mod members;
 mod missing_types;
@@ -255,6 +256,16 @@ pub const IDENTIFIERS: &[&str] = &[
     "staticClassAccess.privateProperty",
     "staticClassAccess.privateMethod",
     "staticClassAccess.privateConstant",
+    "method.internal",
+    "method.internalClass",
+    "method.internalInterface",
+    "method.internalTrait",
+    "method.internalEnum",
+    "staticMethod.internal",
+    "staticMethod.internalClass",
+    "staticMethod.internalInterface",
+    "staticMethod.internalTrait",
+    "staticMethod.internalEnum",
     "property.callableType",
     "class.serializable",
     "parameter.requiredAfterOptional",
@@ -416,6 +427,8 @@ pub struct Checker<'a, 'arena> {
     /// [`driver::Checks`]'s Larastan switches, when the config includes Larastan.
     larastan: Option<&'a Larastan>,
     larastan_state: larastan::State,
+    /// [`driver::Checks`]'s `@internal` method names, when the internal usage rules run.
+    internal: Option<&'a internal::Names>,
     errors: Vec<Error>,
 }
 
@@ -1296,7 +1309,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::arguments(self, assign::Callee::New(new));
     }
 
+    fn walk_in_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
+        internal::method_call(self, call.span(), call.object, &call.method);
+    }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        internal::method_call(self, call.span(), call.object, &call.method);
         larastan::method_call(self, call);
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && m.value.eq_ignore_ascii_case(b"call")
@@ -1336,6 +1353,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
         through_static::method(self, call);
+        internal::static_method_call(self, call);
         larastan::static_method_call(self, call);
         if let (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(m)) =
             (call.class, &call.method)

@@ -41,6 +41,8 @@ pub(crate) struct Checks {
     relative_path: RelativePath,
     /// [`Project::larastan`].
     larastan: Option<super::Larastan>,
+    /// The `@internal` method names, at level 2 with `featureToggles.internalTag` (config.level2.neon).
+    internal: Option<super::internal::Names>,
 }
 
 impl Checks {
@@ -58,6 +60,8 @@ impl Checks {
             report_unmatched_ignores: project.report_unmatched_ignores,
             relative_path: project.relative_path.clone(),
             larastan,
+            internal: (project.level >= 2 && project.internal_tag)
+                .then(|| super::internal::Names::of(codebase)),
         }
     }
 }
@@ -94,7 +98,13 @@ fn checker<'a, 'arena>(
             names,
             codebase,
             php_version,
-            super::larastan::typed_expressions(project.larastan.as_ref(), names, program),
+            super::larastan::typed_expressions(project.larastan.as_ref(), names, program)
+                .into_iter()
+                .chain(super::internal::typed_expressions(
+                    project.internal.as_ref(),
+                    program,
+                ))
+                .collect(),
         ),
         names,
         codebase,
@@ -136,6 +146,7 @@ fn checker<'a, 'arena>(
         generic_iterable_classes: project.generic_iterable_classes,
         larastan: project.larastan.as_ref(),
         larastan_state: Default::default(),
+        internal: project.internal.as_ref(),
         errors: Vec::new(),
     }
 }

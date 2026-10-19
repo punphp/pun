@@ -36,6 +36,8 @@ pub struct Project {
     pub level: u8,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
     pub check_generic_iterable_classes: bool,
+    /// `featureToggles.internalTag` (on with bleedingEdge): the `@internal` usage rules.
+    pub internal_tag: bool,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
@@ -144,6 +146,11 @@ impl Project {
         }
     }
 
+            internal_tag: params
+                .get_str("featureToggles")
+                .and_then(Value::as_array)
+                .and_then(|t| t.get_str("internalTag"))
+                == Some(&Value::Bool(true)),
     /// PHPStan's defaults (no `ignoreErrors`, unmatched ignores reported) over the given files.
     pub fn new(analysed: Vec<PathBuf>, scanned: Vec<PathBuf>) -> Project {
         let paths: Vec<String> = analysed.iter().map(|p| absolute(p)).collect();
@@ -164,6 +171,7 @@ impl Project {
     }
 }
 
+            internal_tag: false,
 /// A psr-4 or psr-0 file and the class its path holds.
 pub struct Autoloaded {
     pub path: PathBuf,

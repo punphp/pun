@@ -1,0 +1,89 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "src/App/Use.php",
+   "line": 13,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $secret of method App\\Consumer::run() has typehint with internal class Vendor\\Pkg\\Secret.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 13,
+   "identifier": "parameter.internalInterface",
+   "message": "Parameter $contract of method App\\Consumer::run() has typehint with internal interface Vendor\\Pkg\\SecretContract.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 15,
+   "identifier": "method.internal",
+   "message": "Call to internal method Vendor\\Pkg\\Lib::hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 17,
+   "identifier": "method.internal",
+   "message": "Call to internal method Vendor\\Pkg\\Lib::hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 19,
+   "identifier": "staticMethod.internal",
+   "message": "Call to internal static method Vendor\\Pkg\\Lib::hiddenStatic() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 20,
+   "identifier": "method.internalClass",
+   "message": "Call to method run() of internal class Vendor\\Pkg\\Secret from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 21,
+   "identifier": "staticMethod.internalClass",
+   "message": "Call to static method make() of internal class Vendor\\Pkg\\Secret from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 23,
+   "identifier": "method.internalInterface",
+   "message": "Call to method contract() of internal interface Vendor\\Pkg\\SecretContract from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 25,
+   "identifier": "method.internal",
+   "message": "Call to internal method Vendor\\Pkg\\Lib::hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/Use.php",
+   "line": 26,
+   "identifier": "staticMethod.internal",
+   "message": "Call to internal static method Vendor\\Pkg\\Lib::hiddenStatic() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/Vendor/Lib.php",
+   "line": 32,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "src/global.php",
+   "line": 5,
+   "identifier": "method.internal",
+   "message": "Call to internal method Vendor\\Pkg\\Lib::hidden() from outside its root namespace Vendor.",
+   "tip": null
+  }
+ ]
+}

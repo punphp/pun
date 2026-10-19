@@ -1001,10 +1001,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/incompatible-property-override" = { preset = "basic", fixed_by = ["lint/refactor/add-override-attribute"], status = "decided" }
 "classes/inconsistent-constructor" = { preset = "basic", status = "decided" }
 "classes/internal-constant-access" = { preset = "basic", status = "decided" }
-"classes/internal-method-call" = { preset = "basic", status = "decided" }
+"classes/internal-method-call" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-method-callable" = { preset = "basic", status = "decided" }
 "classes/internal-property-access" = { preset = "basic", status = "decided" }
-"classes/internal-static-method-call" = { preset = "basic", status = "decided" }
+"classes/internal-static-method-call" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-static-method-callable" = { preset = "basic", status = "decided" }
 "classes/internal-static-property-access" = { preset = "basic", status = "decided" }
 "classes/invalid-dynamic-constant-fetch" = { preset = "basic", status = "decided" }

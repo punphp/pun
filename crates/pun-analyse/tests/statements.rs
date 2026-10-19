@@ -167,3 +167,10 @@ fn hierarchy() {
 fn through_static() {
     check_in("through-static", "phpstan");
 }
+
+/// RestrictedMethodUsageRule and RestrictedStaticMethodUsageRule with the `@internal` extension (level 2,
+/// `featureToggles.internalTag`): internal methods, methods of internal class-likes, the root-namespace exemption.
+#[test]
+fn internal_methods() {
+    check_in("internal", "phpstan");
+}

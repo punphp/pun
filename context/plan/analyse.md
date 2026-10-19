@@ -440,3 +440,8 @@ Assistant's calls in analyse 3l (sealed hierarchies, interface method visibility
   method counts, because `getMethod()` finds it. A parent's private property or constant does not, because the
   class does not have it. A trait's member is reported on the using class. tests/fixtures/through-static is their
   level-2 oracle fixture; their rule tests join tests/levels.rs once its level-2 export lands.
+- RestrictedMethodUsageRule and RestrictedStaticMethodUsageRule run with the `@internal` extension only, at level 2
+  with `featureToggles.internalTag` (bleedingEdge). An instance call's object classes come from Mago's inferred type,
+  and only calls to a method name that some `@internal` method or `@internal` class-like declares are typed. The
+  first-class-callable rules (`$x->m(...)`) and the level-0 class-name, constant and function extensions are not
+  ported yet.
