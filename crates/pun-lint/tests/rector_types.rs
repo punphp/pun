@@ -236,3 +236,13 @@ fn closure_return_type_intersection_below_dnf() {
         assert_eq!(fixed.source, input, "PHP {version}");
     }
 }
+
+#[test]
+fn return_type_from_return_new_anonymous_below_object() {
+    // .oracle/rector-bin (ReturnTypeFromReturnNewRector alone) at PHP 7.1 leaves a function returning an anonymous
+    // class alone: PHP 7.1 has no `object` type.
+    let input = "<?php\n\nfunction make()\n{\n    return new class {\n    };\n}\n";
+    let linter = pun_lint::Linter::new(vec![Box::new(AddReturnTypeFromNew)], 70100);
+    let fixed = linter.fix(std::path::Path::new("make.php"), input).unwrap();
+    assert_eq!(fixed.source, input);
+}
