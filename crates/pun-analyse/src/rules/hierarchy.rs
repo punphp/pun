@@ -579,7 +579,7 @@ fn allowed_sub_types(c: &Checker, k: &ClassLikeMetadata) -> Option<Vec<pun_phpst
         .iter()
         .flat_map(|name| tags.iter().filter(move |(t, _)| t == name))
         .filter_map(|(_, v)| pun_phpstan::phpdoc::parse_prefix(v).ok())
-        .last()?;
+        .next_back()?;
     let scope = super::declared::class_scope(c, k.span, k);
     let mut types = match pun_phpstan::resolve::resolve_in(&last.0, &scope) {
         Type::Union(members) => members,
