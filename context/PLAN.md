@@ -10,6 +10,9 @@ One lead agent works on `main` and spawns subagents for parallel work (AGENTS.md
 agents and helper branches are stopped and merged; there is nothing in flight.
 
 - **Counts** (mapping.toml `ported = true`): format 167 of 168, lint 270 of 703, analyse 108 of 378.
+- **Rule docs:** steps 1–5 built locally: all 1,249 rule pages, 64 command/group pages, 8 presets, 8 sets, six
+  migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
+  Docs pushes are blocked by this runner's GitHub authentication; no docs commit has been published.
 - **Green on main:** `cargo test -p punphp-analyse` (levels included; the generics wiring from salvage/handoff is applied).
 - **Salvage refs on origin** (not branches to work on; read, port what is missing, then delete the ref):
   `salvage/handoff` (format-handoff: heredoc_closing_marker + fixtures, the inline `Content` type and fmtbench;
@@ -353,8 +356,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 
 | Work | Status |
 | --- | --- |
-| docs 5: searchable rules directory with URL filters | todo |
-| docs 6: CLI rule-page links | todo |
+| docs 6: CLI rule-page links (needs the public docs origin; the plan settles the path, not the hostname) | blocked (needs Pushpak) |
 | docs content: 378 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
 
 ### Foundations, alongside every step (plan/foundations.md)

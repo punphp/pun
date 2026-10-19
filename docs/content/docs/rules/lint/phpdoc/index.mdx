@@ -10,102 +10,130 @@ PHPDoc blocks and tags.
 Across commands: format: 25, lint: 14, analyse: 32.
 
 <CardGroup cols={2}>
-<Card title="lint/phpdoc/add-missing-param" href="/docs/rules/lint/phpdoc/add-missing-param">
+<Card title="lint/phpdoc/add-missing-param">
+
+[`lint/phpdoc/add-missing-param`](/docs/rules/lint/phpdoc/add-missing-param)
 
 PHPDoc should contain `@param` for all params.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-access" href="/docs/rules/lint/phpdoc/no-access">
+<Card title="lint/phpdoc/no-access">
+
+[`lint/phpdoc/no-access`](/docs/rules/lint/phpdoc/no-access)
 
 `@access` annotations must be removed from PHPDoc.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-empty-return" href="/docs/rules/lint/phpdoc/no-empty-return">
+<Card title="lint/phpdoc/no-empty-return">
+
+[`lint/phpdoc/no-empty-return`](/docs/rules/lint/phpdoc/no-empty-return)
 
 `@return void` and `@return null` annotations must be removed from PHPDoc.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-misplaced" href="/docs/rules/lint/phpdoc/no-misplaced">
+<Card title="lint/phpdoc/no-misplaced">
+
+[`lint/phpdoc/no-misplaced`](/docs/rules/lint/phpdoc/no-misplaced)
 
 Docblocks should only be used on structural elements.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-mixed-overruled-by-native" href="/docs/rules/lint/phpdoc/no-mixed-overruled-by-native">
+<Card title="lint/phpdoc/no-mixed-overruled-by-native">
+
+[`lint/phpdoc/no-mixed-overruled-by-native`](/docs/rules/lint/phpdoc/no-mixed-overruled-by-native)
 
 Remove @param mixed and @return mixed docblock that duplicates an already declared native type
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-package" href="/docs/rules/lint/phpdoc/no-package">
+<Card title="lint/phpdoc/no-package">
+
+[`lint/phpdoc/no-package`](/docs/rules/lint/phpdoc/no-package)
 
 `@package` and `@subpackage` annotations must be removed from PHPDoc.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-superfluous-tags" href="/docs/rules/lint/phpdoc/no-superfluous-tags">
+<Card title="lint/phpdoc/no-superfluous-tags">
+
+[`lint/phpdoc/no-superfluous-tags`](/docs/rules/lint/phpdoc/no-superfluous-tags)
 
 Removes `@param`, `@return` and `@var` tags that don't provide any useful information.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-useless-inheritdoc" href="/docs/rules/lint/phpdoc/no-useless-inheritdoc">
+<Card title="lint/phpdoc/no-useless-inheritdoc">
+
+[`lint/phpdoc/no-useless-inheritdoc`](/docs/rules/lint/phpdoc/no-useless-inheritdoc)
 
 Classy that does not inherit must not have `@inheritdoc` tags.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-useless-param" href="/docs/rules/lint/phpdoc/no-useless-param">
+<Card title="lint/phpdoc/no-useless-param">
+
+[`lint/phpdoc/no-useless-param`](/docs/rules/lint/phpdoc/no-useless-param)
 
 Remove @param docblock with same type as parameter type
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/phpdoc/no-useless-readonly" href="/docs/rules/lint/phpdoc/no-useless-readonly">
+<Card title="lint/phpdoc/no-useless-readonly">
+
+[`lint/phpdoc/no-useless-readonly`](/docs/rules/lint/phpdoc/no-useless-readonly)
 
 Remove useless `@readonly` annotation on native readonly type
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/no-useless-return" href="/docs/rules/lint/phpdoc/no-useless-return">
+<Card title="lint/phpdoc/no-useless-return">
+
+[`lint/phpdoc/no-useless-return`](/docs/rules/lint/phpdoc/no-useless-return)
 
 Remove @return docblock with same type as defined in PHP
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/phpdoc/no-useless-var" href="/docs/rules/lint/phpdoc/no-useless-var">
+<Card title="lint/phpdoc/no-useless-var">
+
+[`lint/phpdoc/no-useless-var`](/docs/rules/lint/phpdoc/no-useless-var)
 
 Remove unused `@var` annotation for properties and class constants
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/phpdoc/no-void-on-magic-method" href="/docs/rules/lint/phpdoc/no-void-on-magic-method">
+<Card title="lint/phpdoc/no-void-on-magic-method">
+
+[`lint/phpdoc/no-void-on-magic-method`](/docs/rules/lint/phpdoc/no-void-on-magic-method)
 
 Remove useless @return void docblock from magic methods __construct, __destruct, and __clone
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/phpdoc/require-no-named-arguments" href="/docs/rules/lint/phpdoc/require-no-named-arguments">
+<Card title="lint/phpdoc/require-no-named-arguments">
+
+[`lint/phpdoc/require-no-named-arguments`](/docs/rules/lint/phpdoc/require-no-named-arguments)
 
 There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
 </CardGroup>

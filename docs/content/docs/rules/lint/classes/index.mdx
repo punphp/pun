@@ -10,151 +10,193 @@ Class, interface, trait and enum declarations and their members.
 Across commands: format: 8, lint: 21, analyse: 63.
 
 <CardGroup cols={2}>
-<Card title="lint/classes/add-dynamic-properties" href="/docs/rules/lint/classes/add-dynamic-properties">
+<Card title="lint/classes/add-dynamic-properties">
+
+[`lint/classes/add-dynamic-properties`](/docs/rules/lint/classes/add-dynamic-properties)
 
 Add missing dynamic properties
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/classes/add-stringable" href="/docs/rules/lint/classes/add-stringable">
+<Card title="lint/classes/add-stringable">
+
+[`lint/classes/add-stringable`](/docs/rules/lint/classes/add-stringable)
 
 A class that implements the `__toString()` method must explicitly implement the `Stringable` interface.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-explicit-constructor-call" href="/docs/rules/lint/classes/no-explicit-constructor-call">
+<Card title="lint/classes/no-explicit-constructor-call">
+
+[`lint/classes/no-explicit-constructor-call`](/docs/rules/lint/classes/no-explicit-constructor-call)
 
 Disallows calling `__construct()` on an existing object outside a constructor.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious. Additional upstream gates: `strictRules.illegalConstructorMethodCall`.
 
 </Card>
-<Card title="lint/classes/no-null-property-default" href="/docs/rules/lint/classes/no-null-property-default">
+<Card title="lint/classes/no-null-property-default">
+
+[`lint/classes/no-null-property-default`](/docs/rules/lint/classes/no-null-property-default)
 
 Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4).
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-null-property-init" href="/docs/rules/lint/classes/no-null-property-init">
+<Card title="lint/classes/no-null-property-init">
+
+[`lint/classes/no-null-property-init`](/docs/rules/lint/classes/no-null-property-init)
 
 Remove initialization with null value from property declarations
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-protected-constant-in-final" href="/docs/rules/lint/classes/no-protected-constant-in-final">
+<Card title="lint/classes/no-protected-constant-in-final">
+
+[`lint/classes/no-protected-constant-in-final`](/docs/rules/lint/classes/no-protected-constant-in-final)
 
 Change protected constant to private if possible
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-protected-in-final" href="/docs/rules/lint/classes/no-protected-in-final">
+<Card title="lint/classes/no-protected-in-final">
+
+[`lint/classes/no-protected-in-final`](/docs/rules/lint/classes/no-protected-in-final)
 
 Converts `protected` variables and methods to `private` where possible.
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-protected-method-in-final" href="/docs/rules/lint/classes/no-protected-method-in-final">
+<Card title="lint/classes/no-protected-method-in-final">
+
+[`lint/classes/no-protected-method-in-final`](/docs/rules/lint/classes/no-protected-method-in-final)
 
 Change protected class method to private if possible
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-protected-property-in-final" href="/docs/rules/lint/classes/no-protected-property-in-final">
+<Card title="lint/classes/no-protected-property-in-final">
+
+[`lint/classes/no-protected-property-in-final`](/docs/rules/lint/classes/no-protected-property-in-final)
 
 Change property to private if possible
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-redundant-readonly" href="/docs/rules/lint/classes/no-redundant-readonly">
+<Card title="lint/classes/no-redundant-readonly">
+
+[`lint/classes/no-redundant-readonly`](/docs/rules/lint/classes/no-redundant-readonly)
 
 Removes redundant readonly from properties in readonly classes.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-redundant-readonly-property" href="/docs/rules/lint/classes/no-redundant-readonly-property">
+<Card title="lint/classes/no-redundant-readonly-property">
+
+[`lint/classes/no-redundant-readonly-property`](/docs/rules/lint/classes/no-redundant-readonly-property)
 
 In a readonly class, drop `readonly` from properties and promoted parameters
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-static-constructor-call" href="/docs/rules/lint/classes/no-static-constructor-call">
+<Card title="lint/classes/no-static-constructor-call">
+
+[`lint/classes/no-static-constructor-call`](/docs/rules/lint/classes/no-static-constructor-call)
 
 Disallows calling a constructor statically (`Foo::__construct()`) outside a child class's constructor.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious. Additional upstream gates: `strictRules.illegalConstructorMethodCall`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/classes/no-underscore-class" href="/docs/rules/lint/classes/no-underscore-class">
+<Card title="lint/classes/no-underscore-class">
+
+[`lint/classes/no-underscore-class`](/docs/rules/lint/classes/no-underscore-class)
 
 Detects class, interface, trait, or enum declarations named `_`.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) sets. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: none (report only). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/no-unset-on-property" href="/docs/rules/lint/classes/no-unset-on-property">
+<Card title="lint/classes/no-unset-on-property">
+
+[`lint/classes/no-unset-on-property`](/docs/rules/lint/classes/no-unset-on-property)
 
 Properties should be set to `null` instead of using `unset`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: suspicious.
 
 </Card>
-<Card title="lint/classes/prefer-new-self" href="/docs/rules/lint/classes/prefer-new-self">
+<Card title="lint/classes/prefer-new-self">
+
+[`lint/classes/prefer-new-self`](/docs/rules/lint/classes/prefer-new-self)
 
 Change `new static()` to `new self()` in a final class
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/prefer-self-in-final" href="/docs/rules/lint/classes/prefer-self-in-final">
+<Card title="lint/classes/prefer-self-in-final">
+
+[`lint/classes/prefer-self-in-final`](/docs/rules/lint/classes/prefer-self-in-final)
 
 Inside an enum or `final`/anonymous class, `self` should be preferred over `static`.
 
 Enabled by the [`modernize`](/docs/rules/sets/modernize), [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/prefer-self-over-static" href="/docs/rules/lint/classes/prefer-self-over-static">
+<Card title="lint/classes/prefer-self-over-static">
+
+[`lint/classes/prefer-self-over-static`](/docs/rules/lint/classes/prefer-self-over-static)
 
 Change `static::*` to `self::*` on final class or private static members
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/prefer-serialize-method" href="/docs/rules/lint/classes/prefer-serialize-method">
+<Card title="lint/classes/prefer-serialize-method">
+
+[`lint/classes/prefer-serialize-method`](/docs/rules/lint/classes/prefer-serialize-method)
 
 Change __sleep() to __serialize() with correct return values
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/prefer-unserialize-method" href="/docs/rules/lint/classes/prefer-unserialize-method">
+<Card title="lint/classes/prefer-unserialize-method">
+
+[`lint/classes/prefer-unserialize-method`](/docs/rules/lint/classes/prefer-unserialize-method)
 
 Change __wakeup() to __unserialize()
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/classes/require-class-matches-file" href="/docs/rules/lint/classes/require-class-matches-file">
+<Card title="lint/classes/require-class-matches-file">
+
+[`lint/classes/require-class-matches-file`](/docs/rules/lint/classes/require-class-matches-file)
 
 Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: correctness.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: correctness.
 
 </Card>
-<Card title="lint/classes/require-member-order" href="/docs/rules/lint/classes/require-member-order">
+<Card title="lint/classes/require-member-order">
+
+[`lint/classes/require-member-order`](/docs/rules/lint/classes/require-member-order)
 
 Orders the elements of classes/interfaces/traits/enums.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
 
 </Card>
 </CardGroup>

@@ -44,6 +44,10 @@ def rule_link(rid: str) -> str:
     return f"[`{rid}`](/docs/rules/{rid})"
 
 
+def table_code(value: str) -> str:
+    return "`" + value.replace("|", "\\|") + "`"
+
+
 def upstream_rows(data: dict) -> list[dict]:
     rows = [dict(tool=tool, name=name, **entry)
             for tool, entries in data["upstream"].items() if tool not in FAMILY
@@ -87,6 +91,8 @@ def upstream_url(row: dict, urls: dict) -> str:
         return urls[(tool, name)]
     if tool in ("phpstan", "phpstan-strict-rules", "phpstan-deprecation-rules"):
         return f"https://phpstan.org/error-identifiers/{quote(name)}"
+    if tool == "phpstan-classes":
+        return urls.get(("class", row["class"].replace("\\\\", "\\")), "https://phpstan.org/user-guide/rule-levels")
     if "class" in row:
         return urls.get(("class", row["class"].replace("\\\\", "\\")), "https://getrector.com/find-rule")
     if tool == "phpstan-parameters":
@@ -115,12 +121,13 @@ def memberships(data: dict, command: str, rule: dict) -> list[str]:
     return [f"analyse-{p}" for p in presets[presets.index(rule["preset"]):]] if "preset" in rule else []
 
 
-def badges(data: dict, rid: str, rule: dict) -> str:
+def badges(data: dict, rid: str, rule: dict, sources: list[dict]) -> str:
     command, group, _ = rid.split("/")
     enabled = memberships(data, command, rule)
     folder = "sets" if command == "lint" else "presets"
     labels = [f"[`{name}`](/docs/rules/{folder}/{name})" for name in enabled]
-    sentences = [f"Enabled by the {', '.join(labels)} {'sets' if command == 'lint' else 'presets'}."
+    kind = "set" if command == "lint" else "preset"
+    sentences = [f"Enabled by the {', '.join(labels)} {kind}{'s' if len(labels) > 1 else ''}."
                  if labels else "Not in any preset or set. Enable it by name or group."]
     fix = rule.get("fix", "none")
     sentences.append("Fix: " + {"safe": "safe (keeps behaviour).", "unsafe": "unsafe (can change behaviour).",
@@ -132,6 +139,9 @@ def badges(data: dict, rid: str, rule: dict) -> str:
         sentences.append(f"Runs when {ecosystem} is installed.")
     if rule.get("gated_by") or re.match(r"(php|laravel|phpunit|pest)-\d", group):
         sentences.append(f"Gated by {group if re.search(r'\d', group) else rule['gated_by']}.")
+    gates = sorted({s["gated_by"] for s in sources if s.get("gated_by")})
+    if gates:
+        sentences.append("Additional upstream gates: " + ", ".join(f"`{gate}`" for gate in gates) + ".")
     if not rule.get("ported"):
         sentences.append("**Planned: not in Pun yet.** Enabling it in pun.toml is a config error.")
     return " ".join(sentences)
@@ -163,7 +173,7 @@ def toml_value(value: object) -> str:
 
 def rule_page(data: dict, rid: str, rule: dict, sources: list[dict], urls: dict, defaults: dict) -> str:
     command, group, name = rid.split("/")
-    body = f'<RuleId id="{rid}" />\n\n' + badges(data, rid, rule)
+    body = f'<RuleId id="{rid}" />\n\n' + badges(data, rid, rule, sources)
     body += "\n\n## Replaces\n\n"
     body += "\n".join(f"- {upstream_link(s, urls)} ({s['tool']}{', risky' if s.get('risky') else ''})."
                       for s in sources) or "Pun-only rule. No upstream equivalent."
@@ -193,8 +203,8 @@ def rule_page(data: dict, rid: str, rule: dict, sources: list[dict], urls: dict,
         for key, option in options.items():
             default = next((o for o in defaults.get(fixer, []) if o["name"] == option["upstream"]), None)
             value = pun_value(default["default"], option) if default else None
-            shown = f"`{prose(toml_value(value))}`" if value is not None else "omit (upstream null)" if default else "not recorded"
-            allowed = ", ".join(f"`{prose(v)}`" for v in option.get("values", {})) or "Any value of this type"
+            shown = table_code(toml_value(value)) if value is not None else "omit (upstream null)" if default else "not recorded"
+            allowed = ", ".join(table_code(v) for v in option.get("values", {})) or "Any value of this type"
             body += f"| `{key}` | `{option['type']}` | {allowed} | {shown} | `{option['upstream']}` |\n"
     fixed = rule.get("fixed_by", [])
     fixes = [f"{cmd}/{key}" for cmd, rules in data["rules"].items() for key, r in rules.items() if rid in r.get("fixed_by", [])]
@@ -218,7 +228,7 @@ def page(title: str, body: str) -> str:
 
 def meta(title: str, pages: list[str]) -> str:
     return (f'// {MARKER}\nimport {{ defineMeta }} from "blume";\n\n'
-            f'export default defineMeta({{ title: {json.dumps(title)}, directory: "none", '
+            f'export default defineMeta({{ title: {json.dumps(title)}, display: "group", directory: "none", '
             f'pages: {json.dumps(pages)} }});\n')
 
 
@@ -261,7 +271,23 @@ def format_config(data: dict, preset: str) -> dict[str, object]:
 def selection_page(data: dict, command: str, name: str, on: dict) -> str:
     is_set = command == "lint"
     title = f"{name} {'set' if is_set else command + ' preset'}"
-    body = code(f'[{command}]\n' + (f'sets = ["{name}"]' if is_set else f'preset = "{name}"'), "toml")
+    purposes = {
+        "format": {"laravel": "Laravel Pint's default formatting style.", "psr12": "The PSR-12 formatting standard.",
+                   "empty": "No format rules. Every enabled rule is explicit."},
+        "lint": {"dead-code": "Code that never runs, or whose result is never used.",
+                 "modernize": "Newer PHP syntax, up to your configured PHP target version.",
+                 "code-quality": "Simpler equivalents and likely bugs.", "types": "Missing type declarations and PHPDoc types.",
+                 "early-return": "Early returns and continues instead of nesting.",
+                 "privatization": "Narrower visibility, final classes and constants.",
+                 "naming": "Names that match their types. No rules remain in this set after upstream deprecations.",
+                 "coding-style": "One consistent way to write the same thing."},
+        "analyse": {"basic": "Unknown names, wrong argument counts and undefined variables.",
+                    "essential": "Unknown methods and properties, PHPDoc, return and property types.",
+                    "recommended": "Dead code, constant conditions and argument types. The default analyse preset.",
+                    "strict": "Missing typehints, union types and nullable values.", "max": "Explicit and implicit mixed types."},
+    }
+    body = purposes[command][name] + "\n\n"
+    body += code(f'[{command}]\n' + (f'sets = ["{name}"]' if is_set else f'preset = "{name}"'), "toml")
     body += "\nEcosystem and target-version gates still apply. Planned rules are listed, but cannot run until ported.\n"
     if command == "analyse":
         presets = data["meta"]["presets"]["analyse"]
@@ -431,6 +457,52 @@ def migration_pages(data: dict, rows: list[dict], urls: dict) -> dict[Path, str]
     return out
 
 
+def directory(data: dict, sources: dict) -> dict[Path, str]:
+    rows = []
+    for command in COMMANDS:
+        for key, rule in sorted(data["rules"][command].items()):
+            rid = f"{command}/{key}"
+            group = key.split("/")[0]
+            names = {s["name"] for s in sources[rid]}
+            names.update(s["expanded_from"] for s in sources[rid] if s.get("expanded_from"))
+            names.update(s["class"].split("\\")[-1] for s in sources[rid] if s.get("class"))
+            names.update(s["class"] for s in sources[rid] if s.get("class"))
+            tools = {tool for tool, sections in TOOLS.items() if any(s["tool"] in sections for s in sources[rid])}
+            tools.update(s["tool"] for s in sources[rid] if s["tool"] in ("phpstan-strict-rules", "phpstan-deprecation-rules", "rector-laravel", "rector-phpunit", "pest-plugin-rector"))
+            for source in sources[rid]:
+                if source["tool"] == "phpstan-classes":
+                    tools.update((source["package"], "larastan" if source["package"] == "larastan" else "phpstan"))
+                elif source["tool"] == "phpstan-parameters":
+                    tools.add("phpstan")
+            ecosystem = next((e for e in data["meta"]["ecosystems"] if group == e or group.startswith(e + "-")), "core")
+            rows.append(dict(id=rid, command=command, group=group, summary=re.sub(r"`+", "", rule.get("summary", "Summary not written yet.")),
+                             enabled=memberships(data, command, rule), fix=rule.get("fix", "none"), ecosystem=ecosystem,
+                             tools=sorted(tools), upstream=sorted(names), ported=bool(rule.get("ported"))))
+    counts = ", ".join(f"{len(data['rules'][c])} {c}" for c in COMMANDS)
+    body = f"**{len(rows):,} rules: {counts}. {sum(r['fix'] != 'none' for r in rows)} fixable.** "
+    body += f"{sum(r['ported'] for r in rows)} ported; the rest are marked Planned.\n\n[Jump to the searchable table](#all-rules).\n\n"
+    groups = data["meta"]["groups"]
+    for title, names in (
+        ("Topic groups", [g for g in groups if g not in data["meta"]["ecosystems"] and not re.search(r"-\d", g)]),
+        ("Ecosystem groups", data["meta"]["ecosystems"]),
+        ("Upgrade groups", [g for g in groups if re.search(r"-\d", g)]),
+    ):
+        body += f"## {title}\n\n<CardGroup cols={{3}}>\n"
+        for group in names:
+            members = [r for r in rows if r["group"] == group]
+            body += f'<Card title="{group} · {len(members)} rules">\n\n{prose(groups[group])}.\n\n'
+            body += " · ".join(f"[{command}: {sum(r['command'] == command for r in members)}](/docs/rules/{command}/{group})"
+                               for command in COMMANDS if any(r["command"] == command for r in members))
+            body += "\n\n</Card>\n"
+        body += "</CardGroup>\n\n"
+    body += "## All rules\n\nSearch a Pun ID or any upstream name. Filters combine and stay in the URL. Planned rules remain in the table.\n\n<RulesDirectory />"
+    content = page("Rules", body).replace("pagination: false", "pagination: false\nmode: wide")
+    selections = [f"{command}-{preset}" for command, presets in data["meta"]["presets"].items() for preset in presets]
+    selections += data["meta"]["sets"]
+    return {CONTENT / "rules/index.mdx": content,
+            GENERATED / "rules.json": json.dumps({"_generated": MARKER, "selections": selections, "rules": rows}, ensure_ascii=False, indent=2) + "\n"}
+
+
 def generate(data: dict) -> dict[Path, str]:
     out = {}
     urls = source_urls()
@@ -458,8 +530,8 @@ def generate(data: dict) -> dict[Path, str]:
             for name in names:
                 rid = f"{command}/{group}/{name}"
                 rule = data["rules"][command][f"{group}/{name}"]
-                body += f'<Card title="{rid}" href="/docs/rules/{rid}">\n\n'
-                body += prose(rule.get("summary", "Summary not written yet.")) + "\n\n" + badges(data, rid, rule) + "\n\n</Card>\n"
+                body += f'<Card title="{rid}">\n\n{rule_link(rid)}\n\n'
+                body += prose(rule.get("summary", "Summary not written yet.")) + "\n\n" + badges(data, rid, rule, sources[rid]) + "\n\n</Card>\n"
             out[CONTENT / f"rules/{command}/{group}/index.mdx"] = page(f"{command}/{group}", body + "</CardGroup>")
         links = "\n".join(f"- [{g}](/docs/rules/{command}/{g}) ({len(ns)} rules)" for g, ns in groups.items())
         out[CONTENT / f"rules/{command}/index.mdx"] = page(f"{command} rules", links)
@@ -482,6 +554,12 @@ def generate(data: dict) -> dict[Path, str]:
     out[CONTENT / "rules/sets/index.mdx"] = page("Lint sets", "\n".join(
         f"- [{name}](/docs/rules/sets/{name})" for name in data["meta"]["sets"]))
     out.update(migration_pages(data, rows, urls))
+    # Search also accepts literal mapping patterns, including those shadowed by an exact identifier.
+    for tool in FAMILY:
+        for name, entry in data["upstream"][tool].items():
+            if "%s" in name and entry.get("pun"):
+                sources[entry["pun"]].append(dict(tool=tool, name=name, **entry))
+    out.update(directory(data, sources))
     return out
 
 

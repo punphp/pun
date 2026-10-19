@@ -96,7 +96,11 @@ identifiers (`%s.alwaysFalse`) expanded.
 | 2. Rule page and content schema | built | `python3 scripts/test-rule-docs.py`: ordered sections, content fields, defaults, reverse links and Planned state |
 | 3. Groups, presets and sets | built | All 64 command groups, 8 presets and 8 sets; format configs from the pinned preset exports; cumulative analyse switches and level additions |
 | 4. Migration mapping | built | Six tool tables and overview; PHPStan patterns expanded from pinned inventories with exact-name precedence; config translation, reasons and Pun-only rules |
-| 5. Rules directory | todo | Search and URL-kept filters |
-| 6. CLI links | todo | Explain and terminal hyperlinks target rule pages |
+| 5. Rules directory | built | Generated JSON, all upstream spellings and URL-kept filters; agent-browser exercised combined filters, empty presets, no-preset bucket, reload and browser history |
+| 6. CLI links | blocked | The public docs origin is not configured anywhere in the repository; need the hostname before emitting absolute terminal links |
 
 The content gaps in §6 remain separate work in PLAN.md §3, not placeholder prose to invent during generation.
+
+Steps 1–5 are local work, not a deployment. Pushes to origin/main failed because this runner has no usable GitHub
+credentials. Preset URLs include the command (`format-laravel`, `analyse-basic`); generated folders use Blume's
+collapsible groups so the sidebar does not list every rule at once.

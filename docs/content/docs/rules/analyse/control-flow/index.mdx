@@ -10,56 +10,72 @@ if, switch, match, loops, return and the other control structures.
 Across commands: format: 13, lint: 17, analyse: 8.
 
 <CardGroup cols={2}>
-<Card title="analyse/control-flow/break-outside-loop" href="/docs/rules/analyse/control-flow/break-outside-loop">
+<Card title="analyse/control-flow/break-outside-loop">
+
+[`analyse/control-flow/break-outside-loop`](/docs/rules/analyse/control-flow/break-outside-loop)
 
 Summary not written yet.
 
 Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness.
 
 </Card>
-<Card title="analyse/control-flow/non-boolean-condition" href="/docs/rules/analyse/control-flow/non-boolean-condition">
+<Card title="analyse/control-flow/non-boolean-condition">
+
+[`analyse/control-flow/non-boolean-condition`](/docs/rules/analyse/control-flow/non-boolean-condition)
 
 Summary not written yet.
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.booleansInConditions`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="analyse/control-flow/non-boolean-do-while" href="/docs/rules/analyse/control-flow/non-boolean-do-while">
+<Card title="analyse/control-flow/non-boolean-do-while">
+
+[`analyse/control-flow/non-boolean-do-while`](/docs/rules/analyse/control-flow/non-boolean-do-while)
 
 Summary not written yet.
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.booleansInLoopConditions + bleedingEdge`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="analyse/control-flow/non-boolean-elseif" href="/docs/rules/analyse/control-flow/non-boolean-elseif">
+<Card title="analyse/control-flow/non-boolean-elseif">
+
+[`analyse/control-flow/non-boolean-elseif`](/docs/rules/analyse/control-flow/non-boolean-elseif)
 
 Summary not written yet.
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.booleansInConditions`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="analyse/control-flow/non-boolean-ternary" href="/docs/rules/analyse/control-flow/non-boolean-ternary">
+<Card title="analyse/control-flow/non-boolean-ternary">
+
+[`analyse/control-flow/non-boolean-ternary`](/docs/rules/analyse/control-flow/non-boolean-ternary)
 
 Summary not written yet.
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.booleansInConditions`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="analyse/control-flow/non-boolean-while" href="/docs/rules/analyse/control-flow/non-boolean-while">
+<Card title="analyse/control-flow/non-boolean-while">
+
+[`analyse/control-flow/non-boolean-while`](/docs/rules/analyse/control-flow/non-boolean-while)
 
 Summary not written yet.
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.booleansInLoopConditions + bleedingEdge`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="analyse/control-flow/switch-type-mismatch" href="/docs/rules/analyse/control-flow/switch-type-mismatch">
+<Card title="analyse/control-flow/switch-type-mismatch">
+
+[`analyse/control-flow/switch-type-mismatch`](/docs/rules/analyse/control-flow/switch-type-mismatch)
 
 Summary not written yet.
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.switchConditionsMatchingType`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="analyse/control-flow/unhandled-match" href="/docs/rules/analyse/control-flow/unhandled-match">
+<Card title="analyse/control-flow/unhandled-match">
+
+[`analyse/control-flow/unhandled-match`](/docs/rules/analyse/control-flow/unhandled-match)
 
 Summary not written yet.
 

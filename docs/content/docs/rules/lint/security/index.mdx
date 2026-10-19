@@ -10,95 +10,121 @@ Code that can be exploited, or that leaks or hides data.
 Across commands: format: 0, lint: 13, analyse: 0.
 
 <CardGroup cols={2}>
-<Card title="lint/security/add-sensitive-parameter" href="/docs/rules/lint/security/add-sensitive-parameter">
+<Card title="lint/security/add-sensitive-parameter">
+
+[`lint/security/add-sensitive-parameter`](/docs/rules/lint/security/add-sensitive-parameter)
 
 Requires that parameters that are likely to contain sensitive information (e.g., passwords) are marked with the `#[SensitiveParameter]` attribute.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-debug-calls" href="/docs/rules/lint/security/no-debug-calls">
+<Card title="lint/security/no-debug-calls">
+
+[`lint/security/no-debug-calls`](/docs/rules/lint/security/no-debug-calls)
 
 Remove or report debug calls left in code: dd(), dump(), var_dump(), ray(), and ->dd()/->dump() in Pest expectations.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: unsafe (can change behaviour). Intent: suspicious. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: suspicious. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/security/no-eval" href="/docs/rules/lint/security/no-eval">
+<Card title="lint/security/no-eval">
+
+[`lint/security/no-eval`](/docs/rules/lint/security/no-eval)
 
 Detects unsafe uses of the `eval` construct.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-ffi" href="/docs/rules/lint/security/no-ffi">
+<Card title="lint/security/no-ffi">
+
+[`lint/security/no-ffi`](/docs/rules/lint/security/no-ffi)
 
 Detects unsafe use of the PHP FFI (Foreign Function Interface) extension.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-global" href="/docs/rules/lint/security/no-global">
+<Card title="lint/security/no-global">
+
+[`lint/security/no-global`](/docs/rules/lint/security/no-global)
 
 Detects the use of the `global` keyword and the `$GLOBALS` variable.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-homoglyph-names" href="/docs/rules/lint/security/no-homoglyph-names">
+<Card title="lint/security/no-homoglyph-names">
+
+[`lint/security/no-homoglyph-names`](/docs/rules/lint/security/no-homoglyph-names)
 
 Replace accidental usage of homoglyphs (non ascii characters) in names.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-insecure-comparison" href="/docs/rules/lint/security/no-insecure-comparison">
+<Card title="lint/security/no-insecure-comparison">
+
+[`lint/security/no-insecure-comparison`](/docs/rules/lint/security/no-insecure-comparison)
 
 Detects insecure comparison of passwords or tokens using `==`, `!=`, `===`, or `!==`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-literal-password" href="/docs/rules/lint/security/no-literal-password">
+<Card title="lint/security/no-literal-password">
+
+[`lint/security/no-literal-password`](/docs/rules/lint/security/no-literal-password)
 
 Detects the use of literal values for passwords or sensitive data.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-request-variable" href="/docs/rules/lint/security/no-request-variable">
+<Card title="lint/security/no-request-variable">
+
+[`lint/security/no-request-variable`](/docs/rules/lint/security/no-request-variable)
 
 Detects the use of the `$_REQUEST` variable, which is considered unsafe.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/no-restricted-functions" href="/docs/rules/lint/security/no-restricted-functions">
+<Card title="lint/security/no-restricted-functions">
+
+[`lint/security/no-restricted-functions`](/docs/rules/lint/security/no-restricted-functions)
 
 Flags calls to functions that are disallowed via rule configuration.
 
 Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: suspicious. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/security/no-restricted-instantiation" href="/docs/rules/lint/security/no-restricted-instantiation">
+<Card title="lint/security/no-restricted-instantiation">
+
+[`lint/security/no-restricted-instantiation`](/docs/rules/lint/security/no-restricted-instantiation)
 
 Flags direct instantiation of specific types that are disallowed via rule configuration.
 
 Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: suspicious. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/security/no-tainted-data" href="/docs/rules/lint/security/no-tainted-data">
+<Card title="lint/security/no-tainted-data">
+
+[`lint/security/no-tainted-data`](/docs/rules/lint/security/no-tainted-data)
 
 Detects user (tainted) data being passed directly to sink functions or constructs (such as `echo`, `print`, or user-defined "log" functions).
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
-<Card title="lint/security/require-preg-quote-delimiter" href="/docs/rules/lint/security/require-preg-quote-delimiter">
+<Card title="lint/security/require-preg-quote-delimiter">
+
+[`lint/security/require-preg-quote-delimiter`](/docs/rules/lint/security/require-preg-quote-delimiter)
 
 This rule requires that when using `preg_quote()`, the second `$delimiter` argument is always provided.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious.
 
 </Card>
 </CardGroup>

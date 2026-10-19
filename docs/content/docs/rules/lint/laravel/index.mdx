@@ -10,627 +10,805 @@ Laravel (ecosystem: on when composer.lock has laravel/framework).
 Across commands: format: 1, lint: 89, analyse: 18.
 
 <CardGroup cols={2}>
-<Card title="lint/laravel/add-factory-extends-phpdoc" href="/docs/rules/lint/laravel/add-factory-extends-phpdoc">
+<Card title="lint/laravel/add-factory-extends-phpdoc">
+
+[`lint/laravel/add-factory-extends-phpdoc`](/docs/rules/lint/laravel/add-factory-extends-phpdoc)
 
 Adds the @extends annotation to Factories.
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. Gated by laravel-version. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/add-has-factory-trait" href="/docs/rules/lint/laravel/add-has-factory-trait">
+<Card title="lint/laravel/add-has-factory-trait">
+
+[`lint/laravel/add-has-factory-trait`](/docs/rules/lint/laravel/add-has-factory-trait)
 
 Adds the HasFactory trait to Models.
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/add-query-closure-type" href="/docs/rules/lint/laravel/add-query-closure-type">
+<Card title="lint/laravel/add-query-closure-type">
+
+[`lint/laravel/add-query-closure-type`](/docs/rules/lint/laravel/add-query-closure-type)
 
 Type-hint the closure parameter of Eloquent where()/whereHas() and similar query methods.
 
-Enabled by the [`types`](/docs/rules/sets/types) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/add-relation-generics" href="/docs/rules/lint/laravel/add-relation-generics">
+<Card title="lint/laravel/add-relation-generics">
+
+[`lint/laravel/add-relation-generics`](/docs/rules/lint/laravel/add-relation-generics)
 
 Add generic return type to relations in child of Illuminate\Database\Eloquent\Model
 
-Enabled by the [`types`](/docs/rules/sets/types) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/add-relation-query-closure-type" href="/docs/rules/lint/laravel/add-relation-query-closure-type">
+<Card title="lint/laravel/add-relation-query-closure-type">
+
+[`lint/laravel/add-relation-query-closure-type`](/docs/rules/lint/laravel/add-relation-query-closure-type)
 
 Add type hinting to where relation has methods e.g. `whereHas`, `orWhereHas`, `whereDoesntHave`, `orWhereDoesntHave`, `whereHasMorph`, `orWhereHasMorph`, `whereDoesntHaveMorph`, `orWhereDoesntHaveMorph`
 
-Enabled by the [`types`](/docs/rules/sets/types) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/add-tap-closure-type" href="/docs/rules/lint/laravel/add-tap-closure-type">
+<Card title="lint/laravel/add-tap-closure-type">
+
+[`lint/laravel/add-tap-closure-type`](/docs/rules/lint/laravel/add-tap-closure-type)
 
 Automatically type hints your tappable closures
 
-Enabled by the [`types`](/docs/rules/sets/types) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-app-array-access" href="/docs/rules/lint/laravel/no-app-array-access">
+<Card title="lint/laravel/no-app-array-access">
+
+[`lint/laravel/no-app-array-access`](/docs/rules/lint/laravel/no-app-array-access)
 
 Replace magical call on $this->app["something"] to standalone type assign variable
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-collection-aliases" href="/docs/rules/lint/laravel/no-collection-aliases">
+<Card title="lint/laravel/no-collection-aliases">
+
+[`lint/laravel/no-collection-aliases`](/docs/rules/lint/laravel/no-collection-aliases)
 
 Use the base collection methods instead of their aliases.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-controller-middleware" href="/docs/rules/lint/laravel/no-controller-middleware">
+<Card title="lint/laravel/no-controller-middleware">
+
+[`lint/laravel/no-controller-middleware`](/docs/rules/lint/laravel/no-controller-middleware)
 
 This rule warns against applying middlewares in controllers.
 
 Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-implicit-model-query" href="/docs/rules/lint/laravel/no-implicit-model-query">
+<Card title="lint/laravel/no-implicit-model-query">
+
+[`lint/laravel/no-implicit-model-query`](/docs/rules/lint/laravel/no-implicit-model-query)
 
 Start Eloquent queries with Model::query() instead of static magic calls.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/no-negated-blank-filled" href="/docs/rules/lint/laravel/no-negated-blank-filled">
+<Card title="lint/laravel/no-negated-blank-filled">
+
+[`lint/laravel/no-negated-blank-filled`](/docs/rules/lint/laravel/no-negated-blank-filled)
 
 Swap the use of NotBooleans used with filled() and blank() to the correct helper.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/no-negated-contains" href="/docs/rules/lint/laravel/no-negated-contains">
+<Card title="lint/laravel/no-negated-contains">
+
+[`lint/laravel/no-negated-contains`](/docs/rules/lint/laravel/no-negated-contains)
 
 Convert negated calls to `contains` to `doesntContain`, or vice versa.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-negated-filter" href="/docs/rules/lint/laravel/no-negated-filter">
+<Card title="lint/laravel/no-negated-filter">
+
+[`lint/laravel/no-negated-filter`](/docs/rules/lint/laravel/no-negated-filter)
 
 Avoid negated conditionals in `filter()` by using `reject()`, or vice versa.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-negated-when" href="/docs/rules/lint/laravel/no-negated-when">
+<Card title="lint/laravel/no-negated-when">
+
+[`lint/laravel/no-negated-when`](/docs/rules/lint/laravel/no-negated-when)
 
 Reverse conditionable method calls
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-request-all" href="/docs/rules/lint/laravel/no-request-all">
+<Card title="lint/laravel/no-request-all">
+
+[`lint/laravel/no-request-all`](/docs/rules/lint/laravel/no-request-all)
 
 Detects the use of `$request->all()` or `Request::all()` in Laravel applications.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-useless-value-call" href="/docs/rules/lint/laravel/no-useless-value-call">
+<Card title="lint/laravel/no-useless-value-call">
+
+[`lint/laravel/no-useless-value-call`](/docs/rules/lint/laravel/no-useless-value-call)
 
 Removes redundant value helper calls
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/no-useless-with-call" href="/docs/rules/lint/laravel/no-useless-with-call">
+<Card title="lint/laravel/no-useless-with-call">
+
+[`lint/laravel/no-useless-with-call`](/docs/rules/lint/laravel/no-useless-with-call)
 
 Removes redundant with helper calls
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-abort-if" href="/docs/rules/lint/laravel/prefer-abort-if">
+<Card title="lint/laravel/prefer-abort-if">
+
+[`lint/laravel/prefer-abort-if`](/docs/rules/lint/laravel/prefer-abort-if)
 
 Change if abort to abort_if
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-aliases-attribute" href="/docs/rules/lint/laravel/prefer-aliases-attribute">
+<Card title="lint/laravel/prefer-aliases-attribute">
+
+[`lint/laravel/prefer-aliases-attribute`](/docs/rules/lint/laravel/prefer-aliases-attribute)
 
 Changes the aliases property to use the Aliases attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-anonymous-migration" href="/docs/rules/lint/laravel/prefer-anonymous-migration">
+<Card title="lint/laravel/prefer-anonymous-migration">
+
+[`lint/laravel/prefer-anonymous-migration`](/docs/rules/lint/laravel/prefer-anonymous-migration)
 
 Prefer using anonymous classes for Laravel migrations instead of named classes.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-appends-attribute" href="/docs/rules/lint/laravel/prefer-appends-attribute">
+<Card title="lint/laravel/prefer-appends-attribute">
+
+[`lint/laravel/prefer-appends-attribute`](/docs/rules/lint/laravel/prefer-appends-attribute)
 
 Changes model appends property to use the appends attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-array-validation-rules" href="/docs/rules/lint/laravel/prefer-array-validation-rules">
+<Card title="lint/laravel/prefer-array-validation-rules">
+
+[`lint/laravel/prefer-array-validation-rules`](/docs/rules/lint/laravel/prefer-array-validation-rules)
 
 Use array syntax for validation rules instead of 'a&#124;b' strings.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-back-helper" href="/docs/rules/lint/laravel/prefer-back-helper">
+<Card title="lint/laravel/prefer-back-helper">
+
+[`lint/laravel/prefer-back-helper`](/docs/rules/lint/laravel/prefer-back-helper)
 
 Replace `redirect()->back()` and `Redirect::back()` with `back()`
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-backoff-attribute" href="/docs/rules/lint/laravel/prefer-backoff-attribute">
+<Card title="lint/laravel/prefer-backoff-attribute">
+
+[`lint/laravel/prefer-backoff-attribute`](/docs/rules/lint/laravel/prefer-backoff-attribute)
 
 Changes the backoff property to use the Backoff attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-casts-method" href="/docs/rules/lint/laravel/prefer-casts-method">
+<Card title="lint/laravel/prefer-casts-method">
+
+[`lint/laravel/prefer-casts-method`](/docs/rules/lint/laravel/prefer-casts-method)
 
 Detects the `$casts` property on an Eloquent model. Laravel 11 introduced the `casts()`
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-class-container-key" href="/docs/rules/lint/laravel/prefer-class-container-key">
+<Card title="lint/laravel/prefer-class-container-key">
+
+[`lint/laravel/prefer-class-container-key`](/docs/rules/lint/laravel/prefer-class-container-key)
 
 Changes the string or class const used for a service container make call
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-closure-only-bind" href="/docs/rules/lint/laravel/prefer-closure-only-bind">
+<Card title="lint/laravel/prefer-closure-only-bind">
+
+[`lint/laravel/prefer-closure-only-bind`](/docs/rules/lint/laravel/prefer-closure-only-bind)
 
 Drop the specified abstract class from the bind method and replace it with a closure that returns the abstract class.
 
 Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-collected-by-attribute" href="/docs/rules/lint/laravel/prefer-collected-by-attribute">
+<Card title="lint/laravel/prefer-collected-by-attribute">
+
+[`lint/laravel/prefer-collected-by-attribute`](/docs/rules/lint/laravel/prefer-collected-by-attribute)
 
 Changes model newCollection method to use the CollectedBy attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-collection-all" href="/docs/rules/lint/laravel/prefer-collection-all">
+<Card title="lint/laravel/prefer-collection-all">
+
+[`lint/laravel/prefer-collection-all`](/docs/rules/lint/laravel/prefer-collection-all)
 
 Convert `toArray()` to `all()` when the collection does not contain any Arrayable objects.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-collects-attribute" href="/docs/rules/lint/laravel/prefer-collects-attribute">
+<Card title="lint/laravel/prefer-collects-attribute">
+
+[`lint/laravel/prefer-collects-attribute`](/docs/rules/lint/laravel/prefer-collects-attribute)
 
 Changes the collects property to use the Collects attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-command-hidden-attribute" href="/docs/rules/lint/laravel/prefer-command-hidden-attribute">
+<Card title="lint/laravel/prefer-command-hidden-attribute">
+
+[`lint/laravel/prefer-command-hidden-attribute`](/docs/rules/lint/laravel/prefer-command-hidden-attribute)
 
 Changes the hidden property to use the Hidden attribute on console commands
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-connection-attribute" href="/docs/rules/lint/laravel/prefer-connection-attribute">
+<Card title="lint/laravel/prefer-connection-attribute">
+
+[`lint/laravel/prefer-connection-attribute`](/docs/rules/lint/laravel/prefer-connection-attribute)
 
 Changes model connection property to use the Connection attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-constructor-injection" href="/docs/rules/lint/laravel/prefer-constructor-injection">
+<Card title="lint/laravel/prefer-constructor-injection">
+
+[`lint/laravel/prefer-constructor-injection`](/docs/rules/lint/laravel/prefer-constructor-injection)
 
 Move help facade-like function calls to constructor injection
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-date-facade" href="/docs/rules/lint/laravel/prefer-date-facade">
+<Card title="lint/laravel/prefer-date-facade">
+
+[`lint/laravel/prefer-date-facade`](/docs/rules/lint/laravel/prefer-date-facade)
 
 Refactor Carbon static method calls to use the Date facade instead.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-date-format-attribute" href="/docs/rules/lint/laravel/prefer-date-format-attribute">
+<Card title="lint/laravel/prefer-date-format-attribute">
+
+[`lint/laravel/prefer-date-format-attribute`](/docs/rules/lint/laravel/prefer-date-format-attribute)
 
 Changes model dateFormat property to use the DateFormat attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-dedicated-status-assertion" href="/docs/rules/lint/laravel/prefer-dedicated-status-assertion">
+<Card title="lint/laravel/prefer-dedicated-status-assertion">
+
+[`lint/laravel/prefer-dedicated-status-assertion`](/docs/rules/lint/laravel/prefer-dedicated-status-assertion)
 
 Use assertOk(), assertNotFound() and similar instead of assertStatus(200).
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-default-argument" href="/docs/rules/lint/laravel/prefer-default-argument">
+<Card title="lint/laravel/prefer-default-argument">
+
+[`lint/laravel/prefer-default-argument`](/docs/rules/lint/laravel/prefer-default-argument)
 
 Apply default instead of null coalesce
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-delay-attribute" href="/docs/rules/lint/laravel/prefer-delay-attribute">
+<Card title="lint/laravel/prefer-delay-attribute">
+
+[`lint/laravel/prefer-delay-attribute`](/docs/rules/lint/laravel/prefer-delay-attribute)
 
 Changes the delay property to use the Delay attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-delete-when-missing-models-attribute" href="/docs/rules/lint/laravel/prefer-delete-when-missing-models-attribute">
+<Card title="lint/laravel/prefer-delete-when-missing-models-attribute">
+
+[`lint/laravel/prefer-delete-when-missing-models-attribute`](/docs/rules/lint/laravel/prefer-delete-when-missing-models-attribute)
 
 Changes the deleteWhenMissingModels property to use the DeleteWhenMissingModels attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-description-attribute" href="/docs/rules/lint/laravel/prefer-description-attribute">
+<Card title="lint/laravel/prefer-description-attribute">
+
+[`lint/laravel/prefer-description-attribute`](/docs/rules/lint/laravel/prefer-description-attribute)
 
 Changes the description property to use the Description attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-dispatch-helper" href="/docs/rules/lint/laravel/prefer-dispatch-helper">
+<Card title="lint/laravel/prefer-dispatch-helper">
+
+[`lint/laravel/prefer-dispatch-helper`](/docs/rules/lint/laravel/prefer-dispatch-helper)
 
 Use the event or dispatch helpers instead of the static dispatch method.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-env-helper" href="/docs/rules/lint/laravel/prefer-env-helper">
+<Card title="lint/laravel/prefer-env-helper">
+
+[`lint/laravel/prefer-env-helper`](/docs/rules/lint/laravel/prefer-env-helper)
 
 Change env variable to env static call
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-environment-check" href="/docs/rules/lint/laravel/prefer-environment-check">
+<Card title="lint/laravel/prefer-environment-check">
+
+[`lint/laravel/prefer-environment-check`](/docs/rules/lint/laravel/prefer-environment-check)
 
 Replace app environment comparison with parameter or method call
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-error-bag-attribute" href="/docs/rules/lint/laravel/prefer-error-bag-attribute">
+<Card title="lint/laravel/prefer-error-bag-attribute">
+
+[`lint/laravel/prefer-error-bag-attribute`](/docs/rules/lint/laravel/prefer-error-bag-attribute)
 
 Changes the errorBag property to use the ErrorBag attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-exception-class-string" href="/docs/rules/lint/laravel/prefer-exception-class-string">
+<Card title="lint/laravel/prefer-exception-class-string">
+
+[`lint/laravel/prefer-exception-class-string`](/docs/rules/lint/laravel/prefer-exception-class-string)
 
 changes use of a new throw instance to class string
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-explicit-json-call" href="/docs/rules/lint/laravel/prefer-explicit-json-call">
+<Card title="lint/laravel/prefer-explicit-json-call">
+
+[`lint/laravel/prefer-explicit-json-call`](/docs/rules/lint/laravel/prefer-explicit-json-call)
 
 Change method calls from $this->json to $this->postJson, $this->putJson, etc.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-facade-over-app" href="/docs/rules/lint/laravel/prefer-facade-over-app">
+<Card title="lint/laravel/prefer-facade-over-app">
+
+[`lint/laravel/prefer-facade-over-app`](/docs/rules/lint/laravel/prefer-facade-over-app)
 
 Change app() func calls to facade calls
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-fail-on-timeout-attribute" href="/docs/rules/lint/laravel/prefer-fail-on-timeout-attribute">
+<Card title="lint/laravel/prefer-fail-on-timeout-attribute">
+
+[`lint/laravel/prefer-fail-on-timeout-attribute`](/docs/rules/lint/laravel/prefer-fail-on-timeout-attribute)
 
 Changes the failOnTimeout property to use the FailOnTimeout attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-fake-helper" href="/docs/rules/lint/laravel/prefer-fake-helper">
+<Card title="lint/laravel/prefer-fake-helper">
+
+[`lint/laravel/prefer-fake-helper`](/docs/rules/lint/laravel/prefer-fake-helper)
 
 Use the fake() helper instead of $this->faker.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-fillable-attribute" href="/docs/rules/lint/laravel/prefer-fillable-attribute">
+<Card title="lint/laravel/prefer-fillable-attribute">
+
+[`lint/laravel/prefer-fillable-attribute`](/docs/rules/lint/laravel/prefer-fillable-attribute)
 
 Changes model fillable property to use the fillable attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-guarded-attribute" href="/docs/rules/lint/laravel/prefer-guarded-attribute">
+<Card title="lint/laravel/prefer-guarded-attribute">
+
+[`lint/laravel/prefer-guarded-attribute`](/docs/rules/lint/laravel/prefer-guarded-attribute)
 
 Changes model guarded property to use the guarded attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-help-attribute" href="/docs/rules/lint/laravel/prefer-help-attribute">
+<Card title="lint/laravel/prefer-help-attribute">
+
+[`lint/laravel/prefer-help-attribute`](/docs/rules/lint/laravel/prefer-help-attribute)
 
 Changes the help property to use the Help attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-hidden-attribute" href="/docs/rules/lint/laravel/prefer-hidden-attribute">
+<Card title="lint/laravel/prefer-hidden-attribute">
+
+[`lint/laravel/prefer-hidden-attribute`](/docs/rules/lint/laravel/prefer-hidden-attribute)
 
 Changes model hidden property to use the hidden attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-job-connection-attribute" href="/docs/rules/lint/laravel/prefer-job-connection-attribute">
+<Card title="lint/laravel/prefer-job-connection-attribute">
+
+[`lint/laravel/prefer-job-connection-attribute`](/docs/rules/lint/laravel/prefer-job-connection-attribute)
 
 Changes the connection property to use the Connection attribute on queue jobs
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-latest-oldest" href="/docs/rules/lint/laravel/prefer-latest-oldest">
+<Card title="lint/laravel/prefer-latest-oldest">
+
+[`lint/laravel/prefer-latest-oldest`](/docs/rules/lint/laravel/prefer-latest-oldest)
 
 Changes orderBy() to latest() or oldest()
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-max-exceptions-attribute" href="/docs/rules/lint/laravel/prefer-max-exceptions-attribute">
+<Card title="lint/laravel/prefer-max-exceptions-attribute">
+
+[`lint/laravel/prefer-max-exceptions-attribute`](/docs/rules/lint/laravel/prefer-max-exceptions-attribute)
 
 Changes the maxExceptions property to use the MaxExceptions attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-nullsafe" href="/docs/rules/lint/laravel/prefer-nullsafe">
+<Card title="lint/laravel/prefer-nullsafe">
+
+[`lint/laravel/prefer-nullsafe`](/docs/rules/lint/laravel/prefer-nullsafe)
 
 Convert simple calls to optional helper to use the nullsafe operator
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-preserve-keys-attribute" href="/docs/rules/lint/laravel/prefer-preserve-keys-attribute">
+<Card title="lint/laravel/prefer-preserve-keys-attribute">
+
+[`lint/laravel/prefer-preserve-keys-attribute`](/docs/rules/lint/laravel/prefer-preserve-keys-attribute)
 
 Changes the preserveKeys property to use the PreserveKeys attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-protected-model-methods" href="/docs/rules/lint/laravel/prefer-protected-model-methods">
+<Card title="lint/laravel/prefer-protected-model-methods">
+
+[`lint/laravel/prefer-protected-model-methods`](/docs/rules/lint/laravel/prefer-protected-model-methods)
 
 Makes Model attributes and scopes protected
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-query-builder-call" href="/docs/rules/lint/laravel/prefer-query-builder-call">
+<Card title="lint/laravel/prefer-query-builder-call">
+
+[`lint/laravel/prefer-query-builder-call`](/docs/rules/lint/laravel/prefer-query-builder-call)
 
 The EloquentMagicMethodToQueryBuilderRule is designed to automatically transform certain magic method calls on Eloquent Models into corresponding Query Builder method calls.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-queue-attribute" href="/docs/rules/lint/laravel/prefer-queue-attribute">
+<Card title="lint/laravel/prefer-queue-attribute">
+
+[`lint/laravel/prefer-queue-attribute`](/docs/rules/lint/laravel/prefer-queue-attribute)
 
 Changes the queue property to use the Queue attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-report-if" href="/docs/rules/lint/laravel/prefer-report-if">
+<Card title="lint/laravel/prefer-report-if">
+
+[`lint/laravel/prefer-report-if`](/docs/rules/lint/laravel/prefer-report-if)
 
 Change if report to report_if
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-request-facade" href="/docs/rules/lint/laravel/prefer-request-facade">
+<Card title="lint/laravel/prefer-request-facade">
+
+[`lint/laravel/prefer-request-facade`](/docs/rules/lint/laravel/prefer-request-facade)
 
 Use the Request facade instead of $_GET, $_POST and $_SERVER.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-request-server" href="/docs/rules/lint/laravel/prefer-request-server">
+<Card title="lint/laravel/prefer-request-server">
+
+[`lint/laravel/prefer-request-server`](/docs/rules/lint/laravel/prefer-request-server)
 
 Change server variable to Request facade's server method
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-request-validate" href="/docs/rules/lint/laravel/prefer-request-validate">
+<Card title="lint/laravel/prefer-request-validate">
+
+[`lint/laravel/prefer-request-validate`](/docs/rules/lint/laravel/prefer-request-validate)
 
 Change static validate() method to $request->validate()
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-resolve-helper" href="/docs/rules/lint/laravel/prefer-resolve-helper">
+<Card title="lint/laravel/prefer-resolve-helper">
+
+[`lint/laravel/prefer-resolve-helper`](/docs/rules/lint/laravel/prefer-resolve-helper)
 
 Convert app() to resolve() where applicable.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-session-facade" href="/docs/rules/lint/laravel/prefer-session-facade">
+<Card title="lint/laravel/prefer-session-facade">
+
+[`lint/laravel/prefer-session-facade`](/docs/rules/lint/laravel/prefer-session-facade)
 
 Change PHP session usage to Session Facade methods
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-signature-attribute" href="/docs/rules/lint/laravel/prefer-signature-attribute">
+<Card title="lint/laravel/prefer-signature-attribute">
+
+[`lint/laravel/prefer-signature-attribute`](/docs/rules/lint/laravel/prefer-signature-attribute)
 
 Changes the signature property to use the Signature attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-sleep-facade" href="/docs/rules/lint/laravel/prefer-sleep-facade">
+<Card title="lint/laravel/prefer-sleep-facade">
+
+[`lint/laravel/prefer-sleep-facade`](/docs/rules/lint/laravel/prefer-sleep-facade)
 
 Use Sleep::sleep() and Sleep::usleep() instead of the sleep() and usleep() function.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-status-assertion-method" href="/docs/rules/lint/laravel/prefer-status-assertion-method">
+<Card title="lint/laravel/prefer-status-assertion-method">
+
+[`lint/laravel/prefer-status-assertion-method`](/docs/rules/lint/laravel/prefer-status-assertion-method)
 
 Replace `(new \Illuminate\Testing\TestResponse)->assertStatus(200)` with `(new \Illuminate\Testing\TestResponse)->assertOk()`
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-stop-on-first-failure-attribute" href="/docs/rules/lint/laravel/prefer-stop-on-first-failure-attribute">
+<Card title="lint/laravel/prefer-stop-on-first-failure-attribute">
+
+[`lint/laravel/prefer-stop-on-first-failure-attribute`](/docs/rules/lint/laravel/prefer-stop-on-first-failure-attribute)
 
 Changes the stopOnFirstFailure property to use the StopOnFirstFailure attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-str-starts-with" href="/docs/rules/lint/laravel/prefer-str-starts-with">
+<Card title="lint/laravel/prefer-str-starts-with">
+
+[`lint/laravel/prefer-str-starts-with`](/docs/rules/lint/laravel/prefer-str-starts-with)
 
 Use Str::startsWith() or Str::endsWith() instead of substr() === $str
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-table-attribute" href="/docs/rules/lint/laravel/prefer-table-attribute">
+<Card title="lint/laravel/prefer-table-attribute">
+
+[`lint/laravel/prefer-table-attribute`](/docs/rules/lint/laravel/prefer-table-attribute)
 
 Changes model table-related properties to use the Table attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-throw-if" href="/docs/rules/lint/laravel/prefer-throw-if">
+<Card title="lint/laravel/prefer-throw-if">
+
+[`lint/laravel/prefer-throw-if`](/docs/rules/lint/laravel/prefer-throw-if)
 
 Change if throw to throw_if
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-timeout-attribute" href="/docs/rules/lint/laravel/prefer-timeout-attribute">
+<Card title="lint/laravel/prefer-timeout-attribute">
+
+[`lint/laravel/prefer-timeout-attribute`](/docs/rules/lint/laravel/prefer-timeout-attribute)
 
 Changes the timeout property to use the Timeout attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-to-route-helper" href="/docs/rules/lint/laravel/prefer-to-route-helper">
+<Card title="lint/laravel/prefer-to-route-helper">
+
+[`lint/laravel/prefer-to-route-helper`](/docs/rules/lint/laravel/prefer-to-route-helper)
 
 Replace `redirect()->route("home")` and `Redirect::route("home")` with `to_route("home")`
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-today" href="/docs/rules/lint/laravel/prefer-today">
+<Card title="lint/laravel/prefer-today">
+
+[`lint/laravel/prefer-today`](/docs/rules/lint/laravel/prefer-today)
 
 Use today() instead of now()->startOfDay()
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/prefer-touches-attribute" href="/docs/rules/lint/laravel/prefer-touches-attribute">
+<Card title="lint/laravel/prefer-touches-attribute">
+
+[`lint/laravel/prefer-touches-attribute`](/docs/rules/lint/laravel/prefer-touches-attribute)
 
 Changes model touches property to use the touches attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-travel-to" href="/docs/rules/lint/laravel/prefer-travel-to">
+<Card title="lint/laravel/prefer-travel-to">
+
+[`lint/laravel/prefer-travel-to`](/docs/rules/lint/laravel/prefer-travel-to)
 
 Use the `$this->travelTo()` method in Laravel's `TestCase` class instead of the `Carbon::setTestNow()` method.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-tries-attribute" href="/docs/rules/lint/laravel/prefer-tries-attribute">
+<Card title="lint/laravel/prefer-tries-attribute">
+
+[`lint/laravel/prefer-tries-attribute`](/docs/rules/lint/laravel/prefer-tries-attribute)
 
 Changes the tries property to use the Tries attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-typed-assert-closure" href="/docs/rules/lint/laravel/prefer-typed-assert-closure">
+<Card title="lint/laravel/prefer-typed-assert-closure">
+
+[`lint/laravel/prefer-typed-assert-closure`](/docs/rules/lint/laravel/prefer-typed-assert-closure)
 
 Changes assert calls to use a type hinted closure.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-unique-for-attribute" href="/docs/rules/lint/laravel/prefer-unique-for-attribute">
+<Card title="lint/laravel/prefer-unique-for-attribute">
+
+[`lint/laravel/prefer-unique-for-attribute`](/docs/rules/lint/laravel/prefer-unique-for-attribute)
 
 Changes the uniqueFor property to use the UniqueFor attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-validation-rule-array" href="/docs/rules/lint/laravel/prefer-validation-rule-array">
+<Card title="lint/laravel/prefer-validation-rule-array">
+
+[`lint/laravel/prefer-validation-rule-array`](/docs/rules/lint/laravel/prefer-validation-rule-array)
 
 Convert string validation rules into arrays for Laravel's Validator.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-view-array" href="/docs/rules/lint/laravel/prefer-view-array">
+<Card title="lint/laravel/prefer-view-array">
+
+[`lint/laravel/prefer-view-array`](/docs/rules/lint/laravel/prefer-view-array)
 
 Prefer passing data to views using the array parameter in the `view()` function,
 
 Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-visible-attribute" href="/docs/rules/lint/laravel/prefer-visible-attribute">
+<Card title="lint/laravel/prefer-visible-attribute">
+
+[`lint/laravel/prefer-visible-attribute`](/docs/rules/lint/laravel/prefer-visible-attribute)
 
 Changes model visible property to use the Visible attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-without-incrementing-attribute" href="/docs/rules/lint/laravel/prefer-without-incrementing-attribute">
+<Card title="lint/laravel/prefer-without-incrementing-attribute">
+
+[`lint/laravel/prefer-without-incrementing-attribute`](/docs/rules/lint/laravel/prefer-without-incrementing-attribute)
 
 Changes model incrementing = false property to use the WithoutIncrementing attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/prefer-without-timestamps-attribute" href="/docs/rules/lint/laravel/prefer-without-timestamps-attribute">
+<Card title="lint/laravel/prefer-without-timestamps-attribute">
+
+[`lint/laravel/prefer-without-timestamps-attribute`](/docs/rules/lint/laravel/prefer-without-timestamps-attribute)
 
 Changes model timestamps = false property to use the WithoutTimestamps attribute
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/laravel/require-final-controller" href="/docs/rules/lint/laravel/require-final-controller">
+<Card title="lint/laravel/require-final-controller">
+
+[`lint/laravel/require-final-controller`](/docs/rules/lint/laravel/require-final-controller)
 
 Enforces that controller classes are declared as `final`.
 
 Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
-<Card title="lint/laravel/require-phpdoc-types-only" href="/docs/rules/lint/laravel/require-phpdoc-types-only">
+<Card title="lint/laravel/require-phpdoc-types-only">
+
+[`lint/laravel/require-phpdoc-types-only`](/docs/rules/lint/laravel/require-phpdoc-types-only)
 
 Keeps only type annotations in PHPDoc.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Runs when laravel is installed.
 
 </Card>
 </CardGroup>

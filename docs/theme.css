@@ -73,3 +73,35 @@
   --pun-shadow: #5b3fd9;
   --pun-pop-lilac: 6px 6px 0 0 #bbaaff;
 }
+
+/* Rule references use the site's existing tokens, including dark mode. */
+.rule-reference { margin-block: 1.5rem; }
+.rule-reference label { display: grid; gap: .35rem; font-weight: 500; }
+.rule-reference input[type="search"], .rule-reference select {
+  width: 100%; min-width: 0; padding: .65rem .8rem;
+  border: 1px solid var(--blume-border); border-radius: .6rem;
+  background: var(--blume-background); color: var(--blume-foreground); font: inherit;
+}
+.rule-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-block: 1rem; }
+.rule-reference .rule-check { display: flex; align-items: center; gap: .5rem; margin-block: 1rem; }
+.rule-check input { accent-color: var(--blume-accent); }
+.rule-copy, .rule-chips button {
+  padding: .35rem .7rem; border: 1px solid var(--blume-border); border-radius: 999px;
+  background: var(--blume-muted); color: var(--blume-foreground); font: inherit; cursor: pointer;
+}
+.rule-copy:hover, .rule-chips button:hover { border-color: var(--blume-accent); }
+.rule-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-block: 1rem; }
+.rule-table-scroll { overflow-x: auto; max-width: 100%; }
+.rule-table-scroll table { width: 100%; font-size: .9rem; }
+.rule-table-scroll td { vertical-align: top; min-width: 10rem; overflow-wrap: anywhere; }
+.rule-table-scroll td:first-child { min-width: 14rem; }
+.rule-table-scroll td a, .rule-table-scroll small { display: block; }
+.rule-table-scroll code { white-space: normal; overflow-wrap: anywhere; }
+.rule-table-scroll small, .rule-legend { color: var(--blume-muted-foreground); }
+.rule-table-scroll .rule-planned { display: inline-block; margin-top: .4rem; padding: .1rem .45rem;
+  border: 1px solid var(--blume-border); border-radius: .35rem; font-size: .75rem; }
+.rule-icons { display: inline-flex; gap: .45rem; white-space: nowrap; font-family: monospace; }
+.rule-icons > span { width: 1ch; font-weight: 700; }
+.rule-icons .rule-dim { opacity: .25; }
+.rule-reference :focus-visible, .rule-copy:focus-visible { outline: 2px solid var(--blume-accent); outline-offset: 3px; }
+@media (max-width: 640px) { .rule-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

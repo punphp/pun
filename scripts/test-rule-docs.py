@@ -58,6 +58,21 @@ def main() -> None:
     assert identifiers["phpstanApi.class"]["unsupported"]
     assert all("%s" not in r["name"] for r in tables["phpstan"])
     assert "larastan.jobs.noConstructor" in {r["name"] for r in tables["larastan"]}
+    index = json.loads(output[docs.GENERATED / "rules.json"])
+    assert "format-empty" in index["selections"] and "naming" in index["selections"]
+    directory = index["rules"]
+    indexed = {rule["id"]: rule for rule in directory}
+    assert len(directory) == len(indexed)
+    assert set(indexed) == {f"{command}/{key}" for command, rules in data["rules"].items() for key in rules}
+    assert "no_alias_functions" in indexed["lint/style/no-alias-function"]["upstream"]
+    assert "StrictArraySearchRector" in indexed["lint/functions/require-strict-array-search"]["upstream"]
+    assert "method.notFound" in indexed["analyse/undefined/method"]["upstream"]
+    assert "phpstan" in indexed["analyse/undefined/method"]["tools"]
+    assert "%s.alwaysFalse" in indexed["analyse/dead-code/number-comparison-always-constant"]["upstream"]
+    assert "analyse-max" in indexed["analyse/undefined/method"]["enabled"]
+    assert not indexed["format/arrays/no-space-in-empty"]["enabled"]
+    assert indexed["lint/laravel-12/prefer-scope-attribute"]["ecosystem"] == "laravel"
+    assert "getrector.com" not in analyse
     for tool in docs.TOOLS:
         migration = output[docs.CONTENT / f"migrate/from/{tool}.mdx"]
         assert "## Config translation" in migration and "## Unsupported rules by reason" in migration

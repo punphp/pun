@@ -10,25 +10,31 @@ Array literals, list() destructuring and array access.
 Across commands: format: 12, lint: 3, analyse: 4.
 
 <CardGroup cols={2}>
-<Card title="lint/arrays/no-implicit-array-creation" href="/docs/rules/lint/arrays/no-implicit-array-creation">
+<Card title="lint/arrays/no-implicit-array-creation">
+
+[`lint/arrays/no-implicit-array-creation`](/docs/rules/lint/arrays/no-implicit-array-creation)
 
 Disallows implicit array creation: appending to or writing an offset of an undefined or `null` variable.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: none (report only). Intent: suspicious. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: suspicious. Additional upstream gates: `strictRules.disallowedImplicitArrayCreation`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
-<Card title="lint/arrays/prefer-array-append" href="/docs/rules/lint/arrays/prefer-array-append">
+<Card title="lint/arrays/prefer-array-append">
+
+[`lint/arrays/prefer-array-append`](/docs/rules/lint/arrays/prefer-array-append)
 
 Use `$array[] =` instead of `array_push()` in a statement.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
 
 </Card>
-<Card title="lint/arrays/prefer-array-spread" href="/docs/rules/lint/arrays/prefer-array-spread">
+<Card title="lint/arrays/prefer-array-spread">
+
+[`lint/arrays/prefer-array-spread`](/docs/rules/lint/arrays/prefer-array-spread)
 
 Detects calls to `array_merge()` and suggests using the array spread operator (`...`) in an array literal instead.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
 
 </Card>
 </CardGroup>
