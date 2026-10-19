@@ -7,12 +7,12 @@
 //! `--error-format`) prints PHPStan's machine formats byte for byte (`analyse_report`). The exit code is PHPStan's:
 //! 1 with errors, 0 without, and 2 when Pun couldn't run.
 
-use crate::mapping::rule_of_identifier;
 use crate::render::{Look, Renderer, RunError, Summary};
 use crate::report::Abort;
 use crate::{agent, analyse_report, baseline, github, render, root};
 use anyhow::Result;
 use clap::Args;
+use pun_config::rule_of_identifier;
 use pun_config::{Config, Options};
 use pun_problem::ignore::Ignores;
 use pun_problem::{Level, LineIndex, Problem, Span};
@@ -131,7 +131,7 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
     params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
     params.set(
         Key::Str("phpVersion".into()),
-        Value::Int(i64::from(php_version_id(&cfg.php))),
+        Value::Int(i64::from(cfg.php_version().to_id())),
     );
     let mut project = pun_analyse::Project::from_config(&cfg.root, &params);
     let excluded = Exclusions::new(cfg, Command::Analyse)?;
@@ -141,15 +141,6 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
         .retain(|a| !excluded.is_excluded(&a.path));
     project.analysed = analysed;
     Ok(project)
-}
-
-/// `8.4` as `PHP_VERSION_ID` (80400).
-pub(crate) fn php_version_id(version: &str) -> u32 {
-    let mut parts = version.split('.').map(|p| p.parse::<u32>().unwrap_or(0));
-    let major = parts.next().unwrap_or(8);
-    let minor = parts.next().unwrap_or(4);
-    let patch = parts.next().unwrap_or(0);
-    major * 10000 + minor * 100 + patch
 }
 
 /// Analyse `paths` (or the configured paths) under `cfg`: enabled rules only, `@pun-ignore` comments and the

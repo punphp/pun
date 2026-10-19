@@ -17,7 +17,6 @@ mod github;
 mod init;
 mod lint_plan;
 mod list_files;
-mod mapping;
 mod migrate;
 mod php_diff;
 mod pint_error;

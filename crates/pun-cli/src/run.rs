@@ -86,6 +86,21 @@ pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
     pun_config::load(root, &opts).map_err(config_error)
 }
 
+/// Hands a native rule its options from `[lint.rules]`. Overrides change levels only, as one instance of the rule
+/// lints every file.
+fn configure(cfg: &Config, rule: &mut dyn pun_lint::Rule) -> Result<()> {
+    let id = rule.id();
+    let base = (cfg.lint.rules.iter()).find(|r| r.id == id);
+    let overridden = (cfg.lint.overrides.iter())
+        .flat_map(|o| &o.rules)
+        .any(|s| s.id == id && !s.options.is_null());
+    let result = match overridden {
+        true => Err("takes options in [lint.rules] only, not in [[lint.overrides]]".to_string()),
+        false => rule.configure(base.map_or(&serde_json::Value::Null, |r| &r.options)),
+    };
+    result.map_err(|e| config_error(anyhow::anyhow!("pun.toml: `{id}` {e}")))
+}
+
 /// A config error: Pun's own run error, never a Pint box (Pint never reads pun.toml).
 fn config_error(e: anyhow::Error) -> anyhow::Error {
     let message = format!("{e:#}");
@@ -238,16 +253,20 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     let natives: Vec<Box<dyn pun_lint::Rule>> = match lints {
         true => {
             let on = plan.mentioned();
-            (pun_lint::rules::all().into_iter())
+            let mut natives: Vec<_> = (pun_lint::rules::all().into_iter())
                 .filter(|r| on.contains(r.id()))
-                .collect()
+                .collect();
+            for r in &mut natives {
+                configure(&cfg, r.as_mut())?;
+            }
+            natives
         }
         false => vec![],
     };
     let engines = Engines {
         stage,
         linter: (!natives.is_empty())
-            .then(|| pun_lint::Linter::new(natives, crate::analyse::php_version_id(&cfg.php))),
+            .then(|| pun_lint::Linter::new(natives, cfg.php_version().to_id())),
         lint_files: lints.then(|| lint_set.into_iter().collect()),
         format_files: match stage {
             Stage::Check { .. } => Some(format_set.into_iter().collect()),

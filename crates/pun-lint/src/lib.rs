@@ -59,6 +59,16 @@ pub trait Rule: Send + Sync {
         None
     }
 
+    /// Takes the rule's options from pun.toml (`options` of its `[lint.rules]` entry, keyed as the upstream rule's
+    /// configuration), before any file is linted. The error says what is wrong with them. A rule without options
+    /// rejects any.
+    fn configure(&mut self, options: &serde_json::Value) -> Result<(), String> {
+        match options {
+            serde_json::Value::Null => Ok(()),
+            _ => Err("takes no options".into()),
+        }
+    }
+
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,

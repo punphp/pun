@@ -190,3 +190,42 @@ fn lint_skips_blade_and_reports_syntax_errors() {
     );
     assert_eq!(code, Some(1));
 }
+
+#[test]
+fn native_rule_options_reach_the_rule() {
+    // `no-global` has no options (Mago's rule takes none), so options for it are a config error that names it.
+    let d = project(
+        "lint",
+        "options",
+        &[
+            (
+                "pun.toml",
+                "[format]\npreset = \"empty\"\n[lint.rules]\n\"security/no-global\" = { level = \"error\", allow = [\"x\"] }\n",
+            ),
+            ("a.php", "<?php\n"),
+        ],
+    );
+    let (lines, summary, code) = agent(&d, &["lint"]);
+    assert_eq!(
+        (lines, summary.as_str(), code),
+        (
+            vec![],
+            "pun lint: error: pun.toml: `lint/security/no-global` takes no options",
+            Some(2)
+        )
+    );
+    // Overrides change levels only: one instance of a rule lints every file.
+    std::fs::write(
+        d.join("pun.toml"),
+        "[format]\npreset = \"empty\"\n[lint.rules]\n\"security/no-global\" = \"error\"\n[[lint.overrides]]\nfiles = [\"a.php\"]\nrules = { \"security/no-global\" = { allow = [\"x\"] } }\n",
+    )
+    .unwrap();
+    let (_, summary, code) = agent(&d, &["lint"]);
+    assert_eq!(
+        (summary.as_str(), code),
+        (
+            "pun lint: error: pun.toml: `lint/security/no-global` takes options in [lint.rules] only, not in [[lint.overrides]]",
+            Some(2)
+        )
+    );
+}

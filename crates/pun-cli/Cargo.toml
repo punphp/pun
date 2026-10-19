@@ -34,6 +34,7 @@ pun-lint.workspace = true
 pun-phpstan.workspace = true
 serde.workspace = true
 sha2.workspace = true
+md-5.workspace = true
 pun-tokens.workspace = true
 pcre2.workspace = true
 notify.workspace = true

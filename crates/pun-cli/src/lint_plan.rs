@@ -240,5 +240,5 @@ fn is_group(id: &str) -> bool {
     let Some(group) = id.strip_prefix("lint/") else {
         return false;
     };
-    !group.contains('/') && crate::mapping::groups().iter().any(|g| g == group)
+    !group.contains('/') && pun_config::groups().iter().any(|g| g == group)
 }

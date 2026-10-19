@@ -672,7 +672,10 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
 /// A lint rule's fix safety (`mixed` counts as unsafe) and ` summary` (empty without one).
 fn lint_rule(id: &str) -> (&'static str, String) {
     let m = pun_config::rule(id);
-    let fix = if m.as_ref().is_some_and(|m| m.fix == "safe") {
+    let fix = if m
+        .as_ref()
+        .is_some_and(|m| m.fix == pun_config::FixSafety::Safe)
+    {
         "safe"
     } else {
         "unsafe"
