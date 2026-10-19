@@ -29,7 +29,7 @@ agents and helper branches are stopped and merged; there is nothing in flight.
 | Path | What it is | Edit when |
 | --- | --- | --- |
 | PLAN.md (this file) | Decisions (§2), build order and status (§3), open questions (§4) | A decision, a step's status or the order changes |
-| [plan/](plan/) | One plan per part, each with Today, the design, a **Build** list with "done when", and Decisions: [commands](plan/commands.md) (who does what, `pun check`), [config](plan/config.md) (pun.toml, names, presets), [rules](plan/rules.md) (placement, overlaps, naming, ignore comments, mapping data), [output](plan/output.md), [format](plan/format.md), [lint](plan/lint.md), [analyse](plan/analyse.md), [migrate](plan/migrate.md), [init](plan/init.md), [foundations](plan/foundations.md) (CI, harness, docs, release, later) | We discuss or change that part |
+| [plan/](plan/) | One plan per part, each with Today, the design, a **Build** list with "done when", and Decisions: [commands](plan/commands.md) (who does what, `pun check`), [config](plan/config.md) (pun.toml, names, presets), [rules](plan/rules.md) (placement, overlaps, naming, ignore comments, mapping data), [output](plan/output.md), [format](plan/format.md), [lint](plan/lint.md), [analyse](plan/analyse.md), [migrate](plan/migrate.md), [init](plan/init.md), [docs](plan/docs.md) (rule pages, rules directory, migration mapping), [foundations](plan/foundations.md) (CI, harness, docs, release, later) | We discuss or change that part |
 | [reference/](reference/) | [oracle.md](reference/oracle.md) (pinned upstream tools, exporters), [tokens.md](reference/tokens.md) (pun-tokens API), [mago-extras.md](reference/mago-extras.md) (Mago-derived rules) | The thing it describes changes |
 | [AUDIT.md](AUDIT.md) | Code audit findings, P0 to P3, from `prompts/rust-audit.md` | An item lands (tick it) or a new audit runs |
 | [prompts/](prompts/) | [rust-audit.md](prompts/rust-audit.md): prompt for an agent to audit the Rust code for smells and unidiomatic Rust; writes `context/AUDIT.md` | Pun's conventions or lint policy change |
@@ -166,6 +166,13 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
   (`-v` adds a dim line).
 - **Exit codes and machine formats** stay Pint- and PHPStan-compatible. Exit 2 means Pun couldn't run.
 - **Agent mode:** under a coding agent every command prints compact `path:line:col rule message` lines, not JSON.
+
+### Docs (plan/docs.md)
+
+- **Rule docs** (2026-10-19): a page for every rule at `/docs/rules/<command>/<group>/<name>`, unported ones marked
+  Planned; generated as MDX from mapping.toml, with a sync check; each rule's why and examples are fields in
+  mapping.toml. A rules directory with search across upstream names and URL-kept filters at launch. One migration
+  mapping page per upstream tool under `/docs/migrate/from/`, plus an overview.
 
 ### Engineering
 
@@ -344,7 +351,7 @@ three commands one after the other.
 
 ### Step 5. 1.0 (plan/foundations.md)
 
-Docs pages for every command and rule, `pun explain`, the generated "Coming from" page, AGENTS.md updated for the new
+Docs pages for every command and rule, `pun explain`, the generated "Coming from" pages (plan/docs.md), AGENTS.md updated for the new
 output, name checks, signing and publishing (Pushpak: after Step 4).
 
 ### Foundations, alongside every step (plan/foundations.md)
