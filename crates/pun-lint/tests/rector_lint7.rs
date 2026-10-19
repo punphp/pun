@@ -261,6 +261,16 @@ fn call_user_func_array_to_variadic() {
 }
 
 #[test]
+fn illegal_constructor_static_call() {
+    // unknown_parents.php.inc: PHPStan scanned a file declaring `Vendor\Base` and `Vendor\Deep extends Base`, which
+    // Pun does not see.
+    report(
+        NoStaticConstructorCall,
+        "classes/no-static-constructor-call",
+    );
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -310,6 +320,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(PreferSpread),
             &["rector/CallUserFuncArrayToVariadicRector"],
+        ),
+        (
+            || Box::new(NoStaticConstructorCall),
+            &["lint7_report/classes/no-static-constructor-call"],
         ),
     ];
     for (rule, dirs) in cases {

@@ -89,6 +89,7 @@ mod no_single_argument_sprintf;
 mod no_single_case_switch;
 mod no_single_item_in_array;
 mod no_sole_value_sprintf;
+mod no_static_constructor_call;
 mod no_swapped_explode_arguments;
 mod no_tainted_data;
 mod no_tautology_ternary;
@@ -253,6 +254,7 @@ pub use no_single_argument_sprintf::NoSingleArgumentSprintf;
 pub use no_single_case_switch::NoSingleCaseSwitch;
 pub use no_single_item_in_array::NoSingleItemInArray;
 pub use no_sole_value_sprintf::NoSoleValueSprintf;
+pub use no_static_constructor_call::NoStaticConstructorCall;
 pub use no_swapped_explode_arguments::NoSwappedExplodeArguments;
 pub use no_tainted_data::NoTaintedData;
 pub use no_tautology_ternary::NoTautologyTernary;
@@ -496,5 +498,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUnusedPrivateConstant),
         Box::new(PreferVariadicParam),
         Box::new(PreferSpread),
+        Box::new(NoStaticConstructorCall),
     ]
 }

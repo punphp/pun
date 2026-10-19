@@ -268,7 +268,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/no-protected-property-in-final" = { fix = "safe", sets = ["privatization"], ported = true, status = "decided", summary = "Change property to private if possible" }
 "classes/no-redundant-readonly" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes redundant readonly from properties in readonly classes." }
 "classes/no-redundant-readonly-property" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "In a readonly class, drop `readonly` from properties and promoted parameters" }
-"classes/no-static-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Disallows calling a constructor statically (`Foo::__construct()`) outside a child class's constructor." }
+"classes/no-static-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Disallows calling a constructor statically (`Foo::__construct()`) outside a child class's constructor." }
 "classes/no-underscore-class" = { fix = "none", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Detects class, interface, trait, or enum declarations named `_`." }
 "classes/no-unset-on-property" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Properties should be set to `null` instead of using `unset`." }
 "classes/prefer-new-self" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `new static()` to `new self()` in a final class" }
