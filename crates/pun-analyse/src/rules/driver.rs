@@ -47,6 +47,17 @@ pub(crate) struct Checks {
     internal: Option<super::internal::Names>,
     /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension (config.level0.neon).
     internal_tag: bool,
+    /// [`Project::reported`].
+    reported: Option<crate::project::Reported>,
+}
+
+impl Checks {
+    /// Drops the errors of identifiers the run doesn't report.
+    pub(crate) fn keep_reported(&self, errors: &mut Vec<Error>) {
+        if let Some(reported) = &self.reported {
+            errors.retain(|e| reported(e.identifier.as_deref().unwrap_or_default()));
+        }
+    }
 }
 
 impl Checks {
@@ -68,6 +79,7 @@ impl Checks {
             internal: (project.level >= 2 && project.internal_tag)
                 .then(|| super::internal::Names::of(codebase)),
             internal_tag: project.internal_tag,
+            reported: project.reported.clone(),
         }
     }
 }
@@ -192,6 +204,7 @@ pub(crate) fn check_file(
     });
     let mut errors = std::mem::take(&mut checker.errors);
     errors.extend(parse_errors(&name, &parse));
+    project.keep_reported(&mut errors);
     let mut out = Vec::new();
     if project.report_ignores_without_comments {
         out.extend(ignores_without_comments(&name, &mut lines, &mut unmatched));
@@ -274,11 +287,8 @@ fn in_trait_context(
             .any(|(a, b)| a <= line && line <= b)
     });
     let mut unmatched = lines.clone();
-    let (kept, _) = local_ignores(
-        &label,
-        std::mem::take(&mut checker.errors),
-        &mut lines,
-        &mut unmatched,
-    );
+    let mut errors = std::mem::take(&mut checker.errors);
+    project.keep_reported(&mut errors);
+    let (kept, _) = local_ignores(&label, errors, &mut lines, &mut unmatched);
     (kept, checker.trait_uses)
 }

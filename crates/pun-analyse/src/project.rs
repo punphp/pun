@@ -44,7 +44,15 @@ pub struct Project {
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
     pub larastan: Option<crate::Larastan>,
+    /// `stubFiles`: scanned as Mago patches, whose declarations override the symbols they name.
+    pub stubs: Vec<PathBuf>,
+    /// Which identifiers the run reports, `None` for all: the others are dropped before any ignore sees them, as
+    /// PHPStan never reports the errors of a rule it doesn't run.
+    pub reported: Option<Reported>,
 }
+
+/// [`Project::reported`].
+pub type Reported = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
 pub(crate) const RUNTIME_PHP_VERSION: u32 = 80511;
@@ -158,6 +166,11 @@ impl Project {
                 == Some(&Value::Bool(true)),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
+            stubs: strings(params, "stubFiles")
+                .into_iter()
+                .map(PathBuf::from)
+                .collect(),
+            reported: None,
         }
     }
 
@@ -179,6 +192,8 @@ impl Project {
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,
             larastan: None,
+            stubs: Vec::new(),
+            reported: None,
         }
     }
 }
