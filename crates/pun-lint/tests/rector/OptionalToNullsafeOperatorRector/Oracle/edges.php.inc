@@ -1,0 +1,43 @@
+<?php
+optional()->method();
+optional($value, null)->method($arg);
+optional($value, NULL)->property;
+optional($value, callback: fn () => 1)->method();
+optional($value)->$method($arg);
+optional($value)->{$property};
+optional(new Example)->method();
+optional($value ?? $other)->method();
+optional($value = example())->method();
+optional($value)->PrEsEnT();
+other($value)->method();
+$value->property;
+optional(Example::VALUE)->method();
+optional(CONSTANT_VALUE)->method();
+optional(__FILE__)->method();
+optional("$value")->method();
+optional(`echo foo`)->method();
+isset(optional($value)->property);
+isset(optional($value)->property['key']);
+empty(optional($value)->property);
+-----
+<?php
+optional()->method();
+$value?->method($arg);
+$value?->property;
+optional($value, callback: fn () => 1)->method();
+$value?->{$method}($arg);
+$value?->{$property};
+(new Example)?->method();
+($value ?? $other)?->method();
+($value = example())?->method();
+optional($value)->PrEsEnT();
+other($value)->method();
+$value->property;
+optional(Example::VALUE)->method();
+optional(CONSTANT_VALUE)->method();
+optional(__FILE__)->method();
+optional("$value")->method();
+(`echo foo`)?->method();
+isset($value?->property);
+isset($value?->property['key']);
+empty($value?->property);

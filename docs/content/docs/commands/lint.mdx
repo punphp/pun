@@ -39,6 +39,20 @@ Options for a rule go in the same table. Rule names are Pun IDs, `<group>/<name>
 
 Which rules run comes from your [lint sets](/docs/configuration/presets#lint-sets), `[lint.groups]` and `[lint.rules]` ([pun.toml](/docs/configuration/pun-toml#lint)). `pun migrate` moves the risky and code-deleting rules your `pint.json` enabled here at `"error"`, so `pun check --fix` applies them as Pint did.
 
+## Laravel conditional helpers and sessions
+
+```toml pun.toml
+[lint.rules]
+"laravel/prefer-session-facade" = "error"
+"laravel/prefer-abort-if" = "error"
+"laravel/prefer-report-if" = "error"
+"laravel/prefer-throw-if" = "error"
+```
+
+The conditional rules replace a single `abort()`, `report()`, or `throw` inside an `if` with the corresponding `_if` helper. A negated condition uses `_unless`. An `else`, an `elseif`, or extra statements leave the `if` unchanged. The rules keep Rector's checks for variables assigned in the condition and exception expressions that would be evaluated too early.
+
+`prefer-session-facade` replaces session reads, direct item assignments, `isset()`, `unset()`, and the session lifecycle functions with `Illuminate\Support\Facades\Session` calls. It leaves writable expressions and string interpolation unchanged when a call would produce invalid PHP. Rector emits invalid PHP for some of those inputs.
+
 ## Levels on the command line
 
 ```bash

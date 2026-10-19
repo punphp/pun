@@ -9,7 +9,7 @@
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 996 | 996 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
-| punphp-lint | 5666 | 5666 | 100.00% | ok |
+| punphp-lint | 6520 | 6512 | 99.88% | ok |
 | punphp-phpstan | 7192 | 7163 | 99.60% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3642 | 3642 | 100.00% | ok |
@@ -25,6 +25,7 @@ Uncovered lines:
 - `crates/pun-analyse/src/rules/names.rs` 97.56% (11 lines): 94, 106, 241-247, 260, 328
 - `crates/pun-analyse/src/rules/params.rs` 98.08% (2 lines): 102, 112
 - `crates/pun-analyse/src/rules/scope.rs` 96.03% (5 lines): 43, 53-54, 146, 154
+- `crates/pun-lint/src/rules/prefer_property_over_local_getter.rs` 92.08% (8 lines): 47-48, 89, 105, 111, 133, 136, 146
 - `crates/pun-phpstan/src/types.rs` 98.83% (29 lines): 2321, 2927-2929, 2940, 2973-2976, 3023, 3026, 3031, 3097, 3131, 3137, 3277, 3303, 3314, 3333, 3358-3367
 <!-- coverage:end -->
 
@@ -39,6 +40,11 @@ Uncovered lines:
 - `crates/pun-cli/src/migrate.rs:283` the `preset <name>` source of an unsupported rule when there is no pint.json: every rule of the presets `--preset` takes (laravel, psr12, empty) has a native fixer, so `unsupported` is empty there unless a `PUN_FIXERS_ONLY` build left the preset's fixers out.
 - `crates/pun-analyse/src/laravel/mod.rs:464-471` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-phpstan/src/symbols.rs:96-98` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
+- `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
+- `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
+- `crates/pun-lint/src/rules/laravel/prefer_request_server.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
+- `crates/pun-lint/src/rules/laravel/prefer_sleep_facade.rs:33` the non-target node guard: `Linter` dispatches only ExpressionStatement for this rule.
+- `crates/pun-lint/src/rules/laravel/names.rs:20` a scope without a Program ancestor: every class-name lookup comes from a parsed file's walk, whose first ancestor is Program.
 
 ## Not measured
 
