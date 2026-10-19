@@ -54,6 +54,12 @@ const PARAMETERS = [
     'ModelAppendsRuleTest' => ['databaseMigrationsPath' => ['../application/database/migrations']],
 ];
 
+// files a test's data needs that its analyse() call does not list (Composer autoloads them in Larastan's checkout;
+// Pun's tests scan them), relative to <larastan>/tests
+const SCANNED = [
+    'CheckDispatchArgumentTypesCompatibleWithClassConstructorRuleTest' => ['Rules/data/job-dispatch-classes.php', 'Rules/data/event-dispatch-classes.php'],
+];
+
 $only = array_slice($argv, 1);
 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tests.'/Rules'));
 $testFiles = [];
@@ -97,6 +103,9 @@ $run = function (array $configs, array $params, array $files, array $bootstrap =
     $r = json_decode((string) $output, true);
     if (! is_array($r)) {
         return null;
+    }
+    foreach ($r['errors'] as $error) {
+        fwrite(STDERR, "general error: $error\n");
     }
     $errors = [];
     foreach ($r['files'] as $file => $d) {
@@ -150,7 +159,8 @@ foreach ($testFiles as $test) {
             fwrite(STDERR, "$name::{$case['method']}: phpstan crashed\n");
             continue;
         }
-        $result['cases'][] = ['method' => $case['method'], 'files' => $files, 'errors' => $errors];
+        $scanned = array_map(fn ($f) => $copy($tests.'/'.$f), SCANNED[$short] ?? []);
+        $result['cases'][] = ['method' => $case['method'], 'files' => $files, 'scanned' => $scanned, 'errors' => $errors];
     }
     @mkdir(dirname($out.'/'.$name), 0777, true);
     file_put_contents($out.'/'.$name.'.json', json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");

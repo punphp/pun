@@ -5,6 +5,7 @@
 mod appends;
 mod calls;
 mod classes;
+mod dispatch;
 mod octane;
 
 use std::collections::{HashMap, HashSet};
@@ -37,6 +38,8 @@ pub const IDENTIFIERS: &[&str] = &[
     "larastan.noPublicModelAccessorMethod",
     "larastan.octaneCompatibility",
     "rules.modelAppends",
+    "larastan.jobs.noConstructor",
+    "larastan.events.noConstructor",
 ];
 
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
@@ -249,6 +252,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         self.spans.extend(wanted.map(|a| a.value().span()));
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        if let ClassLikeMemberSelector::Identifier(m) = &call.method
+            && dispatch::conditional(m.value)
+            && let Some(first) = call.argument_list.arguments.first()
+        {
+            self.spans.push(first.value().span());
+        }
         if self.larastan.no_model_make
             && matches!(&call.method, ClassLikeMemberSelector::Identifier(m) if m.value == b"make")
             && !matches!(

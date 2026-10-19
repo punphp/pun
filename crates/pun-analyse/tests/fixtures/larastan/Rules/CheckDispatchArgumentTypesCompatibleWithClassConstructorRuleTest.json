@@ -1,0 +1,190 @@
+{
+    "test": "Rules/CheckDispatchArgumentTypesCompatibleWithClassConstructorRuleTest",
+    "cases": [
+        {
+            "method": "testJobDispatch",
+            "files": [
+                "Rules/data/job-dispatch.php"
+            ],
+            "scanned": [
+                "Rules/data/job-dispatch-classes.php",
+                "Rules/data/event-dispatch-classes.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 5,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 0 parameters in Tests\\Rules\\Data\\LaravelJob::dispatch(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 6,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 0 parameters in Tests\\Rules\\Data\\LaravelJob::dispatchSync(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 7,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 0 parameters in Tests\\Rules\\Data\\LaravelJob::dispatchNow(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 7,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Tests\\Rules\\Data\\LaravelJob::dispatchNow().",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 8,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 0 parameters in Tests\\Rules\\Data\\LaravelJob::dispatchAfterResponse(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 10,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 1 parameter in Tests\\Rules\\Data\\LaravelJob::dispatch(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 14,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 1 parameter in Tests\\Rules\\Data\\LaravelJob::dispatchSync(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 18,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 1 parameter in Tests\\Rules\\Data\\LaravelJob::dispatchNow(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 18,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Tests\\Rules\\Data\\LaravelJob::dispatchNow().",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 19,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Tests\\Rules\\Data\\LaravelJob::dispatchNow().",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 20,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Tests\\Rules\\Data\\LaravelJob::dispatchNow().",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 22,
+                    "identifier": "arguments.count",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJob constructor invoked with 1 parameter in Tests\\Rules\\Data\\LaravelJob::dispatchAfterResponse(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 30,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJobWithoutConstructor does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 32,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJobWithoutConstructor does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 33,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Tests\\Rules\\Data\\LaravelJobWithoutConstructor::dispatchNow().",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 34,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJobWithoutConstructor does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 34,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Tests\\Rules\\Data\\LaravelJobWithoutConstructor::dispatchNow().",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 36,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJobWithoutConstructor does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/job-dispatch.php",
+                    "line": 39,
+                    "identifier": "larastan.jobs.noConstructor",
+                    "message": "Job class Tests\\Rules\\Data\\LaravelJobWithoutConstructor does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "testEventDispatch",
+            "files": [
+                "Rules/data/event-dispatch.php"
+            ],
+            "scanned": [
+                "Rules/data/job-dispatch-classes.php",
+                "Rules/data/event-dispatch-classes.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/event-dispatch.php",
+                    "line": 5,
+                    "identifier": "arguments.count",
+                    "message": "Event class Tests\\Rules\\Data\\LaravelEvent constructor invoked with 0 parameters in Tests\\Rules\\Data\\LaravelEvent::dispatch(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/event-dispatch.php",
+                    "line": 7,
+                    "identifier": "arguments.count",
+                    "message": "Event class Tests\\Rules\\Data\\LaravelEvent constructor invoked with 1 parameter in Tests\\Rules\\Data\\LaravelEvent::dispatch(), 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/event-dispatch.php",
+                    "line": 15,
+                    "identifier": "larastan.events.noConstructor",
+                    "message": "Event class Tests\\Rules\\Data\\LaravelEventWithoutConstructor does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/event-dispatch.php",
+                    "line": 18,
+                    "identifier": "larastan.events.noConstructor",
+                    "message": "Event class Tests\\Rules\\Data\\LaravelEventWithoutConstructor does not have a constructor and must be dispatched without any parameters.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

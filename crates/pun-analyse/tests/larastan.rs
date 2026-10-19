@@ -25,7 +25,17 @@ const PORTED: &[&str] = &[
     "larastan.noPublicModelAccessorMethod",
     "larastan.octaneCompatibility",
     "rules.modelAppends",
+    "larastan.jobs.noConstructor",
+    "larastan.events.noConstructor",
 ];
+
+/// Whether the test compares an error: one of a ported rule, or the dispatch rule's argument count (core
+/// `arguments.count` errors on the fixtures are not this suite's).
+fn is_compared(identifier: &str, message: &str) -> bool {
+    PORTED.contains(&identifier)
+        || identifier == "arguments.count"
+            && (message.starts_with("Job class ") || message.starts_with("Event class "))
+}
 
 /// Laravel's stubs, and the migrations' Schema facade (autoloadable in Larastan's test application).
 fn scanned(root: &Path) -> Vec<PathBuf> {
@@ -75,12 +85,15 @@ fn larastan_rule_fixtures() {
     for f in files {
         let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
         for case in test["cases"].as_array().unwrap() {
-            let ported = |id: &str| PORTED.contains(&id);
             let want: BTreeSet<Key> = case["errors"]
                 .as_array()
                 .unwrap()
                 .iter()
-                .filter(|e| e["identifier"].as_str().is_some_and(ported))
+                .filter(|e| {
+                    e["identifier"]
+                        .as_str()
+                        .is_some_and(|id| is_compared(id, e["message"].as_str().unwrap()))
+                })
                 .map(|e| {
                     (
                         e["file"].as_str().unwrap().to_string(),
@@ -97,12 +110,20 @@ fn larastan_rule_fixtures() {
                 .iter()
                 .map(|p| data.join(p.as_str().unwrap()))
                 .collect();
-            let mut project = Project::new(analysed, scanned(&root));
+            let mut scanned = scanned(&root);
+            scanned.extend(
+                case["scanned"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .map(|p| data.join(p.as_str().unwrap())),
+            );
+            let mut project = Project::new(analysed, scanned);
             project.larastan = Some(larastan.clone());
             let got: BTreeSet<Key> = run(&project)
                 .unwrap()
                 .into_iter()
-                .filter(|e| ported(&e.identifier))
+                .filter(|e| is_compared(&e.identifier, &e.message))
                 .map(|e| {
                     let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
                     (file, e.line, e.identifier, e.message, e.tip)

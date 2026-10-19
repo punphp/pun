@@ -143,6 +143,48 @@ namespace Illuminate\Database\Eloquent\Attributes {
     }
 }
 
+namespace Illuminate\Foundation\Bus {
+    trait Dispatchable
+    {
+        public static function dispatch(...$arguments)
+        {
+        }
+
+        public static function dispatchIf($boolean, ...$arguments)
+        {
+        }
+
+        public static function dispatchUnless($boolean, ...$arguments)
+        {
+        }
+
+        public static function dispatchSync(...$arguments)
+        {
+        }
+
+        public static function dispatchAfterResponse(...$arguments)
+        {
+        }
+    }
+}
+
+namespace Illuminate\Foundation\Events {
+    trait Dispatchable
+    {
+        public static function dispatch(...$arguments)
+        {
+        }
+
+        public static function dispatchIf($boolean, ...$arguments)
+        {
+        }
+
+        public static function dispatchUnless($boolean, ...$arguments)
+        {
+        }
+    }
+}
+
 namespace App {
     class User extends \Illuminate\Database\Eloquent\Model
     {

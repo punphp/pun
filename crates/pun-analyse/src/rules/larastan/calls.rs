@@ -227,6 +227,7 @@ pub(crate) fn static_method_call<'arena>(
     let Some(larastan) = c.larastan else {
         return;
     };
+    super::dispatch::check(c, call);
     let ClassLikeMemberSelector::Identifier(method) = &call.method else {
         return;
     };
