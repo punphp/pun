@@ -260,6 +260,60 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
     }
 }
 
+/// `TypehintHelper::decideTypeFromReflection()` of a native type declaration Mago's codex holds (the `TUnion` its
+/// scanner built from the hint), declared in class-like `class`: what [`native()`] gives for the hint itself.
+pub fn from_tunion(
+    c: &Checker,
+    t: &mago_codex::ttype::union::TUnion,
+    class: &ClassLikeMetadata,
+) -> Type {
+    use mago_codex::ttype::union::TUnion;
+    use mago_codex::ttype::atomic::TAtomic;
+    use mago_codex::ttype::atomic::callable::TCallable;
+    use mago_codex::ttype::atomic::object::TObject;
+    use mago_codex::ttype::atomic::reference::TReference;
+    use mago_codex::ttype::atomic::scalar::TScalar;
+    let atom = |a: &TAtomic| match a {
+        TAtomic::Null => Type::Null,
+        TAtomic::Void => Type::Void,
+        TAtomic::Never => Type::Never(NeverKind::Explicit),
+        TAtomic::Scalar(TScalar::Bool(b)) => b.value.map_or(Type::Bool, Type::ConstBool),
+        TAtomic::Scalar(TScalar::Integer(_)) => Type::Int,
+        TAtomic::Scalar(TScalar::Float(_)) => Type::Float,
+        TAtomic::Scalar(TScalar::String(_)) => Type::String,
+        TAtomic::Array(_) => Type::array(mixed(), mixed()),
+        TAtomic::Iterable(_) => Type::Iterable(Box::new(mixed()), Box::new(mixed())),
+        TAtomic::Callable(TCallable::Signature(s)) if s.is_closure => {
+            Type::Object("Closure".to_string(), vec![])
+        }
+        TAtomic::Callable(_) => Type::Callable(None),
+        TAtomic::Object(TObject::Named(n)) => {
+            let name = text(n.name.as_bytes());
+            let ty = if n.is_static {
+                Type::Static(name, vec![])
+            } else if name.eq_ignore_ascii_case("parent") {
+                Type::Object(parent_name(c.codebase, class).unwrap_or(name), vec![])
+            } else {
+                Type::Object(name, vec![])
+            };
+            match &n.intersection_types {
+                None => ty,
+                Some(more) => intersect(
+                    std::iter::once(ty)
+                        .chain(more.iter().map(|m| from_tunion(c, &TUnion::from_atomic(m.clone()), class)))
+                        .collect(),
+                ),
+            }
+        }
+        TAtomic::Reference(TReference::Symbol { name, .. }) => {
+            Type::Object(text(name.as_bytes()), vec![])
+        }
+        TAtomic::Object(TObject::Any) => Type::ObjectWithoutClass,
+        _ => Type::Mixed { explicit: true },
+    };
+    union(t.types.iter().map(atom).collect())
+}
+
 /// A function-like's types as its reflection gives them.
 pub struct Signature {
     /// (name, `getType()`, `getOutType()`, `getClosureThisType()`)
@@ -715,7 +769,7 @@ fn is_constructor(k: &ClassLikeMetadata, lower: &[u8]) -> bool {
 }
 
 /// A `= null` default.
-fn default_is_null(p: &FunctionLikeParameter) -> bool {
+pub fn default_is_null(p: &FunctionLikeParameter) -> bool {
     matches!(
         p.default_value.as_ref().map(|d| d.value),
         Some(Expression::Literal(Literal::Null(_)))
@@ -970,12 +1024,19 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                 .get_class_like(w.as_bytes())
                 .map_or_else(|| text(w.as_bytes()), original_name)
         };
-        let ancestors = k
+        let mut ancestors: Vec<String> = k
             .all_parent_classes
             .iter()
             .chain(k.all_parent_interfaces.iter())
+            .filter(|w| !w.as_bytes().starts_with(b"__internal_do_not_use__"))
             .map(canonical)
             .collect();
+        // an enum's implicit interfaces (Mago names a backed one's by its backing type)
+        if k.kind == SymbolKind::Enum {
+            ancestors.retain(|a| a != "UnitEnum" && a != "BackedEnum");
+            ancestors.push("UnitEnum".to_string());
+            ancestors.extend(k.enum_type.is_some().then(|| "BackedEnum".to_string()));
+        }
         let own = class_templates(c, k);
         let generics = self.generics(k, &own);
         let templates = own
@@ -1113,6 +1174,10 @@ fn serialize(t: &Type) -> String {
                 args.extend(tpl.default.as_ref().map(encode));
                 Type::Object("__template".to_string(), args)
             }
+            Type::Benevolent(types) => Type::Object(
+                "__benevolent".to_string(),
+                vec![Type::Union(types.iter().map(encode).collect())],
+            ),
             _ => t.traverse(&encode),
         }
     }

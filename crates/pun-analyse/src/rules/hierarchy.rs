@@ -28,7 +28,7 @@ impl Checker<'_, '_> {
         doc_before(&contents, k.span.start.offset as usize).map(<[u8]>::to_vec)
     }
 
-    fn class_tags(&self, k: &ClassLikeMetadata) -> Vec<String> {
+    pub(super) fn class_tags(&self, k: &ClassLikeMetadata) -> Vec<String> {
         self.class_doc(k).map(|d| doc_tags(&d)).unwrap_or_default()
     }
 
@@ -44,7 +44,7 @@ impl Checker<'_, '_> {
 
     /// Whether the declaration at `span` has the modifier `modifier` before its name (after its attributes), or
     /// `None` when its file can't be read (a built-in symbol's stub).
-    fn has_modifier(&self, span: Span, name: Span, modifier: &[u8]) -> Option<bool> {
+    pub(super) fn has_modifier(&self, span: Span, name: Span, modifier: &[u8]) -> Option<bool> {
         let contents = self.file_contents(span.file_id)?;
         let head = &contents[span.start.offset as usize..name.start.offset as usize];
         let modifiers = head
@@ -72,7 +72,7 @@ impl Checker<'_, '_> {
 
     /// BetterReflection's `ReflectionMethod::isAbstract()`: an interface's method, or one declared `abstract` (Mago
     /// also flags a method without a body).
-    fn method_abstract(
+    pub(super) fn method_abstract(
         &self,
         declaring: &ClassLikeMetadata,
         f: &mago_codex::metadata::function_like::FunctionLikeMetadata,

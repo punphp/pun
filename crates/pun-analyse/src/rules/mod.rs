@@ -25,6 +25,7 @@ mod larastan;
 mod members;
 mod missing_types;
 mod names;
+mod overriding;
 mod params;
 mod printf_helper;
 mod properties;
@@ -333,6 +334,20 @@ pub const IDENTIFIERS: &[&str] = &[
     "callable.notSupported",
     "array.duplicateKey",
     "property.assignByRef",
+    "method.parentMethodFinal",
+    "method.parentMethodFinalByPhpDoc",
+    "method.abstractOverridingNonAbstract",
+    "method.override",
+    "method.nonStatic",
+    "method.static",
+    "method.tentativeReturnType",
+    "method.childReturnType",
+    "method.childParameterType",
+    "parameter.missing",
+    "parameter.byRef",
+    "parameter.notByRef",
+    "parameter.notOptional",
+    "parameter.notVariadic",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -620,9 +635,17 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && trait_span.start.offset <= f.span.start.offset
                 && f.span.end.offset <= trait_span.end.offset
         };
-        self.codebase
-            .get_class_like(class.as_bytes())
-            .and_then(|k| members::method(self, k, name.as_bytes()))
+        let Some(k) = self.codebase.get_class_like(class.as_bytes()) else {
+            return false;
+        };
+        // BetterReflection's own cases(), and a backed enum's from() and tryFrom(), replace an enum's others
+        let lower = name.to_ascii_lowercase();
+        if k.kind == SymbolKind::Enum
+            && (lower == "cases" || (k.enum_type.is_some() && (lower == "from" || lower == "tryfrom")))
+        {
+            return true;
+        }
+        members::method(self, k, name.as_bytes())
             .is_some_and(|m| !matches!(m, members::Method::User { f, .. } if this_trait(f)))
     }
 
@@ -1080,6 +1103,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         };
         declarations::method(self, m, &method);
         hierarchy::method(self, m, &method);
+        overriding::method(self, m, &method);
         hierarchy::interface_method_visibility(self, m);
         dead_code::constructor(self, m, &method);
         missing_types::method(self, m);
