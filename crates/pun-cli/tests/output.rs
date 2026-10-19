@@ -755,6 +755,44 @@ fn latin1_diffs_like_pint() {
 /// or `--color=always`; `--format` and `-q` runs keep Pint's box (with the PHP exception's "In X.php line N:"
 /// header) on stdout, coloured by a raw `--ansi`. pint.json's own errors are `pun migrate`'s (pun-config's tests
 /// have Pint's messages).
+/// PHP's parse error keeps the source's bytes (`é` cut after its first byte by `%.*s`, a Latin-1 `é`), and Pint's
+/// ERROR line (`--format`) and `-q` line print them as they are.
+#[test]
+fn error_messages_keep_the_source_bytes_like_pint() {
+    let Some(cx) = Cx::new("error-bytes") else { return };
+    let php = which("php");
+    let oracle = cx.oracle.to_str().unwrap();
+    let side = |pun: bool, args: &[&str]| {
+        reset(&cx.dir, &[]);
+        std::fs::create_dir_all(&cx.dir).unwrap();
+        std::fs::write(
+            cx.dir.join("a.php"),
+            b"<?php\n$x = 1 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa\xc3\xa9 bbbbbbbbbbbbb';\n",
+        )
+        .unwrap();
+        std::fs::write(cx.dir.join("b.php"), b"<?php\n$x = 1 'caf\xe9';\n").unwrap();
+        if pun {
+            migrate(&cx.dir);
+            run(&[&PUN[..], args].concat(), &cx.dir, PLAIN)
+        } else {
+            let pint = [php.as_str(), "-d", "zend.assertions=-1", oracle];
+            run(&[&pint[..], args].concat(), &cx.dir, PLAIN)
+        }
+    };
+    for (args, bytes) in [
+        (&["--test", "--format=txt", "a.php"][..], "a\\xc3...\""),
+        (&["--test", "-q", "b.php"], "caf\\xe9\""),
+    ] {
+        let (want, got) = (side(false, args), side(true, args));
+        assert!(want.stderr.contains(bytes), "{args:?}: {}", want.stderr);
+        assert_eq!(
+            (&got.stderr, got.code),
+            (&want.stderr, want.code),
+            "{args:?}"
+        );
+    }
+}
+
 #[test]
 fn error_boxes_like_pint() {
     let Some(cx) = Cx::new("errors") else { return };

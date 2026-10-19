@@ -11,7 +11,8 @@ use pun_tokens::{Kind, ParseLexer, ParseToken};
 /// `CompileError` when `fatal` (PHP-CS-Fixer reports it as "Fatal error"), else `ParseError`.
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct SyntaxError {
-    pub message: String,
+    /// Bytes: the unexpected token's text is copied from the source as PHP copies it, valid UTF-8 or not.
+    pub message: Vec<u8>,
     pub line: u32,
     pub fatal: bool,
 }
@@ -248,7 +249,7 @@ impl Parser<'_> {
         below: Option<(usize, usize)>,
     ) -> Result<(), SyntaxError> {
         let fatal = |message: String| SyntaxError {
-            message,
+            message: message.into_bytes(),
             line: 0,
             fatal: true,
         };
@@ -291,15 +292,15 @@ impl Parser<'_> {
     }
 
     /// `zend_yytnamerr` for the unexpected token.
-    fn unexpected(&self, symbol: i32, tok: Option<&ParseToken>) -> String {
+    fn unexpected(&self, symbol: i32, tok: Option<&ParseToken>) -> Vec<u8> {
         let Some(tok) = tok else {
-            return "end of file".into();
+            return b"end of file".to_vec();
         };
         let name = YYTNAME[symbol as usize];
         match name {
-            "\"'\\\\'\"" => return "token \"\\\"".into(),
-            "\"amp\"" => return "token \"&\"".into(),
-            "'\"'" => return "double-quote mark".into(),
+            "\"'\\\\'\"" => return b"token \"\\\"".to_vec(),
+            "\"amp\"" => return b"token \"&\"".to_vec(),
+            "'\"'" => return b"double-quote mark".to_vec(),
             _ => {}
         }
         let mut toktype = name
@@ -307,11 +308,11 @@ impl Parser<'_> {
             .and_then(|n| n.strip_suffix('"'))
             .unwrap_or(name);
         if toktype.starts_with('\'') {
-            return format!("token \"{}\"", &toktype[1..toktype.len() - 1]);
+            return format!("token \"{}\"", &toktype[1..toktype.len() - 1]).into_bytes();
         }
         let mut content = self.text(tok);
         if content.len() == 1 && name == "\"invalid character\"" {
-            return format!("character 0x{:02X}", content[0]);
+            return format!("character 0x{:02X}", content[0]).into_bytes();
         }
         if let Some(nl) = content.iter().position(|&c| c == b'\n') {
             content = &content[..nl];
@@ -329,19 +330,23 @@ impl Parser<'_> {
         if content.last().is_some_and(|&c| c == b'\'' || c == b'"') {
             content = &content[..content.len() - 1];
         }
-        if content.len() > 33 {
-            return format!(
-                "{toktype} \"{}...\"",
-                String::from_utf8_lossy(&content[..30])
-            );
-        }
-        format!("{toktype} \"{}\"", String::from_utf8_lossy(content))
+        // `%.*s` cuts at byte 30, inside a multibyte character or not.
+        let (content, ellipsis): (&[u8], &[u8]) = if content.len() > 33 {
+            (&content[..30], b"...")
+        } else {
+            (content, b"")
+        };
+        [toktype.as_bytes(), b" \"", content, ellipsis, b"\""].concat()
     }
 
     /// `yysyntax_error` + `zenderror`.
     fn syntax_error(&self, state: i32, symbol: i32, tok: Option<&ParseToken>) -> SyntaxError {
         let line = self.lx.lineno();
-        let mut msg = format!("syntax error, unexpected {}", self.unexpected(symbol, tok));
+        let mut msg = [
+            &b"syntax error, unexpected "[..],
+            &self.unexpected(symbol, tok),
+        ]
+        .concat();
         let mut expected = Vec::new();
         // The state read a lookahead, so its yypact entry is not the default.
         let yyn = YYPACT[state as usize] as i32;
@@ -365,8 +370,8 @@ impl Parser<'_> {
                         .unwrap_or(name)
                         .replace('\'', "\""),
                 };
-                msg += if i == 0 { ", expecting " } else { " or " };
-                msg += &shown;
+                msg.extend_from_slice(if i == 0 { b", expecting " } else { b" or " });
+                msg.extend_from_slice(shown.as_bytes());
             }
         }
         SyntaxError {
@@ -385,7 +390,7 @@ impl Parser<'_> {
 
     fn run(&mut self) -> Result<(), SyntaxError> {
         let lex_error = |e: pun_tokens::LexError| SyntaxError {
-            message: e.message,
+            message: e.message.into_bytes(),
             line: e.line,
             fatal: false,
         };

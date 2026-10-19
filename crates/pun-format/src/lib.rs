@@ -429,7 +429,8 @@ pub fn php_bool(v: &str) -> bool {
 /// A syntax error (PHP-CS-Fixer `LintingException`). `after_fix` = the fixers produced invalid code.
 #[derive(Debug, Clone)]
 pub struct LintError {
-    pub message: String,
+    /// Bytes, as PHP's message carries the source's bytes (an unexpected token cut at byte 30, Latin-1 text).
+    pub message: Vec<u8>,
     pub after_fix: bool,
 }
 
@@ -437,16 +438,16 @@ pub struct LintError {
 /// errors, see php_parser.rs); the message is TokenizerLintingResult's.
 pub fn lint(code: &[u8]) -> Result<(), LintError> {
     php_parser::parse(code).map_err(|e| LintError {
-        message: format!(
-            "{}: {} on line {}.",
+        message: [
             if e.fatal {
-                "Fatal error"
+                &b"Fatal error: "[..]
             } else {
-                "Parse error"
+                b"Parse error: "
             },
-            e.message,
-            e.line
-        ),
+            &e.message,
+            format!(" on line {}.", e.line).as_bytes(),
+        ]
+        .concat(),
         after_fix: false,
     })
 }
@@ -672,7 +673,7 @@ mod tests {
             .unwrap_err();
         // Expected messages: token_get_all($code, TOKEN_PARSE) on PHP 8.5, worded by TokenizerLintingResult.
         assert!(!e.after_fix);
-        assert_eq!(e.message, "Parse error: Unclosed '(' on line 2 on line 3.");
+        assert_eq!(e.message, b"Parse error: Unclosed '(' on line 2 on line 3.");
         let only_drop = Pipeline::new(&[rule("drop_space")], &factory).unwrap();
         // drop_space turns the input into `<?php\nfunctiona() {}`.
         let e = only_drop
@@ -681,7 +682,7 @@ mod tests {
         assert!(e.after_fix);
         assert_eq!(
             e.message,
-            "Parse error: syntax error, unexpected token \"{\" on line 2."
+            b"Parse error: syntax error, unexpected token \"{\" on line 2."
         );
     }
 

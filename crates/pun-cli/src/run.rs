@@ -645,7 +645,7 @@ fn process_file(
                 } else {
                     Status::Invalid
                 };
-                r.message = err.message;
+                r.message = crate::console::carry(&err.message);
                 return Ok(done(r));
             }
             Ok(None) => {}
@@ -664,7 +664,7 @@ fn process_file(
         }
     } else if native_syntax_error && let Err(err) = pun_format::lint(&code) {
         r.status = Status::Invalid;
-        r.message = err.message;
+        r.message = crate::console::carry(&err.message);
         return Ok(done(r));
     }
     let warned: Vec<&'static str> = (token_on.iter())

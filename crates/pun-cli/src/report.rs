@@ -291,18 +291,15 @@ pub(crate) fn emit(
         out = reporter(ctx, results, f, out_dec)?;
     } else if quiet {
         for i in issues(results) {
-            eprintln!(
-                "{}",
-                fmt(
-                    &format!(
-                        "  {} {}: {}",
-                        symbol(i.status, ctx.dry_run, out_dec),
-                        i.rel,
-                        description(i)
-                    ),
-                    err_dec
-                )
-            );
+            console::eprintln_raw(&fmt(
+                &format!(
+                    "  {} {}: {}",
+                    symbol(i.status, ctx.dry_run, out_dec),
+                    i.rel,
+                    description(i)
+                ),
+                err_dec,
+            ))?;
         }
     } else {
         console::print_raw(&human(ctx, results))?;
@@ -342,13 +339,10 @@ pub(crate) fn emit(
     }
     if format.is_some() {
         for r in errors(results) {
-            eprintln!(
-                "{}",
-                fmt(
-                    &format!("  <error>ERROR</error> {}: {}", r.path.display(), r.message),
-                    err_dec
-                )
-            );
+            console::eprintln_raw(&fmt(
+                &format!("  <error>ERROR</error> {}: {}", r.path.display(), r.message),
+                err_dec,
+            ))?;
         }
     }
     Ok(())
@@ -383,7 +377,7 @@ fn annotations(ctx: &Ctx, results: &[FileResult]) -> String {
                 &f.rel,
                 error_line(&f.message).max(1),
                 &["fixer-error".into()],
-                &f.message,
+                &console::lossy(&f.message),
             ),
             _ => continue,
         };
@@ -527,10 +521,8 @@ fn syntax_error(f: &FileResult) -> (Problem, String, LineIndex) {
         .expect("a line of the file");
     let line = &source[range.clone()];
     let at = range.start + line.len() - line.trim_start().len();
-    let message = f
-        .message
-        .strip_prefix("Parse error: ")
-        .unwrap_or(&f.message);
+    let message = console::lossy(&f.message);
+    let message = message.strip_prefix("Parse error: ").unwrap_or(&message);
     let message = message.rsplit_once(" on line ").map_or(message, |m| m.0);
     let problem = Problem {
         rule: "syntax-error".into(),
@@ -549,7 +541,7 @@ fn fixer_error(r: &Renderer, f: &FileResult) -> String {
     r.run_error(&RunError {
         path: Some(f.rel.clone().into()),
         line: None,
-        message: f.message.clone(),
+        message: console::lossy(&f.message),
         hint: Some(
             "a rule failed on this file; please report it at https://github.com/punphp/pun/issues"
                 .into(),
@@ -606,7 +598,7 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
                 0 => String::new(),
                 n => format!(":{n}"),
             };
-            items.push(format!("{}{at} {rule} {}", r.rel, r.message));
+            items.push(format!("{}{at} {rule} {}", r.rel, console::lossy(&r.message)));
         } else if r.status == Status::Fixed {
             if remaining {
                 left += 1;
@@ -810,8 +802,9 @@ fn reporter(
             fix_report::txt(&changes, ctx.verbose, ctx.dry_run, ctx.total, decorated)
         }
         ReportFormat::Agent => {
-            let errors: Vec<(&str, &str)> = (errors(results))
-                .map(|r| (r.rel.as_str(), r.message.as_str()))
+            let messages: Vec<String> = errors(results).map(|r| console::lossy(&r.message)).collect();
+            let errors: Vec<(&str, &str)> = (errors(results).map(|r| r.rel.as_str()))
+                .zip(messages.iter().map(String::as_str))
                 .collect();
             fix_report::agent(&changes, &errors, ctx.dry_run)
         }
