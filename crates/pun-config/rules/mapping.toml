@@ -421,7 +421,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-useless-override" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove methods and constructors that only call the parent with the same arguments." }
 "dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
 "dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }
-"dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove useless variable assigns" }
+"dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless variable assigns" }
 "functions/no-assign-in-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects assignments in function call arguments which can lead to unexpected behavior and make" }
 "functions/no-call-user-func-method" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `call_user_func()` on known class method to a method call" }
 "functions/no-extra-arguments" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Remove extra parameters" }

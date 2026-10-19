@@ -116,6 +116,7 @@ mod no_useless_condition;
 mod no_useless_continue;
 mod no_useless_readonly;
 mod no_useless_ternary;
+mod no_useless_variable;
 mod no_variable_variable;
 mod no_void_on_magic_method;
 mod no_void_reference_return;
@@ -285,6 +286,7 @@ pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_continue::NoUselessContinue;
 pub use no_useless_readonly::NoUselessReadonly;
 pub use no_useless_ternary::NoUselessTernary;
+pub use no_useless_variable::NoUselessVariable;
 pub use no_variable_variable::NoVariableVariable;
 pub use no_void_on_magic_method::NoVoidOnMagicMethod;
 pub use no_void_reference_return::NoVoidReferenceReturn;
@@ -511,5 +513,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireStrictFunctionCall),
         Box::new(PreferCatchNameFromType),
         Box::new(NoParentCallWithoutParent),
+        Box::new(NoUselessVariable::default()),
     ]
 }
