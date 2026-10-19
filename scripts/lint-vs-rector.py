@@ -22,6 +22,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.dont_write_bytecode = True  # no scripts/__pycache__ from loading bench.py
 spec = importlib.util.spec_from_file_location("bench", ROOT / "scripts/bench.py")
 bench = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bench)
