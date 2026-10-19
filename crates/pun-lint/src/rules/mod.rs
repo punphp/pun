@@ -1,6 +1,14 @@
 //! The ported rules. Each file is one Pun rule, ported function by function from its upstream source.
 
 mod add_csv_escape_argument;
+mod no_unused_promoted_property;
+mod require_parent_visibility;
+mod add_datetime_property_type;
+mod no_dead_catch;
+mod prefer_class_keyword;
+mod no_unused_constructor_param;
+mod no_null_default_argument;
+mod add_param_type_sprintf;
 mod laravel;
 mod lint_b_doc;
 mod lint_b_early_exit;
@@ -181,6 +189,14 @@ mod types;
 mod used_variable;
 
 pub use add_csv_escape_argument::AddCsvEscapeArgument;
+pub use no_unused_promoted_property::NoUnusedPromotedProperty;
+pub use require_parent_visibility::RequireParentVisibility;
+pub use add_datetime_property_type::AddDatetimePropertyType;
+pub use no_dead_catch::NoDeadCatch;
+pub use prefer_class_keyword::PreferClassKeyword;
+pub use no_unused_constructor_param::NoUnusedConstructorParam;
+pub use no_null_default_argument::{NoNullDefaultArgument, NoNullDefaultNamedArgument};
+pub use add_param_type_sprintf::AddParamTypeSprintf;
 pub use laravel::*;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
@@ -514,5 +530,14 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferCatchNameFromType),
         Box::new(NoParentCallWithoutParent),
         Box::new(NoUselessVariable::default()),
+        Box::new(NoNullDefaultArgument),
+        Box::new(NoNullDefaultNamedArgument),
+        Box::new(NoUnusedConstructorParam),
+        Box::new(NoDeadCatch),
+        Box::new(AddParamTypeSprintf),
+        Box::new(AddDatetimePropertyType),
+        Box::new(PreferClassKeyword),
+        Box::new(RequireParentVisibility),
+        Box::new(NoUnusedPromotedProperty),
     ]
 }

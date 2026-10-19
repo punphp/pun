@@ -17,7 +17,7 @@ use crate::{Context, Report, Rule};
 pub struct NoUnusedPublicMethodParam;
 
 /// php-parser's `ClassMethod::isMagic` names, lowercase.
-const MAGIC: &[&str] = &[
+pub(super) const MAGIC: &[&str] = &[
     "__construct",
     "__destruct",
     "__call",

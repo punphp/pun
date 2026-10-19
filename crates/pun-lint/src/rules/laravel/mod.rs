@@ -13,18 +13,24 @@ mod prefer_abort_if;
 mod prefer_anonymous_migration;
 mod prefer_back_helper;
 mod prefer_casts_method;
+mod prefer_date_facade;
+mod prefer_default_argument;
 mod prefer_env_helper;
 mod prefer_exception_class_string;
+mod prefer_explicit_json_call;
 mod prefer_facade_over_app;
 mod prefer_nullsafe;
 mod prefer_report_if;
+mod prefer_request_facade;
 mod prefer_request_server;
+mod prefer_resolve_helper;
 mod prefer_session_facade;
 mod prefer_sleep_facade;
 mod prefer_str_starts_with;
 mod prefer_throw_if;
 mod prefer_to_route_helper;
 mod prefer_today;
+mod prefer_travel_to;
 
 pub use no_negated_blank_filled::NoNegatedBlankFilled;
 pub use no_request_all::NoRequestAll;
@@ -32,22 +38,28 @@ pub use prefer_abort_if::PreferAbortIf;
 pub use prefer_anonymous_migration::PreferAnonymousMigration;
 pub use prefer_back_helper::PreferBackHelper;
 pub use prefer_casts_method::PreferCastsMethod;
+pub use prefer_date_facade::PreferDateFacade;
+pub use prefer_default_argument::PreferDefaultArgument;
 pub use prefer_env_helper::PreferEnvHelper;
 pub use prefer_exception_class_string::PreferExceptionClassString;
+pub use prefer_explicit_json_call::PreferExplicitJsonCall;
 pub use prefer_facade_over_app::PreferFacadeOverApp;
 pub use prefer_nullsafe::PreferNullsafe;
 pub use prefer_report_if::PreferReportIf;
+pub use prefer_request_facade::PreferRequestFacade;
 pub use prefer_request_server::PreferRequestServer;
+pub use prefer_resolve_helper::PreferResolveHelper;
 pub use prefer_session_facade::PreferSessionFacade;
 pub use prefer_sleep_facade::PreferSleepFacade;
 pub use prefer_str_starts_with::PreferStrStartsWith;
 pub use prefer_throw_if::PreferThrowIf;
 pub use prefer_to_route_helper::PreferToRouteHelper;
 pub use prefer_today::PreferToday;
+pub use prefer_travel_to::PreferTravelTo;
 
 use mago_syntax::cst::{
-    ArgumentList, Assignment, AssignmentOperator, Call, ClassLikeMemberSelector, CompositeString,
-    Expression, Node, UnaryPrefixOperator, Variable,
+    Argument, ArgumentList, Assignment, AssignmentOperator, Call, ClassLikeMemberSelector,
+    CompositeString, Expression, Node, UnaryPrefixOperator, Variable,
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 
@@ -75,6 +87,13 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoRequestAll),
         Box::new(PreferCastsMethod),
         Box::new(PreferAnonymousMigration),
+        Box::new(PreferNullsafe::default()),
+        Box::new(PreferResolveHelper),
+        Box::new(PreferDateFacade),
+        Box::new(PreferRequestFacade),
+        Box::new(PreferDefaultArgument),
+        Box::new(PreferExplicitJsonCall),
+        Box::new(PreferTravelTo),
     ]
 }
 
@@ -115,6 +134,23 @@ pub(crate) fn argument_texts<'s>(ctx: &Context<'s>, list: &ArgumentList<'_>) -> 
             &ctx.source[s.start..s.end]
         })
         .collect()
+}
+
+/// `CallLike::getArg($name, $position)`: the argument named `name`, or the unnamed one at `position`; unpacked
+/// arguments are skipped.
+pub(crate) fn get_arg<'a>(
+    list: &'a ArgumentList<'a>,
+    name: &str,
+    position: usize,
+) -> Option<&'a Argument<'a>> {
+    list.arguments
+        .iter()
+        .enumerate()
+        .find(|(i, a)| match a {
+            Argument::Named(n) => n.name.value == name.as_bytes(),
+            Argument::Positional(p) => p.ellipsis.is_none() && *i == position,
+        })
+        .map(|(_, a)| a)
 }
 
 /// `name(arg, arg)`: a call php-parser's printer writes for a new call node over kept arguments.
@@ -270,4 +306,64 @@ pub(crate) fn redirect_helper(
         format!("Use `{helper}()` instead of redirecting with `{method}()`."),
         call(helper, &argument_texts(ctx, list)),
     ));
+}
+
+/// PHPStan's `ObjectType::isSuperTypeOf` on a class name: `class` is one of `targets` (ignoring ASCII case), or a
+/// class the codebase knows that extends, implements or uses (itself or through a parent) one of them.
+pub(crate) fn is_a(ctx: &Context<'_>, class: &str, targets: &[&str]) -> bool {
+    let target = |name: &[u8]| {
+        targets
+            .iter()
+            .any(|t| t.as_bytes().eq_ignore_ascii_case(name))
+    };
+    if target(class.as_bytes()) {
+        return true;
+    }
+    let facts = crate::rules::types::facts::facts(ctx);
+    let codebase = &facts.codebase;
+    codebase.get_class_like(class.as_bytes()).is_some_and(|c| {
+        c.all_parent_classes
+            .iter()
+            .chain(c.all_parent_interfaces.iter())
+            .any(|p| target(p.as_bytes()))
+            || std::iter::once(&c.name)
+                .chain(c.all_parent_classes.iter())
+                .filter_map(|p| codebase.get_class_like(p.as_bytes()))
+                .any(|p| p.used_traits.iter().any(|t| target(t.as_bytes())))
+    })
+}
+
+/// Whether the expression holds an object of `class` (or a subclass the codebase knows): `$this` in such a class, or
+/// what [`is_object_of`](crate::rules::lint_b_helpers::is_object_of) proves from the syntax.
+pub(crate) fn is_object(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+    class: &str,
+) -> bool {
+    match unparenthesize(expr) {
+        Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+            // The class-like `$this` stands for; none in a trait, which Rector leaves alone.
+            let own = ancestors.iter().rev().find_map(|a| {
+                let name = match a {
+                    Node::Class(c) => c.name.value,
+                    Node::Enum(e) => e.name.value,
+                    Node::AnonymousClass(c) => {
+                        let span = mago_span::HasSpan::span(*c);
+                        return Some(
+                            crate::rules::types::facts::facts(ctx).anonymous_class_name(span),
+                        );
+                    }
+                    _ => return None,
+                };
+                let name = String::from_utf8_lossy(name);
+                Some(match crate::rules::types::namespace_of(ancestors) {
+                    Some(ns) => format!("{ns}\\{name}"),
+                    None => name.into_owned(),
+                })
+            });
+            own.is_some_and(|own| is_a(ctx, &own, &[class]))
+        }
+        e => crate::rules::lint_b_helpers::is_object_of(ancestors, e, class, node_span(e).start),
+    }
 }
