@@ -1,6 +1,9 @@
 //! The ported rules. Each file is one Pun rule, ported function by function from its upstream source.
 
+mod add_csv_escape_argument;
 mod laravel;
+mod lint_b_foreach;
+mod lint_b_helpers;
 mod mago_const_value;
 mod mago_usage;
 mod no_and_assignment;
@@ -20,6 +23,7 @@ mod no_else_after_return;
 mod no_empty_block;
 mod no_empty_catch;
 mod no_empty_loop;
+mod no_finfo_buffer_context;
 mod no_future_php_version_check;
 mod no_identical_branches;
 mod no_implode_ternary;
@@ -30,7 +34,9 @@ mod no_negated_and;
 mod no_negated_boolean_literal;
 mod no_negated_condition;
 mod no_negated_group;
+mod no_null_debug_info;
 mod no_null_property_init;
+mod no_out_of_range_chr;
 mod no_overwritten_assignment;
 mod no_redundant_condition;
 mod no_redundant_final_const;
@@ -62,9 +68,15 @@ mod no_useless_condition;
 mod no_useless_continue;
 mod php_parser;
 mod prefer_absolute_include;
+mod prefer_array_all;
+mod prefer_array_any;
 mod prefer_array_append;
+mod prefer_array_find;
+mod prefer_array_find_key;
+mod prefer_array_first_last;
 mod prefer_array_literal;
 mod prefer_boolean_and_or;
+mod prefer_clamp;
 mod prefer_coalesce_chain;
 mod prefer_coalesce_over_foreach;
 mod prefer_compound_assignment;
@@ -79,8 +91,10 @@ mod prefer_in_array_over_search;
 mod prefer_new_self;
 mod prefer_not_in_array;
 mod prefer_null_coalesce;
+mod prefer_ord_first_byte;
 mod prefer_property_default;
 mod prefer_property_over_local_getter;
+mod prefer_round_mode_enum;
 mod prefer_simple_condition;
 mod rector_batch5;
 mod rector_code_quality;
@@ -92,6 +106,7 @@ mod no_sole_value_sprintf;
 mod no_compact;
 mod require_is_a_allow_string;
 
+pub use add_csv_escape_argument::AddCsvEscapeArgument;
 pub use laravel::*;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
@@ -110,6 +125,7 @@ pub use no_else_after_return::NoElseAfterReturn;
 pub use no_empty_block::NoEmptyBlock;
 pub use no_empty_catch::NoEmptyCatch;
 pub use no_empty_loop::NoEmptyLoop;
+pub use no_finfo_buffer_context::NoFinfoBufferContext;
 pub use no_future_php_version_check::NoFuturePhpVersionCheck;
 pub use no_identical_branches::NoIdenticalBranches;
 pub use no_implode_ternary::NoImplodeTernary;
@@ -120,7 +136,9 @@ pub use no_negated_and::NoNegatedAnd;
 pub use no_negated_boolean_literal::NoNegatedBooleanLiteral;
 pub use no_negated_condition::NoNegatedCondition;
 pub use no_negated_group::NoNegatedGroup;
+pub use no_null_debug_info::NoNullDebugInfo;
 pub use no_null_property_init::NoNullPropertyInit;
+pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_redundant_condition::NoRedundantCondition;
 pub use no_redundant_final_const::NoRedundantFinalConst;
@@ -151,9 +169,15 @@ pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_continue::NoUselessContinue;
 pub use prefer_absolute_include::PreferAbsoluteInclude;
+pub use prefer_array_all::PreferArrayAll;
+pub use prefer_array_any::PreferArrayAny;
 pub use prefer_array_append::PreferArrayAppend;
+pub use prefer_array_find::PreferArrayFind;
+pub use prefer_array_find_key::PreferArrayFindKey;
+pub use prefer_array_first_last::PreferArrayFirstLast;
 pub use prefer_array_literal::PreferArrayLiteral;
 pub use prefer_boolean_and_or::PreferBooleanAndOr;
+pub use prefer_clamp::PreferClamp;
 pub use prefer_coalesce_chain::PreferCoalesceChain;
 pub use prefer_coalesce_over_foreach::PreferCoalesceOverForeach;
 pub use prefer_compound_assignment::PreferCompoundAssignment;
@@ -168,8 +192,10 @@ pub use prefer_in_array_over_search::PreferInArrayOverSearch;
 pub use prefer_new_self::PreferNewSelf;
 pub use prefer_not_in_array::PreferNotInArray;
 pub use prefer_null_coalesce::PreferNullCoalesce;
+pub use prefer_ord_first_byte::PreferOrdFirstByte;
 pub use prefer_property_default::PreferPropertyDefault;
 pub use prefer_property_over_local_getter::PreferPropertyOverLocalGetter;
+pub use prefer_round_mode_enum::PreferRoundModeEnum;
 pub use prefer_simple_condition::PreferSimpleCondition;
 pub use no_sole_value_sprintf::NoSoleValueSprintf;
 pub use no_compact::NoCompact;
@@ -268,5 +294,17 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoSoleValueSprintf),
         Box::new(NoCompact),
         Box::new(RequireIsAAllowString),
+        Box::new(AddCsvEscapeArgument),
+        Box::new(PreferRoundModeEnum),
+        Box::new(NoFinfoBufferContext),
+        Box::new(NoNullDebugInfo),
+        Box::new(NoOutOfRangeChr),
+        Box::new(PreferOrdFirstByte),
+        Box::new(PreferArrayFirstLast),
+        Box::new(PreferClamp),
+        Box::new(PreferArrayAll),
+        Box::new(PreferArrayAny),
+        Box::new(PreferArrayFind),
+        Box::new(PreferArrayFindKey),
     ]
 }
