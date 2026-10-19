@@ -249,6 +249,18 @@ fn func_get_args_to_variadic_param() {
 }
 
 #[test]
+fn call_user_func_array_to_variadic() {
+    let linter = only(PreferSpread);
+    let sources = ["CallUserFuncArrayToVariadicRector/Source/Redirector.php"];
+    run_with_sources(
+        &linter,
+        "CallUserFuncArrayToVariadicRector/Fixture",
+        &sources,
+    );
+    run(&linter, "CallUserFuncArrayToVariadicRector/Oracle");
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -294,6 +306,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(PreferVariadicParam),
             &["rector/FuncGetArgsToVariadicParamRector"],
+        ),
+        (
+            || Box::new(PreferSpread),
+            &["rector/CallUserFuncArrayToVariadicRector"],
         ),
     ];
     for (rule, dirs) in cases {

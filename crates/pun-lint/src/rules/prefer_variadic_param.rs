@@ -53,7 +53,10 @@ impl Rule for PreferVariadicParam {
                 }
                 // php-parser's `${'args'}`: Rector 2.6.1 fails on its null name.
                 Expression::Variable(_) => return,
-                _ => (&b"$args"[..], vec![Edit::new(node_span(assign.rhs), "$args")]),
+                _ => (
+                    &b"$args"[..],
+                    vec![Edit::new(node_span(assign.rhs), "$args")],
+                ),
             };
             // Rector removes the statement before `applyVariadicParams` gives up on an inner function or closure
             // assigning the same variable, and that one's own change prints the removal.
@@ -145,8 +148,8 @@ fn has_function_or_closure_inside(body: &Block<'_>, name: &[u8]) -> bool {
             return false;
         };
         params.parameters.is_empty()
-            && func_get_args_assign(inner).is_some_and(|a| {
-                matches!(a.lhs, Expression::Variable(Variable::Direct(v)) if v.name == name)
-            })
+            && func_get_args_assign(inner).is_some_and(
+                |a| matches!(a.lhs, Expression::Variable(Variable::Direct(v)) if v.name == name),
+            )
     })
 }

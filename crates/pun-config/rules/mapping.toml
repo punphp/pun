@@ -855,7 +855,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-readonly-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts readonly comment on classes to the readonly keyword." }
 "style/prefer-self-reference" = { fix = "unsafe", ported = true, status = "decided", summary = "Inside class or interface element `self` should be preferred to the class name itself." }
 "style/prefer-short-ternary" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Use the Elvis operator `?:` where possible." }
-"style/prefer-spread" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace `call_user_func_array()` with variadic" }
+"style/prefer-spread" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace `call_user_func_array()` with variadic" }
 "style/prefer-static-private-method" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Converts private methods to `static` where possible." }
 "style/prefer-str-contains" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible." }
 "style/prefer-variadic-param" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `func_get_args()` in to a variadic param" }
