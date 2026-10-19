@@ -103,19 +103,13 @@ fn parameter<'ast, 'arena>(
     if in_trait(ancestors) {
         return None;
     }
-    let body = ancestors.iter().rev().find(|n| {
-        matches!(
-            n,
-            Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)
-        )
+    let (body, params) = ancestors.iter().rev().find_map(|n| match n {
+        Node::Function(f) => Some((n, &f.parameter_list)),
+        Node::Method(m) => Some((n, &m.parameter_list)),
+        Node::Closure(c) => Some((n, &c.parameter_list)),
+        Node::ArrowFunction(a) => Some((n, &a.parameter_list)),
+        _ => None,
     })?;
-    let params = match body {
-        Node::Function(f) => &f.parameter_list,
-        Node::Method(m) => &m.parameter_list,
-        Node::Closure(c) => &c.parameter_list,
-        Node::ArrowFunction(a) => &a.parameter_list,
-        _ => unreachable!(),
-    };
     let param = params.parameters.iter().find(|p| p.variable.name == name)?;
     let written = written(*body, name);
     if written {
@@ -139,9 +133,7 @@ fn own_method_returns(
     };
     let Some(members) = ancestors.iter().rev().find_map(|n| match n {
         Node::Class(c) => Some(&c.members),
-        Node::Trait(t) => Some(&t.members),
         Node::Enum(e) => Some(&e.members),
-        Node::Interface(i) => Some(&i.members),
         Node::AnonymousClass(c) => Some(&c.members),
         _ => None,
     }) else {
@@ -307,7 +299,6 @@ pub(crate) fn is_array(source: &str, ancestors: &[Node<'_, '_>], expr: &Expressi
 fn own_property_is_array(source: &str, ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
     let Some((class, members, left_brace)) = ancestors.iter().rev().find_map(|n| match n {
         Node::Class(c) => Some((*n, &c.members, c.left_brace)),
-        Node::Trait(t) => Some((*n, &t.members, t.left_brace)),
         Node::AnonymousClass(c) => Some((*n, &c.members, c.left_brace)),
         _ => None,
     }) else {
@@ -386,11 +377,11 @@ fn only_array_assigned(class: Node<'_, '_>, name: &[u8]) -> bool {
 /// it.
 fn breaks_array<'ast, 'arena>(
     node: Node<'ast, 'arena>,
-    method: Option<Node<'ast, 'arena>>,
+    method: Option<&'ast Method<'arena>>,
     name: &[u8],
 ) -> bool {
     let method = match node {
-        Node::Method(_) => Some(node),
+        Node::Method(m) => Some(m),
         _ => method,
     };
     if let Node::Assignment(a) = node
@@ -408,7 +399,7 @@ fn breaks_array<'ast, 'arena>(
 }
 
 /// [`breaks_array`] for one assignment.
-fn breaks_with(a: &Assignment<'_>, method: Option<Node<'_, '_>>, name: &[u8]) -> bool {
+fn breaks_with(a: &Assignment<'_>, method: Option<&Method<'_>>, name: &[u8]) -> bool {
     let mut target = unparenthesize(a.lhs);
     let mut element = false;
     loop {
@@ -440,11 +431,8 @@ fn breaks_with(a: &Assignment<'_>, method: Option<Node<'_, '_>>, name: &[u8]) ->
     if element {
         // `isNonTypedFromParam`: a variable may be an untyped parameter unless it is one declared with a type.
         match unparenthesize(a.rhs) {
-            Expression::Variable(Variable::Direct(v)) => !method.is_some_and(|m| {
-                let Node::Method(method) = m else {
-                    return false;
-                };
-                !written(m, v.name)
+            Expression::Variable(Variable::Direct(v)) => !method.is_some_and(|method| {
+                !written(Node::Method(method), v.name)
                     && method.parameter_list.parameters.iter().any(|p| {
                         p.variable.name == v.name
                             && p.ampersand.is_none()
@@ -497,10 +485,10 @@ pub(crate) fn in_trait(ancestors: &[Node<'_, '_>]) -> bool {
 fn assigned_first(ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
     let body = ancestors.iter().rev().find_map(|n| match n {
         Node::Function(f) => Some(&f.body),
-        Node::Method(m) => match &m.body {
-            MethodBody::Concrete(b) => Some(b),
-            _ => None,
-        },
+        Node::Method(Method {
+            body: MethodBody::Concrete(b),
+            ..
+        }) => Some(b),
         Node::Closure(c) => Some(&c.body),
         _ => None,
     });

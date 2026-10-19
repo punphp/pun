@@ -319,7 +319,8 @@ fn remove_dead_loop() {
 #[test]
 fn remove_dead_stmt() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/ keeps the kept parts in source
-    // order where Rector writes the first part last.
+    // order where Rector writes the first part last, and keeps `$v[...]` where `$v` may be an `ArrayAccess` that Rector
+    // drops the `offsetGet()` of (a nullable, union, `object`, `mixed` or `iterable` type).
     let linter = only(rules::NoUnusedExpression, 80400);
     run_formatter_too(
         &linter,
@@ -327,6 +328,7 @@ fn remove_dead_stmt() {
         &["constant_fetch.php.inc", "scalar.php.inc"],
     );
     run(&linter, "RemoveDeadStmtRector/FixtureRemovedComments");
+    run(&linter, "RemoveDeadStmtRector/Oracle");
     run(&linter, "RemoveDeadStmtRector/Pun");
 }
 
