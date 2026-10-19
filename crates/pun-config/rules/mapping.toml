@@ -258,10 +258,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/no-explicit-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Disallows calling `__construct()` on an existing object outside a constructor." }
 "classes/no-null-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4)." }
 "classes/no-null-property-init" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove initialization with null value from property declarations" }
-"classes/no-protected-constant-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided", summary = "Change protected constant to private if possible" }
+"classes/no-protected-constant-in-final" = { fix = "safe", sets = ["privatization"], ported = true, status = "decided", summary = "Change protected constant to private if possible" }
 "classes/no-protected-in-final" = { fix = "safe", sets = ["privatization"], ported = true, status = "decided", summary = "Converts `protected` variables and methods to `private` where possible." }
-"classes/no-protected-method-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided", summary = "Change protected class method to private if possible" }
-"classes/no-protected-property-in-final" = { fix = "safe", sets = ["privatization"], ported = false, status = "decided", summary = "Change property to private if possible" }
+"classes/no-protected-method-in-final" = { fix = "safe", sets = ["privatization"], ported = true, status = "decided", summary = "Change protected class method to private if possible" }
+"classes/no-protected-property-in-final" = { fix = "safe", sets = ["privatization"], ported = true, status = "decided", summary = "Change property to private if possible" }
 "classes/no-redundant-readonly" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Removes redundant readonly from properties in readonly classes." }
 "classes/no-redundant-readonly-property" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "In a readonly class, drop `readonly` from properties and promoted parameters" }
 "classes/no-static-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Disallows calling a constructor statically (`Foo::__construct()`) outside a child class's constructor." }
@@ -269,7 +269,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/no-unset-on-property" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Properties should be set to `null` instead of using `unset`." }
 "classes/prefer-new-self" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `new static()` to `new self()` in a final class" }
 "classes/prefer-self-in-final" = { fix = "safe", sets = ["modernize", "code-quality"], ported = true, status = "decided", summary = "Inside an enum or `final`/anonymous class, `self` should be preferred over `static`." }
-"classes/prefer-self-over-static" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change `static::*` to `self::*` on final class or private static members" }
+"classes/prefer-self-over-static" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `static::*` to `self::*` on final class or private static members" }
 "classes/prefer-serialize-method" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Change __sleep() to __serialize() with correct return values" }
 "classes/prefer-unserialize-method" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Change __wakeup() to __unserialize()" }
 "classes/require-class-matches-file" = { fix = "unsafe", intent = "correctness", sets = ["code-quality"], ported = true, status = "decided", summary = "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name." }
@@ -430,7 +430,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/no-void-reference-return" = { fix = "none", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Detects functions, methods, closures, arrow functions, and set property hooks that return by reference from a void function." }
 "functions/require-array-filter-callback" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided", summary = "Requires a callback for `array_filter()`: without one it drops every falsy value, not only `null`." }
 "functions/require-assert-description" = { fix = "none", intent = "correctness", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects assert functions that do not have a description." }
-"functions/require-strict-array-search" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = false, status = "decided", summary = "Makes array_search search for identical elements" }
+"functions/require-strict-array-search" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Makes array_search search for identical elements" }
 "functions/require-strict-function-call" = { fix = "none", intent = "suspicious", sets = ["coding-style"], ported = false, status = "decided", summary = "Requires the strict flag of `in_array()`, `array_search()`, `array_keys()` with a search value and `base64_decode()`." }
 "functions/require-strict-in-array" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = false, status = "decided", summary = "Set in_array strict to true when defined on similar type" }
 "imports/no-unused" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Unused `use` statements must be removed." }
@@ -799,14 +799,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-dynamic-static-property" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows accessing a static property by a variable name (`Foo::$$property`)." }
 "style/no-empty" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Detects the use of the `empty()` construct.", note = "fix (Rector DisallowedEmptyRuleFixer) is unsafe; report-only from strict-rules empty.notAllowed and Mago no-empty" }
 "style/no-ereg" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace deprecated `ereg` regular expression functions with `preg`." }
-"style/no-escaped-quotes" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Prefer quote that are not inside the string" }
+"style/no-escaped-quotes" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Prefer quote that are not inside the string" }
 "style/no-hash-emoji" = { fix = "safe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Discourages usage of the `#️⃣` emoji in place of the ASCII `#`." }
 "style/no-ini-set" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Enforces that ini_set is not used." }
 "style/no-inline-html" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Disallows inline content (text outside of PHP tags) in source files." }
 "style/no-invalid-phpdoc" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Checks for syntax errors in docblock comments, such as malformed `{@see}` or" }
 "style/no-is-null" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Replaces `is_null($var)` expression with `null === $var`." }
 "style/no-isset" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects the use of the `isset()` construct." }
-"style/no-multi-assign" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Split chained assignments (`$a = $b = 1`) into one assignment per statement." }
+"style/no-multi-assign" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Split chained assignments (`$a = $b = 1`) into one assignment per statement." }
 "style/no-multiple-classes-per-file" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Ensures that each file contains at most one class-like definition (class, interface, enum, or trait)." }
 "style/no-nested-ternary" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Nested ternary expressions are disallowed to improve code clarity and prevent potential bugs arising from confusion over operator associativity." }
 "style/no-parameter-shadowing" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Detects when a function or method parameter is shadowed by a loop variable," }
@@ -843,7 +843,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-generic-array-phpdoc" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "PHPDoc `array<T>` type must be used instead of `T[]`." }
 "style/prefer-instanceof-stringable" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Detects the legacy pattern `is_object($x) && method_exists($x, '__toString')` and suggests" }
 "style/prefer-list-phpdoc" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "PHPDoc `list` type must be used instead of `array` without a key." }
-"style/prefer-php-version-id" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Changes use of call to version compare function to use of PHP version constant" }
+"style/prefer-php-version-id" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Changes use of call to version compare function to use of PHP version constant" }
 "style/prefer-phpdoc-comment" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Comments with annotation should be docblock when used on structural elements." }
 "style/prefer-pow-operator" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Converts `pow` to the `**` operator." }
 "style/prefer-property-over-local-getter" = { fix = "unsafe", sets = ["privatization"], ported = true, status = "decided", summary = "Privatize getter of local property to property" }
@@ -856,7 +856,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-str-contains" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible." }
 "style/prefer-variadic-param" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Refactor `func_get_args()` in to a variadic param" }
 "style/prefer-while-loop" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Suggests using a `while` loop instead of a `for` loop when the `for` loop does not have any" }
-"style/require-assign-set-padding" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Add extra space before new assign set" }
+"style/require-assign-set-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add extra space before new assign set" }
 "style/require-create-from-format-bang" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "The first argument of `DateTime::createFromFormat` method must start with `!`." }
 "style/require-final-class" = { fix = "unsafe", ported = true, status = "decided", summary = "All classes must be final, except abstract ones and Doctrine entities." }
 "style/require-final-internal-class" = { fix = "unsafe", ported = true, status = "decided", summary = "Internal classes should be `final`." }
@@ -870,7 +870,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/require-parent-visibility" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Make method visibility same as parent one" }
 "style/require-phpdoc" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects declarations that are missing a docblock." }
 "style/require-sorted-integer-keys" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects array literals with integer keys that are not in ascending order." }
-"style/require-statement-padding" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Add empty new line after different-type statements to improve code readability" }
+"style/require-statement-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add empty new line after different-type statements to improve code readability" }
 "style/require-todo-reference" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Require TODO and FIXME comments to reference a user or issue." }
 "tags/no-invalid-open-tag" = { fix = "safe", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects misspelled PHP opening tags like `<php?` instead of `<?php`." }
 "types/add-array-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type from return direct array" }

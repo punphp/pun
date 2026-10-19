@@ -34,7 +34,7 @@ impl Rule for AddCsvEscapeArgument {
         &self,
         node: Node<'ast, 'arena>,
         ancestors: &[Node<'ast, 'arena>],
-        _ctx: &Context<'_>,
+        ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
         let (list, at_most) = match node {
@@ -79,7 +79,7 @@ impl Rule for AddCsvEscapeArgument {
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
-                edits: vec![append_argument(list, "escape: '\\\\'")],
+                edits: vec![append_argument(ctx.source, list, "escape: '\\\\'")],
             }),
         });
     }

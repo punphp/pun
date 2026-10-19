@@ -6,6 +6,7 @@ mod lint_b_early_exit;
 mod lint_b_foreach;
 mod lint_b_helpers;
 mod lint_b_names;
+mod lint_b_privatize;
 mod lint_b_security;
 mod mago_const_value;
 mod mago_usage;
@@ -30,6 +31,7 @@ mod no_empty;
 mod no_empty_block;
 mod no_empty_catch;
 mod no_empty_loop;
+mod no_escaped_quotes;
 mod no_eval;
 mod no_explicit_constructor_call;
 mod no_ffi;
@@ -45,6 +47,7 @@ mod no_iterator_to_array_in_foreach;
 mod no_literal_password;
 mod no_mirror_assignment;
 mod no_missing_format_argument;
+mod no_multi_assign;
 mod no_negated_and;
 mod no_negated_boolean_literal;
 mod no_negated_condition;
@@ -55,6 +58,9 @@ mod no_null_property_init;
 mod no_out_of_range_chr;
 mod no_overwritten_assignment;
 mod no_parameter_shadowing;
+mod no_protected_constant_in_final;
+mod no_protected_method_in_final;
+mod no_protected_property_in_final;
 mod no_redundant_condition;
 mod no_redundant_final_const;
 mod no_redundant_null_check;
@@ -119,15 +125,20 @@ mod prefer_new_self;
 mod prefer_not_in_array;
 mod prefer_null_coalesce;
 mod prefer_ord_first_byte;
+mod prefer_php_version_id;
 mod prefer_property_default;
 mod prefer_property_over_local_getter;
 mod prefer_round_mode_enum;
+mod prefer_self_over_static;
 mod prefer_simple_condition;
 mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
 mod rector_stmts;
+mod require_assign_set_padding;
 mod require_preg_quote_delimiter;
+mod require_statement_padding;
+mod require_strict_array_search;
 mod side_effect;
 mod used_variable;
 mod no_sole_value_sprintf;
@@ -157,6 +168,7 @@ pub use no_empty::NoEmpty;
 pub use no_empty_block::NoEmptyBlock;
 pub use no_empty_catch::NoEmptyCatch;
 pub use no_empty_loop::NoEmptyLoop;
+pub use no_escaped_quotes::NoEscapedQuotes;
 pub use no_eval::NoEval;
 pub use no_explicit_constructor_call::NoExplicitConstructorCall;
 pub use no_ffi::NoFfi;
@@ -172,6 +184,7 @@ pub use no_iterator_to_array_in_foreach::NoIteratorToArrayInForeach;
 pub use no_literal_password::NoLiteralPassword;
 pub use no_mirror_assignment::NoMirrorAssignment;
 pub use no_missing_format_argument::NoMissingFormatArgument;
+pub use no_multi_assign::NoMultiAssign;
 pub use no_negated_and::NoNegatedAnd;
 pub use no_negated_boolean_literal::NoNegatedBooleanLiteral;
 pub use no_negated_condition::NoNegatedCondition;
@@ -182,6 +195,9 @@ pub use no_null_property_init::NoNullPropertyInit;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_parameter_shadowing::NoParameterShadowing;
+pub use no_protected_constant_in_final::NoProtectedConstantInFinal;
+pub use no_protected_method_in_final::NoProtectedMethodInFinal;
+pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
 pub use no_redundant_condition::NoRedundantCondition;
 pub use no_redundant_final_const::NoRedundantFinalConst;
 pub use no_redundant_null_check::NoRedundantNullCheck;
@@ -245,14 +261,19 @@ pub use prefer_new_self::PreferNewSelf;
 pub use prefer_not_in_array::PreferNotInArray;
 pub use prefer_null_coalesce::PreferNullCoalesce;
 pub use prefer_ord_first_byte::PreferOrdFirstByte;
+pub use prefer_php_version_id::PreferPhpVersionId;
 pub use prefer_property_default::PreferPropertyDefault;
 pub use prefer_property_over_local_getter::PreferPropertyOverLocalGetter;
 pub use prefer_round_mode_enum::PreferRoundModeEnum;
+pub use prefer_self_over_static::PreferSelfOverStatic;
 pub use prefer_simple_condition::PreferSimpleCondition;
 pub use no_sole_value_sprintf::NoSoleValueSprintf;
 pub use no_compact::NoCompact;
+pub use require_assign_set_padding::RequireAssignSetPadding;
 pub use require_is_a_allow_string::RequireIsAAllowString;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
+pub use require_statement_padding::RequireStatementPadding;
+pub use require_strict_array_search::RequireStrictArraySearch;
 
 use crate::Rule;
 
@@ -384,5 +405,15 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoArrayAccumulationInLoop),
         Box::new(PreferEarlyContinue),
         Box::new(NoTaintedData),
+        Box::new(NoProtectedConstantInFinal),
+        Box::new(NoProtectedMethodInFinal),
+        Box::new(NoProtectedPropertyInFinal),
+        Box::new(PreferSelfOverStatic),
+        Box::new(RequireStrictArraySearch),
+        Box::new(NoEscapedQuotes),
+        Box::new(NoMultiAssign),
+        Box::new(RequireStatementPadding),
+        Box::new(RequireAssignSetPadding),
+        Box::new(PreferPhpVersionId),
     ]
 }

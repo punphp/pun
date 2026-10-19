@@ -10,6 +10,7 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Span};
 
 use super::rector_code_quality::named;
+use super::rector_stmts::{List, line_indent};
 use crate::syntax::{node_span, unparenthesize};
 
 /// `Arg::$value`.
@@ -40,10 +41,21 @@ pub fn remove_argument(list: &ArgumentList<'_>, index: usize) -> Edit {
 }
 
 /// The edit php-parser's printer makes when it appends `code` as a new last argument.
-pub fn append_argument(list: &ArgumentList<'_>, code: &str) -> Edit {
+pub fn append_argument(source: &str, list: &ArgumentList<'_>, code: &str) -> Edit {
     match list.arguments.last() {
         Some(last) => {
             let end = node_span(last).end;
+            // `isMultiline()`: with a line break between every two arguments, the new one goes on a line of its own
+            // at the indent of the last.
+            let spans: Vec<Span> = list.arguments.iter().map(node_span).collect();
+            let multiline = spans.len() >= 2
+                && spans
+                    .windows(2)
+                    .all(|w| source[w[0].end..w[1].end].contains('\n'));
+            if multiline {
+                let indent = line_indent(source, node_span(last).start);
+                return Edit::new(Span::new(end, end), format!(",\n{indent}{code}"));
+            }
             Edit::new(Span::new(end, end), format!(", {code}"))
         }
         None => {
@@ -653,4 +665,56 @@ pub fn is_native_array(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: us
         },
         _ => false,
     }
+}
+
+/// The edit for Rector's removal of the statements `first..=last` of `list` with one new statement added in their
+/// place, as php-parser's `pArray()` prints that diff (two removals and an addition, never coalesced into a
+/// replacement). After a kept statement, the new one goes on the next line at that statement's indent, so the blanks
+/// and comments before the removed statements are lost and those after them are kept. From the list's start, the
+/// blanks before the removed statements are kept and the new statement runs straight into the next kept one (or the
+/// comments of the trailing `Nop`); with nothing kept after them, php-parser reprints the whole list.
+pub fn replace_run(source: &str, list: &List<'_>, first: usize, last: usize, new: &str) -> Edit {
+    let end = node_span(list.stmts[last]).end;
+    if first > 0 {
+        let prev = node_span(list.stmts[first - 1]);
+        let indent = line_indent(source, prev.start);
+        return Edit::new(Span::new(prev.end, end), format!("\n{indent}{new}"));
+    }
+    let start = list.with_comments(source, first).start;
+    let next = match list.stmts.get(last + 1) {
+        Some(_) => Some(list.with_comments(source, last + 1).start),
+        None => list.nop_span(source).map(|s| s.start),
+    };
+    match next {
+        Some(next) => Edit::new(
+            Span::new(start, next),
+            format!("{new}\n{}", line_indent(source, next)),
+        ),
+        None => Edit::new(Span::new(start, end), new),
+    }
+}
+
+/// `File::containsHTML()`, which keeps Rector's `HTMLAverseRectorInterface` rules off a file: an `InlineHTML`
+/// statement anywhere in it (the newline php-parser's `?>` takes is not one). `node` is the visited node.
+pub fn contains_html(node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
+    fn walk(node: Node<'_, '_>, found: &mut bool) {
+        if *found {
+            return;
+        }
+        if let Node::Statement(Statement::Inline(inline)) = node
+            && !(matches!(inline.value, b"\n" | b"\r\n") && inline.span.start.offset > 0)
+        {
+            *found = true;
+            return;
+        }
+        node.visit_children(|child| walk(child, found));
+    }
+    let mut found = false;
+    walk(ancestors.first().copied().unwrap_or(node), &mut found);
+    found
+}
+
+/// The number of line breaks in `source[from..to]`.
+pub fn lines_between(source: &str, from: usize, to: usize) -> usize {
+    source[from..to].bytes().filter(|&b| b == b'\n').count()
 }

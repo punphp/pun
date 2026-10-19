@@ -65,6 +65,7 @@ fn laravel() -> Pipeline {
 fn run(rule: impl Rule + 'static, php_version: u32, dir: &str) {
     let linter = Linter::new(vec![Box::new(rule)], php_version);
     let pipeline = laravel();
+    let mut failed = Vec::new();
     for (path, input, mut expected) in fixtures(dir) {
         let name = path
             .strip_prefix(env!("CARGO_MANIFEST_DIR"))
@@ -76,14 +77,23 @@ fn run(rule: impl Rule + 'static, php_version: u32, dir: &str) {
             expected.push('\n');
         }
         let fixed = linter.fix(&path, &input).unwrap();
-        assert_eq!(fixed.source, expected, "{name}: lint --fix");
-        assert_eq!(
-            format(&pipeline, &fixed.source),
-            format(&pipeline, &expected),
-            "{name}: format(lint --fix)"
-        );
-        assert_eq!(fixed.applied.is_empty(), input == expected, "{name}");
+        // Every fixture is checked before the test fails, so one run lists all that differ.
+        if fixed.source != expected
+            || format(&pipeline, &fixed.source) != format(&pipeline, &expected)
+            || fixed.applied.is_empty() != (input == expected)
+        {
+            failed.push(format!(
+                "{name}\n--- got ---\n{}--- expected ---\n{expected}",
+                fixed.source
+            ));
+        }
     }
+    assert!(
+        failed.is_empty(),
+        "{} fixture(s) differ:\n{}",
+        failed.len(),
+        failed.join("\n")
+    );
 }
 
 #[test]
@@ -179,5 +189,87 @@ fn foreach_to_array_find_key() {
         rules::PreferArrayFindKey,
         80400,
         "ForeachToArrayFindKeyRector",
+    );
+}
+
+#[test]
+fn privatize_final_class_constant() {
+    run(
+        rules::NoProtectedConstantInFinal,
+        80400,
+        "PrivatizeFinalClassConstantRector",
+    );
+}
+
+#[test]
+fn privatize_final_class_method() {
+    run(
+        rules::NoProtectedMethodInFinal,
+        80400,
+        "PrivatizeFinalClassMethodRector",
+    );
+}
+
+#[test]
+fn privatize_final_class_property() {
+    run(
+        rules::NoProtectedPropertyInFinal,
+        80400,
+        "PrivatizeFinalClassPropertyRector",
+    );
+}
+
+#[test]
+fn convert_static_to_self() {
+    run(
+        rules::PreferSelfOverStatic,
+        80400,
+        "ConvertStaticToSelfRector",
+    );
+}
+
+#[test]
+fn strict_array_search() {
+    run(
+        rules::RequireStrictArraySearch,
+        80400,
+        "StrictArraySearchRector",
+    );
+}
+
+#[test]
+fn simplify_quote_escape() {
+    run(rules::NoEscapedQuotes, 80400, "SimplifyQuoteEscapeRector");
+}
+
+#[test]
+fn split_double_assign() {
+    run(rules::NoMultiAssign, 80400, "SplitDoubleAssignRector");
+}
+
+#[test]
+fn newline_after_statement() {
+    run(
+        rules::RequireStatementPadding,
+        80400,
+        "NewlineAfterStatementRector",
+    );
+}
+
+#[test]
+fn newline_before_new_assign_set() {
+    run(
+        rules::RequireAssignSetPadding,
+        80400,
+        "NewlineBeforeNewAssignSetRector",
+    );
+}
+
+#[test]
+fn version_compare_func_call_to_constant() {
+    run(
+        rules::PreferPhpVersionId,
+        80400,
+        "VersionCompareFuncCallToConstantRector",
     );
 }

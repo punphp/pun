@@ -11,9 +11,9 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Span};
 
-use super::lint_b_helpers::is_native_array;
+use super::lint_b_helpers::{is_native_array, replace_run};
 use super::rector_code_quality::{equal, is_constant, operand, text};
-use super::rector_stmts::{List, body_list, expression, holder_list, if_view, line_indent};
+use super::rector_stmts::{List, body_list, expression, holder_list, if_view};
 use super::used_variable::used_in;
 use crate::Context;
 use crate::syntax::{node_span, unparenthesize};
@@ -263,31 +263,4 @@ fn early_return_pattern(
         ));
     }
     None
-}
-
-/// The edit for Rector's removal of the statements `first..=last` of `list` with one new statement added in their
-/// place, as php-parser's `pArray()` prints that diff (two removals and an addition, never coalesced into a
-/// replacement). After a kept statement, the new one goes on the next line at that statement's indent, so the blanks
-/// and comments before the removed statements are lost and those after them are kept. From the list's start, the
-/// blanks before the removed statements are kept and the new statement runs straight into the next kept one (or the
-/// comments of the trailing `Nop`); with nothing kept after them, php-parser reprints the whole list.
-fn replace_run(source: &str, list: &List<'_>, first: usize, last: usize, new: &str) -> Edit {
-    let end = node_span(list.stmts[last]).end;
-    if first > 0 {
-        let prev = node_span(list.stmts[first - 1]);
-        let indent = line_indent(source, prev.start);
-        return Edit::new(Span::new(prev.end, end), format!("\n{indent}{new}"));
-    }
-    let start = list.with_comments(source, first).start;
-    let next = match list.stmts.get(last + 1) {
-        Some(_) => Some(list.with_comments(source, last + 1).start),
-        None => list.nop_span(source).map(|s| s.start),
-    };
-    match next {
-        Some(next) => Edit::new(
-            Span::new(start, next),
-            format!("{new}\n{}", line_indent(source, next)),
-        ),
-        None => Edit::new(Span::new(start, end), new),
-    }
 }
