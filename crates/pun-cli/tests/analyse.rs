@@ -149,7 +149,12 @@ fn baseline_covers_the_errors_it_lists() {
     .unwrap();
     let (out, code) = run(&d, &[PUN, "analyse"], &["--color=never"]);
     assert!(out.contains("nope2 not found."), "{out}");
-    assert!(out.contains("1 baseline entry no longer match"), "{out}");
+    assert!(
+        out.contains(
+            "1 baseline entry no longer matches: run `pun analyse --generate-baseline` to drop it\n"
+        ),
+        "{out}"
+    );
     assert_eq!(code, Some(1));
 }
 
@@ -408,4 +413,53 @@ fn table_and_teamcity_match_phpstan() {
             }
         }
     }
+}
+
+/// `pun check` reports analyse's findings with the format and lint ones: in files format skips too, a malformed
+/// `@pun-ignore` once (lint and analyse both see it), and the baseline note in human output.
+#[test]
+fn check_reports_analyse_findings() {
+    let d = project(
+        "analyse",
+        "check",
+        &[
+            (
+                "pun.toml",
+                "[format]\npreset = \"empty\"\nexclude = [\"lib\"]\n\n[analyse]\npaths = [\"src\", \"lib\"]\nbaseline = \"b.toml\"\n",
+            ),
+            ("src/a.php", "<?php\n\nnope(); // @pun-ignore\n"),
+            ("lib/b.php", "<?php\n\nnope2();\n"),
+        ],
+    );
+    assert_eq!(
+        pun(&d, &["--generate-baseline", "b.toml", "-q"], &[]).2,
+        Some(0)
+    );
+    std::fs::write(d.join("lib/b.php"), "<?php\n\nnope3();\n").unwrap();
+    let check = |env: &[(&str, &str)]| {
+        let out = clean_env(&mut Command::new(PUN), &["PATH", "HOME"])
+            .current_dir(&d)
+            .env("PUN_AGENT", "0")
+            .envs(env.iter().copied())
+            .args(["check", "--no-cache", "--color=never"])
+            .output()
+            .unwrap();
+        (String::from_utf8(out.stdout).unwrap(), out.status.code())
+    };
+    let (out, code) = check(&[("PUN_AGENT", "1")]);
+    let lines: Vec<&str> = out.lines().skip(1).collect();
+    assert_eq!(
+        lines,
+        [
+            "lib/b.php:3:1 analyse/undefined/function Function nope3 not found.",
+            "src/a.php:3:12 invalid-ignore-comment `@pun-ignore` needs one or more rule IDs",
+        ]
+    );
+    assert_eq!(code, Some(1));
+    // nope2's entry no longer matches.
+    let (out, _) = check(&[]);
+    assert!(
+        out.contains("! 1 baseline entry no longer matches: run `pun analyse --generate-baseline` to drop it\n"),
+        "{out}"
+    );
 }

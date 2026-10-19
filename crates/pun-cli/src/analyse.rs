@@ -432,10 +432,13 @@ fn sources(analysed: &Analysed) -> BTreeMap<PathBuf, (String, LineIndex)> {
 }
 
 pub(crate) fn baseline_note(r: &Renderer, unmatched: usize) -> String {
-    let entries = if unmatched == 1 { "entry" } else { "entries" };
+    let (entries, verb, them) = match unmatched {
+        1 => ("entry", "matches", "it"),
+        _ => ("entries", "match", "them"),
+    };
     let glyph = r.look.paint(render::Role::Warning, r.look.glyph("⚠", "!"));
     format!(
-        "{glyph} {unmatched} baseline {entries} no longer match: run `pun analyse --generate-baseline` to drop them\n"
+        "{glyph} {unmatched} baseline {entries} no longer {verb}: run `pun analyse --generate-baseline` to drop {them}\n"
     )
 }
 
