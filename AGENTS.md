@@ -6,7 +6,6 @@ Read these for more:
 
 - `context/PLAN.md`: the source of truth. Every decision, the build order with each row's status, and the open questions. Start here.
 - `context/plan/`: one plan per part, each with its Build list. `plan/rules.md` covers rule placement, naming and the upstream mapping.
-- `context/agents/README.md`: how several agents build at once (ownership, claiming work, the shared git protocol). Read it when other agents are working.
 - `README.md`: the behavior users see.
 
 ## Match the upstream tool
@@ -103,18 +102,16 @@ Every Rector run uses `--dry-run --clear-cache`.
 - Harness-only environment variables: `PUN_IGNORE_PHP_CONSTRAINT=1` (for corpora that allow PHP below 8.4), `PUN_BIN`, `PUN_HARNESS_ROOT`, and `PUN_PROFILE`.
 - Every test that spawns `pun` sets `PUN_AGENT=0`. Tests of agent mode are the exception.
 
-## Respect the machine budget
-
-The machine has 2 cores and 7 GB of memory, and several agents share it.
+## Build budget
 
 1. Run `source ~/.cargo/env`.
-2. Run `export CARGO_BUILD_JOBS=1`.
-3. Prefix heavy commands with `timeout 900 nice`, for example `timeout 900 nice cargo test -p punphp-tokens`.
-4. Run one cargo or php command at a time, in the foreground.
-5. Build only your own crate.
-6. Set your own `CARGO_TARGET_DIR`, for example `target-perf`.
+2. Size builds to the machine: check `nproc` and free memory, and leave headroom for the subagents running beside you.
+3. Prefix long commands with `timeout 900 nice`, for example `timeout 900 nice cargo test -p punphp-tokens`.
+4. Build and test only the crates you changed (`-p`). Give each concurrent build its own `CARGO_TARGET_DIR`
+   (`target-<name>`) so two cargo runs never wait on one lock or reuse each other's stale artifacts.
+5. Delete scratch target dirs and downloads when you no longer need them. Keep `target/`.
 
-Keep the `target/` directories. Corpus runs cover one fixer on one project. While you iterate, use Pinkary or laravel-framework.
+Corpus runs cover one fixer on one project. While you iterate, use Pinkary or laravel-framework.
 
 ## Tests
 
@@ -131,15 +128,29 @@ Keep a test only if it fails on a plausible wrong implementation. If you cannot 
 - A mock that only verifies calls.
 - A test of a private helper that the public API already covers.
 
-## Work with other agents
+## How work runs
 
-- Each crate has one owning agent. To use another crate's API, read it and adapt. If you need a change there, add a `request` row under the step that needs it in `context/PLAN.md` §3.
-- In the root `Cargo.toml`, append to `[workspace.dependencies]` only.
-- At the start of a session, read `context/PLAN.md` and run `git log -15`, `git status`, and `ps aux | grep -E 'cargo|rustc|php'`. A `doing` row whose agent no longer runs is abandoned. Check its uncommitted files, then commit or revert them.
-- Before you start a task, set its row's status in `context/PLAN.md` §3 to `doing` with your owner name and target directory. When you have pushed the work, delete the row.
-- All agents share one git index. Commit your files in a single step: `git commit -m "..." -- path1 path2`. If `.git/index.lock` exists, wait and retry.
-- After each commit, run `git pull --rebase origin main` and then `git push origin main`. If the push fails, retry once.
-- Rewrite history or force-push only when the user explicitly asks.
+One lead agent drives the build and works on `main`. It spawns subagents for independent work and merges what
+they return.
+
+- **Always work on the `main` branch.** Commit on main and push to `origin/main`. Do not create long-lived
+  branches, `helper/*` branches or pull requests. Rewrite history or force-push only when Pushpak asks.
+- At the start of a session, read `context/PLAN.md` (§0 "Resume here" first), then run `git log -15`,
+  `git status` and `git fetch origin`. Pick the next row from §0's priorities.
+- Before you start a row, set its status in `context/PLAN.md` §3 to `doing`. When it lands, delete the row and
+  update §0's counts.
+- **Subagents.** Spawn as many as the work and the machine allow, one per independent slice (a rule group, a
+  crate, a bug). Give each a slice no other subagent touches, the files it may edit, and the check that proves it
+  done. A subagent that edits files runs in its own git worktree (`isolation: "worktree"`, or
+  `git worktree add ../pun-<name> main`) with its own `CARGO_TARGET_DIR`, commits there, and the lead merges the
+  result into main, runs the tests and pushes. Remove the worktree after the merge. Read-only subagents (search,
+  review, oracle runs) need no worktree.
+- Shared files (`context/PLAN.md`, `crates/pun-config/rules/mapping.toml`, each crate's `rules/mod.rs`): subagents
+  change only their own lines; the lead resolves conflicts at merge time by keeping both sides.
+- Never `git stash`, `git reset --hard` or `git clean` in the main checkout while subagents run. Commit with
+  explicit paths: `git commit -m "..." -- path1 path2`.
+- When a decision is genuinely Pushpak's, add a `needs Pushpak` row in `context/PLAN.md` §3, take the option
+  closest to upstream, and keep going.
 
 ## Commits
 

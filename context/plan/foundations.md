@@ -13,9 +13,7 @@ in `.oracle/` (reference/oracle.md); 7 corpus projects (`corpus/manifest.toml`).
 1. Get CI on main green: coverage is red (pun-analyse at 97.59%), and runs get cancelled by the next push.
 2. Clippy gate with `-D warnings`: clippy already fails the job on errors and the cleanup pass took warnings to 0,
    so add `-- -D warnings` (ci.yml "ponytail" comment).
-3. One branch and PR per thread instead of agents sharing one box and git index (../PLAN.md §4); rewrite AGENTS.md's
-   "Work with other agents" to match.
-4. Update AGENTS.md when the new design lands: rule names, no delegate mode, and "output must match upstream" narrowed
+3. Update AGENTS.md when the new design lands: rule names, no delegate mode, and "output must match upstream" narrowed
    to exit codes and machine formats.
 
 ## 2. Parity harness, corpus and fuzz (C11)
