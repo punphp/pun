@@ -195,6 +195,57 @@ fn lint_skips_blade_and_reports_syntax_errors() {
     assert_eq!(code, Some(1));
 }
 
+/// A 20 000-term concatenation nests as deep as its terms in the syntax tree; the parser and the lint walk recurse
+/// that deep, which overflows a 2 MiB worker stack (it aborts the run).
+#[test]
+fn lint_survives_a_deep_expression() {
+    let deep = format!("<?php\n\n$a = 1{};\neval('1;');\n", " . 'a'".repeat(20_000));
+    let d = project("lint", "deep", &[("pun.toml", TOML), ("a.php", &deep)]);
+    let (lines, summary, code) = agent(&d, &["lint"]);
+    assert_eq!(summary, "pun lint: fail, 1 error");
+    assert!(lines[0].starts_with("a.php:4:"), "{lines:?}");
+    assert_eq!(code, Some(1));
+}
+
+/// The types rules see classes in the project's other files, also when only one file is named: Rector 2.6.1's
+/// StringReturnTypeFromStrictScalarReturnsRector adds `: string` to `Child::prefix()` once it knows `Base` (in another
+/// file) has no `prefix()` to stay compatible with. A class outside the project stays unknown:
+/// AddArrowFunctionReturnTypeRector leaves `fn () => Job::go()->job` alone (Rector run on these files), where Mago
+/// types the access on `?Unknown` as `null`.
+#[test]
+fn types_rules_see_the_project_classes() {
+    let d = project(
+        "lint",
+        "codebase",
+        &[
+            (
+                "pun.toml",
+                "[lint.rules]\n\"types/add-string-return-type-from-scalar\" = \"error\"\n\"types/add-arrow-function-return-type\" = \"error\"\n",
+            ),
+            (
+                "src/Job.php",
+                "<?php\n\nnamespace App;\n\nuse Vendor\\PendingDispatch;\n\nclass Job\n{\n    public static function go(): ?PendingDispatch\n    {\n        return null;\n    }\n}\n",
+            ),
+            (
+                "src/T.php",
+                "<?php\n\nuse App\\Job;\n\n$x = fn () => Job::go()->job;\n",
+            ),
+            (
+                "src/Base.php",
+                "<?php\n\nnamespace App;\n\nabstract class Base\n{\n}\n",
+            ),
+            (
+                "src/Child.php",
+                "<?php\n\nnamespace App;\n\nclass Child extends Base\n{\n    public function prefix()\n    {\n        return '';\n    }\n}\n",
+            ),
+        ],
+    );
+    let (lines, summary, code) = agent(&d, &["lint", "src/Child.php", "src/T.php"]);
+    assert_eq!(summary, "pun lint: fail, 1 error");
+    assert!(lines[0].starts_with("src/Child.php:7:"), "{lines:?}");
+    assert_eq!(code, Some(1));
+}
+
 #[test]
 fn native_rule_options_reach_the_rule() {
     // `no-global` has no options (Mago's rule takes none), so options for it are a config error that names it.

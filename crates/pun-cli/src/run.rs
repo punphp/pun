@@ -259,6 +259,9 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
             for r in &mut natives {
                 configure(&cfg, r.as_mut())?;
             }
+            if natives.iter().any(|r| r.id().starts_with("lint/types/")) {
+                project_codebase(&cfg)?;
+            }
             natives
         }
         false => vec![],
@@ -407,6 +410,27 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     };
     eprint!("{}", base.profile_report());
     Ok(if crashed { 2 } else { u8::from(failed) })
+}
+
+/// The `types` rules look classes up in the project's other files, as Rector's PHPStan reflection does: scan every
+/// file `pun lint` would check (not only the ones named on the command line) into the codebase they share.
+/// ponytail: vendor/ isn't scanned, so a parent class from a package stays unknown; scan Composer's autoload on demand
+/// as pun-analyse's project.rs does when the residuals need it.
+fn project_codebase(cfg: &Config) -> Result<()> {
+    use pun_lint::rules::facts;
+    let files = pun_workspace::files(cfg, Some(pun_workspace::Command::Lint), &[])?;
+    let sources: Vec<(String, String)> = (files.par_iter())
+        .filter_map(|f| {
+            let rel = f.strip_prefix(&cfg.root).unwrap_or(f);
+            Some((
+                rel.to_string_lossy().into_owned(),
+                std::fs::read_to_string(f).ok()?,
+            ))
+        })
+        .collect();
+    let codebase = facts::project_codebase(&sources, cfg.php_version().to_id());
+    facts::set_project_codebase(Some(codebase));
+    Ok(())
 }
 
 /// The threads that read the files (context/plan/lint.md, perf lint 4): opening files on more than about four
