@@ -24,6 +24,36 @@ impl Rule for PreferNullsafe {
         80000
     }
 
+    /// `configure`: `exclude-methods` (rector-laravel's `exclude_methods`), the method names a call to keeps
+    /// `optional()`.
+    fn configure(&mut self, options: &serde_json::Value) -> Result<(), String> {
+        match options {
+            serde_json::Value::Null => Ok(()),
+            serde_json::Value::Object(map) => {
+                for (key, value) in map {
+                    let names = (key == "exclude-methods")
+                        .then(|| value.as_array())
+                        .flatten()
+                        .and_then(|a| {
+                            a.iter()
+                                .map(|v| v.as_str().map(str::to_string))
+                                .collect::<Option<Vec<_>>>()
+                        });
+                    match names {
+                        Some(names) => self.exclude_methods = names,
+                        None => {
+                            return Err(format!(
+                                "unknown option `{key}` or a value of the wrong type"
+                            ));
+                        }
+                    }
+                }
+                Ok(())
+            }
+            _ => Err("options must be a table".into()),
+        }
+    }
+
     fn targets(&self) -> Option<&'static [NodeKind]> {
         Some(&[NodeKind::MethodCall, NodeKind::PropertyAccess])
     }

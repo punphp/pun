@@ -346,6 +346,122 @@ fn simplify_useless_variable() {
 }
 
 #[test]
+fn remove_null_arg_on_null_default_param() {
+    run_with_sources(
+        &only(NoNullDefaultArgument),
+        "RemoveNullArgOnNullDefaultParamRector/Fixture",
+        &["RemoveNullArgOnNullDefaultParamRector/Source/SomeExternalClass.php"],
+    );
+    run(
+        &only(NoNullDefaultArgument),
+        "RemoveNullArgOnNullDefaultParamRector/Oracle",
+    );
+}
+
+#[test]
+fn remove_null_named_arg_on_null_default_param() {
+    run_with_sources(
+        &only(NoNullDefaultNamedArgument),
+        "RemoveNullNamedArgOnNullDefaultParamRector/Fixture",
+        &["RemoveNullNamedArgOnNullDefaultParamRector/Source/SomeExternalClass.php"],
+    );
+    run(
+        &only(NoNullDefaultNamedArgument),
+        "RemoveNullNamedArgOnNullDefaultParamRector/Oracle",
+    );
+}
+
+#[test]
+fn add_param_string_type_from_sprintf_use() {
+    let linter = only(AddParamTypeSprintf);
+    run_with_sources(
+        &linter,
+        "AddParamStringTypeFromSprintfUseRector/Fixture",
+        &["AddParamStringTypeFromSprintfUseRector/Source/SomeParentClass.php"],
+    );
+    run(&linter, "AddParamStringTypeFromSprintfUseRector/Oracle");
+}
+
+#[test]
+fn remove_unused_constructor_param() {
+    let linter = only(NoUnusedConstructorParam);
+    run_with_sources(
+        &linter,
+        "RemoveUnusedConstructorParamRector/Fixture",
+        &["RemoveUnusedConstructorParamRector/Source/InterfaceWithConstruct.php"],
+    );
+    run(&linter, "RemoveUnusedConstructorParamRector/Oracle");
+}
+
+#[test]
+fn use_class_keyword_for_class_name_resolution() {
+    let linter = only(PreferClassKeyword);
+    run_with_sources(
+        &linter,
+        "UseClassKeywordForClassNameResolutionRector/Fixture",
+        &["UseClassKeywordForClassNameResolutionRector/Source/ConstantReferenceClass.php"],
+    );
+    run(
+        &linter,
+        "UseClassKeywordForClassNameResolutionRector/Oracle",
+    );
+    run(&linter, "UseClassKeywordForClassNameResolutionRector/Pun");
+}
+
+#[test]
+fn remove_dead_catch() {
+    let linter = only(NoDeadCatch);
+    run_with_sources(
+        &linter,
+        "RemoveDeadCatchRector/Fixture",
+        &["RemoveDeadCatchRector/Source/ShouldNotHappenException.php"],
+    );
+    run(&linter, "RemoveDeadCatchRector/Oracle");
+}
+
+#[test]
+fn merge_date_time_property_type_declaration() {
+    let linter = only(AddDatetimePropertyType);
+    run(
+        &linter,
+        "MergeDateTimePropertyTypeDeclarationRector/Fixture",
+    );
+    run(&linter, "MergeDateTimePropertyTypeDeclarationRector/Oracle");
+}
+
+#[test]
+fn make_inherited_method_visibility_same_as_parent() {
+    let linter = only(RequireParentVisibility);
+    let dir = "MakeInheritedMethodVisibilitySameAsParentRector";
+    let sources: Vec<String> = [
+        "Father",
+        "GrandFather",
+        "NoMethodAnnotationHere",
+        "ParentWithProtectedMethod",
+        "ParentWithPublicConstructor",
+        "SomeInterface",
+    ]
+    .iter()
+    .map(|s| format!("{dir}/Source/{s}.php"))
+    .collect();
+    let sources: Vec<&str> = sources.iter().map(String::as_str).collect();
+    run_with_sources(&linter, &format!("{dir}/Fixture"), &sources);
+    run(&linter, &format!("{dir}/Oracle"));
+}
+
+#[test]
+fn remove_unused_promoted_property() {
+    let linter = only(NoUnusedPromotedProperty);
+    run_with_sources(
+        &linter,
+        "RemoveUnusedPromotedPropertyRector/Fixture",
+        &["RemoveUnusedPromotedPropertyRector/Source/SomeInterfaceWithConstruct.php"],
+    );
+    run(&linter, "RemoveUnusedPromotedPropertyRector/Oracle");
+    run(&linter, "RemoveUnusedPromotedPropertyRector/Pun");
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -431,6 +547,67 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoUselessVariable::default()),
             &["rector/SimplifyUselessVariableRector"],
+        ),
+        (
+            || Box::new(NoNullDefaultArgument),
+            &["rector/RemoveNullArgOnNullDefaultParamRector"],
+        ),
+        (
+            || Box::new(NoNullDefaultNamedArgument),
+            &["rector/RemoveNullNamedArgOnNullDefaultParamRector"],
+        ),
+        (
+            || Box::new(AddParamTypeSprintf),
+            &["rector/AddParamStringTypeFromSprintfUseRector"],
+        ),
+        (
+            || Box::new(NoUnusedConstructorParam),
+            &["rector/RemoveUnusedConstructorParamRector"],
+        ),
+        (
+            || Box::new(PreferClassKeyword),
+            &["rector/UseClassKeywordForClassNameResolutionRector"],
+        ),
+        (|| Box::new(NoDeadCatch), &["rector/RemoveDeadCatchRector"]),
+        (
+            || Box::new(RequireParentVisibility),
+            &["rector/MakeInheritedMethodVisibilitySameAsParentRector"],
+        ),
+        (
+            || Box::new(NoUnusedPromotedProperty),
+            &["rector/RemoveUnusedPromotedPropertyRector"],
+        ),
+        (
+            || Box::new(AddDatetimePropertyType),
+            &["rector/MergeDateTimePropertyTypeDeclarationRector"],
+        ),
+        (
+            || Box::new(PreferResolveHelper),
+            &["rector/AppToResolveRector"],
+        ),
+        (
+            || Box::new(PreferDateFacade),
+            &["rector/CarbonToDateFacadeRector"],
+        ),
+        (
+            || Box::new(PreferRequestFacade),
+            &["rector/RequestVariablesToRequestFacadeRector"],
+        ),
+        (
+            || Box::new(PreferDefaultArgument),
+            &["rector/ApplyDefaultInsteadOfNullCoalesceRector"],
+        ),
+        (
+            || Box::new(PreferExplicitJsonCall),
+            &["rector/JsonCallToExplicitJsonCallRector"],
+        ),
+        (
+            || Box::new(PreferTravelTo),
+            &["rector/CarbonSetTestNowToTravelToRector"],
+        ),
+        (
+            || Box::new(PreferNullsafe::default()),
+            &["rector/OptionalToNullsafeOperatorRector"],
         ),
     ];
     for (rule, dirs) in cases {

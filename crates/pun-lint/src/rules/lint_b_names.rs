@@ -192,3 +192,9 @@ pub fn function_call_matches(
 ) -> bool {
     function_call_matches_any(ancestors, call, &[name]).is_some()
 }
+
+/// The fully qualified class-like name (without a leading `\`) of `name` written at `offset` (a docblock type), with
+/// the ancestors of the node there.
+pub fn resolve_class_at(ancestors: &[Node<'_, '_>], offset: u32, name: &[u8]) -> Vec<u8> {
+    scope(ancestors, offset).resolve(Kind::Class, name).0
+}
