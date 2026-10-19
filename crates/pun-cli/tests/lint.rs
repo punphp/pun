@@ -203,6 +203,35 @@ fn lint_survives_a_deep_expression() {
     assert_eq!(code, Some(1));
 }
 
+/// The types rules see classes in the project's other files, also when only one file is named: Rector 2.6.1's
+/// StringReturnTypeFromStrictScalarReturnsRector adds `: string` to `Child::prefix()` once it knows `Base` (in another
+/// file) has no `prefix()` to stay compatible with.
+#[test]
+fn types_rules_see_the_project_classes() {
+    let d = project(
+        "lint",
+        "codebase",
+        &[
+            (
+                "pun.toml",
+                "[lint.rules]\n\"types/add-string-return-type-from-scalar\" = \"error\"\n",
+            ),
+            (
+                "src/Base.php",
+                "<?php\n\nnamespace App;\n\nabstract class Base\n{\n}\n",
+            ),
+            (
+                "src/Child.php",
+                "<?php\n\nnamespace App;\n\nclass Child extends Base\n{\n    public function prefix()\n    {\n        return '';\n    }\n}\n",
+            ),
+        ],
+    );
+    let (lines, summary, code) = agent(&d, &["lint", "src/Child.php"]);
+    assert_eq!(summary, "pun lint: fail, 1 error");
+    assert!(lines[0].starts_with("src/Child.php:7:"), "{lines:?}");
+    assert_eq!(code, Some(1));
+}
+
 #[test]
 fn native_rule_options_reach_the_rule() {
     // `no-global` has no options (Mago's rule takes none), so options for it are a config error that names it.
