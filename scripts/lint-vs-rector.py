@@ -49,8 +49,13 @@ def compare(name: str, pun: str, env: dict) -> bool:
     mapping = tomllib.loads((ROOT / "crates/pun-config/rules/mapping.toml").read_text())
     pun_id = {e["class"]: e["pun"] for t, rules in mapping["upstream"].items() if "rector" in t
               for e in rules.values() if isinstance(e, dict) and "class" in e and "pun" in e}
-    # Rector's workers ignore --memory-limit and stop at php.ini's limit, losing their batch of files.
-    rector = subprocess.run(["php", "-d", "memory_limit=-1", str(bench.RECTOR), "process", "--dry-run", "--clear-cache",
+    # PHP 8.5's max_memory_limit (php.ini) caps --memory-limit=-1, and a Rector worker over it loses its batch of
+    # files: lift both limits with an extra ini file.
+    ini = work / ".bench-tmp" / "ini"
+    ini.mkdir(parents=True, exist_ok=True)
+    (ini / "memory.ini").write_text("max_memory_limit = -1\nmemory_limit = -1\n")
+    env = {**env, "PHP_INI_SCAN_DIR": f"{env.get('PHP_INI_SCAN_DIR', '')}:{ini}"}
+    rector = subprocess.run(["php", str(bench.RECTOR), "process", "--dry-run", "--clear-cache",
                              "--no-progress-bar", "--output-format=json", "--memory-limit=-1", "--config",
                              "pun-bench-rector.php"],
                             cwd=work, env=env, capture_output=True, text=True)
