@@ -278,6 +278,14 @@ fn remove_null_tag_value_node() {
 }
 
 #[test]
+fn strict_function_calls() {
+    report(
+        RequireStrictFunctionCall,
+        "functions/require-strict-function-call",
+    );
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -335,6 +343,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoNullTagValue),
             &["rector/RemoveNullTagValueNodeRector"],
+        ),
+        (
+            || Box::new(RequireStrictFunctionCall),
+            &["lint7_report/functions/require-strict-function-call"],
         ),
     ];
     for (rule, dirs) in cases {

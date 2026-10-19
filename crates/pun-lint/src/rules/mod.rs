@@ -170,6 +170,7 @@ mod require_is_a_allow_string;
 mod require_named_argument_order;
 mod require_preg_quote_delimiter;
 mod require_statement_padding;
+mod require_strict_function_call;
 mod require_strict_array_search;
 mod side_effect;
 mod syntax_types;
@@ -331,6 +332,7 @@ pub use require_is_a_allow_string::RequireIsAAllowString;
 pub use require_named_argument_order::RequireNamedArgumentOrder;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
 pub use require_statement_padding::RequireStatementPadding;
+pub use require_strict_function_call::RequireStrictFunctionCall;
 pub use require_strict_array_search::RequireStrictArraySearch;
 pub use types::*;
 
@@ -502,5 +504,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferSpread),
         Box::new(NoStaticConstructorCall),
         Box::new(NoNullTagValue),
+        Box::new(RequireStrictFunctionCall),
     ]
 }
