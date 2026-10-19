@@ -164,7 +164,14 @@ fn upstream_fixtures() {
         let Ok(raw) = std::fs::read(dir.join(format!("{}.json", name.replace('/', "_")))) else {
             continue;
         };
-        let doc: Value = serde_json::from_slice(&raw).unwrap();
+        // The export holds the exporting machine's absolute `.oracle` paths; point them at this checkout's.
+        let mut raw = String::from_utf8(raw).unwrap();
+        if let Some(at) = raw.find("/.oracle/") {
+            let start = raw[..at].rfind('"').unwrap() + 1;
+            let oracle = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/");
+            raw = raw.replace(&raw[start..at + 9].to_string(), oracle.to_str().unwrap());
+        }
+        let doc: Value = serde_json::from_str(&raw).unwrap();
         let (mut p, mut f) = (0, 0);
         for test in doc["tests"].as_array().into_iter().flatten() {
             let method = test["method"].as_str().unwrap_or("");
