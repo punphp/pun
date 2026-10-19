@@ -270,12 +270,7 @@ pub(crate) fn is_array(source: &str, ancestors: &[Node<'_, '_>], expr: &Expressi
         Expression::Variable(Variable::Direct(v)) => match parameter_hint(ancestors, v.name) {
             Some(hint) => matches!(hint, Hint::Array(_)),
             None => {
-                local_of(ancestors, v.name, &|e| {
-                    matches!(
-                        unparenthesize(e),
-                        Expression::Array(_) | Expression::LegacyArray(_)
-                    )
-                }) && assigned_first(ancestors, v.name)
+                local_of(ancestors, v.name, &array_literal) && assigned_first(ancestors, v.name)
             }
         },
         Expression::Access(Access::Property(p)) if is_this(p.object) => match &p.property {
@@ -294,6 +289,13 @@ pub(crate) fn is_array(source: &str, ancestors: &[Node<'_, '_>], expr: &Expressi
         }
         _ => false,
     }
+}
+
+fn array_literal(e: &Expression<'_>) -> bool {
+    matches!(
+        unparenthesize(e),
+        Expression::Array(_) | Expression::LegacyArray(_)
+    )
 }
 
 fn own_property_is_array(source: &str, ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {

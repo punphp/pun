@@ -2,10 +2,10 @@
 
 function f($a)
 {
-    if ($a) {
+    if (foo()) {
         echo 1;
     }
     return $a;
-    foo();
+    bar();
     return 2;
 }
