@@ -530,3 +530,196 @@ fn offers_the_closest_preset() {
     assert!(!out.contains("switched to the preset"), "{out}");
     assert!(read(&d, "pun.toml").contains(" = \"off\"\n"));
 }
+
+/// `.oracle/<rel>` (scripts/oracle.sh), canonical; `None` skips the cases that need it.
+fn oracle(rel: &str) -> Option<PathBuf> {
+    let p = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../.oracle")
+        .join(rel);
+    p.exists().then(|| p.canonicalize().unwrap())
+}
+
+/// phpstan.neon with a baseline, phpstan-strict-rules (its checks are Pun lint and format rules), a parameter that
+/// is a rule option, and an ignored pattern. Expected from rules/mapping.toml: `additionalConstructors` is the
+/// `additional-constructors` option, strict-rules' `backtick.notAllowed` the format rule
+/// `functions/backtick-to-shell-exec`.
+#[test]
+fn phpstan_baseline_extensions_options_and_ignores() {
+    let Some(strict) = oracle("phpstan/vendor/phpstan/phpstan-strict-rules") else {
+        return;
+    };
+    let neon = "includes:\n    - phpstan-baseline.neon\n    - vendor/phpstan/phpstan-strict-rules/rules.neon\nparameters:\n    level: 9\n    paths:\n        - src\n    additionalConstructors:\n        - App\\Foo::init\n    ignoreErrors:\n        - '#Call to an undefined method#'\n";
+    let d = project(
+        "phpstan-extras",
+        &[
+            ("phpstan.neon", neon),
+            (
+                "phpstan-baseline.neon",
+                "parameters:\n    ignoreErrors: []\n",
+            ),
+            ("src/a.php", "<?php\n"),
+        ],
+    );
+    std::fs::create_dir_all(d.join("vendor/phpstan")).unwrap();
+    std::os::unix::fs::symlink(strict, d.join("vendor/phpstan/phpstan-strict-rules")).unwrap();
+    let (out, _, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(code, Some(0), "{out}");
+    let out = counts(&out);
+    let line = out.lines().next().unwrap();
+    assert!(
+        line.starts_with(" ok phpstan.neon  -> [analyse] preset max (level 9), N on, N off, "),
+        "{out}"
+    );
+    assert!(
+        line.ends_with(" rules -> [lint], 1 parameter -> rule options, 1 error pattern ignored"),
+        "{out}"
+    );
+    assert!(
+        out.contains(" ! format/functions/backtick-to-shell-exec  a PHPStan check that is this format rule in Pun; turn it on in [format.rules]; skipped\n"),
+        "{out}"
+    );
+    assert!(
+        out.contains("\n ! phpstan-baseline.neon was not copied. Run `pun analyse --generate-baseline` for a Pun baseline.\n"),
+        "{out}"
+    );
+    let toml = read(&d, "pun.toml");
+    assert!(
+        toml.contains(
+            "\"types/readonly-property-write\" = { additional-constructors = ['App\\Foo::init'] }\n"
+        ),
+        "{toml}"
+    );
+    assert!(
+        toml.contains("[[analyse.ignore]]\nmessage = \"#Call to an undefined method#\"\n"),
+        "{toml}"
+    );
+}
+
+/// rector.php read through Rector 2.6.1 (`.oracle/rector-bin`): its paths become `[lint] exclude` for the files
+/// outside them, a rule skipped for a path an override, and what Pun can't run is listed (a reason shared by more
+/// than three rules once, with the count).
+#[test]
+fn rector_paths_skips_and_unsupported_rules() {
+    let Some(vendor) = oracle("rector-bin/vendor") else {
+        return;
+    };
+    let rector = "<?php\n\nuse Rector\\Config\\RectorConfig;\nuse Rector\\DeadCode\\Rector\\ClassMethod\\RemoveUselessParamTagRector;\n\nreturn RectorConfig::configure()\n    ->withPaths([__DIR__.'/src'])\n    ->withPreparedSets(deadCode: true)\n    ->withPhpSets(php53: true)\n    ->withSkip([RemoveUselessParamTagRector::class => [__DIR__.'/src/Sub']]);\n";
+    let d = project(
+        "rector",
+        &[
+            ("composer.json", "{\"require\":{\"php\":\"^8.4\"}}"),
+            ("rector.php", rector),
+            ("src/a.php", "<?php\n"),
+            ("src/Sub/b.php", "<?php\n"),
+            ("scripts/x.php", "<?php\n"),
+            ("tools/deep/y.php", "<?php\n"),
+        ],
+    );
+    std::os::unix::fs::symlink(vendor, d.join("vendor")).unwrap();
+    let (out, err, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(code, Some(0), "{out}{err}");
+    let out = counts(&out);
+    assert!(
+        out.starts_with(" ok rector.php  -> [lint] sets dead-code, modernize; N on, N off"),
+        "{out}"
+    );
+    assert!(
+        out.contains(", 3 paths excluded, 1 per-path skip\n"),
+        "{out}"
+    );
+    // php53 (withPhpSets below 8.4) adds many upgrade rules that share one reason.
+    assert!(
+        out.lines().any(|l| l.starts_with(" ! 13 Rector rules ")
+            && l.ends_with(
+                "  only in php52..php83 upgrade sets (below the PHP 8.4 floor); skipped"
+            )),
+        "{out}"
+    );
+    assert!(out.contains(PR), "{out}");
+    let toml = read(&d, "pun.toml");
+    assert!(
+        toml.contains("exclude = [\"rector.php\", \"scripts\", \"tools\"]\n"),
+        "{toml}"
+    );
+    assert!(
+        toml.contains("[[lint.overrides]]\nfiles = [\"src/Sub\"]\nrules = { \"phpdoc/no-useless-param\" = \"off\" }\n"),
+        "{toml}"
+    );
+    // Rector's paths cover the project and no set is prepared: nothing excluded, no sets.
+    std::fs::remove_file(d.join("pun.toml")).unwrap();
+    let whole = (rector.replace("__DIR__.'/src'", "__DIR__")).replace(
+        "    ->withPreparedSets(deadCode: true)\n    ->withPhpSets(php53: true)\n",
+        "",
+    );
+    std::fs::write(d.join("rector.php"), whole).unwrap();
+    let (out, _, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(code, Some(0), "{out}");
+    assert!(
+        counts(&out).starts_with(" ok rector.php  -> [lint] no sets; N on, N off"),
+        "{out}"
+    );
+    assert!(!out.contains("excluded"), "{out}");
+    // A rector.php Rector can't load stops the migration with its message: the config's own exception (on stdout)
+    // or a fatal error (on stderr).
+    std::fs::remove_file(d.join("pun.toml")).unwrap();
+    std::fs::write(d.join("rector.php"), "<?php\nreturn 1;\n").unwrap();
+    let (_, err, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(
+        (err.as_str(), code),
+        (
+            "x rector.php must return RectorConfig::configure() or a closure taking RectorConfig\n",
+            Some(2)
+        )
+    );
+    std::fs::write(
+        d.join("rector.php"),
+        "<?php\nfunction f() {}\nfunction f() {}\n",
+    )
+    .unwrap();
+    let (_, err, code) = pun(&d, &["migrate", "--yes"]);
+    let file = d.join("rector.php");
+    let file = file.display();
+    assert_eq!(
+        (err, code),
+        (
+            format!(
+                "x Fatal error: Cannot redeclare function f() (previously declared in {file}:2) in {file} on line 3\n"
+            ),
+            Some(2)
+        )
+    );
+}
+
+/// A `@phpstan-ignore` that names a check Pun has as a format rule (rules/mapping.toml: `whitespace.fileEnd` is
+/// `format/tags/no-closing`) is left: format rules are not ignored per line.
+#[test]
+fn phpstan_ignore_of_a_format_check_is_left() {
+    let php = "<?php\n\n$a = 1; // @phpstan-ignore whitespace.fileEnd\n";
+    let d = project(
+        "phpstan-format-ignore",
+        &[
+            (
+                "phpstan.neon",
+                "parameters:\n    level: 5\n    paths: [app]\n",
+            ),
+            ("app/A.php", php),
+        ],
+    );
+    let (out, _, code) = pun(&d, &["migrate", "--dry-run", "--yes"]);
+    assert_eq!(code, Some(0), "{out}");
+    assert!(
+        out.contains(" ! app/A.php  `@phpstan-ignore whitespace.fileEnd` left as is (`whitespace.fileEnd` is the format rule `format/tags/no-closing`, ignored per file); skipped\n"),
+        "{out}"
+    );
+}
+
+/// Mago is detected but can't be migrated yet: the checklist says so.
+#[test]
+fn checklist_marks_unsupported_configs() {
+    let d = project("tty-mago", &[("pint.json", PINT), ("mago.toml", "")]);
+    let out = pty(&d, "\\r");
+    assert!(
+        out.contains("Mago          mago.toml  (not supported yet)\n"),
+        "{out}"
+    );
+}

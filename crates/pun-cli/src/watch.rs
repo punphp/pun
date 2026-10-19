@@ -44,12 +44,16 @@ pub(crate) fn run(mut a: FormatArgs) -> Result<u8> {
         .filter_map(|f| Some((f.clone(), hash(&f)?)))
         .collect();
     loop {
-        // Polls for a dead parent (the editor or shell that started the watch): the watch ends with it.
+        // Checks for a dead parent (the editor or shell that started the watch) at least every second: the watch ends
+        // with it. Reads (Linux inotify's open/close, Pun's own reads of pun.toml and the tree included) wake it
+        // without starting a run.
         let first = loop {
             match rx.recv_timeout(Duration::from_secs(1)) {
+                _ if parent() != started_by => return Ok(0),
+                Ok(Ok(e)) if matches!(e.kind, EventKind::Access(_)) => {}
                 Ok(e) => break e,
-                Err(mpsc::RecvTimeoutError::Timeout) if parent() == started_by => {}
-                Err(_) => return Ok(0),
+                Err(mpsc::RecvTimeoutError::Timeout) => {}
+                Err(mpsc::RecvTimeoutError::Disconnected) => return Ok(0),
             }
         };
         let mut changed = HashSet::new();

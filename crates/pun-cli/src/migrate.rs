@@ -948,7 +948,8 @@ fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
         );
     }
     let out = std::process::Command::new("php")
-        // Startup warnings (a broken php.ini) go to stderr, off the JSON.
+        // Startup warnings (a broken php.ini) go to stderr, off the JSON; a fatal error is printed once (no php.ini
+        // log_errors copy) and without PHP 8.5's backtrace.
         .args([
             "-d",
             "display_errors=stderr",
