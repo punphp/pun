@@ -48,21 +48,8 @@ impl Checker<'_, '_> {
     /// Leaves a scope boundary: GotoUndefinedLabelRule reports its gotos to labels it does not hold.
     pub(super) fn pop_frame(&mut self) {
         let frame = self.frames.pop().expect("pushed");
-        // UnusedLabelRule (level 4, `featureToggles.unusedLabel`)
-        if self.unused_label && self.level >= 4 {
-            for (label, at) in &frame.labels {
-                if !frame.gotos.iter().any(|(g, _)| g == label) {
-                    self.report(
-                        *at,
-                        "label.unused",
-                        format!("Label '{}' is unused.", String::from_utf8_lossy(label)),
-                        None,
-                    );
-                }
-            }
-        }
-        for (label, at) in frame.gotos {
-            if frame.labels.iter().any(|(l, _)| *l == label) {
+        for (label, at) in &frame.gotos {
+            if frame.labels.iter().any(|(l, _)| l == label) {
                 continue;
             }
             self.report_non_ignorable(
@@ -70,10 +57,19 @@ impl Checker<'_, '_> {
                 "goto.labelUndefined",
                 format!(
                     "Goto to undefined label '{}'.",
-                    String::from_utf8_lossy(&label)
+                    String::from_utf8_lossy(label)
                 ),
                 None,
             );
+        }
+        // UnusedLabelRule (level 4, `featureToggles.unusedLabel`)
+        if self.unused_label {
+            for (label, at) in &frame.labels {
+                if !frame.gotos.iter().any(|(g, _)| g == label) {
+                    let message = format!("Label '{}' is unused.", String::from_utf8_lossy(label));
+                    self.report(*at, "label.unused", message, None);
+                }
+            }
         }
     }
 

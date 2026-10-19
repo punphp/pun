@@ -233,6 +233,37 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
         Flow::Next
     }
 
+    /// A loop body (NodeScopeResolver runs it without the node callback until its entry scope, merged with its end,
+    /// stops changing, then once with it), from `s`; `s` becomes its end (`once`, a `do`-`while`) or the merge.
+    fn looped(&mut self, s: &mut State, nodes: Vec<Node<'_, '_>>, once: bool) -> Flow {
+        let run = |w: &mut Self, mut from: State| {
+            let mut flow = Flow::Next;
+            for n in nodes.iter().copied() {
+                flow = w.node(n, &mut from);
+                if flow != Flow::Next {
+                    break;
+                }
+            }
+            (from, flow)
+        };
+        let mut entry = s.clone();
+        loop {
+            let kept = (self.gathered.usages.len(), self.gathered.calls.len(), self.returns.len());
+            let (end, _) = run(self, entry.clone());
+            self.gathered.usages.truncate(kept.0);
+            self.gathered.calls.truncate(kept.1);
+            self.returns.truncate(kept.2);
+            let next = merge(&entry, &end);
+            if next == entry {
+                break;
+            }
+            entry = next;
+        }
+        let (end, flow) = run(self, entry);
+        *s = if once { end } else { merge(s, &end) };
+        flow
+    }
+
     fn maybe(&mut self, s: &mut State, nodes: Vec<Node<'_, '_>>) {
         let mut body = s.clone();
         for n in nodes {
@@ -245,10 +276,10 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
 
     fn node(&mut self, n: Node<'_, '_>, s: &mut State) -> Flow {
         match n {
+            // an `if`, `elseif`, `while`, `for` condition, `foreach` expression, `do`-`while` condition or `return`
+            // value that always terminates does not end the flow (NodeScopeResolver reads only the statements')
             Node::If(i) => {
-                if self.node(Node::Expression(i.condition), s) == Flow::Exit {
-                    return Flow::Exit;
-                }
+                self.node(Node::Expression(i.condition), s);
                 // an elseif runs its condition, then its branch
                 let (branches, has_else) = match &i.body {
                     IfBody::Statement(b) => {
@@ -275,15 +306,11 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 self.branches(s, branches, !has_else)
             }
             Node::IfStatementBodyElseIfClause(e) => {
-                if self.node(Node::Expression(e.condition), s) == Flow::Exit {
-                    return Flow::Exit;
-                }
+                self.node(Node::Expression(e.condition), s);
                 self.node(Node::Statement(e.statement), s)
             }
             Node::IfColonDelimitedBodyElseIfClause(e) => {
-                if self.node(Node::Expression(e.condition), s) == Flow::Exit {
-                    return Flow::Exit;
-                }
+                self.node(Node::Expression(e.condition), s);
                 self.statements(e.statements.iter(), s)
             }
             Node::Switch(sw) => {
@@ -327,48 +354,47 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 self.branches(s, branches, false)
             }
             Node::While(w) => {
-                if self.node(Node::Expression(w.condition), s) == Flow::Exit {
-                    return Flow::Exit;
-                }
+                self.node(Node::Expression(w.condition), s);
                 let body = match &w.body {
                     WhileBody::Statement(b) => vec![Node::Statement(b)],
                     WhileBody::ColonDelimited(b) => b.statements.iter().map(Node::Statement).collect(),
                 };
-                self.maybe(s, body);
+                self.looped(s, body, false);
                 Flow::Next
             }
             Node::For(f) => {
-                for e in f.initializations.iter().chain(f.conditions.iter()) {
+                for e in f.initializations.iter() {
                     if self.node(Node::Expression(e), s) == Flow::Exit {
                         return Flow::Exit;
                     }
+                }
+                for e in f.conditions.iter() {
+                    self.node(Node::Expression(e), s);
                 }
                 let mut body: Vec<Node> = match &f.body {
                     ForBody::Statement(b) => vec![Node::Statement(b)],
                     ForBody::ColonDelimited(b) => b.statements.iter().map(Node::Statement).collect(),
                 };
                 body.extend(f.increments.iter().map(|e| Node::Expression(e)));
-                self.maybe(s, body);
+                self.looped(s, body, false);
                 Flow::Next
             }
             Node::Foreach(f) => {
-                if self.node(Node::Expression(f.expression), s) == Flow::Exit {
-                    return Flow::Exit;
-                }
+                self.node(Node::Expression(f.expression), s);
                 let mut body = vec![Node::ForeachTarget(&f.target)];
                 match &f.body {
                     ForeachBody::Statement(b) => body.push(Node::Statement(b)),
                     ForeachBody::ColonDelimited(b) => body.extend(b.statements.iter().map(Node::Statement)),
                 }
-                self.maybe(s, body);
+                self.looped(s, body, false);
                 Flow::Next
             }
             Node::DoWhile(d) => {
-                let flow = self.node(Node::Statement(d.statement), s);
-                if flow == Flow::Exit {
-                    return flow;
+                if self.looped(s, vec![Node::Statement(d.statement)], true) == Flow::Exit {
+                    return Flow::Exit;
                 }
-                self.node(Node::Expression(d.condition), s)
+                self.node(Node::Expression(d.condition), s);
+                Flow::Next
             }
             Node::Try(t) => {
                 let before = s.clone();
@@ -398,10 +424,8 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 if exits { Flow::Exit } else { Flow::Next }
             }
             Node::Return(r) => {
-                if let Some(v) = r.value
-                    && self.node(Node::Expression(v), s) == Flow::Exit
-                {
-                    return Flow::Exit;
+                if let Some(v) = r.value {
+                    self.node(Node::Expression(v), s);
                 }
                 self.returns.push(s.clone());
                 Flow::Exit
@@ -543,16 +567,26 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                     Expression::Identifier(id) => Some(self.ctx.sources[self.source].names.get(&id.span())),
                     _ => None,
                 };
-                let enumerating = name.is_some_and(|n| {
-                    let n = n.strip_prefix(b"\\").unwrap_or(n);
-                    n.eq_ignore_ascii_case(b"get_object_vars") || n.eq_ignore_ascii_case(b"array_walk")
-                });
+                let enumerating = match f.function {
+                    Expression::Identifier(id) => {
+                        let names = self.ctx.sources[self.source].names;
+                        let n = super::function_checks::function_name(names, self.ctx.c.codebase, id);
+                        n == "get_object_vars" || n == "array_walk"
+                    }
+                    _ => false,
+                };
                 if enumerating
                     && let Some(Argument::Positional(first)) = f.argument_list.arguments.first()
                     && is_this(first.value)
                 {
+                    // tryToApplyPropertyReads(): a PropertyFetch without a line, reported on the class's
+                    let at = self.gathered.usages.len();
                     for p in self.ctx.instance_properties() {
                         self.usage(s, p.as_bytes(), f, None);
+                    }
+                    let line = i64::from(self.ctx.sources[0].file.line_number(self.ctx.k.span.start.offset)) + 1;
+                    for u in &mut self.gathered.usages[at..] {
+                        (u.line, u.source) = (line, 0);
                     }
                 }
                 // the trait files' names are not the checker's
@@ -603,10 +637,7 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
     }
 
     fn assignment(&mut self, a: &Assignment, s: &mut State) -> Flow {
-        let mut target = a.lhs;
-        while let Expression::Parenthesized(p) = target {
-            target = p.expression;
-        }
+        let target = a.lhs;
         if let Some(property) = this_property(target) {
             let assign = matches!(a.operator, AssignmentOperator::Assign(_));
             let coalesce = matches!(a.operator, AssignmentOperator::Coalesce(_));
@@ -635,23 +666,21 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 _ => break,
             }
         }
-        if !dims.is_empty() || !std::ptr::eq(root, target) {
-            if let Some(property) = this_property(root) {
-                for d in dims.iter().rev() {
-                    if self.node(Node::Expression(d), s) == Flow::Exit {
-                        return Flow::Exit;
-                    }
-                }
-                if self.node(Node::Expression(a.rhs), s) == Flow::Exit {
-                    return Flow::Exit;
-                }
-                let (object, array_access) = self.ctx.offsets.get(&text(property)).copied().unwrap_or((true, false));
-                if object {
-                    self.usage(s, property, root, None);
-                }
-                self.usage(s, property, root, Some(array_access));
-                return Flow::Next;
+        if (!dims.is_empty() || !std::ptr::eq(root, target))
+            && let Some(property) = this_property(root)
+        {
+            for d in dims.iter().rev() {
+                self.node(Node::Expression(d), s);
             }
+            // the write is gathered, and initializes the property, even when the value never returns
+            let flow = self.node(Node::Expression(a.rhs), s);
+            let (object, array_access) = self.ctx.offsets.get(&text(property)).copied().unwrap_or((true, false));
+            if object {
+                self.usage(s, property, root, None);
+            }
+            self.usage(s, property, root, Some(array_access));
+            s.insert(text(property), Tri::Yes);
+            return flow;
         }
         // list() and [] destructuring: the value first, then each element's target
         if let Expression::List(_) | Expression::Array(_) | Expression::LegacyArray(_) = target {
@@ -664,9 +693,7 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
         match target {
             Expression::Variable(_) => {}
             _ => {
-                if self.children(Node::Expression(target), s) == Flow::Exit {
-                    return Flow::Exit;
-                }
+                self.children(Node::Expression(target), s);
             }
         }
         self.node(Node::Expression(a.rhs), s)
@@ -1022,9 +1049,6 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
             let Some(hint) = &p.hint else {
                 continue;
             };
-            if p.modifiers.iter().any(|m| matches!(m, Modifier::Static(_) | Modifier::Abstract(_))) {
-                continue;
-            }
             nodes.push(PropertyNode {
                 name: text(&p.variable.name[1..]),
                 line: i64::from(file.line_number(p.span().start.offset)) + 1,
@@ -1055,7 +1079,6 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
 fn offsets(c: &Checker, source: &Source, hint: &Hint) -> (bool, bool) {
     match hint {
         Hint::Nullable(n) => offsets(c, source, n.hint),
-        Hint::Parenthesized(p) => offsets(c, source, p.hint),
         Hint::Identifier(id) => {
             let Some(name) = source.names.resolve(&id.span()) else { return (true, false) };
             (true, c.codebase.is_instance_of(name, b"ArrayAccess"))
@@ -1181,13 +1204,9 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                                 additional.push((usage.property.clone(), usage.line));
                             }
                         }
+                        // (a read in an additional constructor of a property the constructor initializes is skipped
+                        // upstream; Pun has no additional constructors)
                         None => {
-                            if !function.eq_ignore_ascii_case("__construct")
-                                && in_constructor.contains(&usage.property)
-                                && constructors.contains(function)
-                            {
-                                continue;
-                            }
                             let mut has = or(known, usage.state);
                             if has != Tri::Yes
                                 && let Some(parent) = usage.parent
@@ -1246,9 +1265,14 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
 impl Checker<'_, '_> {
     /// An error on `line` of the class's file, or of a trait's (`file`: its description and path).
     fn report_line(&mut self, line: i64, identifier: &str, message: String, file: Option<(String, String)>) {
+        if self.trait_context.is_some() && !self.in_target {
+            return;
+        }
+        // a class declared in a trait's method is checked in each using class's context, with its own scope (not in
+        // the trait)
         let (label, trait_file) = match file {
             Some((label, path)) => (label, Some(path)),
-            None => (self.label.clone(), None),
+            None => (self.file_name(), None),
         };
         self.errors.push(Error {
             identifier: Some(identifier.to_string()),

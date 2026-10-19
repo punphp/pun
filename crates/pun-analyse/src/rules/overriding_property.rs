@@ -13,7 +13,7 @@ use mago_codex::symbol::SymbolKind;
 use mago_codex::visibility::Visibility;
 use mago_database::file::{File, FileId};
 use mago_span::{HasSpan, Position, Span};
-use mago_syntax::cst::Property;
+use mago_syntax::cst::{ClassLikeConstant, Constant, Property};
 use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
@@ -50,12 +50,22 @@ fn accessible(is_static: bool, is_virtual: bool, hook: bool) -> bool {
 
 /// Where each property declaration of a file starts, by the offset of its items' names (Mago's codex keeps no span
 /// for a plain property), parsed once per content.
-fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
+pub(super) fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
     struct Starts(HashMap<u32, u32>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Starts {
         fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
             for v in p.variables() {
                 self.0.insert(v.span.start.offset, p.span().start.offset);
+            }
+        }
+        fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+            for item in k.items.iter() {
+                self.0.insert(item.span().start.offset, k.span().start.offset);
+            }
+        }
+        fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
+            for item in k.items.iter() {
+                self.0.insert(item.span().start.offset, k.span().start.offset);
             }
         }
     }
@@ -84,7 +94,7 @@ fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
 
 impl<'a> Checker<'a, '_> {
     /// The span of property `p`'s declaration (from its attributes or modifiers), and of its name.
-    fn declaration(&self, p: &PropertyMetadata) -> Option<(Span, Span)> {
+    pub(super) fn declaration(&self, p: &PropertyMetadata) -> Option<(Span, Span)> {
         let name = p.name_span?;
         if let Some(span) = p.span {
             return Some((span, name));
@@ -96,7 +106,7 @@ impl<'a> Checker<'a, '_> {
 
     /// The declared property `name` (with its `$`) of user class `class` (its own, a trait's or an ancestor's): the
     /// class PHP reports declaring it, the class-like whose code declares it, and the property.
-    fn declared_property(
+    pub(super) fn declared_property(
         &self,
         class: &'a ClassLikeMetadata,
         name: &[u8],
@@ -183,10 +193,8 @@ impl<'a> Checker<'a, '_> {
                         native: p.native.clone(),
                     });
                 }
-                match self.parent_class(Class::Builtin(b))? {
-                    Class::Builtin(parent) => b = parent,
-                    Class::User(_) => return None,
-                }
+                // a built-in class's parent is built in
+                b = super::overriding::natives(self.php_version).get(&b.parent.as_deref()?.to_ascii_lowercase())?;
             },
             Class::User(u) => {
                 let dollar = format!("${name}");
@@ -254,12 +262,8 @@ fn hook_names(p: &PropertyMetadata) -> (bool, bool) {
 
 /// OverridingPropertyRule on a ClassPropertyNode, `is_readonly` being its `isReadOnly()`.
 pub fn check(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
-    let Some(k) = c.class_scope() else {
-        return;
-    };
-    if k.kind == SymbolKind::Trait {
-        return;
-    }
+    // a trait's property is walked only in a using class's context, where the scope is that class
+    let k = c.class_scope().expect("a property is walked inside its class");
     let errors = declared::with_classes(c, || errors(c, node, is_readonly, k));
     for (identifier, message, ignorable) in errors {
         if ignorable {
