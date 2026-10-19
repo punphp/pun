@@ -28,6 +28,48 @@ pub fn same_code(source: &str, a: Span, b: Span) -> bool {
     tokens(&source[a.start..a.end]) == tokens(&source[b.start..b.end])
 }
 
+/// Rector's `NodeComparator::areNodesEqual` on Mago's tree: the two nodes are the same code once printed without
+/// comments. php-parser keeps no node for parentheses and its printer only writes the ones precedence needs, so the
+/// parentheses of every parenthesized expression inside either node are left out, as are whitespace and comments.
+pub fn same_node(source: &str, a: Node<'_, '_>, b: Node<'_, '_>) -> bool {
+    printed_tokens(source, a) == printed_tokens(source, b)
+}
+
+/// [`same_node`] for two expressions.
+pub fn same_expression(source: &str, a: &Expression<'_>, b: &Expression<'_>) -> bool {
+    same_node(source, Node::Expression(a), Node::Expression(b))
+}
+
+fn printed_tokens<'s>(
+    source: &'s str,
+    node: Node<'_, '_>,
+) -> Vec<(mago_syntax::token::TokenKind, &'s [u8])> {
+    let span = node_span(&node);
+    let mut parentheses = Vec::new();
+    collect_parentheses(node, &mut parentheses);
+    let code = &source[span.start..span.end];
+    let mut lexer = Lexer::scripting(
+        Input::new(FileId::zero(), code.as_bytes()),
+        LexerSettings::default(),
+    );
+    let mut out = Vec::new();
+    while let Some(Ok(token)) = lexer.advance() {
+        let at = span.start + token.start.offset as usize;
+        if !token.kind.is_trivia() && !parentheses.contains(&at) {
+            out.push((token.kind, &source.as_bytes()[at..at + token.value.len()]));
+        }
+    }
+    out
+}
+
+fn collect_parentheses(node: Node<'_, '_>, out: &mut Vec<usize>) {
+    if let Node::Parenthesized(p) = node {
+        out.push(p.left_parenthesis.start.offset as usize);
+        out.push(p.right_parenthesis.start.offset as usize);
+    }
+    node.visit_children(|child| collect_parentheses(child, out));
+}
+
 fn tokens(code: &str) -> Vec<(mago_syntax::token::TokenKind, &[u8])> {
     let mut lexer = Lexer::scripting(
         Input::new(FileId::zero(), code.as_bytes()),

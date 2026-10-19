@@ -1,0 +1,2 @@
+143 165 Unnecessary `iterator_to_array()` in `foreach`.
+226 233 Unnecessary `iterator_to_array()` in `foreach`.
