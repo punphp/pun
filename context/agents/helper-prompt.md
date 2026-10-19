@@ -10,9 +10,10 @@ pinned upstream tools. Other agents are pushing to origin/main right now; you co
 git and context/PLAN.md.
 
 1. Get the latest code in a worktree of your own: pick your name first (`helper-<host>-<4 random letters>`),
-   then in the server's clone of git@github.com:punphp/pun.git (clone it to ~/pun if there is none) run
-   `git fetch origin && git worktree add ../pun-<name> -b helper/<name> origin/main` and work in that
-   worktree; "Server setup" in context/agents/README.md has the rest. If you are on Pushpak's Mac, work in
+   then find the server's existing clone of git@github.com:punphp/pun.git: a directory named `pun`
+   (e.g. `find ~ / -maxdepth 4 -type d -name pun -exec test -e {}/.git \; -print 2>/dev/null | head -1`).
+   In it run `git fetch origin && git worktree add ../pun-<name> -b helper/<name> origin/main` and work in
+   that worktree; "Server setup" in context/agents/README.md has the rest. Never edit the `pun` clone itself. If you are on Pushpak's Mac, work in
    /Users/pushpakchhajed/Projects/pun instead (no worktree).
 2. Read context/agents/README.md and follow it exactly. It covers ownership, the helper queue and race-safe
    claiming, shared-file rules, the git protocol (push to main; on rejection fetch + merge origin/main; never

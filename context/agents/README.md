@@ -80,7 +80,8 @@ of your own.
   touch other agents' uncommitted files.
 - Commit only your own paths in one step: `git add <new files you created>`, then
   `git commit -m "type(scope): subject" -m "Claude-Session: https://claude.ai/code/session_01NySXSoVyfV7bfuu5pBqpiQ" -- <your paths>`.
-  If `.git/index.lock` exists, wait a few seconds and retry.
+  If `.git/index.lock` exists, wait a few seconds and retry. Never leave files staged: `git add` only
+  new files, right before the commit that includes them. A staged file blocks everyone's merge.
 - Push after every finished batch: `git push origin main`. If it is rejected because someone else pushed:
   `git fetch origin && git merge --no-edit origin/main && git push origin main`. Never rebase, never force.
   `git merge` refuses safely when it would touch a file with uncommitted edits; if it refuses or conflicts,
@@ -125,14 +126,17 @@ directories you did not create, ~/.claude, or anything you did not create.
 The server has one base clone of git@github.com:punphp/pun.git; each agent works in its own worktree of it,
 so agents never share a working tree and the git objects are stored once.
 
+The base clone is the directory named `pun` on the server (find it; do not make another clone, and never
+edit files in it directly: it only hosts the worktrees and the shared `.oracle/`, `corpus/`, `target-bench/`).
+
 1. Once per server: install rustc 1.99 (rustup), PHP 8.4+ with the usual extensions, composer, node and npm;
-   clone the repo (e.g. `~/pun`) if it is not there; in the clone run `scripts/oracle.sh` (pinned tools into
+   in the `pun` clone run `scripts/oracle.sh` (pinned tools into
    `.oracle/`) and `scripts/corpus.sh <name>` for the corpus projects (corpus/manifest.toml lists them). For
    analyse and lint comparisons, run `SETUP_ONLY=1 BENCH=analyse scripts/bench.py` (and `BENCH=lint`) once
    to make scratch copies with `composer install` under `target-bench/`.
-2. Each agent: `cd ~/pun && git fetch origin && git worktree add ../pun-<name> -b helper/<name> origin/main`,
-   then work in `../pun-<name>`. Link the shared heavy data instead of copying it:
-   `ln -s ~/pun/.oracle ~/pun/corpus ~/pun/target-bench ../pun-<name>/` (skip any that do not exist).
+2. Each agent, from inside the `pun` clone: `git fetch origin && git worktree add ../pun-<name> -b
+   helper/<name> origin/main`, then work in `../pun-<name>`. Link the shared heavy data instead of copying it:
+   `ln -s "$PWD/.oracle" "$PWD/corpus" "$PWD/target-bench" ../pun-<name>/` (skip any that do not exist).
 3. Your branch is private, so before each push: `git fetch origin && git rebase origin/main`, then
    `git push origin HEAD:main`. Never force-push and never push the helper branch itself.
 4. When you stop: `git worktree remove ../pun-<name>` and `git branch -D helper/<name>` after everything
