@@ -268,6 +268,12 @@ fn foreach_to_in_array() {
         &only(rules::PreferInArrayOverForeach, 80400),
         "ForeachToInArrayRector/Oracle",
     );
+    // Derived by hand: Rector drops an `else` the `if` has, and Pun leaves a list whose first statements would go
+    // ahead of kept ones (php-parser's reprint there is not ported).
+    run(
+        &only(rules::PreferInArrayOverForeach, 80400),
+        "ForeachToInArrayRector/Pun",
+    );
 }
 
 #[test]
@@ -444,7 +450,8 @@ fn simplify_bool_identical_true() {
 fn simplify_empty_check_on_empty_array() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: a property of a class in another
     // file, which Pun can't read without analyse's index, and Rector's own run on the `is_array() &&` guard, a trait,
-    // an element assignment of an untyped parameter and variadic parameters.
+    // an element assignment of an untyped parameter and variadic parameters; a file-level variable, which Pun does not
+    // type.
     let linter = only(rules::PreferEmptyArrayIdentical, 80400);
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Fixture");
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Oracle");

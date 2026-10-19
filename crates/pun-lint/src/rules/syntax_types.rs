@@ -481,33 +481,31 @@ pub(crate) fn in_trait(ancestors: &[Node<'_, '_>]) -> bool {
 }
 
 /// Whether the enclosing function's own statement list assigns `name` (`$name = ...;`) before anything else
-/// mentions it, so the variable is defined wherever it is read.
+/// mentions it, so the variable is defined wherever it is read. Only asked after [`local_of`], which found that
+/// function.
 fn assigned_first(ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
-    let body = ancestors.iter().rev().find_map(|n| match n {
-        Node::Function(f) => Some(&f.body),
+    let statements = ancestors.iter().rev().find_map(|n| match n {
+        Node::Function(f) => Some(&f.body.statements),
         Node::Method(Method {
             body: MethodBody::Concrete(b),
             ..
-        }) => Some(b),
-        Node::Closure(c) => Some(&c.body),
+        }) => Some(&b.statements),
+        Node::Closure(c) => Some(&c.body.statements),
         _ => None,
     });
-    let Some(body) = body else {
-        return false;
-    };
-    for statement in body.statements.iter() {
-        if let Statement::Expression(e) = statement
-            && let Expression::Assignment(a) = unparenthesize(e.expression)
-            && matches!(unparenthesize(a.lhs), Expression::Variable(Variable::Direct(l)) if l.name == name)
-        {
-            return true;
-        }
-        if super::side_effect::any_node(
-            Node::Statement(statement),
-            &|n| matches!(n, Node::DirectVariable(d) if d.name == name),
-        ) {
-            return false;
-        }
-    }
-    false
+    // The first statement that mentions it (the one being read, at the latest) must be the assignment.
+    statements
+        .unwrap()
+        .iter()
+        .find(|statement| {
+            super::side_effect::any_node(
+                Node::Statement(statement),
+                &|n| matches!(n, Node::DirectVariable(d) if d.name == name),
+            )
+        })
+        .is_some_and(|statement| {
+            matches!(statement, Statement::Expression(e)
+                if matches!(unparenthesize(e.expression), Expression::Assignment(a)
+                    if matches!(unparenthesize(a.lhs), Expression::Variable(Variable::Direct(l)) if l.name == name)))
+        })
 }
