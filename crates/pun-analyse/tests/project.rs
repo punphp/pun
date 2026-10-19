@@ -106,3 +106,19 @@ fn unreadable_file_stops_the_run() {
     let gone = dir.join("gone.php");
     assert_eq!(run(&Project::new(vec![gone], Vec::new())).unwrap(), []);
 }
+
+/// Without `level` (config.neon's null) the rules run at level 0, where PHPStan stops with "No rules detected".
+#[test]
+fn level_is_zero_when_unset() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/project");
+    let options = Options {
+        config: Some(
+            dir.join("phpstan-nolevel.neon")
+                .to_string_lossy()
+                .into_owned(),
+        ),
+        ..Options::for_project(&dir.to_string_lossy())
+    };
+    let config = resolve(&options).unwrap_or_else(|e| panic!("{e}"));
+    assert_eq!(Project::from_config(&dir, &config.parameters).level, 0);
+}

@@ -1247,7 +1247,6 @@ pub fn trait_use(c: &mut Checker, u: &TraitUse) {
             let kind = match c.decls.last().map(|d| d.kind) {
                 Some(mago_codex::symbol::SymbolKind::Interface) => "interface",
                 Some(mago_codex::symbol::SymbolKind::Enum) => "enum",
-                Some(mago_codex::symbol::SymbolKind::Trait) => "trait",
                 _ => "class",
             };
             (format!("{kind} {}", escape(&class)), kind)

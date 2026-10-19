@@ -193,11 +193,8 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         let v = super::restricted(visibility);
         c.report(
             name,
-            if visibility.is_private() {
-                "method.private"
-            } else {
-                "method.protected"
-            },
+            // `$this` is an instance of the scope class, so only a parent's private method is out of reach
+            "method.private",
             format!(
                 "Call to {v} method {}() of class {declaring}.",
                 method.name()
@@ -242,13 +239,12 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         return;
     };
     let method_name = String::from_utf8_lossy(name.value).into_owned();
-    let in_class = !c.classes.is_empty();
     let scope_class = c.class_scope();
     let is_static_keyword = matches!(call.class, Expression::Static(_));
     // ClassNameCheck's errors on a written class, dropped where PHPStan returns none (`__callStatic()`)
     let mut pair = None;
-    let class = match call.class {
-        Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_) if !in_class => {
+    let class = match (call.class, scope_class) {
+        (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_), None) => {
             let identifier = super::out_of_class(call.class);
             let written = written(c, call.class);
             c.report(
@@ -259,14 +255,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
             );
             return;
         }
-        Expression::Self_(_) | Expression::Static(_) => match scope_class {
-            Some(k) => k,
-            None => return,
-        },
-        Expression::Parent(_) => {
-            let Some(scope) = scope_class else {
-                return;
-            };
+        (Expression::Self_(_) | Expression::Static(_), Some(k)) => k,
+        (Expression::Parent(_), Some(scope)) => {
             let parent = scope
                 .direct_parent_class
                 .map(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())));
@@ -284,7 +274,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
                 }
             }
         }
-        Expression::Identifier(id) => {
+        (Expression::Identifier(id), _) => {
             let class_name = c.resolved(id);
             match c.class_like(&class_name) {
                 Lookup::Found(k) => {

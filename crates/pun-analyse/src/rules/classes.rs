@@ -20,25 +20,16 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
         new_static(c, new);
     }
     let args = new.argument_list.as_ref();
-    // `new Foo(...)`: InstantiationCallableRule's business
-    if args.is_some_and(|a| {
-        a.arguments
-            .iter()
-            .any(|x| matches!(x, Argument::Positional(p) if p.ellipsis.is_some() && matches!(p.value, Expression::Error(_))))
-    }) {
-        return;
-    }
-    let in_class = !c.classes.is_empty();
     let keyword = |c: &Checker| {
         String::from_utf8_lossy(&c.file.contents[new.class.span().to_range_usize()]).into_owned()
     };
-    let (class, is_static) = match new.class {
-        Expression::Identifier(id) => {
+    let (class, is_static) = match (new.class, c.class_scope()) {
+        (Expression::Identifier(id), _) => {
             let name = c.resolved(id);
             named(c, new, &name, true, Pair::name(name.clone(), id.span()));
             return;
         }
-        Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_) if !in_class => {
+        (Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_), None) => {
             let written = keyword(c);
             let identifier = super::out_of_class(new.class);
             c.report(
@@ -49,10 +40,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
             );
             return;
         }
-        Expression::Static(_) => {
-            let Some(class) = c.class_scope() else {
-                return;
-            };
+        (Expression::Static(_), Some(class)) => {
             if !class.flags.is_final()
                 && (!has_constructor(c, class) || !consistent_constructor(c, class))
             {
@@ -60,14 +48,8 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
             }
             (class, true)
         }
-        Expression::Self_(_) => match c.class_scope() {
-            Some(class) => (class, false),
-            None => return,
-        },
-        Expression::Parent(_) => {
-            let Some(scope) = c.class_scope() else {
-                return;
-            };
+        (Expression::Self_(_), Some(class)) => (class, false),
+        (Expression::Parent(_), Some(scope)) => {
             let parent = scope
                 .direct_parent_class
                 .map(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())));
@@ -85,7 +67,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
                 }
             }
         }
-        expr => {
+        (expr, _) => {
             for (name, is_name) in class_names(c, expr) {
                 let pair = Pair::node(name.clone(), expr.span());
                 named(c, new, &name, is_name, pair);

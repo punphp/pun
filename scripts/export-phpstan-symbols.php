@@ -568,7 +568,7 @@ if (($argv[1] ?? '') === 'probes') {
         $scope = new NameScope('PunProbe', [], $class);
         foreach (['static', 'static<string>', 'self', 'parent', 'Coll', 'Coll<int, string>', 'Child<string>', 'SORT_REGULAR',
             'int-mask-of<SORT_REGULAR|SORT_NUMERIC>', '\\SORT_NUMERIC', 'self::A', 'self::*', 'Child::C', 'Coll::*', 'class-string<static>',
-            'Nope::A', 'Coll::NOPE'] as $s) {
+            'Nope::A', 'Coll::NOPE', 'Defaults<string>', 'Defaults<string, string, string, string>'] as $s) {
             $scoped[] = [$class, $s, $resolver->resolve($s, $scope)->describe(VerbosityLevel::precise())];
         }
     }

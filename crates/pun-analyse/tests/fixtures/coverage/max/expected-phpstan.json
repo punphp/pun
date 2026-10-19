@@ -1,0 +1,19 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "max.php",
+   "line": 5,
+   "identifier": "missingType.return",
+   "message": "Function CoverageMax\\untyped() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "max.php",
+   "line": 5,
+   "identifier": "missingType.parameter",
+   "message": "Function CoverageMax\\untyped() has parameter $a with no type specified.",
+   "tip": null
+  }
+ ]
+}

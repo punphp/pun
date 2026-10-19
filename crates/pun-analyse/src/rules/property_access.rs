@@ -427,19 +427,11 @@ fn has_native_method(c: &Checker, k: &ClassLikeMetadata, name: &str) -> bool {
 }
 
 /// A native property of `k` by name (`$` included) as BetterReflection's `hasProperty()` sees it: declared by the
-/// class, its traits or a parent (a parent's private one excluded); `Some(is_static)`.
+/// class, its traits or a parent (Mago leaves a parent's private one out of `declaring_property_ids`); `Some(is_static)`.
 fn native_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> Option<bool> {
-    let declaring = k.declaring_property_ids.get(&word(property))?;
     let p = c
         .codebase
         .get_declaring_property(k.name.as_bytes(), property)?;
-    let own = declaring.as_bytes().eq_ignore_ascii_case(k.name.as_bytes())
-        || c.codebase
-            .get_class_like(declaring.as_bytes())
-            .is_some_and(|d| d.kind == SymbolKind::Trait);
-    if !own && p.read_visibility.is_private() {
-        return None;
-    }
     Some(p.flags.is_static() || is_static_hooked(c, p))
 }
 
@@ -595,15 +587,14 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
     let property = v.name;
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
     let at = p.property.span();
-    let in_class = !c.classes.is_empty();
-    let holder = match unparenthesized(p.class) {
-        e @ (Expression::Self_(_) | Expression::Static(_)) => {
+    let holder = match (unparenthesized(p.class), c.class_scope()) {
+        (e @ (Expression::Self_(_) | Expression::Static(_)), scope) => {
             let written = if matches!(e, Expression::Self_(_)) {
                 "self"
             } else {
                 "static"
             };
-            if !in_class {
+            let Some(k) = scope else {
                 c.report(
                     at,
                     &format!("outOfClass.{written}"),
@@ -614,14 +605,11 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                     None,
                 );
                 return;
-            }
-            match c.class_scope() {
-                Some(k) => Holder::Class(k, written == "static"),
-                None => Holder::Done,
-            }
+            };
+            Holder::Class(k, written == "static")
         }
-        e @ Expression::Parent(_) => {
-            if !in_class {
+        (e @ Expression::Parent(_), scope) => {
+            let Some(scope) = scope else {
                 c.report(
                     at,
                     "outOfClass.parent",
@@ -631,9 +619,6 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                     ),
                     None,
                 );
-                return;
-            }
-            let Some(scope) = c.class_scope() else {
                 return;
             };
             // an unknown parent is no parent (`getParentClass()`)
@@ -653,7 +638,7 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                 Some(k) => Holder::Class(k, false),
             }
         }
-        Expression::Identifier(id) => {
+        (Expression::Identifier(id), _) => {
             let class = c.resolved(id);
             match c.class_like(&class) {
                 super::reflection::Lookup::NotFound => {

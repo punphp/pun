@@ -28,20 +28,19 @@ impl Checker<'_, '_> {
         if let Some(display) = self.anonymous.get(name) {
             return display.clone();
         }
+        // one declared in another file (an inferred `new class`)
         if name.starts_with(b"{anonymous-class:")
-            && let Some(file) = self
+            && let Some(display) = self
                 .files
                 .get(&k.span.file_id)
                 .and_then(|p| self.sources.get(p))
+                .and_then(|file| {
+                    let arena = LocalArena::new();
+                    let (program, names) = parse(&arena, file);
+                    anonymous::names(file, program, &names, self.relative_path).remove(name)
+                })
         {
-            // one declared in another file (an inferred `new class`)
-            let arena = LocalArena::new();
-            let (program, names) = parse(&arena, file);
-            if let Some(display) =
-                anonymous::names(file, program, &names, self.relative_path).remove(name)
-            {
-                return display;
-            }
+            return display;
         }
         String::from_utf8_lossy(name).into_owned()
     }
@@ -53,21 +52,11 @@ impl Checker<'_, '_> {
         if k.template_types.is_empty() {
             return display;
         }
-        let scope = super::declared::class_scope(self, k.span, k);
-        let args: Option<Vec<Type>> = k
-            .template_types
-            .keys()
-            .map(|n| {
-                scope
-                    .templates
-                    .get(String::from_utf8_lossy(n.as_bytes()).as_ref())
-                    .cloned()
-            })
+        let args = super::declared::class_templates(self, k)
+            .into_iter()
+            .map(|t| Type::Template(Box::new(t)))
             .collect();
-        match args {
-            Some(args) => Type::Object(display, args).describe(Level::TypeOnly),
-            None => display,
-        }
+        Type::Object(display, args).describe(Level::TypeOnly)
     }
 }
 

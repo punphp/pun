@@ -244,14 +244,7 @@ pub fn constructor_return_type(c: &mut Checker, m: &Method) {
             }
             name = alias;
         }
-        // NodeScopeResolver skips a trait method the class declares itself
-        if let Some(f) = c.codebase.get_method(class.name.as_bytes(), &name)
-            && f.span.file_id == class.span.file_id
-            && class.span.start.offset <= f.span.start.offset
-            && f.span.end.offset <= class.span.end.offset
-        {
-            return;
-        }
+        // (a trait method the class declares itself is not walked: Checker::shadowed())
     }
     if name != b"__construct" {
         return;

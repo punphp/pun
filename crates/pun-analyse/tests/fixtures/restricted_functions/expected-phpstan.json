@@ -1,0 +1,110 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "function-internal-tag.php",
+   "line": 35,
+   "identifier": "function.internal",
+   "message": "Call to internal function FunctionInternalTagOne\\doInternal() from outside its root namespace FunctionInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "function-internal-tag.php",
+   "line": 44,
+   "identifier": "function.internal",
+   "message": "Call to internal function FunctionInternalTagOne\\doInternal() from outside its root namespace FunctionInternalTagOne.",
+   "tip": null
+  },
+  {
+   "file": "function-internal-tag.php",
+   "line": 60,
+   "identifier": "function.internal",
+   "message": "Call to internal function doInternalWithoutNamespace().",
+   "tip": null
+  },
+  {
+   "file": "function-internal-tag.php",
+   "line": 69,
+   "identifier": "function.internal",
+   "message": "Call to internal function doInternalWithoutNamespace().",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 20,
+   "identifier": "function.internal",
+   "message": "Call to internal function Vendor\\PrivateApi\\hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 21,
+   "identifier": "function.internal",
+   "message": "Call to internal function Vendor\\PrivateApi\\hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 23,
+   "identifier": "function.internal",
+   "message": "Call to internal function Vendor\\PrivateApi\\hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 28,
+   "identifier": "function.notFound",
+   "message": "Function missing not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "functions.php",
+   "line": 29,
+   "identifier": "function.notFound",
+   "message": "Function missing not found.",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 39,
+   "identifier": "function.internal",
+   "message": "Call to internal function globalHidden().",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 40,
+   "identifier": "function.internal",
+   "message": "Call to internal function globalHidden().",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 50,
+   "identifier": "function.internal",
+   "message": "Call to internal function globalHidden().",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 51,
+   "identifier": "function.internal",
+   "message": "Call to internal function globalHidden().",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 55,
+   "identifier": "function.internal",
+   "message": "Call to internal function Vendor\\PrivateApi\\hidden() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "functions.php",
+   "line": 56,
+   "identifier": "function.internal",
+   "message": "Call to internal function Vendor\\PrivateApi\\hidden() from outside its root namespace Vendor.",
+   "tip": null
+  }
+ ]
+}

@@ -85,6 +85,16 @@
         "*ERROR*"
     ],
     [
+        "PunProbe\\Child",
+        "Defaults<string>",
+        "PunProbe\\Defaults<string, int>"
+    ],
+    [
+        "PunProbe\\Child",
+        "Defaults<string, string, string, string>",
+        "PunProbe\\Defaults<string, string, string, string>"
+    ],
+    [
         "PunProbe\\Coll",
         "static",
         "static(PunProbe\\Coll<TKey (class PunProbe\\Coll, argument), TValue (class PunProbe\\Coll, argument)>)"
@@ -168,6 +178,16 @@
         "PunProbe\\Coll",
         "Coll::NOPE",
         "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "Defaults<string>",
+        "PunProbe\\Defaults<string, int>"
+    ],
+    [
+        "PunProbe\\Coll",
+        "Defaults<string, string, string, string>",
+        "PunProbe\\Defaults<string, string, string, string>"
     ],
     [
         "PunProbe\\Missing",
@@ -255,6 +275,16 @@
         "*ERROR*"
     ],
     [
+        "PunProbe\\Missing",
+        "Defaults<string>",
+        "PunProbe\\Defaults<string, int>"
+    ],
+    [
+        "PunProbe\\Missing",
+        "Defaults<string, string, string, string>",
+        "PunProbe\\Defaults<string, string, string, string>"
+    ],
+    [
         null,
         "static",
         "PunProbe\\static"
@@ -338,6 +368,16 @@
         null,
         "Coll::NOPE",
         "*ERROR*"
+    ],
+    [
+        null,
+        "Defaults<string>",
+        "PunProbe\\Defaults<string, int>"
+    ],
+    [
+        null,
+        "Defaults<string, string, string, string>",
+        "PunProbe\\Defaults<string, string, string, string>"
     ],
     [
         "templates",

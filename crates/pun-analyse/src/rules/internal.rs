@@ -229,13 +229,13 @@ fn restricted(
 }
 
 /// The first segment of a name's namespace (`array_slice(explode('\\', $name), 0, -1)[0]`).
-fn root_namespace(name: &str) -> Option<&str> {
+pub(super) fn root_namespace(name: &str) -> Option<&str> {
     let (namespace, _) = name.rsplit_once('\\')?;
     namespace.split('\\').next()
 }
 
 /// RestrictedInternalUsageHelper::shouldBeReported().
-fn should_be_reported(c: &Checker, name: &str) -> bool {
+pub(super) fn should_be_reported(c: &Checker, name: &str) -> bool {
     match c.namespaces.last().cloned().flatten() {
         None => match c.class_scope() {
             None => true,

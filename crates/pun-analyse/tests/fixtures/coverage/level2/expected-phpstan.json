@@ -1,0 +1,166 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "generics.php",
+   "line": 37,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @template U for class CoverageGenerics\\Templates has invalid default type CoverageGenerics\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 37,
+   "identifier": "generics.traitBound",
+   "message": "PHPDoc tag @template V for class CoverageGenerics\\Templates has invalid default type CoverageGenerics\\GenericTrait.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 37,
+   "identifier": "generics.requiredTypeAfterOptional",
+   "message": "PHPDoc tag @template W for class CoverageGenerics\\Templates does not have a default type but follows an optional @template V.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 37,
+   "identifier": "generics.notSupportedBound",
+   "message": "PHPDoc tag @template W for class CoverageGenerics\\Templates with bound type static(CoverageGenerics\\Templates<T, U = CoverageGenerics\\Missing, V = CoverageGenerics\\GenericTrait, W>) is not supported.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 60,
+   "identifier": "generics.moreTypes",
+   "message": "Generic type CoverageGenerics\\Pair<int, int, int> in PHPDoc tag @extends specifies 3 template types, but class CoverageGenerics\\Pair supports only 2: A, B (1-2 required)",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 67,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of * in generic type CoverageGenerics\\GenericInterface<*> in PHPDoc tag @implements is not allowed.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 76,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @template T for class CoverageGenerics\\Bounds has invalid bound type CoverageGenerics\\Unknown.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 76,
+   "identifier": "generics.notGeneric",
+   "message": "PHPDoc tag @template U bound contains generic type CoverageGenerics\\Plain<int> but enum CoverageGenerics\\Plain is not generic.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 76,
+   "identifier": "generics.traitBound",
+   "message": "PHPDoc tag @template V for class CoverageGenerics\\Bounds has invalid bound type CoverageGenerics\\GenericTrait.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 85,
+   "identifier": "class.notFound",
+   "message": "Cannot import type alias Nope: class CoverageGenerics\\Missing does not exist.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 97,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @extends has invalid value (Pair): Unexpected token \"\\n * \", expected '<' at offset 20 on line 2",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 108,
+   "identifier": "class.notFound",
+   "message": "Class CoverageGenerics\\Orphan extends unknown class CoverageGenerics\\MissingParent.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "generics.php",
+   "line": 130,
+   "identifier": "generics.notSubtype",
+   "message": "Type CoverageGenerics\\Pair<string, int> in generic type CoverageGenerics\\Bounded<CoverageGenerics\\Pair<string, int>, string> in PHPDoc tag @implements is not subtype of template type T of CoverageGenerics\\Pair<int, int> of interface CoverageGenerics\\Bounded.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 130,
+   "identifier": "generics.notSubtype",
+   "message": "Type string in generic type CoverageGenerics\\Bounded<CoverageGenerics\\Pair<string, int>, string> in PHPDoc tag @implements is not subtype of template type U of int of interface CoverageGenerics\\Bounded.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 151,
+   "identifier": "generics.requiredTypeAfterOptional",
+   "message": "PHPDoc tag @template D for class CoverageGenerics\\Quad does not have a default type but follows an optional @template C.",
+   "tip": null
+  },
+  {
+   "file": "generics.php",
+   "line": 158,
+   "identifier": "generics.lessTypes",
+   "message": "Generic type CoverageGenerics\\Quad<int, int> in PHPDoc tag @extends does not specify all template types of class CoverageGenerics\\Quad: A, B, C, D (3-4 required).",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 30,
+   "identifier": "trait.notFound",
+   "message": "Class CoverageUses\\Uses uses unknown trait CoverageUses\\MissingTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 40,
+   "identifier": "interface.traitUse",
+   "message": "Interface CoverageUses\\UsingInterface uses trait CoverageUses\\Generic.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 47,
+   "identifier": "generics.traitBound",
+   "message": "PHPDoc tag @template U for class CoverageUses\\Defaults has invalid default type CoverageUses\\Generic.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 62,
+   "identifier": "generics.notSubtype",
+   "message": "Type int in generic type CoverageUses\\Bounded<int, int> in PHPDoc tag @implements is not subtype of template type T of CoverageGenerics\\Pair<int, int> of interface CoverageUses\\Bounded.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 69,
+   "identifier": "generics.notSubtype",
+   "message": "Type stdClass in generic type CoverageUses\\Bounded<stdClass, int> in PHPDoc tag @implements is not subtype of template type T of CoverageGenerics\\Pair<int, int> of interface CoverageUses\\Bounded.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 76,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of * in generic type CoverageUses\\Bounded<*, *> in PHPDoc tag @implements is not allowed.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 76,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of * in generic type CoverageUses\\Bounded<*, *> in PHPDoc tag @implements is not allowed.",
+   "tip": null
+  }
+ ]
+}

@@ -106,12 +106,13 @@ impl Project {
         scanned.retain(|f| !both.is_excluded(&display(f)));
         let php_version = params
             .get_str("phpVersion")
+            // the schema's `{min, max}` structure requires both as ints
+            .and_then(|v| match v {
+                Value::Array(a) => a.get_str("min"),
+                v => Some(v),
+            })
             .and_then(|v| match v {
                 Value::Int(i) => u32::try_from(*i).ok(),
-                Value::Array(a) => match a.get_str("min") {
-                    Some(Value::Int(i)) => u32::try_from(*i).ok(),
-                    _ => None,
-                },
                 _ => None,
             })
             .unwrap_or(RUNTIME_PHP_VERSION);
@@ -135,11 +136,8 @@ impl Project {
             report_unmatched_ignores,
             report_ignores_without_comments: flag("reportIgnoresWithoutComments"),
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
-            // config.level2.neon turns it on
-            check_class_case_sensitivity: match params.get_str("checkClassCaseSensitivity") {
-                Some(Value::Bool(b)) => *b,
-                _ => level >= 2,
-            },
+            // config.neon's false, which config.level2.neon turns on
+            check_class_case_sensitivity: flag("checkClassCaseSensitivity"),
             level,
             check_generic_iterable_classes: params
                 .get_str("featureToggles")

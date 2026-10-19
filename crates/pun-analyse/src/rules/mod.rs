@@ -30,6 +30,7 @@ mod printf_helper;
 mod properties;
 mod property_access;
 mod reflection;
+mod restricted_functions;
 mod scope;
 mod signatures;
 mod statements;
@@ -59,6 +60,13 @@ use statements::{Frame, FrameKind};
 pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
 pub(crate) use reflection::builtins;
+
+pub fn reports(identifier: &str) -> bool {
+    IDENTIFIERS.contains(&identifier)
+        || missing_types::IDENTIFIERS.contains(&identifier)
+        || generics::IDENTIFIERS.contains(&identifier)
+        || larastan::IDENTIFIERS.contains(&identifier)
+}
 
 pub const IDENTIFIERS: &[&str] = &[
     "typeAlias.circular",
@@ -298,6 +306,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "staticMethod.internalInterface",
     "staticMethod.internalTrait",
     "staticMethod.internalEnum",
+    "function.internal",
     "property.callableType",
     "class.serializable",
     "parameter.requiredAfterOptional",
@@ -461,6 +470,8 @@ pub struct Checker<'a, 'arena> {
     larastan_state: larastan::State,
     /// [`driver::Checks`]'s `@internal` method names, when the internal usage rules run.
     internal: Option<&'a internal::Names>,
+    /// [`driver::Checks`]'s `featureToggles.internalTag`.
+    internal_tag: bool,
     errors: Vec<Error>,
 }
 
@@ -509,13 +520,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     fn report(&mut self, at: impl HasSpan, identifier: &str, message: String, tip: Option<&str>) {
-        debug_assert!(
-            IDENTIFIERS.contains(&identifier)
-                || missing_types::IDENTIFIERS.contains(&identifier)
-                || generics::IDENTIFIERS.contains(&identifier)
-                || larastan::IDENTIFIERS.contains(&identifier),
-            "{identifier} is not in IDENTIFIERS"
-        );
+        debug_assert!(reports(identifier), "{identifier} is not in IDENTIFIERS");
         if self.trait_context.is_some() && !self.in_target {
             return;
         }
@@ -641,6 +646,19 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn class_scope(&self) -> Option<&'a ClassLikeMetadata> {
         let name = self.classes.last()?.name.as_deref()?;
         self.codebase.get_class_like(name.as_bytes())
+    }
+
+    /// The class-like a member is walked in and its display name (trait bodies are walked only in a class's context).
+    fn member_scope(&self) -> (&'a ClassLikeMetadata, String) {
+        let class = self
+            .class_scope()
+            .expect("a member is walked inside its class-like");
+        let display = self
+            .decls
+            .last()
+            .and_then(|d| d.display.clone())
+            .expect("a class-like's declaration has its display name");
+        (class, display)
     }
 
     /// In an anonymous class's body (not in a trait it uses).
@@ -1107,46 +1125,48 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 hierarchy::callable_property(self, p.span(), p.variable.name, p.hint.as_ref());
             }
         }
-        if let Some(class) = self.class_scope() {
-            let docblock = self
-                .codebase
-                .get_method(class.name.as_bytes(), method.as_bytes())
-                .and_then(|f| f.return_type_metadata.as_ref())
-                .filter(|t| t.from_docblock)
-                .map(|t| &t.type_union);
-            let class = self.display(class);
-            let kind = names::FunctionKind::Method(&class, &method);
-            names::typehints(self, kind, &m.parameter_list, m.return_type_hint.as_ref());
-            signatures::check(
-                self,
-                kind,
-                m.span(),
-                &m.parameter_list,
-                m.return_type_hint.as_ref(),
-            );
-            // PhpMethodFromParserNodeReflection's void methods
-            let forced_void = m.name.value.eq_ignore_ascii_case(b"__construct")
-                || [
-                    "__construct",
-                    "__destruct",
-                    "__unset",
-                    "__wakeup",
-                    "__clone",
-                    "__set",
-                    "__unserialize",
-                ]
-                .iter()
-                .any(|n| method.eq_ignore_ascii_case(n));
-            names::no_discard(
-                self,
-                kind,
-                m.span(),
-                m.attribute_lists.as_slice(),
-                m.return_type_hint.as_ref(),
-                forced_void,
-                docblock,
-            );
-        }
+        // trait bodies are walked only in a class's context, so a method always has its class-like
+        let class = self
+            .class_scope()
+            .expect("a method is walked inside its class-like");
+        let docblock = self
+            .codebase
+            .get_method(class.name.as_bytes(), method.as_bytes())
+            .and_then(|f| f.return_type_metadata.as_ref())
+            .filter(|t| t.from_docblock)
+            .map(|t| &t.type_union);
+        let class = self.display(class);
+        let kind = names::FunctionKind::Method(&class, &method);
+        names::typehints(self, kind, &m.parameter_list, m.return_type_hint.as_ref());
+        signatures::check(
+            self,
+            kind,
+            m.span(),
+            &m.parameter_list,
+            m.return_type_hint.as_ref(),
+        );
+        // PhpMethodFromParserNodeReflection's void methods
+        let forced_void = m.name.value.eq_ignore_ascii_case(b"__construct")
+            || [
+                "__construct",
+                "__destruct",
+                "__unset",
+                "__wakeup",
+                "__clone",
+                "__set",
+                "__unserialize",
+            ]
+            .iter()
+            .any(|n| method.eq_ignore_ascii_case(n));
+        names::no_discard(
+            self,
+            kind,
+            m.span(),
+            m.attribute_lists.as_slice(),
+            m.return_type_hint.as_ref(),
+            forced_void,
+            docblock,
+        );
         syntax::function_like_types(self, Some(&m.parameter_list), m.return_type_hint.as_ref());
         if m.name.value.eq_ignore_ascii_case(b"__construct") {
             for p in m
@@ -1348,6 +1368,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         larastan::function_call(self, call);
         function_checks::function_call(self, call);
+        restricted_functions::function_call(self, call);
         calls::function_call(self, call);
         dead_code::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
@@ -1388,6 +1409,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.piped.insert(p.callable.span());
         calls::pipe(self, p);
         function_checks::pipe(self, p);
+        restricted_functions::pipe(self, p);
     }
     fn walk_in_function_partial_application(
         &mut self,
@@ -1397,6 +1419,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let whole = f.function.span().join(f.argument_list.span());
         if !statements::first_class_callable(self, whole, &f.argument_list) {
             calls::function_callable(self, f);
+            restricted_functions::callable(self, f);
         }
     }
     fn walk_in_method_partial_application(
@@ -1638,12 +1661,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
         );
         self.mark_top_level(f.expression);
-    }
-    fn walk_in_match_expression_arm(&mut self, a: &'ast MatchExpressionArm<'arena>, _: &mut ()) {
-        self.mark_top_level(a.expression);
-    }
-    fn walk_in_match_default_arm(&mut self, a: &'ast MatchDefaultArm<'arena>, _: &mut ()) {
-        self.mark_top_level(a.expression);
     }
 
     fn walk_in_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
