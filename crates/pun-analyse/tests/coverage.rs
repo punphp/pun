@@ -82,3 +82,13 @@ fn coverage_fixtures() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
+
+/// A circular class hierarchy stops PHPStan with "Reflection error: Circular reference to class" (no file errors to
+/// compare); the PHPDoc inheritance walks must still end.
+#[test]
+fn circular_hierarchy_ends() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/cycle");
+    let mut project = pun_analyse::Project::new(vec![dir.join("cycle.php")], Vec::new());
+    project.level = 6;
+    assert!(pun_analyse::run(&project).is_ok());
+}

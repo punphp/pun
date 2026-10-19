@@ -296,9 +296,7 @@ pub fn method(c: &mut Checker, m: &Method) {
         return;
     }
     let (context, display) = c.member_scope();
-    let Some(declaring) = declaring(c, m.span()) else {
-        return;
-    };
+    let declaring = declaring(c, m.span()).expect("a method is declared by its class or a used trait");
     let name = c
         .renamed
         .as_ref()
@@ -499,8 +497,7 @@ fn class_level(
                     (Some(r), Some(w)) if r == w => ("@property", vec![r]),
                     (Some(r), Some(w)) => ("@property", vec![r, w]),
                     (Some(r), None) => ("@property-read", vec![r]),
-                    (None, Some(w)) => ("@property-write", vec![w]),
-                    (None, None) => continue,
+                    (r, w) => ("@property-write", w.into_iter().chain(r).collect()),
                 };
                 for ty in &types {
                     generics_of(ty, &mut out, &|inner, list| {

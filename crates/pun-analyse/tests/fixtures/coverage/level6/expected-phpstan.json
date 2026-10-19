@@ -2,6 +2,76 @@
  "general": [],
  "errors": [
   {
+   "file": "docs.php",
+   "line": 12,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @param has invalid value (int $1bad): Unexpected token \"$1bad\", expected variable at offset 48 on line 3",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 13,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @param has invalid value (int $): Unexpected token \"$\", expected variable at offset 68 on line 4",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 41,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @method has invalid value (array {}): Unexpected token \"{\", expected '(' at offset 66 on line 3",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 45,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @property has invalid value (int $): Unexpected token \"$\", expected variable at offset 187 on line 7",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 46,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @property has invalid value (int noDollar): Unexpected token \"noDollar\", expected variable at offset 206 on line 8",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 47,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @phpstan-import-type has invalid value (Y from <Z>): Unexpected token \"<\", expected type at offset 246 on line 9",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 48,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @phpstan-import-type has invalid value (X from): Unexpected token \"\\n * \", expected type at offset 280 on line 10",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 49,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @template has invalid value (): Unexpected token \"\\n \", expected type at offset 293 on line 11",
+   "tip": null
+  },
+  {
+   "file": "docs.php",
+   "line": 51,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageDocs\\Tags has PHPDoc tag @method for method nested() parameter #2 $d with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "docs.php",
+   "line": 66,
+   "identifier": "missingType.property",
+   "message": "Property CoverageDocs\\Tags::$glued has no type specified.",
+   "tip": null
+  },
+  {
    "file": "inherit.php",
    "line": 17,
    "identifier": "missingType.parameter",
@@ -240,6 +310,27 @@
    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
   },
   {
+   "file": "more.php",
+   "line": 26,
+   "identifier": "missingType.generics",
+   "message": "Class CoverageMore\\UsesBoth uses generic trait CoverageMore\\Second but does not specify its types: U",
+   "tip": null
+  },
+  {
+   "file": "more.php",
+   "line": 63,
+   "identifier": "missingType.return",
+   "message": "Method CoverageMore\\UsesAttribute::attributed() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "more.php (in context of class CoverageMore\\UsesBoth)",
+   "line": 11,
+   "identifier": "missingType.iterableValue",
+   "message": "Property CoverageMore\\UsesBoth::$first type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
    "file": "natives.php",
    "line": 29,
    "identifier": "missingType.iterableValue",
@@ -363,6 +454,13 @@
    "line": 121,
    "identifier": "missingType.iterableValue",
    "message": "Function CoverageNatives\\nested() has parameter $c with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 121,
+   "identifier": "missingType.iterableValue",
+   "message": "Function CoverageNatives\\nested() has parameter $d with no value type specified in iterable type array.",
    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
   },
   {
@@ -570,38 +668,59 @@
   },
   {
    "file": "types.php",
-   "line": 49,
+   "line": 52,
    "identifier": "conditionalType.alwaysFalse",
    "message": "Condition \"non-empty-list&callable(): mixed is int\" in conditional return type is always false.",
    "tip": null
   },
   {
    "file": "types.php",
-   "line": 49,
+   "line": 52,
    "identifier": "missingType.iterableValue",
    "message": "Method CoverageTypes\\Types::f() return type has no value type specified in iterable type array.",
    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
   },
   {
    "file": "types.php",
-   "line": 57,
+   "line": 60,
    "identifier": "missingType.iterableValue",
    "message": "Method CoverageTypes\\Types::shapes() return type has no value type specified in iterable type array.",
    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
   },
   {
    "file": "types.php",
-   "line": 57,
+   "line": 60,
    "identifier": "missingType.iterableValue",
    "message": "Method CoverageTypes\\Types::shapes() return type has no value type specified in iterable type array.",
    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
   },
   {
    "file": "types.php",
-   "line": 69,
+   "line": 72,
    "identifier": "missingType.iterableValue",
    "message": "Class CoverageTypes\\Split has PHPDoc tag @property for property $split with no value type specified in iterable type array.",
    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "uses.php",
+   "line": 30,
+   "identifier": "missingType.generics",
+   "message": "Class CoverageUses\\Uses uses generic trait CoverageUses\\SomeDefault but does not specify its types: A, B (1-2 required)",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 30,
+   "identifier": "trait.notFound",
+   "message": "Class CoverageUses\\Uses uses unknown trait CoverageUses\\MissingTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 35,
+   "identifier": "missingType.generics",
+   "message": "Enum CoverageUses\\UsingEnum uses generic trait CoverageUses\\Generic but does not specify its types: T",
+   "tip": null
   }
  ]
 }

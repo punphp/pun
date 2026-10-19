@@ -112,6 +112,55 @@
    "identifier": "generics.lessTypes",
    "message": "Generic type CoverageGenerics\\Quad<int, int> in PHPDoc tag @extends does not specify all template types of class CoverageGenerics\\Quad: A, B, C, D (3-4 required).",
    "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 30,
+   "identifier": "trait.notFound",
+   "message": "Class CoverageUses\\Uses uses unknown trait CoverageUses\\MissingTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 40,
+   "identifier": "interface.traitUse",
+   "message": "Interface CoverageUses\\UsingInterface uses trait CoverageUses\\Generic.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 47,
+   "identifier": "generics.traitBound",
+   "message": "PHPDoc tag @template U for class CoverageUses\\Defaults has invalid default type CoverageUses\\Generic.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 62,
+   "identifier": "generics.notSubtype",
+   "message": "Type int in generic type CoverageUses\\Bounded<int, int> in PHPDoc tag @implements is not subtype of template type T of CoverageGenerics\\Pair<int, int> of interface CoverageUses\\Bounded.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 69,
+   "identifier": "generics.notSubtype",
+   "message": "Type stdClass in generic type CoverageUses\\Bounded<stdClass, int> in PHPDoc tag @implements is not subtype of template type T of CoverageGenerics\\Pair<int, int> of interface CoverageUses\\Bounded.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 76,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of * in generic type CoverageUses\\Bounded<*, *> in PHPDoc tag @implements is not allowed.",
+   "tip": null
+  },
+  {
+   "file": "uses.php",
+   "line": 76,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of * in generic type CoverageUses\\Bounded<*, *> in PHPDoc tag @implements is not allowed.",
+   "tip": null
   }
  ]
 }

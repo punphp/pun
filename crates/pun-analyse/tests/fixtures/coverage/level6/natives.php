@@ -118,6 +118,6 @@ function staticky(): static
     return new \stdClass();
 }
 
-function nested(Shape&Named&\Countable $a, ?array $b = null, array $c = NULL): void
+function nested(Shape&Named&\Countable $a, ?array $b = null, array $c = NULL, ?array $d = \null): void
 {
 }

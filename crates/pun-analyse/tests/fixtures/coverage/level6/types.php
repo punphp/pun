@@ -42,11 +42,14 @@ class ExtendsSomeDefaults extends SomeDefaults
 class Types
 {
     /**
+     * @template T
      * @param array&callable&iterable $a
      * @param GenericEnum $b
+     * @param callable&non-empty-array $c
+     * @param T&callable&array $d
      * @return ($a is int ? array : string)
      */
-    public function f($a, $b)
+    public function f($a, $b, $c, $d)
     {
         return '';
     }

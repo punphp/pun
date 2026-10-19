@@ -1,6 +1,7 @@
 //! `run_mago()` reports what the `mago analyze` CLI reports. Expected: tests/fixtures/mago/expected.json, Mago
 //! 1.57.0's own `mago analyze issues.php --reporting-format json` in that directory (primary span's line, 1-based).
-//! debug-panic.php, analysed first, makes Mago's analyser panic in a debug build: the run skips that file and goes on.
+//! debug-panic.php, analysed first, was written to make Mago's analyser panic in a debug build (the run skips such a
+//! file and goes on); it no longer panics and is kept as a regression input.
 
 use std::path::Path;
 
