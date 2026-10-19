@@ -1,0 +1,331 @@
+{
+    "test": "Pun/Cases",
+    "cases": [
+        {
+            "method": "Appends",
+            "files": [
+                "Pun/Appends.php"
+            ],
+            "errors": [
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 14,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' is not a computed property, remove from $appends.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 15,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'tagged' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 16,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'title' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 19,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'interpolated' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 44,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 44,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'missing' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 49,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 56,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 56,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'uuid' is not a computed property, remove from $appends.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "Calls",
+            "files": [
+                "Pun/Calls.php"
+            ],
+            "errors": [
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 35,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 36,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 37,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 38,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 40,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 41,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 44,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 47,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 51,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 52,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 53,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 54,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 55,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 60,
+                    "identifier": "arguments.count",
+                    "message": "Function value invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 61,
+                    "identifier": "arguments.count",
+                    "message": "Function with invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 69,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 72,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 74,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 87,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::check() in a class that has access to the request. Use $request->user() !== null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 88,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::guest() in a class that has access to the request. Use $request->user() === null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 92,
+                    "identifier": "larastan.noAuthHelperInRequestScope",
+                    "message": "Do not use auth()->check() in a class that has access to the request. Use $request->user() !== null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 93,
+                    "identifier": "larastan.noAuthHelperInRequestScope",
+                    "message": "Do not use auth()->guest() in a class that has access to the request. Use $request->user() === null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 104,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $request (Illuminate\\Http\\Request) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 120,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::user() in a class that has access to the request. Use $request->user() instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Calls.php",
+                    "line": 122,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::user() in a class that has access to the request. Use $request->user() instead.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "Models",
+            "files": [
+                "Pun/Models.php"
+            ],
+            "errors": [
+                {
+                    "file": "Pun/Models.php",
+                    "line": 23,
+                    "identifier": "larastan.noPublicModelScopeMethod",
+                    "message": "Local query scope method 'scopePublished' should be declared as protected.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Models.php",
+                    "line": 35,
+                    "identifier": "larastan.noPublicModelAccessorMethod",
+                    "message": "Model accessor method 'name' should be declared as protected.",
+                    "tip": null
+                }
+            ]
+        },
+        {
+            "method": "Octane",
+            "files": [
+                "Pun/Octane.php"
+            ],
+            "errors": [
+                {
+                    "file": "Pun/Octane.php",
+                    "line": 24,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Pun/Octane.php",
+                    "line": 44,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $other",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Octane.php",
+                    "line": 45,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $other",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Octane.php",
+                    "line": 46,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Pun/Octane.php",
+                    "line": 49,
+                    "identifier": "larastan.octaneCompatibility",
+                    "message": "Consider using bind method instead or pass a closure.",
+                    "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
+                },
+                {
+                    "file": "Pun/Octane.php",
+                    "line": 55,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Pun\\Octane\\Provider::$other.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ]
+        }
+    ]
+}

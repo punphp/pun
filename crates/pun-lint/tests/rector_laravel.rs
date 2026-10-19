@@ -11,8 +11,10 @@ mod lint_c;
 use lint_c::run_class;
 use pun_lint::Rule;
 use pun_lint::rules::{
-    NoNegatedBlankFilled, PreferBackHelper, PreferEnvHelper, PreferExceptionClassString,
-    PreferRequestServer, PreferSleepFacade, PreferStrStartsWith, PreferToRouteHelper, PreferToday,
+    NoNegatedBlankFilled, PreferAbortIf, PreferBackHelper, PreferEnvHelper,
+    PreferExceptionClassString, PreferFacadeOverApp, PreferNullsafe, PreferReportIf,
+    PreferRequestServer, PreferSessionFacade, PreferSleepFacade, PreferStrStartsWith,
+    PreferThrowIf, PreferToRouteHelper, PreferToday,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -74,4 +76,39 @@ fn sub_str_to_starts_with_or_ends_with_static_method_call() {
         PreferStrStartsWith,
         "SubStrToStartsWithOrEndsWithStaticMethodCallRector",
     );
+}
+
+#[test]
+fn optional_to_nullsafe_operator() {
+    check(
+        PreferNullsafe {
+            exclude_methods: vec!["present".to_string()],
+        },
+        "OptionalToNullsafeOperatorRector",
+    );
+}
+
+#[test]
+fn session_variable_to_session_facade() {
+    check(PreferSessionFacade, "SessionVariableToSessionFacadeRector");
+}
+
+#[test]
+fn abort_if() {
+    check(PreferAbortIf, "AbortIfRector");
+}
+
+#[test]
+fn report_if() {
+    check(PreferReportIf, "ReportIfRector");
+}
+
+#[test]
+fn throw_if() {
+    check(PreferThrowIf, "ThrowIfRector");
+}
+
+#[test]
+fn helper_func_call_to_facade_class() {
+    check(PreferFacadeOverApp, "HelperFuncCallToFacadeClassRector");
 }
