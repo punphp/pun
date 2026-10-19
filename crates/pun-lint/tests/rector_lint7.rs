@@ -329,6 +329,23 @@ fn mago_prefer_anonymous_migration() {
 }
 
 #[test]
+fn simplify_useless_variable() {
+    let linter = only(NoUselessVariable::default());
+    run(&linter, "SimplifyUselessVariableRector/Fixture");
+    run(&linter, "SimplifyUselessVariableRector/Oracle");
+    let mut rule = NoUselessVariable::default();
+    assert!(rule.configure(&serde_json::json!(null)).is_ok());
+    assert!(rule.configure(&serde_json::json!({"other": true})).is_err());
+    assert!(rule.configure(&serde_json::json!(true)).is_err());
+    rule.configure(&serde_json::json!({"only-direct-assign": true}))
+        .unwrap();
+    run(
+        &only(rule),
+        "SimplifyUselessVariableRector/FixtureSkipConcat",
+    );
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -410,6 +427,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(PreferAnonymousMigration),
             &["lint7_report/laravel/prefer-anonymous-migration"],
+        ),
+        (
+            || Box::new(NoUselessVariable::default()),
+            &["rector/SimplifyUselessVariableRector"],
         ),
     ];
     for (rule, dirs) in cases {
