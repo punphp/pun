@@ -58,6 +58,7 @@ mod no_mixed_overruled_by_native;
 mod no_multi_assign;
 mod no_negated_and;
 mod no_negated_boolean_literal;
+mod no_negated_comparison;
 mod no_negated_condition;
 mod no_negated_group;
 mod no_nested_ternary;
@@ -122,6 +123,7 @@ mod prefer_array_literal;
 mod prefer_boolean_and_or;
 mod prefer_clamp;
 mod prefer_coalesce_chain;
+mod prefer_coalesce_over_empty_ternary;
 mod prefer_coalesce_over_foreach;
 mod prefer_compound_assignment;
 mod prefer_early_continue;
@@ -211,6 +213,7 @@ pub use no_mixed_overruled_by_native::NoMixedOverruledByNative;
 pub use no_multi_assign::NoMultiAssign;
 pub use no_negated_and::NoNegatedAnd;
 pub use no_negated_boolean_literal::NoNegatedBooleanLiteral;
+pub use no_negated_comparison::NoNegatedComparison;
 pub use no_negated_condition::NoNegatedCondition;
 pub use no_negated_group::NoNegatedGroup;
 pub use no_nested_ternary::NoNestedTernary;
@@ -274,6 +277,7 @@ pub use prefer_array_literal::PreferArrayLiteral;
 pub use prefer_boolean_and_or::PreferBooleanAndOr;
 pub use prefer_clamp::PreferClamp;
 pub use prefer_coalesce_chain::PreferCoalesceChain;
+pub use prefer_coalesce_over_empty_ternary::PreferCoalesceOverEmptyTernary;
 pub use prefer_coalesce_over_foreach::PreferCoalesceOverForeach;
 pub use prefer_compound_assignment::PreferCompoundAssignment;
 pub use prefer_early_continue::PreferEarlyContinue;
@@ -463,5 +467,7 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoCallUserFuncMethod),
         Box::new(NoMixedOverruledByNative),
         Box::new(NoRequiredAfterOptional),
+        Box::new(NoNegatedComparison),
+        Box::new(PreferCoalesceOverEmptyTernary),
     ]
 }
