@@ -829,7 +829,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-arrow-function" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Anonymous functions with return as the only statement must use arrow functions." }
 "style/prefer-cast-over-intval" = { fix = "unsafe", ported = true, status = "decided", summary = "Replaces `intval`, `floatval`, `doubleval`, `strval` and `boolval` function calls with according type casting operator." }
 "style/prefer-cast-over-settype" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast shall be used, not `settype`." }
-"style/prefer-catch-name-from-type" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Type and name of catch exception should match" }
+"style/prefer-catch-name-from-type" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Type and name of catch exception should match" }
 "style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = false, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
 "style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Use `class` keyword for class name resolution in string instead of hardcoded string reference" }
 "style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }

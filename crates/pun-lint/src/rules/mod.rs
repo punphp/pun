@@ -128,6 +128,7 @@ mod prefer_array_find_key;
 mod prefer_array_first_last;
 mod prefer_array_literal;
 mod prefer_boolean_and_or;
+mod prefer_catch_name_from_type;
 mod prefer_clamp;
 mod prefer_coalesce_chain;
 mod prefer_coalesce_over_empty_ternary;
@@ -294,6 +295,7 @@ pub use prefer_array_find_key::PreferArrayFindKey;
 pub use prefer_array_first_last::PreferArrayFirstLast;
 pub use prefer_array_literal::PreferArrayLiteral;
 pub use prefer_boolean_and_or::PreferBooleanAndOr;
+pub use prefer_catch_name_from_type::PreferCatchNameFromType;
 pub use prefer_clamp::PreferClamp;
 pub use prefer_coalesce_chain::PreferCoalesceChain;
 pub use prefer_coalesce_over_empty_ternary::PreferCoalesceOverEmptyTernary;
@@ -505,5 +507,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoStaticConstructorCall),
         Box::new(NoNullTagValue),
         Box::new(RequireStrictFunctionCall),
+        Box::new(PreferCatchNameFromType),
     ]
 }
