@@ -10,6 +10,7 @@ function go(): ?PendingDispatch
 $a = fn () => go()->job;
 $b = fn () => (new PendingDispatch())->job;
 $c = fn () => go()?->job();
+$d = fn () => go()?->job;
 -----
 <?php
 
@@ -23,3 +24,4 @@ function go(): ?PendingDispatch
 $a = fn () => go()->job;
 $b = fn () => (new PendingDispatch())->job;
 $c = fn () => go()?->job();
+$d = fn () => go()?->job;

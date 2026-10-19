@@ -248,3 +248,12 @@ fn arrow_function_return_type_of_a_member_of_an_unknown_class() {
         "add_arrow_function_return_type_unknown_class.php.inc",
     );
 }
+
+#[test]
+fn statement_padding_skips_a_file_with_inline_html() {
+    // NewlineAfterStatementRector is HTML-averse: the `if` would get its blank line without the `<p>` after `?>`.
+    check_rule_oracle(
+        rules::RequireStatementPadding,
+        "require_statement_padding_html.php.inc",
+    );
+}
