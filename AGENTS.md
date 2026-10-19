@@ -6,6 +6,7 @@ Read these for more:
 
 - `context/PLAN.md`: the source of truth. Every decision, the build order with each row's status, and the open questions. Start here.
 - `context/plan/`: one plan per part, each with its Build list. `plan/rules.md` covers rule placement, naming and the upstream mapping.
+- `context/agents/README.md`: how several agents build at once (ownership, claiming work, the shared git protocol). Read it when other agents are working.
 - `README.md`: the behavior users see.
 
 ## Match the upstream tool
