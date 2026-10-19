@@ -33,6 +33,8 @@ const PORTED: &[&str] = &[
     "larastan.unnecessaryEnumerableToArrayCall",
     "larastan.relationExistence",
     "larastan.noUnnecessaryCollectionCall",
+    "larastan.unusedViews",
+    "larastan.missingTranslations",
 ];
 
 /// Whether the test compares an error: one of a ported rule, or the dispatch rule's argument count (core
@@ -374,5 +376,42 @@ fn larastan_unnecessary_collection_calls() {
             .unwrap()
             .iter()
             .all(|e| e.identifier != "larastan.noUnnecessaryCollectionCall")
+    );
+}
+
+/// UnusedViewsRule and NoMissingTranslationsRule on tests/fixtures/larastan/data/Views, Larastan's FooController.php,
+/// Translation.php and test application resources, with the expectations of their tests.
+#[test]
+fn larastan_views_and_translations() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    let dir = root.join("data/Views");
+    let mut larastan = Larastan::new(&dir);
+    larastan.check_unused_views = true;
+    larastan.check_missing_translations = true;
+    oracle_case(&dir, larastan.clone(), "larastan.");
+    // configured directories replace the finder's paths and lang_path(); names relative to them that the finder
+    // does not find (`mailable.view` below `emails`) are no views
+    larastan.view_directories = vec![dir.join("resources/views/emails")];
+    larastan.translation_directories = vec![dir.join("missing")];
+    let mut project = Project::new(vec![dir.join("Translation.php")], scanned(&root));
+    project.larastan = Some(larastan.clone());
+    let errors = run(&project).unwrap();
+    assert!(
+        errors
+            .iter()
+            .all(|e| e.identifier != "larastan.unusedViews")
+    );
+    assert!(
+        errors
+            .iter()
+            .any(|e| e.message == "Translation \"messages.foo\" has not been found.")
+    );
+    // off
+    project.larastan = Some(Larastan::new(&dir));
+    assert!(
+        run(&project)
+            .unwrap()
+            .iter()
+            .all(|e| !e.identifier.starts_with("larastan."))
     );
 }

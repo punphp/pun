@@ -33,6 +33,7 @@ pub(crate) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
     let Expression::Identifier(id) = call.function else {
         return;
     };
+    super::collectors::function_call(c, call);
     let name = written_name(c.names, id);
     let args = &call.argument_list.arguments;
     if name.eq_ignore_ascii_case("with") {
@@ -230,6 +231,7 @@ pub(crate) fn static_method_call<'arena>(
     super::dispatch::check(c, call);
     super::config::check(c, call);
     super::relations::static_method_call(c, call);
+    super::collectors::static_method_call(c, call);
     let ClassLikeMemberSelector::Identifier(method) = &call.method else {
         return;
     };
@@ -305,6 +307,7 @@ pub(crate) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall
     };
     super::console::check(c, call);
     super::relations::method_call(c, call);
+    super::collectors::method_call(c, call);
     if larastan.no_unnecessary_collection_call {
         super::collections::unnecessary(c, call, &larastan.no_unnecessary_collection_call_methods);
     }

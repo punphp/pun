@@ -75,6 +75,86 @@ namespace Illuminate\Support\Facades {
     class Auth extends Facade
     {
     }
+
+    class View extends Facade
+    {
+    }
+
+    class Route extends Facade
+    {
+    }
+
+    class Lang extends Facade
+    {
+    }
+}
+
+namespace Illuminate\Contracts\View {
+    interface View
+    {
+    }
+
+    interface Factory
+    {
+        /** @return \Illuminate\Contracts\View\View */
+        public function make($view, $data = [], $mergeData = []);
+    }
+}
+
+namespace Illuminate\View {
+    class Factory implements \Illuminate\Contracts\View\Factory
+    {
+        public function make($view, $data = [], $mergeData = [])
+        {
+        }
+    }
+}
+
+namespace Illuminate\Mail {
+    class Mailable
+    {
+        /** @return $this */
+        public function markdown($view, array $data = [])
+        {
+            return $this;
+        }
+
+        /** @return $this */
+        public function view($view, array $data = [])
+        {
+            return $this;
+        }
+    }
+}
+
+namespace Illuminate\Notifications\Messages {
+    class MailMessage
+    {
+        /** @return $this */
+        public function markdown($view, array $data = [])
+        {
+            return $this;
+        }
+
+        /** @return $this */
+        public function view($view, array $data = [])
+        {
+            return $this;
+        }
+    }
+}
+
+namespace Illuminate\Translation {
+    class Translator
+    {
+        public function get($key, array $replace = [], $locale = null, $fallback = true)
+        {
+        }
+
+        public function choice($key, $number, array $replace = [], $locale = null)
+        {
+        }
+    }
 }
 
 namespace Illuminate\Contracts\Auth {
@@ -586,6 +666,25 @@ namespace {
      * @return \Illuminate\Support\Collection<TKey, TValue>
      */
     function collect($value = [])
+    {
+    }
+
+    /**
+     * @return ($view is null ? \Illuminate\Contracts\View\Factory : \Illuminate\Contracts\View\View)
+     */
+    function view($view = null, $data = [], $mergeData = [])
+    {
+    }
+
+    function __($key = null, $replace = [], $locale = null)
+    {
+    }
+
+    function trans($key = null, $replace = [], $locale = null)
+    {
+    }
+
+    function trans_choice($key, $number, array $replace = [], $locale = null)
     {
     }
 

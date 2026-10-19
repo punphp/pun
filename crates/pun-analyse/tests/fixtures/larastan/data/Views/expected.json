@@ -1,0 +1,269 @@
+{
+    "how": "Larastan 3.10.0's UnusedViewsRuleTest and NoMissingTranslationsRuleTest expectations, on their FooController.php, Translation.php and tests/application/resources",
+    "errors": [
+        {
+            "file": "unused.blade.php",
+            "line": 0,
+            "identifier": "larastan.unusedViews",
+            "message": "This view is not used in the project."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 26,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.get\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 27,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.choice\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 28,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.trans\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 29,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.transChoice\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 31,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a.b\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 32,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a.b.c\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 33,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a_b.c-d\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 34,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a.b\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 35,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a.b!\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 36,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a.translate me!\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 37,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a.über~\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 38,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"app.i\\'m\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 39,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"app.i'm\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 40,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"app.\\\"ok\\\"\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 41,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"app.\"ok\"\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 42,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"a.b\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 44,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"directive.lang\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 45,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"directive.choice\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 47,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"surrounded.by.text\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 48,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"surrounded.by.html.tags\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 50,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"trans.uppercase\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 51,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"object.instance.method\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 52,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"dollar.t\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 53,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"double.underscore.helper.function\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 55,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.in.html.attribute\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 56,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.with.extra.paramater\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 57,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.in.blade.comment\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 58,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.in.html.comment\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 59,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"and.a.simple.translation.afterwards\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 60,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.with.prefix\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 71,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.with.new\nline.char\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 72,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.spanning\nmultiple.lines\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 74,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.with.a.back\\slash.single.quotes\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 75,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.with.a.back\\slash.double.quotes\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 76,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"lang.with.a.hex.char\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 18,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"messages.test\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 19,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"messages.test\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 20,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"messages.test\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 25,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"messages.test\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 26,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"messages.test\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 31,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"messages.test\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 32,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"messages.test\" has not been found."
+        },
+        {
+            "file": "Translation.php",
+            "line": 40,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"sub/lines.farewell\" has not been found."
+        }
+    ]
+}

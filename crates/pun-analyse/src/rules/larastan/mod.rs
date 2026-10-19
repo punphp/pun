@@ -6,6 +6,7 @@ mod appends;
 mod calls;
 mod classes;
 mod collections;
+mod collectors;
 mod config;
 mod console;
 mod dispatch;
@@ -29,6 +30,7 @@ use super::Checker;
 pub(crate) use appends::property;
 pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
+pub(crate) use collectors::finish;
 
 pub const IDENTIFIERS: &[&str] = &[
     "larastan.uselessConstructs.with",
@@ -50,6 +52,8 @@ pub const IDENTIFIERS: &[&str] = &[
     "larastan.unnecessaryEnumerableToArrayCall",
     "larastan.relationExistence",
     "larastan.noUnnecessaryCollectionCall",
+    "larastan.unusedViews",
+    "larastan.missingTranslations",
 ];
 
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
@@ -82,6 +86,12 @@ pub struct Larastan {
     pub no_unnecessary_collection_call_methods: Vec<String>,
     /// `noUnnecessaryEnumerableToArrayCalls` (default false).
     pub no_unnecessary_enumerable_to_array_calls: bool,
+    /// `checkUnusedViews` (default false) and `viewDirectories` (absolute).
+    pub check_unused_views: bool,
+    pub view_directories: Vec<PathBuf>,
+    /// `checkMissingTranslations` (default false) and `translationDirectories` (absolute).
+    pub check_missing_translations: bool,
+    pub translation_directories: Vec<PathBuf>,
     /// `checkConfigTypes` (default false).
     pub check_config_types: bool,
     /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
@@ -105,6 +115,10 @@ impl Larastan {
             database_properties: HashMap::new(),
             commands: Vec::new(),
             check_config_types: false,
+            check_unused_views: false,
+            view_directories: Vec::new(),
+            check_missing_translations: false,
+            translation_directories: Vec::new(),
             no_unnecessary_enumerable_to_array_calls: false,
             no_unnecessary_collection_call: true,
             no_unnecessary_collection_call_methods: collections::should_handle(&[], &[]),
@@ -168,6 +182,8 @@ impl Larastan {
         larastan.no_unnecessary_enumerable_to_array_calls =
             flag("noUnnecessaryEnumerableToArrayCalls", false);
         larastan.no_unnecessary_collection_call = flag("noUnnecessaryCollectionCall", true);
+        larastan.check_unused_views = flag("checkUnusedViews", false);
+        larastan.check_missing_translations = flag("checkMissingTranslations", false);
         let names = |k: &str| -> Vec<String> {
             params
                 .get_str(k)
@@ -180,6 +196,14 @@ impl Larastan {
                 })
                 .unwrap_or_default()
         };
+        larastan.view_directories = names("viewDirectories")
+            .iter()
+            .map(|d| root.join(d))
+            .collect();
+        larastan.translation_directories = names("translationDirectories")
+            .iter()
+            .map(|d| root.join(d))
+            .collect();
         larastan.no_unnecessary_collection_call_methods = collections::should_handle(
             &names("noUnnecessaryCollectionCallOnly"),
             &names("noUnnecessaryCollectionCallExcept"),
@@ -363,6 +387,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         }
         if self.larastan.no_unnecessary_collection_call {
             self.spans.extend(collections::unnecessary_typed(call));
+        }
+        if collectors::typed_method_call(self.larastan, call) {
+            self.spans.push(call.object.span());
         }
         if let Some((_, arg)) = console::input_call(call) {
             self.spans.extend([call.object.span(), arg.span()]);
