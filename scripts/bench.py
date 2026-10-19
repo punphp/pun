@@ -155,7 +155,7 @@ def bench_format() -> None:
 
 SCRATCH = Path(os.environ.get("BENCH_SCRATCH", ROOT / "target-bench"))
 PHPSTAN = ROOT / ".oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar"
-RECTOR = ROOT / ".oracle/rector-bin/vendor/bin/rector"
+RECTOR = ROOT / ".oracle/rector-ecosystem/vendor/bin/rector"  # rector 2.6.1 with rector-laravel and Pest's plugin
 # project -> (PHPStan includes, paths, extra parameter lines): the project's own config at level 0, without its
 # ignoreErrors and baseline (scripts/analyse-corpus.py's configs, plus laravel-pint).
 ANALYSE = {
@@ -261,12 +261,15 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
 
 
 def native_rules() -> list[str]:
-    """The IDs of pun-lint's native rules, read from each rule's `fn id`."""
+    """The IDs of pun-lint's native rules, read from each rule's `fn id`, that rules/mapping.toml marks ported (a rule
+    file not yet in `rules::all()` is not)."""
     import re
+    import tomllib
     ids = set()
     for f in (ROOT / "crates/pun-lint/src/rules").rglob("*.rs"):
         ids.update(re.findall(r'fn id\(&self\) -> &\'static str \{\s*"(lint/[^"]+)"', f.read_text()))
-    return sorted(ids)
+    lint = tomllib.loads((ROOT / "crates/pun-config/rules/mapping.toml").read_text())["rules"]["lint"]
+    return sorted(i for i in ids if lint.get(i.removeprefix("lint/"), {}).get("ported"))
 
 
 def ported_rector_rules() -> list[str]:
