@@ -144,7 +144,7 @@ pub(super) fn known<'a>(c: &Checker<'a, '_>, name: &str) -> Option<Known<'a>> {
 
 impl<'a> Checker<'a, '_> {
     /// `ReflectionProvider::getFunction()`: the display name and the variants.
-    pub(super) fn function(&self, name: &[u8]) -> Option<(String, Vec<params::Acceptor>)> {
+    pub(super) fn function(&self, name: &[u8]) -> Option<(String, params::Variants)> {
         if let Some(f) = self
             .codebase
             .get_function(name)
@@ -152,18 +152,12 @@ impl<'a> Checker<'a, '_> {
         {
             return Some((
                 String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
-                vec![params::Acceptor::of(f)],
+                params::Variants::of(f),
             ));
         }
         let lower = String::from_utf8_lossy(name).to_ascii_lowercase();
         let f = self.builtins.functions.get(&lower)?;
-        Some((
-            f.name.clone(),
-            f.variants
-                .iter()
-                .map(params::Acceptor::of_builtin)
-                .collect(),
-        ))
+        Some((f.name.clone(), params::Variants::of_builtin(f)))
     }
 
     /// [`known()`] with Mago's metadata, which the rules reading constructors, methods and flags need.
