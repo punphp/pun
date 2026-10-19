@@ -1,0 +1,344 @@
+{
+    "test": "Exceptions/HelperFinally",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/helper-finally.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": -1,
+                    "identifier": "finally.exitPoint",
+                    "message": "This break is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 14,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 16,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 17,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 20,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting throw is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 27,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 28,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 29,
+                    "identifier": "elseif.alwaysTrue",
+                    "message": "Elseif condition is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 29,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 36,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 39,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 40,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting throw is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 64,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 65,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 78,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 78,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 78,
+                    "identifier": "while.alwaysFalse",
+                    "message": "While loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 79,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 84,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 85,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 98,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 99,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 99,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 106,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 112,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 112,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 113,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 119,
+                    "identifier": "finally.exitPoint",
+                    "message": "This break is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 119,
+                    "identifier": "finally.exitPoint",
+                    "message": "This continue is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 120,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 124,
+                    "identifier": "void.pure",
+                    "message": "Function HelperFinally\\overwritingBreak() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 127,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting break is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 127,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 131,
+                    "identifier": "void.pure",
+                    "message": "Function HelperFinally\\overwritingContinue() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 134,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting continue is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 134,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 141,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 142,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 149,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 154,
+                    "identifier": "function.inner",
+                    "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 160,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 160,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 165,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting exit point is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 165,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 171,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 172,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/helper-finally.php",
+                    "line": 173,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

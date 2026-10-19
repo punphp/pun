@@ -58,8 +58,13 @@ pub(crate) use reflection::builtins;
 
 pub const IDENTIFIERS: &[&str] = &[
     "argument.unused",
+    "callable.inVoidCast",
+    "callable.resultDiscarded",
     "closure.unusedUse",
     "constructor.unusedParameter",
+    "finally.exitPoint",
+    "function.inVoidCast",
+    "function.resultDiscarded",
     "function.uselessReturnValue",
     "method.inVoidCast",
     "method.resultDiscarded",
@@ -1529,6 +1534,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, _: &mut ()) {
         through_static::constant(self, a);
         names::class_constant(self, a);
+    }
+    fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
+        dead_code::try_statement(self, t);
     }
     fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {
         statements::noncapturing_catch(self, clause);

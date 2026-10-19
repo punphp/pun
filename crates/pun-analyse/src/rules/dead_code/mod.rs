@@ -1,5 +1,7 @@
 //! PHPStan's dead-code rules. Expected diagnostics come from the pinned PHPStan rule fixtures.
 
+mod finally;
+mod function_discard;
 mod no_discard;
 
 use std::collections::HashSet;
@@ -12,7 +14,34 @@ use mago_syntax::walker::MutWalker;
 
 use super::{Checker, members};
 
-pub(super) use no_discard::{statement, typed as typed_statement};
+pub(super) fn try_statement(c: &mut Checker, t: &Try) {
+    finally::check(c, t);
+}
+
+pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
+    if level < 4 {
+        return Vec::new();
+    }
+    finally::typed(program)
+}
+
+pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
+    no_discard::statement(c, s);
+    function_discard::statement(c, s);
+}
+
+pub(super) fn typed_statement(
+    s: &ExpressionStatement,
+    level: u8,
+    php_version: u32,
+) -> impl Iterator<Item = Span> {
+    [
+        no_discard::typed(s, level, php_version),
+        function_discard::typed(s, php_version),
+    ]
+    .into_iter()
+    .flatten()
+}
 
 /// PHP-Parser replaces imported function aliases, but preserves names with namespace fallback.
 fn node_name<'arena>(names: &ResolvedNames<'arena>, id: &Identifier<'arena>) -> &'arena [u8] {

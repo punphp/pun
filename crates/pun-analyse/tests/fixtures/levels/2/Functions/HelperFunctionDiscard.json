@@ -1,0 +1,302 @@
+{
+    "test": "Functions/HelperFunctionDiscard",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/helper-function-discard.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 39,
+                    "identifier": "function.resultDiscarded",
+                    "message": "Call to function HelperFunctionDiscard\\required() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 41,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function HelperFunctionDiscard\\allowed() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 42,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function strlen() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 43,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function strlen() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 44,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable HelperFunctionDiscard\\Required on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 47,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable HelperFunctionDiscard\\Allowed in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 54,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable HelperFunctionDiscard\\Allowed|HelperFunctionDiscard\\Required on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 58,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable array{HelperFunctionDiscard\\Required, 'method'} on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 61,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable array{HelperFunctionDiscard\\Required, 'allowed'} in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 63,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable array{'HelperFunctionDiscard\\\\Required', 'stat'} on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 65,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable array{'HelperFunctionDiscard\\\\Allowed', 'stat'} in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 67,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable array{1: 'stat', 0: 'HelperFunctionDiscard\\\\Required'} on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 69,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable array{1: 'stat', 0: 'HelperFunctionDiscard\\\\Allowed'} in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 71,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable 'HelperFunctionDisca\u2026' on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 73,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable 'HelperFunctionDisca\u2026' in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 75,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke 'HelperFunctionDisca\u2026' but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 77,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke 'NonexistentDiscardF\u2026' but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 79,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke array{'HelperFunctionDiscard\\\\Required', 'method'} but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 83,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke array{'HelperFunctionDiscard\\\\Required'} but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 85,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke array{2: 'HelperFunctionDiscard\\\\Required', 3: 'stat'} but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 88,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(): int on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 90,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(): int on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 92,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable Closure(): int in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 95,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable Closure(int=): int in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 97,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(): 2.5 on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 99,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(): array{answer: true, 3: null} on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 101,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(int, string=, float ...): string on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 103,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable Closure(): 17 in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 105,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(mixed): mixed on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 111,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable 'HelperFunctionDisca\u2026' on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 113,
+                    "identifier": "function.resultDiscarded",
+                    "message": "Call to function HelperFunctionDiscard\\required() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 114,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function HelperFunctionDiscard\\allowed() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 115,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"|>\" between 3 and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 115,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke int but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 116,
+                    "identifier": "function.resultDiscarded",
+                    "message": "Call to function HelperFunctionDiscard\\required() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 117,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function HelperFunctionDiscard\\allowed() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 124,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable HelperFunctionDiscard\\Contract&HelperFunctionDiscard\\Marker on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 148,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function phpversion() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 149,
+                    "identifier": "function.notFound",
+                    "message": "Function missing not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 162,
+                    "identifier": "callable.inVoidCast",
+                    "message": "Call to callable 'DateTimeImmutable:\u2026' in (void) cast but callable allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-function-discard.php",
+                    "line": 164,
+                    "identifier": "callable.resultDiscarded",
+                    "message": "Call to callable Closure(): array{answer?: bool} on a separate line discards return value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

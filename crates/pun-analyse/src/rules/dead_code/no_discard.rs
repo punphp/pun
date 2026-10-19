@@ -14,7 +14,7 @@ struct Target<'e, 'arena> {
     void: bool,
 }
 
-fn unparen<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
+pub(super) fn unparen<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<'arena> {
     while let Expression::Parenthesized(p) = e {
         e = p.expression;
     }
@@ -25,7 +25,10 @@ fn is_void(e: &Expression) -> bool {
     matches!(unparen(e), Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::VoidCast(..)))
 }
 
-fn target<'e, 'arena>(s: &'e ExpressionStatement<'arena>) -> Option<Target<'e, 'arena>> {
+/// The discarded expression, whether its result is cast to void, and whether it is a pipe's callable.
+pub(super) fn expression<'e, 'arena>(
+    s: &'e ExpressionStatement<'arena>,
+) -> (&'e Expression<'arena>, bool, bool) {
     let mut e = unparen(s.expression);
     let mut void = is_void(e);
     if let Expression::UnaryPrefix(u) = e
@@ -44,6 +47,11 @@ fn target<'e, 'arena>(s: &'e ExpressionStatement<'arena>) -> Option<Target<'e, '
             piped = true;
         }
     }
+    (e, void, piped)
+}
+
+fn target<'e, 'arena>(s: &'e ExpressionStatement<'arena>) -> Option<Target<'e, 'arena>> {
+    let (e, void, piped) = expression(s);
     let (receiver, selector, is_static) = match e {
         Expression::Call(Call::Method(m)) if !piped => (m.object, &m.method, false),
         Expression::Call(Call::NullSafeMethod(m)) if !piped => (m.object, &m.method, false),

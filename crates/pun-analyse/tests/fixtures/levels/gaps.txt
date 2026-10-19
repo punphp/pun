@@ -1,1 +1,5 @@
 # Cases of tests/levels.rs that still differ from PHPStan: "<level> <test>::<method>".
+# Mago callable union contracts and array-shape insertion order; function NoDiscard stays unported (PLAN.md).
+2 Functions/HelperFunctionDiscard::testRule
+# PHPStan synthetic multi-level break has line -1; the public Error line is u32 (PLAN.md).
+4 Exceptions/HelperFinally::testRule

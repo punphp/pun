@@ -108,6 +108,7 @@ pub(super) fn infer<'arena>(
     wanted.walk_program(program, &mut ());
     let mut wanted = wanted.spans;
     wanted.extend(extra);
+    wanted.extend(dead_code::flow_types(program, level));
     if wanted.is_empty() {
         return HashMap::new();
     }

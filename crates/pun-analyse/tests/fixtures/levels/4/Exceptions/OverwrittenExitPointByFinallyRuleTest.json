@@ -1,0 +1,370 @@
+{
+    "test": "Exceptions/OverwrittenExitPointByFinallyRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/overwritten-exit-point.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/overwritten-exit-point.php",
+                    "line": 8,
+                    "identifier": "finally.exitPoint",
+                    "message": "This throw is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/overwritten-exit-point.php",
+                    "line": 11,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/overwritten-exit-point.php",
+                    "line": 13,
+                    "identifier": "finally.exitPoint",
+                    "message": "This return is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/overwritten-exit-point.php",
+                    "line": 15,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6670",
+            "files": [
+                "Exceptions/data/bug-6670.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12215",
+            "files": [
+                "Exceptions/data/bug-12215.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11906",
+            "files": [
+                "Exceptions/data/bug-11906.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7665",
+            "files": [
+                "Exceptions/data/bug-7665.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-7665.php",
+                    "line": 9,
+                    "identifier": "return.missing",
+                    "message": "Method Bug7665\\HelloWorld::doStuff() should return string but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5627",
+            "files": [
+                "Exceptions/data/bug-5627.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 10,
+                    "identifier": "finally.exitPoint",
+                    "message": "This throw is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 12,
+                    "identifier": "finally.exitPoint",
+                    "message": "This throw is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 14,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 29,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 31,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 33,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 39,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 41,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 43,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 49,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 51,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 62,
+                    "identifier": "finally.exitPoint",
+                    "message": "This throw is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 64,
+                    "identifier": "finally.exitPoint",
+                    "message": "This throw is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 66,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 81,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 83,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 85,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 91,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 93,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 95,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 101,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 103,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 112,
+                    "identifier": "return.never",
+                    "message": "Function Bug5627\\abort() should always throw an exception or terminate script execution but doesn't do that.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 122,
+                    "identifier": "finally.exitPoint",
+                    "message": "This throw is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 124,
+                    "identifier": "finally.exitPoint",
+                    "message": "This throw is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 126,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 141,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 141,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug5627\\abort() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 143,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 143,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug5627\\abort() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 145,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 151,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 151,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug5627\\abort() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 153,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 153,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug5627\\abort() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 155,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 161,
+                    "identifier": "finally.exitPoint",
+                    "message": "This exit point is overwritten by a different one in the finally block below.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 161,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug5627\\abort() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5627.php",
+                    "line": 163,
+                    "identifier": "finally.exitPoint",
+                    "message": "The overwriting return is on this line.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
