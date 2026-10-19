@@ -15,7 +15,7 @@ agents and helper branches are stopped and merged; there is nothing in flight.
   `salvage/handoff` (format-handoff: heredoc_closing_marker + fixtures, the inline `Content` type and fmtbench;
   generics-wiring.diff; the audit item 12 and 83 patches), `salvage/stash-ef0bb7f` (edits lost in a shared-tree
   reset on 2026-10-19, mostly redone; diff each file against main), `salvage/stash-0b0ef5b` (2026-10-17 pun-cli and
-  blade WIP), `salvage/wf-lint-5`, `salvage/wf-lint-7` (their rules are on main; only the wip commits' leftovers).
+  blade WIP).
 - **Priorities, in order:** (1) done; (2) the `pun lint` stack overflow on pinkary (Track B), then lint
   vs Rector end to end; (3) coverage back to 100% in pun-lint, pun-analyse, punphp; (4) analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
@@ -270,7 +270,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint clippy: two warnings in pun-lint, no_duplicate_case_body.rs:67 (needless_range_loop) and rector_stmts.rs:790 (double_ended_iterator_last) | todo |
 | lint 7 (needs Pushpak): `style/prefer-class-constant` (PHP-CS-Fixer `class_keyword`) needs the class to exist in the fixer's PHP process. Option A (closest to upstream, picked): leave it unported. Option B: port it with PHP's built-in classes only | needs Pushpak |
 | lint 7 follow-up: `php-8.5/no-null-array-key` (ArrayKeyExistsNullToEmptyStringRector) needs the key's type; port it once analyse's types reach pun-lint (Build 8) | todo |
-| lint 7 follow-up (from batch 2): optional code-quality rule ConsecutiveNullCompareReturnsToNullCoalesceQueueRector (`lint/complexity/prefer-coalesce-chain`) | todo |
 | lint 7 follow-up (from batch 2): move crates/pun-lint/src/rules/rector_code_quality.rs's shared helpers (precedence table, in_parent, statements_edit, inverse_node/de_morgan, call_to/args/is_constant/equal) into `crate::syntax` for later batches (syntax.rs is owned by lint 1-2) | todo |
 | lint 7 follow-up (from batch 2): `lint/complexity/prefer-null-coalesce`'s mapping summary describes more than ArrayKeyExistsTernaryThenValueToCoalescing (isset ternaries, if/return chains, foreach lookups); check whether more upstream rules belong to it | todo |
 | lint 7 follow-up (from batch 2): on a colon-body `if (...): ... endif;` Rector reprints the `if` with braces when one statement becomes two, Pun keeps the colon syntax | todo |
