@@ -131,7 +131,7 @@ enum ConfigFormat {
 /// Pint's DefaultCommand flags, plus Pun's own.
 #[derive(Args, Default, Clone)]
 #[command(about = "Fix the coding style of the given path")]
-pub struct FormatArgs {
+pub(crate) struct FormatArgs {
     /// The path to fix (`-` reads stdin).
     paths: Vec<PathBuf>,
     /// Enable the [Pint/laravel_blade] rule to format Blade files.
@@ -223,7 +223,8 @@ impl FormatArgs {
         report::Failure {
             pint: true,
             machine: !human,
-            github_format: self.format.as_deref() == Some("github"),
+            github_format: self.format.as_deref().and_then(|f| f.parse().ok())
+                == Some(report::ReportFormat::Github),
             annotate: human && self.github_actions,
             color: self.color(),
         }
@@ -232,7 +233,7 @@ impl FormatArgs {
 
 /// `pun format`'s flags that Pint doesn't have.
 #[derive(Args, Default, Clone)]
-pub struct PunArgs {
+pub(crate) struct PunArgs {
     /// Only fix files with staged changes (Pun).
     #[arg(long)]
     staged: bool,

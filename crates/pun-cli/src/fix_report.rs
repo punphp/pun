@@ -7,16 +7,16 @@ use std::fmt::Write as _;
 use std::sync::LazyLock;
 
 /// One changed file as the reporters see it: `diff` is empty unless `-v` (Pint uses a NullDiffer otherwise).
-pub struct Change<'a> {
-    pub file: &'a str,
-    pub fixers: &'a [&'a str],
-    pub diff: &'a str,
+pub(crate) struct Change<'a> {
+    pub(crate) file: &'a str,
+    pub(crate) fixers: &'a [&'a str],
+    pub(crate) diff: &'a str,
 }
 
-pub const ABOUT: &str =
+pub(crate) const ABOUT: &str =
     "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
 
-pub fn json(changes: &[Change], verbose: bool, decorated: bool) -> String {
+pub(crate) fn json(changes: &[Change], verbose: bool, decorated: bool) -> String {
     let files: Vec<serde_json::Value> = changes
         .iter()
         .map(|c| {
@@ -36,7 +36,7 @@ pub fn json(changes: &[Change], verbose: bool, decorated: bool) -> String {
     if decorated { escape(&json) } else { json }
 }
 
-pub fn txt(
+pub(crate) fn txt(
     changes: &[Change],
     verbose: bool,
     dry_run: bool,
@@ -77,7 +77,7 @@ pub fn txt(
 }
 
 /// Pint's AgentReporter; `errors` are (path, message).
-pub fn agent(changes: &[Change], errors: &[(&str, &str)], dry_run: bool) -> String {
+pub(crate) fn agent(changes: &[Change], errors: &[(&str, &str)], dry_run: bool) -> String {
     let result = if !errors.is_empty() {
         "fail"
     } else if changes.is_empty() {
@@ -141,7 +141,7 @@ fn console_diff(diff: &str, decorated: bool) -> String {
 }
 
 /// json_encode() defaults: escape `/` and non-ASCII (as UTF-16 `\uXXXX`).
-pub fn php_json(v: &serde_json::Value) -> String {
+pub(crate) fn php_json(v: &serde_json::Value) -> String {
     let s = serde_json::to_string(v).expect("json");
     let mut o = String::with_capacity(s.len());
     for c in s.chars() {
@@ -219,7 +219,7 @@ fn xml(root: El, decorated: bool) -> String {
     if decorated { escape(&o) } else { o }
 }
 
-pub fn checkstyle(changes: &[Change], decorated: bool) -> String {
+pub(crate) fn checkstyle(changes: &[Change], decorated: bool) -> String {
     let mut root = el("checkstyle", &[("version", ABOUT)]);
     for c in changes {
         let mut file = el("file", &[("name", c.file)]);
@@ -238,7 +238,7 @@ pub fn checkstyle(changes: &[Change], decorated: bool) -> String {
     xml(root, decorated)
 }
 
-pub fn junit(changes: &[Change], verbose: bool, decorated: bool) -> String {
+pub(crate) fn junit(changes: &[Change], verbose: bool, decorated: bool) -> String {
     let mut suite = el("testsuite", &[("name", "PHP CS Fixer")]);
     let mut props = el("properties", &[]);
     props
@@ -315,7 +315,7 @@ pub fn junit(changes: &[Change], verbose: bool, decorated: bool) -> String {
     xml(root, decorated)
 }
 
-pub fn xml_report(changes: &[Change], verbose: bool, decorated: bool) -> String {
+pub(crate) fn xml_report(changes: &[Change], verbose: bool, decorated: bool) -> String {
     let mut root = el("report", &[]);
     root.children.push(el("about", &[("value", ABOUT)]));
     let mut files = el("files", &[]);
@@ -344,7 +344,7 @@ static FIXERS: LazyLock<serde_json::Map<String, serde_json::Value>> = LazyLock::
     serde_json::from_str(include_str!("gitlab_fixers.json")).expect("gitlab_fixers.json")
 });
 
-pub fn gitlab(changes: &[Change], decorated: bool) -> String {
+pub(crate) fn gitlab(changes: &[Change], decorated: bool) -> String {
     let mut report = vec![];
     for c in changes {
         let lines = gitlab_lines(c.diff);

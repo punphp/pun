@@ -256,8 +256,10 @@ fn lint_and_check() {
             ("app/S.php", SELF),
         ],
     );
-    // A rule without a summary in the mapping prints none.
-    let lint = format!("{ALIAS_LINE}\napp/S.php lint/dead-code/no-self-assignment [fix:safe]\n");
+    // Each lint rule prints its summary from rules/mapping.toml (Mago's rule description).
+    let lint = format!(
+        "{ALIAS_LINE}\napp/S.php lint/dead-code/no-self-assignment [fix:safe] Detects and removes self-assignments where a variable or property is assigned to itself.\n"
+    );
     assert_eq!(
         agent(&d, &["lint"]),
         (
@@ -277,7 +279,7 @@ fn lint_and_check() {
     );
     // --fix applies every rule but those with `fix = "off"`, which are reported as remaining, like `--test` reports them,
     // and fail the run.
-    let remaining = "app/S.php lint/dead-code/no-self-assignment [fix:safe] [remaining]\n";
+    let remaining = "app/S.php lint/dead-code/no-self-assignment [fix:safe] [remaining] Detects and removes self-assignments where a variable or property is assigned to itself.\n";
     assert_eq!(
         agent(&d, &["lint", "--fix"]),
         (

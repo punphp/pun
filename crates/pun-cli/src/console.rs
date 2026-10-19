@@ -5,8 +5,46 @@ use pcre2::bytes::Regex;
 use std::io::IsTerminal;
 use std::sync::LazyLock;
 
+/// The first of the 256 code points (plane 16's private use area) that carry the bytes of a non-UTF-8 diff through
+/// Pun's `String` output until `raw` writes them out, as PHP's byte strings print them.
+const CARRIED: u32 = 0x10_FF00;
+
+/// `bytes` as text: UTF-8 stays as is, every other byte becomes its carrier code point.
+pub(crate) fn carry(bytes: &[u8]) -> String {
+    let mut s = String::with_capacity(bytes.len());
+    for chunk in bytes.utf8_chunks() {
+        s.push_str(chunk.valid());
+        s.extend((chunk.invalid().iter()).filter_map(|&b| char::from_u32(CARRIED + u32::from(b))));
+    }
+    s
+}
+
+/// Whether `text` carries a byte that isn't UTF-8.
+pub(crate) fn carries_bytes(text: &str) -> bool {
+    text.chars()
+        .any(|c| (CARRIED..=CARRIED + 0xFF).contains(&u32::from(c)))
+}
+
+/// The bytes `text` stands for: its carriers written back as the bytes they carry.
+pub(crate) fn raw(text: &str) -> Vec<u8> {
+    let mut out = Vec::with_capacity(text.len());
+    let mut buf = [0; 4];
+    for c in text.chars() {
+        match u32::from(c).checked_sub(CARRIED) {
+            Some(b) if b <= 0xFF => out.push(b as u8),
+            _ => out.extend_from_slice(c.encode_utf8(&mut buf).as_bytes()),
+        }
+    }
+    out
+}
+
+/// `print!` for text that may carry raw bytes.
+pub(crate) fn print_raw(text: &str) -> std::io::Result<()> {
+    std::io::Write::write_all(&mut std::io::stdout().lock(), &raw(text))
+}
+
 /// Whether stdout (fd 1) / stderr (fd 2) get ANSI styles, as Application::configureIO + ConsoleOutput decide.
-pub fn decorated(fd: i32, ansi: bool, no_ansi: bool) -> bool {
+pub(crate) fn decorated(fd: i32, ansi: bool, no_ansi: bool) -> bool {
     if ansi {
         return true;
     }
@@ -53,7 +91,7 @@ fn has_color_support(tty: bool, env: &dyn Fn(&str) -> Option<String>) -> bool {
 }
 
 /// Terminal::getWidth: `COLUMNS` (as PHP's `(int)`), else `stty -a` on the inherited stdin, else 80.
-pub fn width() -> usize {
+pub(crate) fn width() -> usize {
     if let Ok(c) = std::env::var("COLUMNS") {
         return php_int(c.trim());
     }
@@ -89,7 +127,7 @@ fn php_int(s: &str) -> usize {
 }
 
 /// OutputFormatter::escape.
-pub fn escape(text: &str) -> String {
+pub(crate) fn escape(text: &str) -> String {
     static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"([^\\]|^)([<>])").unwrap());
     let mut out = Vec::with_capacity(text.len() + 8);
     let mut last = 0;
@@ -225,7 +263,7 @@ impl Style {
 
 /// OutputFormatter::format: `<fg=..;bg=..;options=..>`, `<info>` etc. become ANSI (or vanish when not decorated);
 /// unknown tags stay as text; `\<` is an escaped `<`.
-pub fn format(message: &str, decorated: bool) -> String {
+pub(crate) fn format(message: &str, decorated: bool) -> String {
     static TAG: LazyLock<Regex> = LazyLock::new(|| {
         Regex::new(r"(?i)<(([a-z](?:[^\\<>]*+|\\.)*)|/([a-z][^<>]*+)?)>").unwrap()
     });

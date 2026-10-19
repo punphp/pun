@@ -178,7 +178,10 @@ fn watch_reformats_like_pint() {
     write_files(&dir, &[("pun.toml", "[format")]);
     // With its cause, as the first run prints it (the toml crate's message).
     wait_for("the config error", &err, |e| {
-        e.contains(&format!("invalid {}/pun.toml: TOML parse error at line 1, column 8", dir.display()))
+        e.contains(&format!(
+            "invalid {}/pun.toml: TOML parse error at line 1, column 8",
+            dir.display()
+        ))
     });
     write_files(&dir, &[("pun.toml", &toml), ("app/U.php", "<?php\n")]);
     std::fs::set_permissions(

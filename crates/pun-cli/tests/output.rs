@@ -85,8 +85,16 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
     // pun.toml: written by `pun migrate` for Pun's run.
     let files = common::snapshot(dir, |r| r == "pun.toml");
     // A pty turns `\n` into `\r\n`; BSD's script echoes the closed stdin as `^D` and two backspaces first.
+    // Bytes that aren't UTF-8 show as `\xHH`, so a raw byte and its U+FFFD replacement differ.
     let text = |b: &[u8]| {
-        let t = String::from_utf8_lossy(b).replace("\r\n", "\n");
+        let mut t = String::new();
+        for chunk in b.utf8_chunks() {
+            t.push_str(chunk.valid());
+            for byte in chunk.invalid() {
+                t.push_str(&format!("\\x{byte:02x}"));
+            }
+        }
+        let t = t.replace("\r\n", "\n");
         t.strip_prefix("^D\x08\x08")
             .map_or(t.clone(), str::to_string)
     };
@@ -692,6 +700,39 @@ fn abort_box_like_pint() {
     );
     // COLUMNS=0: Symfony doesn't wrap at all.
     cx.same_abort(&t, &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped-at-all"], Opts { env: &[("COLUMNS", "0")], ..PLAIN }, "");
+}
+
+/// A file that isn't UTF-8 keeps its bytes in the `-v` diffs of the txt, junit and xml reports, and makes the json
+/// report's `json_encode` throw (audit item 11).
+#[test]
+fn latin1_diffs_like_pint() {
+    let Some(cx) = Cx::new("latin1") else { return };
+    let php = which("php");
+    let oracle = cx.oracle.to_str().unwrap();
+    let side = |pun: bool, args: &[&str]| {
+        reset(&cx.dir, &[]);
+        std::fs::create_dir_all(&cx.dir).unwrap();
+        std::fs::write(cx.dir.join("a.php"), b"<?php $a = array( \"caf\xe9\" );\n").unwrap();
+        if pun {
+            migrate(&cx.dir);
+            run(&[&PUN[..], args].concat(), &cx.dir, PLAIN)
+        } else {
+            run(&[&[php.as_str(), "-d", "zend.assertions=-1", oracle][..], args].concat(), &cx.dir, PLAIN)
+        }
+    };
+    for f in ["--format=txt", "--format=junit", "--format=xml"] {
+        let args = ["--test", "-v", f, "a.php"];
+        let (want, got) = (side(false, &args), side(true, &args));
+        assert!(want.stdout.contains("+$a = ['caf\\xe9'];"), "{f}: {}", want.stdout);
+        assert_eq!(got, want, "{f}");
+    }
+    let args = ["--test", "-v", "--format=json", "a.php"];
+    let (mut want, got) = (side(false, &args), side(true, &args));
+    assert_eq!((want.code, got.code), (Some(1), Some(2)));
+    want.code = Some(2);
+    want.stdout = normalise_trace(&want.stdout, &cx.oracle);
+    assert!(want.stdout.contains("[JsonException (5)]"), "{}", want.stdout);
+    assert_eq!(got, want);
 }
 
 /// Run errors exit 2 (output.md §2). Human runs print Pun's run error (output.md §1) on stderr, red with `--ansi`

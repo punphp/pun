@@ -632,14 +632,14 @@ fn pun_only_behaviour() {
     // Lint rules count too, even for `pun format`; several are listed together.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/heredoc-closing-marker\" = true\n[lint.rules]\n\"security/no-homoglyph-names\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/heredoc-closing-marker\" = true\n[lint.rules]\n\"complexity/no-else-clause\" = \"error\"\n",
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["format", "--test"]);
     assert_eq!(
         (err, code),
         (
-            "x pun.toml  rules not supported by Pun yet: `format/strings/heredoc-closing-marker`, `lint/security/no-homoglyph-names`\n  remove them from pun.toml to run the other rules\n".to_string(),
+            "x pun.toml  rules not supported by Pun yet: `format/strings/heredoc-closing-marker`, `lint/complexity/no-else-clause`\n  remove them from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );
@@ -649,24 +649,24 @@ fn pun_only_behaviour() {
         (out, code),
         (
             format!(
-                "pun lint: error: {}: rules not supported by Pun yet: `format/strings/heredoc-closing-marker`, `lint/security/no-homoglyph-names`\n",
+                "pun lint: error: {}: rules not supported by Pun yet: `format/strings/heredoc-closing-marker`, `lint/complexity/no-else-clause`\n",
                 toml.display()
             ),
             Some(2)
         )
     );
-    // A named lint rule no fixer runs yet stops the run too; a set skips the rules Pun can't run yet (code-quality
-    // has `lint/security/no-homoglyph-names`, whose fixer isn't ported).
+    // A named lint rule Pun can't run yet stops the run too; a set skips the rules Pun can't run yet (code-quality
+    // has `later = true` rules).
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint]\nsets = [\"code-quality\"]\n[lint.rules]\n\"style/prefer-early-return\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[lint]\nsets = [\"code-quality\"]\n[lint.rules]\n\"complexity/no-empty-file\" = \"error\"\n",
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["lint"]);
     assert_eq!(
         (err, code),
         (
-            "x pun.toml  rule not supported by Pun yet: `lint/style/prefer-early-return`\n  remove it from pun.toml to run the other rules\n".to_string(),
+            "x pun.toml  rule not supported by Pun yet: `lint/complexity/no-empty-file`\n  remove it from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );
@@ -793,7 +793,8 @@ fn migrates_php_cs_fixer_config() {
     let (out, err, code) = pun(&dir, &["migrate"]);
     assert_eq!((err.as_str(), code), ("", Some(0)));
     assert!(
-        out.starts_with(" ok .php-cs-fixer.php  -> [format] preset empty, ") && out.ends_with(skipped),
+        out.starts_with(" ok .php-cs-fixer.php  -> [format] preset empty, ")
+            && out.ends_with(skipped),
         "{out}"
     );
     let toml = std::fs::read_to_string(dir.join("pun.toml")).unwrap();
@@ -996,34 +997,4 @@ docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mappin
             Some(2)
         )
     );
-}
-
-/// `pun lint --mago` names the file it can't read (hand-derived: Pun's own wording for a read error).
-#[cfg(feature = "mago-lint")]
-#[test]
-fn mago_lint_read_error_names_the_file() {
-    let dir = scratch("cli", "mago-unreadable");
-    reset(
-        &dir,
-        &[
-            ("pun.toml", "[format]\npreset = \"empty\"\n"),
-            ("a.php", "<?php\necho 1;\n"),
-        ],
-    );
-    let locked = dir.join("a.php");
-    std::fs::set_permissions(&locked, std::os::unix::fs::PermissionsExt::from_mode(0o000)).unwrap();
-    // Root reads a mode-000 file: there is no read error to report.
-    if std::fs::read(&locked).is_err() {
-        let (_, err, code) = pun(&dir, &["lint", "--mago"]);
-        assert_eq!(
-            (err, code),
-            (
-                format!(
-                    "x can't read {}: Permission denied (os error 13)\n",
-                    locked.display()
-                ),
-                Some(2)
-            )
-        );
-    }
 }

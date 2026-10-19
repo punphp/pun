@@ -6,7 +6,7 @@ use std::path::Path;
 /// `--blade`): Node must exist and prettier, prettier-plugin-blade and prettier-plugin-tailwindcss must resolve
 /// from the project at the required versions. Returns the abort (Pint's message and box) when it would abort.
 /// ponytail: Pint offers to install missing packages when interactive; Pun always takes the non-interactive "no".
-pub fn ensure(root: &Path, enabled: bool) -> Option<Abort> {
+pub(crate) fn ensure(root: &Path, enabled: bool) -> Option<Abort> {
     use std::process::{Command, Stdio};
     if !enabled {
         return None;

@@ -17,6 +17,11 @@ mago-database.workspace = true
 mago-span.workspace = true
 mago-syntax.workspace = true
 mago-syntax-core.workspace = true
+mago-analyzer.workspace = true
+mago-codex.workspace = true
+mago-names.workspace = true
+mago-php-version.workspace = true
+mago-prelude.workspace = true
 
 [dev-dependencies]
 pun-config.workspace = true

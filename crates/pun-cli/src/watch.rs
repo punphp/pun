@@ -15,7 +15,7 @@ use xxhash_rust::xxh3::xxh3_64;
 /// Editors save in bursts (truncate + write, temp file + rename): wait for this much quiet before running.
 const DEBOUNCE: Duration = Duration::from_millis(100);
 
-pub fn run(mut a: FormatArgs) -> Result<u8> {
+pub(crate) fn run(mut a: FormatArgs) -> Result<u8> {
     a.pun.watch = false;
     let started_by = parent();
     let root = root()?;

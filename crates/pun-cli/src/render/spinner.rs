@@ -13,7 +13,7 @@ const DELAY: Duration = Duration::from_secs(1);
 /// Time between two frames.
 const FRAME: Duration = Duration::from_millis(80);
 
-pub struct Spinner {
+pub(crate) struct Spinner {
     done: Arc<AtomicUsize>,
     stop: Arc<(Mutex<bool>, Condvar)>,
     thread: Option<JoinHandle<()>>,
@@ -21,12 +21,12 @@ pub struct Spinner {
 
 impl Spinner {
     /// The spinner on stderr when it is a terminal (`tty`), else none.
-    pub fn stderr(total: usize, look: &Look, tty: bool) -> Option<Spinner> {
+    pub(crate) fn stderr(total: usize, look: &Look, tty: bool) -> Option<Spinner> {
         tty.then(|| Spinner::start(Box::new(std::io::stderr()), total, look.unicode, DELAY))
     }
 
     /// Draw `⠋ 3/412 files` on `out` every frame, starting after `delay`.
-    pub fn start(
+    pub(crate) fn start(
         mut out: Box<dyn Write + Send>,
         total: usize,
         unicode: bool,
@@ -74,7 +74,7 @@ impl Spinner {
     }
 
     /// One more file done.
-    pub fn tick(&self) {
+    pub(crate) fn tick(&self) {
         self.done.fetch_add(1, Ordering::Relaxed);
     }
 }

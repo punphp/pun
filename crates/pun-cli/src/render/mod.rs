@@ -10,10 +10,10 @@ mod spinner;
 #[cfg(test)]
 mod tests;
 
-pub use look::{ColorChoice, Look, Role};
+pub(crate) use look::{ColorChoice, Look, Role};
 #[cfg(test)]
-pub use look::{Depth, Theme, nearest_256};
-pub use spinner::Spinner;
+pub(crate) use look::{Depth, Theme, nearest_256};
+pub(crate) use spinner::Spinner;
 
 use pun_problem::{Level, LineIndex, Problem, Safety};
 use std::path::{Path, PathBuf};
@@ -31,7 +31,7 @@ const INDENT: usize = 4;
 
 /// What happened to one file.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum FileStatus {
+pub(crate) enum FileStatus {
     /// Fixed (✔).
     Fixed,
     /// Needs fixing, under `--test` (✖).
@@ -42,56 +42,56 @@ pub enum FileStatus {
 
 /// One file line: the path (relative to the project root) and the rule IDs that changed it, or would.
 #[derive(Clone, Debug)]
-pub struct FileLine {
-    pub path: PathBuf,
-    pub status: FileStatus,
-    pub rules: Vec<String>,
+pub(crate) struct FileLine {
+    pub(crate) path: PathBuf,
+    pub(crate) status: FileStatus,
+    pub(crate) rules: Vec<String>,
 }
 
 /// The summary line's counts. `fix_command` is what `fixable` tells the user to run (`pun check --fix`).
 #[derive(Clone, Debug)]
-pub struct Summary<'a> {
-    pub errors: usize,
-    pub warnings: usize,
-    pub fixable: usize,
-    pub fix_command: &'a str,
-    pub need_formatting: usize,
-    pub files: usize,
-    pub elapsed: Duration,
+pub(crate) struct Summary<'a> {
+    pub(crate) errors: usize,
+    pub(crate) warnings: usize,
+    pub(crate) fixable: usize,
+    pub(crate) fix_command: &'a str,
+    pub(crate) need_formatting: usize,
+    pub(crate) files: usize,
+    pub(crate) elapsed: Duration,
 }
 
 /// `pun format`'s counts: files formatted (or needing it, under `--test`), unchanged, failed, and in all.
 #[derive(Clone, Debug)]
-pub struct FormatSummary {
-    pub formatted: usize,
-    pub unchanged: usize,
-    pub errors: usize,
-    pub files: usize,
-    pub test: bool,
-    pub elapsed: Duration,
+pub(crate) struct FormatSummary {
+    pub(crate) formatted: usize,
+    pub(crate) unchanged: usize,
+    pub(crate) errors: usize,
+    pub(crate) files: usize,
+    pub(crate) test: bool,
+    pub(crate) elapsed: Duration,
 }
 
 /// A run error: where (`pun.toml:7`, a path relative to the root, with an optional line), what, and a hint.
 #[derive(Clone, Debug)]
-pub struct RunError {
-    pub path: Option<PathBuf>,
-    pub line: Option<usize>,
-    pub message: String,
-    pub hint: Option<String>,
+pub(crate) struct RunError {
+    pub(crate) path: Option<PathBuf>,
+    pub(crate) line: Option<usize>,
+    pub(crate) message: String,
+    pub(crate) hint: Option<String>,
 }
 
 /// The renderer: a [`Look`], the project root (for clickable paths) and the base URL of the rule docs.
 #[derive(Clone, Debug)]
-pub struct Renderer {
-    pub look: Look,
+pub(crate) struct Renderer {
+    pub(crate) look: Look,
     /// Problems print one line each (`--concise`).
-    pub concise: bool,
+    pub(crate) concise: bool,
     root: PathBuf,
     rule_docs: Option<String>,
 }
 
 impl Renderer {
-    pub fn new(look: Look, root: impl Into<PathBuf>) -> Renderer {
+    pub(crate) fn new(look: Look, root: impl Into<PathBuf>) -> Renderer {
         Renderer {
             look,
             concise: false,
@@ -103,14 +103,14 @@ impl Renderer {
     /// Link each rule ID to `base` followed by the ID. Test-only until the docs site has rule pages (the docs-base
     /// row in PLAN.md §3 passes the base).
     #[cfg(test)]
-    pub fn with_rule_docs(mut self, base: impl Into<String>) -> Renderer {
+    pub(crate) fn with_rule_docs(mut self, base: impl Into<String>) -> Renderer {
         self.rule_docs = Some(base.into());
         self
     }
 
     /// One line per file, the rule IDs in one column after the longest path. Each line is its own string, so a
     /// caller can put a diff under it.
-    pub fn file_lines(&self, files: &[FileLine]) -> Vec<String> {
+    pub(crate) fn file_lines(&self, files: &[FileLine]) -> Vec<String> {
         let width = files
             .iter()
             .map(|f| f.path.display().to_string().chars().count() + 2)
@@ -143,7 +143,7 @@ impl Renderer {
     /// `-v`'s diff under a file line (format.md §9), from a unified diff: each hunk's lines with their old and new
     /// line numbers, removed lines red, added lines green, context dim; `…` between hunks. The `---`/`+++` header
     /// and `\ No newline` markers are left out.
-    pub fn diff(&self, unified: &str) -> String {
+    pub(crate) fn diff(&self, unified: &str) -> String {
         enum Row<'a> {
             Gap,
             Line(Option<usize>, Option<usize>, char, &'a str),
@@ -210,7 +210,7 @@ impl Renderer {
     }
 
     /// The problems of one or more files: blocks separated by a blank line, or one line each under `--concise`.
-    pub fn problems<'a>(
+    pub(crate) fn problems<'a>(
         &self,
         problems: impl IntoIterator<Item = (&'a Problem, &'a str, &'a LineIndex)>,
     ) -> String {
@@ -222,7 +222,7 @@ impl Renderer {
     }
 
     /// One problem: its header and a code frame, or a single line under `--concise`.
-    pub fn problem(&self, problem: &Problem, source: &str, index: &LineIndex) -> String {
+    pub(crate) fn problem(&self, problem: &Problem, source: &str, index: &LineIndex) -> String {
         let (glyph, role) = level(&self.look, problem.level);
         let at = index.line_col(problem.span.start);
         let location = format!("{}:{}:{}", problem.path.display(), at.line, at.column);
@@ -350,7 +350,7 @@ impl Renderer {
     }
 
     /// The last line of a run: the non-zero counts in a fixed order, then the file count and the time.
-    pub fn summary(&self, s: &Summary) -> String {
+    pub(crate) fn summary(&self, s: &Summary) -> String {
         let plural =
             |n: usize, one: &str, many: &str| format!("{n} {}", if n == 1 { one } else { many });
         let mut parts = Vec::new();
@@ -400,7 +400,7 @@ impl Renderer {
     /// `pun format`'s last line (format.md §9): `Formatted N files, M unchanged · T files in Xs`, or under `--test`
     /// `N of T files need formatting · run \`pun format\` to fix · Xs` (`All T files formatted · Xs` when none
     /// does). Files that failed add a red `E errors` before the time.
-    pub fn format_summary(&self, s: &FormatSummary) -> String {
+    pub(crate) fn format_summary(&self, s: &FormatSummary) -> String {
         let plural =
             |n: usize, one: &str, many: &str| format!("{n} {}", if n == 1 { one } else { many });
         let time = format!("{:.2}s", s.elapsed.as_secs_f64());
@@ -436,13 +436,13 @@ impl Renderer {
     }
 
     /// A done line (`pun init`): `✔ message`, the glyph in the ok colour.
-    pub fn done(&self, message: &str) -> String {
+    pub(crate) fn done(&self, message: &str) -> String {
         let glyph = self.look.paint(Role::Ok, self.look.glyph("✔", "ok"));
         format!("{glyph} {message}\n")
     }
 
     /// A run error: one red line (`path:line  message`), then the hint indented under it, line by line.
-    pub fn run_error(&self, e: &RunError) -> String {
+    pub(crate) fn run_error(&self, e: &RunError) -> String {
         let glyph = self.look.glyph("✖", "x");
         let line = match &e.path {
             Some(path) => {
@@ -502,7 +502,7 @@ fn columns(text: &str) -> usize {
 }
 
 /// A `file://` URL for an absolute path, with every byte outside `A-Za-z0-9-._~/` percent-encoded.
-pub fn file_url(path: &Path) -> String {
+pub(crate) fn file_url(path: &Path) -> String {
     let mut url = String::from("file://");
     for &b in path.to_string_lossy().as_bytes() {
         if b.is_ascii_alphanumeric() || b"-._~/".contains(&b) {

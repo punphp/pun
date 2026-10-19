@@ -9,7 +9,7 @@ use std::sync::LazyLock;
 
 /// `--color=auto|always|never`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, clap::ValueEnum)]
-pub enum ColorChoice {
+pub(crate) enum ColorChoice {
     #[default]
     Auto,
     Always,
@@ -18,7 +18,7 @@ pub enum ColorChoice {
 
 /// How many colours the terminal shows; `None` means no colour at all.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Depth {
+pub(crate) enum Depth {
     None,
     Ansi16,
     Ansi256,
@@ -27,14 +27,14 @@ pub enum Depth {
 
 /// The terminal's background, which picks the light or dark token variant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Theme {
+pub(crate) enum Theme {
     Dark,
     Light,
 }
 
 /// What a piece of text means; [`Look::paint`] turns it into a colour.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Role {
+pub(crate) enum Role {
     /// ✖, error counts, the marker under an error.
     Error,
     /// ⚠, warning counts, the marker under a warning.
@@ -49,19 +49,19 @@ pub enum Role {
 
 /// What one output stream can show.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Look {
-    pub depth: Depth,
-    pub theme: Theme,
+pub(crate) struct Look {
+    pub(crate) depth: Depth,
+    pub(crate) theme: Theme,
     /// False: ASCII fallbacks (`x`, `!`, `ok`, `|`, `^`).
-    pub unicode: bool,
+    pub(crate) unicode: bool,
     /// OSC 8 hyperlinks for paths and rule IDs.
-    pub links: bool,
+    pub(crate) links: bool,
 }
 
 impl Look {
     /// No colour, no links, Unicode glyphs: what a pipe gets with a UTF-8 locale.
     #[cfg(test)]
-    pub fn plain() -> Look {
+    pub(crate) fn plain() -> Look {
         Look {
             depth: Depth::None,
             theme: Theme::Dark,
@@ -71,14 +71,14 @@ impl Look {
     }
 
     /// The look for stdout under `--color=<choice>`.
-    pub fn stdout(choice: ColorChoice) -> Look {
+    pub(crate) fn stdout(choice: ColorChoice) -> Look {
         Look::detect(choice, std::io::stdout().is_terminal(), &|k| {
             std::env::var(k).ok()
         })
     }
 
     /// The look for stderr (run errors) under `--color=<choice>`.
-    pub fn stderr(choice: ColorChoice) -> Look {
+    pub(crate) fn stderr(choice: ColorChoice) -> Look {
         Look::detect(choice, std::io::stderr().is_terminal(), &|k| {
             std::env::var(k).ok()
         })
@@ -86,7 +86,11 @@ impl Look {
 
     /// `--color=always|never` win; then `NO_COLOR` (non-empty) and `TERM=dumb` turn colour off; otherwise colour is
     /// on for a terminal and off for a pipe. Links need a terminal (or `always`) that is known to support them.
-    pub fn detect(choice: ColorChoice, tty: bool, env: &dyn Fn(&str) -> Option<String>) -> Look {
+    pub(crate) fn detect(
+        choice: ColorChoice,
+        tty: bool,
+        env: &dyn Fn(&str) -> Option<String>,
+    ) -> Look {
         let var = |k: &str| env(k).filter(|v| !v.is_empty());
         let term = var("TERM").unwrap_or_default();
         let styled = match choice {
@@ -116,7 +120,7 @@ impl Look {
     }
 
     /// `text` in the colour of `role`, reset after it. Unchanged without colour.
-    pub fn paint(&self, role: Role, text: &str) -> String {
+    pub(crate) fn paint(&self, role: Role, text: &str) -> String {
         let code = match self.depth {
             Depth::None => return text.to_string(),
             Depth::Ansi16 => ansi16(role).to_string(),
@@ -130,7 +134,7 @@ impl Look {
     }
 
     /// `text` as an OSC 8 link to `url` when links are on.
-    pub fn link(&self, url: &str, text: &str) -> String {
+    pub(crate) fn link(&self, url: &str, text: &str) -> String {
         if self.links {
             format!("\x1b]8;;{url}\x1b\\{text}\x1b]8;;\x1b\\")
         } else {
@@ -139,7 +143,7 @@ impl Look {
     }
 
     /// The Unicode glyph, or its ASCII fallback.
-    pub fn glyph<'a>(&self, unicode: &'a str, ascii: &'a str) -> &'a str {
+    pub(crate) fn glyph<'a>(&self, unicode: &'a str, ascii: &'a str) -> &'a str {
         if self.unicode { unicode } else { ascii }
     }
 }
@@ -202,7 +206,7 @@ static TOKENS: LazyLock<Vec<(String, Rgb, Rgb)>> = LazyLock::new(|| {
 
 /// The nearest xterm colour among 16-255 (the 6×6×6 cube and the grey ramp; 0-15 vary by terminal), by squared
 /// RGB distance.
-pub fn nearest_256((r, g, b): (u8, u8, u8)) -> u8 {
+pub(crate) fn nearest_256((r, g, b): (u8, u8, u8)) -> u8 {
     const LEVELS: [i32; 6] = [0, 95, 135, 175, 215, 255];
     let dist = |c: (i32, i32, i32)| {
         (c.0 - r as i32).pow(2) + (c.1 - g as i32).pow(2) + (c.2 - b as i32).pow(2)

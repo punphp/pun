@@ -32,8 +32,8 @@ pub(crate) struct AnalyseArgs {
     #[arg(long, alias = "error-format", value_name = "FORMAT")]
     format: Option<String>,
     /// Write every error to the baseline (`[analyse] baseline`, else pun-baseline.toml) and exit 0.
-    #[arg(long, value_name = "FILE", num_args = 0..=1, default_missing_value = "")]
-    generate_baseline: Option<PathBuf>,
+    #[arg(long, value_name = "FILE", num_args = 0..=1)]
+    generate_baseline: Option<Option<PathBuf>>,
     /// The number of threads (default: one per core).
     #[arg(long)]
     max_processes: Option<String>,
@@ -81,27 +81,27 @@ impl AnalyseArgs {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Finding {
     /// Absolute, as PHPStan's `json` and `raw` print it.
-    pub file: PathBuf,
+    pub(crate) file: PathBuf,
     /// Relative to the project root (PHPStan's simple relative path, the cwd being the root).
-    pub rel: String,
-    pub line: u32,
-    pub identifier: String,
-    pub rule: String,
-    pub message: String,
-    pub tip: Option<String>,
+    pub(crate) rel: String,
+    pub(crate) line: u32,
+    pub(crate) identifier: String,
+    pub(crate) rule: String,
+    pub(crate) message: String,
+    pub(crate) tip: Option<String>,
 }
 
 /// What an analysis found.
 pub(crate) struct Analysed {
-    pub findings: Vec<Finding>,
+    pub(crate) findings: Vec<Finding>,
     /// The files analysed.
-    pub files: usize,
+    pub(crate) files: usize,
     /// Baseline entries (counts) no error matched any more.
-    pub unmatched_baseline: usize,
+    pub(crate) unmatched_baseline: usize,
     /// `@pun-ignore` comments without a rule ID, as problems (`ignore-comment`).
-    pub malformed: Vec<Problem>,
+    pub(crate) malformed: Vec<Problem>,
     /// The analysed paths (absolute): the path arguments, else the configured paths, else the root.
-    pub paths: Vec<PathBuf>,
+    pub(crate) paths: Vec<PathBuf>,
 }
 
 pub(crate) fn load_config(root: &Path, config: Option<PathBuf>) -> Result<Config> {
@@ -277,7 +277,7 @@ pub(crate) fn run(a: AnalyseArgs) -> Result<u8> {
     let root = root()?;
     let cfg = load_config(&root, a.config.clone())?;
     if let Some(path) = &a.generate_baseline {
-        return generate_baseline(&a, &cfg, path, started);
+        return generate_baseline(&a, &cfg, path.as_deref(), started);
     }
     let analysed = analyse(&cfg, &a.paths, true)?;
     let errors = analysed.findings.len() + analysed.malformed.len();
@@ -322,10 +322,15 @@ fn unsupported_format(e: &anyhow::Error) -> anyhow::Error {
 }
 
 /// `--generate-baseline [file]`: every error into the baseline; nothing is reported, the exit code is 0.
-fn generate_baseline(a: &AnalyseArgs, cfg: &Config, path: &Path, started: Instant) -> Result<u8> {
-    let path = match path.as_os_str().is_empty() {
-        false => path.to_path_buf(),
-        true => PathBuf::from(cfg.analyse.baseline.as_deref().unwrap_or(baseline::DEFAULT)),
+fn generate_baseline(
+    a: &AnalyseArgs,
+    cfg: &Config,
+    path: Option<&Path>,
+    started: Instant,
+) -> Result<u8> {
+    let path = match path {
+        Some(path) => path.to_path_buf(),
+        None => PathBuf::from(cfg.analyse.baseline.as_deref().unwrap_or(baseline::DEFAULT)),
     };
     let analysed = analyse(cfg, &a.paths, false)?;
     let b = baseline::Baseline::of(&analysed.findings);

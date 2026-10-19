@@ -26,11 +26,11 @@ pub(crate) const FORMATS: [&str; 9] = [
 /// What a report needs besides the errors.
 pub(crate) struct Context<'a> {
     /// `raw`'s identifiers (PHPStan's `-v`, or a detected coding agent).
-    pub verbose: bool,
+    pub(crate) verbose: bool,
     /// The project root, PHPStan's current working directory.
-    pub root: &'a Path,
+    pub(crate) root: &'a Path,
     /// The analysed paths (absolute), for `table`'s relative paths.
-    pub paths: &'a [PathBuf],
+    pub(crate) paths: &'a [PathBuf],
 }
 
 /// The report in `format`.

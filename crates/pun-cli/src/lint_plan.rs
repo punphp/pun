@@ -40,9 +40,9 @@ pub(crate) enum Engine {
 /// A rule that is on: its level, whether `--fix` applies its fix (`fix = "off"` makes it report-only), its options.
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) struct On {
-    pub level: Level,
-    pub fix: bool,
-    pub options: Value,
+    pub(crate) level: Level,
+    pub(crate) fix: bool,
+    pub(crate) options: Value,
 }
 
 /// Lint rule IDs a ported token fixer backs, to the fixer's name.

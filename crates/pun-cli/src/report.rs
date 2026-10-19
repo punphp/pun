@@ -15,7 +15,7 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Status {
+pub(crate) enum Status {
     NoChanges,
     Skipped,
     Fixed,
@@ -29,26 +29,26 @@ pub enum Status {
     Link,
 }
 
-pub struct FileResult {
-    pub path: PathBuf,
-    pub rel: String,
-    pub status: Status,
-    pub applied: Vec<&'static str>,
-    pub diff: String,
-    pub message: String,
+pub(crate) struct FileResult {
+    pub(crate) path: PathBuf,
+    pub(crate) rel: String,
+    pub(crate) status: Status,
+    pub(crate) applied: Vec<&'static str>,
+    pub(crate) diff: String,
+    pub(crate) message: String,
     /// The first line the fix changes (its GitHub annotation's line); 0 when nothing changes.
-    pub line: usize,
+    pub(crate) line: usize,
     /// Lint and analyse problems left in the file, sorted by offset; their spans refer to `source`.
-    pub problems: Vec<Problem>,
+    pub(crate) problems: Vec<Problem>,
     /// The file's final content, when it has problems.
-    pub source: String,
+    pub(crate) source: String,
     /// The applied fixers whose lint rule is at `warn` for this file.
-    pub warned: Vec<&'static str>,
+    pub(crate) warned: Vec<&'static str>,
 }
 
 impl FileResult {
     /// A file nothing happened to yet.
-    pub fn new(path: PathBuf, rel: String) -> FileResult {
+    pub(crate) fn new(path: PathBuf, rel: String) -> FileResult {
         FileResult {
             path,
             rel,
@@ -63,7 +63,7 @@ impl FileResult {
         }
     }
 
-    pub fn is_error(&self) -> bool {
+    pub(crate) fn is_error(&self) -> bool {
         matches!(
             self.status,
             Status::Invalid | Status::Exception | Status::Lint
@@ -71,35 +71,35 @@ impl FileResult {
     }
 }
 
-pub struct Ctx<'a> {
-    pub total: usize,
-    pub dry_run: bool,
+pub(crate) struct Ctx<'a> {
+    pub(crate) total: usize,
+    pub(crate) dry_run: bool,
     /// `--fix`: the fixes of the lint rules it doesn't apply, one result per file (status Fixed).
-    pub remaining: &'a [FileResult],
-    pub verbose: bool,
-    pub ansi: bool,
-    pub no_ansi: bool,
+    pub(crate) remaining: &'a [FileResult],
+    pub(crate) verbose: bool,
+    pub(crate) ansi: bool,
+    pub(crate) no_ansi: bool,
     /// The human output's colours, glyphs and links (`--color`).
-    pub look: Look,
+    pub(crate) look: Look,
     /// The project root: file lines link their paths under it.
-    pub root: &'a Path,
-    pub elapsed: Duration,
+    pub(crate) root: &'a Path,
+    pub(crate) elapsed: Duration,
     /// Human output under GitHub Actions (`GITHUB_ACTIONS=true`): the annotations follow it.
-    pub github: bool,
+    pub(crate) github: bool,
     /// Problems print one line each (`--concise`).
-    pub concise: bool,
+    pub(crate) concise: bool,
     /// `pun check`: baseline entries no analyse error matched any more.
-    pub unmatched_baseline: usize,
+    pub(crate) unmatched_baseline: usize,
 }
 
 /// `pun lint` and `pun check`'s counts: errors (failed files, lint fixes and problems at `error`, analyse errors),
 /// warnings, fixes `--fix` would apply, and files needing format rules.
 #[derive(Debug, Default, PartialEq, Eq)]
-pub struct Counts {
-    pub errors: usize,
-    pub warnings: usize,
-    pub fixable: usize,
-    pub need_formatting: usize,
+pub(crate) struct Counts {
+    pub(crate) errors: usize,
+    pub(crate) warnings: usize,
+    pub(crate) fixable: usize,
+    pub(crate) need_formatting: usize,
 }
 
 /// A fixer's Pun rule ID (its own name when it has none).
@@ -114,7 +114,7 @@ fn lint_fixers(f: &FileResult) -> (usize, usize) {
     (lint().count() - warned, warned)
 }
 
-pub fn counts(ctx: &Ctx, results: &[FileResult]) -> Counts {
+pub(crate) fn counts(ctx: &Ctx, results: &[FileResult]) -> Counts {
     let mut c = Counts {
         errors: results.iter().filter(|f| f.is_error()).count(),
         ..Counts::default()
@@ -146,19 +146,21 @@ pub fn counts(ctx: &Ctx, results: &[FileResult]) -> Counts {
 /// A run error: Pun couldn't run (exit 2). Humans get [`RunError`]; Pint's box is kept for `--format` and `-q` runs
 /// when Pint aborts the same way.
 #[derive(Debug)]
-pub struct Abort {
+pub(crate) struct Abort {
     /// The message on one line: agent mode's error, the `::error ::` annotation and Pint's box.
-    pub message: String,
+    pub(crate) message: String,
     /// Pint aborts with `message` too; `before` is what it prints ahead of the box.
-    pub pint: bool,
-    pub before: String,
-    pub error: RunError,
+    pub(crate) pint: bool,
+    pub(crate) before: String,
+    pub(crate) error: RunError,
+    /// The exception Pint throws, for its box.
+    pub(crate) thrown: pint_error::Thrown,
 }
 
 impl Abort {
     /// An abort Pint has too, with Pint's message. A message of several lines shows its first as the run error and
     /// the rest (without blank lines) as the hint, unless a hint is given.
-    pub fn pint(message: impl Into<String>, hint: Option<String>) -> Abort {
+    pub(crate) fn pint(message: impl Into<String>, hint: Option<String>) -> Abort {
         let message = message.into();
         let (first, rest) = message.split_once('\n').unwrap_or((&message, ""));
         let rest: Vec<&str> = rest.lines().filter(|l| !l.trim().is_empty()).collect();
@@ -172,16 +174,18 @@ impl Abort {
             message,
             pint: true,
             before: String::new(),
+            thrown: pint_error::Thrown::Console,
         }
     }
 
     /// Pun's own run error (pun.toml, `pun migrate`, ...), which Pint doesn't have.
-    pub fn pun(message: impl Into<String>, error: RunError) -> Abort {
+    pub(crate) fn pun(message: impl Into<String>, error: RunError) -> Abort {
         Abort {
             message: message.into(),
             pint: false,
             before: String::new(),
             error,
+            thrown: pint_error::Thrown::Console,
         }
     }
 }
@@ -195,24 +199,28 @@ impl std::fmt::Display for Abort {
 impl std::error::Error for Abort {}
 
 /// How a failed run shows its error.
-pub struct Failure {
+pub(crate) struct Failure {
     /// `pun format`, `lint` and `check`: a plain error is Pint's message (its box), not Pun's own.
-    pub pint: bool,
+    pub(crate) pint: bool,
     /// A `--format` or `-q` run: Pint's box on stdout for the errors Pint has too.
-    pub machine: bool,
+    pub(crate) machine: bool,
     /// `--format=github`: the error as an annotation, and nothing else.
-    pub github_format: bool,
+    pub(crate) github_format: bool,
     /// Human output under GitHub Actions: the annotation follows the error.
-    pub annotate: bool,
-    pub color: ColorChoice,
+    pub(crate) annotate: bool,
+    pub(crate) color: ColorChoice,
 }
 
 /// Print a run's error the way the run prints (agent line, annotation, Pint's box or Pun's run error on stderr);
 /// the exit code is 2, Pun couldn't run.
-pub fn fail(e: anyhow::Error, f: &Failure) -> u8 {
+pub(crate) fn fail(e: anyhow::Error, f: &Failure) -> u8 {
     let abort = match e.downcast::<Abort>() {
         Ok(a) => a,
-        Err(e) if f.pint => Abort::pint(e.to_string(), None),
+        Err(e) if f.pint => {
+            let mut abort = Abort::pint(e.to_string(), None);
+            abort.thrown = pint_error::Thrown::of(&e);
+            abort
+        }
         Err(e) => {
             let message = format!("{e:#}");
             Abort::pun(
@@ -231,7 +239,11 @@ pub fn fail(e: anyhow::Error, f: &Failure) -> u8 {
     } else if f.github_format {
         print!("{}", github::run_error(&abort.message));
     } else if f.machine && abort.pint {
-        print!("{}{}", abort.before, pint_error::render(&abort.message));
+        print!(
+            "{}{}",
+            abort.before,
+            pint_error::render(&abort.message, abort.thrown)
+        );
     } else {
         let root = std::env::current_dir().unwrap_or_default();
         let r = Renderer::new(Look::stderr(f.color), root);
@@ -254,7 +266,7 @@ fn error_line(message: &str) -> usize {
 
 /// ElaborateSummary::execute (output part). Errors (bad `--format`, an unwritable `--output-to-file`) are Pint's
 /// aborts, run errors for Pun.
-pub fn emit(
+pub(crate) fn emit(
     ctx: &Ctx,
     results: &[FileResult],
     format: Option<&str>,
@@ -269,13 +281,14 @@ pub fn emit(
     };
     let err_dec = console::decorated(2, ctx.ansi, ctx.no_ansi);
     let mut out = String::new();
+    let parsed = (format.map(str::parse::<ReportFormat>).transpose()).map_err(unsupported)?;
     if crate::agent::enabled() && format.is_none() {
         out = agent(ctx, results);
-    } else if format == Some("github") {
+    } else if parsed == Some(ReportFormat::Github) {
         // Not formatter markup: printed as is.
         print!("{}", annotations(ctx, results));
-    } else if let Some(f) = format {
-        out = reporter(ctx, results, f, out_dec).map_err(unsupported)?;
+    } else if let Some(f) = parsed {
+        out = reporter(ctx, results, f, out_dec)?;
     } else if quiet {
         for i in issues(results) {
             eprintln!(
@@ -292,17 +305,22 @@ pub fn emit(
             );
         }
     } else {
-        print!("{}", human(ctx, results));
+        console::print_raw(&human(ctx, results))?;
         if ctx.github {
             print!("{}", annotations(ctx, results));
         }
     }
-    print!("{}", fmt(&out, out_dec));
+    console::print_raw(&fmt(&out, out_dec))?;
     std::io::Write::flush(&mut std::io::stdout())?;
     if let (Some(path), Some(f)) = (to_file, file_format.or(format))
         && let Err(e) = std::fs::write(
             path,
-            reporter(ctx, results, f, out_dec).map_err(unsupported)?,
+            console::raw(&reporter(
+                ctx,
+                results,
+                f.parse().map_err(unsupported)?,
+                out_dec,
+            )?),
         )
     {
         // PHP's warning, rendered as an uncaught ErrorException. Rust adds " (os error N)" after the same strerror.
@@ -313,6 +331,7 @@ pub fn emit(
             path.display(),
         );
         let mut abort = Abort::pint(msg, None);
+        abort.thrown = pint_error::Thrown::ReportNotWritable;
         abort.error = RunError {
             path: None,
             line: None,
@@ -716,7 +735,43 @@ fn issues(results: &[FileResult]) -> Vec<&FileResult> {
     v
 }
 
-fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) -> Result<String> {
+/// A `--format` or `--output-format` value. Pint takes any string and aborts only when it reports, after the run.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(crate) enum ReportFormat {
+    Json,
+    Txt,
+    Agent,
+    Checkstyle,
+    Junit,
+    Xml,
+    Gitlab,
+    Github,
+}
+
+impl std::str::FromStr for ReportFormat {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        Ok(match s {
+            "json" => Self::Json,
+            "txt" => Self::Txt,
+            "agent" => Self::Agent,
+            "checkstyle" => Self::Checkstyle,
+            "junit" => Self::Junit,
+            "xml" => Self::Xml,
+            "gitlab" => Self::Gitlab,
+            "github" => Self::Github,
+            _ => bail!("Format [{s}] is not supported."),
+        })
+    }
+}
+
+fn reporter(
+    ctx: &Ctx,
+    results: &[FileResult],
+    format: ReportFormat,
+    decorated: bool,
+) -> Result<String> {
     // A file's lint and analyse problems list with its fixers, by rule ID, once each.
     let fixers: Vec<Vec<&str>> = (results.iter())
         .map(|r| {
@@ -738,33 +793,43 @@ fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) ->
         })
         .collect();
     Ok(match format {
-        "json" => fix_report::json(&changes, ctx.verbose, decorated),
-        "txt" => fix_report::txt(&changes, ctx.verbose, ctx.dry_run, ctx.total, decorated),
-        "agent" => {
+        ReportFormat::Json if changes.iter().any(|c| console::carries_bytes(c.diff)) => {
+            // json_encode under JSON_THROW_ON_ERROR, on a diff of a file that isn't UTF-8.
+            let mut abort = Abort::pint(
+                "Malformed UTF-8 characters, possibly incorrectly encoded",
+                None,
+            );
+            abort.thrown = pint_error::Thrown::JsonMalformed;
+            return Err(abort.into());
+        }
+        ReportFormat::Json => fix_report::json(&changes, ctx.verbose, decorated),
+        ReportFormat::Txt => {
+            fix_report::txt(&changes, ctx.verbose, ctx.dry_run, ctx.total, decorated)
+        }
+        ReportFormat::Agent => {
             let errors: Vec<(&str, &str)> = (errors(results))
                 .map(|r| (r.rel.as_str(), r.message.as_str()))
                 .collect();
             fix_report::agent(&changes, &errors, ctx.dry_run)
         }
-        "checkstyle" => fix_report::checkstyle(&changes, decorated),
-        "junit" => fix_report::junit(&changes, ctx.verbose, decorated),
-        "xml" => fix_report::xml_report(&changes, ctx.verbose, decorated),
-        "gitlab" => fix_report::gitlab(&changes, decorated),
-        "github" => annotations(ctx, results),
-        _ => bail!("Format [{format}] is not supported."),
+        ReportFormat::Checkstyle => fix_report::checkstyle(&changes, decorated),
+        ReportFormat::Junit => fix_report::junit(&changes, ctx.verbose, decorated),
+        ReportFormat::Xml => fix_report::xml_report(&changes, ctx.verbose, decorated),
+        ReportFormat::Gitlab => fix_report::gitlab(&changes, decorated),
+        ReportFormat::Github => annotations(ctx, results),
     })
 }
 
 /// PHP-CS-Fixer UnifiedDiffer (sebastian/diff strict unified, 3 lines of context, real path in headers).
-pub fn diff(old: &str, new: &str, path: &Path) -> String {
+pub(crate) fn diff(old: &str, new: &str, path: &Path) -> String {
+    diff_bytes(old.as_bytes(), new.as_bytes(), path)
+}
+
+/// `diff` of a file's bytes: those that aren't UTF-8 are carried to the output as they are (`console::carry`).
+pub(crate) fn diff_bytes(old: &[u8], new: &[u8], path: &Path) -> String {
     let mut p = path.to_string_lossy().into_owned();
     if p.contains(char::is_whitespace) {
         p = format!("\"{p}\"");
     }
-    String::from_utf8_lossy(&crate::php_diff::unified(
-        old.as_bytes(),
-        new.as_bytes(),
-        &p,
-    ))
-    .into_owned()
+    console::carry(&crate::php_diff::unified(old, new, &p))
 }

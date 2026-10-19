@@ -47,7 +47,7 @@ else
   [ -d "$project/node_modules" ] && ln -s "$project/node_modules" "$src/node_modules"
 fi
 # Pun's side: `pun migrate` on the same pint.json, then `pun format` with the same arguments.
-mkdir -p "$W/bin" && printf '#!/bin/sh\n"%s" migrate >/dev/null 2>&1; exec "%s" format "$@"\n' "$R/target/debug/pun" "$R/target/debug/pun" > "$W/bin/pint" && chmod +x "$W/bin/pint"
+mkdir -p "$W/bin" && printf '#!/bin/sh\n"%s" migrate >/dev/null 2>&1; exec "%s" format "$@"\n' "${PUN_TARGET:-$R/target}/debug/pun" "${PUN_TARGET:-$R/target}/debug/pun" > "$W/bin/pint" && chmod +x "$W/bin/pint"
 P=$W/proj
 status=0
 run() { # name cmd...

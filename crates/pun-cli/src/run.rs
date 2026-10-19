@@ -8,7 +8,7 @@ use crate::lint_plan::{self, CliLevel, Engine, On, Plan};
 use crate::render::{Look, RunError, Spinner};
 use crate::report::{self, Abort, FileResult, Status};
 use crate::{FormatArgs, cache, root};
-use anyhow::{Context, Result};
+use anyhow::Result;
 use pun_config::{Config, Options, Rule};
 use pun_format::{LintError, Pipeline};
 use pun_problem::ignore::{Ignores, covers};
@@ -51,10 +51,10 @@ impl Stage {
 #[derive(Clone, Default)]
 pub(crate) struct LintOpts {
     /// `-A`, `-W` and `-D`, in the order given.
-    pub levels: Vec<(CliLevel, String)>,
-    pub deny_warnings: bool,
-    pub max_warnings: Option<usize>,
-    pub concise: bool,
+    pub(crate) levels: Vec<(CliLevel, String)>,
+    pub(crate) deny_warnings: bool,
+    pub(crate) max_warnings: Option<usize>,
+    pub(crate) concise: bool,
 }
 
 /// What a file's token pass returned: the new code and the fixers that changed it, or why it failed.
@@ -83,7 +83,7 @@ pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
         preset: a.preset.clone(),
         blade: a.blade,
     };
-    pun_config::load(root, &opts)
+    pun_config::load(root, &opts).map_err(config_error)
 }
 
 /// A config error: Pun's own run error, never a Pint box (Pint never reads pun.toml).
@@ -160,7 +160,7 @@ struct Processed {
 pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> {
     let started = std::time::Instant::now();
     let root = root()?;
-    let cfg = load_config(&a, &root).map_err(config_error)?;
+    let cfg = load_config(&a, &root)?;
     // No PHP fallback: a rule Pun can't run, format or named lint rule, stops every command (exit 2, Pun can't
     // run). A set or a group skips the rules Pun can't run yet.
     let plan = Plan::new(&cfg, &lint.levels).map_err(config_error)?;
@@ -284,8 +284,8 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     let spinner = human
         .then(|| Spinner::stderr(files.len(), &look, std::io::stderr().is_terminal()))
         .flatten();
-    let process = |path: &PathBuf| -> Result<Processed> {
-        let r = process_file(&a, &engines, cache.as_ref(), dry_run, path);
+    let process = |path: &PathBuf, code: std::io::Result<Vec<u8>>| -> Result<Processed> {
+        let r = process_file(&a, &engines, cache.as_ref(), dry_run, path, code);
         if let Some(s) = &spinner {
             s.tick();
         }
@@ -297,7 +297,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
         // stop it; an aborting file does).
         let mut out = Vec::new();
         for f in &files {
-            let r = process(f);
+            let r = process(f, std::fs::read(f));
             let stop = (r.as_ref()).map_or(true, |r| r.result.status == Status::Fixed);
             out.push(r);
             if stop {
@@ -307,7 +307,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
         out
     } else {
         // main sizes rayon's global pool by `--max-processes`.
-        files.par_iter().map(process).collect()
+        read_in_parallel(&files, process)
     };
     drop(spinner);
     let processed: Vec<Processed> = all.into_iter().collect::<Result<_>>()?;
@@ -388,6 +388,41 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     };
     eprint!("{}", base.profile_report());
     Ok(if crashed { 2 } else { u8::from(failed) })
+}
+
+/// The threads that read the files (context/plan/lint.md, perf lint 4): opening files on more than about four
+/// threads at once slows each open on macOS, so a few threads read and every core checks what they read.
+const READERS: usize = 3;
+
+/// `process` over every file, its content read by [`READERS`] threads of their own and checked on rayon's pool
+/// (sized by `--max-processes` in main) as it arrives; the results keep the files' order.
+fn read_in_parallel<T: Send>(
+    files: &[PathBuf],
+    process: impl Fn(&PathBuf, std::io::Result<Vec<u8>>) -> T + Sync,
+) -> Vec<T> {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    let next = AtomicUsize::new(0);
+    let (tx, rx) = std::sync::mpsc::sync_channel(64);
+    std::thread::scope(|s| {
+        for _ in 0..READERS.min(files.len()) {
+            let (tx, next) = (tx.clone(), &next);
+            s.spawn(move || {
+                while let Some(path) = files.get(next.fetch_add(1, Ordering::Relaxed)) {
+                    if tx.send((path, std::fs::read(path))).is_err() {
+                        break;
+                    }
+                }
+            });
+        }
+        drop(tx);
+        let index: HashMap<&PathBuf, usize> =
+            files.iter().enumerate().map(|(i, f)| (f, i)).collect();
+        let mut out: Vec<(usize, T)> = (rx.into_iter().par_bridge())
+            .map(|(path, code)| (index[path], process(path, code)))
+            .collect();
+        out.sort_by_key(|o| o.0);
+        out.into_iter().map(|o| o.1).collect()
+    })
 }
 
 /// The token lint rules of `on`, as fixer rules: under `--fix` those whose fix applies (`pending`: those whose fix
@@ -473,6 +508,7 @@ fn process_file(
     cache: Option<&cache::Cache>,
     dry_run: bool,
     path: &PathBuf,
+    code: std::io::Result<Vec<u8>>,
 ) -> Result<Processed> {
     let rel = path
         .strip_prefix(e.root)
@@ -491,8 +527,7 @@ fn process_file(
         r.status = Status::Link;
         return Ok(done(r));
     }
-    let code = std::fs::read(path)
-        .with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
+    let code = code.map_err(|_| crate::pint_error::PintError::Read(path.clone()))?;
     if code.is_empty() {
         r.status = Status::Skipped;
         return Ok(done(r));
@@ -627,9 +662,9 @@ fn process_file(
         if a.verbose == 0 {
             return String::new();
         }
-        report::diff(
-            &String::from_utf8_lossy(old),
-            &String::from_utf8_lossy(new),
+        report::diff_bytes(
+            old,
+            new,
             // Agent mode: paths relative to the project, as everywhere in its output.
             if crate::agent::enabled() {
                 rel_path
@@ -645,12 +680,8 @@ fn process_file(
         r.applied = applied;
         r.status = Status::Fixed;
         if !dry_run {
-            std::fs::write(path, &now).with_context(|| {
-                format!(
-                    "Cannot write to file \"{}\" as it is not writable.",
-                    path.display()
-                )
-            })?;
+            std::fs::write(path, &now)
+                .map_err(|_| crate::pint_error::PintError::Write(path.clone()))?;
         }
     } else if problems.is_empty() {
         clean = hash;
