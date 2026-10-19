@@ -993,9 +993,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/final-private-constant" = { preset = "basic", ported = true, status = "decided" }
 "classes/final-private-method" = { preset = "basic", ported = true, status = "decided" }
 "classes/get-hook-without-read" = { preset = "essential", status = "decided" }
-"classes/inaccessible-class-constant" = { preset = "essential", status = "decided" }
-"classes/inaccessible-method" = { preset = "essential", status = "decided" }
-"classes/inaccessible-property" = { preset = "essential", status = "decided" }
+"classes/inaccessible-class-constant" = { preset = "essential", ported = true, status = "decided" }
+"classes/inaccessible-method" = { preset = "essential", ported = true, status = "decided" }
+"classes/inaccessible-property" = { preset = "essential", ported = true, status = "decided" }
 "classes/incompatible-constant-override" = { preset = "basic", status = "decided" }
 "classes/incompatible-override" = { preset = "basic", fixed_by = ["lint/refactor/add-override-attribute"], status = "decided" }
 "classes/incompatible-property-override" = { preset = "basic", fixed_by = ["lint/refactor/add-override-attribute"], status = "decided" }

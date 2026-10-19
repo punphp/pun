@@ -160,3 +160,10 @@ fn property_access() {
 fn hierarchy() {
     check_in("hierarchy", "phpstan");
 }
+
+/// AccessPrivatePropertyThroughStaticRule, CallPrivateMethodThroughStaticRule and
+/// AccessPrivateConstantThroughStaticRule at level 2: own, trait and parent members, final classes.
+#[test]
+fn through_static() {
+    check_in("through-static", "phpstan");
+}

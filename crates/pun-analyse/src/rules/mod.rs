@@ -29,6 +29,7 @@ mod scope;
 mod signatures;
 mod statements;
 mod syntax;
+mod through_static;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -251,6 +252,9 @@ pub const IDENTIFIERS: &[&str] = &[
     "trait.duplicateConstant",
     "trait.duplicateProperty",
     "trait.duplicateMethod",
+    "staticClassAccess.privateProperty",
+    "staticClassAccess.privateMethod",
+    "staticClassAccess.privateConstant",
     "property.callableType",
     "class.serializable",
     "parameter.requiredAfterOptional",
@@ -1265,6 +1269,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         _: &mut (),
     ) {
         property_access::static_read(self, p);
+        through_static::property(self, p);
     }
     fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -1330,6 +1335,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         statements::first_class_callable(self, m.span(), &m.argument_list);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        through_static::method(self, call);
         larastan::static_method_call(self, call);
         if let (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(m)) =
             (call.class, &call.method)
@@ -1490,6 +1496,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
     }
     fn walk_in_class_constant_access(&mut self, a: &'ast ClassConstantAccess<'arena>, _: &mut ()) {
+        through_static::constant(self, a);
         names::class_constant(self, a);
     }
     fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {

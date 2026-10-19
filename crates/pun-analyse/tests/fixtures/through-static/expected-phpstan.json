@@ -1,0 +1,89 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "a.php",
+   "line": 47,
+   "identifier": "staticClassAccess.privateProperty",
+   "message": "Unsafe access to private property Through\\Open::$secret through static::.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 49,
+   "identifier": "staticProperty.private",
+   "message": "Access to private static property $parentSecret of parent class Through\\ParentClass.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 50,
+   "identifier": "staticClassAccess.privateProperty",
+   "message": "Unsafe access to private property Through\\Open::$traitSecret through static::.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 51,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property static(Through\\Open)::$missing.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 52,
+   "identifier": "staticClassAccess.privateConstant",
+   "message": "Unsafe access to private constant Through\\Open::SECRET through static::.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 54,
+   "identifier": "classConstant.notFound",
+   "message": "Access to undefined constant static(Through\\Open)::PARENT_SECRET.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 55,
+   "identifier": "staticClassAccess.privateMethod",
+   "message": "Unsafe call to private method Through\\Open::hidden() through static::.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 56,
+   "identifier": "staticClassAccess.privateMethod",
+   "message": "Unsafe call to private method Through\\Open::hiddenInstance() through static::.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 57,
+   "identifier": "staticClassAccess.privateMethod",
+   "message": "Unsafe call to private method Through\\ParentClass::parentHidden() through static::.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 57,
+   "identifier": "staticMethod.private",
+   "message": "Call to private static method parentHidden() of class Through\\ParentClass.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 58,
+   "identifier": "staticClassAccess.privateMethod",
+   "message": "Unsafe call to private method Through\\Open::traitHidden() through static::.",
+   "tip": null
+  },
+  {
+   "file": "a.php",
+   "line": 61,
+   "identifier": "staticClassAccess.privateProperty",
+   "message": "Unsafe access to private property Through\\Open::$secret through static::.",
+   "tip": null
+  }
+ ]
+}

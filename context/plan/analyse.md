@@ -436,3 +436,7 @@ Assistant's calls in analyse 3l (sealed hierarchies, interface method visibility
   directory, the working directory of `cargo test`.
 - DuplicateTraitDeclarationRule reports in each using class's context, as InTraitNode does; an unused trait is never
   checked.
+- The level-2 `static::` rules (through_static.rs) count `@final` and anonymous classes as final. A parent's private
+  method counts, because `getMethod()` finds it. A parent's private property or constant does not, because the
+  class does not have it. A trait's member is reported on the using class. tests/fixtures/through-static is their
+  level-2 oracle fixture; their rule tests join tests/levels.rs once its level-2 export lands.
