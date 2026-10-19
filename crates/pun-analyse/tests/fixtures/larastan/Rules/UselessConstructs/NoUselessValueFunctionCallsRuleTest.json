@@ -1,0 +1,36 @@
+{
+    "test": "Rules/UselessConstructs/NoUselessValueFunctionCallsRuleTest",
+    "cases": [
+        {
+            "method": "testNoFalsePositives",
+            "files": [
+                "Rules/UselessConstructs/data/CorrectValueFunctionCall.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUselessWithCalls",
+            "files": [
+                "Rules/UselessConstructs/data/UselessValueFunctionCall.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/UselessConstructs/data/UselessValueFunctionCall.php",
+                    "line": 11,
+                    "identifier": "function.void",
+                    "message": "Result of function value (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/UselessConstructs/data/UselessValueFunctionCall.php",
+                    "line": 11,
+                    "identifier": "larastan.uselessConstructs.value",
+                    "message": "Calling the helper function 'value()' without a closure as the first argument simply returns the first argument without doing anything",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

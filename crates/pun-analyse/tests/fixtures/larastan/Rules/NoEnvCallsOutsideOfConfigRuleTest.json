@@ -1,0 +1,171 @@
+{
+    "test": "Rules/NoEnvCallsOutsideOfConfigRuleTest",
+    "cases": [
+        {
+            "method": "itDoesNotFailForEnvCallsInsideConfigDirectory",
+            "files": [
+                "Rules/data/config/env-calls.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "itDoesNotFailForEnvCallsInsideGlobConfigDirectory",
+            "files": [
+                "Rules/data/module/foo/config/env-calls.php",
+                "Rules/data/module/bar/config/env-calls.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/module/bar/config/env-calls.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/module/bar/config/env-calls.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/module/bar/config/env-calls.php",
+                    "line": 12,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/module/foo/config/env-calls.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/module/foo/config/env-calls.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/module/foo/config/env-calls.php",
+                    "line": 12,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "itReportsEnvCallsOutsideOfConfigDirectory",
+            "files": [
+                "Rules/data/env-calls.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 7,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 8,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/env-calls.php",
+                    "line": 12,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "itDoesNotReportTraitFunctionsThatHaveBeenOverridden",
+            "files": [
+                "Rules/data/EnvUsageClassOverride.php",
+                "Rules/data/EnvUsageTrait.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/EnvUsageTrait.php",
+                    "line": 7,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "itReportsEnvCallsInTraitRatherThanClass",
+            "files": [
+                "Rules/data/EnvUsageClass.php",
+                "Rules/data/EnvUsageTrait.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/EnvUsageTrait.php",
+                    "line": 7,
+                    "identifier": "function.notFound",
+                    "message": "Used function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/EnvUsageTrait.php (in context of class Tests\\Rules\\Data\\EnvUsageClass)",
+                    "line": 14,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/EnvUsageTrait.php (in context of class Tests\\Rules\\Data\\EnvUsageClass)",
+                    "line": 15,
+                    "identifier": "function.notFound",
+                    "message": "Function Foo\\Bar\\env not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Rules/data/EnvUsageTrait.php (in context of class Tests\\Rules\\Data\\EnvUsageClass)",
+                    "line": 17,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/EnvUsageTrait.php (in context of class Tests\\Rules\\Data\\EnvUsageClass)",
+                    "line": 18,
+                    "identifier": "larastan.noEnvCallsOutsideOfConfig",
+                    "message": "Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

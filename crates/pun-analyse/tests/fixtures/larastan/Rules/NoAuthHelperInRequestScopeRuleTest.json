@@ -1,0 +1,42 @@
+{
+    "test": "Rules/NoAuthHelperInRequestScopeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/no-auth-helper-in-request-scope-rule.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/no-auth-helper-in-request-scope-rule.php",
+                    "line": 23,
+                    "identifier": "larastan.noAuthHelperInRequestScope",
+                    "message": "Do not use auth()->check() in a class that has access to the request. Use $request->user() !== null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-auth-helper-in-request-scope-rule.php",
+                    "line": 28,
+                    "identifier": "larastan.noAuthHelperInRequestScope",
+                    "message": "Do not use auth()->user() in a class that has access to the request. Use $request->user() instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-auth-helper-in-request-scope-rule.php",
+                    "line": 33,
+                    "identifier": "larastan.noAuthHelperInRequestScope",
+                    "message": "Do not use auth()->guest() in a class that has access to the request. Use $request->user() === null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-auth-helper-in-request-scope-rule.php",
+                    "line": 51,
+                    "identifier": "larastan.noAuthHelperInRequestScope",
+                    "message": "Do not use auth()->check() in a class that has access to the request. Use $this->user() !== null instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

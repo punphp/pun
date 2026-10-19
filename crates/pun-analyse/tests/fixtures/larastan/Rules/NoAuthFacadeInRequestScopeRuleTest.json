@@ -1,0 +1,42 @@
+{
+    "test": "Rules/NoAuthFacadeInRequestScopeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/no-auth-facade-in-request-scope-rule.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/no-auth-facade-in-request-scope-rule.php",
+                    "line": 17,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::check() in a class that has access to the request. Use $request->user() !== null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-auth-facade-in-request-scope-rule.php",
+                    "line": 22,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::user() in a class that has access to the request. Use $request->user() instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-auth-facade-in-request-scope-rule.php",
+                    "line": 27,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::guest() in a class that has access to the request. Use $request->user() === null instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-auth-facade-in-request-scope-rule.php",
+                    "line": 40,
+                    "identifier": "larastan.noAuthFacadeInRequestScope",
+                    "message": "Do not use Auth::check() in a class that has access to the request. Use $this->user() !== null instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
