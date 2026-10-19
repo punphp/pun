@@ -345,19 +345,17 @@ fn remove_dead_stmt() {
 #[test]
 fn remove_sole_value_sprintf() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoSoleValueSprintf, 80400),
-        "RemoveSoleValueSprintfRector/Fixture",
-    );
+    let linter = only(rules::NoSoleValueSprintf, 80400);
+    run(&linter, "RemoveSoleValueSprintfRector/Fixture");
+    run(&linter, "RemoveSoleValueSprintfRector/Oracle");
 }
 
 #[test]
 fn compact_to_variables() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoCompact, 80400),
-        "CompactToVariablesRector/Fixture",
-    );
+    let linter = only(rules::NoCompact, 80400);
+    run(&linter, "CompactToVariablesRector/Fixture");
+    run(&linter, "CompactToVariablesRector/Oracle");
 }
 
 #[test]

@@ -99,16 +99,12 @@ fn list_variable(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> Option<Ve
     let Expression::Variable(Variable::Direct(v)) = unparenthesize(expr) else {
         return None;
     };
-    let body = ancestors
-        .iter()
-        .rev()
-        .find(|n| matches!(n, Node::Function(_) | Node::Method(_) | Node::Closure(_)))?;
-    let params = match body {
-        Node::Function(f) => &f.parameter_list,
-        Node::Method(m) => &m.parameter_list,
-        Node::Closure(c) => &c.parameter_list,
-        _ => unreachable!(),
-    };
+    let (body, params) = ancestors.iter().rev().find_map(|n| match n {
+        Node::Function(f) => Some((n, &f.parameter_list)),
+        Node::Method(m) => Some((n, &m.parameter_list)),
+        Node::Closure(c) => Some((n, &c.parameter_list)),
+        _ => None,
+    })?;
     if params.parameters.iter().any(|p| p.variable.name == v.name) {
         return None;
     }
