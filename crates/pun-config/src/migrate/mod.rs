@@ -8,7 +8,7 @@
 pub mod phpstan;
 mod rector;
 
-pub use rector::{Reconciled, Rector, RectorConfig, compose, from_rector};
+pub use rector::{Configured, Reconciled, Rector, RectorConfig, compose, from_rector};
 
 use crate::{Rule, fixer_entries, preset_rules, rule_of, rule_set};
 use anyhow::{Context, Result, bail};
@@ -34,13 +34,13 @@ pub struct Parts {
     pub analyse_ignores: String,
 }
 
-/// `id` (a lint rule ID) at `"error"` in `[lint.rules]`, replacing a line already there; false, and nothing written,
-/// when Pun hasn't ported it (pun.toml rejects a rule without a native port).
-pub(super) fn require_lint(parts: &mut Parts, id: &str) -> bool {
+/// `id` (a lint rule ID) set to `value` (`"error"` or a table of options) in `[lint.rules]`, replacing a line already
+/// there; false, and nothing written, when Pun hasn't ported it (pun.toml rejects a rule without a native port).
+pub(super) fn require_lint(parts: &mut Parts, id: &str, value: &str) -> bool {
     let ported = rector::ported(id);
     let name = &id[5..];
     parts.lint_rules.retain(|(k, _)| !(ported && k == name));
-    (parts.lint_rules).extend(ported.then(|| (name.to_string(), "\"error\"".to_string())));
+    (parts.lint_rules).extend(ported.then(|| (name.to_string(), value.to_string())));
     ported
 }
 

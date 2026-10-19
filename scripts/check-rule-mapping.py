@@ -203,6 +203,18 @@ def check(data):
         for a, b in meta.get("conflicts", []):
             if a in on and b in on:
                 err(f"{name} enables both sides of conflict {a} / {b}")
+    # PHPStan parameters (scripts/gen-phpstan-parameters.py): a level parameter, or an option of analyse rules.
+    for name, p in data.get("phpstan-parameters", {}).items():
+        where = f"phpstan-parameters.{name}"
+        if p.get("level") is True:
+            if set(p) != {"level"}:
+                err(f"{where}: a level parameter has nothing else")
+        elif set(p) != {"option", "rules"} or not p["rules"]:
+            err(f"{where}: needs `option` and a non-empty `rules`, or `level = true`")
+        else:
+            for r in p["rules"]:
+                if not r.startswith("analyse/") or r not in ids:
+                    err(f"{where}: {r!r} is not an analyse rule")
     return errors
 
 
@@ -424,6 +436,12 @@ def selftest():
         add("format", "dead-code/b", presets=["laravel"])(d)
         d["meta"]["conflicts"] = [["format/dead-code/a", "format/dead-code/b"]]
     bad(format_conflict, "format preset laravel enables both sides")
+    bad(lambda d: d.update(**{"phpstan-parameters": {"p": {"option": "p", "rules": ["analyse/undefined/gone"]}}}),
+        "is not an analyse rule")
+    bad(lambda d: d.update(**{"phpstan-parameters": {"p": {"level": True, "option": "p"}}}), "has nothing else")
+    bad(lambda d: d.update(**{"phpstan-parameters": {"p": {"option": "p", "rules": []}}}), "needs `option`")
+    fine(lambda d: d.update(**{"phpstan-parameters": {"p": {"option": "p", "rules": ["analyse/undefined/x"]},
+                                                      "q": {"level": True}}}))
     assert analyse_preset(good, "basic") == {"analyse/undefined/x"}
     d = copy.deepcopy(good)
     d["rules"]["analyse"]["undefined/x"]["preset"] = "max"

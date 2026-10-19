@@ -469,3 +469,64 @@ fn starter_on_a_terminal() {
     );
     assert!(read(&d, "pun.toml").starts_with("# Written by `pun migrate`: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found; starter config.\n"));
 }
+
+/// With phpstan.neon migrated, `@phpstan-ignore` comments become `@pun-ignore` with each identifier's rule
+/// (rules/mapping.toml: method.notFound and function.notFound are analyse/undefined/{method,function}) and the
+/// parenthesised comments as the reason. An identifier Pun doesn't know, and `@phpstan-ignore-next-line` (no
+/// identifier), are left and named.
+#[test]
+fn rewrites_phpstan_ignores() {
+    let php = "<?php\n\n$a->foo(); // @phpstan-ignore method.notFound (a macro adds it), function.notFound\n/** @phpstan-ignore acme.rule */\n$b = 1;\n// @phpstan-ignore-next-line\n$c = 2;\n";
+    let d = project(
+        "phpstan-ignores",
+        &[
+            (
+                "phpstan.neon",
+                "parameters:\n    level: 5\n    paths: [app]\n",
+            ),
+            ("app/A.php", php),
+        ],
+    );
+    let (out, _, code) = pun(&d, &["migrate", "--dry-run", "--yes"]);
+    assert_eq!(code, Some(0), "{out}");
+    assert!(
+        out.contains("-$a->foo(); // @phpstan-ignore method.notFound (a macro adds it), function.notFound\n+$a->foo(); // @pun-ignore analyse/undefined/method,analyse/undefined/function -- a macro adds it\n"),
+        "{out}"
+    );
+    assert!(
+        counts(&out).contains(" ok ignore comments  -> @pun-ignore in 1 file\n ! app/A.php  `@phpstan-ignore acme.rule` left as is (`acme.rule` is not a PHPStan identifier Pun knows); skipped\n ! app/A.php  `@phpstan-ignore-next-line` left as is (it names no identifier, and a Pun ignore names its rules); skipped\n"),
+        "{out}"
+    );
+    // A dry run writes nothing.
+    assert_eq!(read(&d, "app/A.php"), php);
+}
+
+/// On a terminal, after PHPStan's exact rules, migrate offers the closest preset (level 5: `recommended`,
+/// context/plan/analyse.md) with what it would change; one empty file has no problems either way. `y` drops the
+/// on/off lines, the default (`n`) keeps them.
+#[test]
+fn offers_the_closest_preset() {
+    let files = [
+        (
+            "phpstan.neon",
+            "parameters:\n    level: 5\n    paths: [app]\n",
+        ),
+        ("app/A.php", "<?php\n"),
+    ];
+    let d = project("tty-preset", &files);
+    let out = pty(&d, "\\ry");
+    assert!(
+        out.contains("You're on PHPStan level 5; the closest Pun preset is `recommended`. Switch to it? (0 new problems, 0 fewer)"),
+        "{out}"
+    );
+    assert!(out.contains(", switched to the preset\n"), "{out}");
+    let toml = read(&d, "pun.toml");
+    assert!(
+        !toml.contains("\"on\"") && !toml.contains("\"off\""),
+        "{toml}"
+    );
+    std::fs::remove_file(d.join("pun.toml")).unwrap();
+    let out = pty(&d, "\\rn");
+    assert!(!out.contains("switched to the preset"), "{out}");
+    assert!(read(&d, "pun.toml").contains(" = \"off\"\n"));
+}

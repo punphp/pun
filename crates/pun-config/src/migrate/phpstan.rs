@@ -36,6 +36,9 @@ pub struct Phpstan {
     pub extensions: BTreeSet<String>,
     /// The resolved parameters, for the rules a parameter turns on (`gated_by`).
     pub parameters: Array,
+    /// Parameters the project changed from PHPStan's value at its level that rules read as options: (dotted name,
+    /// value), for [`compose`] to write on those rules.
+    pub changed: Vec<(String, Value)>,
 }
 
 /// The extensions Pun has built in, by package, and the mapping's `package` of their rule classes.
@@ -74,10 +77,12 @@ const HANDLED: [&str; 19] = [
     "resultCacheChecksProjectExtensionFilesDependencies",
 ];
 
-/// Files as PHPStan reads them, with every baseline file empty; the baselines met are recorded.
+/// Files as PHPStan reads them, with every baseline file empty; the baselines met are recorded. `virtual_file` is a
+/// config only migrate writes (PHPStan's defaults for the project's level and packages).
 struct WithoutBaselines {
     files: ProjectFiles,
     seen: std::cell::RefCell<BTreeSet<String>>,
+    virtual_file: std::cell::RefCell<Option<(String, String)>>,
 }
 
 fn is_baseline(path: &str) -> bool {
@@ -87,6 +92,11 @@ fn is_baseline(path: &str) -> bool {
 
 impl Files for WithoutBaselines {
     fn read(&self, path: &str) -> Option<Vec<u8>> {
+        if let Some((p, text)) = &*self.virtual_file.borrow()
+            && p == path
+        {
+            return Some(text.clone().into_bytes());
+        }
         if is_baseline(path) && self.files.is_file(path) {
             self.seen.borrow_mut().insert(path.to_string());
             return Some(vec![]);
@@ -95,7 +105,8 @@ impl Files for WithoutBaselines {
     }
 
     fn is_file(&self, path: &str) -> bool {
-        self.files.is_file(path)
+        (self.virtual_file.borrow().as_ref()).is_some_and(|(p, _)| p == path)
+            || self.files.is_file(path)
     }
 }
 
@@ -128,6 +139,7 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
     let files = WithoutBaselines {
         files: ProjectFiles::new(&phar),
         seen: Default::default(),
+        virtual_file: Default::default(),
     };
     let resolved = resolve_with(&o, &files).map_err(|e| anyhow::anyhow!(e))?;
     let p = &resolved.parameters;
@@ -190,16 +202,47 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
                 .push((pkg, "a PHPStan extension Pun doesn't have built in".into()));
         }
     }
+    // What PHPStan resolves for the project's level and packages alone: a parameter the project sets to that value
+    // changes nothing.
+    let packages: Vec<&String> = (includes.iter())
+        .filter(|i| package(&relative(root, i)).is_some())
+        .collect();
+    let mut text = String::from("includes:\n");
+    for inc in &packages {
+        writeln!(text, "    - '{inc}'").unwrap();
+    }
+    writeln!(text, "parameters:\n    level: {}", out.level).unwrap();
+    let path = format!("{cwd}/.pun-migrate-defaults.neon");
+    *files.virtual_file.borrow_mut() = Some((path.clone(), text));
+    o.config = Some(path);
+    let defaults = resolve_with(&o, &files)
+        .map_err(|e| anyhow::anyhow!(e))?
+        .parameters;
+    let gates = gate_parameters();
+    let table = mapping::section(&["phpstan-parameters"]).table();
     for key in own_parameters(root, config, &includes) {
-        if !HANDLED.contains(&key.as_str()) {
-            let why = match key.as_str() {
+        if HANDLED.contains(&key.as_str()) {
+            continue;
+        }
+        let mut leaves = vec![];
+        differences(&key, p.get_str(&key), defaults.get_str(&key), &mut leaves);
+        for (name, value) in leaves {
+            let entry = table.get(&name);
+            let level = entry.is_some_and(|e| e.get("level").is_some());
+            let why = match name.as_str() {
+                _ if gates.contains(&name) => continue,
+                _ if entry.is_some() && !level => {
+                    out.changed.push((name, value));
+                    continue;
+                }
+                _ if level => "the level sets it; Pun's analyse presets decide it",
                 "phpVersion" => {
                     "Pun reads the PHP version from composer.json; [php] version overrides it"
                 }
                 _ => "no pun.toml setting for this parameter yet",
             };
             out.unsupported
-                .push((format!("parameter {key}"), why.into()));
+                .push((format!("parameter {name}"), why.into()));
         }
     }
     out.stubs = (strings(p.get_str("stubFiles")).iter())
@@ -290,6 +333,49 @@ fn own_parameters(root: &Path, config: &Path, includes: &[String]) -> BTreeSet<S
             .unwrap_or_default()
     })
     .collect()
+}
+
+/// The parameters a `gated_by` condition of `[upstream.phpstan-classes]` reads: their effect is the rules [`compose`]
+/// turns on and off.
+fn gate_parameters() -> BTreeSet<String> {
+    let mut out = BTreeSet::new();
+    for e in mapping::section(&["upstream", "phpstan-classes"])
+        .table()
+        .values()
+    {
+        for part in (e.get("gated_by").and_then(toml::Value::as_str))
+            .into_iter()
+            .flat_map(|g| g.split(" + "))
+        {
+            let (name, note) = part.split_once(" (").unwrap_or((part, ""));
+            out.insert(name.to_string());
+            out.extend(
+                note.strip_prefix("featureToggles.")
+                    .map(|t| format!("featureToggles.{}", t.trim_end_matches(')'))),
+            );
+        }
+    }
+    out
+}
+
+/// The leaves under `name` where the project's value `a` differs from PHPStan's `b`, by dotted name: string-keyed
+/// tables are compared key by key, anything else as a whole.
+fn differences(name: &str, a: Option<&Value>, b: Option<&Value>, out: &mut Vec<(String, Value)>) {
+    let table = |v: Option<&Value>| {
+        v.and_then(Value::as_array)
+            .filter(|t| !t.is_list())
+            .cloned()
+    };
+    match (table(a), table(b)) {
+        (Some(x), Some(y)) => {
+            let keys: BTreeSet<String> = x.keys().chain(y.keys()).map(|k| k.as_string()).collect();
+            for k in keys {
+                differences(&format!("{name}.{k}"), x.get_str(&k), y.get_str(&k), out);
+            }
+        }
+        _ if a != b => out.push((name.to_string(), a.cloned().unwrap_or_default())),
+        _ => {}
+    }
 }
 
 /// One `ignoreErrors` entry as `[[analyse.ignore]]` tables: one per message and identifier it lists.
@@ -447,6 +533,8 @@ pub struct Analysed {
     pub off: usize,
     /// strict-rules checks that are lint rules in Pun, turned on in `[lint.rules]`.
     pub lint: usize,
+    /// Changed parameters written as rule options.
+    pub options: usize,
     /// PHPStan checks Pun runs elsewhere or not yet: (rule, why).
     pub unsupported: Vec<(String, String)>,
 }
@@ -476,6 +564,7 @@ pub fn compose(root: &Path, parts: &mut Parts, phpstan: &Phpstan) -> Result<Anal
         on: 0,
         off: 0,
         lint: 0,
+        options: 0,
         unsupported: vec![],
     };
     // Larastan's rules are the `laravel` group: off as a group when the config doesn't include Larastan.
@@ -518,7 +607,7 @@ pub fn compose(root: &Path, parts: &mut Parts, phpstan: &Phpstan) -> Result<Anal
         .filter(|id| !id.starts_with("analyse/") && !formats(id))
     {
         let lint = id.starts_with("lint/");
-        let turned_on = lint && super::require_lint(parts, id);
+        let turned_on = lint && super::require_lint(parts, id, "\"error\"");
         done.lint += usize::from(turned_on);
         let why = match lint {
             true => "a PHPStan check that is this lint rule in Pun, not supported yet",
@@ -529,6 +618,56 @@ pub fn compose(root: &Path, parts: &mut Parts, phpstan: &Phpstan) -> Result<Anal
         done.unsupported
             .extend((!turned_on).then(|| (id.clone(), why.to_string())));
     }
+    options(root, parts, phpstan, &mut done)?;
     parts.analyse_ignores = phpstan.ignores.join("\n");
     Ok(done)
+}
+
+/// Each changed parameter as an option (`[phpstan-parameters]` of mapping.toml names it) of every rule that reads it
+/// and runs: the rule's line becomes a table of its options.
+fn options(root: &Path, parts: &mut Parts, phpstan: &Phpstan, done: &mut Analysed) -> Result<()> {
+    let cfg = resolve(root, &parts.render())?;
+    let running: BTreeSet<&str> = cfg.analyse.rules.iter().map(|r| &r.id[8..]).collect();
+    let table = mapping::section(&["phpstan-parameters"]).table();
+    let mut by_rule: Vec<(String, toml::Table)> = vec![];
+    for (name, value) in &phpstan.changed {
+        let value = toml_value(value);
+        let entry = &table[name.as_str()];
+        let option = entry["option"].as_str().unwrap();
+        let rules = entry["rules"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(toml::Value::as_str);
+        let mut applied = false;
+        for rule in rules.map(|r| &r[8..]).filter(|r| running.contains(r)) {
+            let at = match by_rule.iter().position(|(r, _)| r == rule) {
+                Some(at) => at,
+                None => {
+                    by_rule.push((rule.to_string(), toml::Table::new()));
+                    by_rule.len() - 1
+                }
+            };
+            by_rule[at].1.insert(option.to_string(), value.clone());
+            applied = true;
+        }
+        done.options += usize::from(applied);
+    }
+    for (rule, options) in by_rule {
+        let line = toml::Value::Table(options).to_string();
+        parts.analyse_rules.retain(|(k, _)| *k != rule);
+        parts.analyse_rules.push((rule, line));
+    }
+    Ok(())
+}
+
+/// A parameter value as TOML. PHPStan's and Larastan's schemas (conf/parametersSchema.neon, extension.neon) declare
+/// every parameter of `[phpstan-parameters]` that isn't the level's as `bool()` or `listOf(string())`, and `resolve`
+/// has checked the value against them.
+fn toml_value(v: &Value) -> toml::Value {
+    match v {
+        Value::Bool(b) => toml::Value::Boolean(*b),
+        Value::Array(a) => toml::Value::Array(a.values().map(toml_value).collect()),
+        v => toml::Value::String(v.as_str().unwrap_or_default().to_string()),
+    }
 }

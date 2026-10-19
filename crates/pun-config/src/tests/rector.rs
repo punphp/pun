@@ -1,8 +1,8 @@
 //! rector.php to `[lint]`. The Rector classes and their Pun rules, sets and reasons are rules/mapping.toml's
 //! `[upstream.rector]` rows; the expected sets come from Rector's set file names (config/set/*.php).
 use super::*;
-use crate::migrate::{Parts, Rector, RectorConfig, compose, from_rector};
-use std::collections::BTreeSet;
+use crate::migrate::{Configured, Parts, Rector, RectorConfig, compose, from_rector};
+use std::collections::{BTreeMap, BTreeSet};
 
 const FOREACH: &str = "Rector\\DeadCode\\Rector\\Foreach_\\RemoveUnusedForeachKeyRector";
 const AND_TRUE: &str = "Rector\\DeadCode\\Rector\\BooleanAnd\\RemoveAndTrueRector";
@@ -33,7 +33,10 @@ fn reads_sets_rules_and_skips() {
             FOREACH,
             NOT_EQUAL,
         ]),
-        configured: strings(&[RENAME]),
+        configured: serde_json::from_value(json!({
+            RENAME: {"configuration": {"split": "explode"}, "constants": []},
+        }))
+        .unwrap(),
         skip_rules: serde_json::from_value(
             json!({ MIRROR: null, AND_TRUE: [at("tests"), at("app/Legacy.php")], NOT_EQUAL: [at("tests")] }),
         )
@@ -62,6 +65,7 @@ fn reads_sets_rules_and_skips() {
                 "lint/dead-code/no-unused-foreach-key",
                 "RemoveUnusedForeachKeyRector"
             ),
+            ("lint/refactor/rename-function", "RenameFunctionRector"),
             ("lint/dead-code/no-and-true", "RemoveAndTrueRector"),
             (
                 "format/operators/standardize-not-equals",
@@ -83,10 +87,6 @@ fn reads_sets_rules_and_skips() {
                 "ClassPropertyAssignToConstructorPromotionRector",
                 "only in php52..php83 upgrade sets (below the PHP 8.4 floor)"
             ),
-            (
-                "RenameFunctionRector",
-                "configured; its configuration can't be migrated yet"
-            ),
         ]
     );
     assert_eq!(
@@ -104,6 +104,148 @@ fn reads_sets_rules_and_skips() {
         ..RectorConfig::default()
     };
     assert_eq!(from_rector(&root, &whole).paths, [".", "/elsewhere/src"]);
+}
+
+/// A configured rule's configuration becomes its options. The input is what crates/pun-cli/src/rector_config.php printed
+/// for a rector.php with these four `withConfiguredRule()` calls, run on .oracle/rector-ecosystem's Rector: a data map
+/// keeps its keys, a value object list goes under `items` with its properties kebab-cased, Rector's option constant
+/// `exclude_methods` is kebab-cased. What TOML can't hold, or a key pun.toml keeps for the level, is named.
+#[test]
+fn carries_rule_configurations() {
+    let root = dir(&[]);
+    let printed = json!({"Rector\\Renaming\\Rector\\FuncCall\\RenameFunctionRector": {"configuration": {"split": "explode", "join": "implode"}, "constants": []}, "Rector\\Removing\\Rector\\FuncCall\\RemoveFuncCallArgRector": {"configuration": [{"@props": {"function": "ldap_first_attribute", "argumentPosition": 2}}], "constants": []}, "RectorLaravel\\Rector\\PropertyFetch\\OptionalToNullsafeOperatorRector": {"configuration": {"exclude_methods": ["present"]}, "constants": ["exclude_methods"]}, "Rector\\Renaming\\Rector\\ConstFetch\\RenameConstantRector": {"configuration": {"OLD": "NEW"}, "constants": []}});
+    let mut configured: BTreeMap<String, Configured> = serde_json::from_value(printed).unwrap();
+    // By hand: an unset value-object property is left out; a null, a closure and a `level` key can't be carried.
+    let by_hand = [
+        (
+            "Rector\\Renaming\\Rector\\Cast\\RenameCastRector",
+            json!([{"@props": {"fromCastKind": 3, "scope": null, "strict": true, "ratio": 0.5}}]),
+        ),
+        (
+            "Rector\\Renaming\\Rector\\Name\\RenameClassRector",
+            json!({"Old": null}),
+        ),
+        (
+            "Rector\\Transform\\Rector\\FuncCall\\FuncCallToStaticCallRector",
+            json!([{"@unsupported": "Closure"}]),
+        ),
+        (
+            "Rector\\Renaming\\Rector\\ClassConstFetch\\RenameClassConstFetchRector",
+            json!({"level": "x"}),
+        ),
+    ];
+    for (class, configuration) in &by_hand {
+        configured.insert(
+            class.to_string(),
+            Configured {
+                configuration: configuration.clone(),
+                constants: vec![],
+            },
+        );
+    }
+    let config = RectorConfig {
+        rules: configured.keys().cloned().collect(),
+        configured,
+        ..RectorConfig::default()
+    };
+    let r = from_rector(&root, &config);
+    let options: Vec<(&str, String)> = (r.options.iter())
+        .map(|(id, t)| (id.as_str(), toml::Value::Table(t.clone()).to_string()))
+        .collect();
+    assert_eq!(
+        options,
+        [
+            (
+                "lint/laravel/prefer-nullsafe",
+                "{ exclude-methods = [\"present\"] }".to_string()
+            ),
+            (
+                "lint/refactor/remove-function-argument",
+                "{ items = [{ function = \"ldap_first_attribute\", argument-position = 2 }] }"
+                    .into()
+            ),
+            (
+                "lint/refactor/rename-cast",
+                "{ items = [{ from-cast-kind = 3, strict = true, ratio = 0.5 }] }".into()
+            ),
+            ("lint/refactor/rename-constant", "{ OLD = \"NEW\" }".into()),
+            (
+                "lint/refactor/rename-function",
+                "{ split = \"explode\", join = \"implode\" }".into()
+            ),
+        ]
+    );
+    let unsupported: Vec<(&str, &str)> = (r.unsupported.iter())
+        .map(|(a, b)| (a.as_str(), b.as_str()))
+        .collect();
+    assert_eq!(
+        unsupported,
+        [
+            (
+                "RenameClassConstFetchRector",
+                "configured; its configuration has a `level` key, which pun.toml keeps for the rule's level"
+            ),
+            (
+                "RenameClassRector",
+                "configured; its configuration holds a null, which pun.toml can't"
+            ),
+            (
+                "FuncCallToStaticCallRector",
+                "configured; its configuration holds a Closure, which pun.toml can't"
+            ),
+        ]
+    );
+
+    // Composed: a ported rule gets its options on its line, even when a set already turns it on; an unported one is
+    // named. lint/complexity/no-and-assignment is ported and in code-quality (mapping.toml); its options are made up.
+    let rector = Rector {
+        sets: vec!["code-quality"],
+        want: vec![
+            (
+                "lint/complexity/no-and-assignment".to_string(),
+                "AndAssignsToSeparateLinesRector".to_string(),
+            ),
+            (
+                "lint/refactor/rename-function".to_string(),
+                "RenameFunctionRector".to_string(),
+            ),
+        ],
+        options: BTreeMap::from([
+            (
+                "lint/complexity/no-and-assignment".to_string(),
+                toml::Table::from_iter([("items".to_string(), toml::Value::Integer(1))]),
+            ),
+            (
+                "lint/refactor/rename-function".to_string(),
+                r.options["lint/refactor/rename-function"].clone(),
+            ),
+        ]),
+        ..Rector::default()
+    };
+    let mut parts = Parts {
+        format: "preset = \"empty\"\n".into(),
+        ..Parts::default()
+    };
+    let done = compose(&root, &mut parts, &rector).unwrap();
+    let text = parts.render();
+    assert!(
+        text.contains("\n\"complexity/no-and-assignment\" = { items = 1 }\n"),
+        "{text}"
+    );
+    assert_eq!(done.on, 1);
+    if !rule_meta_ported("lint/refactor/rename-function") {
+        assert!(done.unsupported.contains(&(
+            "RenameFunctionRector".to_string(),
+            "not supported by Pun yet".to_string()
+        )));
+    }
+    let cfg = from_toml(&root, &text).unwrap();
+    let rule = cfg
+        .lint
+        .rules
+        .iter()
+        .find(|r| r.id == "lint/complexity/no-and-assignment");
+    assert_eq!(rule.unwrap().options, json!({"items": 1}));
 }
 
 /// The composed pun.toml runs exactly what Rector ran: each wanted rule Pun can run is on (from the set or its own

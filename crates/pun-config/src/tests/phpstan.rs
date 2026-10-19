@@ -50,6 +50,14 @@ parameters:
         - /tmp
     phpVersion: 80400
     tmpDir: build/phpstan
+    checkUninitializedProperties: true
+    checkMissingTypehints: true
+    treatPhpDocTypesAsCertain: true
+    universalObjectCratesClasses: [App\\Bag]
+    checkBenevolentUnionTypes: true
+    additionalConstructors: [App\\Bag::setUp]
+    exceptions:
+        implicitThrows: false
     stubFiles:
         - stubs/Foo.stub
     ignoreErrors:
@@ -169,8 +177,9 @@ fn reads_level_paths_ignores_and_includes() {
             "build/custom.neon",
             "foo/bar",
             "phpstan/phpstan-mockery",
-            "parameter checkFunctionNameCase",
+            "parameter checkMissingTypehints",
             "parameter phpVersion",
+            "parameter universalObjectCratesClasses",
             "ignoreErrors no.suchIdentifier",
             "ignoreErrors whitespace.bom",
             "ignoreErrors phpstanApi.method",
@@ -180,6 +189,41 @@ fn reads_level_paths_ignores_and_includes() {
     assert_eq!(
         why("ignoreErrors whitespace.bom"),
         "`whitespace.bom` is the format rule `format/whitespace/encoding` in Pun; ignore it there"
+    );
+    // Against PHPStan's value at level 5 (conf/config.level*.neon, conf/config.neon): checkFunctionNameCase (false)
+    // is an option of the rules that read it, checkUninitializedProperties gates a rule (compose turns it on),
+    // treatPhpDocTypesAsCertain is already true, checkMissingTypehints is level 6's, and only a lint rule reads
+    // universalObjectCratesClasses.
+    assert_eq!(
+        p.changed,
+        [
+            (
+                "additionalConstructors".to_string(),
+                pun_phpstan::Value::Array(pun_phpstan::Array::list([pun_phpstan::Value::Str(
+                    "App\\Bag::setUp".into()
+                )]))
+            ),
+            (
+                "checkBenevolentUnionTypes".to_string(),
+                pun_phpstan::Value::Bool(true)
+            ),
+            (
+                "checkFunctionNameCase".to_string(),
+                pun_phpstan::Value::Bool(true)
+            ),
+            (
+                "exceptions.implicitThrows".to_string(),
+                pun_phpstan::Value::Bool(false)
+            ),
+        ]
+    );
+    assert_eq!(
+        why("parameter checkMissingTypehints"),
+        "the level sets it; Pun's analyse presets decide it"
+    );
+    assert_eq!(
+        why("parameter universalObjectCratesClasses"),
+        "no pun.toml setting for this parameter yet"
     );
     assert_eq!(
         why("ignoreErrors phpstanApi.method"),
@@ -196,7 +240,32 @@ fn reads_level_paths_ignores_and_includes() {
         ]
     );
     let mut parts = Parts::default();
-    compose(&d, &mut parts, &p).unwrap();
+    let done = compose(&d, &mut parts, &p).unwrap();
+    // CallToNonExistentFunctionRule reads checkFunctionNameCase (its constructor's #[AutowiredParameter]),
+    // CallMethodsRule that and checkBenevolentUnionTypes (through RuleLevelHelper), UninitializedPropertyRule
+    // additionalConstructors (through ConstructorsHelper). MethodThrowTypeCovarianceRule reads
+    // exceptions.implicitThrows, but it runs only under exceptions.check.throwTypeCovariance, so that one is applied
+    // nowhere.
+    let text = parts.render();
+    for line in [
+        "\"undefined/function\" = { check-function-name-case = true }",
+        "\"undefined/method\" = { check-benevolent-union-types = true, check-function-name-case = true }",
+        "\"classes/uninitialized-property\" = { additional-constructors = ['App\\Bag::setUp'] }",
+        "\"types/throws-not-covariant\" = \"off\"",
+    ] {
+        assert!(text.contains(&format!("\n{line}\n")), "{line}\n{text}");
+    }
+    assert_eq!(done.options, 3);
+    let cfg = crate::from_toml(&d, &text).unwrap();
+    let function = cfg
+        .analyse
+        .rules
+        .iter()
+        .find(|r| r.id == "analyse/undefined/function");
+    assert_eq!(
+        function.unwrap().options,
+        serde_json::json!({"check-function-name-case": true})
+    );
     assert!(
         parts.render().starts_with(
             "[analyse]\npreset = \"recommended\"\npaths = [\"app\", \"tests\"]\nexclude = [\"app/Legacy\", \"/tmp\"]\nstubs = [\"stubs/Foo.stub\"]\n"

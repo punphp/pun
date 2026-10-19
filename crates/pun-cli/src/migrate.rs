@@ -38,6 +38,21 @@ static IGNORE: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?m)^(\h*[*\/]+\h+@)php-cs-fixer-ignore ((?:@?[\w\/,])+)").unwrap()
 });
 
+/// `@phpstan-ignore id (comment), id`, as PHPStan's IgnoreLexer reads it (identifiers, each with an optional
+/// parenthesised comment, comma-separated), up to the end of the comment or its line. `-line` and `-next-line` are
+/// not this tag.
+static PHPSTAN_IGNORE: LazyLock<Regex> = LazyLock::new(|| {
+    let id = r"[\w.\-\\]+(?:\h*\([^()\n]*\))?";
+    Regex::new(&format!(
+        r"(?m)@phpstan-ignore(?![-\w])\h+({id}(?:\h*,\h*{id})*)(?=\h*(?:\*/|$))"
+    ))
+    .unwrap()
+});
+
+/// PHPStan's ignores without identifiers: every error of a line.
+static PHPSTAN_IGNORE_LINE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"@phpstan-ignore-(?:next-)?line\b").unwrap());
+
 #[derive(Clone, Copy, PartialEq, Debug, clap::ValueEnum)]
 pub(crate) enum Source {
     Pint,
@@ -236,7 +251,12 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
     }
     let mut analyse = String::new();
     if let Some(p) = &phpstan {
-        analyse = phpstan_analyse(&root, p, &mut m.parts, &mut report)?;
+        let level;
+        (analyse, level) = phpstan_analyse(&root, p, &mut m.parts, &mut report)?;
+        if interactive && let Some(plain) = closest_preset(&root, &m.parts, level)? {
+            m.parts = plain;
+            analyse.push_str(", switched to the preset");
+        }
         m.toml = m.parts.render();
     }
     let header = match &from {
@@ -256,7 +276,7 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
         );
     }
     let cfg = pun_config::from_toml(&root, &toml)?;
-    let mut edits = ignore_rewrites(&root, &cfg, &mut report);
+    let mut edits = ignore_rewrites(&root, &cfg, phpstan.is_some(), &mut report);
     let rewritten = edits.len();
     let written = old.as_deref() != Some(&toml);
     if written {
@@ -284,7 +304,11 @@ pub(crate) fn run(a: MigrateArgs) -> Result<u8> {
         report.line(
             Mark::Done,
             "ignore comments",
-            format!("{arrow} @pun-ignore-file in {files}"),
+            // `@pun-ignore-file` from `@php-cs-fixer-ignore`; `@phpstan-ignore` becomes the line form too.
+            match phpstan {
+                Some(_) => format!("{arrow} @pun-ignore in {files}"),
+                None => format!("{arrow} @pun-ignore-file in {files}"),
+            },
         );
     }
     let toml = if from.is_some() {
@@ -390,28 +414,36 @@ fn convert(
     Ok(m)
 }
 
-/// Each project file whose `@php-cs-fixer-ignore` comments [`rewrite`] changes: (path, old, new). An annotation
-/// naming a fixer Pun has no rule for is reported.
+/// Each project file whose `@php-cs-fixer-ignore` comments (and, when the PHPStan config is migrated,
+/// `@phpstan-ignore` comments, in the files `pun analyse` checks too) [`rewrite`] changes: (path, old, new). An
+/// annotation Pun has no rule for is reported.
 fn ignore_rewrites(
     root: &Path,
     cfg: &pun_config::Config,
+    phpstan: bool,
     report: &mut Report,
 ) -> Vec<(PathBuf, Vec<u8>, Vec<u8>)> {
     let mut edits = vec![];
     let mut unknown = vec![];
     // A broken finder (a missing `in` dir) is `pun format`'s to report, as Pint does.
-    for f in pun_workspace::discover(cfg, &[]).unwrap_or_default() {
+    let mut files = pun_workspace::discover(cfg, &[]).unwrap_or_default();
+    if phpstan {
+        let analysed = pun_workspace::files(cfg, Some(pun_workspace::Command::Analyse), &[]);
+        files.extend(analysed.unwrap_or_default());
+        files.sort();
+        files.dedup();
+    }
+    for f in files {
         // Unreadable files are `pun format`'s to report.
         let Ok(code) = std::fs::read(&f) else {
             continue;
         };
-        if let Some(new) = rewrite(&code, &rel(root, &f), &mut unknown) {
+        if let Some(new) = rewrite(&code, &rel(root, &f), phpstan, &mut unknown) {
             edits.push((f, code, new));
         }
     }
-    for (path, rules) in &unknown {
-        let note = format!("`@php-cs-fixer-ignore {rules}` left as is (no Pun rule for it)");
-        report.unsupported(path, &note, format!("{path} ignore-not-migrated {note}"));
+    for (path, note) in &unknown {
+        report.unsupported(path, note, format!("{path} ignore-not-migrated {note}"));
     }
     edits
 }
@@ -476,7 +508,7 @@ fn phpstan_analyse(
     config: &Path,
     parts: &mut migrate::Parts,
     report: &mut Report,
-) -> Result<String> {
+) -> Result<(String, u8)> {
     let p = migrate::phpstan::from_phpstan(root, config)?;
     let arrow = report.look.glyph("→", "->");
     let done = migrate::phpstan::compose(root, parts, &p)?;
@@ -498,11 +530,53 @@ fn phpstan_analyse(
     if done.lint > 0 {
         text += &format!(", {} {arrow} [lint]", agent::count(done.lint, "rule"));
     }
+    if done.options > 0 {
+        let parameters = agent::count(done.options, "parameter");
+        text += &format!(", {parameters} {arrow} rule options");
+    }
     let ignores = p.ignores.len();
     if ignores > 0 {
         text += &format!(", {} ignored", agent::count(ignores, "error pattern"));
     }
-    Ok(text)
+    Ok((text, p.level))
+}
+
+/// On a terminal, after the exact rules (context/plan/migrate.md §3): when `parts` turns analyse rules on or off
+/// beside its preset, offer the preset alone, with the problems the switch adds and drops (both configs analysed
+/// on the project). `Some` is the preset alone, when taken.
+fn closest_preset(
+    root: &Path,
+    parts: &migrate::Parts,
+    level: u8,
+) -> Result<Option<migrate::Parts>> {
+    let mut plain = parts.clone();
+    plain
+        .analyse_rules
+        .retain(|(_, v)| v != "\"on\"" && v != "\"off\"");
+    if plain.analyse_rules.len() == parts.analyse_rules.len() {
+        return Ok(None);
+    }
+    let exact = pun_config::from_toml(root, &parts.render())?;
+    let preset = pun_config::from_toml(root, &plain.render())?;
+    let found = |cfg: &pun_config::Config| -> Result<std::collections::HashSet<_>> {
+        let a = crate::analyse::analyse(cfg, &[], false)?;
+        Ok((a.findings.into_iter())
+            .map(|f| (f.rel, f.line, f.identifier, f.message))
+            .collect())
+    };
+    let (before, after) = (found(&exact)?, found(&preset)?);
+    let new = after.difference(&before).count();
+    let gone = before.difference(&after).count();
+    let prompt = format!(
+        "You're on PHPStan level {level}; the closest Pun preset is `{}`. Switch to it? ({new} new problem{}, {gone} fewer)",
+        preset.analyse.preset,
+        if new == 1 { "" } else { "s" },
+    );
+    let yes = dialoguer::Confirm::with_theme(&crate::init::theme())
+        .with_prompt(prompt)
+        .default(false)
+        .interact_on_opt(&dialoguer::console::Term::stdout())?;
+    Ok((yes == Some(true)).then_some(plain))
 }
 
 /// The shallowest path (relative to `root`) holding each of `files` that no Rector path covers, once each; nothing
@@ -738,38 +812,120 @@ impl Report {
     }
 }
 
-/// `code` with each `@php-cs-fixer-ignore a,b` in a comment turned into `@pun-ignore-file format/x/a,lint/y/b`, or
-/// `None` when nothing changes. One naming a fixer Pun has no rule for stays as it is, reported in `unknown`.
-fn rewrite(code: &[u8], path: &str, unknown: &mut Vec<(String, String)>) -> Option<Vec<u8>> {
-    if !code.windows(19).any(|w| w == b"php-cs-fixer-ignore") {
+/// `code` with each `@php-cs-fixer-ignore a,b` in a comment turned into `@pun-ignore-file format/x/a,lint/y/b`, and
+/// with `phpstan`, each `@phpstan-ignore` into [`phpstan_ignore`]'s `@pun-ignore`; `None` when nothing changes. One
+/// naming a rule Pun has no rule for stays as it is, reported in `unknown` as (path, note).
+fn rewrite(
+    code: &[u8],
+    path: &str,
+    phpstan: bool,
+    unknown: &mut Vec<(String, String)>,
+) -> Option<Vec<u8>> {
+    let has = |needle: &[u8]| code.windows(needle.len()).any(|w| w == needle);
+    let phpstan = phpstan && has(b"@phpstan-ignore");
+    if !has(b"php-cs-fixer-ignore") && !phpstan {
         return None;
     }
     let mut out = Vec::with_capacity(code.len());
     for t in pun_tokens::Tokens::from_code(code).as_slice() {
+        if !t.is_comment() {
+            out.extend_from_slice(&t.content);
+            continue;
+        }
+        let mut text = t.content.to_vec();
+        let mut done = Vec::with_capacity(text.len());
         let mut last = 0;
-        for c in IGNORE
-            .captures_iter(&t.content)
-            .flatten()
-            .filter(|_| t.is_comment())
-        {
+        for c in IGNORE.captures_iter(&text).flatten() {
             let ids: Option<Vec<&str>> = (c[2].split(|&b| b == b','))
                 .map(|r| std::str::from_utf8(r).ok().and_then(pun_config::rule_of))
                 .collect();
             let Some(ids) = ids else {
-                let rules = String::from_utf8_lossy(&c[2]).into_owned();
-                unknown.push((path.to_string(), rules));
+                let rules = String::from_utf8_lossy(&c[2]);
+                let note =
+                    format!("`@php-cs-fixer-ignore {rules}` left as is (no Pun rule for it)");
+                unknown.push((path.to_string(), note));
                 continue;
             };
             let m = c.get(0).unwrap();
-            out.extend_from_slice(&t.content[last..m.start()]);
-            out.extend_from_slice(&c[1]);
-            out.extend_from_slice(b"pun-ignore-file ");
-            out.extend_from_slice(ids.join(",").as_bytes());
+            done.extend_from_slice(&text[last..m.start()]);
+            done.extend_from_slice(&c[1]);
+            done.extend_from_slice(b"pun-ignore-file ");
+            done.extend_from_slice(ids.join(",").as_bytes());
             last = m.end();
         }
-        out.extend_from_slice(&t.content[last..]);
+        done.extend_from_slice(&text[last..]);
+        if phpstan {
+            text = done;
+            done = Vec::with_capacity(text.len());
+            last = 0;
+            for c in PHPSTAN_IGNORE.captures_iter(&text).flatten() {
+                let list = String::from_utf8_lossy(&c[1]).into_owned();
+                let m = c.get(0).unwrap();
+                match phpstan_ignore(&list) {
+                    Ok(new) => {
+                        done.extend_from_slice(&text[last..m.start()]);
+                        done.extend_from_slice(new.as_bytes());
+                        last = m.end();
+                    }
+                    Err(why) => {
+                        let note = format!("`@phpstan-ignore {list}` left as is ({why})");
+                        unknown.push((path.to_string(), note));
+                    }
+                }
+            }
+            done.extend_from_slice(&text[last..]);
+            for m in PHPSTAN_IGNORE_LINE.find_iter(&done).flatten() {
+                let tag = String::from_utf8_lossy(m.as_bytes());
+                let why = "it names no identifier, and a Pun ignore names its rules";
+                unknown.push((path.to_string(), format!("`{tag}` left as is ({why})")));
+            }
+        }
+        out.extend_from_slice(&done);
     }
     (out != code).then_some(out)
+}
+
+/// `@phpstan-ignore`'s list (`a.b (why), c.d`) as `@pun-ignore <rule IDs> -- <comments>`: each identifier's Pun rule
+/// (rules/mapping.toml), once each; the comments joined by `; `. An identifier with no analyse or lint rule in Pun
+/// (format rules are ignored per file) is the error.
+fn phpstan_ignore(list: &str) -> Result<String, String> {
+    let mut ids: Vec<&str> = vec![];
+    let mut comments = vec![];
+    // Commas inside a comment's parentheses are the comment's.
+    let mut rest = list;
+    while !rest.is_empty() {
+        let end = rest.find([',', '(']).unwrap_or(rest.len());
+        let identifier = rest[..end].trim();
+        rest = &rest[end..];
+        if let Some(r) = rest.strip_prefix('(') {
+            let close = r.find(')').unwrap();
+            comments.push(r[..close].trim());
+            rest = &r[close + 1..];
+        }
+        rest = rest.trim_start().trim_start_matches(',').trim_start();
+        match pun_config::rule_of_identifier(identifier) {
+            Some(id) if !id.starts_with("format/") => {
+                if !ids.contains(&id) {
+                    ids.push(id);
+                }
+            }
+            Some(id) => {
+                return Err(format!(
+                    "`{identifier}` is the format rule `{id}`, ignored per file"
+                ));
+            }
+            None => {
+                return Err(format!(
+                    "`{identifier}` is not a PHPStan identifier Pun knows"
+                ));
+            }
+        }
+    }
+    let mut out = format!("@pun-ignore {}", ids.join(","));
+    if !comments.is_empty() {
+        out += &format!(" -- {}", comments.join("; "));
+    }
+    Ok(out)
 }
 
 fn rel(root: &Path, p: &Path) -> String {

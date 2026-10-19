@@ -20,9 +20,9 @@ use std::path::Path;
 pub struct RectorConfig {
     /// Every rule Rector runs (`RectorConfig::getMainRectorClasses()`), sets included, in registration order.
     pub rules: Vec<String>,
-    /// The rules registered with a configuration.
+    /// The rules registered with a configuration, by class.
     #[serde(default)]
-    pub configured: Vec<String>,
+    pub configured: BTreeMap<String, Configured>,
     /// `withSkip()` rule entries: class => `null` (everywhere) or the paths it is skipped for.
     #[serde(default)]
     pub skip_rules: Map<String, Value>,
@@ -40,6 +40,91 @@ pub struct RectorConfig {
     pub php_sets: bool,
 }
 
+/// A rule's configuration as `rector_config.php` exports it.
+#[derive(Debug, Default, Deserialize)]
+pub struct Configured {
+    /// The value given to `ruleWithConfiguration()` (merged across sets): a value object is `{"@props": {...}}`, what
+    /// JSON can't hold `{"@unsupported": type}`.
+    pub configuration: Value,
+    /// The rule class's string constants: a key among them is an option name, not data.
+    #[serde(default)]
+    pub constants: Vec<String>,
+}
+
+/// `camelCase` or `snake_case` as `kebab-case`.
+fn kebab(s: &str) -> String {
+    let mut out = String::new();
+    for c in s.chars() {
+        if c.is_ascii_uppercase() && !out.is_empty() && !out.ends_with('-') {
+            out.push('-');
+        }
+        out.push(if c == '_' {
+            '-'
+        } else {
+            c.to_ascii_lowercase()
+        });
+    }
+    out
+}
+
+/// A configuration value as TOML: a value object's properties kebab-cased (unset ones left out), data keys as they
+/// are.
+fn toml_value(v: &Value) -> Result<toml::Value, String> {
+    Ok(match v {
+        Value::Null => return Err("its configuration holds a null, which pun.toml can't".into()),
+        Value::Bool(b) => toml::Value::Boolean(*b),
+        Value::Number(n) => match n.as_i64() {
+            Some(i) => toml::Value::Integer(i),
+            None => toml::Value::Float(n.as_f64().unwrap()),
+        },
+        Value::String(s) => toml::Value::String(s.clone()),
+        Value::Array(a) => toml::Value::Array(a.iter().map(toml_value).collect::<Result<_, _>>()?),
+        Value::Object(o) => {
+            if let Some(t) = o.get("@unsupported").and_then(Value::as_str) {
+                return Err(format!(
+                    "its configuration holds a {t}, which pun.toml can't"
+                ));
+            }
+            let mut table = toml::Table::new();
+            match o.get("@props").and_then(Value::as_object) {
+                Some(props) => {
+                    for (k, v) in props.iter().filter(|(_, v)| !v.is_null()) {
+                        table.insert(kebab(k), toml_value(v)?);
+                    }
+                }
+                None => {
+                    for (k, v) in o {
+                        table.insert(k.clone(), toml_value(v)?);
+                    }
+                }
+            }
+            toml::Value::Table(table)
+        }
+    })
+}
+
+/// A configured rule's options in pun.toml (context/plan/migrate.md, Decisions): Rector's option keys (the rule's
+/// constants) kebab-cased, a data map as it is, a list under `items`.
+fn rule_options(c: &Configured) -> Result<toml::Table, String> {
+    let named = matches!(&c.configuration, Value::Object(o)
+        if !o.is_empty() && o.keys().all(|k| c.constants.contains(k)));
+    let table: toml::Table = match toml_value(&c.configuration)? {
+        toml::Value::Table(t) => (t.into_iter())
+            .map(|(k, v)| (if named { kebab(&k) } else { k }, v))
+            .collect(),
+        v => toml::Table::from_iter([("items".to_string(), v)]),
+    };
+    match ["level", "fix"]
+        .into_iter()
+        .find(|k| table.contains_key(*k))
+    {
+        Some(k) => Err(format!(
+            "its configuration has a `{k}` key, which pun.toml keeps for the rule's level"
+        )),
+        None => Ok(table),
+    }
+}
+
 /// What a rector.php becomes before [`compose`] reconciles it with the sets.
 #[derive(Debug, Default)]
 pub struct Rector {
@@ -54,6 +139,8 @@ pub struct Rector {
     pub paths: Vec<String>,
     /// What Pun can't run: (Rector class short name, why).
     pub unsupported: Vec<(String, String)>,
+    /// The options of configured rules, by Pun rule ID.
+    pub options: BTreeMap<String, toml::Table>,
 }
 
 /// Rector's prepared set files (by file name) and the Pun set each is.
@@ -131,9 +218,6 @@ pub fn from_rector(root: &Path, r: &RectorConfig) -> Rector {
                 .get("unsupported")
                 .or(e.get("drop"))
                 .and_then(toml::Value::as_str),
-            (Some(_), Some(_)) if r.configured.contains(class) => {
-                Some("configured; its configuration can't be migrated yet")
-            }
             _ => None,
         };
         if let Some(why) = why {
@@ -141,6 +225,17 @@ pub fn from_rector(root: &Path, r: &RectorConfig) -> Rector {
             continue;
         }
         let id = pun.unwrap().to_string();
+        match r.configured.get(class).map(rule_options) {
+            Some(Err(why)) => {
+                out.unsupported
+                    .push((short(class), format!("configured; {why}")));
+                continue;
+            }
+            Some(Ok(options)) => {
+                out.options.insert(id.clone(), options);
+            }
+            None => {}
+        }
         // A format rule in Pun has no lint override; [`compose`] checks the format config runs it.
         if let Some(paths) = skip.and_then(Value::as_array)
             && id.starts_with("lint/")
@@ -204,10 +299,15 @@ pub fn compose(root: &Path, parts: &mut Parts, rector: &Rector) -> Result<Reconc
         if given.contains(id) {
             continue;
         }
-        if on.contains(&id.as_str()) {
+        let options = rector.options.get(id);
+        if on.contains(&id.as_str()) && options.is_none() {
             out.waiting += usize::from(!ported(id));
         } else {
-            let turned_on = super::require_lint(parts, id);
+            // A configured rule gets its options (at the default level, error), even when a set turns it on.
+            let value = options.map_or("\"error\"".into(), |t| {
+                toml::Value::Table(t.clone()).to_string()
+            });
+            let turned_on = super::require_lint(parts, id, &value);
             out.on += usize::from(turned_on);
             let why = "not supported by Pun yet".to_string();
             out.unsupported
