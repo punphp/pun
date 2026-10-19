@@ -1,0 +1,313 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$b.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$d.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$e.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$f.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$h.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$j.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$k.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$l.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$m.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$n.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$o.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$p.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 19,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $a. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 20,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $b. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 21,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $c. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 22,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $d. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 23,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $e. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 24,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $f. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 25,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $g. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 26,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $h. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 27,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $i. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 28,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $j. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 29,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $k. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 30,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $l. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 31,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $m. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 32,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $n. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 33,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $o. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 34,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Conditions has an uninitialized readonly property $p. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 64,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$d.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 67,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$e.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 70,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$f.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 73,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyFlow\\Conditions::$g is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 75,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$h.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 77,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Conditions::$j.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 95,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyFlow\\Exits has an uninitialized readonly property $a. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 162,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyFlow\\Dims::$a is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 164,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyFlow\\Dims::$a is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 171,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 177,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\Hints::$dnf.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 178,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyFlow\\Hints::$dnf is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 189,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyFlow\\UpperConstructor::$a is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 196,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyFlow\\UpperConstructor::$b is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 226,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class class@anonymous/flow.php:225 has an uninitialized readonly property $x. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "flow.php (in context of class ReadonlyFlow\\UsesReadsEarly)",
+   "line": 204,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyFlow\\UsesReadsEarly::$early.",
+   "tip": null
+  }
+ ]
+}

@@ -6,6 +6,8 @@ use std::collections::HashMap;
 use mago_span::Span;
 use mago_syntax::cst::*;
 
+use mago_codex::metadata::class_like::ClassLikeMetadata;
+
 use super::Checker;
 use super::reflection::{Known, known};
 
@@ -69,13 +71,210 @@ pub fn use_statement(c: &mut Checker, u: &Use) {
 
 /// ClassNameCheck::checkClassNames(). `case` is its `$checkClassCaseSensitivity`: `true` for the rules that call it
 /// with the default, [`Checker::case_sensitivity`] for the ones passing the `checkClassCaseSensitivity` parameter.
+/// With a `location`, each found class also goes through the RestrictedClassNameUsageExtension services.
 pub fn check(c: &mut Checker, pairs: &[Pair], case: bool) {
+    check_at(c, pairs, None, case);
+}
+
+pub fn check_at(c: &mut Checker, pairs: &[Pair], location: Option<&Location>, case: bool) {
     if case {
         case_sensitivity(c, pairs);
     }
     forbidden(c, pairs);
-    // ponytail: the RestrictedClassNameUsageExtension loop (RestrictedInternalClassNameUsageExtension's `*.internal`
-    // errors) belongs to the internal-usage rules
+    let Some(location) = location else {
+        return;
+    };
+    for pair in pairs {
+        let Some(Known::User(k)) = known(c, &pair.name) else {
+            continue;
+        };
+        for (message, identifier) in restricted(c, k, location) {
+            c.report(pair.at, &identifier, message, None);
+        }
+    }
+}
+
+/// A class member a location names, for the extensions: whether it or its declaring class is `@internal`, and
+/// whether it or its declaring class is deprecated.
+pub struct Member {
+    pub name: String,
+    pub internal: bool,
+    pub deprecated: bool,
+}
+
+/// ClassNameUsageLocation: where a class name is used, with what its messages need.
+pub enum Location {
+    TraitUse { class: Option<String> },
+    StaticPropertyAccess(Option<Member>),
+    Attribute,
+    Catch,
+    ClassConstantAccess(Option<Member>),
+    /// `Class X`, `Anonymous class`, `Interface X` or `Enum X` (the messages' subject), and the class's name.
+    Extends { subject: String, class: Option<String> },
+    Implements { subject: String, class: Option<String> },
+    Instanceof,
+    PropertyType { property: String },
+    /// The parameter's name (without `$`) and the function-like.
+    ParameterType { parameter: String, function: Function },
+    ReturnType(Function),
+    Instantiation,
+    StaticMethodCall(Option<Member>),
+}
+
+/// The function-like of a parameter or return type.
+pub enum Function {
+    Anonymous,
+    /// The method's name, and its class's name unless it is an anonymous class.
+    Method { name: String, class: Option<String> },
+    Function(String),
+}
+
+impl Location {
+    /// `createMessage()`.
+    fn message(&self, part: &str) -> String {
+        match self {
+            Location::TraitUse { class: Some(class) } => format!("Usage of {part} in class {class}."),
+            Location::TraitUse { class: None } => format!("Usage of {part}."),
+            Location::StaticPropertyAccess(Some(p)) => format!("Access to static property ${} on {part}.", p.name),
+            Location::StaticPropertyAccess(None) => format!("Access to static property on {part}."),
+            Location::Attribute => format!("Attribute references {part}."),
+            Location::Catch => format!("Catching {part}."),
+            Location::ClassConstantAccess(Some(k)) => format!("Access to constant {} on {part}.", k.name),
+            Location::ClassConstantAccess(None) => format!("Access to constant on {part}."),
+            Location::Extends { subject, .. } => format!("{subject} extends {part}."),
+            Location::Implements { subject, .. } => format!("{subject} implements {part}."),
+            Location::Instanceof => format!("Instanceof references {part}."),
+            Location::PropertyType { property } => format!("Property ${property} references {part} in its type."),
+            Location::ParameterType { parameter, function } => match function {
+                Function::Anonymous => format!("Parameter ${parameter} of anonymous function has typehint with {part}."),
+                Function::Method { name, class: Some(class) } => {
+                    format!("Parameter ${parameter} of method {class}::{name}() has typehint with {part}.")
+                }
+                Function::Method { name, class: None } => {
+                    format!("Parameter ${parameter} of method {name}() in anonymous class has typehint with {part}.")
+                }
+                Function::Function(name) => {
+                    format!("Parameter ${parameter} of function {name}() has typehint with {part}.")
+                }
+            },
+            Location::ReturnType(function) => match function {
+                Function::Anonymous => format!("Return type of anonymous function has typehint with {part}."),
+                Function::Method { name, class: Some(class) } => {
+                    format!("Return type of method {class}::{name}() has typehint with {part}.")
+                }
+                Function::Method { name, class: None } => {
+                    format!("Return type of method {name}() in anonymous class has typehint with {part}.")
+                }
+                Function::Function(name) => format!("Return type of function {name}() has typehint with {part}."),
+            },
+            Location::Instantiation => format!("Instantiation of {part}."),
+            Location::StaticMethodCall(Some(m)) => format!("Call to static method {}() on {part}.", m.name),
+            Location::StaticMethodCall(None) => format!("Call to static method on {part}."),
+        }
+    }
+
+    /// `createIdentifier()`.
+    fn identifier(&self, second: &str) -> String {
+        let ucfirst = || format!("{}{}", second[..1].to_ascii_uppercase(), &second[1..]);
+        match self {
+            Location::Extends { subject, .. } if subject.starts_with("Interface") => {
+                format!("interface.extends{}", ucfirst())
+            }
+            Location::Extends { .. } => format!("class.extends{}", ucfirst()),
+            Location::Implements { subject, .. } if subject.starts_with("Enum") => {
+                format!("enum.implements{}", ucfirst())
+            }
+            Location::Implements { .. } => format!("class.implements{}", ucfirst()),
+            _ => format!("{}.{second}", self.value()),
+        }
+    }
+
+    /// The location's value (the identifier's first part).
+    fn value(&self) -> &'static str {
+        match self {
+            Location::TraitUse { .. } => "traitUse",
+            Location::StaticPropertyAccess(_) => "staticProperty",
+            Location::Attribute => "attribute",
+            Location::Catch => "catch",
+            Location::ClassConstantAccess(_) => "classConstant",
+            Location::Extends { .. } | Location::Implements { .. } => "class",
+            Location::Instanceof => "instanceof",
+            Location::PropertyType { .. } => "property",
+            Location::ParameterType { .. } => "parameter",
+            Location::ReturnType(_) => "return",
+            Location::Instantiation => "new",
+            Location::StaticMethodCall(_) => "staticMethod",
+        }
+    }
+
+    /// `getCurrentClassName()`.
+    fn current_class(&self) -> Option<&str> {
+        match self {
+            Location::TraitUse { class }
+            | Location::Extends { class, .. }
+            | Location::Implements { class, .. }
+            | Location::ParameterType { function: Function::Method { class, .. }, .. }
+            | Location::ReturnType(Function::Method { class, .. }) => class.as_deref(),
+            _ => None,
+        }
+    }
+
+    /// The member a static call, static property access or class constant access names.
+    fn member(&self) -> Option<&Member> {
+        match self {
+            Location::StaticPropertyAccess(m) | Location::ClassConstantAccess(m) | Location::StaticMethodCall(m) => {
+                m.as_ref()
+            }
+            _ => None,
+        }
+    }
+}
+
+/// RestrictedInternalClassNameUsageExtension and phpstan-deprecation-rules' RestrictedDeprecatedClassNameUsageExtension
+/// on class-like `k` used at `location`.
+pub fn restricted(c: &Checker, k: &ClassLikeMetadata, location: &Location) -> Vec<(String, String)> {
+    let mut out = Vec::new();
+    let description = super::deprecations::type_description(k);
+    let name = String::from_utf8_lossy(k.original_name.as_bytes()).into_owned();
+    if c.internal_tag
+        && k.flags.is_internal()
+        && super::internal::should_be_reported(c, &name)
+        && !location.member().is_some_and(|m| m.internal)
+    {
+        let part = format!("internal {} {}", description.to_ascii_lowercase(), c.display(k));
+        out.push((location.message(&part), location.identifier(&format!("internal{description}"))));
+    }
+    if c.deprecations
+        && let Some(deprecation) = c.class_deprecation(k)
+        && !c.scope_deprecated()
+        && !location
+            .current_class()
+            .and_then(|class| c.codebase.get_class_like(class.as_bytes()))
+            .is_some_and(|current| c.class_deprecation(current).is_some())
+        && !location.member().is_some_and(|m| m.deprecated)
+        && (c.bleeding_edge
+            || matches!(
+                location,
+                Location::Implements { .. }
+                    | Location::Extends { .. }
+                    | Location::Instantiation
+                    | Location::TraitUse { .. }
+                    | Location::StaticMethodCall(_)
+                    | Location::StaticPropertyAccess(_)
+                    | Location::ClassConstantAccess(_)
+                    | Location::ParameterType { .. }
+                    | Location::ReturnType(_)
+            ))
+    {
+        let part = format!("deprecated {} {}", description.to_ascii_lowercase(), c.display(k));
+        let message = location.message(&part);
+        let message = match deprecation {
+            None => message,
+            Some(d) => format!("{}:\n{d}", message.trim_end_matches('.')),
+        };
+        out.push((message, location.identifier(&format!("deprecated{description}"))));
+    }
+    out
 }
 
 /// The core classes PHPStan reflects from its own stubs (stubs/runtime/Attribute84.php) rather than as built-ins, so

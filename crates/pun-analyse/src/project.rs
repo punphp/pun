@@ -40,6 +40,14 @@ pub struct Project {
     pub internal_tag: bool,
     /// `featureToggles.newStaticInAbstractClassStaticMethod` (on with bleedingEdge).
     pub new_static_in_abstract_class_static_method: bool,
+    /// Every analysed path is a file (FileFinderResult's `isOnlyFiles()`).
+    pub only_files: bool,
+    /// `featureToggles.bleedingEdge`.
+    pub bleeding_edge: bool,
+    /// `featureToggles.unusedLabel` (on with bleedingEdge).
+    pub unused_label: bool,
+    /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
+    pub deprecation_rules: bool,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
@@ -119,6 +127,13 @@ impl Project {
             })
             .unwrap_or(RUNTIME_PHP_VERSION);
         let flag = |k: &str| params.get_str(k) == Some(&Value::Bool(true));
+        let toggle = |k: &str| {
+            params
+                .get_str("featureToggles")
+                .and_then(Value::as_array)
+                .and_then(|t| t.get_str(k))
+                == Some(&Value::Bool(true))
+        };
         let report_unmatched_ignores = flag("reportUnmatchedIgnoredErrors");
         let empty = Array::new();
         let ignore_errors = params
@@ -141,21 +156,13 @@ impl Project {
             // config.neon's false, which config.level2.neon turns on
             check_class_case_sensitivity: flag("checkClassCaseSensitivity"),
             level,
-            check_generic_iterable_classes: params
-                .get_str("featureToggles")
-                .and_then(Value::as_array)
-                .and_then(|t| t.get_str("checkGenericIterableClasses"))
-                == Some(&Value::Bool(true)),
-            internal_tag: params
-                .get_str("featureToggles")
-                .and_then(Value::as_array)
-                .and_then(|t| t.get_str("internalTag"))
-                == Some(&Value::Bool(true)),
-            new_static_in_abstract_class_static_method: params
-                .get_str("featureToggles")
-                .and_then(Value::as_array)
-                .and_then(|t| t.get_str("newStaticInAbstractClassStaticMethod"))
-                == Some(&Value::Bool(true)),
+            check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
+            internal_tag: toggle("internalTag"),
+            new_static_in_abstract_class_static_method: toggle("newStaticInAbstractClassStaticMethod"),
+            only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
+            bleeding_edge: toggle("bleedingEdge"),
+            unused_label: toggle("unusedLabel"),
+            deprecation_rules: flag("deprecationRulesInstalled"),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
         }
@@ -178,6 +185,10 @@ impl Project {
             check_generic_iterable_classes: false,
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,
+            only_files: true,
+            bleeding_edge: false,
+            unused_label: false,
+            deprecation_rules: false,
             larastan: None,
         }
     }

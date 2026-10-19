@@ -1007,10 +1007,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/internal-constant-access" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-method-call" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-method-callable" = { preset = "basic", ported = true, status = "decided" }
-"classes/internal-property-access" = { preset = "basic", status = "decided" }
+"classes/internal-property-access" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-static-method-call" = { preset = "basic", ported = true, status = "decided" }
 "classes/internal-static-method-callable" = { preset = "basic", ported = true, status = "decided" }
-"classes/internal-static-property-access" = { preset = "basic", status = "decided" }
+"classes/internal-static-property-access" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-dynamic-constant-fetch" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-enum" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-enum-implements" = { preset = "basic", ported = true, status = "decided" }
@@ -1083,7 +1083,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-closure-use" = { preset = "basic", status = "decided" }
 "dead-code/unused-constructor-parameter" = { preset = "basic", fixed_by = ["lint/dead-code/no-unused-constructor-param"], status = "decided" }
 "dead-code/unused-function-result" = { preset = "recommended", status = "decided" }
-"dead-code/unused-label" = { preset = "recommended", fixed_by = ["lint/complexity/no-unused-label"], status = "decided" }
+"dead-code/unused-label" = { preset = "recommended", fixed_by = ["lint/complexity/no-unused-label"], ported = true, status = "decided" }
 "dead-code/unused-method-result" = { preset = "recommended", status = "decided" }
 "dead-code/unused-new-result" = { preset = "recommended", status = "decided" }
 "dead-code/unused-private-constant" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-constant"], status = "decided" }
@@ -1091,7 +1091,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-private-property" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-property"], status = "decided" }
 "dead-code/unused-result" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-expression"], status = "decided" }
 "dead-code/unused-static-method-result" = { preset = "recommended", status = "decided" }
-"dead-code/unused-trait" = { preset = "recommended", status = "decided" }
+"dead-code/unused-trait" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/useless-return-value" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/while-always-false" = { preset = "recommended", status = "decided" }
 "dead-code/while-always-true" = { preset = "recommended", status = "decided" }
@@ -1103,14 +1103,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "debug/dump-type" = { preset = "basic", status = "decided" }
 "deprecated/backtick" = { preset = "basic", fixed_by = ["format/functions/backtick-to-shell-exec"], ported = true, status = "decided" }
 "deprecated/cast" = { preset = "basic", fixed_by = ["format/casts/short-scalar"], ported = true, status = "decided" }
-"deprecated/class" = { preset = "recommended", status = "decided" }
-"deprecated/class-constant" = { preset = "recommended", status = "decided" }
-"deprecated/constant" = { preset = "recommended", status = "decided" }
-"deprecated/function" = { preset = "recommended", status = "decided" }
-"deprecated/ini-option" = { preset = "recommended", status = "decided" }
-"deprecated/method" = { preset = "recommended", status = "decided" }
-"deprecated/property" = { preset = "recommended", status = "decided" }
-"deprecated/to-string" = { preset = "basic", status = "decided" }
+"deprecated/class" = { preset = "recommended", ported = true, status = "decided" }
+"deprecated/class-constant" = { preset = "recommended", ported = true, status = "decided" }
+"deprecated/constant" = { preset = "recommended", ported = true, status = "decided" }
+"deprecated/function" = { preset = "recommended", ported = true, status = "decided" }
+"deprecated/ini-option" = { preset = "recommended", ported = true, status = "decided" }
+"deprecated/method" = { preset = "recommended", ported = true, status = "decided" }
+"deprecated/property" = { preset = "recommended", ported = true, status = "decided" }
+"deprecated/to-string" = { preset = "basic", ported = true, status = "decided" }
 "functions/closure-uses-this" = { preset = "basic", status = "decided" }
 "functions/conflicting-filter-var-flags" = { preset = "basic", status = "decided" }
 "functions/duplicate-parameter" = { preset = "basic", ported = true, status = "decided" }

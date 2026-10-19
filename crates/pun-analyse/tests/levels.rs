@@ -104,6 +104,18 @@ const PORTED: &[&str] = &[
     "classConstant.internalTrait",
     "classConstant.internalEnum",
     "function.internal",
+    "property.internal",
+    "property.internalClass",
+    "property.internalInterface",
+    "property.internalTrait",
+    "property.internalEnum",
+    "staticProperty.internal",
+    "staticProperty.internalClass",
+    "staticProperty.internalInterface",
+    "staticProperty.internalTrait",
+    "staticProperty.internalEnum",
+    "label.unused",
+    "trait.unused",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).

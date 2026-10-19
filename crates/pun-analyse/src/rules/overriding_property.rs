@@ -13,7 +13,7 @@ use mago_codex::symbol::SymbolKind;
 use mago_codex::visibility::Visibility;
 use mago_database::file::{File, FileId};
 use mago_span::{HasSpan, Position, Span};
-use mago_syntax::cst::Property;
+use mago_syntax::cst::{ClassLikeConstant, Constant, Property};
 use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
@@ -50,12 +50,22 @@ fn accessible(is_static: bool, is_virtual: bool, hook: bool) -> bool {
 
 /// Where each property declaration of a file starts, by the offset of its items' names (Mago's codex keeps no span
 /// for a plain property), parsed once per content.
-fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
+pub(super) fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
     struct Starts(HashMap<u32, u32>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Starts {
         fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
             for v in p.variables() {
                 self.0.insert(v.span.start.offset, p.span().start.offset);
+            }
+        }
+        fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+            for item in k.items.iter() {
+                self.0.insert(item.span().start.offset, k.span().start.offset);
+            }
+        }
+        fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
+            for item in k.items.iter() {
+                self.0.insert(item.span().start.offset, k.span().start.offset);
             }
         }
     }
@@ -84,7 +94,7 @@ fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
 
 impl<'a> Checker<'a, '_> {
     /// The span of property `p`'s declaration (from its attributes or modifiers), and of its name.
-    fn declaration(&self, p: &PropertyMetadata) -> Option<(Span, Span)> {
+    pub(super) fn declaration(&self, p: &PropertyMetadata) -> Option<(Span, Span)> {
         let name = p.name_span?;
         if let Some(span) = p.span {
             return Some((span, name));
@@ -96,7 +106,7 @@ impl<'a> Checker<'a, '_> {
 
     /// The declared property `name` (with its `$`) of user class `class` (its own, a trait's or an ancestor's): the
     /// class PHP reports declaring it, the class-like whose code declares it, and the property.
-    fn declared_property(
+    pub(super) fn declared_property(
         &self,
         class: &'a ClassLikeMetadata,
         name: &[u8],

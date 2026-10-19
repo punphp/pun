@@ -68,6 +68,7 @@ pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
         .analysed
         .par_iter()
         .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
+        .chain(rules::unused_traits(project, &codebase, &sources))
         .collect();
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));

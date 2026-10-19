@@ -6,7 +6,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_word::word;
 
-use super::class_names::{self, Pair};
+use super::class_names::{self, Function, Location, Pair};
 use super::reflection::{Known, known};
 use super::scope::Guard;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
@@ -211,7 +211,8 @@ pub fn instanceof<'arena>(
                 ),
                 Some(k) => {
                     let case = c.case_sensitivity;
-                    class_names::check(c, &[Pair::name(name.clone(), id.span())], case);
+                    let pair = Pair::name(name.clone(), id.span());
+                    class_names::check_at(c, &[pair], Some(&Location::Instanceof), case);
                     if k.is_trait() {
                         instanceof_trait(c, expr, &name);
                     }
@@ -275,7 +276,7 @@ pub fn catch<'arena>(c: &mut Checker<'_, 'arena>, clause: &TryCatchClause<'arena
                     );
                 }
                 let case = c.case_sensitivity;
-                class_names::check(c, &[Pair::name(name, at)], case);
+                class_names::check_at(c, &[Pair::name(name, at)], Some(&Location::Catch), case);
             }
         }
     }
@@ -337,6 +338,20 @@ pub fn typehints<'arena>(
     let parameter_message = format!("of {}", kind.named());
     let return_message = format!("{} has invalid return type", kind.subject());
     let anonymous = matches!(kind, FunctionKind::Anonymous);
+    let class = c
+        .class_scope()
+        .filter(|k| !k.name.as_bytes().starts_with(b"{anonymous-class:"))
+        .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned());
+    let function = || match kind {
+        FunctionKind::Anonymous => Some(Function::Anonymous),
+        FunctionKind::Function(name) => Some(Function::Function(name.to_string())),
+        FunctionKind::Method(_, method) => Some(Function::Method {
+            name: method.to_string(),
+            class: class.clone(),
+        }),
+        // ponytail: a hook's PhpMethodFromParserNodeReflection location is not built
+        FunctionKind::Hook(..) => None,
+    };
     for p in parameters.parameters.iter() {
         let Some(hint) = &p.hint else {
             continue;
@@ -367,7 +382,11 @@ pub fn typehints<'arena>(
             anonymous && matches!(hint, Hint::Identifier(_)),
         );
         let case = c.case_sensitivity;
-        class_names::check(c, &pairs, case);
+        let location = function().map(|function| Location::ParameterType {
+            parameter: name[1..].to_string(),
+            function,
+        });
+        class_names::check_at(c, &pairs, location.as_ref(), case);
     }
     let Some(r) = return_type else {
         return;
@@ -394,7 +413,8 @@ pub fn typehints<'arena>(
         matches!(r.hint, Hint::Identifier(_)),
     );
     let case = c.case_sensitivity;
-    class_names::check(c, &pairs, case);
+    let location = function().map(Location::ReturnType);
+    class_names::check_at(c, &pairs, location.as_ref(), case);
 }
 
 /// FunctionDefinitionCheck's ClassNameNodePairs for a type's classes: a name written in another case than it
@@ -482,13 +502,22 @@ pub fn class_hierarchy<'arena>(
     interface: bool,
     readonly: bool,
 ) {
-    let pairs: Vec<Pair> = extends
-        .iter()
-        .flat_map(|e| e.types.iter())
-        .chain(implements.iter().flat_map(|i| i.types.iter()))
-        .map(|id| Pair::name(c.resolved(id), id.span()))
-        .collect();
-    class_names::check(c, &pairs, true);
+    let class = current.split_once(' ').map(|(_, name)| name.to_string());
+    let pairs = |c: &Checker, ids: Option<&TokenSeparatedSequence<'arena, Identifier<'arena>>>| -> Vec<Pair> {
+        ids.into_iter().flat_map(|ids| ids.iter()).map(|id| Pair::name(c.resolved(id), id.span())).collect()
+    };
+    let extended = pairs(c, extends.map(|e| &e.types));
+    let location = Location::Extends {
+        subject: current.to_string(),
+        class: class.clone(),
+    };
+    class_names::check_at(c, &extended, Some(&location), true);
+    let implemented = pairs(c, implements.map(|i| &i.types));
+    let location = Location::Implements {
+        subject: current.to_string(),
+        class,
+    };
+    class_names::check_at(c, &implemented, Some(&location), true);
     if let Some(e) = extends {
         for id in e.types.iter() {
             let name = c.resolved(id);
@@ -634,7 +663,8 @@ pub fn property_type<'arena>(
             .map(|(referenced, _)| Pair::node(referenced.clone(), at))
             .collect();
         let case = c.case_sensitivity;
-        class_names::check(c, &pairs, case);
+        let location = Location::PropertyType { property };
+        class_names::check_at(c, &pairs, Some(&location), case);
     }
 }
 

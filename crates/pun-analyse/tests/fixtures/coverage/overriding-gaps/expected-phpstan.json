@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "gaps.php",
+   "line": 58,
+   "identifier": "method.parentMethodFinalByPhpDoc",
+   "message": "Method OverridingGaps\\OverridesFinalByDoc::f() overrides @final method OverridingGaps\\FinalByDoc::f().",
+   "tip": null
+  },
+  {
+   "file": "gaps.php",
+   "line": 68,
+   "identifier": "parameter.notOptional",
+   "message": "Parameter #1 $x of method OverridingGaps\\ConsistentChild::__construct() is not optional.",
+   "tip": null
+  },
+  {
+   "file": "gaps.php",
+   "line": 194,
+   "identifier": "outOfClass.static",
+   "message": "Using static outside of class scope.",
+   "tip": null
+  }
+ ]
+}

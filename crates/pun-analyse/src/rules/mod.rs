@@ -12,6 +12,7 @@ mod constants;
 mod dead_code;
 mod declarations;
 mod declared;
+mod deprecations;
 mod dynamic_fetch;
 mod doc;
 mod driver;
@@ -44,6 +45,7 @@ mod statements;
 mod syntax;
 mod through_static;
 mod type_aliases;
+mod unused_trait;
 mod write_only;
 
 use std::collections::{HashMap, HashSet};
@@ -70,6 +72,7 @@ pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
 pub(crate) use larastan::finish as larastan_finish;
 pub(crate) use reflection::builtins;
+pub(crate) use unused_trait::unused_traits;
 
 pub fn reports(identifier: &str) -> bool {
     IDENTIFIERS.contains(&identifier)
@@ -168,6 +171,8 @@ pub const IDENTIFIERS: &[&str] = &[
     "declareStrictTypes.notFirst",
     "declareStrictTypes.value",
     "goto.labelUndefined",
+    "label.unused",
+    "trait.unused",
     "constructor.returnType",
     "cast.deprecated",
     "cast.unset",
@@ -394,6 +399,133 @@ pub const IDENTIFIERS: &[&str] = &[
     "classConstant.internalInterface",
     "classConstant.internalTrait",
     "classConstant.internalEnum",
+    "property.internal",
+    "property.internalClass",
+    "property.internalInterface",
+    "property.internalTrait",
+    "property.internalEnum",
+    "staticProperty.internal",
+    "staticProperty.internalClass",
+    "staticProperty.internalInterface",
+    "staticProperty.internalTrait",
+    "staticProperty.internalEnum",
+    "traitUse.internalClass",
+    "traitUse.internalInterface",
+    "traitUse.internalTrait",
+    "traitUse.internalEnum",
+    "traitUse.deprecatedClass",
+    "traitUse.deprecatedInterface",
+    "traitUse.deprecatedTrait",
+    "traitUse.deprecatedEnum",
+    "staticProperty.deprecatedClass",
+    "staticProperty.deprecatedInterface",
+    "staticProperty.deprecatedTrait",
+    "staticProperty.deprecatedEnum",
+    "attribute.internalClass",
+    "attribute.internalInterface",
+    "attribute.internalTrait",
+    "attribute.internalEnum",
+    "attribute.deprecated",
+    "attribute.deprecatedClass",
+    "attribute.deprecatedInterface",
+    "attribute.deprecatedTrait",
+    "attribute.deprecatedEnum",
+    "catch.internalClass",
+    "catch.internalInterface",
+    "catch.internalTrait",
+    "catch.internalEnum",
+    "catch.deprecatedClass",
+    "catch.deprecatedInterface",
+    "catch.deprecatedTrait",
+    "catch.deprecatedEnum",
+    "classConstant.deprecatedClass",
+    "classConstant.deprecatedInterface",
+    "classConstant.deprecatedTrait",
+    "classConstant.deprecatedEnum",
+    "instanceof.internalClass",
+    "instanceof.internalInterface",
+    "instanceof.internalTrait",
+    "instanceof.internalEnum",
+    "instanceof.deprecatedClass",
+    "instanceof.deprecatedInterface",
+    "instanceof.deprecatedTrait",
+    "instanceof.deprecatedEnum",
+    "property.deprecatedClass",
+    "property.deprecatedInterface",
+    "property.deprecatedTrait",
+    "property.deprecatedEnum",
+    "parameter.internalClass",
+    "parameter.internalInterface",
+    "parameter.internalTrait",
+    "parameter.internalEnum",
+    "parameter.deprecatedClass",
+    "parameter.deprecatedInterface",
+    "parameter.deprecatedTrait",
+    "parameter.deprecatedEnum",
+    "return.internalClass",
+    "return.internalInterface",
+    "return.internalTrait",
+    "return.internalEnum",
+    "return.deprecatedClass",
+    "return.deprecatedInterface",
+    "return.deprecatedTrait",
+    "return.deprecatedEnum",
+    "new.internalClass",
+    "new.internalInterface",
+    "new.internalTrait",
+    "new.internalEnum",
+    "new.deprecatedClass",
+    "new.deprecatedInterface",
+    "new.deprecatedTrait",
+    "new.deprecatedEnum",
+    "staticMethod.deprecatedClass",
+    "staticMethod.deprecatedInterface",
+    "staticMethod.deprecatedTrait",
+    "staticMethod.deprecatedEnum",
+    "class.extendsInternalClass",
+    "class.extendsInternalInterface",
+    "class.extendsInternalTrait",
+    "class.extendsInternalEnum",
+    "class.extendsDeprecatedClass",
+    "class.extendsDeprecatedInterface",
+    "class.extendsDeprecatedTrait",
+    "class.extendsDeprecatedEnum",
+    "class.implementsInternalClass",
+    "class.implementsInternalInterface",
+    "class.implementsInternalTrait",
+    "class.implementsInternalEnum",
+    "class.implementsDeprecatedClass",
+    "class.implementsDeprecatedInterface",
+    "class.implementsDeprecatedTrait",
+    "class.implementsDeprecatedEnum",
+    "interface.extendsInternalClass",
+    "interface.extendsInternalInterface",
+    "interface.extendsInternalTrait",
+    "interface.extendsInternalEnum",
+    "interface.extendsDeprecatedClass",
+    "interface.extendsDeprecatedInterface",
+    "interface.extendsDeprecatedTrait",
+    "interface.extendsDeprecatedEnum",
+    "enum.implementsInternalClass",
+    "enum.implementsInternalInterface",
+    "enum.implementsInternalTrait",
+    "enum.implementsInternalEnum",
+    "enum.implementsDeprecatedClass",
+    "enum.implementsDeprecatedInterface",
+    "enum.implementsDeprecatedTrait",
+    "enum.implementsDeprecatedEnum",
+    "method.deprecated",
+    "method.deprecatedClass",
+    "method.deprecatedInterface",
+    "method.deprecatedTrait",
+    "method.deprecatedEnum",
+    "staticMethod.deprecated",
+    "property.deprecated",
+    "staticProperty.deprecated",
+    "classConstant.deprecated",
+    "function.deprecated",
+    "class.toStringDeprecated",
+    "constant.deprecated",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -438,6 +570,10 @@ struct TraitContext {
 pub struct FunctionScope {
     pub name: String,
     pub kind: FunctionScopeKind,
+    /// `isDeprecated()`, when the deprecation rules run.
+    pub deprecated: bool,
+    /// Where its declaration starts.
+    pub start: u32,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -526,6 +662,13 @@ pub struct Checker<'a, 'arena> {
     internal: Option<&'a internal::Names>,
     /// [`driver::Checks`]'s `featureToggles.internalTag`.
     internal_tag: bool,
+    /// [`driver::Checks`]'s level-2 RestrictedInternalMethodUsageExtension and RestrictedInternalPropertyUsageExtension.
+    internal_members: bool,
+    /// [`driver::Checks`]'s phpstan-deprecation-rules switch and `featureToggles.bleedingEdge`.
+    deprecations: bool,
+    bleeding_edge: bool,
+    /// UnusedLabelRule: level 4 with `featureToggles.unusedLabel`.
+    unused_label: bool,
     errors: Vec<Error>,
 }
 
@@ -679,18 +822,14 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && trait_span.start.offset <= f.span.start.offset
                 && f.span.end.offset <= trait_span.end.offset
         };
-        let Some(k) = self.codebase.get_class_like(class.as_bytes()) else {
-            return false;
-        };
-        // BetterReflection's own cases(), and a backed enum's from() and tryFrom(), replace an enum's others
-        let lower = name.to_ascii_lowercase();
-        if k.kind == SymbolKind::Enum
-            && (lower == "cases" || (k.enum_type.is_some() && (lower == "from" || lower == "tryfrom")))
-        {
-            return true;
-        }
-        members::method(self, k, name.as_bytes())
-            .is_some_and(|m| !matches!(m, members::Method::User { f, .. } if this_trait(f)))
+        self.codebase.get_class_like(class.as_bytes()).is_some_and(|k| {
+            // BetterReflection's own cases(), and a backed enum's from() and tryFrom(), replace an enum's others
+            let lower = name.to_ascii_lowercase();
+            (k.kind == SymbolKind::Enum
+                && (lower == "cases" || (k.enum_type.is_some() && (lower == "from" || lower == "tryfrom"))))
+                || members::method(self, k, name.as_bytes())
+                    .is_some_and(|m| !matches!(m, members::Method::User { f, .. } if this_trait(f)))
+        })
     }
 
     fn written(&self, span: Span) -> String {
@@ -841,9 +980,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, class.span(), k);
             hierarchy::allowed_subtypes(self, class.span(), k);
-            if self.trait_context.is_none() {
-                readonly_init::class(self, k, class.members.as_slice());
-            }
+            readonly_init::class(self, k, class.members.as_slice());
         }
         type_aliases::class_like(self, class.span());
         missing_types::class(self, class);
@@ -1067,9 +1204,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, a.span(), k);
             hierarchy::allowed_subtypes(self, a.span(), k);
-            if self.trait_context.is_none() {
-                readonly_init::class(self, k, a.members.as_slice());
-            }
+            readonly_init::class(self, k, a.members.as_slice());
         }
         generics::anonymous(self, a, &name, &display);
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
@@ -1127,9 +1262,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         self.syntax.by_ref.push(f.ampersand.is_some());
         self.enter_function(Vec::new());
+        let deprecated = self.entered_deprecated("", false, f.span());
         self.functions.push(FunctionScope {
             name: String::from_utf8_lossy(f.name.value).into_owned(),
             kind: FunctionScopeKind::Function,
+            deprecated,
+            start: f.span().start.offset,
         });
     }
     fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
@@ -1266,7 +1404,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 .unwrap_or_default()
         };
         self.enter_function(guards);
+        let deprecated = self.entered_deprecated(&method, true, m.span());
         self.functions.push(FunctionScope {
+            deprecated,
+            start: m.span().start.offset,
             name: method,
             kind: FunctionScopeKind::Method {
                 is_static: m.modifiers.iter().any(|m| matches!(m, Modifier::Static(_))),
@@ -1421,6 +1562,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
         property_access::read(self, p);
         write_only::read(self, p.span(), p.object, &p.property);
+        internal::property_fetch(self, p);
     }
     fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
         write_only::null_safe(self, p);
@@ -1432,6 +1574,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         property_access::static_read(self, p);
         through_static::property(self, p);
+        internal::static_property_fetch(self, p);
     }
     fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -1443,6 +1586,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         larastan::function_call(self, call);
         function_checks::function_call(self, call);
         restricted_functions::function_call(self, call);
+        deprecations::ini_option(self, call);
         calls::function_call(self, call);
         dead_code::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
@@ -1808,11 +1952,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_label(&mut self, l: &'ast Label<'arena>, _: &mut ()) {
         self.label(l);
     }
+    fn walk_in_constant_access(&mut self, a: &'ast ConstantAccess<'arena>, _: &mut ()) {
+        deprecations::constant_fetch(self, a.span(), &a.name);
+    }
     fn walk_in_magic_constant(&mut self, m: &'ast MagicConstant<'arena>, _: &mut ()) {
         statements::magic_constant(self, m);
     }
     fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
         statements::cast(self, u);
+        internal::string_cast(self, u);
         if matches!(
             u.operator,
             UnaryPrefixOperator::PreIncrement(_) | UnaryPrefixOperator::PreDecrement(_)
