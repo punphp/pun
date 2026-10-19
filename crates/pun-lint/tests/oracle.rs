@@ -239,3 +239,12 @@ fn empty_array_identical_on_a_parameter_written_later() {
         "prefer_empty_array_identical.php.inc",
     );
 }
+
+#[test]
+fn arrow_function_return_type_of_a_member_of_an_unknown_class() {
+    // Mago types a member of `?Unknown` as `null` and of `new Unknown()` as `never`; PHPStan knows no type for either.
+    check_rule_oracle(
+        rules::AddArrowFunctionReturn,
+        "add_arrow_function_return_type_unknown_class.php.inc",
+    );
+}

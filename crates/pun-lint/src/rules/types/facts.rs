@@ -25,7 +25,6 @@ use mago_codex::populator::populate_codebase;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
-use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileType};
 use mago_names::ResolvedNames;
@@ -308,15 +307,9 @@ impl Facts {
         if let Some(artifacts) = &artifacts {
             // a member of a class the codebase lacks (vendor/ is not scanned; Rector's PHPStan reads it): Mago types
             // it from the rest of the object's union (`?Unknown` gives `null`), PHPStan from the class
+            // (a class name Mago could not resolve is a reference; `new` of one is `never`)
             let unknown = |t: &TUnion| {
-                t.types.iter().any(|t| match t {
-                    // a class name Mago could not resolve
-                    TAtomic::Reference(_) => true,
-                    TAtomic::Object(TObject::Named(c)) => {
-                        self.codebase.get_class_like(c.name.as_bytes()).is_none()
-                    }
-                    _ => false,
-                })
+                (t.types.iter()).any(|t| matches!(t, TAtomic::Reference(_) | TAtomic::Never))
             };
             any_node(Node::Program(program), &mut |n| {
                 let (object, span) = match n {
@@ -326,7 +319,8 @@ impl Facts {
                     Node::NullSafeMethodCall(c) => (c.object, c.span()),
                     _ => return,
                 };
-                let o = object.span();
+                // Mago types `(new X)` under the span inside the parentheses
+                let o = crate::syntax::unparenthesize(object).span();
                 if (artifacts.expression_types)
                     .get(&(o.start.offset, o.end.offset))
                     .is_some_and(|t| unknown(t))
