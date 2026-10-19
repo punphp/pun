@@ -146,13 +146,14 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
         .iter()
         .map(|s| relative(root, s))
         .collect();
-    if let Some(Value::Array(e)) = p.get_str("excludePaths") {
-        out.exclude = strings(e.get_str("analyseAndScan"))
-            .into_iter()
-            .chain(strings(e.get_str("analyse")))
-            .map(|s| relative(root, &s))
-            .collect();
-    }
+    let exclude = (p.get_str("excludePaths").and_then(Value::as_array))
+        .cloned()
+        .unwrap_or_default();
+    out.exclude = strings(exclude.get_str("analyseAndScan"))
+        .into_iter()
+        .chain(strings(exclude.get_str("analyse")))
+        .map(|s| relative(root, &s))
+        .collect();
     let includes = includes(root, config);
     for inc in &includes {
         if is_baseline(inc) {
@@ -161,14 +162,13 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
         let rel = relative(root, inc);
         match package(&rel) {
             Some(pkg) if pkg == "phpstan/phpstan" => {
-                let name = inc.rsplit('/').next().unwrap();
-                if name != "bleedingEdge.neon" {
-                    continue;
-                }
-                out.unsupported.push((
-                    rel,
-                    "Pun checks as PHPStan does without bleeding edge".into(),
-                ));
+                out.unsupported
+                    .extend((inc.ends_with("/bleedingEdge.neon")).then(|| {
+                        (
+                            rel,
+                            "Pun checks as PHPStan does without bleeding edge".into(),
+                        )
+                    }))
             }
             Some(pkg) if BUILT_IN.iter().any(|b| b.0 == pkg) => {
                 out.extensions.insert(pkg);
@@ -216,27 +216,17 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
     Ok(out)
 }
 
-/// Every file `config` includes, depth first, as absolute paths; `%rootDir%`-relative PHPStan files included.
+/// Every file `config` includes, depth first, as absolute paths; `%rootDir%`-relative PHPStan files included. PHPStan
+/// rejects a file included twice, so each appears once.
 fn includes(root: &Path, config: &Path) -> Vec<String> {
     let mut out = vec![];
     let mut todo = vec![config.display().to_string()];
     while let Some(file) = todo.pop() {
-        let Some(Value::Array(a)) = std::fs::read(&file)
-            .ok()
-            .and_then(|b| pun_phpstan::neon::decode_bytes(&b).ok())
-        else {
-            continue;
-        };
         let dir = Path::new(&file).parent().unwrap_or(root).to_path_buf();
-        for inc in strings(a.get_str("includes")) {
-            let path = if inc.starts_with('/') {
-                inc.clone()
-            } else {
-                dir.join(inc.trim_start_matches("./")).display().to_string()
-            };
-            if out.contains(&path) {
-                continue;
-            }
+        for inc in strings(neon(&file).get_str("includes")) {
+            // As PHPStan normalizes it (`../vendor/...` from a subdirectory is a package's); an absolute include
+            // replaces `dir`.
+            let path = pun_phpstan::php::normalize_path(&dir.join(inc).display().to_string());
             out.push(path.clone());
             // A package's own includes belong to it.
             if package(&relative(root, &path)).is_none() {
@@ -245,6 +235,14 @@ fn includes(root: &Path, config: &Path) -> Vec<String> {
         }
     }
     out
+}
+
+/// A neon file PHPStan has already read (so it exists and parses) as its top-level array.
+fn neon(file: &str) -> Array {
+    (std::fs::read(file).ok())
+        .and_then(|b| pun_phpstan::neon::decode_bytes(&b).ok())
+        .and_then(|v| v.as_array().cloned())
+        .unwrap_or_default()
 }
 
 /// `vendor/<vendor>/<package>/...` as `<vendor>/<package>`.
@@ -260,11 +258,9 @@ fn installer_extensions(root: &Path) -> Vec<String> {
     let Ok(text) = std::fs::read_to_string(path) else {
         return vec![];
     };
-    let Some(start) = text.find("EXTENSIONS") else {
-        return vec![];
-    };
+    let after = text.split_once("EXTENSIONS").map_or("", |x| x.1);
     let mut out = vec![];
-    for line in text[start..].lines().skip(1) {
+    for line in after.lines().skip(1) {
         let t = line.trim();
         if t.starts_with("const ") || t.starts_with("public const") {
             break;
@@ -274,7 +270,6 @@ fn installer_extensions(root: &Path) -> Vec<String> {
             && after.trim_start().starts_with("=>")
             && name.matches('/').count() == 1
             && !name.contains(' ')
-            && !out.contains(&name.to_string())
         {
             out.push(name.to_string());
         }
@@ -289,31 +284,21 @@ fn own_parameters(root: &Path, config: &Path, includes: &[String]) -> BTreeSet<S
             .filter(|i| package(&relative(root, i)).is_none() && !is_baseline(i))
             .cloned(),
     );
-    let mut out = BTreeSet::new();
-    for file in own {
-        let Some(Value::Array(a)) = std::fs::read(&file)
-            .ok()
-            .and_then(|b| pun_phpstan::neon::decode_bytes(&b).ok())
-        else {
-            continue;
-        };
-        if let Some(Value::Array(p)) = a.get_str("parameters") {
-            out.extend(p.keys().map(|k| k.as_string()));
-        }
-    }
-    out
+    own.flat_map(|file| {
+        (neon(&file).get_str("parameters").and_then(Value::as_array))
+            .map(|p| p.keys().map(|k| k.as_string()).collect::<Vec<_>>())
+            .unwrap_or_default()
+    })
+    .collect()
 }
 
 /// One `ignoreErrors` entry as `[[analyse.ignore]]` tables: one per message and identifier it lists.
 fn ignore_entry(root: &Path, e: &Value, out: &mut Phpstan) {
+    // PHPStan's schema allows a string (a message) or an array.
     let empty = Array::new();
-    let (a, plain) = match e {
-        Value::Str(s) => (&empty, Some(s.clone())),
-        Value::Array(a) => (a, None),
-        _ => return,
-    };
+    let a = e.as_array().unwrap_or(&empty);
     let mut messages: Vec<(&str, String)> = vec![];
-    messages.extend(plain.map(|m| ("message", m)));
+    messages.extend(e.as_str().map(|m| ("message", m.to_string())));
     for (key, kind) in [
         ("message", "message"),
         ("messages", "message"),
@@ -532,22 +517,17 @@ pub fn compose(root: &Path, parts: &mut Parts, phpstan: &Phpstan) -> Result<Anal
         .iter()
         .filter(|id| !id.starts_with("analyse/") && !formats(id))
     {
-        let name = id.split_once('/').unwrap().1.to_string();
-        if id.starts_with("lint/") && super::rector::ported(id) {
-            match parts.lint_rules.iter_mut().find(|(k, _)| *k == name) {
-                Some((_, v)) => *v = "\"error\"".into(),
-                None => parts.lint_rules.push((name, "\"error\"".into())),
+        let lint = id.starts_with("lint/");
+        let turned_on = lint && super::require_lint(parts, id);
+        done.lint += usize::from(turned_on);
+        let why = match lint {
+            true => "a PHPStan check that is this lint rule in Pun, not supported yet",
+            false => {
+                "a PHPStan check that is this format rule in Pun; turn it on in [format.rules]"
             }
-            done.lint += 1;
-        } else {
-            let why = match id.starts_with("lint/") {
-                true => "a PHPStan check that is this lint rule in Pun, not supported yet",
-                false => {
-                    "a PHPStan check that is this format rule in Pun; turn it on in [format.rules]"
-                }
-            };
-            done.unsupported.push((id.clone(), why.to_string()));
-        }
+        };
+        done.unsupported
+            .extend((!turned_on).then(|| (id.clone(), why.to_string())));
     }
     parts.analyse_ignores = phpstan.ignores.join("\n");
     Ok(done)

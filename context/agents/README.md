@@ -13,8 +13,8 @@ option closest to upstream behaviour, and keep going.
 - **Mac agents** run in one shared checkout, /Users/pushpakchhajed/Projects/pun, on `main`. A coordinator
   session checks on them hourly. Machine-local tooling lives in ~/Projects/pun-wf (not in git): the `heavy`
   build lock, corpus scratch copies with `vendor/`, per-agent tmp dirs.
-- **Server agents** run on a separate server, each in its own clone of git@github.com:punphp/pun.git.
-  They have no ~/Projects/pun-wf; see "Server setup" below.
+- **Server agents** run on a separate server, each in its own git worktree of one shared clone of
+  git@github.com:punphp/pun.git. They have no ~/Projects/pun-wf; see "Server setup" below.
 
 Both push straight to origin/main. Nobody force-pushes, rebases shared history or opens long-lived branches.
 
@@ -80,7 +80,8 @@ of your own.
   touch other agents' uncommitted files.
 - Commit only your own paths in one step: `git add <new files you created>`, then
   `git commit -m "type(scope): subject" -m "Claude-Session: https://claude.ai/code/session_01NySXSoVyfV7bfuu5pBqpiQ" -- <your paths>`.
-  If `.git/index.lock` exists, wait a few seconds and retry.
+  If `.git/index.lock` exists, wait a few seconds and retry. Never leave files staged: `git add` only
+  new files, right before the commit that includes them. A staged file blocks everyone's merge.
 - Push after every finished batch: `git push origin main`. If it is rejected because someone else pushed:
   `git fetch origin && git merge --no-edit origin/main && git push origin main`. Never rebase, never force.
   `git merge` refuses safely when it would touch a file with uncommitted edits; if it refuses or conflicts,
@@ -122,15 +123,24 @@ directories you did not create, ~/.claude, or anything you did not create.
 
 ## Server setup
 
-A server agent, in its own clone:
+The server has one base clone of git@github.com:punphp/pun.git; each agent works in its own worktree of it,
+so agents never share a working tree and the git objects are stored once.
 
-1. Install rustc 1.99 (rustup), PHP 8.4+ with the usual extensions, composer, node and npm.
-2. `scripts/oracle.sh` installs the pinned tools into `.oracle/`; `scripts/corpus.sh <name>` checks out a
-   corpus project (corpus/manifest.toml lists them). For analyse and lint comparisons, run
-   `SETUP_ONLY=1 BENCH=analyse scripts/bench.py` (and `BENCH=lint`) once to make scratch copies with
-   `composer install` under `target-bench/`.
-3. `git fetch origin && git merge --ff-only origin/main` before each batch; your clone is yours, so
-   `git pull --rebase origin main` before a push is fine there as long as you never force-push.
+The base clone is the directory named `pun` on the server (find it; do not make another clone, and never
+edit files in it directly: it only hosts the worktrees and the shared `.oracle/`, `corpus/`, `target-bench/`).
+
+1. Once per server: install rustc 1.99 (rustup), PHP 8.4+ with the usual extensions, composer, node and npm;
+   in the `pun` clone run `scripts/oracle.sh` (pinned tools into
+   `.oracle/`) and `scripts/corpus.sh <name>` for the corpus projects (corpus/manifest.toml lists them). For
+   analyse and lint comparisons, run `SETUP_ONLY=1 BENCH=analyse scripts/bench.py` (and `BENCH=lint`) once
+   to make scratch copies with `composer install` under `target-bench/`.
+2. Each agent, from inside the `pun` clone: `git fetch origin && git worktree add ../pun-<name> -b
+   helper/<name> origin/main`, then work in `../pun-<name>`. Link the shared heavy data instead of copying it:
+   `ln -s "$PWD/.oracle" "$PWD/corpus" "$PWD/target-bench" ../pun-<name>/` (skip any that do not exist).
+3. Your branch is private, so before each push: `git fetch origin && git rebase origin/main`, then
+   `git push origin HEAD:main`. Never force-push and never push the helper branch itself.
+4. When you stop: `git worktree remove ../pun-<name>` and `git branch -D helper/<name>` after everything
+   is on origin/main.
 
 ## Finishing
 

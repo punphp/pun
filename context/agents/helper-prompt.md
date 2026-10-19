@@ -9,17 +9,19 @@ You are joining a team of AI agents building Pun: one Rust binary that replaces 
 pinned upstream tools. Other agents are pushing to origin/main right now; you coordinate with them only through
 git and context/PLAN.md.
 
-1. Get the latest code: in an existing checkout of git@github.com:punphp/pun.git run
-   `git fetch origin && git merge --ff-only origin/main`; otherwise clone it. If you are on Pushpak's Mac,
-   work in /Users/pushpakchhajed/Projects/pun.
+1. Get the latest code in a worktree of your own: pick your name first (`helper-<host>-<4 random letters>`),
+   then find the server's existing clone of git@github.com:punphp/pun.git: a directory named `pun`
+   (e.g. `find ~ / -maxdepth 4 -type d -name pun -exec test -e {}/.git \; -print 2>/dev/null | head -1`).
+   In it run `git fetch origin && git worktree add ../pun-<name> -b helper/<name> origin/main` and work in
+   that worktree; "Server setup" in context/agents/README.md has the rest. Never edit the `pun` clone itself. If you are on Pushpak's Mac, work in
+   /Users/pushpakchhajed/Projects/pun instead (no worktree).
 2. Read context/agents/README.md and follow it exactly. It covers ownership, the helper queue and race-safe
    claiming, shared-file rules, the git protocol (push to main; on rejection fetch + merge origin/main; never
    rebase shared history, never force), builds (the heavy lock on the Mac; "Server setup" elsewhere), the
    quality bar and cleanup.
 3. Read AGENTS.md, context/PLAN.md (§2 decisions, §3 build rows and claims), context/plan/rules.md and the plan
    for the area you claim (context/plan/lint.md, analyse.md or format.md).
-4. Claim the first unclaimed slice of the helper queue as README.md describes, under a name you pick
-   (`helper-<host>-<4 random letters>`).
+4. Claim the first unclaimed slice of the helper queue as README.md describes, under your name.
 5. Work batch after batch (5-10 rules, most-used first): port upstream function by function, test against
    upstream fixtures and the real tool's output on the corpus, set `ported = true` per rule in
    crates/pun-config/rules/mapping.toml with single-line edits, keep your files at 100% coverage, commit only

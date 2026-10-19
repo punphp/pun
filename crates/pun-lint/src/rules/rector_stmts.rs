@@ -233,7 +233,7 @@ pub fn body_list<'a>(source: &str, statement: &'a Statement<'a>) -> List<'a> {
     }
 }
 
-fn open_list<'a>(
+pub fn open_list<'a>(
     source: &str,
     statements: &'a Sequence<'a, Statement<'a>>,
     from: usize,

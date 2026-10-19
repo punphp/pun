@@ -34,6 +34,19 @@ pub struct Parts {
     pub analyse_ignores: String,
 }
 
+/// `id` (a lint rule ID) at `"error"` in `[lint.rules]`, replacing a line already there; false, and nothing written,
+/// when Pun hasn't ported it (pun.toml rejects a rule without a native port).
+pub(super) fn require_lint(parts: &mut Parts, id: &str) -> bool {
+    if !rector::ported(id) {
+        return false;
+    }
+    parts.lint_rules.retain(|(k, _)| k != &id[5..]);
+    parts
+        .lint_rules
+        .push((id[5..].to_string(), "\"error\"".into()));
+    true
+}
+
 impl Parts {
     pub fn render(&self) -> String {
         let pairs = |rules: &[(String, String)]| -> String {

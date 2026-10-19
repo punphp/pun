@@ -117,6 +117,11 @@ fn composes_the_difference_with_the_sets() {
                 id("lint/complexity/no-compact"),
                 id("CompactToVariablesRector"),
             ),
+            // A code-quality rule (ported), outside the dead-code set: its own line.
+            (
+                id("lint/complexity/no-and-assignment"),
+                id("AndAssignsToSeparateLinesRector"),
+            ),
             // Already on through the format config's line: no second line.
             (
                 id("lint/imports/no-unused"),
@@ -160,13 +165,15 @@ fn composes_the_difference_with_the_sets() {
     let mut expect: BTreeSet<&str> = [
         "lint/dead-code/no-unused-foreach-key",
         "lint/imports/no-unused",
+        "lint/complexity/no-and-assignment",
     ]
     .into();
+    assert!(text.contains("\n\"complexity/no-and-assignment\" = \"error\"\n"));
     if ported("lint/complexity/no-compact") {
         expect.insert("lint/complexity/no-compact");
-        assert_eq!((done.on, done.unsupported.len()), (1, 0));
+        assert_eq!((done.on, done.unsupported.len()), (2, 0));
     } else {
-        assert_eq!(done.on, 0);
+        assert_eq!(done.on, 1);
         assert_eq!(
             done.unsupported,
             [(
@@ -178,6 +185,14 @@ fn composes_the_difference_with_the_sets() {
     assert_eq!(on, expect);
     assert_eq!(done.off, text.matches("= \"off\"\n").count());
     assert!(done.off > 0);
+
+    // No prepared set and no skip: no empty `sets` or `exclude` line.
+    let mut parts = Parts {
+        format: "preset = \"empty\"\n".into(),
+        ..Parts::default()
+    };
+    compose(&root, &mut parts, &Rector::default()).unwrap();
+    assert!(!parts.render().contains("[lint]\n"), "{}", parts.render());
 }
 
 /// mapping.toml's `ported` flag of a rule.

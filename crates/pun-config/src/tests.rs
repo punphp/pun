@@ -647,6 +647,10 @@ fn rule_metadata() {
     );
     // Analyse rules have no fix.
     assert_eq!(rule("analyse/types/argument").unwrap().fix, "none");
+    assert_eq!(
+        rule("lint/arrays/prefer-array-append").unwrap().fix.name(),
+        "unsafe"
+    );
     assert!(rule("dead-code/no-self-assignment").is_none());
     assert!(rule("lint.no-self-assignment").is_none());
     assert!(rule("format/imports/no-unused").is_none());
@@ -699,10 +703,18 @@ fn show() {
     assert_eq!(v["analyse"]["preset"], "basic");
     // No baseline, no key (TOML has no null); a baseline is a path.
     assert!(v["analyse"].get("baseline").is_none());
-    let d = dir(&[("pun.toml", "[analyse]\nbaseline = \"b.toml\"\n")]);
+    let d = dir(&[(
+        "pun.toml",
+        "[analyse]\nbaseline = \"b.toml\"\nstubs = [\"stubs/A.stub\"]\n[[analyse.ignore]]\nrule = \"undefined/method\"\nmessage = \"#^Call#\"\ncount = 2\n",
+    )]);
+    let a = &load(&d, &Options::default()).unwrap().show()["analyse"];
     assert_eq!(
-        load(&d, &Options::default()).unwrap().show()["analyse"]["baseline"],
-        "b.toml"
+        (&a["baseline"], &a["stubs"], &a["ignore"]),
+        (
+            &json!("b.toml"),
+            &json!(["stubs/A.stub"]),
+            &json!([{"rule": "analyse/undefined/method", "message": "#^Call#", "count": 2}])
+        )
     );
 }
 
@@ -1004,6 +1016,19 @@ fn pun_toml_errors() {
         (
             "[analyse.rules]\nnope = \"on\"\n",
             "`nope` is not a analyse rule (see crates/pun-config/rules/mapping.toml)",
+        ),
+        (
+            "[[analyse.ignore]]\nrule = \"nope\"\n",
+            "`nope` is not a analyse rule (see crates/pun-config/rules/mapping.toml)",
+        ),
+        // PHPStan's ignoreErrors schema: message and rawMessage exclude each other, and an entry names something.
+        (
+            "[[analyse.ignore]]\nmessage = \"#^A#\"\nraw-message = \"A\"\n",
+            "[[analyse.ignore]] #1: message and raw-message: give one",
+        ),
+        (
+            "[[analyse.ignore]]\nidentifier = \"x.y\"\n\n[[analyse.ignore]]\npaths = [\"app\"]\n",
+            "[[analyse.ignore]] #2: name a rule, an identifier or a message",
         ),
         // `ordered` is imports/ordered, attributes/ordered and types/ordered: not guessed.
         (
@@ -1513,4 +1538,10 @@ fn php_version_id() {
     assert_eq!(c.show()["php"]["version"], "8.5");
     assert_eq!(crate::PhpVersion::FLOOR.to_id(), 80400);
     assert!("8".parse::<crate::PhpVersion>().is_err());
+    // Serialized as `[php] version` writes it, not as a table.
+    assert_eq!(
+        serde_json::to_value(crate::PhpVersion { major: 8, minor: 5 }).unwrap(),
+        "8.5"
+    );
+    assert_eq!(crate::FormatPreset::Psr12.to_string(), "psr12");
 }

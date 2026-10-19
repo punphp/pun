@@ -28,6 +28,7 @@ fn project(neon: &str, extra: &[(&str, &str)]) -> PathBuf {
     std::fs::create_dir_all(d.join("app/Models")).unwrap();
     std::fs::write(d.join("app/Models/User.php"), "<?php\n").unwrap();
     for (n, c) in extra {
+        std::fs::create_dir_all(d.join(n).parent().unwrap()).unwrap();
         std::fs::write(d.join(n), c).unwrap();
     }
     d
@@ -37,8 +38,8 @@ const NEON: &str = "includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
     - phpstan-baseline.neon
-    - vendor/foo/bar/rules.neon
     - build/custom.neon
+    - vendor/phpstan/phpstan/conf/extra.neon
 parameters:
     level: 5
     paths:
@@ -46,6 +47,7 @@ parameters:
         - tests/
     excludePaths:
         - app/Legacy
+        - /tmp
     phpVersion: 80400
     tmpDir: build/phpstan
     stubFiles:
@@ -65,6 +67,61 @@ parameters:
             identifier: no.suchIdentifier
         -
             identifier: whitespace.bom
+        -
+            identifier: phpstanApi.method
+";
+
+/// phpstan/extension-installer's GeneratedConfig.php as version 1.4 writes it (trimmed to three packages).
+const GENERATED: &str = "<?php declare(strict_types = 1);
+
+namespace PHPStan\\ExtensionInstaller;
+
+final class GeneratedConfig
+{
+
+\tpublic const EXTENSIONS = array (
+  'foo/bar' => 
+  array (
+    'install_path' => '/p/vendor/foo/bar',
+    'relative_install_path' => '../../../foo/bar',
+    'extra' => NULL,
+    'version' => '1.0.0',
+  ),
+  'phpstan/phpstan-mockery' => 
+  array (
+    'install_path' => '/p/vendor/phpstan/phpstan-mockery',
+    'relative_install_path' => '../../phpstan-mockery',
+    'extra' => 
+    array (
+      'includes' => 
+      array (
+        0 => 'extension.neon',
+      ),
+    ),
+    'version' => '2.0.0',
+  ),
+  'phpstan/phpstan-strict-rules' => 
+  array (
+    'install_path' => '/p/vendor/phpstan/phpstan-strict-rules',
+    'relative_install_path' => '../../phpstan-strict-rules',
+    'extra' => 
+    array (
+      'includes' => 
+      array (
+        0 => 'rules.neon',
+      ),
+    ),
+    'version' => '2.0.7',
+  ),
+);
+
+\tpublic const NOT_INSTALLED = array (
+  'phpstan/phpstan-phpunit' => 
+  array (
+  ),
+);
+
+}
 ";
 
 /// Each part of the config lands where the plan puts it; what Pun can't take is named.
@@ -75,9 +132,13 @@ fn reads_level_paths_ignores_and_includes() {
         &[
             ("vendor/larastan/larastan/extension.neon", ""),
             ("vendor/foo/bar/rules.neon", ""),
+            ("vendor/phpstan/phpstan/conf/extra.neon", ""),
+            ("vendor/phpstan/phpstan-mockery/extension.neon", ""),
+            ("vendor/phpstan/phpstan-strict-rules/rules.neon", ""),
+            // A package's file included from a subdirectory is the package's.
             (
                 "build/custom.neon",
-                "parameters:\n    checkFunctionNameCase: true\n",
+                "includes:\n    - ../vendor/foo/bar/rules.neon\nparameters:\n    checkFunctionNameCase: true\n",
             ),
             (
                 "phpstan-baseline.neon",
@@ -85,33 +146,44 @@ fn reads_level_paths_ignores_and_includes() {
             ),
         ],
     );
+    let installer = d.join("vendor/phpstan/extension-installer/src");
+    std::fs::create_dir_all(&installer).unwrap();
+    let generated = GENERATED.replace("'/p/", &format!("'{}/", d.display()));
+    std::fs::write(installer.join("GeneratedConfig.php"), generated).unwrap();
     let p = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
     assert_eq!(p.level, 5);
     assert_eq!(p.paths, ["app", "tests"]);
-    assert_eq!(p.exclude, ["app/Legacy"]);
+    assert_eq!(p.exclude, ["app/Legacy", "/tmp"]);
     assert_eq!(p.stubs, ["stubs/Foo.stub"]);
     assert_eq!(p.baselines, ["phpstan-baseline.neon"]);
+    // strict-rules through the extension installer; NOT_INSTALLED is not read.
     assert_eq!(
         p.extensions.iter().collect::<Vec<_>>(),
-        ["larastan/larastan"]
+        ["larastan/larastan", "phpstan/phpstan-strict-rules"]
     );
     let names: Vec<&str> = p.unsupported.iter().map(|u| u.0.as_str()).collect();
     assert_eq!(
         names,
         [
             "vendor/phpstan/phpstan/conf/bleedingEdge.neon",
-            "foo/bar",
             "build/custom.neon",
+            "foo/bar",
+            "phpstan/phpstan-mockery",
             "parameter checkFunctionNameCase",
             "parameter phpVersion",
             "ignoreErrors no.suchIdentifier",
             "ignoreErrors whitespace.bom",
+            "ignoreErrors phpstanApi.method",
         ]
     );
     let why = |n: &str| &p.unsupported.iter().find(|u| u.0 == n).unwrap().1;
     assert_eq!(
         why("ignoreErrors whitespace.bom"),
         "`whitespace.bom` is the format rule `format/whitespace/encoding` in Pun; ignore it there"
+    );
+    assert_eq!(
+        why("ignoreErrors phpstanApi.method"),
+        "`phpstanApi.method`: PHPStan extension-API checks; Pun has no PHP extension API"
     );
     // The baseline's own ignoreErrors are not read.
     assert_eq!(
@@ -122,6 +194,15 @@ fn reads_level_paths_ignores_and_includes() {
             "[[analyse.ignore]]\nrule = \"undefined/property\"\nidentifier = \"property.notFound\"\nmessage = \"#Access#\"\npaths = [\"app/*\"]\n",
             "[[analyse.ignore]]\nrule = \"dead-code/number-comparison-always-constant\"\nidentifier = \"number.alwaysTrue\"\nmessage = \"#Access#\"\npaths = [\"app/*\"]\n",
         ]
+    );
+    let mut parts = Parts::default();
+    compose(&d, &mut parts, &p).unwrap();
+    assert!(
+        parts.render().starts_with(
+            "[analyse]\npreset = \"recommended\"\npaths = [\"app\", \"tests\"]\nexclude = [\"app/Legacy\", \"/tmp\"]\nstubs = [\"stubs/Foo.stub\"]\n"
+        ),
+        "{}",
+        parts.render()
     );
 }
 
@@ -148,26 +229,30 @@ fn reads_max_and_rejects_bad_levels() {
 #[test]
 fn composes_the_level_extensions_and_parameters() {
     // PHPStan's resolved parameters at a level, with extensions and strictRules parameters added.
+    let at_in =
+        |level: u8, ext: &[&str], strict: &[(&str, bool)], files: &[(&str, &str)], format: &str| {
+            let d = project(&format!("parameters:\n    level: {level}\n"), files);
+            let mut p: Phpstan = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
+            p.extensions = ext.iter().map(|e| e.to_string()).collect();
+            let mut rules = pun_phpstan::Array::new();
+            for (k, v) in strict {
+                rules.set(pun_phpstan::Key::from(*k), pun_phpstan::Value::Bool(*v));
+            }
+            p.parameters.set(
+                pun_phpstan::Key::from("strictRules"),
+                pun_phpstan::Value::Array(rules),
+            );
+            p.ignores =
+                vec!["[[analyse.ignore]]\nrule = \"undefined/method\"\nmessage = \"#x#\"\n".into()];
+            let mut parts = Parts {
+                format: format.into(),
+                ..Parts::default()
+            };
+            let done = compose(&d, &mut parts, &p).unwrap();
+            (done, parts, d)
+        };
     let at = |level: u8, ext: &[&str], strict: &[(&str, bool)]| {
-        let d = project(
-            &format!("parameters:\n    level: {level}\n"),
-            &[("composer.json", "{}")],
-        );
-        let mut p: Phpstan = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
-        p.extensions = ext.iter().map(|e| e.to_string()).collect();
-        let mut rules = pun_phpstan::Array::new();
-        for (k, v) in strict {
-            rules.set(pun_phpstan::Key::from(*k), pun_phpstan::Value::Bool(*v));
-        }
-        p.parameters.set(
-            pun_phpstan::Key::from("strictRules"),
-            pun_phpstan::Value::Array(rules),
-        );
-        p.ignores =
-            vec!["[[analyse.ignore]]\nrule = \"undefined/method\"\nmessage = \"#x#\"\n".into()];
-        let mut parts = Parts::default();
-        let done = compose(&d, &mut parts, &p).unwrap();
-        (done, parts, d)
+        at_in(level, ext, strict, &[("composer.json", "{}")], "")
     };
     let lines = |parts: &Parts, v: &str| -> Vec<String> {
         (parts.analyse_rules.iter())
@@ -241,6 +326,31 @@ fn composes_the_level_extensions_and_parameters() {
             )]
         ),
     }
+    // Laravel locked without Larastan: the whole `laravel` group off, no line per Larastan rule.
+    let (done, parts, _) = at_in(5, &[], &[], &[("composer.lock", super::LARAVEL_LOCK)], "");
+    assert!((parts.analyse_rules.iter()).any(|(k, v)| k == "laravel" && v == "\"off\""));
+    assert!(
+        !parts
+            .analyse_rules
+            .iter()
+            .any(|(k, _)| k.starts_with("laravel/"))
+    );
+    assert_eq!(done.off, lines(&parts, "\"off\"").len());
+
+    // strict-rules' backtick ban is the format rule functions/backtick-to-shell-exec, which an empty format config
+    // doesn't run.
+    let backtick = [("disallowedBacktick", true)];
+    let format_rule = (
+        "format/functions/backtick-to-shell-exec".to_string(),
+        "a PHPStan check that is this format rule in Pun; turn it on in [format.rules]".to_string(),
+    );
+    let (done, ..) = at_in(0, &[strict], &backtick, &[], "preset = \"empty\"\n");
+    // PHPStan's BOM check (level 0) is the format rule whitespace/encoding, which the empty config doesn't run either.
+    let encoding = (
+        "format/whitespace/encoding".to_string(),
+        format_rule.1.clone(),
+    );
+    assert_eq!(done.unsupported, [format_rule, encoding]);
 }
 
 /// Values read off rules/mapping.toml by hand: an exact identifier, a `%s` pattern, a Larastan identifier.

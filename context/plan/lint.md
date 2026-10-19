@@ -347,3 +347,73 @@ laravel-framework (identical files)):
   constructor through reflection, and the `@var` check reads PHPDoc types); `lint/complexity/prefer-inline-array-return`
   (`InlineArrayReturnAssignRector`: `ValueResolver::getValue` resolves class constants used as keys through
   reflection).
+
+Lint 7 batch 5 (code-quality, dead-code and privatization, 2026-10-19; 11 of 13 rules ported by lint-a; `prefer-property-over-local-getter` and `CombinedAssignRector` went to lint-b; on the corpus Pinkary has nothing to change, and laravel-framework's 9 files Rector changes come out
+the same, plus one file Rector cannot parse):
+
+- **Assistant's call (lint 7 batch 5): shared code in `rules/rector_batch5.rs`.** php-parser's `pArray` removal
+  (a removed item after a kept one takes the text from the kept item's end; leading removals stop at the first kept
+  item's comments; an emptied list is printed anew), the 1:1 and many-to-one statement replace, PhpVersionFactory's
+  version strings, `ParamAnalyzer`, the `ClassMethod` reprint without some parameters, and the docblock `@param`
+  removal live there, beside batch 1-3's shared files, which this batch only appends to.
+- **Assistant's call (lint 7 batch 5): syntax stands in for types until Build 8.** `prefer-boolean-and-or` treats an
+  operand as boolean only when its syntax says so (`true`/`false`, a comparison or logical operator, `!`, a
+  `(bool)` cast, `isset`, `empty`, or an assignment of one); `prefer-in-array-over-foreach` and `prefer-coalesce-over-foreach` need the loop's
+  subject to be an array literal, a property or untouched parameter declared `array`, or a local written only with
+  array literals; `no-future-php-version-check` reads literal versions only; `no-redundant-property-default` takes
+  "is a TestCase" as a direct `extends PHPUnit\Framework\TestCase` and follows method calls on `$this`, `self` and
+  `static` only; `no-unused-private-method-param` classifies callers from the syntax (`$this->m()`, `self::m()`,
+  `static::m()`, `[$this, 'm']`, first-class callables); a call on an unknown receiver or a method name in a
+  string lets only trailing parameters go, and such a call is not rewritten; `no-unused-private-property` counts a
+  fetch on an unknown receiver or in a nested class as a read. Each widens with analyse's index (Build 8).
+- **Assistant's call (lint 7 batch 5): meaning over Rector's bytes.** Rector drops the `else` and `elseif`s of an
+  `if` that `prefer-coalesce-chain`, `prefer-in-array-over-foreach` or `no-dead-php-version-check` removes; Pun leaves
+  such an `if` alone. `prefer-boolean-and-or` keeps the parentheses a kept operand needs (`$a and ($b = c())`), and
+  `prefer-coalesce-chain` puts them around operands below `??` and writes a `throw` operand only from PHP 8.0.
+  `no-unused-private-property` keeps a property whose assignment it cannot remove (`if ($this->p = f())`) where Rector
+  removes the property and leaves a write to an undeclared one. The differing cases are `Pun/`
+  fixtures.
+
+Lint 7 lint-a batch 6 (Mago control-flow, tags, statements and dead-code rules, 2026-10-19; 11 rules):
+
+- **Assistant's call (lint-a batch 6): Mago's linter rules are report-only ports on the same tree.** The expected
+  problems (`start end message`) come from the Mago 1.57.0 binary on the rule's own doc snippets plus extra cases, in
+  `tests/mago/<group-name>/{Mago,Own}`. `mago_usage.rs` ports Mago's `UsageCollector` and `mago_const_value.rs` its
+  `const_value` for `no-unused-global`, `no-unused-static` and `no-duplicate-match-arm`.
+- **Assistant's call (lint-a batch 6): `tags/no-invalid-open-tag` reports the tag itself.** Mago's span is off when
+  whitespace precedes the tag; Pun's span covers the bad tag, and those cases are `Pun/` fixtures.
+- **Assistant's call (lint-a batch 6): `control-flow/no-negated-condition` gets an unsafe fix** that swaps the
+  branches and parenthesizes what needs it; Mago has none.
+
+Lint 7 lint-a batch 7 (Rector statement rules, 2026-10-19; 4 rules, `no-useless-condition`,
+`no-condition-exact-return`, `no-overwritten-assignment`, `no-redundant-condition`):
+
+- **Assistant's call (lint-a batch 7): `side_effect.rs` ports `SideEffectNodeDetector` without types.** Pure functions
+  are PHPStan's built-in `hasSideEffects = false` functions and throwables its built-in `Throwable` classes, both in
+  `crates/pun-lint/data/` and generated from `pun-phpstan`'s symbols by `scripts/gen-lint-data.py`. A call on a test
+  mock is approximated as a call on `$this`, `self`, `static` or `parent` in a class whose parent ends in `TestCase`.
+- **Assistant's call (lint-a batch 7): `syntax::same_node` is the structural NodeComparator.** It compares tokens
+  without trivia and without a `Parenthesized` node's parentheses; the new rules use it, older ones still use
+  `same_code`.
+- **Known difference: rounds.** Rector applies a rule once per node and run; Pun's fix loop runs until nothing is
+  left, so three equal `if`s merge into one where Rector merges two, and a dead condition exposed by removing
+  another goes too. The Oracle fixtures leave those cases out.
+
+Lint 7 lint-a batch 8 (2026-10-19; `no-empty-loop`, `no-unused-expression` and four PHP-CS-Fixer ports:
+`ternary_to_null_coalescing`, `assign_null_coalescing_to_coalesce_equal`, `return_to_yield_from`,
+`function_to_constant`; the wf/lint-7 fixers `error_suppression`, `logical_operators`, `long_to_shorthand_operator`,
+`no_useless_nullsafe_operator`, `non_printable_character`, `return_assignment` and `simplified_if_return` land with
+them):
+
+- **Assistant's call (lint-a batch 8): `no-unused-expression` keeps the parts' order.** Rector's
+  `RemoveDeadStmtRector` writes the kept parts of `foo2() + foo3();` as `foo3(); foo2();`, which runs them in the
+  other order; Pun writes `foo2(); foo3();`. Those fixtures are `Pun/` ones.
+- **Assistant's call (lint-a batch 8): `no-unused-expression` is careful where Rector reflects.** A property fetch
+  statement goes only for a property the enclosing class declares (`$this->p`, `self::$p`, `static::$p`); `$v[...]`
+  and `clone $v` stay whole when `$v` may be an object (`$this`, a class-typed parameter, or a variable assigned a
+  `new`); a `(void)` cast stays. Each widens with analyse's index (Build 8).
+- **Assistant's call (lint-a batch 8): "is a string" from the syntax.** `no-sole-value-sprintf` and
+  `require-is-a-allow-string` (Rector asks PHPStan for a string type) take a string literal, an interpolated string,
+  a concatenation, `X::class`, a `string` parameter or a local that every write sets to one of those.
+  `no-compact` (Rector reads a constant-array type) takes string arguments, an array literal of strings, or a local
+  assigned one such literal once and never written otherwise. Each widens with analyse's index (Build 8).
