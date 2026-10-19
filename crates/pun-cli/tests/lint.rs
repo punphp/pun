@@ -109,7 +109,11 @@ fn warnings_fail_only_when_asked() {
                 "pun.toml",
                 "[lint.rules]\n\"security/no-global\" = \"warn\"\n",
             ),
-            ("a.php", "<?php\n\nfunction f()\n{\n    global $y;\n}\n"),
+            // Without `comments/no-unused-ignore` on, an ignore that covers nothing is fine.
+            (
+                "a.php",
+                "<?php\n\nfunction f()\n{\n    global $y; // @pun-ignore lint/security/no-eval\n}\n",
+            ),
         ],
     );
     assert_eq!(agent(&d, &["lint"]).2, Some(0));
@@ -343,6 +347,17 @@ fn problems_in_every_report() {
         plain(&d, &["--format=github"], &[]),
         (annotations.clone(), Some(1))
     );
+    // Pun's github format also goes to a report file.
+    assert_eq!(
+        plain(
+            &d,
+            &["--output-to-file=r.txt", "--output-format=github", "-q"],
+            &[]
+        )
+        .1,
+        Some(1)
+    );
+    assert_eq!(read(&d, "r.txt"), annotations);
     let (out, code) = plain(&d, &["--color=never"], &[("GITHUB_ACTIONS", "true")]);
     assert!(out.ends_with(&annotations), "{out}");
     assert_eq!(code, Some(1));
@@ -354,7 +369,8 @@ fn problems_in_every_report() {
 #[test]
 fn token_rules_beside_native_ones() {
     let toml = "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"style/no-alias-function\" = \"warn\"\n\"comments/no-unused-ignore\" = \"error\"\n\"security/no-eval\" = \"error\"\n";
-    let ignore = "<?php\n$a = 1; // @pun-ignore lint/style/no-alias-function\n";
+    // The unused-ignore check itself isn't judged either.
+    let ignore = "<?php\n$a = 1; // @pun-ignore lint/style/no-alias-function\n$b = 2; // @pun-ignore lint/comments/no-unused-ignore\n";
     let d = project(
         "lint",
         "token",
@@ -364,12 +380,12 @@ fn token_rules_beside_native_ones() {
         ],
     );
     let alias = "a.php lint/style/no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.";
-    // `$n = count($a); eval` puts eval at column 17 (at 18 before the fix).
+    // `$n = count($a); eval` puts eval at column 17 (at 18 before the fix), on line 4.
     let (lines, _, code) = agent(&d, &["lint"]);
     assert_eq!(
         lines,
         [
-            "a.php:3:17 lint/security/no-eval Unsafe use of `eval` construct.",
+            "a.php:4:17 lint/security/no-eval Unsafe use of `eval` construct.",
             alias
         ]
     );

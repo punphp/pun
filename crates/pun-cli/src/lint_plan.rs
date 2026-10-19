@@ -46,7 +46,7 @@ pub(crate) struct On {
 }
 
 /// Lint rule IDs a ported token fixer backs, to the fixer's name.
-fn token_rules() -> &'static HashMap<&'static str, &'static str> {
+pub(crate) fn token_rules() -> &'static HashMap<&'static str, &'static str> {
     static T: LazyLock<HashMap<&'static str, &'static str>> = LazyLock::new(|| {
         let ported: BTreeSet<&'static str> = pun_fixers::all().iter().map(|f| f.name()).collect();
         (pun_config::fixer_entries().iter())

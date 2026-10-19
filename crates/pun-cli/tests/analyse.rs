@@ -156,6 +156,13 @@ fn baseline_covers_the_errors_it_lists() {
         "{out}"
     );
     assert_eq!(code, Some(1));
+    // Every error fixed: all three entries are stale.
+    std::fs::write(d.join("src/a.php"), CLEAN).unwrap();
+    let (out, _) = run(&d, &[PUN, "analyse"], &["--color=never"]);
+    assert!(
+        out.contains("! 3 baseline entries no longer match: run `pun analyse --generate-baseline` to drop them\n"),
+        "{out}"
+    );
 }
 
 #[test]
@@ -415,7 +422,7 @@ fn table_and_teamcity_match_phpstan() {
     }
 }
 
-/// `pun check` reports analyse's findings with the format and lint ones: in files format skips too, a malformed
+/// `pun check` reports analyse's findings with the format and lint ones: in files format and lint skip too, a malformed
 /// `@pun-ignore` once (lint and analyse both see it), and the baseline note in human output.
 #[test]
 fn check_reports_analyse_findings() {
@@ -425,7 +432,7 @@ fn check_reports_analyse_findings() {
         &[
             (
                 "pun.toml",
-                "[format]\npreset = \"empty\"\nexclude = [\"lib\"]\n\n[analyse]\npaths = [\"src\", \"lib\"]\nbaseline = \"b.toml\"\n",
+                "[format]\npreset = \"empty\"\nexclude = [\"lib\"]\n\n[lint]\nexclude = [\"lib\"]\n\n[analyse]\npaths = [\"src\", \"lib\"]\nbaseline = \"b.toml\"\n",
             ),
             ("src/a.php", "<?php\n\nnope(); // @pun-ignore\n"),
             ("lib/b.php", "<?php\n\nnope2();\n"),

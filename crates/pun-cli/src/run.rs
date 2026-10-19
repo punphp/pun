@@ -665,10 +665,7 @@ fn process_file(
     }
     let warned: Vec<&'static str> = (token_on.iter())
         .filter(|(_, o)| o.level == pun_problem::Level::Warning)
-        .filter_map(|(id, _)| match lint_plan::engine(id) {
-            Some(Engine::Token(fixer)) => Some(fixer),
-            _ => None,
-        })
+        .filter_map(|(id, _)| lint_plan::token_rules().get(id.as_str()).copied())
         .collect();
     r.warned = warned.clone();
 
