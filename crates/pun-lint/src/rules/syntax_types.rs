@@ -451,11 +451,8 @@ fn breaks_with(a: &Assignment<'_>, method: Option<&Method<'_>>, name: &[u8]) -> 
     if element {
         // `isNonTypedFromParam`: a variable may be an untyped parameter unless it is one declared with a type.
         match unparenthesize(a.rhs) {
-            Expression::Variable(Variable::Direct(v)) => !method.is_some_and(|m| {
-                let Node::Method(method) = m else {
-                    return false;
-                };
-                !written(m, v.name, usize::MAX)
+            Expression::Variable(Variable::Direct(v)) => !method.is_some_and(|method| {
+                !written(Node::Method(method), v.name, usize::MAX)
                     && method.parameter_list.parameters.iter().any(|p| {
                         p.variable.name == v.name
                             && p.ampersand.is_none()
@@ -476,9 +473,8 @@ fn breaks_with(a: &Assignment<'_>, method: Option<&Method<'_>>, name: &[u8]) -> 
     }
 }
 
-/// Whether the function `body` writes the variable `name`: assigns it, takes a reference to it, or binds it in a
-/// `foreach`, `global`, `static` or `list()`.
-/// Whether a write of `name` in `body` starts before `until`.
+/// Whether a write of `name` in the function `body` starts before `until`: an assignment, a reference to it, or a
+/// binding in a `foreach`, `global`, `static` or `list()`.
 fn written(body: Node<'_, '_>, name: &[u8], until: usize) -> bool {
     super::side_effect::any_node(body, &|n| {
         node_span(&n).start < until
