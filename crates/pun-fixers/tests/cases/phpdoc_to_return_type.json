@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_to_return_type",
+        "input": "<?php\n/** @return resource|int */\nfunction f() {}\n",
+        "expected": "<?php\n/** @return resource|int */\nfunction f() {}\n"
+    }
+]

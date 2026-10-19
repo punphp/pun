@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_to_param_type",
+        "input": "<?php\nnamespace N;\n/**\n * @param integer $a\n * @param list<int> $b\n * @param static|int $c\n */\nfunction f($a, $b, $c) {}\n",
+        "expected": "<?php\nnamespace N;\n/**\n * @param integer $a\n * @param list<int> $b\n * @param static|int $c\n */\nfunction f(int $a, array $b, $c) {}\n"
+    }
+]

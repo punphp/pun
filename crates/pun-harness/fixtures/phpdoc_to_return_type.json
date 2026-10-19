@@ -1,0 +1,701 @@
+{
+    "fixer": "phpdoc_to_return_type",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/PhpdocToReturnTypeFixerTest.php",
+    "case_count": 76,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "no phpdoc return",
+                    "args": [
+                        "<?php function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid return",
+                    "args": [
+                        "<?php /** @return */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid class 1",
+                    "args": [
+                        "<?php /** @return \\9 */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid class 2",
+                    "args": [
+                        "<?php /** @return \\Foo\\\\Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid class 3",
+                    "args": [
+                        "<?php /** @return Break */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid class 4",
+                    "args": [
+                        "<?php /** @return __CLASS__ */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid class 5",
+                    "args": [
+                        "<?php /** @return I\\Want\\To\\Bre\\\\ak\\Free */ function queen() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "excluded class methods",
+                    "args": [
+                        "<?php\n\n                    class Foo\n                    {\n                        /** @return Bar */\n                        function __construct() {}\n                        /** @return Bar */\n                        function __destruct() {}\n                        /** @return Bar */\n                        function __clone() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple returns",
+                    "args": [
+                        "<?php\n\n                    /**\n                     * @return Bar\n                     * @return Baz\n                     */\n                    function xyz() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non-root class",
+                    "args": [
+                        "<?php /** @return Bar */ function my_foo(): Bar {}",
+                        "<?php /** @return Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non-root namespaced class",
+                    "args": [
+                        "<?php /** @return My\\Bar */ function my_foo(): My\\Bar {}",
+                        "<?php /** @return My\\Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "root class",
+                    "args": [
+                        "<?php /** @return \\My\\Bar */ function my_foo(): \\My\\Bar {}",
+                        "<?php /** @return \\My\\Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface",
+                    "args": [
+                        "<?php interface Foo { /** @return Bar */ function my_foo(): Bar; }",
+                        "<?php interface Foo { /** @return Bar */ function my_foo(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "void return",
+                    "args": [
+                        "<?php /** @return void */ function my_foo(): void {}",
+                        "<?php /** @return void */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid void return",
+                    "args": [
+                        "<?php /** @return null|void */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "iterable return",
+                    "args": [
+                        "<?php /** @return iterable */ function my_foo(): iterable {}",
+                        "<?php /** @return iterable */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "object return",
+                    "args": [
+                        "<?php /** @return object */ function my_foo(): object {}",
+                        "<?php /** @return object */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix scalar types by default, int",
+                    "args": [
+                        "<?php /** @return int */ function my_foo(): int {}",
+                        "<?php /** @return int */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix scalar types by default, float",
+                    "args": [
+                        "<?php /** @return float */ function my_foo(): float {}",
+                        "<?php /** @return float */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix scalar types by default, string",
+                    "args": [
+                        "<?php /** @return string */ function my_foo(): string {}",
+                        "<?php /** @return string */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix scalar types by default, bool",
+                    "args": [
+                        "<?php /** @return bool */ function my_foo(): bool {}",
+                        "<?php /** @return bool */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix scalar types by default, bool, make unqualified",
+                    "args": [
+                        "<?php /** @return \\bool */ function my_foo(): bool {}",
+                        "<?php /** @return \\bool */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix scalar types by default, false",
+                    "args": [
+                        "<?php /** @return false */ function my_foo(): bool {}",
+                        "<?php /** @return false */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix scalar types by default, true",
+                    "args": [
+                        "<?php /** @return true */ function my_foo(): bool {}",
+                        "<?php /** @return true */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix scalar types when configured as such",
+                    "args": [
+                        "<?php /** @return int */ function my_foo() {}",
+                        null,
+                        {
+                            "scalar_types": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix union types when configured as such",
+                    "args": [
+                        "<?php /** @return int|string */ function my_foo() {}",
+                        null,
+                        {
+                            "union_types": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array native type",
+                    "args": [
+                        "<?php /** @return array */ function my_foo(): array {}",
+                        "<?php /** @return array */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "callable type",
+                    "args": [
+                        "<?php /** @return callable */ function my_foo(): callable {}",
+                        "<?php /** @return callable */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "self accessor",
+                    "args": [
+                        "<?php\n                    class Foo {\n                        /** @return self */ function my_foo(): self {}\n                    }\n                ",
+                        "<?php\n                    class Foo {\n                        /** @return self */ function my_foo() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable self accessor",
+                    "args": [
+                        "<?php\n                    class Foo {\n                        /** @return self|null */ function my_foo(): ?self {}\n                    }\n                ",
+                        "<?php\n                    class Foo {\n                        /** @return self|null */ function my_foo() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "skip resource special type",
+                    "args": [
+                        "<?php /** @return resource */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "null alone cannot be a return type",
+                    "args": [
+                        "<?php /** @return null */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable type",
+                    "args": [
+                        "<?php /** @return null|Bar */ function my_foo(): ?Bar {}",
+                        "<?php /** @return null|Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable type with ? notation in phpDoc",
+                    "args": [
+                        "<?php /** @return ?Bar */ function my_foo(): ?Bar {}",
+                        "<?php /** @return ?Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable type reverse order",
+                    "args": [
+                        "<?php /** @return Bar|null */ function my_foo(): ?Bar {}",
+                        "<?php /** @return Bar|null */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable native type",
+                    "args": [
+                        "<?php /** @return null|array */ function my_foo(): ?array {}",
+                        "<?php /** @return null|array */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "generics",
+                    "args": [
+                        "<?php /** @return array<int, bool> */ function my_foo(): array {}",
+                        "<?php /** @return array<int, bool> */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array of types",
+                    "args": [
+                        "<?php /** @return Foo[] */ function my_foo(): array {}",
+                        "<?php /** @return Foo[] */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array of array of types",
+                    "args": [
+                        "<?php /** @return Foo[][] */ function my_foo(): array {}",
+                        "<?php /** @return Foo[][] */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable array of types",
+                    "args": [
+                        "<?php /** @return null|Foo[] */ function my_foo(): ?array {}",
+                        "<?php /** @return null|Foo[] */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments",
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        // comment 0\n                        /** @return Foo */ # comment 1\n                        final/**/public/**/static/**/function/**/bar/**/(/**/$var/**/=/**/1/**/): Foo/**/{# comment 2\n                        } // comment 3\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        // comment 0\n                        /** @return Foo */ # comment 1\n                        final/**/public/**/static/**/function/**/bar/**/(/**/$var/**/=/**/1/**/)/**/{# comment 2\n                        } // comment 3\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array and traversable",
+                    "args": [
+                        "<?php /** @return array|Traversable */ function my_foo(): iterable {}",
+                        "<?php /** @return array|Traversable */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array and traversable with leading slash",
+                    "args": [
+                        "<?php /** @return array|\\Traversable */ function my_foo(): iterable {}",
+                        "<?php /** @return array|\\Traversable */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array and traversable in a namespace",
+                    "args": [
+                        "<?php\n                     namespace App;\n                     /** @return array|Traversable */\n                     function my_foo() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array and traversable with leading slash in a namespace",
+                    "args": [
+                        "<?php\n                     namespace App;\n                     /** @return array|\\Traversable */\n                     function my_foo(): iterable {}\n                ",
+                        "<?php\n                     namespace App;\n                     /** @return array|\\Traversable */\n                     function my_foo() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array and imported traversable in a namespace",
+                    "args": [
+                        "<?php\n                     namespace App;\n                     use Traversable;\n                     /** @return array|Traversable */\n                     function my_foo(): iterable {}\n                ",
+                        "<?php\n                     namespace App;\n                     use Traversable;\n                     /** @return array|Traversable */\n                     function my_foo() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array and object aliased as traversable in a namespace",
+                    "args": [
+                        "<?php\n                     namespace App;\n                     use Foo as Traversable;\n                     /** @return array|Traversable */\n                     function my_foo() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array of object and traversable",
+                    "args": [
+                        "<?php /** @return Foo[]|Traversable */ function my_foo(): iterable {}",
+                        "<?php /** @return Foo[]|Traversable */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array of object and iterable",
+                    "args": [
+                        "<?php /** @return Foo[]|iterable */ function my_foo(): iterable {}",
+                        "<?php /** @return Foo[]|iterable */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array of string and array of int",
+                    "args": [
+                        "<?php /** @return string[]|int[] */ function my_foo(): array {}",
+                        "<?php /** @return string[]|int[] */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "intersection types",
+                    "args": [
+                        "<?php\n                    /** @return Bar&Baz */\n                    function bar() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "very long class name before ampersand",
+                    "args": [
+                        "<?php\n                    /** @return Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaar&Baz */\n                    function bar() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "very long class name after ampersand",
+                    "args": [
+                        "<?php\n                    /** @return Bar&Baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz */\n                    function bar() {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "arrow function",
+                    "args": [
+                        "<?php /** @return int */ fn(): int => 1;",
+                        "<?php /** @return int */ fn() => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "arrow function (static)",
+                    "args": [
+                        "<?php /** @return int */ static fn(): int => 1;",
+                        "<?php /** @return int */ static fn() => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "arrow function (as argument ended with ,)",
+                    "args": [
+                        "<?php\n            Utils::stableSort(\n                $elements,\n                /**\n                 * @return array\n                 */\n                static fn($a): array => [$a],\n                fn($a, $b) => 1,\n            );",
+                        "<?php\n            Utils::stableSort(\n                $elements,\n                /**\n                 * @return array\n                 */\n                static fn($a) => [$a],\n                fn($a, $b) => 1,\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types defined with \"phpstan-type\"",
+                    "args": [
+                        "<?php\n/**\n * @phpstan-type _Pair array{int, int}\n */\nclass Foo {\n    /**\n     * @return _Pair\n     */\n    public function f() {}\n}\n/**\n * @phpstan-type _Trio array{int, int, int}\n */\nclass Bar {\n    /**\n     * @return _Trio\n     */\n    public function f() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types defined with \"phpstan-import-type\"",
+                    "args": [
+                        "<?php\n/**\n * @phpstan-import-type _Pair from FooFoo\n */\nclass Foo {\n    /**\n     * @return _Pair\n     */\n    public function f() {}\n}\n/**\n * @phpstan-import-type _Trio from BarBar\n */\nclass Bar {\n    /**\n     * @return _Trio\n     */\n    public function f() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types defined with \"phpstan-import-type\" with alias",
+                    "args": [
+                        "<?php\n/**\n * @phpstan-import-type ConflictingType from FooFoo as Not_ConflictingType\n */\nclass Foo {\n    /**\n     * @return Not_ConflictingType\n     */\n    public function f1() {}\n    /**\n     * @return ConflictingType\n     */\n    public function f2(): ConflictingType {}\n}",
+                        "<?php\n/**\n * @phpstan-import-type ConflictingType from FooFoo as Not_ConflictingType\n */\nclass Foo {\n    /**\n     * @return Not_ConflictingType\n     */\n    public function f1() {}\n    /**\n     * @return ConflictingType\n     */\n    public function f2() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types defined with \"psalm-type\"",
+                    "args": [
+                        "<?php\n/**\n * @psalm-type _Pair = array{int, int}\n */\nclass Foo {\n    /**\n     * @return _Pair\n     */\n    public function f() {}\n}\n/**\n * @psalm-type _Trio array{int, int, int}\n */\nclass Bar {\n    /**\n     * @return _Trio\n     */\n    public function f() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types defined with \"psalm-import-type\"",
+                    "args": [
+                        "<?php\n/**\n * @psalm-import-type _Pair from FooFoo\n */\nclass Foo {\n    /**\n     * @return _Pair\n     */\n    public function f() {}\n}\n/**\n * @psalm-import-type _Trio from BarBar\n */\nclass Bar {\n    /**\n     * @return _Trio\n     */\n    public function f() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types defined with \"psalm-import-type\" with alias",
+                    "args": [
+                        "<?php\n/**\n * @psalm-import-type Bar from FooFoo as BarAliased\n */\nclass Foo {\n    /** @return Bar */\n    public function f1(): Bar {}\n    /** @return BarAliased */\n    public function f2() {}\n    /** @return BarAliased */\n    public function f3() {}\n    /** @return Bar */\n    public function f4(): Bar {}\n}",
+                        "<?php\n/**\n * @psalm-import-type Bar from FooFoo as BarAliased\n */\nclass Foo {\n    /** @return Bar */\n    public function f1() {}\n    /** @return BarAliased */\n    public function f2() {}\n    /** @return BarAliased */\n    public function f3() {}\n    /** @return Bar */\n    public function f4() {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "report static as self",
+                    "args": [
+                        "<?php\n                class Foo {\n                    /** @return static */ function my_foo(): self {}\n                }\n            ",
+                        "<?php\n                class Foo {\n                    /** @return static */ function my_foo() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "skip mixed special type",
+                    "args": [
+                        "<?php /** @return mixed */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "skip union types",
+                    "args": [
+                        "<?php /** @return Foo|Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "skip primitive or array types",
+                    "args": [
+                        "<?php /** @return string|string[] */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "skip nullable union types",
+                    "args": [
+                        "<?php /** @return null|Foo|Bar */ function my_foo() {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "static",
+                    "args": [
+                        "<?php\n                final class Foo {\n                    /** @return static */\n                    public function something(): static {}\n                }\n            ",
+                        "<?php\n                final class Foo {\n                    /** @return static */\n                    public function something() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "nullable static",
+                    "args": [
+                        "<?php\n                final class Foo {\n                    /** @return null|static */\n                    public function something(): ?static {}\n                }\n            ",
+                        "<?php\n                final class Foo {\n                    /** @return null|static */\n                    public function something() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "mixed",
+                    "args": [
+                        "<?php\n                final class Foo {\n                    /** @return mixed */\n                    public function something(): mixed {}\n                }\n            ",
+                        "<?php\n                final class Foo {\n                    /** @return mixed */\n                    public function something() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "union types",
+                    "args": [
+                        "<?php /** @return Foo|Bar */ function my_foo(): Foo|Bar {}",
+                        "<?php /** @return Foo|Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "union types including generics",
+                    "args": [
+                        "<?php /** @return string|array<int, string> */ function my_foo(): string|array {}",
+                        "<?php /** @return string|array<int, string> */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "union types including nullable",
+                    "args": [
+                        "<?php /** @return null|Foo|Bar */ function my_foo(): Foo|Bar|null {}",
+                        "<?php /** @return null|Foo|Bar */ function my_foo() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "primitive or array types",
+                    "args": [
+                        "<?php /** @return string|string[] */ function my_foo(): string|array {}",
+                        "<?php /** @return string|string[] */ function my_foo() {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixerTest",
+            "body": "    public function testFixPre81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": "skip never type",
+                    "args": [
+                        "<?php /** @return never */ function bar() {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\PhpdocToReturnTypeFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "never type",
+                    "args": [
+                        "<?php /** @return never */ function bar(): never {}",
+                        "<?php /** @return never */ function bar() {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

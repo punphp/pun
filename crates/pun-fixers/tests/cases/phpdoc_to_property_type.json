@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "phpdoc_to_property_type",
+        "input": "<?php\nclass A {\n    /**\n     * @var int $e\n     * @var int $e\n     */\n    public $e;\n    /**\n     * @var int $f\n     * @var string $f\n     */\n    public $f;\n}\n",
+        "expected": "<?php\nclass A {\n    /**\n     * @var int $e\n     * @var int $e\n     */\n    public int $e;\n    /**\n     * @var int $f\n     * @var string $f\n     */\n    public $f;\n}\n"
+    },
+    {
+        "fixer": "phpdoc_to_property_type",
+        "input": "<?php\nclass A {\n    public function m() { return 1; }\n    /** @var int */\n    public $x;\n    /** @var callable */\n    public $cb;\n    /** @var callable */\n    public $d, $d;\n    /** @var int */\n    public $p, $q;\n    /** @var int $e @var int $e */\n    public $e;\n    /** @var int */\n    public $after;\n}\n",
+        "expected": "<?php\nclass A {\n    public function m() { return 1; }\n    /** @var int */\n    public int $x;\n    /** @var callable */\n    public $cb;\n    /** @var callable */\n    public $d, $d;\n    /** @var int */\n    public $p, $q;\n    /** @var int $e @var int $e */\n    public int $e;\n    /** @var int */\n    public int $after;\n}\n"
+    },
+    {
+        "fixer": "phpdoc_to_property_type",
+        "input": "<?php\nclass A {\n    /** @var class */\n    public $z;\n    /** @var int $other */\n    public $y;\n}\n",
+        "expected": "<?php\nclass A {\n    /** @var class */\n    public $z;\n    /** @var int $other */\n    public $y;\n}\n"
+    }
+]
