@@ -27,6 +27,7 @@ mod missing_types;
 mod names;
 mod overriding;
 mod overriding_property;
+mod set_hook;
 mod params;
 mod printf_helper;
 mod properties;
@@ -363,6 +364,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "property.missingNativeType",
     "property.nativeType",
     "property.extraNativeType",
+    "propertySetHook.nativeParameterType",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -1109,6 +1111,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             signatures::property(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
             if let Some(hooks) = &p.hooks {
                 signatures::hooks(self, p.variable.name, hooks);
+                set_hook::hooks(self, p.variable.name, p.hint.as_ref(), hooks);
             }
         }
         // a trait method under its `as` alias
@@ -1522,6 +1525,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         signatures::property(self, p.span(), p.hint(), &names);
         if let Property::Hooked(h) = p {
             signatures::hooks(self, h.item.variable().name, &h.hook_list);
+            set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
         }
         properties::property(self, p);
         missing_types::property(self, p);

@@ -76,6 +76,7 @@ const PORTED: &[&str] = &[
     "property.missingNativeType",
     "property.nativeType",
     "property.extraNativeType",
+    "propertySetHook.nativeParameterType",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).
