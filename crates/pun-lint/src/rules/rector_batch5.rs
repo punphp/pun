@@ -190,8 +190,7 @@ pub(crate) fn merge(mut edits: Vec<Edit>) -> Vec<Edit> {
 pub(crate) fn doc_comment(source: &str, from: usize, start: usize) -> Option<Span> {
     let last = tokens(source, from, start)
         .into_iter()
-        .filter(|t| t.kind.is_comment())
-        .last()?;
+        .rfind(|t| t.kind.is_comment())?;
     (last.kind == TokenKind::DocBlockComment).then(|| Span::new(last.start, last.end))
 }
 
@@ -286,9 +285,11 @@ fn param_tag_name(tag: &str) -> Option<&[u8]> {
     None
 }
 
+type IsModifier = fn(&Modifier<'_>) -> bool;
+
 /// php-parser's `pModifiers`: the modifiers in its order, each followed by a space.
 pub(crate) fn modifiers_text(modifiers: &Sequence<'_, Modifier<'_>>) -> String {
-    let order: [(fn(&Modifier<'_>) -> bool, &str); 8] = [
+    let order: [(IsModifier, &str); 8] = [
         (|m| matches!(m, Modifier::Final(_)), "final "),
         (|m| matches!(m, Modifier::Abstract(_)), "abstract "),
         (|m| matches!(m, Modifier::Public(_)), "public "),
@@ -693,7 +694,7 @@ pub(crate) fn remove_members(
     right_brace: mago_span::Span,
     removed: &[bool],
 ) -> Vec<Edit> {
-    let spans: Vec<Span> = members.iter().map(|m| node_span(m)).collect();
+    let spans: Vec<Span> = members.iter().map(node_span).collect();
     let froms: Vec<usize> = (0..spans.len())
         .map(|i| member_from(members, left_brace, i))
         .collect();

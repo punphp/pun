@@ -35,7 +35,7 @@ impl Rule for NoEscapedQuotes {
         // HAS_NON_PRINTABLE_CHARS and ESCAPED_CHAR_REGEX (`\n` and `\t` are among the former).
         if value
             .iter()
-            .any(|&b| b < 0x20 || b >= 0x80 || b == b'\\' || b == b'$')
+            .any(|&b| !(0x20..0x80).contains(&b) || b == b'\\' || b == b'$')
         {
             return;
         }
