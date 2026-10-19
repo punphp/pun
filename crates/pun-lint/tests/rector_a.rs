@@ -210,6 +210,11 @@ fn remove_unused_private_property() {
         "RemoveUnusedPrivatePropertyRector/Fixture",
         &["on_arg.php.inc"],
     );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
+    run(
+        &only(rules::NoUnusedPrivateProperty, 80400),
+        "RemoveUnusedPrivatePropertyRector/Oracle",
+    );
     // Pun's own cases where Pun keeps the meaning Rector loses (the module docs say how); expected derived by hand.
     run(
         &only(rules::NoUnusedPrivateProperty, 80400),
@@ -266,7 +271,13 @@ fn consecutive_null_compare_returns_to_null_coalesce_queue() {
         &only(rules::PreferCoalesceChain, 80400),
         "ConsecutiveNullCompareReturnsToNullCoalesceQueueRector/Fixture",
     );
-    // Pun's own cases where Pun keeps the meaning Rector loses (the module docs say how); expected derived by hand.
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
+    run(
+        &only(rules::PreferCoalesceChain, 80400),
+        "ConsecutiveNullCompareReturnsToNullCoalesceQueueRector/Oracle",
+    );
+    // Pun's own cases where Pun keeps the meaning Rector loses (the module docs say how), or leaves a file's top-level
+    // statements whose reprint by php-parser it does not know; expected derived by hand.
     run(
         &only(rules::PreferCoalesceChain, 80400),
         "ConsecutiveNullCompareReturnsToNullCoalesceQueueRector/Pun",
