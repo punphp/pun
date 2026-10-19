@@ -132,7 +132,7 @@ pub(super) fn sorted(
 }
 
 /// What a call calls: a function name, a method of an object or a class, or a class's constructor.
-enum Target<'a> {
+pub(super) enum Target<'a> {
     Function(&'a Expression<'a>),
     Method(&'a Expression<'a>, &'a ClassLikeMemberSelector<'a>),
     Static(&'a Expression<'a>, &'a ClassLikeMemberSelector<'a>),
@@ -140,7 +140,7 @@ enum Target<'a> {
 }
 
 /// `ReflectionResolver::resolveFunctionLikeReflectionFromCall`: the function or method `target` calls.
-fn callee<'f>(
+pub(super) fn callee<'f>(
     facts: &'f Facts,
     target: Target<'_>,
     ancestors: &[Node<'_, '_>],

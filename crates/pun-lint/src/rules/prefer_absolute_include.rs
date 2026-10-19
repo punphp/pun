@@ -123,7 +123,7 @@ fn prefix_with_dir_constant(mut value: Vec<u8>) -> Vec<u8> {
 
 /// php-parser's `pScalar_String` for a string of `kind` with `value`: `pSingleQuotedString` or `escapeString` in
 /// double quotes. A value that is not UTF-8 is left alone (php-parser escapes its bytes one by one).
-fn print_string(kind: LiteralStringKind, value: &[u8]) -> Option<String> {
+pub(crate) fn print_string(kind: LiteralStringKind, value: &[u8]) -> Option<String> {
     let value = std::str::from_utf8(value).ok()?;
     let mut out = String::with_capacity(value.len() + 2);
     if kind == LiteralStringKind::SingleQuoted {

@@ -16,6 +16,10 @@ use pun_lint::rules::{
     PreferRequestServer, PreferSessionFacade, PreferSleepFacade, PreferStrStartsWith,
     PreferThrowIf, PreferToRouteHelper, PreferToday,
 };
+use pun_lint::rules::{
+    PreferDateFacade, PreferDefaultArgument, PreferExplicitJsonCall, PreferRequestFacade,
+    PreferResolveHelper, PreferTravelTo,
+};
 
 fn check(rule: impl Rule + 'static, class: &str) {
     run_class(vec![Box::new(rule)], class);
@@ -111,4 +115,52 @@ fn throw_if() {
 #[test]
 fn helper_func_call_to_facade_class() {
     check(PreferFacadeOverApp, "HelperFuncCallToFacadeClassRector");
+}
+
+#[test]
+fn optional_to_nullsafe_operator_options() {
+    let mut rule = PreferNullsafe::default();
+    assert!(rule.configure(&serde_json::json!(null)).is_ok());
+    assert!(rule.configure(&serde_json::json!(true)).is_err());
+    assert!(rule.configure(&serde_json::json!({"other": []})).is_err());
+    assert!(
+        rule.configure(&serde_json::json!({"exclude-methods": [1]}))
+            .is_err()
+    );
+    rule.configure(&serde_json::json!({"exclude-methods": ["present"]}))
+        .unwrap();
+    check(rule, "OptionalToNullsafeOperatorRector");
+}
+
+#[test]
+fn app_to_resolve() {
+    check(PreferResolveHelper, "AppToResolveRector");
+}
+
+#[test]
+fn carbon_to_date_facade() {
+    check(PreferDateFacade, "CarbonToDateFacadeRector");
+}
+
+#[test]
+fn request_variables_to_request_facade() {
+    check(PreferRequestFacade, "RequestVariablesToRequestFacadeRector");
+}
+
+#[test]
+fn apply_default_instead_of_null_coalesce() {
+    check(
+        PreferDefaultArgument,
+        "ApplyDefaultInsteadOfNullCoalesceRector",
+    );
+}
+
+#[test]
+fn json_call_to_explicit_json_call() {
+    check(PreferExplicitJsonCall, "JsonCallToExplicitJsonCallRector");
+}
+
+#[test]
+fn carbon_set_test_now_to_travel_to() {
+    check(PreferTravelTo, "CarbonSetTestNowToTravelToRector");
 }

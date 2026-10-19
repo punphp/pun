@@ -367,7 +367,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-bool-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove unnecessary ternary expressions" }
 "dead-code/no-cast-in-concat" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove (string) casting when it comes to concat, that does this by default" }
 "dead-code/no-condition-exact-return" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove an if that returns the value it compares when the next statement returns the compared expression." }
-"dead-code/no-dead-catch" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove dead catches" }
+"dead-code/no-dead-catch" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead catches" }
 "dead-code/no-dead-php-version-check" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove PHP_VERSION_ID / version_compare() checks that are always true for the configured PHP version." }
 "dead-code/no-double-self-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove duplicated self assign of the same variable" }
 "dead-code/no-duplicate-array-key" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove duplicated key in defined arrays" }
@@ -382,8 +382,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
 "dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes non-existing @var annotations above the code" }
 "dead-code/no-mirror-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `$value = $value` assignments." }
-"dead-code/no-null-default-argument" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove default null argument, where null is already a default param value" }
-"dead-code/no-null-default-named-argument" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove named null argument, where null is already a default param value" }
+"dead-code/no-null-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove default null argument, where null is already a default param value" }
+"dead-code/no-null-default-named-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove named null argument, where null is already a default param value" }
 "dead-code/no-null-tag-value" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @var/@param/@return null docblock" }
 "dead-code/no-overwritten-assignment" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove an assignment that the next statement overwrites without reading it." }
 "dead-code/no-parent-call-without-parent" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parent call with no parent class" }
@@ -398,7 +398,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-typed-property-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove dead instanceof check on type hinted property" }
 "dead-code/no-unreachable-code" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unreachable statements" }
 "dead-code/no-unused-assignment" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assignments whose value is never read, including stores overwritten before use." }
-"dead-code/no-unused-constructor-param" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused parameter in constructor" }
+"dead-code/no-unused-constructor-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameter in constructor" }
 "dead-code/no-unused-expression" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead code statements" }
 "dead-code/no-unused-foreach-key" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused key in foreach" }
 "dead-code/no-unused-global" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flags `global $x;` declarations whose name is never read or written" }
@@ -406,7 +406,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-unused-private-method" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused private method" }
 "dead-code/no-unused-private-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameters of private methods, including test-method parameters overwritten before use." }
 "dead-code/no-unused-private-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused private properties" }
-"dead-code/no-unused-promoted-property" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused promoted property" }
+"dead-code/no-unused-promoted-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused promoted property" }
 "dead-code/no-unused-public-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameter in public method on final class without extends and interface" }
 "dead-code/no-unused-return-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Narrow overly wide union return type declaration if possible" }
 "dead-code/no-unused-static" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flags `static $x;` declarations whose name is never read or written" }
@@ -472,10 +472,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-command-hidden-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the hidden property to use the Hidden attribute on console commands" }
 "laravel/prefer-connection-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes model connection property to use the Connection attribute" }
 "laravel/prefer-constructor-injection" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Move help facade-like function calls to constructor injection" }
-"laravel/prefer-date-facade" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Refactor Carbon static method calls to use the Date facade instead." }
+"laravel/prefer-date-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Refactor Carbon static method calls to use the Date facade instead." }
 "laravel/prefer-date-format-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes model dateFormat property to use the DateFormat attribute" }
 "laravel/prefer-dedicated-status-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use assertOk(), assertNotFound() and similar instead of assertStatus(200)." }
-"laravel/prefer-default-argument" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Apply default instead of null coalesce" }
+"laravel/prefer-default-argument" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Apply default instead of null coalesce" }
 "laravel/prefer-delay-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the delay property to use the Delay attribute" }
 "laravel/prefer-delete-when-missing-models-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the deleteWhenMissingModels property to use the DeleteWhenMissingModels attribute" }
 "laravel/prefer-description-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the description property to use the Description attribute" }
@@ -484,7 +484,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-environment-check" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace app environment comparison with parameter or method call" }
 "laravel/prefer-error-bag-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the errorBag property to use the ErrorBag attribute" }
 "laravel/prefer-exception-class-string" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "changes use of a new throw instance to class string" }
-"laravel/prefer-explicit-json-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change method calls from $this->json to $this->postJson, $this->putJson, etc." }
+"laravel/prefer-explicit-json-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change method calls from $this->json to $this->postJson, $this->putJson, etc." }
 "laravel/prefer-facade-over-app" = { fix = "unsafe", ported = true, status = "decided", summary = "Change app() func calls to facade calls" }
 "laravel/prefer-fail-on-timeout-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the failOnTimeout property to use the FailOnTimeout attribute" }
 "laravel/prefer-fake-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use the fake() helper instead of $this->faker." }
@@ -495,16 +495,16 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-job-connection-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the connection property to use the Connection attribute on queue jobs" }
 "laravel/prefer-latest-oldest" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes orderBy() to latest() or oldest()" }
 "laravel/prefer-max-exceptions-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the maxExceptions property to use the MaxExceptions attribute" }
-"laravel/prefer-nullsafe" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert simple calls to optional helper to use the nullsafe operator" }
+"laravel/prefer-nullsafe" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert simple calls to optional helper to use the nullsafe operator" }
 "laravel/prefer-preserve-keys-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the preserveKeys property to use the PreserveKeys attribute" }
 "laravel/prefer-protected-model-methods" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Makes Model attributes and scopes protected" }
 "laravel/prefer-query-builder-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "The EloquentMagicMethodToQueryBuilderRule is designed to automatically transform certain magic method calls on Eloquent Models into corresponding Query Builder method calls." }
 "laravel/prefer-queue-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the queue property to use the Queue attribute" }
 "laravel/prefer-report-if" = { fix = "unsafe", ported = true, status = "decided", summary = "Change if report to report_if" }
-"laravel/prefer-request-facade" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the Request facade instead of $_GET, $_POST and $_SERVER." }
+"laravel/prefer-request-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the Request facade instead of $_GET, $_POST and $_SERVER." }
 "laravel/prefer-request-server" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change server variable to Request facade's server method" }
 "laravel/prefer-request-validate" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Change static validate() method to $request->validate()" }
-"laravel/prefer-resolve-helper" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert app() to resolve() where applicable." }
+"laravel/prefer-resolve-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Convert app() to resolve() where applicable." }
 "laravel/prefer-session-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change PHP session usage to Session Facade methods" }
 "laravel/prefer-signature-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the signature property to use the Signature attribute" }
 "laravel/prefer-sleep-facade" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use Sleep::sleep() and Sleep::usleep() instead of the sleep() and usleep() function." }
@@ -517,7 +517,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-to-route-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `redirect()->route(\"home\")` and `Redirect::route(\"home\")` with `to_route(\"home\")`" }
 "laravel/prefer-today" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use today() instead of now()->startOfDay()" }
 "laravel/prefer-touches-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes model touches property to use the touches attribute" }
-"laravel/prefer-travel-to" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use the `$this->travelTo()` method in Laravel's `TestCase` class instead of the `Carbon::setTestNow()` method." }
+"laravel/prefer-travel-to" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the `$this->travelTo()` method in Laravel's `TestCase` class instead of the `Carbon::setTestNow()` method." }
 "laravel/prefer-tries-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the tries property to use the Tries attribute" }
 "laravel/prefer-typed-assert-closure" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes assert calls to use a type hinted closure." }
 "laravel/prefer-unique-for-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the uniqueFor property to use the UniqueFor attribute" }
@@ -831,7 +831,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-cast-over-settype" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast shall be used, not `settype`." }
 "style/prefer-catch-name-from-type" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Type and name of catch exception should match" }
 "style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = false, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
-"style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Use `class` keyword for class name resolution in string instead of hardcoded string reference" }
+"style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Use `class` keyword for class name resolution in string instead of hardcoded string reference" }
 "style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
 "style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace string class names by `<class>::class` constant" }
 "style/prefer-compound-assignment" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
@@ -871,7 +871,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/require-namespace" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects files that contain definitions (classes, interfaces, enums, traits, functions, or constants)" }
 "style/require-naming-convention" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Enforce naming conventions for classes, interfaces, traits, enums, functions, methods, properties, constants and variables (options per kind)." }
 "style/require-ordered-traits" = { fix = "unsafe", ported = true, status = "decided", summary = "Trait `use` statements must be sorted alphabetically.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }
-"style/require-parent-visibility" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Make method visibility same as parent one" }
+"style/require-parent-visibility" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Make method visibility same as parent one" }
 "style/require-phpdoc" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects declarations that are missing a docblock." }
 "style/require-sorted-integer-keys" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Detects array literals with integer keys that are not in ascending order." }
 "style/require-statement-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add empty new line after different-type statements to improve code readability" }
@@ -884,7 +884,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-closure-never-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add \"never\" return-type for closure that never return anything" }
 "types/add-closure-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to closures based on known return values" }
 "types/add-closure-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure return type void if there is no return" }
-"types/add-datetime-property-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Set DateTime to DateTimeInterface for DateTime property with DateTimeInterface docblock" }
+"types/add-datetime-property-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Set DateTime to DateTimeInterface for DateTime property with DateTimeInterface docblock" }
 "types/add-doctrine-repository-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to classes that extend Doctrine\\ORM\\EntityRepository based on return Doctrine method names" }
 "types/add-fluent-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from strict return $this" }
 "types/add-function-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add function return type void if there is no return" }
@@ -912,7 +912,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-param-type-parent-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Change param type based on parent param type" }
 "types/add-param-type-property" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add param type declaration based on property type" }
 "types/add-param-type-spl-fixed-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add exact fixed array type in known cases" }
-"types/add-param-type-sprintf" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add string type to parameters used in sprintf calls" }
+"types/add-param-type-sprintf" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string type to parameters used in sprintf calls" }
 "types/add-param-type-variable-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add closure param object type based on the argument the assigned closure variable is called with" }
 "types/add-private-method-array-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type to private methods based on created empty array and returned" }
 "types/add-property-type-assigns" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add typed property from assigned types" }

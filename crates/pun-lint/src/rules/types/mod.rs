@@ -52,6 +52,7 @@ pub use add_return_type_from_property::AddReturnTypeFromProperty;
 pub use add_return_type_from_ternary::AddReturnTypeFromTernary;
 pub use add_scalar_return::{AddNumericReturnFromScalar, AddStringReturnFromScalar};
 pub use add_union_return::{AddNullableReturn, AddUnionReturn};
+pub(crate) use never::has_parent_class_method;
 
 use mago_syntax::cst::{
     Block, Expression, Extends, Identifier, MethodBody, Modifier, Node, Return, Sequence, Statement,
