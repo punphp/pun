@@ -189,8 +189,8 @@ fn find_references<'a>(
         ClassLikeMemberSelector::Identifier(id) => Some(id.value.eq_ignore_ascii_case(name)),
         _ => None,
     };
+    // A class-like can't be declared inside a method, so only an anonymous class nests one.
     match node {
-        Node::Class(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_) => return,
         Node::AnonymousClass(c) => {
             if let Some(args) = &c.argument_list {
                 find_references(class, Node::PartialArgumentList(args), name, out);
