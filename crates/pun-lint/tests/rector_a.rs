@@ -126,6 +126,12 @@ fn logical_to_boolean() {
         &only(rules::PreferBooleanAndOr, 80400),
         "LogicalToBooleanRector/Oracle",
     );
+    // Where Rector keeps an operand's own parentheses inside the ones it adds, or drops those a ternary or `xor` operand
+    // needs (changing the meaning); the expected code is derived by hand.
+    run(
+        &only(rules::PreferBooleanAndOr, 80400),
+        "LogicalToBooleanRector/Pun",
+    );
 }
 
 #[test]
@@ -139,6 +145,12 @@ fn unwrap_future_compatible_if_php_version() {
     run(
         &only(rules::NoFuturePhpVersionCheck, 80400),
         "UnwrapFutureCompatibleIfPhpVersionRector/Oracle",
+    );
+    // Where Rector crashes on an unknown sign, or decides a check on a call's value, an unknown sign or a negated
+    // string (which Pun does not evaluate); the expected code (left alone) is derived by hand.
+    run(
+        &only(rules::NoFuturePhpVersionCheck, 80400),
+        "UnwrapFutureCompatibleIfPhpVersionRector/Pun",
     );
 }
 
@@ -187,6 +199,14 @@ fn remove_unused_private_method_parameter() {
         &only(rules::NoUnusedPrivateMethodParam, 80400),
         "RemoveUnusedPrivateMethodParameterRector/Oracle",
     );
+    // A dynamic call on `$this` may reach the method, so Pun keeps a parameter whose removal would shift the others,
+    // and a call on another receiver names a parameter that would go; Rector ignores both calls. A method whose every
+    // parameter goes while it calls itself is printed anew around that call, so Pun leaves it. The expected code is
+    // derived by hand.
+    run(
+        &only(rules::NoUnusedPrivateMethodParam, 80400),
+        "RemoveUnusedPrivateMethodParameterRector/Pun",
+    );
 }
 
 #[test]
@@ -197,6 +217,11 @@ fn remove_unused_private_property() {
         &only(rules::NoUnusedPrivateProperty, 80400),
         "RemoveUnusedPrivatePropertyRector/Fixture",
         &["on_arg.php.inc"],
+    );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
+    run(
+        &only(rules::NoUnusedPrivateProperty, 80400),
+        "RemoveUnusedPrivatePropertyRector/Oracle",
     );
     // Pun's own cases where Pun keeps the meaning Rector loses (the module docs say how); expected derived by hand.
     run(
@@ -245,6 +270,13 @@ fn foreach_to_in_array() {
         &only(rules::PreferInArrayOverForeach, 80400),
         "ForeachToInArrayRector/Oracle",
     );
+    // Derived by hand: Rector drops an `else` the `if` has, and Pun leaves a list whose first statements would go
+    // ahead of kept ones (php-parser's reprint there is not ported), a file-level variable, and a local whose other
+    // writes (`+=`, a list, a reference, a `foreach` target, a by-reference `use`) PHPStan still types as an array.
+    run(
+        &only(rules::PreferInArrayOverForeach, 80400),
+        "ForeachToInArrayRector/Pun",
+    );
 }
 
 #[test]
@@ -254,7 +286,13 @@ fn consecutive_null_compare_returns_to_null_coalesce_queue() {
         &only(rules::PreferCoalesceChain, 80400),
         "ConsecutiveNullCompareReturnsToNullCoalesceQueueRector/Fixture",
     );
-    // Pun's own cases where Pun keeps the meaning Rector loses (the module docs say how); expected derived by hand.
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
+    run(
+        &only(rules::PreferCoalesceChain, 80400),
+        "ConsecutiveNullCompareReturnsToNullCoalesceQueueRector/Oracle",
+    );
+    // Pun's own cases where Pun keeps the meaning Rector loses (the module docs say how), or leaves a file's top-level
+    // statements whose reprint by php-parser it does not know; expected derived by hand.
     run(
         &only(rules::PreferCoalesceChain, 80400),
         "ConsecutiveNullCompareReturnsToNullCoalesceQueueRector/Pun",
@@ -310,16 +348,22 @@ fn remove_next_same_value_condition() {
 #[test]
 fn remove_dead_loop() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoEmptyLoop, 80400),
-        "RemoveDeadLoopRector/Fixture",
+    let linter = only(rules::NoEmptyLoop, 80400);
+    run(&linter, "RemoveDeadLoopRector/Fixture");
+    // The empty block that replaces a loop that was a braceless body: php-parser prints it on the `if` line, Pun's edit
+    // keeps it on the loop's own line.
+    run_with_whitespace_exceptions(
+        &linter,
+        "RemoveDeadLoopRector/Oracle",
+        &["dead_loop_braceless.php.inc"],
     );
 }
 
 #[test]
 fn remove_dead_stmt() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/ keeps the kept parts in source
-    // order where Rector writes the first part last.
+    // order where Rector writes the first part last, and keeps `$v[...]` where `$v` may be an `ArrayAccess` that Rector
+    // drops the `offsetGet()` of (a nullable, union, `object`, `mixed` or `iterable` type).
     let linter = only(rules::NoUnusedExpression, 80400);
     run_formatter_too(
         &linter,
@@ -327,25 +371,24 @@ fn remove_dead_stmt() {
         &["constant_fetch.php.inc", "scalar.php.inc"],
     );
     run(&linter, "RemoveDeadStmtRector/FixtureRemovedComments");
+    run(&linter, "RemoveDeadStmtRector/Oracle");
     run(&linter, "RemoveDeadStmtRector/Pun");
 }
 
 #[test]
 fn remove_sole_value_sprintf() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoSoleValueSprintf, 80400),
-        "RemoveSoleValueSprintfRector/Fixture",
-    );
+    let linter = only(rules::NoSoleValueSprintf, 80400);
+    run(&linter, "RemoveSoleValueSprintfRector/Fixture");
+    run(&linter, "RemoveSoleValueSprintfRector/Oracle");
 }
 
 #[test]
 fn compact_to_variables() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoCompact, 80400),
-        "CompactToVariablesRector/Fixture",
-    );
+    let linter = only(rules::NoCompact, 80400);
+    run(&linter, "CompactToVariablesRector/Fixture");
+    run(&linter, "CompactToVariablesRector/Oracle");
 }
 
 #[test]
@@ -355,42 +398,51 @@ fn is_a_with_string_with_third_argument() {
         &only(rules::RequireIsAAllowString, 80400),
         "IsAWithStringWithThirdArgumentRector/Fixture",
     );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
+    run(
+        &only(rules::RequireIsAAllowString, 80400),
+        "IsAWithStringWithThirdArgumentRector/Oracle",
+    );
 }
 
 #[test]
 fn unnecessary_ternary_expression() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on a trait, where
-    // PHPStan knows no type, and on a variadic `bool` parameter, which is an array.
+    // PHPStan knows no type, on a variadic `bool` parameter, which is an array, and the parentheses php-parser leaves
+    // out around an assignment, arrow function, `print` or `include` under the new cast.
     let linter = only(rules::NoBoolTernary, 80400);
     run(&linter, "UnnecessaryTernaryExpressionRector/Fixture");
+    run(&linter, "UnnecessaryTernaryExpressionRector/Oracle");
     run(&linter, "UnnecessaryTernaryExpressionRector/Pun");
 }
 
 #[test]
 fn remove_useless_ternary() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoUselessTernary, 80400),
-        "RemoveUselessTernaryRector/Fixture",
-    );
+    let linter = only(rules::NoUselessTernary, 80400);
+    run(&linter, "RemoveUselessTernaryRector/Fixture");
+    run(&linter, "RemoveUselessTernaryRector/Oracle");
 }
 
 #[test]
 fn ternary_to_boolean_or_false_to_boolean_and() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoFalseTernary, 80400),
-        "TernaryToBooleanOrFalseToBooleanAndRector/Fixture",
-    );
+    let linter = only(rules::NoFalseTernary, 80400);
+    run(&linter, "TernaryToBooleanOrFalseToBooleanAndRector/Fixture");
+    run(&linter, "TernaryToBooleanOrFalseToBooleanAndRector/Oracle");
+    // Where Rector drops the parentheses an assignment or arrow function needs; the expected code is derived by hand.
+    run(&linter, "TernaryToBooleanOrFalseToBooleanAndRector/Pun");
 }
 
 #[test]
 fn strlen_zero_to_identical_empty_string() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::PreferEmptyStringIdentical, 80400),
-        "StrlenZeroToIdenticalEmptyStringRector/Fixture",
-    );
+    let linter = only(rules::PreferEmptyStringIdentical, 80400);
+    run(&linter, "StrlenZeroToIdenticalEmptyStringRector/Fixture");
+    run(&linter, "StrlenZeroToIdenticalEmptyStringRector/Oracle");
+    // Where Rector unpacks `...$s`, crashes on `strlen()` or drops the parentheses a `?:` or assignment needs under the
+    // cast; the expected code is derived by hand.
+    run(&linter, "StrlenZeroToIdenticalEmptyStringRector/Pun");
 }
 
 #[test]
@@ -398,6 +450,7 @@ fn simplify_bool_identical_true() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on `@call()`.
     let linter = only(rules::NoBooleanLiteralCompare, 80400);
     run(&linter, "SimplifyBoolIdenticalTrueRector/Fixture");
+    run(&linter, "SimplifyBoolIdenticalTrueRector/Oracle");
     run(&linter, "SimplifyBoolIdenticalTrueRector/Pun");
 }
 
@@ -405,17 +458,18 @@ fn simplify_bool_identical_true() {
 fn simplify_empty_check_on_empty_array() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: a property of a class in another
     // file, which Pun can't read without analyse's index, and Rector's own run on the `is_array() &&` guard, a trait,
-    // an element assignment of an untyped parameter and variadic parameters.
+    // an element assignment of an untyped parameter and variadic parameters; a file-level variable, which Pun does not
+    // type, and an element assignment of a typed parameter the method writes, which Pun does not follow.
     let linter = only(rules::PreferEmptyArrayIdentical, 80400);
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Fixture");
+    run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Oracle");
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Pun");
 }
 
 #[test]
 fn number_compare_to_max_func_call() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::PreferMinMax, 80400),
-        "NumberCompareToMaxFuncCallRector/Fixture",
-    );
+    let linter = only(rules::PreferMinMax, 80400);
+    run(&linter, "NumberCompareToMaxFuncCallRector/Fixture");
+    run(&linter, "NumberCompareToMaxFuncCallRector/Oracle");
 }

@@ -217,3 +217,50 @@ fn return_union_type() {
         run_class_at(vec![Box::new(AddUnionReturn)], dir, version);
     }
 }
+
+#[test]
+fn closure_return_type_intersection_below_dnf() {
+    // Oracle/closure_dnf.php.inc below PHP 8.2: .oracle/rector-bin (ClosureReturnTypeRector alone) leaves the closure
+    // alone at 8.1 (no DNF types) and at 8.0 (no intersection types).
+    let input = std::fs::read_to_string(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/rector/ClosureReturnTypeRector/Oracle/closure_dnf.php.inc"
+    ))
+    .unwrap();
+    let input = input.split_once("-----\n").unwrap().0;
+    for version in [80000, 80100] {
+        let linter = pun_lint::Linter::new(vec![Box::new(AddClosureReturn)], version);
+        let fixed = linter
+            .fix(std::path::Path::new("closure_dnf.php"), input)
+            .unwrap();
+        assert_eq!(fixed.source, input, "PHP {version}");
+    }
+}
+
+#[test]
+fn left_alone_at_other_versions() {
+    // Inputs .oracle/rector-bin (the one Rector rule alone) leaves unchanged at a version the fixture directories do
+    // not run: an anonymous class below PHP 7.2 (no `object`), and a ternary with a `mixed` branch at PHP 8.0.
+    let cases: [(Box<dyn Rule>, u32, &str); 3] = [
+        (
+            Box::new(AddReturnTypeFromNew),
+            70100,
+            "<?php\n\nfunction make()\n{\n    return new class {\n    };\n}\n",
+        ),
+        (
+            Box::new(AddClosureReturn),
+            70100,
+            "<?php\n\n$f = function () {\n    return new class {\n    };\n};\n",
+        ),
+        (
+            Box::new(AddReturnTypeFromTernary),
+            80000,
+            "<?php\n\nfunction f(bool $x, mixed $a)\n{\n    return $x ? $a : $a;\n}\n",
+        ),
+    ];
+    for (rule, version, input) in cases {
+        let linter = pun_lint::Linter::new(vec![rule], version);
+        let fixed = linter.fix(std::path::Path::new("f.php"), input).unwrap();
+        assert_eq!(fixed.source, input, "PHP {version}");
+    }
+}

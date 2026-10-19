@@ -294,13 +294,10 @@ fn divide(left: Number, right: Number) -> Option<Number> {
         return None;
     }
     match (left, right) {
-        (Number::Integer(l), Number::Integer(r)) => match l.checked_rem(r) {
-            Some(0) => match l.checked_div(r) {
-                Some(value) => Some(Number::Integer(value)),
-                None => Some(Number::Float(l as f64 / r as f64)),
-            },
-            _ => Some(Number::Float(l as f64 / r as f64)),
-        },
+        // `checked_rem` fails only where `checked_div` does (`i64::MIN / -1`).
+        (Number::Integer(l), Number::Integer(r)) if l.checked_rem(r) == Some(0) => {
+            Some(Number::Integer(l / r))
+        }
         _ => Some(Number::Float(left.as_float() / right.as_float())),
     }
 }

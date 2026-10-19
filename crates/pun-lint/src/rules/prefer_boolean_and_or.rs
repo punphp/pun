@@ -245,7 +245,7 @@ impl Printer<'_, '_> {
                 self.infix(b, precedence, lhs_precedence)
             }
             Expression::Assignment(a) => self.assignment(a, lhs_precedence),
-            Expression::Conditional(c) if boolean => self.ternary(c, precedence),
+            Expression::Conditional(c) if boolean => self.ternary(c),
             Expression::Construct(Construct::Print(p)) if boolean => {
                 self.prefix("print ", 180, p.value, lhs_precedence)
             }
@@ -318,8 +318,9 @@ impl Printer<'_, '_> {
         }
     }
 
-    /// `pExpr_Ternary`, through `pInfixOp`; its operands keep their code.
-    fn ternary(&self, c: &Conditional<'_>, precedence: i32) -> String {
+    /// `pExpr_Ternary`, through `pInfixOp`; its operands keep their code. Only an operand of `&&`/`||` gets here, which
+    /// binds tighter than `?:`, so it is in parentheses.
+    fn ternary(&self, c: &Conditional<'_>) -> String {
         let condition = kept_operand(self.ctx, c.condition, 150, Some(150));
         let otherwise = kept_operand(self.ctx, c.r#else, 150, None);
         let code = match c.then {
@@ -329,11 +330,7 @@ impl Printer<'_, '_> {
             ),
             None => format!("{condition} ?: {otherwise}"),
         };
-        if 150 >= precedence {
-            format!("({code})")
-        } else {
-            code
-        }
+        format!("({code})")
     }
 
     /// `pPrefixOp`: in parentheses at or above the left limit.

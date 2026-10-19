@@ -83,7 +83,7 @@ fn bool_value(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
 }
 
 /// The declared type of the parameter `name` of the enclosing function, when nothing writes it before the code (so
-/// the variable keeps its native type, as in PHPStan's scope there), and it is not by reference.
+/// the variable keeps its native type, as in PHPStan's scope there).
 pub(crate) fn parameter_hint<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     name: &[u8],
@@ -95,9 +95,9 @@ pub(crate) fn parameter_hint<'ast, 'arena>(
     param.hint.as_ref()
 }
 
-/// The non-reference parameter `name` of the function around the code, when nothing writes it before the code: no
+/// The parameter `name` of the function around the code, when nothing writes it before the code: no
 /// write starts before the end of the code's parent, and when the code is in a loop, no write anywhere in the
-/// function (the loop can carry a later write back).
+/// function (the loop can carry a later write back). By reference too: PHPStan types it as declared.
 fn parameter<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     name: &[u8],
@@ -120,9 +120,6 @@ fn parameter<'ast, 'arena>(
         _ => unreachable!(),
     };
     let param = params.parameters.iter().find(|p| p.variable.name == name)?;
-    if param.ampersand.is_some() {
-        return None;
-    }
     let in_loop = ancestors[at..].iter().any(|n| {
         matches!(
             n,
@@ -154,9 +151,7 @@ fn own_method_returns(
     };
     let Some(members) = ancestors.iter().rev().find_map(|n| match n {
         Node::Class(c) => Some(&c.members),
-        Node::Trait(t) => Some(&t.members),
         Node::Enum(e) => Some(&e.members),
-        Node::Interface(i) => Some(&i.members),
         Node::AnonymousClass(c) => Some(&c.members),
         _ => None,
     }) else {
@@ -293,12 +288,7 @@ pub(crate) fn is_array(source: &str, ancestors: &[Node<'_, '_>], expr: &Expressi
         Expression::Variable(Variable::Direct(v)) => match parameter_hint(ancestors, v.name) {
             Some(hint) => matches!(hint, Hint::Array(_)),
             None => {
-                local_of(ancestors, v.name, &|e| {
-                    matches!(
-                        unparenthesize(e),
-                        Expression::Array(_) | Expression::LegacyArray(_)
-                    )
-                }) && assigned_first(ancestors, v.name)
+                local_of(ancestors, v.name, &array_literal) && assigned_first(ancestors, v.name)
             }
         },
         Expression::Access(Access::Property(p)) if is_this(p.object) => match &p.property {
@@ -319,10 +309,16 @@ pub(crate) fn is_array(source: &str, ancestors: &[Node<'_, '_>], expr: &Expressi
     }
 }
 
+fn array_literal(e: &Expression<'_>) -> bool {
+    matches!(
+        unparenthesize(e),
+        Expression::Array(_) | Expression::LegacyArray(_)
+    )
+}
+
 fn own_property_is_array(source: &str, ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
     let Some((class, members, left_brace)) = ancestors.iter().rev().find_map(|n| match n {
         Node::Class(c) => Some((*n, &c.members, c.left_brace)),
-        Node::Trait(t) => Some((*n, &t.members, t.left_brace)),
         Node::AnonymousClass(c) => Some((*n, &c.members, c.left_brace)),
         _ => None,
     }) else {
@@ -401,11 +397,11 @@ fn only_array_assigned(class: Node<'_, '_>, name: &[u8]) -> bool {
 /// it.
 fn breaks_array<'ast, 'arena>(
     node: Node<'ast, 'arena>,
-    method: Option<Node<'ast, 'arena>>,
+    method: Option<&'ast Method<'arena>>,
     name: &[u8],
 ) -> bool {
     let method = match node {
-        Node::Method(_) => Some(node),
+        Node::Method(m) => Some(m),
         _ => method,
     };
     if let Node::Assignment(a) = node
@@ -423,7 +419,7 @@ fn breaks_array<'ast, 'arena>(
 }
 
 /// [`breaks_array`] for one assignment.
-fn breaks_with(a: &Assignment<'_>, method: Option<Node<'_, '_>>, name: &[u8]) -> bool {
+fn breaks_with(a: &Assignment<'_>, method: Option<&Method<'_>>, name: &[u8]) -> bool {
     let mut target = unparenthesize(a.lhs);
     let mut element = false;
     loop {
@@ -512,33 +508,31 @@ pub(crate) fn in_trait(ancestors: &[Node<'_, '_>]) -> bool {
 }
 
 /// Whether the enclosing function's own statement list assigns `name` (`$name = ...;`) before anything else
-/// mentions it, so the variable is defined wherever it is read.
+/// mentions it, so the variable is defined wherever it is read. Only asked after [`local_of`], which found that
+/// function.
 fn assigned_first(ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
-    let body = ancestors.iter().rev().find_map(|n| match n {
-        Node::Function(f) => Some(&f.body),
-        Node::Method(m) => match &m.body {
-            MethodBody::Concrete(b) => Some(b),
-            _ => None,
-        },
-        Node::Closure(c) => Some(&c.body),
+    let statements = ancestors.iter().rev().find_map(|n| match n {
+        Node::Function(f) => Some(&f.body.statements),
+        Node::Method(Method {
+            body: MethodBody::Concrete(b),
+            ..
+        }) => Some(&b.statements),
+        Node::Closure(c) => Some(&c.body.statements),
         _ => None,
     });
-    let Some(body) = body else {
-        return false;
-    };
-    for statement in body.statements.iter() {
-        if let Statement::Expression(e) = statement
-            && let Expression::Assignment(a) = unparenthesize(e.expression)
-            && matches!(unparenthesize(a.lhs), Expression::Variable(Variable::Direct(l)) if l.name == name)
-        {
-            return true;
-        }
-        if super::side_effect::any_node(
-            Node::Statement(statement),
-            &|n| matches!(n, Node::DirectVariable(d) if d.name == name),
-        ) {
-            return false;
-        }
-    }
-    false
+    // The first statement that mentions it (the one being read, at the latest) must be the assignment.
+    statements
+        .unwrap()
+        .iter()
+        .find(|statement| {
+            super::side_effect::any_node(
+                Node::Statement(statement),
+                &|n| matches!(n, Node::DirectVariable(d) if d.name == name),
+            )
+        })
+        .is_some_and(|statement| {
+            matches!(statement, Statement::Expression(e)
+                if matches!(unparenthesize(e.expression), Expression::Assignment(a)
+                    if matches!(unparenthesize(a.lhs), Expression::Variable(Variable::Direct(l)) if l.name == name)))
+        })
 }

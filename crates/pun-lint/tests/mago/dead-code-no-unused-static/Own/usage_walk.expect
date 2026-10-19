@@ -1,0 +1,3 @@
+68 70 Static variable `$s` is declared but never used.
+408 410 Static variable `$s` is declared but never used.
+412 414 Static variable `$t` is declared but never used.

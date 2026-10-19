@@ -168,10 +168,13 @@ fn atomic_declaration(
         TAtomic::Callable(_) => "callable".to_string(),
         TAtomic::Object(TObject::Named(named)) => {
             let name = if named.is_this || named.is_static {
+                // Rector's `StaticTypeMapper`: `self` where PHP has no `static` return type.
                 if php_version < PHP_80 {
-                    return None;
+                    "self"
+                } else {
+                    "static"
                 }
-                "static".to_string()
+                .to_string()
             } else if named.name.as_bytes().starts_with(b"{anonymous-class:") {
                 if php_version < OBJECT_TYPE {
                     return None;
@@ -321,8 +324,8 @@ pub(crate) fn union_declaration(
         }
     }
     match names.as_slice() {
-        [] => None,
-        [one] => Some(one.clone()),
+        // one name is no union: Rector's inferer generalizes `1|2` to `int` and `E::A|E::B` to `E` and skips them
+        [] | [_] => None,
         [a, b] if !a.contains('&') && !b.contains('&') && (a == "null" || b == "null") => {
             let other = if a == "null" { b } else { a };
             if other == "false" && php_version < NULL_FALSE_TRUE_STANDALONE_TYPE {

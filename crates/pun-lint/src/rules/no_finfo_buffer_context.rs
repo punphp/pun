@@ -70,7 +70,7 @@ impl Rule for NoFinfoBufferContext {
 /// `removeContextArg`: the index of the argument to remove.
 fn context_arg(list: &ArgumentList<'_>, position: usize) -> Option<usize> {
     let args = list.arguments.as_slice();
-    if args.len() <= position - 1 {
+    if args.len() < position {
         return None;
     }
     if !args.iter().any(|a| matches!(a, Argument::Named(_))) {
