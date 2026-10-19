@@ -612,6 +612,11 @@ fn rector_config(root: &Path, config: &Path) -> Result<migrate::RectorConfig> {
         .args([
             "-d",
             "display_errors=stderr",
+            // One error message whatever the php.ini: no logged copy, no PHP 8.5 fatal backtrace.
+            "-d",
+            "log_errors=0",
+            "-d",
+            "fatal_error_backtraces=0",
             "-r",
             include_str!("rector_config.php"),
             "--",
@@ -947,6 +952,11 @@ fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
         .args([
             "-d",
             "display_errors=stderr",
+            // One error message whatever the php.ini: no logged copy, no PHP 8.5 fatal backtrace.
+            "-d",
+            "log_errors=0",
+            "-d",
+            "fatal_error_backtraces=0",
             "-r",
             include_str!("php_cs_fixer_rules.php"),
             "--",
