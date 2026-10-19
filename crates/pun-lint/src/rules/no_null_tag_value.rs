@@ -60,8 +60,7 @@ impl Rule for NoNullTagValue {
             span.start,
         )
         .into_iter()
-        .filter(|t| t.kind == TokenKind::DocBlockComment)
-        .last()
+        .rfind(|t| t.kind == TokenKind::DocBlockComment)
         .map(|t| Span::new(t.start, t.end)) else {
             return;
         };
