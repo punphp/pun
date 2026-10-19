@@ -154,12 +154,12 @@ fn command(
     };
     // configureFromAttributes()
     let mut signature = string_property(codebase, class, b"$signature")?;
-    let mut aliases = match codebase.get_declaring_property(class, b"$aliases") {
-        Some(p) => match &p.default_type_metadata {
-            Some(t) if !t.type_union.is_null() => strings(&t.type_union)?,
-            _ => Vec::new(),
-        },
-        None => Vec::new(),
+    let mut aliases = match codebase
+        .get_declaring_property(class, b"$aliases")
+        .and_then(|p| p.default_type_metadata.as_ref())
+    {
+        Some(t) if !t.type_union.is_null() => strings(&t.type_union)?,
+        _ => Vec::new(),
     };
     if let Some(a) = attribute(b"illuminate\\console\\attributes\\signature") {
         signature = Some(single_string(argument(a, 0, b"signature")?)?);
@@ -187,11 +187,9 @@ fn command(
             match string_property(codebase, class, b"$name")? {
                 Some(name) => name,
                 // Symfony's getDefaultName()
-                None => single_string(argument(
-                    attribute(b"symfony\\component\\console\\attribute\\ascommand")?,
-                    0,
-                    b"name",
-                )?)?,
+                None => attribute(b"symfony\\component\\console\\attribute\\ascommand")
+                    .and_then(|a| argument(a, 0, b"name"))
+                    .and_then(single_string)?,
             }
         }
     };
@@ -252,8 +250,11 @@ fn single_string(t: &TUnion) -> Option<String> {
         .map(|v| String::from_utf8_lossy(v).into_owned())
 }
 
-/// The strings of a constant array type.
+/// The strings of a constant array type, or a constant string as `(array)` casts it.
 fn strings(t: &TUnion) -> Option<Vec<String>> {
+    if let Some(s) = single_string(t) {
+        return Some(vec![s]);
+    }
     let items: Vec<&TUnion> = match t.types.as_ref() {
         [TAtomic::Array(TArray::List(l))] => l
             .known_elements
@@ -270,9 +271,12 @@ fn strings(t: &TUnion) -> Option<Vec<String>> {
     items.into_iter().map(single_string).collect()
 }
 
+/// A signature's name, argument names, and option names with their shortcuts.
+type Signature = (String, Vec<String>, Vec<(String, Option<String>)>);
+
 /// Laravel's `Parser::parse()`: the name, the arguments' names and the options' names and shortcuts. `None` when
 /// the signature has no name (Laravel throws).
-fn parse(expression: &str) -> Option<(String, Vec<String>, Vec<(String, Option<String>)>)> {
+fn parse(expression: &str) -> Option<Signature> {
     static NAME: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
     static PARAMETER: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
     static OPTION: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
@@ -398,12 +402,12 @@ fn declared<'c>(
     Some((declaring, m.name_span?))
 }
 
-/// Runs `f` on the method named at `name_span` in its file, with the file's names. `None` when the file is
+/// Runs `f` on the body of the concrete method named at `name_span` in its file, with the file's names. `None` when the file is
 /// not one Pun reads.
 fn with_method<R>(
     files: &HashMap<FileId, &Path>,
     name_span: Span,
-    f: impl FnOnce(&Method, &ResolvedNames) -> Option<R>,
+    f: impl FnOnce(&Block, &ResolvedNames) -> Option<R>,
 ) -> Option<R> {
     let file = read(files.get(&name_span.file_id)?, FileType::Host).ok()??;
     let arena = LocalArena::new();
@@ -414,12 +418,15 @@ fn with_method<R>(
     f(finder.1?, &names)
 }
 
-struct Find<'ast, 'arena>(Span, Option<&'ast Method<'arena>>);
+/// The body of the concrete method named at the span.
+struct Find<'ast, 'arena>(Span, Option<&'ast Block<'arena>>);
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'ast, 'arena> {
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
-        if m.name.span == self.0 {
-            self.1 = Some(m);
+        if m.name.span == self.0
+            && let MethodBody::Concrete(body) = &m.body
+        {
+            self.1 = Some(body);
         }
     }
 }
@@ -437,10 +444,7 @@ fn inputs(
     let Some((_, span)) = declared(codebase, k, method, COMMAND) else {
         return Some(());
     };
-    with_method(files, span, |m, names| {
-        let MethodBody::Concrete(body) = &m.body else {
-            return None;
-        };
+    with_method(files, span, |body, names| {
         let value = body.statements.iter().find_map(|s| match s {
             Statement::Return(r) => Some(r.value),
             _ => None,
@@ -468,7 +472,7 @@ fn inputs(
 /// The parameters an array spreads into a call (`...$arguments`): its values, and its string keys as names.
 fn array_parameters<'a, 'arena>(
     elements: &'a TokenSeparatedSequence<'arena, ArrayElement<'arena>>,
-) -> Option<Vec<(Option<&'a [u8]>, &'a Expression<'arena>)>> {
+) -> Option<Parameters<'a, 'arena>> {
     elements
         .iter()
         .map(|e| match e {
@@ -566,14 +570,14 @@ fn configure(
     let Some((declaring, span)) = declared(codebase, k, b"configure", SYMFONY_COMMAND) else {
         return Some(());
     };
-    let calls_parent = with_method(files, span, |m, names| {
+    let calls_parent = with_method(files, span, |body, names| {
         let mut calls = Configure {
             names,
             definition,
             known: true,
             parent: false,
         };
-        calls.walk_method(m, &mut ());
+        calls.walk_block(body, &mut ());
         calls.known.then_some(calls.parent)
     })?;
     match declaring.direct_parent_class {

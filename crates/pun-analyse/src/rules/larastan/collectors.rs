@@ -63,11 +63,12 @@ fn collecting(c: &Checker) -> Option<(bool, bool)> {
 }
 
 /// UsedViewFunctionCollector and UsedTranslationFunctionCollector.
-pub(crate) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>) {
+pub(crate) fn function_call<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    call: &FunctionCall<'arena>,
+    id: &Identifier,
+) {
     let Some((views, translations)) = collecting(c) else {
-        return;
-    };
-    let Expression::Identifier(id) = call.function else {
         return;
     };
     let name = written_name(c.names, id);
@@ -122,38 +123,30 @@ pub(crate) fn static_method_call<'arena>(
     }
 }
 
-/// The method calls the collectors read the object's type of.
-pub(super) fn typed_method_call(larastan: &Larastan, call: &MethodCall) -> bool {
+/// The method calls the collectors read the object's type of, by their method name.
+pub(super) fn typed_method_call<'a>(larastan: &Larastan, call: &'a MethodCall) -> Option<&'a [u8]> {
     let ClassLikeMemberSelector::Identifier(m) = &call.method else {
-        return false;
+        return None;
     };
-    !call.argument_list.arguments.is_empty()
+    let read = !call.argument_list.arguments.is_empty()
         && match m.value {
             b"make" | b"markdown" | b"view" => larastan.check_unused_views,
             b"get" | b"choice" => larastan.check_missing_translations,
             _ => false,
-        }
+        };
+    read.then_some(m.value)
 }
 
 /// UsedViewMakeCollector, UsedEmailViewCollector and UsedTranslationTranslatorCollector.
 pub(crate) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena>) {
-    let Some(larastan) = c.larastan else {
+    let Some(method) = c.larastan.and_then(|l| typed_method_call(l, call)) else {
         return;
     };
-    if !typed_method_call(larastan, call) {
-        return;
-    }
-    let ClassLikeMemberSelector::Identifier(m) = &call.method else {
+    let ty = c.type_of(call.object).cloned();
+    let (Some(ty), Some(value)) = (ty, literal(call.argument_list.arguments.first())) else {
         return;
     };
-    let Some(ty) = c.type_of(call.object).cloned() else {
-        return;
-    };
-    let args = call.argument_list.arguments.as_slice();
-    let Some(value) = literal(args.first()) else {
-        return;
-    };
-    match m.value {
+    match method {
         b"make" if is_object_of(c, &ty, b"illuminate\\contracts\\view\\factory") => {
             c.collect_view(value)
         }

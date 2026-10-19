@@ -1,0 +1,71 @@
+{
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0, on these commands copied to app/Console/Commands/PunEdge of a pinkary checkout (namespace App\\Console\\Commands\\PunEdge)",
+    "errors": [
+        {
+            "file": "AliasesAttrCommand.php",
+            "line": 17,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:aa\" does not have argument \"nope\"."
+        },
+        {
+            "file": "AliasesAttrCommand.php",
+            "line": 17,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:aliases-attr\" does not have argument \"nope\"."
+        },
+        {
+            "file": "AsCommandNameCommand.php",
+            "line": 39,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:as-name\" does not have argument \"nope\"."
+        },
+        {
+            "file": "AsCommandNameCommand.php",
+            "line": 46,
+            "identifier": "larastan.console.undefinedOption",
+            "message": "Command \"pun:as-name\" does not have option \"nope\"."
+        },
+        {
+            "file": "ConfigureChildCommand.php",
+            "line": 22,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:configure-child\" does not have argument \"nope\"."
+        },
+        {
+            "file": "KeyedAliasesCommand.php",
+            "line": 15,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:keyed\" does not have argument \"nope\"."
+        },
+        {
+            "file": "KeyedAliasesCommand.php",
+            "line": 15,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:keyed-alias\" does not have argument \"nope\"."
+        },
+        {
+            "file": "SignatureAttrCommand.php",
+            "line": 14,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:sa\" does not have argument \"nope\"."
+        },
+        {
+            "file": "SignatureAttrCommand.php",
+            "line": 14,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:sig-attr\" does not have argument \"nope\"."
+        },
+        {
+            "file": "SignaturePlainCommand.php",
+            "line": 16,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:sig-plain\" does not have argument \"nope\"."
+        },
+        {
+            "file": "SignaturePlainCommand.php",
+            "line": 16,
+            "identifier": "larastan.console.undefinedArgument",
+            "message": "Command \"pun:sp\" does not have argument \"nope\"."
+        }
+    ]
+}

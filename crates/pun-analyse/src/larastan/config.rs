@@ -294,6 +294,7 @@ fn is_array(e: &Expression, names: &ResolvedNames, codebase: &CodebaseMetadata) 
                 | UnaryPrefixOperator::RealCast(..)
                 | UnaryPrefixOperator::BoolCast(..)
                 | UnaryPrefixOperator::BooleanCast(..)
+                | UnaryPrefixOperator::Not(..)
         ),
         Expression::Call(Call::Function(f)) => match f.function {
             Expression::Identifier(id) => {
@@ -310,7 +311,7 @@ fn is_array(e: &Expression, names: &ResolvedNames, codebase: &CodebaseMetadata) 
                         .get_function(name)
                         .or_else(|| codebase.get_function(short))
                         .and_then(|f| f.return_type_metadata.as_ref())
-                        .is_some_and(|t| union_is_array(&t.type_union) == IsArray::No)
+                        .is_some_and(|t| union_is_array(&t.type_union, false) == IsArray::No)
                 }
             }
             _ => false,
@@ -320,23 +321,25 @@ fn is_array(e: &Expression, names: &ResolvedNames, codebase: &CodebaseMetadata) 
     if no { IsArray::No } else { IsArray::Maybe }
 }
 
-/// `isArray()` of a Mago type: no when every part is a scalar, null or an object other than a closure; a closure's
-/// return type when it is one (ConfigHelper calls a callable default).
-pub(crate) fn union_is_array(t: &TUnion) -> IsArray {
+/// `isArray()` of a Mago type: no when every part is a scalar, null or an object. For a default (`default`),
+/// ConfigHelper calls a callable: a closure's declared return type, or mixed for a `Closure` object.
+pub(crate) fn union_is_array(t: &TUnion, default: bool) -> IsArray {
     let no = !t.types.is_empty()
         && t.types.iter().all(|a| match a {
             TAtomic::Scalar(_)
             | TAtomic::Null
             | TAtomic::Void
             | TAtomic::Never
-            | TAtomic::Resource(_) => true,
+            | TAtomic::Resource(_)
+            | TAtomic::Object(TObject::Enum(_)) => true,
             TAtomic::Object(TObject::Named(n)) => {
-                !n.name.as_bytes().eq_ignore_ascii_case(b"closure")
+                !default || !n.name.as_bytes().eq_ignore_ascii_case(b"closure")
             }
-            TAtomic::Object(TObject::Enum(_)) => true,
-            TAtomic::Callable(TCallable::Signature(s)) => s
+            TAtomic::Callable(TCallable::Signature(s)) if default => s
                 .get_return_type()
-                .is_some_and(|r| union_is_array(r) == IsArray::No),
+                .is_some_and(|r| union_is_array(r, false) == IsArray::No),
+            // a `Closure` object; any other callable may be an array
+            TAtomic::Callable(TCallable::Signature(s)) => s.is_closure,
             _ => false,
         });
     if no { IsArray::No } else { IsArray::Maybe }

@@ -15,6 +15,17 @@ class Writer extends Model
         return $this->hasMany(Writer::class);
     }
 
+    /** @return \Illuminate\Database\Eloquent\Collection<int, static> */
+    public static function everyone()
+    {
+        return static::all();
+    }
+
+    public function countAll(): int
+    {
+        return static::all()->count();
+    }
+
     public function getEmailAttribute(): string
     {
         return 'email';

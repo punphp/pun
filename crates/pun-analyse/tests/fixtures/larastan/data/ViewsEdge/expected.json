@@ -1,0 +1,41 @@
+{
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 with checkUnusedViews and checkMissingTranslations, on ViewsEdge.php copied to app/PunViews of a pinkary checkout and these resources/views and lang/en files added to it; only the errors of these files",
+    "errors": [
+        {
+            "file": "ViewsEdge.php",
+            "line": 15,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"punedge.missing\" has not been found."
+        },
+        {
+            "file": "broken.blade.php",
+            "line": 0,
+            "identifier": "larastan.unusedViews",
+            "message": "This view is not used in the project."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 1,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"punedge.tab\there\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 2,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"punedge.octA\" has not been found."
+        },
+        {
+            "file": "translations.blade.php",
+            "line": 8,
+            "identifier": "larastan.missingTranslations",
+            "message": "Translation \"punedge.nested.deep.y\" has not been found."
+        },
+        {
+            "file": "used-by-broken.blade.php",
+            "line": 0,
+            "identifier": "larastan.unusedViews",
+            "message": "This view is not used in the project."
+        }
+    ]
+}

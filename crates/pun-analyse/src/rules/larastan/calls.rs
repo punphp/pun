@@ -33,7 +33,7 @@ pub(crate) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
     let Expression::Identifier(id) = call.function else {
         return;
     };
-    super::collectors::function_call(c, call);
+    super::collectors::function_call(c, call, id);
     let name = written_name(c.names, id);
     let args = &call.argument_list.arguments;
     if name.eq_ignore_ascii_case("with") {

@@ -1,5 +1,5 @@
 {
-    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 on these files copied to app/PunCollections of a pinkary checkout (its users migration)",
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 with noUnnecessaryEnumerableToArrayCalls on these files copied to app/PunCollections of a pinkary checkout (its users migration)",
     "errors": [
         {
             "file": "Calls.php",
@@ -102,6 +102,30 @@
             "line": 40,
             "identifier": "larastan.noUnnecessaryCollectionCall",
             "message": "Called 'containsStrict' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls2.php",
+            "line": 26,
+            "identifier": "larastan.unnecessaryEnumerableToArrayCall",
+            "message": "Called [toArray()] on an Enumerable which does not contain any Arrayables."
+        },
+        {
+            "file": "Calls2.php",
+            "line": 27,
+            "identifier": "larastan.unnecessaryEnumerableToArrayCall",
+            "message": "Called [toArray()] on an Enumerable which does not contain any Arrayables."
+        },
+        {
+            "file": "Calls2.php",
+            "line": 31,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'sum' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls2.php",
+            "line": 33,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'max' on Laravel collection, but could have been retrieved as a query."
         }
     ]
 }

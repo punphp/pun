@@ -54,14 +54,10 @@ impl Finder {
         }
     }
 
-    /// `FileViewFinder::find()`: the first path holding the name with one of the factory's extensions.
+    /// `FileViewFinder::find()` of a name without a namespace (the names of [`view_names`]): the first path holding
+    /// the name with one of the factory's extensions.
     pub(crate) fn find(&self, name: &str) -> Option<PathBuf> {
-        let name = name.trim();
-        if name.contains("::") {
-            // ponytail: namespaced views need the hints packages register at boot
-            return None;
-        }
-        let file = name.replace('.', "/");
+        let file = name.trim().replace('.', "/");
         self.paths.iter().find_map(|path| {
             ["blade.php", "php", "css", "html"]
                 .iter()
@@ -86,9 +82,8 @@ pub(crate) fn view_names(directories: &[PathBuf]) -> Vec<String> {
             if path.contains("views/vendor") || path.contains("views/errors") {
                 continue;
             }
-            let Some(rest) = path.split(&prefix).nth(1) else {
-                continue;
-            };
+            // explode($directory, $path)[1]
+            let rest = path.split(&prefix).nth(1).unwrap_or_default();
             names.push(rest.replace('/', ".").replace(".blade.php", ""));
         }
     }
@@ -97,25 +92,20 @@ pub(crate) fn view_names(directories: &[PathBuf]) -> Vec<String> {
 
 /// The `InlineHTML` statements of a file parsed as PHP (none when it does not parse), with their first lines.
 fn inline_html(path: &Path) -> Vec<(String, u32)> {
-    let Some(file) = read(path, FileType::Host).ok().flatten() else {
-        return Vec::new();
-    };
-    let arena = LocalArena::new();
-    let program = parse_file(&arena, &file);
-    if program.has_errors() {
-        return Vec::new();
+    let mut found = Vec::new();
+    for file in read(path, FileType::Host).ok().flatten().into_iter() {
+        let arena = LocalArena::new();
+        let program = parse_file(&arena, &file);
+        for s in program.statements.iter().filter(|_| !program.has_errors()) {
+            if let Statement::Inline(i) = s {
+                found.push((
+                    String::from_utf8_lossy(i.value).into_owned(),
+                    file.line_number(i.span().start.offset) + 1,
+                ));
+            }
+        }
     }
-    program
-        .statements
-        .iter()
-        .filter_map(|s| match s {
-            Statement::Inline(i) => Some((
-                String::from_utf8_lossy(i.value).into_owned(),
-                file.line_number(i.span().start.offset) + 1,
-            )),
-            _ => None,
-        })
-        .collect()
+    found
 }
 
 /// UsedViewInAnotherViewCollector: the views `@extends` and `@include*` name in the views below `directories`.
@@ -209,13 +199,6 @@ fn stripcslashes(s: &str) -> String {
         let c = b[i];
         i += 1;
         match c {
-            b'n' => out.push(b'\n'),
-            b't' => out.push(b'\t'),
-            b'r' => out.push(b'\r'),
-            b'a' => out.push(0x07),
-            b'v' => out.push(0x0b),
-            b'b' => out.push(0x08),
-            b'f' => out.push(0x0c),
             b'x' if i < b.len() && b[i].is_ascii_hexdigit() => {
                 let end = (i + 2).min(b.len());
                 let digits = b[i..end]
@@ -235,7 +218,13 @@ fn stripcslashes(s: &str) -> String {
                 out.push(value as u8);
                 i += digits - 1;
             }
-            c => out.push(c),
+            // \n \t \r \a \v \b \f, else the character itself
+            c => out.push(
+                b"ntravbf"
+                    .iter()
+                    .position(|e| *e == c)
+                    .map_or(c, |p| b"\n\t\r\x07\x0b\x08\x0c"[p]),
+            ),
         }
     }
     String::from_utf8_lossy(&out).into_owned()
@@ -288,18 +277,17 @@ pub(crate) fn available_translations(directories: &[PathBuf]) -> Vec<String> {
 
 /// `keys()` of the array a PHP translation file returns (`getRequire()`), read from its `return` literal.
 fn php_keys(path: &Path, root: &str, out: &mut Vec<String>) {
-    let Some(file) = read(path, FileType::Host).ok().flatten() else {
-        return;
-    };
-    let arena = LocalArena::new();
-    let program = parse_file(&arena, &file);
-    let Some(value) = program.statements.iter().find_map(|s| match s {
-        Statement::Return(r) => r.value,
-        _ => None,
-    }) else {
-        return;
-    };
-    keys(value, root, out);
+    for file in read(path, FileType::Host).ok().flatten().into_iter() {
+        let arena = LocalArena::new();
+        let program = parse_file(&arena, &file);
+        let returned = program.statements.iter().find_map(|s| match s {
+            Statement::Return(r) => r.value,
+            _ => None,
+        });
+        for value in returned.into_iter() {
+            keys(value, root, out);
+        }
+    }
 }
 
 fn keys(e: &Expression, prefix: &str, out: &mut Vec<String>) {

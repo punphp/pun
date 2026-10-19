@@ -1,0 +1,131 @@
+{
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 with checkConfigTypes and configDirectories: [pun-config] (this config/), on ConfigExtraCases.php and ConfigFunctions.php copied to app/PunExtra of a pinkary checkout",
+    "errors": [
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 11,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.a' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 13,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.b.c' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 14,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.1.5' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 18,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.object' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 19,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.enum' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 20,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.closure' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 24,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.envnull' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 25,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.intcast' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 26,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.not' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 27,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punlegacy.after' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 28,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc2.a' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 29,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc2.b' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 30,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc2.c' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 32,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc2.d.x' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 33,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc2.e.0.x' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 35,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc2.f.0' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 41,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punbroken.a' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 42,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punspread.a' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 43,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'punnoreturn.a' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 44,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'pundoc2.a' is not an array."
+        },
+        {
+            "file": "ConfigExtraCases.php",
+            "line": 45,
+            "identifier": "larastan.configCollection",
+            "message": "Config key 'nofile.key' is not an array."
+        }
+    ]
+}

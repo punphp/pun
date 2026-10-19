@@ -291,6 +291,11 @@ namespace Illuminate\Database\Eloquent {
         {
         }
 
+        /** @return \Illuminate\Support\Collection<array-key, mixed> */
+        public static function pluck($column, $key = null)
+        {
+        }
+
         /**
          * @template TRelatedModel of Model
          * @param  class-string<TRelatedModel>  $related
@@ -403,6 +408,16 @@ namespace Illuminate\Database\Eloquent {
 
         /** @return $this */
         public function with($relation)
+        {
+        }
+    }
+}
+
+namespace Illuminate\Database\Query {
+    class Builder
+    {
+        /** @return \Illuminate\Support\Collection<int, \stdClass> */
+        public function get($columns = ['*'])
         {
         }
     }
@@ -644,6 +659,130 @@ namespace App {
         /** @return BelongsToMany<User, $this> */
         public function users(): BelongsToMany
         {
+        }
+    }
+}
+
+namespace Symfony\Component\Console\Command {
+    class Command
+    {
+        protected function configure()
+        {
+        }
+
+        public function addArgument(string $name, ?int $mode = null, string $description = '', mixed $default = null): static
+        {
+        }
+
+        public function addOption(string $name, string|array|null $shortcut = null, ?int $mode = null, string $description = '', mixed $default = null): static
+        {
+        }
+
+        public function setName(string $name): static
+        {
+        }
+
+        public function getDefinition(): \Symfony\Component\Console\Input\InputDefinition
+        {
+        }
+    }
+}
+
+namespace Symfony\Component\Console\Attribute {
+    #[\Attribute(\Attribute::TARGET_CLASS)]
+    class AsCommand
+    {
+        public function __construct(public string $name, public ?string $description = null, array $aliases = [], bool $hidden = false)
+        {
+        }
+    }
+}
+
+namespace Symfony\Component\Console\Input {
+    class InputArgument
+    {
+        public const REQUIRED = 1;
+        public const OPTIONAL = 2;
+        public const IS_ARRAY = 4;
+
+        public function __construct(string $name, ?int $mode = null, string $description = '', mixed $default = null)
+        {
+        }
+    }
+
+    class InputOption
+    {
+        public const VALUE_NONE = 1;
+        public const VALUE_REQUIRED = 2;
+        public const VALUE_OPTIONAL = 4;
+        public const VALUE_IS_ARRAY = 8;
+
+        public function __construct(string $name, string|array|null $shortcut = null, ?int $mode = null, string $description = '', mixed $default = null)
+        {
+        }
+    }
+}
+
+namespace Illuminate\Contracts\Console {
+    interface Isolatable
+    {
+    }
+}
+
+namespace Symfony\Component\Console\Input {
+    class InputDefinition
+    {
+        public function addArgument(InputArgument $argument): void
+        {
+        }
+
+        public function addOption(InputOption $option): void
+        {
+        }
+    }
+}
+
+namespace Illuminate\Console\Attributes {
+    #[\Attribute(\Attribute::TARGET_CLASS)]
+    class Signature
+    {
+        public function __construct(public string $signature, public ?array $aliases = null)
+        {
+        }
+    }
+
+    #[\Attribute(\Attribute::TARGET_CLASS)]
+    class Aliases
+    {
+        public function __construct(public array $aliases)
+        {
+        }
+    }
+}
+
+namespace Illuminate\Console {
+    class Command extends \Symfony\Component\Console\Command\Command
+    {
+        protected $signature;
+        protected $name;
+        protected $aliases;
+
+        public function argument($key = null)
+        {
+        }
+
+        public function option($key = null)
+        {
+        }
+
+        protected function getArguments()
+        {
+            return [];
+        }
+
+        protected function getOptions()
+        {
+            return [];
         }
     }
 }

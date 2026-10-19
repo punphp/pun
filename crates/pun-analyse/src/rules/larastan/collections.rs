@@ -27,11 +27,10 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'aren
     let Some(name) = to_array(call) else {
         return;
     };
-    let Some(ty) = c.type_of(call.object) else {
-        return;
-    };
-    if !is_object_of(c, ty, ENUMERABLE) || !value_type(c, ty).is_some_and(|v| not_arrayable(c, &v))
-    {
+    let unnecessary = c.type_of(call.object).is_some_and(|ty| {
+        is_object_of(c, ty, ENUMERABLE) && value_type(c, ty).is_some_and(|v| not_arrayable(c, &v))
+    });
+    if !unnecessary {
         return;
     }
     c.report(
@@ -47,22 +46,16 @@ fn value_type(c: &Checker, ty: &TUnion) -> Option<TUnion> {
     template(c, ty, ENUMERABLE)
 }
 
-/// Each part's `TValue` of the ancestor `class`.
+/// Each part's `TValue` of the ancestor `class`, for a type whose parts are named objects.
 fn template(c: &Checker, ty: &TUnion, class: &[u8]) -> Option<TUnion> {
     let mut types = Vec::new();
-    for t in ty.types.iter() {
-        let TAtomic::Object(TObject::Named(n)) = t else {
-            return None;
-        };
-        let k = c.codebase.get_class_like(n.name.as_bytes())?;
-        let value = get_specialized_template_type(
-            c.codebase,
-            word("TValue"),
-            word(class),
-            k,
-            n.type_parameters.as_deref(),
-        )?;
-        types.extend(value.types.iter().cloned());
+    for n in super::named_objects(ty)? {
+        let k = c.codebase.get_class_like(n.name.as_bytes());
+        let args = n.type_parameters.as_deref();
+        let value = k.and_then(|k| {
+            get_specialized_template_type(c.codebase, word("TValue"), word(class), k, args)
+        });
+        types.extend(value?.types.iter().cloned());
     }
     Some(TUnion::from_vec(types))
 }
@@ -173,25 +166,25 @@ pub(super) fn unnecessary<'arena>(
     {
         return;
     }
-    let previous = call.object;
-    let previous_name = match previous {
+    let (previous_name, previous_args, on) = match call.object {
         Expression::Call(Call::Method(p)) => {
             if !c.type_of(p.object).is_some_and(|t| is_builder(c, t)) {
                 return;
             }
-            &p.method
+            (&p.method, &p.argument_list, On::Object(p.object))
         }
         Expression::Call(Call::StaticMethod(p)) => {
             let Expression::Identifier(class) = p.class else {
                 return;
             };
-            let is_query = is_a(c, c.names.get(&class.span()), super::MODEL)
+            let class = String::from_utf8_lossy(c.names.get(&class.span())).into_owned();
+            let is_query = is_a(c, class.as_bytes(), super::MODEL)
                 && matches!(&p.method, ClassLikeMemberSelector::Identifier(m)
                     if matches!(m.value.to_ascii_lowercase().as_slice(), b"get" | b"all" | b"pluck"));
             if !is_query {
                 return;
             }
-            &p.method
+            (&p.method, &p.argument_list, On::Class(class))
         }
         _ => return,
     };
@@ -205,8 +198,7 @@ pub(super) fn unnecessary<'arena>(
         true
     } else if RISKY_PARAM_METHODS.contains(&lower.as_str()) {
         if args.is_empty() {
-            previous_name.value == b"pluck"
-                && previous_call(c, previous).is_some_and(|(a, on)| first_arg_is_column(c, a, on))
+            previous_name.value == b"pluck" && first_arg_is_column(c, previous_args, on)
         } else {
             first_arg_is_column(c, &call.argument_list, On::Object(call.object))
         }
@@ -244,24 +236,6 @@ enum On<'a, 'arena> {
     Object(&'a Expression<'arena>),
 }
 
-/// The previous call's arguments and what it is made on.
-fn previous_call<'a, 'arena>(
-    c: &Checker,
-    e: &'a Expression<'arena>,
-) -> Option<(&'a ArgumentList<'arena>, On<'a, 'arena>)> {
-    match e {
-        Expression::Call(Call::StaticMethod(s)) => match s.class {
-            Expression::Identifier(class) => Some((
-                &s.argument_list,
-                On::Class(String::from_utf8_lossy(c.names.get(&class.span())).into_owned()),
-            )),
-            _ => None,
-        },
-        Expression::Call(Call::Method(m)) => Some((&m.argument_list, On::Object(m.object))),
-        _ => None,
-    }
-}
-
 /// `firstArgIsDatabaseColumn()`: the call's first argument is a string literal naming a column of the model.
 fn first_arg_is_column(c: &Checker, args: &ArgumentList, on: On) -> bool {
     let Some(Expression::Literal(Literal::String(LiteralString {
@@ -273,26 +247,29 @@ fn first_arg_is_column(c: &Checker, args: &ArgumentList, on: On) -> bool {
     };
     let column = String::from_utf8_lossy(column).into_owned();
     let model = match on {
-        On::Class(model) => model,
+        On::Class(model) => Some(model),
         On::Object(object) => {
-            let Some(values) = c.type_of(object).and_then(|t| iterable_value(c, t)) else {
-                return false;
-            };
+            let values = c
+                .type_of(object)
+                .and_then(|t| iterable_value(c, t))
+                .unwrap_or_else(|| TUnion::from_vec(Vec::new()));
             if is_object_of(c, &values, b"stdclass") {
                 // DB::table(..)->get()->max('id')
                 return matches!(object, Expression::Call(Call::Method(p))
                     if c.type_of(p.object).is_some_and(|t| is_object_of(c, t, QUERY_BUILDER)));
             }
-            if !is_object_of(c, &values, super::MODEL) {
-                return false;
-            }
-            let Some(TAtomic::Object(TObject::Named(n))) = values.types.first() else {
-                return false;
-            };
-            n.name.as_str_lossy().into_owned()
+            is_object_of(c, &values, super::MODEL)
+                .then(|| {
+                    values
+                        .types
+                        .first()
+                        .and_then(TAtomic::get_object_or_enum_name)
+                })
+                .flatten()
+                .map(|n| n.as_str_lossy().into_owned())
         }
     };
-    super::has_database_property(c, &model, &column)
+    model.is_some_and(|model| super::has_database_property(c, &model, &column))
 }
 
 /// `getIterableValueType()` of a collection type.
