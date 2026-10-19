@@ -8,6 +8,7 @@
 mod conditional_helpers;
 mod names;
 mod no_negated_blank_filled;
+mod no_request_all;
 mod prefer_abort_if;
 mod prefer_back_helper;
 mod prefer_env_helper;
@@ -24,6 +25,7 @@ mod prefer_to_route_helper;
 mod prefer_today;
 
 pub use no_negated_blank_filled::NoNegatedBlankFilled;
+pub use no_request_all::NoRequestAll;
 pub use prefer_abort_if::PreferAbortIf;
 pub use prefer_back_helper::PreferBackHelper;
 pub use prefer_env_helper::PreferEnvHelper;
@@ -66,6 +68,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferReportIf),
         Box::new(PreferThrowIf),
         Box::new(PreferFacadeOverApp),
+        Box::new(NoRequestAll),
     ]
 }
 

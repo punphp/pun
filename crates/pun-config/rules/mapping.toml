@@ -453,7 +453,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/no-negated-contains" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Convert negated calls to `contains` to `doesntContain`, or vice versa." }
 "laravel/no-negated-filter" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Avoid negated conditionals in `filter()` by using `reject()`, or vice versa." }
 "laravel/no-negated-when" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Reverse conditionable method calls" }
-"laravel/no-request-all" = { fix = "none", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Detects the use of `$request->all()` or `Request::all()` in Laravel applications." }
+"laravel/no-request-all" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects the use of `$request->all()` or `Request::all()` in Laravel applications." }
 "laravel/no-useless-value-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes redundant value helper calls" }
 "laravel/no-useless-with-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes redundant with helper calls" }
 "laravel/prefer-abort-if" = { fix = "unsafe", ported = true, status = "decided", summary = "Change if abort to abort_if" }
