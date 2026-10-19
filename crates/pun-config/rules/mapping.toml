@@ -463,7 +463,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/prefer-array-validation-rules" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use array syntax for validation rules instead of 'a|b' strings." }
 "laravel/prefer-back-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `redirect()->back()` and `Redirect::back()` with `back()`" }
 "laravel/prefer-backoff-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the backoff property to use the Backoff attribute" }
-"laravel/prefer-casts-method" = { fix = "safe", sets = ["coding-style"], origin = "mago", status = "decided", summary = "Detects the `$casts` property on an Eloquent model. Laravel 11 introduced the `casts()`" }
+"laravel/prefer-casts-method" = { fix = "safe", sets = ["coding-style"], origin = "mago", ported = true, status = "decided", summary = "Detects the `$casts` property on an Eloquent model. Laravel 11 introduced the `casts()`" }
 "laravel/prefer-class-container-key" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the string or class const used for a service container make call" }
 "laravel/prefer-closure-only-bind" = { fix = "safe", ported = false, later = true, status = "decided", summary = "Drop the specified abstract class from the bind method and replace it with a closure that returns the abstract class." }
 "laravel/prefer-collected-by-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes model newCollection method to use the CollectedBy attribute" }

@@ -315,6 +315,11 @@ fn mago_no_request_all() {
 }
 
 #[test]
+fn mago_prefer_casts_method() {
+    report_as(PreferCastsMethod, "laravel/prefer-casts-method", true);
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -388,6 +393,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoRequestAll),
             &["lint7_report/laravel/no-request-all"],
+        ),
+        (
+            || Box::new(PreferCastsMethod),
+            &["lint7_report/laravel/prefer-casts-method"],
         ),
     ];
     for (rule, dirs) in cases {
