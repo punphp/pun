@@ -13,6 +13,7 @@ use std::sync::OnceLock;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
+use mago_codex::metadata::parameter::FunctionLikeParameterMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_codex::visibility::Visibility;
 use mago_syntax::cst::*;
@@ -405,6 +406,16 @@ impl<'a> Checker<'a, '_> {
         Some(args.iter().map(|a| resolve_str(a, None)).collect())
     }
 
+    /// `isVariadic()` of a declared parameter: its `...` (Mago also flags one a `@param` tag makes variadic).
+    fn native_variadic(&self, p: &FunctionLikeParameterMetadata) -> bool {
+        p.flags.is_variadic()
+            && self.file_contents(p.span.file_id).is_none_or(|contents| {
+                let head = &contents[p.span.start.offset as usize..p.name_span.start.offset as usize];
+                let head = head.iter().rposition(|b| *b == b']').map_or(head, |i| &head[i + 1..]);
+                head.windows(3).any(|w| w == b"...")
+            })
+    }
+
     fn facts(&self, found: Found<'a>, k: &ClassLikeMetadata) -> Facts {
         match found {
             Found::Builtin { m, .. } => Facts {
@@ -442,7 +453,7 @@ impl<'a> Checker<'a, '_> {
                 let optional = optional_flags(
                     f.parameters
                         .iter()
-                        .map(|p| p.flags.has_default() || p.flags.is_variadic()),
+                        .map(|p| p.flags.has_default() || self.native_variadic(p)),
                 );
                 Facts {
                     name: String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
@@ -467,7 +478,7 @@ impl<'a> Checker<'a, '_> {
                                 name: String::from_utf8_lossy(&p.name.0.as_bytes()[1..]).into_owned(),
                                 native: if null_default { native.add_null() } else { native },
                                 optional,
-                                variadic: p.flags.is_variadic(),
+                                variadic: self.native_variadic(p),
                                 by_ref: p.flags.is_by_reference(),
                             }
                         })

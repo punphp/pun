@@ -58,6 +58,13 @@
    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
   },
   {
+   "file": "src/Overriding.php",
+   "line": 35,
+   "identifier": "property.nativeType",
+   "message": "Type string of property Overriding\\Page::$count is not the same as type int of overridden property Overriding\\Icons::$count.",
+   "tip": null
+  },
+  {
    "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
    "line": 9,
    "identifier": "function.notFound",

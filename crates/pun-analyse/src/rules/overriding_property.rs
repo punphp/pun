@@ -380,7 +380,10 @@ fn errors<'a>(
             ),
             false,
         )),
-        (Some(theirs), Some(ours)) if *theirs != ours => {
+        // Type::equals(): the same type, however its union is ordered
+        (Some(theirs), Some(ours))
+            if !(is_super_type_of(theirs, &ours).yes() && is_super_type_of(&ours, theirs).yes()) =>
+        {
             let (variance, ok) = if hooks_supported
                 && (prototype.is_virtual || prototype.is_abstract)
                 && (!prototype.readable || !prototype.writable)
