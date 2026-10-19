@@ -17,6 +17,7 @@ mod enums;
 mod functions;
 mod hierarchy;
 mod infer;
+mod larastan;
 mod members;
 mod missing_types;
 mod names;
@@ -48,6 +49,7 @@ use scope::{Guard, Saved};
 use statements::{Frame, FrameKind};
 
 pub(crate) use driver::{Checks, check_file};
+pub use larastan::Larastan;
 pub(crate) use reflection::builtins;
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -390,6 +392,9 @@ pub struct Checker<'a, 'arena> {
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.
     level: u8,
     generic_iterable_classes: bool,
+    /// [`driver::Checks`]'s Larastan switches, when the config includes Larastan.
+    larastan: Option<&'a Larastan>,
+    larastan_state: larastan::State,
     errors: Vec<Error>,
 }
 
@@ -439,7 +444,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     fn report(&mut self, at: impl HasSpan, identifier: &str, message: String, tip: Option<&str>) {
         debug_assert!(
-            IDENTIFIERS.contains(&identifier) || missing_types::IDENTIFIERS.contains(&identifier),
+            IDENTIFIERS.contains(&identifier)
+                || missing_types::IDENTIFIERS.contains(&identifier)
+                || larastan::IDENTIFIERS.contains(&identifier),
             "{identifier} is not in IDENTIFIERS"
         );
         if self.trait_context.is_some() && !self.in_target {
@@ -686,6 +693,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         hierarchy::in_class(self, class.span(), &name);
         missing_types::class(self, class);
+        larastan::class(self, class);
         constants::read_only_class(self, class.span(), class.modifiers.as_slice(), false);
     }
     fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
@@ -865,6 +873,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
         functions::inner_function(self, f);
+        self.larastan_enter_function(&f.parameter_list);
         missing_types::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
         self.push_frame(FrameKind::Named);
@@ -918,6 +927,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
+        self.larastan_leave_function();
         self.syntax.by_ref.pop();
         self.pop_frame();
         self.leave_function();
@@ -926,6 +936,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
         functions::function_like(self, m, &m.parameter_list);
         statements::constructor_return_type(self, m);
+        larastan::method(self, m);
+        self.larastan_enter_function(&m.parameter_list);
         self.push_frame(FrameKind::Named);
         for p in m
             .parameter_list
@@ -1047,6 +1059,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
+        self.larastan_leave_function();
         self.syntax.by_ref.pop();
         self.pop_frame();
         self.leave_function();
@@ -1192,6 +1205,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        larastan::function_call(self, call);
         calls::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
@@ -1210,6 +1224,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        larastan::method_call(self, call);
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && [&b"call"[..], b"bind", b"bindto"].contains(&m.value.to_ascii_lowercase().as_slice())
         {
@@ -1247,6 +1262,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         statements::first_class_callable(self, m.span(), &m.argument_list);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        larastan::static_method_call(self, call);
         if let (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(m)) =
             (call.class, &call.method)
             && self.resolved(id).eq_ignore_ascii_case("Closure")
@@ -1260,6 +1276,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     // ponytail: a rebound closure gets no class scope (PHPStan checks it against the bound object's class)
     fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        self.larastan_leave_function();
         self.syntax.parents.pop();
         self.syntax.by_ref.pop();
         self.pop_frame();
@@ -1354,6 +1371,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         functions::function_like(self, f, &f.parameter_list);
         functions::closure_use(self, f);
+        self.larastan_enter_closure(f);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         self.syntax.parents.push(syntax::Parent::Closure);
         self.syntax.by_ref.push(f.ampersand.is_some());

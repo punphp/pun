@@ -19,6 +19,7 @@ pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
 pub use project::Project;
 pub use relative_path::RelativePath;
+pub use rules::Larastan;
 
 /// One reported error, as `phpstan analyse --error-format=json` prints it.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

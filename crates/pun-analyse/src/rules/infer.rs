@@ -79,6 +79,7 @@ pub(super) fn infer<'arena>(
     names: &ResolvedNames<'arena>,
     codebase: &CodebaseMetadata,
     php_version: u32,
+    extra: Vec<Span>,
 ) -> HashMap<Span, TUnion> {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
@@ -86,7 +87,8 @@ pub(super) fn infer<'arena>(
         codebase,
     };
     wanted.walk_program(program, &mut ());
-    let wanted = wanted.spans;
+    let mut wanted = wanted.spans;
+    wanted.extend(extra);
     if wanted.is_empty() {
         return HashMap::new();
     }

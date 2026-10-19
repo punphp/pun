@@ -1,0 +1,49 @@
+{
+    "test": "Rules/NoPublicModelScopeAndAccessorRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/no-public-model-scope-and-accessor.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/no-public-model-scope-and-accessor.php",
+                    "line": 19,
+                    "identifier": "larastan.noPublicModelScopeMethod",
+                    "message": "Local query scope method 'scopePublic' should be declared as protected.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-public-model-scope-and-accessor.php",
+                    "line": 32,
+                    "identifier": "larastan.noPublicModelAccessorMethod",
+                    "message": "Model accessor method 'lastName' should be declared as protected.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-public-model-scope-and-accessor.php",
+                    "line": 46,
+                    "identifier": "larastan.noPublicModelScopeMethod",
+                    "message": "Local query scope method 'publicWithAttribute' should be declared as protected.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-public-model-scope-and-accessor.php",
+                    "line": 62,
+                    "identifier": "larastan.noPublicModelScopeMethod",
+                    "message": "Local query scope method 'scopePrivate' should be declared as protected.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/no-public-model-scope-and-accessor.php",
+                    "line": 67,
+                    "identifier": "larastan.noPublicModelAccessorMethod",
+                    "message": "Model accessor method 'privateAccessor' should be declared as protected.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
