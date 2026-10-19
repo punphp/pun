@@ -23,6 +23,5 @@ class Toggles
 			$a
 		): void {
 		};
-		$f();
 	}
 }

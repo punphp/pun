@@ -127,6 +127,17 @@ const PORTED: &[&str] = &[
     "property.neverWritten",
     "property.onlyRead",
     "property.onlyWritten",
+    "expr.resultUnused",
+    "logicalXor.resultUnused",
+    "logicalAnd.resultUnused",
+    "logicalOr.resultUnused",
+    "booleanAnd.resultUnused",
+    "booleanOr.resultUnused",
+    "ternary.resultUnused",
+    "function.resultUnused",
+    "method.resultUnused",
+    "staticMethod.resultUnused",
+    "new.resultUnused",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).

@@ -542,6 +542,17 @@ pub const IDENTIFIERS: &[&str] = &[
     "property.neverWritten",
     "property.onlyRead",
     "property.onlyWritten",
+    "expr.resultUnused",
+    "logicalXor.resultUnused",
+    "logicalAnd.resultUnused",
+    "logicalOr.resultUnused",
+    "booleanAnd.resultUnused",
+    "booleanOr.resultUnused",
+    "ternary.resultUnused",
+    "function.resultUnused",
+    "method.resultUnused",
+    "staticMethod.resultUnused",
+    "new.resultUnused",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
