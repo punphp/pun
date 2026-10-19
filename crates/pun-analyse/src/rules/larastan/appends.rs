@@ -60,7 +60,10 @@ pub(crate) fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>
 }
 
 /// `ReflectionHelper::hasPropertyTag()`: a `@property` tag of the class or an ancestor.
-fn property_tag(k: &mago_codex::metadata::class_like::ClassLikeMetadata, name: &str) -> bool {
+pub(super) fn property_tag(
+    k: &mago_codex::metadata::class_like::ClassLikeMetadata,
+    name: &str,
+) -> bool {
     k.magic_property_ids
         .contains_key(&mago_word::word(format!("${name}").as_bytes()))
 }

@@ -27,6 +27,14 @@ const PORTED: &[&str] = &[
     "rules.modelAppends",
     "larastan.jobs.noConstructor",
     "larastan.events.noConstructor",
+    "larastan.console.undefinedArgument",
+    "larastan.console.undefinedOption",
+    "larastan.configCollection",
+    "larastan.unnecessaryEnumerableToArrayCall",
+    "larastan.relationExistence",
+    "larastan.noUnnecessaryCollectionCall",
+    "larastan.unusedViews",
+    "larastan.missingTranslations",
 ];
 
 /// Whether the test compares an error: one of a ported rule, or the dispatch rule's argument count (core
@@ -79,6 +87,8 @@ fn larastan_rule_fixtures() {
     larastan.check_octane_compatibility = true;
     larastan.check_model_method_visibility = true;
     larastan.check_auth_calls_when_in_request_scope = true;
+    larastan.check_config_types = true;
+    larastan.no_unnecessary_enumerable_to_array_calls = true;
     let mut failing = BTreeSet::new();
     let mut details = Vec::new();
     let mut compared = 0;
@@ -237,4 +247,171 @@ fn larastan_switches_from_the_config() {
     assert_eq!(l.config_directories, ["/app/modules/*/config"]);
     let defaults = switches("parameters:\n\tnoModelMake: true\n").unwrap();
     assert_eq!(defaults.config_directories, ["/app/config"]);
+}
+
+/// Errors with identifiers starting with `prefix` on the PHP files of `dir`, against the PHPStan + Larastan errors in
+/// its expected.json (from a run in a real Laravel app, pinkary, as its `how` says).
+fn oracle_case(dir: &Path, larastan: Larastan, prefix: &str) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    let expected: Value =
+        serde_json::from_str(&std::fs::read_to_string(dir.join("expected.json")).unwrap()).unwrap();
+    let want: BTreeSet<(String, u32, String, String)> = expected["errors"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| {
+            (
+                e["file"].as_str().unwrap().to_string(),
+                e["line"].as_u64().unwrap() as u32,
+                e["identifier"].as_str().unwrap().to_string(),
+                e["message"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
+        .unwrap()
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|x| x == "php"))
+        .collect();
+    files.sort();
+    let mut project = Project::new(files, scanned(&root));
+    project.larastan = Some(larastan);
+    let got: BTreeSet<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .filter(|e| e.identifier.starts_with(prefix))
+        .map(|e| {
+            let file = Path::new(&e.file)
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .into_owned();
+            (file, e.line, e.identifier, e.message)
+        })
+        .collect();
+    assert_eq!(got, want);
+}
+
+/// UndefinedArgumentOrOptionRule on the commands of tests/fixtures/larastan/data/Console, registered in pinkary's
+/// app/Console/Commands.
+#[test]
+fn larastan_console_commands() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    oracle_case(
+        &root.join("data/Console"),
+        Larastan::new(&root.join("application")),
+        "larastan.console.",
+    );
+}
+
+/// ConfigCollectionRule on tests/fixtures/larastan/data/Config, whose config/ is the app's config directory.
+#[test]
+fn larastan_config_collection() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan/data/Config");
+    let mut larastan = Larastan::new(&dir);
+    larastan.check_config_types = true;
+    oracle_case(&dir, larastan.clone(), "larastan.configCollection");
+    // configured directories without config files fall back to config_path()
+    larastan.config_directories = vec![dir.join("missing").to_string_lossy().into_owned()];
+    oracle_case(&dir, larastan.clone(), "larastan.configCollection");
+    // off by default
+    let mut project = Project::new(vec![dir.join("ConfigCases.php")], Vec::new());
+    project.larastan = Some(Larastan::new(&dir));
+    assert!(
+        run(&project)
+            .unwrap()
+            .iter()
+            .all(|e| e.identifier != "larastan.configCollection")
+    );
+}
+
+/// RelationExistenceRule on the models and calls of tests/fixtures/larastan/data/Relations.
+#[test]
+fn larastan_relation_existence() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    oracle_case(
+        &root.join("data/Relations"),
+        Larastan::new(&root.join("application")),
+        "larastan.relationExistence",
+    );
+}
+
+/// NoUnnecessaryCollectionCallRule on tests/fixtures/larastan/data/Collections, whose model reads the `users` table.
+#[test]
+fn larastan_unnecessary_collection_calls() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    let dir = root.join("data/Collections");
+    let larastan = Larastan::new(&root.join("application"));
+    oracle_case(
+        &dir,
+        larastan.clone(),
+        "larastan.noUnnecessaryCollectionCall",
+    );
+    // noUnnecessaryCollectionCallOnly and noUnnecessaryCollectionCallExcept
+    let config = pun_phpstan::neon::decode(
+        "parameters:\n\tnoModelMake: true\n\tnoUnnecessaryCollectionCallOnly: [Count, take]\n\tnoUnnecessaryCollectionCallExcept: [take]\n",
+    )
+    .unwrap();
+    let params = config.as_array().unwrap().get_str("parameters").unwrap();
+    let mut only =
+        Larastan::from_params(&root.join("application"), params.as_array().unwrap()).unwrap();
+    let mut project = Project::new(
+        vec![dir.join("Calls.php"), dir.join("Writer.php")],
+        scanned(&root),
+    );
+    project.larastan = Some(only.clone());
+    let lines: BTreeSet<u32> = run(&project)
+        .unwrap()
+        .into_iter()
+        .filter(|e| e.identifier == "larastan.noUnnecessaryCollectionCall")
+        .map(|e| e.line)
+        .collect();
+    assert_eq!(lines, BTreeSet::from([14, 20, 33, 34]));
+    // off
+    only.no_unnecessary_collection_call = false;
+    project.larastan = Some(only);
+    assert!(
+        run(&project)
+            .unwrap()
+            .iter()
+            .all(|e| e.identifier != "larastan.noUnnecessaryCollectionCall")
+    );
+}
+
+/// UnusedViewsRule and NoMissingTranslationsRule on tests/fixtures/larastan/data/Views, Larastan's FooController.php,
+/// Translation.php and test application resources, with the expectations of their tests.
+#[test]
+fn larastan_views_and_translations() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    let dir = root.join("data/Views");
+    let mut larastan = Larastan::new(&dir);
+    larastan.check_unused_views = true;
+    larastan.check_missing_translations = true;
+    oracle_case(&dir, larastan.clone(), "larastan.");
+    // configured directories replace the finder's paths and lang_path(); names relative to them that the finder
+    // does not find (`mailable.view` below `emails`) are no views
+    larastan.view_directories = vec![dir.join("resources/views/emails")];
+    larastan.translation_directories = vec![dir.join("missing")];
+    let mut project = Project::new(vec![dir.join("Translation.php")], scanned(&root));
+    project.larastan = Some(larastan.clone());
+    let errors = run(&project).unwrap();
+    assert!(
+        errors
+            .iter()
+            .all(|e| e.identifier != "larastan.unusedViews")
+    );
+    assert!(
+        errors
+            .iter()
+            .any(|e| e.message == "Translation \"messages.foo\" has not been found.")
+    );
+    // off
+    project.larastan = Some(Larastan::new(&dir));
+    assert!(
+        run(&project)
+            .unwrap()
+            .iter()
+            .all(|e| !e.identifier.starts_with("larastan."))
+    );
 }

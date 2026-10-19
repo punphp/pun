@@ -1,0 +1,191 @@
+{
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 on these files copied to app/PunRelations of a pinkary checkout",
+    "errors": [
+        {
+            "file": "Calls.php",
+            "line": 17,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 18,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 19,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 20,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 21,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 22,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 23,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 24,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 25,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 26,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 29,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 32,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 33,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'bar' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 33,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 34,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 36,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Book model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 37,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 38,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Book model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 41,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'untyped' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 42,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'name' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 43,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Chapter model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 44,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 46,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Book model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 48,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Book model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 49,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 51,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Chapter model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 55,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 56,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 59,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Author model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 60,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Chapter model."
+        },
+        {
+            "file": "Calls.php",
+            "line": 61,
+            "identifier": "larastan.relationExistence",
+            "message": "Relation 'foo' is not found in App\\PunRelations\\Book model."
+        }
+    ]
+}
