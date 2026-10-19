@@ -63,8 +63,6 @@ impl Rule for AddMethodVoidReturn {
             if !scope.is_final {
                 return;
             }
-        } else if scope.is_abstract && count == 0 {
-            return;
         }
         if scope.is_interface || !has_exclusive_void(body) {
             return;

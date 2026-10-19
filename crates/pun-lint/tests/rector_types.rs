@@ -217,3 +217,22 @@ fn return_union_type() {
         run_class_at(vec![Box::new(AddUnionReturn)], dir, version);
     }
 }
+
+#[test]
+fn closure_return_type_intersection_below_dnf() {
+    // Oracle/closure_dnf.php.inc below PHP 8.2: .oracle/rector-bin (ClosureReturnTypeRector alone) leaves the closure
+    // alone at 8.1 (no DNF types) and at 8.0 (no intersection types).
+    let input = std::fs::read_to_string(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/rector/ClosureReturnTypeRector/Oracle/closure_dnf.php.inc"
+    ))
+    .unwrap();
+    let input = input.split_once("-----\n").unwrap().0;
+    for version in [80000, 80100] {
+        let linter = pun_lint::Linter::new(vec![Box::new(AddClosureReturn)], version);
+        let fixed = linter
+            .fix(std::path::Path::new("closure_dnf.php"), input)
+            .unwrap();
+        assert_eq!(fixed.source, input, "PHP {version}");
+    }
+}

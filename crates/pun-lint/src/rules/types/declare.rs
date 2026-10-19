@@ -168,10 +168,13 @@ fn atomic_declaration(
         TAtomic::Callable(_) => "callable".to_string(),
         TAtomic::Object(TObject::Named(named)) => {
             let name = if named.is_this || named.is_static {
+                // Rector's `StaticTypeMapper`: `self` where PHP has no `static` return type.
                 if php_version < PHP_80 {
-                    return None;
+                    "self"
+                } else {
+                    "static"
                 }
-                "static".to_string()
+                .to_string()
             } else if named.name.as_bytes().starts_with(b"{anonymous-class:") {
                 if php_version < OBJECT_TYPE {
                     return None;
