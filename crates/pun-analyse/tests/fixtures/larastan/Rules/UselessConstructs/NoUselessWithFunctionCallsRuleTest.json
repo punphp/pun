@@ -1,0 +1,36 @@
+{
+    "test": "Rules/UselessConstructs/NoUselessWithFunctionCallsRuleTest",
+    "cases": [
+        {
+            "method": "testNoFalsePositives",
+            "files": [
+                "Rules/UselessConstructs/data/CorrectWithFunctionCall.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUselessWithCalls",
+            "files": [
+                "Rules/UselessConstructs/data/UselessWithFunctionCall.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/UselessConstructs/data/UselessWithFunctionCall.php",
+                    "line": 11,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' with only one argument simply returns the value itself. If you want to chain methods on a construct, use '(new ClassName())->foo()' instead",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/UselessConstructs/data/UselessWithFunctionCall.php",
+                    "line": 16,
+                    "identifier": "larastan.uselessConstructs.with",
+                    "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

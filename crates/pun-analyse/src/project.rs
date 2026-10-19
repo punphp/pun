@@ -38,6 +38,8 @@ pub struct Project {
     pub check_generic_iterable_classes: bool,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
+    /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
+    pub larastan: Option<crate::Larastan>,
 }
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
@@ -138,6 +140,7 @@ impl Project {
                 .and_then(|t| t.get_str("checkGenericIterableClasses"))
                 == Some(&Value::Bool(true)),
             relative_path: RelativePath::of(&paths),
+            larastan: crate::Larastan::from_params(root, params),
         }
     }
 
@@ -156,6 +159,7 @@ impl Project {
             check_class_case_sensitivity: false,
             level: 0,
             check_generic_iterable_classes: false,
+            larastan: None,
         }
     }
 }

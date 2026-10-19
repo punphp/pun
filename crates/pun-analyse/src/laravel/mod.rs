@@ -268,12 +268,12 @@ fn model<'a>(scan: &'a Scan, codebase: &CodebaseMetadata, class: &str) -> Option
     })
 }
 
-/// The models' column types, by lowercase class name and column.
-fn models(
+/// The analysed files' models, and the migrations' tables.
+fn scan_tables(
     app: Laravel,
     project: &Project,
     codebase: &CodebaseMetadata,
-) -> HashMap<String, HashMap<String, TUnion>> {
+) -> (Scan, HashMap<String, schema::Table>) {
     let mut scan = Scan::default();
     for file in project
         .analysed
@@ -306,6 +306,45 @@ fn models(
         let names = NameResolver::new(&arena).resolve(program);
         schema.add_statements(program, &names);
     }
+    let tables = schema.tables;
+    (scan, tables)
+}
+
+/// `ModelPropertyHelper::hasDatabaseProperty()` without its `@property` check: each concrete model's key name and
+/// its table's columns, by lowercase class name.
+pub(crate) fn database_properties(
+    app: Laravel,
+    project: &Project,
+    codebase: &CodebaseMetadata,
+) -> HashMap<String, std::collections::HashSet<String>> {
+    let (scan, tables) = scan_tables(app, project, codebase);
+    scan.models
+        .keys()
+        .filter_map(|key| model(&scan, codebase, key))
+        .filter(|m| {
+            codebase
+                .get_class_like(m.name.as_bytes())
+                .is_some_and(|c| !c.flags.is_abstract())
+        })
+        .map(|m| {
+            let mut properties: std::collections::HashSet<String> = tables
+                .get(&m.table)
+                .into_iter()
+                .flat_map(|t| t.columns.keys().cloned())
+                .collect();
+            properties.insert(m.key);
+            (m.name.to_ascii_lowercase(), properties)
+        })
+        .collect()
+}
+
+/// The models' column types, by lowercase class name and column.
+fn models(
+    app: Laravel,
+    project: &Project,
+    codebase: &CodebaseMetadata,
+) -> HashMap<String, HashMap<String, TUnion>> {
+    let (scan, tables) = scan_tables(app, project, codebase);
     // ModelCastHelper::getDateType(): `Date::now()::class`; Illuminate's Carbon is reported as Carbon\Carbon
     let date_class = scan
         .date_class
@@ -325,7 +364,7 @@ fn models(
             continue;
         }
         let mut properties = HashMap::new();
-        let table = schema.tables.get(&m.table);
+        let table = tables.get(&m.table);
         // getDatabaseProperty(): the primary key without a column is typed by `$keyType`
         if table.is_none_or(|t| !t.columns.contains_key(&m.key)) {
             properties.insert(m.key.clone(), column_type(&m.key_type));
@@ -435,7 +474,7 @@ fn cast_type(cast: &str, original: TUnion, date: &TUnion, codebase: &CodebaseMet
 }
 
 /// `ModelPropertyHelper::hasAccessor(strictGenerics: false)`.
-fn has_accessor(codebase: &CodebaseMetadata, class: &str, property: &str) -> bool {
+pub(crate) fn has_accessor(codebase: &CodebaseMetadata, class: &str, property: &str) -> bool {
     let Some(method) = codebase.get_declaring_method(class.as_bytes(), camel(property).as_bytes())
     else {
         let getter = format!("get{}Attribute", studly(property));

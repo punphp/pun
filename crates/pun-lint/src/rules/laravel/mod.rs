@@ -5,24 +5,37 @@
 //! pretty-printed (`name(arg, arg)`), a class it names is fully qualified (`\Illuminate\Support\Env`), and the nodes it
 //! keeps from the old code keep their own text. The rules here write the same text.
 
+mod conditional_helpers;
 mod names;
 mod no_negated_blank_filled;
+mod prefer_abort_if;
 mod prefer_back_helper;
 mod prefer_env_helper;
 mod prefer_exception_class_string;
+mod prefer_facade_over_app;
+mod prefer_nullsafe;
+mod prefer_report_if;
 mod prefer_request_server;
+mod prefer_session_facade;
 mod prefer_sleep_facade;
 mod prefer_str_starts_with;
+mod prefer_throw_if;
 mod prefer_to_route_helper;
 mod prefer_today;
 
 pub use no_negated_blank_filled::NoNegatedBlankFilled;
+pub use prefer_abort_if::PreferAbortIf;
 pub use prefer_back_helper::PreferBackHelper;
 pub use prefer_env_helper::PreferEnvHelper;
 pub use prefer_exception_class_string::PreferExceptionClassString;
+pub use prefer_facade_over_app::PreferFacadeOverApp;
+pub use prefer_nullsafe::PreferNullsafe;
+pub use prefer_report_if::PreferReportIf;
 pub use prefer_request_server::PreferRequestServer;
+pub use prefer_session_facade::PreferSessionFacade;
 pub use prefer_sleep_facade::PreferSleepFacade;
 pub use prefer_str_starts_with::PreferStrStartsWith;
+pub use prefer_throw_if::PreferThrowIf;
 pub use prefer_to_route_helper::PreferToRouteHelper;
 pub use prefer_today::PreferToday;
 
@@ -48,6 +61,11 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToday),
         Box::new(PreferRequestServer),
         Box::new(PreferStrStartsWith),
+        Box::new(PreferSessionFacade),
+        Box::new(PreferAbortIf),
+        Box::new(PreferReportIf),
+        Box::new(PreferThrowIf),
+        Box::new(PreferFacadeOverApp),
     ]
 }
 

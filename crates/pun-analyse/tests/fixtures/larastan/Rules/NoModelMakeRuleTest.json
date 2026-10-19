@@ -1,0 +1,68 @@
+{
+    "test": "Rules/NoModelMakeRuleTest",
+    "cases": [
+        {
+            "method": "testNoFalsePositives",
+            "files": [
+                "Rules/data/CorrectModelInstantiation.php",
+                "Rules/data/ModelMakeTrait.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testModelMake",
+            "files": [
+                "Rules/data/ModelMake.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/ModelMake.php",
+                    "line": 15,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/ModelMake.php",
+                    "line": 22,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportsModelMakeCallsInTraitRatherThanClass",
+            "files": [
+                "Rules/data/ModelMake.php",
+                "Rules/data/ModelMakeTrait.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/ModelMake.php",
+                    "line": 15,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/ModelMake.php",
+                    "line": 22,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/ModelMakeTrait.php (in context of class Tests\\Rules\\Data\\ModelMake)",
+                    "line": 13,
+                    "identifier": "larastan.noModelMake",
+                    "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
