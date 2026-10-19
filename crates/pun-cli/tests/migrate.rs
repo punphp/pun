@@ -645,15 +645,19 @@ fn rector_paths_skips_and_unsupported_rules() {
         toml.contains("[[lint.overrides]]\nfiles = [\"src/Sub\"]\nrules = { \"phpdoc/no-useless-param\" = \"off\" }\n"),
         "{toml}"
     );
-    // Rector's paths cover the project: nothing excluded.
+    // Rector's paths cover the project and no set is prepared: nothing excluded, no sets.
     std::fs::remove_file(d.join("pun.toml")).unwrap();
-    std::fs::write(
-        d.join("rector.php"),
-        rector.replace("__DIR__.'/src'", "__DIR__"),
-    )
-    .unwrap();
+    let whole = (rector.replace("__DIR__.'/src'", "__DIR__")).replace(
+        "    ->withPreparedSets(deadCode: true)\n    ->withPhpSets(php53: true)\n",
+        "",
+    );
+    std::fs::write(d.join("rector.php"), whole).unwrap();
     let (out, _, code) = pun(&d, &["migrate", "--yes"]);
     assert_eq!(code, Some(0), "{out}");
+    assert!(
+        counts(&out).starts_with(" ok rector.php  -> [lint] no sets; N on, N off"),
+        "{out}"
+    );
     assert!(!out.contains("excluded"), "{out}");
     // A rector.php Rector can't load stops the migration with its message: the config's own exception (on stdout)
     // or a fatal error (on stderr).

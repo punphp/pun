@@ -308,11 +308,11 @@ fn fuzzy_relative(root: &Path, paths: &[PathBuf], file: &Path) -> String {
         trim = Some(temp);
     }
     let file = file.to_string_lossy();
-    if let Some(t) = trim.filter(|t| !t.is_empty()) {
-        let prefix = format!("/{}", t.join("/"));
-        if let Some(rest) = file.strip_prefix(&prefix) {
-            return rest.trim_start_matches('/').to_string();
-        }
+    let prefix = trim
+        .filter(|t| !t.is_empty())
+        .map(|t| format!("/{}", t.join("/")));
+    if let Some(rest) = prefix.as_deref().and_then(|p| file.strip_prefix(p)) {
+        return rest.trim_start_matches('/').to_string();
     }
     file.strip_prefix(&format!("{}/", root.display()))
         .unwrap_or(&file)
