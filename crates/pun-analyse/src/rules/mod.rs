@@ -26,6 +26,7 @@ mod members;
 mod missing_types;
 mod names;
 mod overriding;
+mod overriding_property;
 mod params;
 mod printf_helper;
 mod properties;
@@ -348,6 +349,20 @@ pub const IDENTIFIERS: &[&str] = &[
     "parameter.notByRef",
     "parameter.notOptional",
     "parameter.notVariadic",
+    "property.override",
+    "property.nonStatic",
+    "property.static",
+    "property.readWrite",
+    "property.readOnly",
+    "property.notReadable",
+    "property.notWritable",
+    "property.abstractOverridingNonAbstractHook",
+    "property.visibility",
+    "property.parentPropertyFinal",
+    "property.parentPropertyFinalByPhpDoc",
+    "property.missingNativeType",
+    "property.nativeType",
+    "property.extraNativeType",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =

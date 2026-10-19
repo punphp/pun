@@ -3,20 +3,24 @@
 declare(strict_types=1);
 
 /*
- * Built-in classes' methods as PHPStan 2.2.7's reflection gives them to OverridingMethodRule and
+ * Built-in classes' methods and properties as PHPStan 2.2.7's reflection gives them to OverridingMethodRule and
  * ConsistentConstructorRule (NativeMethodReflection over php-8-stubs, BetterReflection's prototypes and tentative
  * return types), from the phar's own container at phpVersion 8.5, with the 8.4 differences.
  *
  *   php scripts/export-native-methods.php   writes crates/pun-analyse/data/native-methods.json
  *
  * {"classes": {"<lowercase class>": C}, "php84": {"<lowercase class>": C|null}} where C is
- *   {"name", "parent": name|null, "interfaces": [immediate interface names], "methods": {"<lowercase name>": M}}
+ *   {"name", "parent": name|null, "interfaces": [immediate interface names], "methods": {"<lowercase name>": M},
+ *    "properties"?: {"<name>": P}}
  * and M, for each method the class declares:
  *   {"name", "visibility": public|protected|private, "static", "abstract", "final" (isFinalByKeyword), "finalDoc"
  *    (isFinal), "builtin", "variants" (count), "params": [[name, native type, optional, variadic, byRef]],
  *    "return": native return type, "tentative"?: type, "prototype"?: class (BetterReflection's getPrototype()),
  *    "willChange"?: true (#[ReturnTypeWillChange])}, without the keys at their defaults (public, false, built-in, one
  *    variant, no parameters, implicit mixed).
+ * and P, for each non-private property the class declares: {"visibility", "static", "readonly", "abstract", "final"
+ *    (isFinalByKeyword), "finalDoc" (isFinal), "virtual", "hooks": [get|set], "readable", "writable", "type": native type},
+ *    without the keys at their defaults (public, false, no hooks, readable and writable, no native type).
  * A type is its toPhpDocNode() string; an implicit mixed (no native type) is null, `mixed` an explicit one.
  */
 
@@ -101,6 +105,27 @@ function dump(int $phpVersion): array
             $defaults = ['visibility' => 'public', 'static' => false, 'abstract' => false, 'final' => false, 'finalDoc' => false, 'builtin' => true, 'variants' => 1, 'params' => [], 'return' => null];
             $entry['methods'][strtolower($m->getName())] = array_filter($e, fn ($v, $k) => !array_key_exists($k, $defaults) || $defaults[$k] !== $v, ARRAY_FILTER_USE_BOTH);
         }
+        foreach ($native->getProperties() as $property) {
+            if ($property->getDeclaringClass()->getName() !== $class->getName() || $property->isPrivate()) {
+                continue;
+            }
+            $p = $class->getNativeProperty($property->getName());
+            $e = [
+                'visibility' => $p->isPublic() ? 'public' : 'protected',
+                'static' => $p->isStatic(),
+                'readonly' => $p->isReadOnly(),
+                'abstract' => $p->isAbstract()->yes(),
+                'final' => $p->isFinalByKeyword()->yes(),
+                'finalDoc' => $p->isFinal()->yes(),
+                'virtual' => $p->isVirtual()->yes(),
+                'hooks' => array_values(array_filter(['get', 'set'], fn ($h) => $p->hasHook($h))),
+                'readable' => $p->isReadable(),
+                'writable' => $p->isWritable(),
+                'type' => $p->hasNativeType() ? t($p->getNativeType()) : null,
+            ];
+            $defaults = ['visibility' => 'public', 'static' => false, 'readonly' => false, 'abstract' => false, 'final' => false, 'finalDoc' => false, 'virtual' => false, 'hooks' => [], 'readable' => true, 'writable' => true, 'type' => null];
+            $entry['properties'][$property->getName()] = (object) array_filter($e, fn ($v, $k) => $defaults[$k] !== $v, ARRAY_FILTER_USE_BOTH);
+        }
         $classes[strtolower($class->getName())] = $entry;
     }
     ksort($classes);
@@ -112,7 +137,7 @@ $classes = dump(80500);
 $old = dump(80400);
 $php84 = [];
 foreach (array_unique(array_merge(array_keys($classes), array_keys($old))) as $k) {
-    if (($classes[$k] ?? null) !== ($old[$k] ?? null)) {
+    if (json_encode($classes[$k] ?? null) !== json_encode($old[$k] ?? null)) {
         $php84[$k] = $old[$k] ?? null;
     }
 }

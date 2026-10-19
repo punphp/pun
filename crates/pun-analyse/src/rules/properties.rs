@@ -6,7 +6,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
-use super::Checker;
+use super::{Checker, overriding_property};
 use super::declarations::{READONLY_TAGS, has_tag, is_abstract, is_final, is_private};
 
 /// ClassPropertyNode.
@@ -16,7 +16,8 @@ pub struct PropertyNode<'n, 'arena> {
     /// The name with its `$`.
     pub name: &'n [u8],
     pub modifiers: &'n [Modifier<'arena>],
-    pub typed: bool,
+    pub hint: Option<&'n Hint<'arena>>,
+    pub attributes: &'n [AttributeList<'arena>],
     pub default: bool,
     pub hooks: &'n [PropertyHook<'arena>],
     pub readonly_by_phpdoc: bool,
@@ -31,14 +32,14 @@ const ALLOW_PRIVATE_MUTATION_TAGS: &[&str] = &[
 ];
 
 impl PropertyNode<'_, '_> {
-    fn has(&self, f: impl Fn(&Modifier) -> bool) -> bool {
+    pub(super) fn has(&self, f: impl Fn(&Modifier) -> bool) -> bool {
         self.modifiers.iter().any(f)
     }
-    fn is_public(&self) -> bool {
+    pub(super) fn is_public(&self) -> bool {
         // Modifiers::VISIBILITY_MASK: the read visibilities
         self.has(|m| matches!(m, Modifier::Public(_))) || !self.has(|m| m.is_read_visibility())
     }
-    fn is_static(&self) -> bool {
+    pub(super) fn is_static(&self) -> bool {
         self.has(|m| matches!(m, Modifier::Static(_)))
     }
     fn hook_final(h: &PropertyHook) -> bool {
@@ -54,9 +55,9 @@ pub fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>) {
     let tags = c.tags_before(p);
     let readonly_by_phpdoc = has_tag(&tags, READONLY_TAGS);
     let allowed_private_mutation = has_tag(&tags, ALLOW_PRIVATE_MUTATION_TAGS);
-    let (items, hooks): (Vec<&PropertyItem<'arena>>, &[PropertyHook<'arena>]) = match p {
-        Property::Plain(p) => (p.items.iter().collect(), &[]),
-        Property::Hooked(h) => (vec![&h.item], h.hook_list.hooks.as_slice()),
+    let (items, hooks, attributes): (Vec<&PropertyItem<'arena>>, &[PropertyHook<'arena>], _) = match p {
+        Property::Plain(p) => (p.items.iter().collect(), &[], p.attribute_lists.as_slice()),
+        Property::Hooked(h) => (vec![&h.item], h.hook_list.hooks.as_slice(), h.attribute_lists.as_slice()),
     };
     for item in items {
         let variable = item.variable();
@@ -64,7 +65,8 @@ pub fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>) {
             at: variable.span(),
             name: variable.name,
             modifiers: p.modifiers().as_slice(),
-            typed: p.hint().is_some(),
+            hint: p.hint(),
+            attributes,
             default: matches!(item, PropertyItem::Concrete(_)),
             hooks,
             readonly_by_phpdoc,
@@ -89,7 +91,8 @@ pub fn promoted<'arena>(
             at: p.span(),
             name: p.variable.name,
             modifiers: p.modifiers.as_slice(),
-            typed: p.hint.is_some(),
+            hint: p.hint.as_ref(),
+            attributes: p.attribute_lists.as_slice(),
             default: false,
             hooks,
             readonly_by_phpdoc: false,
@@ -109,6 +112,7 @@ fn check<'arena>(c: &mut Checker<'_, 'arena>, node: &PropertyNode<'_, 'arena>) {
         in_class(c, node, is_readonly);
     }
     readonly(c, node, is_readonly);
+    overriding_property::check(c, node, is_readonly);
     // isReadOnlyByPhpDoc(): a `@readonly` tag, or the class is immutable (its PHPDoc or a parent's)
     if node.default
         && !is_readonly
@@ -286,7 +290,7 @@ fn readonly(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
         return;
     }
     // property.readOnlyNotSupported (before PHP 8.1) never fires: php-parser lexes `readonly` as a keyword from 8.1 on
-    if !node.typed {
+    if node.hint.is_none() {
         error(
             c,
             node,
@@ -314,7 +318,7 @@ fn readonly(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
 
 /// BetterReflection's ReflectionProperty::isVirtual(): hooks that never touch `$this->name` (a `set => expr` hook
 /// always does), unless the parent class's property of that name is not virtual.
-fn is_virtual(c: &Checker, node: &PropertyNode) -> bool {
+pub(super) fn is_virtual(c: &Checker, node: &PropertyNode) -> bool {
     if node.hooks.is_empty() {
         return false;
     }

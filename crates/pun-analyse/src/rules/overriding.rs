@@ -53,11 +53,28 @@ struct NativeMethod {
     will_change: bool,
 }
 
-struct NativeClass {
-    name: String,
+pub(super) struct NativeClass {
+    pub(super) name: String,
     parent: Option<String>,
     interfaces: Vec<String>,
     methods: HashMap<String, NativeMethod>,
+    /// The non-private properties it declares, by name.
+    pub(super) properties: HashMap<String, NativeProperty>,
+}
+
+/// A built-in property as PhpPropertyReflection gives it.
+pub(super) struct NativeProperty {
+    pub(super) is_public: bool,
+    pub(super) is_static: bool,
+    pub(super) readonly: bool,
+    pub(super) is_abstract: bool,
+    pub(super) is_final: bool,
+    pub(super) final_doc: bool,
+    pub(super) virtual_: bool,
+    pub(super) hooks: (bool, bool),
+    pub(super) readable: bool,
+    pub(super) writable: bool,
+    pub(super) native: Option<Type>,
 }
 
 fn native_class(v: &Value) -> NativeClass {
@@ -103,7 +120,31 @@ fn native_class(v: &Value) -> NativeClass {
             (lower.clone(), method)
         })
         .collect();
+    let properties = v["properties"]
+        .as_object()
+        .into_iter()
+        .flatten()
+        .map(|(n, p)| {
+            let flag = |k: &str| p[k].as_bool().unwrap_or(false);
+            let hook = |h: &str| p["hooks"].as_array().is_some_and(|a| a.iter().any(|x| x == h));
+            let property = NativeProperty {
+                is_public: p["visibility"] != "protected",
+                is_static: flag("static"),
+                readonly: flag("readonly"),
+                is_abstract: flag("abstract"),
+                is_final: flag("final"),
+                final_doc: flag("finalDoc"),
+                virtual_: flag("virtual"),
+                hooks: (hook("get"), hook("set")),
+                readable: p["readable"].as_bool().unwrap_or(true),
+                writable: p["writable"].as_bool().unwrap_or(true),
+                native: p["type"].as_str().map(|s| resolve_str(s, Some(&name))),
+            };
+            (n.clone(), property)
+        })
+        .collect();
     NativeClass {
+        properties,
         parent: v["parent"].as_str().map(str::to_string),
         interfaces: v["interfaces"]
             .as_array()
@@ -140,7 +181,7 @@ fn natives(php_version: u32) -> &'static HashMap<String, NativeClass> {
 
 /// A class-like as PHPStan's reflection provider knows it.
 #[derive(Clone, Copy)]
-enum Class<'a> {
+pub(super) enum Class<'a> {
     User(&'a ClassLikeMetadata),
     Builtin(&'static NativeClass),
 }
@@ -196,7 +237,7 @@ fn has_attribute(f: &FunctionLikeMetadata, name: &[u8]) -> bool {
 
 impl<'a> Checker<'a, '_> {
     /// `ReflectionProvider::getClass()`.
-    fn reflected(&self, name: &str) -> Option<Class<'a>> {
+    pub(super) fn reflected(&self, name: &str) -> Option<Class<'a>> {
         if let Some(k) = self
             .codebase
             .get_class_like(name.as_bytes())
@@ -274,7 +315,7 @@ impl<'a> Checker<'a, '_> {
         names.iter().filter_map(|n| self.reflected(n)).collect()
     }
 
-    fn parent_class(&self, class: Class<'a>) -> Option<Class<'a>> {
+    pub(super) fn parent_class(&self, class: Class<'a>) -> Option<Class<'a>> {
         match class {
             Class::User(k) => self.reflected(&String::from_utf8_lossy(k.direct_parent_class?.as_bytes())),
             Class::Builtin(b) => self.reflected(b.parent.as_deref()?),
@@ -326,7 +367,7 @@ impl<'a> Checker<'a, '_> {
 
     /// The ancestor's template types of class `k` in a `static` of the ancestor (the method reflection is the
     /// ancestor's as `k` sees it), and in a trait method `self` and `static` are the class using it.
-    fn localize(&self, t: &Type, declaring: &ClassLikeMetadata, k: &ClassLikeMetadata) -> Type {
+    pub(super) fn localize(&self, t: &Type, declaring: &ClassLikeMetadata, k: &ClassLikeMetadata) -> Type {
         let t = if declaring.kind == SymbolKind::Trait {
             let name = original_name(declaring);
             let class = original_name(k);
@@ -451,7 +492,7 @@ impl<'a> Checker<'a, '_> {
     }
 
     /// `getAncestorWithClassName($name)->getDisplayName()` of class `k`.
-    fn ancestor_display(&self, k: &ClassLikeMetadata, name: &str) -> String {
+    pub(super) fn ancestor_display(&self, k: &ClassLikeMetadata, name: &str) -> String {
         match self.ancestor_args(k, name) {
             Some(args) => format!(
                 "{name}<{}>",
@@ -530,7 +571,7 @@ impl<'a> Checker<'a, '_> {
     }
 
     /// `getInterfaces()`: every interface the class implements.
-    fn all_interfaces(&self, class: Class<'a>) -> Vec<Class<'a>> {
+    pub(super) fn all_interfaces(&self, class: Class<'a>) -> Vec<Class<'a>> {
         let mut out = Vec::new();
         let mut pending = vec![class];
         while let Some(c) = pending.pop() {

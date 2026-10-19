@@ -62,6 +62,20 @@ const PORTED: &[&str] = &[
     "parameter.notByRef",
     "parameter.notOptional",
     "parameter.notVariadic",
+    "property.override",
+    "property.nonStatic",
+    "property.static",
+    "property.readWrite",
+    "property.readOnly",
+    "property.notReadable",
+    "property.notWritable",
+    "property.abstractOverridingNonAbstractHook",
+    "property.visibility",
+    "property.parentPropertyFinal",
+    "property.parentPropertyFinalByPhpDoc",
+    "property.missingNativeType",
+    "property.nativeType",
+    "property.extraNativeType",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).
