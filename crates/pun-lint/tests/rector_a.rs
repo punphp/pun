@@ -200,7 +200,8 @@ fn remove_unused_private_method_parameter() {
         "RemoveUnusedPrivateMethodParameterRector/Oracle",
     );
     // A dynamic call on `$this` may reach the method, so Pun keeps a parameter whose removal would shift the others,
-    // and a call on another receiver names a parameter that would go; Rector ignores both calls. The expected code is
+    // and a call on another receiver names a parameter that would go; Rector ignores both calls. A method whose every
+    // parameter goes while it calls itself is printed anew around that call, so Pun leaves it. The expected code is
     // derived by hand.
     run(
         &only(rules::NoUnusedPrivateMethodParam, 80400),

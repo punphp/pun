@@ -90,29 +90,31 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Usage<'arena> {
     }
 
     fn walk_function_call(&mut self, fc: &'ast FunctionCall<'arena>, ctx: &mut ()) {
-        if let Expression::Identifier(Identifier::Local(local)) = fc.function {
-            if local.value.eq_ignore_ascii_case(b"extract") {
-                self.bailed = true;
-                return;
-            }
-            if local.value.eq_ignore_ascii_case(b"compact") {
-                for arg in fc.argument_list.arguments.iter() {
-                    let Expression::Literal(Literal::String(lit)) = arg.value() else {
-                        continue;
-                    };
-                    let raw = lit.raw;
-                    if raw.len() <= 2 {
-                        continue;
-                    }
-                    let inner = &raw[1..raw.len() - 1];
-                    for key in self.interest.clone() {
-                        if key.strip_prefix(b"$") == Some(inner) {
-                            self.reference(key);
-                        }
+        let local = match fc.function {
+            Expression::Identifier(Identifier::Local(local)) => local.value,
+            _ => b"",
+        };
+        if local.eq_ignore_ascii_case(b"extract") {
+            self.bailed = true;
+            return;
+        }
+        if local.eq_ignore_ascii_case(b"compact") {
+            for arg in fc.argument_list.arguments.iter() {
+                let Expression::Literal(Literal::String(lit)) = arg.value() else {
+                    continue;
+                };
+                let raw = lit.raw;
+                if raw.len() <= 2 {
+                    continue;
+                }
+                let inner = &raw[1..raw.len() - 1];
+                for key in self.interest.clone() {
+                    if key.strip_prefix(b"$") == Some(inner) {
+                        self.reference(key);
                     }
                 }
-                return;
             }
+            return;
         }
         self.walk_expression(fc.function, ctx);
         self.walk_argument_list(&fc.argument_list, ctx);
