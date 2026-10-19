@@ -24,7 +24,7 @@ declare(strict_types=1);
  */
 
 $root = dirname(__DIR__);
-$src = $root.'/.oracle/phpstan-src';
+$src = realpath($root.'/.oracle/phpstan-src') ?: $root.'/.oracle/phpstan-src'; // .oracle may be a link (worktrees)
 $rulesTests = $src.'/tests/PHPStan/Rules';
 $phar = $root.'/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar';
 $out = $root.'/crates/pun-analyse/tests/fixtures/rules';
