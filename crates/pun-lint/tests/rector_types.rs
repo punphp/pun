@@ -238,11 +238,29 @@ fn closure_return_type_intersection_below_dnf() {
 }
 
 #[test]
-fn return_type_from_return_new_anonymous_below_object() {
-    // .oracle/rector-bin (ReturnTypeFromReturnNewRector alone) at PHP 7.1 leaves a function returning an anonymous
-    // class alone: PHP 7.1 has no `object` type.
-    let input = "<?php\n\nfunction make()\n{\n    return new class {\n    };\n}\n";
-    let linter = pun_lint::Linter::new(vec![Box::new(AddReturnTypeFromNew)], 70100);
-    let fixed = linter.fix(std::path::Path::new("make.php"), input).unwrap();
-    assert_eq!(fixed.source, input);
+fn left_alone_at_other_versions() {
+    // Inputs .oracle/rector-bin (the one Rector rule alone) leaves unchanged at a version the fixture directories do
+    // not run: an anonymous class below PHP 7.2 (no `object`), and a ternary with a `mixed` branch at PHP 8.0.
+    let cases: [(Box<dyn Rule>, u32, &str); 3] = [
+        (
+            Box::new(AddReturnTypeFromNew),
+            70100,
+            "<?php\n\nfunction make()\n{\n    return new class {\n    };\n}\n",
+        ),
+        (
+            Box::new(AddClosureReturn),
+            70100,
+            "<?php\n\n$f = function () {\n    return new class {\n    };\n};\n",
+        ),
+        (
+            Box::new(AddReturnTypeFromTernary),
+            80000,
+            "<?php\n\nfunction f(bool $x, mixed $a)\n{\n    return $x ? $a : $a;\n}\n",
+        ),
+    ];
+    for (rule, version, input) in cases {
+        let linter = pun_lint::Linter::new(vec![rule], version);
+        let fixed = linter.fix(std::path::Path::new("f.php"), input).unwrap();
+        assert_eq!(fixed.source, input, "PHP {version}");
+    }
 }

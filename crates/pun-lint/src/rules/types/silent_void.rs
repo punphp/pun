@@ -40,13 +40,12 @@ fn always_returns_or_exits<'s>(
 ) -> bool {
     statements.into_iter().any(|statement| match statement {
         Statement::Expression(e) => {
-            is_native_never(place.facts, place.ancestors, place.scope, e.expression)
-                || matches!(
-                    e.expression,
-                    Expression::Throw(_)
-                        | Expression::Yield(_)
-                        | Expression::Construct(Construct::Exit(_) | Construct::Die(_))
-                )
+            matches!(
+                e.expression,
+                Expression::Throw(_)
+                    | Expression::Yield(_)
+                    | Expression::Construct(Construct::Exit(_) | Construct::Die(_))
+            ) || is_native_never(place.facts, place.ancestors, place.scope, e.expression)
         }
         Statement::Return(r) => r.value.is_some(),
         Statement::Switch(switch) => switch_always_returns(place, switch),

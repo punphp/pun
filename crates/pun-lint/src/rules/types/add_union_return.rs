@@ -94,9 +94,6 @@ fn union_return<'ast, 'arena>(
         return None;
     }
     let scope = class_scope(ancestors);
-    if matches!(node, Node::Method(_)) && scope.as_ref().is_some_and(|s| s.is_interface) {
-        return None;
-    }
     let facts = facts(ctx);
     let place = Place {
         facts: &facts,
