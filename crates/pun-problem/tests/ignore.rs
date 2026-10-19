@@ -62,6 +62,9 @@ fn a_trailing_comment_covers_its_own_line() {
     assert_eq!(kept(s, "lint/security/no-eval"), [1, 3, 4]);
     // Another rule on that line stays.
     assert_eq!(kept(s, "lint/style/x"), [1, 2, 3, 4]);
+    // A comment without the marker covers nothing, even in a file that has one.
+    let s = "<?php\n// a note\n$a = eval($b); // @pun-ignore lint/security/no-eval\n";
+    assert_eq!(kept(s, "lint/security/no-eval"), [1, 2, 4]);
 }
 
 #[test]

@@ -127,11 +127,11 @@ impl Ignores {
                 && (index.line_range(last))
                     .is_some_and(|r| source[comment.end..r.end].trim().is_empty());
             if kind == "-end" {
-                if let Some(i) = open.pop() {
-                    out.directives[i].scope = match out.directives[i].scope {
-                        Scope::Lines(from, _) => Scope::Lines(from, last),
-                        Scope::File => Scope::File,
-                    };
+                // `open` holds `-start` directives, whose scope is lines.
+                if let Some(i) = open.pop()
+                    && let Scope::Lines(from, _) = out.directives[i].scope
+                {
+                    out.directives[i].scope = Scope::Lines(from, last);
                 }
                 continue;
             }
