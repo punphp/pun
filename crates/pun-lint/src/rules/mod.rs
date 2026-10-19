@@ -140,6 +140,7 @@ mod require_preg_quote_delimiter;
 mod require_statement_padding;
 mod require_strict_array_search;
 mod side_effect;
+mod types;
 mod used_variable;
 mod no_sole_value_sprintf;
 mod no_compact;
@@ -274,12 +275,14 @@ pub use require_is_a_allow_string::RequireIsAAllowString;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
 pub use require_statement_padding::RequireStatementPadding;
 pub use require_strict_array_search::RequireStrictArraySearch;
+pub use types::*;
 
 use crate::Rule;
 
 /// Every rule, in a fixed order.
 pub fn all() -> Vec<Box<dyn Rule>> {
     let mut rules = laravel::all();
+    rules.extend(types::all());
     rules.extend(ungrouped());
     rules
 }

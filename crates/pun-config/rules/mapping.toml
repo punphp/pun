@@ -873,24 +873,24 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/require-statement-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add empty new line after different-type statements to improve code readability" }
 "style/require-todo-reference" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Require TODO and FIXME comments to reference a user or issue." }
 "tags/no-invalid-open-tag" = { fix = "safe", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects misspelled PHP opening tags like `<php?` instead of `<?php`." }
-"types/add-array-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type from return direct array" }
-"types/add-arrow-function-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known return type to arrow function" }
-"types/add-bool-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add bool return type based on strict bool returns type operations" }
-"types/add-bool-return-type-from-const" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return bool, based on direct true/false returns" }
-"types/add-closure-never-return" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add \"never\" return-type for closure that never return anything" }
-"types/add-closure-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to closures based on known return values" }
-"types/add-closure-void-return" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add closure return type void if there is no return" }
+"types/add-array-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from return direct array" }
+"types/add-arrow-function-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known return type to arrow function" }
+"types/add-bool-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add bool return type based on strict bool returns type operations" }
+"types/add-bool-return-type-from-const" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return bool, based on direct true/false returns" }
+"types/add-closure-never-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add \"never\" return-type for closure that never return anything" }
+"types/add-closure-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to closures based on known return values" }
+"types/add-closure-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure return type void if there is no return" }
 "types/add-datetime-property-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Set DateTime to DateTimeInterface for DateTime property with DateTimeInterface docblock" }
 "types/add-doctrine-repository-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to classes that extend Doctrine\\ORM\\EntityRepository based on return Doctrine method names" }
-"types/add-fluent-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type from strict return $this" }
-"types/add-function-void-return" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add function return type void if there is no return" }
+"types/add-fluent-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from strict return $this" }
+"types/add-function-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add function return type void if there is no return" }
 "types/add-getter-return-phpdoc" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return array docblock to a getter method based on @var of the property" }
-"types/add-magic-method-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known magic methods parameter and return type declarations" }
-"types/add-method-void-return" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type void to function like without any return" }
-"types/add-never-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add a `never` return type to functions, methods and closures that never return." }
+"types/add-magic-method-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known magic methods parameter and return type declarations" }
+"types/add-method-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type void to function like without any return" }
+"types/add-never-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add a `never` return type to functions, methods and closures that never return." }
 "types/add-nullable-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add basic ? nullable type to class methods and functions, as of PHP 7.1" }
-"types/add-numeric-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add int/float return type based on strict typed returns" }
-"types/add-numeric-return-type-from-scalar" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add int/float return type based on strict scalar returns type" }
+"types/add-numeric-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add int/float return type based on strict typed returns" }
+"types/add-numeric-return-type-from-scalar" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add int/float return type based on strict scalar returns type" }
 "types/add-param-phpdoc-from-callable-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add param array docblock based on callable native function call" }
 "types/add-param-phpdoc-from-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param docblock array type, based on array dim fetch access" }
 "types/add-param-phpdoc-from-local-calls" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param array docblock to a class method based on local call types" }
@@ -923,22 +923,22 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-return-phpdoc-direct-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add simple @return array docblock based on direct single level direct return of []" }
 "types/add-return-phpdoc-json-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock for array based on return of json_decode() return array" }
 "types/add-return-phpdoc-scalar-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock for scalar array from strict array assignments" }
-"types/add-return-type-from-cast" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to function like with return cast" }
-"types/add-return-type-from-constant" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict type declaration based on returned constants" }
+"types/add-return-type-from-cast" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to function like with return cast" }
+"types/add-return-type-from-constant" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict type declaration based on returned constants" }
 "types/add-return-type-from-get-repository" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add repository return type declaration based on @return docblock, when a method returns entity manager getRepository() fetch" }
 "types/add-return-type-from-native-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return type based native function or native method" }
-"types/add-return-type-from-new" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to function like with return new" }
+"types/add-return-type-from-new" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to function like with return new" }
 "types/add-return-type-from-new-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type based on created empty array and returned" }
-"types/add-return-type-from-param" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type based on strict parameter type" }
+"types/add-return-type-from-param" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type based on strict parameter type" }
 "types/add-return-type-from-parent" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add missing return type declaration based on parent class method" }
-"types/add-return-type-from-property" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return method return type based on strict typed property" }
+"types/add-return-type-from-property" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return method return type based on strict typed property" }
 "types/add-return-type-from-symfony-serializer" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type from symfony serializer" }
 "types/add-return-type-from-ternary" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add method return type based on strict ternary values" }
 "types/add-return-type-from-try-catch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known type declarations based on first-level try/catch return values" }
 "types/add-return-type-from-typed-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type from strict return type of call" }
 "types/add-return-type-from-yield" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type declarations from yields" }
-"types/add-string-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add string return type based on returned strict string values" }
-"types/add-string-return-type-from-scalar" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add string return type based on returned string scalar values" }
+"types/add-string-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string return type based on returned strict string values" }
+"types/add-string-return-type-from-scalar" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string return type based on returned string scalar values" }
 "types/add-union-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add union return type" }
 "types/add-var-phpdoc-from-constructor-param" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array docblock to a property based on @param of constructor assign" }
 "types/add-var-phpdoc-from-default" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array docblock to array property based on iterable default value" }

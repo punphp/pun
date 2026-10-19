@@ -1,0 +1,152 @@
+//! `lint/types/add-closure-return-type` and `lint/types/add-arrow-function-return-type`, ported from Rector 2.6.1's
+//! `ClosureReturnTypeRector` (rules/TypeDeclaration/Rector/Closure) and `AddArrowFunctionReturnTypeRector`
+//! (rules/TypeDeclaration/Rector/ArrowFunction): a closure gets the union of its returns' native types, an arrow
+//! function the native type of its expression.
+//!
+//! Mago does not tell a declared `mixed` from an unknown type, so neither gets a type here (Rector writes `mixed`
+//! for the declared one); and an arrow function returning an offset (`fn () => $a['k']`), for which Rector reads
+//! the docblock type, gets its native type.
+
+use mago_codex::ttype::atomic::TAtomic;
+use mago_syntax::cst::{Node, NodeKind};
+
+use super::declare::{return_declaration, union_order};
+use super::facts::facts;
+use super::native::native_type;
+use super::silent_void::{Place, has_silent_void};
+use super::{add_return_type, class_scope, returns_scoped};
+use crate::syntax::node_span;
+use crate::{Context, Report, Rule};
+
+pub struct AddClosureReturn;
+
+pub struct AddArrowFunctionReturn;
+
+/// `PhpVersionFeature::SCALAR_TYPES`.
+const SCALAR_TYPES: u32 = 70000;
+/// `PhpVersionFeature::ARROW_FUNCTION`.
+const ARROW_FUNCTION: u32 = 70400;
+
+impl Rule for AddClosureReturn {
+    fn id(&self) -> &'static str {
+        "lint/types/add-closure-return-type"
+    }
+
+    fn min_php_version(&self) -> u32 {
+        SCALAR_TYPES
+    }
+
+    fn targets(&self) -> Option<&'static [NodeKind]> {
+        Some(&[NodeKind::Closure])
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        ancestors: &[Node<'ast, 'arena>],
+        ctx: &Context<'_>,
+        out: &mut Vec<Report>,
+    ) {
+        let Node::Closure(closure) = node else {
+            return;
+        };
+        if closure.return_type_hint.is_some() {
+            return;
+        }
+        let facts = facts(ctx);
+        let scope = class_scope(ancestors);
+        let place = Place {
+            facts: &facts,
+            ancestors,
+            scope: scope.as_ref(),
+        };
+        // ReturnedNodesReturnTypeInfererTypeInferer::inferFunctionLike
+        let returns = returns_scoped(&closure.body);
+        if returns.is_empty() {
+            return;
+        }
+        let mut types: Vec<&TAtomic> = Vec::new();
+        let mut has_void = false;
+        for r in &returns {
+            match r.value {
+                None => has_void = true,
+                Some(value) => match native_type(&facts, value) {
+                    Some(t) => types.extend(union_order(t.types.as_ref())),
+                    None => return,
+                },
+            }
+        }
+        if !has_void && has_silent_void(&place, closure.body.statements.iter()) {
+            has_void = true;
+        }
+        // only `void` is mixed; `void` with others has no declaration; `never` is another rule's
+        if has_void
+            || types
+                .iter()
+                .any(|t| matches!(t, TAtomic::Never | TAtomic::Mixed(_)))
+        {
+            return;
+        }
+        let Some(r#type) = return_declaration(types, &facts.codebase, ctx.php_version, &[], true)
+        else {
+            return;
+        };
+        let at = match &closure.use_clause {
+            Some(uses) => node_span(uses).end,
+            None => node_span(&closure.parameter_list).end,
+        };
+        out.push(add_return_type(node_span(&closure.function), at, &r#type));
+    }
+}
+
+impl Rule for AddArrowFunctionReturn {
+    fn id(&self) -> &'static str {
+        "lint/types/add-arrow-function-return-type"
+    }
+
+    fn min_php_version(&self) -> u32 {
+        ARROW_FUNCTION
+    }
+
+    fn targets(&self) -> Option<&'static [NodeKind]> {
+        Some(&[NodeKind::ArrowFunction])
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        _ancestors: &[Node<'ast, 'arena>],
+        ctx: &Context<'_>,
+        out: &mut Vec<Report>,
+    ) {
+        let Node::ArrowFunction(arrow) = node else {
+            return;
+        };
+        if arrow.return_type_hint.is_some() {
+            return;
+        }
+        let facts = facts(ctx);
+        let Some(t) = native_type(&facts, arrow.expression) else {
+            return;
+        };
+        if t.types
+            .iter()
+            .any(|t| matches!(t, TAtomic::Void | TAtomic::Never | TAtomic::Mixed(_)))
+        {
+            return;
+        }
+        if let Some(r#type) = return_declaration(
+            union_order(t.types.as_ref()),
+            &facts.codebase,
+            ctx.php_version,
+            &[],
+            true,
+        ) {
+            out.push(add_return_type(
+                node_span(&arrow.r#fn),
+                node_span(&arrow.parameter_list).end,
+                &r#type,
+            ));
+        }
+    }
+}

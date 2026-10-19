@@ -4,6 +4,7 @@
 use std::path::{Path, PathBuf};
 
 use pun_format::Pipeline;
+use pun_lint::rules::facts::with_sources;
 use pun_lint::{Linter, Rule};
 
 /// The fixtures of one directory, sorted: `(path, input, expected)`.
@@ -29,6 +30,25 @@ fn fixtures(dir: &Path) -> Vec<(PathBuf, String, String)> {
         .collect()
 }
 
+/// The PHP files under `dir` (a fixture's `Source/`), recursively: `(path, code)`.
+fn sources(dir: &Path, out: &mut Vec<(String, String)>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    let mut paths: Vec<PathBuf> = entries.map(|e| e.unwrap().path()).collect();
+    paths.sort();
+    for path in paths {
+        if path.is_dir() {
+            sources(&path, out);
+        } else if path.extension().is_some_and(|e| e == "php") {
+            out.push((
+                path.to_string_lossy().into_owned(),
+                std::fs::read_to_string(&path).unwrap(),
+            ));
+        }
+    }
+}
+
 fn format(pipeline: &Pipeline, code: &str) -> String {
     match pipeline
         .run(Path::new("fixture.php"), code.as_bytes())
@@ -47,7 +67,7 @@ fn laravel() -> Pipeline {
 }
 
 /// Run every fixture of tests/rector/<class>/{Fixture,Oracle,Pun} (the directories that exist; Fixture must) through
-/// `rules` at PHP 8.4, Rector's default version in the fixtures' configs.
+/// `rules` at PHP 8.4, Rector's default version in the fixtures' configs, with the classes of <class>/Source known.
 pub fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
     run_class_at(rules, class, 80400);
 }
@@ -70,7 +90,9 @@ pub fn run_class_at(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
         }
         for (path, input, expected) in fixtures(&dir) {
             let name = format!("{sub}/{}", path.file_name().unwrap().to_string_lossy());
-            let fixed = linter.fix(&path, &input).unwrap();
+            let mut extra = Vec::new();
+            sources(&root.join("Source"), &mut extra);
+            let fixed = with_sources(extra, || linter.fix(&path, &input)).unwrap();
             assert_eq!(fixed.source, expected, "{class} {name}: lint --fix");
             assert_eq!(
                 format(&pipeline, &fixed.source),
