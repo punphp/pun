@@ -283,21 +283,23 @@ fn main() -> ExitCode {
         Cmd::Analyse(a) => a.github_actions = github_actions,
         _ => {}
     }
-    // One rayon pool for every pass, capped by `--max-processes` (read like Pint's intval()).
+    // One rayon pool for every pass, capped by `--max-processes` (read like Pint's intval()). Its threads get Mago's
+    // 36 MiB stack: the parser, the lint walk and analysis recurse as deep as the syntax tree, and a long chain of
+    // concatenations overflows Rust's 2 MiB default.
     let max_processes = match &cmd {
         Cmd::Format(a) => a.max_processes.as_deref(),
         Cmd::Lint(cmd) | Cmd::Check(cmd) => cmd.args.max_processes.as_deref(),
         Cmd::Analyse(a) => a.max_processes(),
         _ => None,
     };
-    if let Some(n) = max_processes
+    let threads = max_processes
         .map(pun_tokens::php_compat::intval)
         .filter(|&n| n > 0)
-    {
-        let _ = rayon::ThreadPoolBuilder::new()
-            .num_threads(n as usize)
-            .build_global();
-    }
+        .map_or(0, |n| n as usize);
+    let _ = rayon::ThreadPoolBuilder::new()
+        .num_threads(threads)
+        .stack_size(36 * 1024 * 1024)
+        .build_global();
     // Other commands' errors are Pun's own run errors.
     let other = report::Failure {
         pint: false,

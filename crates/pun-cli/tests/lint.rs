@@ -191,6 +191,18 @@ fn lint_skips_blade_and_reports_syntax_errors() {
     assert_eq!(code, Some(1));
 }
 
+/// A 20 000-term concatenation nests as deep as its terms in the syntax tree; the parser and the lint walk recurse
+/// that deep, which overflows a 2 MiB worker stack (it aborts the run).
+#[test]
+fn lint_survives_a_deep_expression() {
+    let deep = format!("<?php\n\n$a = 1{};\neval('1;');\n", " . 'a'".repeat(20_000));
+    let d = project("lint", "deep", &[("pun.toml", TOML), ("a.php", &deep)]);
+    let (lines, summary, code) = agent(&d, &["lint"]);
+    assert_eq!(summary, "pun lint: fail, 1 error");
+    assert!(lines[0].starts_with("a.php:4:"), "{lines:?}");
+    assert_eq!(code, Some(1));
+}
+
 #[test]
 fn native_rule_options_reach_the_rule() {
     // `no-global` has no options (Mago's rule takes none), so options for it are a config error that names it.
