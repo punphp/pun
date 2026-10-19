@@ -72,6 +72,12 @@ See the [command reference](docs/content/docs/commands/format.mdx), [configurati
 
 ## Credits
 
+Pun would not be possible without [Mago](https://github.com/carthage-software/mago), [PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer), [Laravel Pint](https://github.com/laravel/pint), [PHPStan](https://github.com/phpstan/phpstan), [Larastan](https://github.com/larastan/larastan), and [Rector](https://github.com/rectorphp/rector).
+
+A special thank-you to Mago's maintainers and contributors. Pun uses Mago's parser and analysis libraries directly and ports rules from its linter.
+
+To the people behind all these projects: thank you for the years of care in your code, tests, and documentation. Pun has come this far because you shared your work.
+
 Pun ports behaviour, test fixtures and data from these projects. Their licences apply to the ported parts.
 
 | Project | Used for | Licence |
