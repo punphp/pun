@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Contract checks for generated rule documentation, without changing the checked-in output."""
 import importlib.util
+import json
 import sys
 import tempfile
 import tomllib
@@ -49,6 +50,18 @@ def main() -> None:
     assert "levels 0–1" in basic and "levels 6–8" in strict
     assert "union-types = true" in strict and "explicit-mixed = true" not in strict
     assert "explicit-mixed = true" in output[docs.CONTENT / "rules/presets/analyse-max.mdx"]
+    tables = json.loads(output[docs.GENERATED / "migrations.json"])["tools"]
+    identifiers = {r["name"]: r for r in tables["phpstan"]}
+    assert identifiers["method.notFound"]["rules"] == ["analyse/undefined/method"]
+    assert identifiers["if.alwaysFalse"]["rules"] == ["analyse/dead-code/number-comparison-always-constant"]
+    assert identifiers["if.alwaysFalse"]["url"].endswith("/if.alwaysFalse")
+    assert identifiers["phpstanApi.class"]["unsupported"]
+    assert all("%s" not in r["name"] for r in tables["phpstan"])
+    assert "larastan.jobs.noConstructor" in {r["name"] for r in tables["larastan"]}
+    for tool in docs.TOOLS:
+        migration = output[docs.CONTENT / f"migrate/from/{tool}.mdx"]
+        assert "## Config translation" in migration and "## Unsupported rules by reason" in migration
+        assert docs.rule_link("lint/comments/no-unused-ignore") in migration
     for command, rules in data["rules"].items():
         for key in rules:
             assert docs.CONTENT / f"rules/{command}/{key}.mdx" in output
@@ -58,8 +71,9 @@ def main() -> None:
             for fixer in rule.get("fixed_by", []):
                 assert docs.rule_link(fixer) in output[docs.CONTENT / f"rules/{rid}.mdx"]
                 assert docs.rule_link(rid) in output[docs.CONTENT / f"rules/{fixer}.mdx"]
-    with tempfile.TemporaryDirectory(dir=docs.ROOT / ".amp/in") as temp:
+    with tempfile.TemporaryDirectory() as temp:
         docs.CONTENT = Path(temp)
+        docs.GENERATED = Path(temp) / "generated"
         page = docs.CONTENT / "generated.mdx"
         handwritten = docs.CONTENT / "handwritten.mdx"
         handwritten.write_text("Keep this page.")

@@ -45,6 +45,9 @@ Replace `vendor/bin/pint --test` with `pun check` ([CI](/docs/guides/ci)).
 
 ## What moved where
 
+The [Pint mapping](/docs/migrate/from/pint) lists every upstream fixer, its Pun rule, option translation and dropped rules.
+For other configs, use the [migration mapping overview](/docs/migrate/from).
+
 `pint` did two kinds of thing in one run: layout, and rewrites that change code, like making classes `final`, comparisons strict, or removing unused imports and superfluous PHPDoc tags. Pun splits them: the rewrites are lint rules. `pun format` runs layout only, which is what format-on-save should do. `pun check --fix` runs both, like `pint` did.
 
 :::tip[Rolling back]

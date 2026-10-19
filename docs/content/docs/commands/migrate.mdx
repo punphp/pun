@@ -10,6 +10,11 @@ pun migrate --yes              # everything it found, no prompt
 pun migrate --dry-run          # show what it would write, change nothing
 ```
 
+The [upstream mapping reference](/docs/migrate/from) lists every name, options and unsupported reason:
+[Pint](/docs/migrate/from/pint), [PHP-CS-Fixer](/docs/migrate/from/php-cs-fixer),
+[Rector](/docs/migrate/from/rector), [PHPStan](/docs/migrate/from/phpstan),
+[Larastan](/docs/migrate/from/larastan) and [Mago](/docs/migrate/from/mago).
+
 ## Choosing what to migrate
 
 `pun migrate` looks for these in the project root and lists only the ones it finds, each with its file:

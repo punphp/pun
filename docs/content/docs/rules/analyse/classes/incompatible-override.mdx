@@ -12,28 +12,7 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 ## Replaces
 
 - [`OverridingMethodRule`](https://phpstan.org/error-identifiers/method.abstractOverridingNonAbstract) (phpstan-classes).
-- [`impure%s.pure`](https://phpstan.org/error-identifiers/impure%25s.pure) (phpstan).
-- [`method.%s`](https://phpstan.org/error-identifiers/method.%25s) (phpstan).
-- [`method.abstractOverridingNonAbstract`](https://phpstan.org/error-identifiers/method.abstractOverridingNonAbstract) (phpstan).
-- [`method.childParameterType`](https://phpstan.org/error-identifiers/method.childParameterType) (phpstan).
-- [`method.childReturnType`](https://phpstan.org/error-identifiers/method.childReturnType) (phpstan).
-- [`method.impure`](https://phpstan.org/error-identifiers/method.impure) (phpstan).
-- [`method.impureOverridePureUnlessCallable`](https://phpstan.org/error-identifiers/method.impureOverridePureUnlessCallable) (phpstan).
-- [`method.missingOverride`](https://phpstan.org/error-identifiers/method.missingOverride) (phpstan).
-- [`method.nonStatic`](https://phpstan.org/error-identifiers/method.nonStatic) (phpstan).
-- [`method.override`](https://phpstan.org/error-identifiers/method.override) (phpstan).
-- [`method.parentMethodFinal`](https://phpstan.org/error-identifiers/method.parentMethodFinal) (phpstan).
-- [`method.parentMethodFinalByPhpDoc`](https://phpstan.org/error-identifiers/method.parentMethodFinalByPhpDoc) (phpstan).
-- [`method.static`](https://phpstan.org/error-identifiers/method.static) (phpstan).
-- [`method.tentativeReturnType`](https://phpstan.org/error-identifiers/method.tentativeReturnType) (phpstan).
-- [`method.visibility`](https://phpstan.org/error-identifiers/method.visibility) (phpstan).
-- [`parameter.byRef`](https://phpstan.org/error-identifiers/parameter.byRef) (phpstan).
-- [`parameter.missing`](https://phpstan.org/error-identifiers/parameter.missing) (phpstan).
-- [`parameter.notByRef`](https://phpstan.org/error-identifiers/parameter.notByRef) (phpstan).
-- [`parameter.notOptional`](https://phpstan.org/error-identifiers/parameter.notOptional) (phpstan).
-- [`parameter.notVariadic`](https://phpstan.org/error-identifiers/parameter.notVariadic) (phpstan).
-- [`parameter.variadic`](https://phpstan.org/error-identifiers/parameter.variadic) (phpstan).
-- [`checkPhpDocMethodSignatures`](https://laravel.com/docs/pint) (phpstan-parameters).
+- [`checkPhpDocMethodSignatures`](https://phpstan.org/config-reference) (phpstan-parameters).
 - [`ImpureConstruct`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
 - [`ImpureStaticVariable`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
 - [`IncompatibleConstantOverride`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
@@ -51,6 +30,37 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 - [`IncompatibleStaticModifier`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
 - [`IncompatibleVisibility`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
 - [`MissingOverrideAttribute`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
+- [`impureFunction.pure`](https://phpstan.org/error-identifiers/impureFunction.pure) (phpstan).
+- [`impureMethod.pure`](https://phpstan.org/error-identifiers/impureMethod.pure) (phpstan).
+- [`method.abstractOverridingNonAbstract`](https://phpstan.org/error-identifiers/method.abstractOverridingNonAbstract) (phpstan).
+- [`method.childParameterType`](https://phpstan.org/error-identifiers/method.childParameterType) (phpstan).
+- [`method.childReturnType`](https://phpstan.org/error-identifiers/method.childReturnType) (phpstan).
+- [`method.deprecatedClass`](https://phpstan.org/error-identifiers/method.deprecatedClass) (phpstan).
+- [`method.deprecatedEnum`](https://phpstan.org/error-identifiers/method.deprecatedEnum) (phpstan).
+- [`method.deprecatedInterface`](https://phpstan.org/error-identifiers/method.deprecatedInterface) (phpstan).
+- [`method.deprecatedTrait`](https://phpstan.org/error-identifiers/method.deprecatedTrait) (phpstan).
+- [`method.impure`](https://phpstan.org/error-identifiers/method.impure) (phpstan).
+- [`method.impureOverridePureUnlessCallable`](https://phpstan.org/error-identifiers/method.impureOverridePureUnlessCallable) (phpstan).
+- [`method.internal`](https://phpstan.org/error-identifiers/method.internal) (phpstan).
+- [`method.internalClass`](https://phpstan.org/error-identifiers/method.internalClass) (phpstan).
+- [`method.internalEnum`](https://phpstan.org/error-identifiers/method.internalEnum) (phpstan).
+- [`method.internalInterface`](https://phpstan.org/error-identifiers/method.internalInterface) (phpstan).
+- [`method.internalTrait`](https://phpstan.org/error-identifiers/method.internalTrait) (phpstan).
+- [`method.missingOverride`](https://phpstan.org/error-identifiers/method.missingOverride) (phpstan).
+- [`method.nonStatic`](https://phpstan.org/error-identifiers/method.nonStatic) (phpstan).
+- [`method.override`](https://phpstan.org/error-identifiers/method.override) (phpstan).
+- [`method.parentMethodFinal`](https://phpstan.org/error-identifiers/method.parentMethodFinal) (phpstan).
+- [`method.parentMethodFinalByPhpDoc`](https://phpstan.org/error-identifiers/method.parentMethodFinalByPhpDoc) (phpstan).
+- [`method.protected`](https://phpstan.org/error-identifiers/method.protected) (phpstan).
+- [`method.static`](https://phpstan.org/error-identifiers/method.static) (phpstan).
+- [`method.tentativeReturnType`](https://phpstan.org/error-identifiers/method.tentativeReturnType) (phpstan).
+- [`method.visibility`](https://phpstan.org/error-identifiers/method.visibility) (phpstan).
+- [`parameter.byRef`](https://phpstan.org/error-identifiers/parameter.byRef) (phpstan).
+- [`parameter.missing`](https://phpstan.org/error-identifiers/parameter.missing) (phpstan).
+- [`parameter.notByRef`](https://phpstan.org/error-identifiers/parameter.notByRef) (phpstan).
+- [`parameter.notOptional`](https://phpstan.org/error-identifiers/parameter.notOptional) (phpstan).
+- [`parameter.notVariadic`](https://phpstan.org/error-identifiers/parameter.notVariadic) (phpstan).
+- [`parameter.variadic`](https://phpstan.org/error-identifiers/parameter.variadic) (phpstan).
 
 ## Turn it on
 
