@@ -172,7 +172,8 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
                 Finding {
                     rel: relative(&cfg.root, &file),
                     file,
-                    line: e.line,
+                    // ponytail: PHPStan's -1 (a node without a position) prints as 0
+                    line: u32::try_from(e.line).unwrap_or(0),
                     identifier: e.identifier,
                     rule: rule.to_string(),
                     message: e.message,

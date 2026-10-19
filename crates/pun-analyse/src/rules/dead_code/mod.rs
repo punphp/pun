@@ -3,6 +3,64 @@
 mod finally;
 mod function_discard;
 mod no_discard;
+mod unreachable;
+mod unused_private;
+
+pub(super) use unreachable::find as unreachable_statements;
+
+/// NotAnalysedTraitRule over TraitDeclarationCollector and TraitUseCollector: the traits the analysed files declare
+/// that no `use` in them names.
+pub(crate) fn unused_traits(
+    codebase: &mago_codex::metadata::CodebaseMetadata,
+    sources: &crate::codebase::Sources,
+    analysed: &[std::path::PathBuf],
+) -> Vec<pun_phpstan::ignore::Error> {
+    let files: Vec<_> = analysed.iter().filter_map(|p| sources.get(p)).collect();
+    let in_analysed = |k: &mago_codex::metadata::class_like::ClassLikeMetadata| {
+        files.iter().find(|f| f.id == k.span.file_id)
+    };
+    // a trait's own `use` is processed only where a class uses it
+    let mut used: HashSet<Vec<u8>> = HashSet::new();
+    let mut pending: Vec<&mago_codex::metadata::class_like::ClassLikeMetadata> = codebase
+        .class_likes
+        .values()
+        .filter(|k| k.kind != mago_codex::symbol::SymbolKind::Trait && in_analysed(k).is_some())
+        .map(|k| &**k)
+        .collect();
+    while let Some(k) = pending.pop() {
+        for t in k.used_traits.iter() {
+            if used.insert(t.as_bytes().to_ascii_lowercase())
+                && let Some(t) = codebase.get_class_like(t.as_bytes())
+            {
+                pending.push(t);
+            }
+        }
+    }
+    let mut errors = Vec::new();
+    for k in codebase.class_likes.values() {
+        let Some(file) = in_analysed(k) else {
+            continue;
+        };
+        if k.kind != mago_codex::symbol::SymbolKind::Trait
+            || used.contains(&k.name.as_bytes().to_ascii_lowercase())
+        {
+            continue;
+        }
+        let line = i64::from(file.line_number(k.span.start.offset)) + 1;
+        let mut e = pun_phpstan::ignore::Error::new(
+            format!(
+                "Trait {} is used zero times and is not analysed.",
+                String::from_utf8_lossy(k.original_name.as_bytes())
+            ),
+            String::from_utf8_lossy(&file.name).into_owned(),
+            Some(line),
+        );
+        e.identifier = Some("trait.unused".into());
+        e.tip = Some("See: https://phpstan.org/blog/how-phpstan-analyses-traits".into());
+        errors.push(e);
+    }
+    errors
+}
 
 use std::collections::HashSet;
 
@@ -22,8 +80,12 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
     if level < 4 {
         return Vec::new();
     }
-    finally::typed(program)
+    let mut spans = finally::typed(program);
+    spans.extend(unused_private::typed(program));
+    spans
 }
+
+pub(super) use unused_private::class as unused_private;
 
 pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);
@@ -126,8 +188,13 @@ pub(super) fn closure(c: &mut Checker, closure: &Closure) {
     let used = used_variables(c, &closure.body);
     for capture in uses.variables.iter() {
         if !used.contains(capture.variable.name) && !used.contains(b"*".as_slice()) {
+            let at = if c.precise_unused_parameter_line {
+                capture.variable.span()
+            } else {
+                closure.span()
+            };
             c.report(
-                closure,
+                at,
                 "closure.unusedUse",
                 format!(
                     "Anonymous function has an unused use {}.",
@@ -193,8 +260,13 @@ pub(super) fn constructor(c: &mut Checker, method: &Method, name: &str) {
             && !used.contains(param.variable.name)
             && !used.contains(b"*".as_slice())
         {
+            let at = if c.precise_unused_parameter_line {
+                param.variable.span()
+            } else {
+                method.span()
+            };
             c.report(
-                method,
+                at,
                 "constructor.unusedParameter",
                 format!(
                     "Constructor of {subject} has an unused parameter {}.",

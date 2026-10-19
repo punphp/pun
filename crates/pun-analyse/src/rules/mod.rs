@@ -70,6 +70,7 @@ pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
 pub(crate) use larastan::finish as larastan_finish;
 pub(crate) use reflection::builtins;
+pub(crate) use dead_code::unused_traits;
 
 pub fn reports(identifier: &str) -> bool {
     IDENTIFIERS.contains(&identifier)
@@ -394,6 +395,17 @@ pub const IDENTIFIERS: &[&str] = &[
     "classConstant.internalInterface",
     "classConstant.internalTrait",
     "classConstant.internalEnum",
+    // analyse dead-code (an-dead)
+    "label.unused",
+    "deadCode.unreachable",
+    "trait.unused",
+    "classConstant.unused",
+    "method.unused",
+    "property.unused",
+    "property.neverRead",
+    "property.neverWritten",
+    "property.onlyRead",
+    "property.onlyWritten",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -526,6 +538,10 @@ pub struct Checker<'a, 'arena> {
     internal: Option<&'a internal::Names>,
     /// [`driver::Checks`]'s `featureToggles.internalTag`.
     internal_tag: bool,
+    precise_unused_parameter_line: bool,
+    unused_label: bool,
+    /// The statements UnreachableStatementRule reports.
+    unreachable: HashSet<Span>,
     errors: Vec<Error>,
 }
 
@@ -574,11 +590,19 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     fn report(&mut self, at: impl HasSpan, identifier: &str, message: String, tip: Option<&str>) {
+        let line = self.line_of(at.span());
+        self.report_at_line(line, identifier, message, tip);
+    }
+
+    fn line_of(&self, at: Span) -> i64 {
+        i64::from(self.file.line_number(at.start.offset)) + 1
+    }
+
+    fn report_at_line(&mut self, line: i64, identifier: &str, message: String, tip: Option<&str>) {
         debug_assert!(reports(identifier), "{identifier} is not in IDENTIFIERS");
         if self.trait_context.is_some() && !self.in_target {
             return;
         }
-        let line = i64::from(self.file.line_number(at.span().start.offset)) + 1;
         self.errors.push(Error {
             identifier: Some(identifier.to_string()),
             tip: tip.map(str::to_string),
@@ -841,6 +865,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, class.span(), k);
             hierarchy::allowed_subtypes(self, class.span(), k);
+            dead_code::unused_private(self, k, class.members.as_slice());
             if self.trait_context.is_none() {
                 readonly_init::class(self, k, class.members.as_slice());
             }
@@ -932,6 +957,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, e.span(), k);
             hierarchy::allowed_subtypes(self, e.span(), k);
+            dead_code::unused_private(self, k, e.members.as_slice());
         }
         type_aliases::class_like(self, e.span());
         missing_types::enum_(self, e);
@@ -1067,6 +1093,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::in_class(self, a.span(), k);
             hierarchy::allowed_subtypes(self, a.span(), k);
+            dead_code::unused_private(self, k, a.members.as_slice());
             if self.trait_context.is_none() {
                 readonly_init::class(self, k, a.members.as_slice());
             }
@@ -1745,6 +1772,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
         syntax::used_names(self, program);
+        self.unreachable = dead_code::unreachable_statements(self, program);
         self.push_frame(FrameKind::Top);
     }
     fn walk_out_program(&mut self, _: &'ast Program<'arena>, _: &mut ()) {
@@ -1798,6 +1826,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
         statements::statement_position(self, s);
+        if self.unreachable.contains(&s.span()) {
+            self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);
+        }
     }
     fn walk_in_declare(&mut self, d: &'ast Declare<'arena>, _: &mut ()) {
         statements::declare(self, d);

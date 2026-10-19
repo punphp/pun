@@ -104,6 +104,17 @@ const PORTED: &[&str] = &[
     "classConstant.internalTrait",
     "classConstant.internalEnum",
     "function.internal",
+    // analyse dead-code (an-dead)
+    "deadCode.unreachable",
+    "classConstant.unused",
+    "method.unused",
+    "property.unused",
+    "property.neverRead",
+    "property.neverWritten",
+    "property.onlyRead",
+    "property.onlyWritten",
+    "label.unused",
+    "trait.unused",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).
@@ -198,7 +209,7 @@ fn phpstan_level_fixtures() {
                     .filter(|e| ported(&e.identifier, &e.message))
                     .map(|e| {
                         let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
-                        (file, i64::from(e.line), e.identifier, e.message, e.tip)
+                        (file, e.line, e.identifier, e.message, e.tip)
                     })
                     .collect();
                 let name = format!(

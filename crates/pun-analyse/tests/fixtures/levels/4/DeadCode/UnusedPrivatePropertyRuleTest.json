@@ -1,0 +1,687 @@
+{
+    "test": "DeadCode/UnusedPrivatePropertyRuleTest",
+    "cases": [
+        {
+            "method": "testRule/0",
+            "files": [
+                "DeadCode/data/unused-private-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 10,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property UnusedPrivateProperty\\Foo::$bar is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 12,
+                    "identifier": "property.unused",
+                    "message": "Property UnusedPrivateProperty\\Foo::$baz is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 14,
+                    "identifier": "property.onlyRead",
+                    "message": "Property UnusedPrivateProperty\\Foo::$lorem is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 55,
+                    "identifier": "property.onlyRead",
+                    "message": "Property UnusedPrivateProperty\\Bar::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 57,
+                    "identifier": "property.onlyRead",
+                    "message": "Property UnusedPrivateProperty\\Bar::$baz is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 86,
+                    "identifier": "property.onlyWritten",
+                    "message": "Static property UnusedPrivateProperty\\Baz::$bar is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 88,
+                    "identifier": "property.unused",
+                    "message": "Static property UnusedPrivateProperty\\Baz::$baz is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 90,
+                    "identifier": "property.onlyRead",
+                    "message": "Static property UnusedPrivateProperty\\Baz::$lorem is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 117,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property UnusedPrivateProperty\\Lorem::$baz is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 148,
+                    "identifier": "property.unused",
+                    "message": "Property UnusedPrivateProperty\\DolorWithAnonymous::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 152,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"new class…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 153,
+                    "identifier": "property.unused",
+                    "message": "Property class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/DeadCode/data/unused-private-property.php:152::$bar is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 162,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property UnusedPrivateProperty\\ArrayAssign::$foo is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 191,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property UnusedPrivateProperty\\ListAssign::$foo is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-property.php",
+                    "line": 228,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, string> does not accept int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule/1",
+            "files": [
+                "DeadCode/data/TestExtension.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/TestExtension.php",
+                    "line": 8,
+                    "identifier": "property.unused",
+                    "message": "Property UnusedPrivateProperty\\TestExtension::$unused is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/TestExtension.php",
+                    "line": 10,
+                    "identifier": "property.unused",
+                    "message": "Property UnusedPrivateProperty\\TestExtension::$read is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/TestExtension.php",
+                    "line": 12,
+                    "identifier": "property.unused",
+                    "message": "Property UnusedPrivateProperty\\TestExtension::$written is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/TestExtension.php",
+                    "line": 14,
+                    "identifier": "property.unused",
+                    "message": "Property UnusedPrivateProperty\\TestExtension::$used is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAlwaysUsedTags",
+            "files": [
+                "DeadCode/data/private-property-with-tags.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/private-property-with-tags.php",
+                    "line": 13,
+                    "identifier": "property.unused",
+                    "message": "Property PrivatePropertyWithTags\\Foo::$title is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/private-property-with-tags.php",
+                    "line": 18,
+                    "identifier": "property.unused",
+                    "message": "Property PrivatePropertyWithTags\\Foo::$text is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/private-property-with-tags.php",
+                    "line": 24,
+                    "identifier": "property.unused",
+                    "message": "Property PrivatePropertyWithTags\\Foo::$author is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTrait",
+            "files": [
+                "DeadCode/data/private-property-trait.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3636",
+            "files": [
+                "DeadCode/data/bug-3636.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-3636.php",
+                    "line": 13,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug3636\\Foo::$date (DateTimeImmutable) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-3636.php",
+                    "line": 22,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug3636\\Bar::$date is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-3636.php",
+                    "line": 26,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug3636\\Bar::$date (DateTimeImmutable) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-3636.php",
+                    "line": 39,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug3636\\Baz::$date (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-3636.php",
+                    "line": 52,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property Bug3636\\Lorem::$date (string) on left side of ?? is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPromotedProperties",
+            "files": [
+                "DeadCode/data/unused-private-promoted-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/unused-private-promoted-property.php",
+                    "line": 12,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property UnusedPrivatePromotedProperty\\Foo::$lorem is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-promoted-property.php",
+                    "line": 13,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property UnusedPrivatePromotedProperty\\Foo::$ipsum is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullsafe",
+            "files": [
+                "DeadCode/data/nullsafe-unused-private-property.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3654",
+            "files": [
+                "DeadCode/data/bug-3654.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5935",
+            "files": [
+                "DeadCode/data/bug-5935.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5337",
+            "files": [
+                "DeadCode/data/bug-5337.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-5337.php",
+                    "line": 7,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug5337\\Clazz::$prefix (string|null) is never assigned null so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-5337.php",
+                    "line": 20,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug5337\\Foo::$field is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5971",
+            "files": [
+                "DeadCode/data/bug-5971.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-5971.php",
+                    "line": 7,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug5971\\TestEmpty::$test (array|null) is never assigned null so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-5971.php",
+                    "line": 22,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug5971\\TestIsset::$test (string|null) is never assigned null so it can be removed from the property type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6107",
+            "files": [
+                "DeadCode/data/bug-6107.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8204",
+            "files": [
+                "DeadCode/data/bug-8204.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8850",
+            "files": [
+                "DeadCode/data/bug-8850.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9409",
+            "files": [
+                "DeadCode/data/bug-9409.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9765",
+            "files": [
+                "DeadCode/data/bug-9765.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 11,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 38,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 40,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 61,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10059",
+            "files": [
+                "DeadCode/data/bug-10059.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10628",
+            "files": [
+                "DeadCode/data/bug-10628.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-10628.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Method Bug10628\\Foo::getMixed() should return mixed but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8781",
+            "files": [
+                "DeadCode/data/bug-8781.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9361",
+            "files": [
+                "DeadCode/data/bug-9361.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7251",
+            "files": [
+                "DeadCode/data/bug-7251.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11802",
+            "files": [
+                "DeadCode/data/bug-11802.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-11802.php",
+                    "line": 8,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug11802\\HelloWorld::$isFinal is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "DeadCode/data/property-hooks-unused-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/property-hooks-unused-property.php",
+                    "line": 32,
+                    "identifier": "property.unused",
+                    "message": "Property PropertyHooksUnusedProperty\\FooUnused::$a is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/property-hooks-unused-property.php",
+                    "line": 46,
+                    "identifier": "property.onlyRead",
+                    "message": "Property PropertyHooksUnusedProperty\\FooOnlyRead::$a is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/property-hooks-unused-property.php",
+                    "line": 65,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property PropertyHooksUnusedProperty\\FooOnlyWritten::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/property-hooks-unused-property.php",
+                    "line": 95,
+                    "identifier": "property.onlyRead",
+                    "message": "Property PropertyHooksUnusedProperty\\ReadInAnotherPropertyHook2::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/property-hooks-unused-property.php",
+                    "line": 105,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property PropertyHooksUnusedProperty\\WrittenInAnotherPropertyHook::$bar is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12621",
+            "files": [
+                "DeadCode/data/bug-12621.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12702",
+            "files": [
+                "DeadCode/data/bug-12702.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-12702.php",
+                    "line": 25,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug12702\\Bar::$i (string|null) is never assigned null so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-12702.php",
+                    "line": 43,
+                    "identifier": "property.neverRead",
+                    "message": "Readable property Bug12702\\Foo2::$i is never read.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-12702.php",
+                    "line": 54,
+                    "identifier": "property.neverWritten",
+                    "message": "Writable property Bug12702\\Bar2::$i is never written.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9213",
+            "files": [
+                "DeadCode/data/bug-9213.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6777",
+            "files": [
+                "DeadCode/data/bug-6777.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14573",
+            "files": [
+                "DeadCode/data/bug-14573.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 8,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\Foo::$test is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 22,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\Bar::$b is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 41,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\Baz::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 41,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\Baz::$b is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 88,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\WithNewStatic::$test is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 94,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 102,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\WithNewClassName::$test is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 135,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\WithNamedArgument::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 135,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\WithNamedArgument::$b is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-14573.php",
+                    "line": 177,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug14573\\MultipleReadsOnlySelfWrite::$test is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14703",
+            "files": [
+                "DeadCode/data/bug-14703.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14880",
+            "files": [
+                "DeadCode/data/bug-14880-property.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

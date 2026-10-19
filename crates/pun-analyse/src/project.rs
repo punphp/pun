@@ -40,6 +40,13 @@ pub struct Project {
     pub internal_tag: bool,
     /// `featureToggles.newStaticInAbstractClassStaticMethod` (on with bleedingEdge).
     pub new_static_in_abstract_class_static_method: bool,
+    /// `featureToggles.reportPreciseLineForUnusedFunctionParameter` (on with bleedingEdge): unused closure uses and
+    /// constructor parameters are reported on their own line, not the function's.
+    pub precise_unused_parameter_line: bool,
+    /// `featureToggles.unusedLabel` (on with bleedingEdge): UnusedLabelRule.
+    pub unused_label: bool,
+    /// Every analysed path is a file (`isOnlyFilesAnalysis()`): NotAnalysedTraitRule stays quiet.
+    pub only_files: bool,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
@@ -125,6 +132,13 @@ impl Project {
             .get_str("ignoreErrors")
             .and_then(Value::as_array)
             .unwrap_or(&empty);
+        let toggle = |k: &str| {
+            params
+                .get_str("featureToggles")
+                .and_then(Value::as_array)
+                .and_then(|t| t.get_str(k))
+                == Some(&Value::Bool(true))
+        };
         let level = match params.get_str("level") {
             Some(Value::Int(i)) => u8::try_from(*i).unwrap_or(10).min(10),
             Some(Value::Str(s)) if s == "max" => 10,
@@ -156,6 +170,12 @@ impl Project {
                 .and_then(Value::as_array)
                 .and_then(|t| t.get_str("newStaticInAbstractClassStaticMethod"))
                 == Some(&Value::Bool(true)),
+            precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
+            unused_label: toggle("unusedLabel"),
+            only_files: {
+                let paths = strings(params, "paths");
+                !paths.is_empty() && paths.iter().all(|p| !Path::new(p).is_dir())
+            },
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
         }
@@ -178,6 +198,9 @@ impl Project {
             check_generic_iterable_classes: false,
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,
+            precise_unused_parameter_line: false,
+            unused_label: false,
+            only_files: true,
             larastan: None,
         }
     }

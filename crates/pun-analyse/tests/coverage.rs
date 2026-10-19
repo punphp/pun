@@ -8,7 +8,7 @@ use pun_analyse::{analyse, reports};
 use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
-type Key = (String, u32, String, String, Option<String>);
+type Key = (String, i64, String, String, Option<String>);
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
     let root = dir.to_string_lossy().into_owned();
@@ -38,7 +38,7 @@ fn check(dir: &Path, neon: &str) -> Result<(), String> {
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),
-                e["line"].as_u64().unwrap() as u32,
+                e["line"].as_i64().unwrap(),
                 e["identifier"].as_str().unwrap().to_string(),
                 e["message"].as_str().unwrap().to_string(),
                 e["tip"].as_str().map(str::to_string),

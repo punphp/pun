@@ -1,0 +1,239 @@
+{
+    "test": "DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "DeadCode/data/call-to-method-without-impure-points.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 7,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\finalX::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 8,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\finalX::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 11,
+                    "identifier": "arguments.count",
+                    "message": "Method CallToMethodWithoutImpurePoints\\finalX::funcWithRef() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 21,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\finalX::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 23,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallToMethodWithoutImpurePoints\\y referenced with incorrect case: CallToMethodWithoutImpurePoints\\Y.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 27,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\finalX::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 29,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallToMethodWithoutImpurePoints\\foo referenced with incorrect case: CallToMethodWithoutImpurePoints\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 30,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\foo::finalFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 35,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\y::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 36,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\y::myFinalBaseFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 39,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\y::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 40,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\finalSubSubY::mySubSubFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 41,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\y::myFinalBaseFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 51,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallToMethodWithoutImpurePoints\\y referenced with incorrect case: CallToMethodWithoutImpurePoints\\Y.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 61,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\y::myFinalBaseFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 98,
+                    "identifier": "impureMethod.pure",
+                    "message": "Method CallToMethodWithoutImpurePoints\\finalX::impureFunc() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 139,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\AbstractFoo::myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points.php",
+                    "line": 147,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePoints\\CallsPrivateMethodWithoutImpurePoints::doBar() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTransitive",
+            "files": [
+                "DeadCode/data/call-to-method-without-impure-points-transitive.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points-transitive.php",
+                    "line": 37,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePointsTransitive\\Foo::pureBase() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points-transitive.php",
+                    "line": 38,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePointsTransitive\\Foo::transitive() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11011",
+            "files": [
+                "DeadCode/data/bug-11011.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-11011.php",
+                    "line": 32,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method Bug11011\\AnotherPureImpl::doFoo() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testThrows",
+            "files": [
+                "DeadCode/data/call-to-method-without-impure-points-throws.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points-throws.php",
+                    "line": 20,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points-throws.php",
+                    "line": 34,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePointsThrows\\Foo::noThrowsMethod() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12379",
+            "files": [
+                "DeadCode/data/bug-12379.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "DeadCode/data/call-to-method-without-impure-points-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points-pipe.php",
+                    "line": 17,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePointsPipe\\Foo::maybePure() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-method-without-impure-points-pipe.php",
+                    "line": 18,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method CallToMethodWithoutImpurePointsPipe\\Foo::maybePure() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

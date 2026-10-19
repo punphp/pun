@@ -1,0 +1,248 @@
+{
+    "test": "Functions/CallToFunctionStatementWithoutSideEffectsRuleTest",
+    "cases": [
+        {
+            "method": "testRule/0",
+            "files": [
+                "Functions/data/function-call-statement-no-side-effects.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects.php",
+                    "line": 13,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function sprintf() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects.php",
+                    "line": 19,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $data",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects.php",
+                    "line": 24,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function var_export() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects.php",
+                    "line": 26,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function print_r() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule/1",
+            "files": [
+                "Functions/data/function-call-statement-no-side-effects-8.0.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-8.0.php",
+                    "line": 19,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function var_export() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-8.0.php",
+                    "line": 20,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function print_r() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-8.0.php",
+                    "line": 21,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function highlight_string() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhpDoc",
+            "files": [
+                "Functions/data/function-call-statement-no-side-effects-phpdoc.php"
+            ],
+            "scan": [
+                "Functions/data/function-call-statement-no-side-effects-phpdoc-definition.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-phpdoc.php",
+                    "line": 8,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallStatementNoSideEffectsPhpDoc\\pure1() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-phpdoc.php",
+                    "line": 9,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallStatementNoSideEffectsPhpDoc\\pure2() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-phpdoc.php",
+                    "line": 10,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallStatementNoSideEffectsPhpDoc\\pure3() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-phpdoc.php",
+                    "line": 11,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallStatementNoSideEffectsPhpDoc\\pure4() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-phpdoc.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallStatementNoSideEffectsPhpDoc\\pure5() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-phpdoc.php",
+                    "line": 13,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallStatementNoSideEffectsPhpDoc\\pureAndThrowsVoid() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12224",
+            "files": [
+                "Functions/data/bug-12224.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11101",
+            "files": [
+                "Functions/data/bug-11101.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11101.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-11101.php",
+                    "line": 13,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_map() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-11101.php",
+                    "line": 14,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_reduce() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-11101.php",
+                    "line": 15,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4455",
+            "files": [
+                "Functions/data/bug-4455.php"
+            ],
+            "scan": [
+                "Functions/data/bug-4455.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallables",
+            "files": [
+                "Functions/data/first-class-callable-function-without-side-effect.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/first-class-callable-function-without-side-effect.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function mkdir() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/first-class-callable-function-without-side-effect.php",
+                    "line": 24,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function strlen() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/first-class-callable-function-without-side-effect.php",
+                    "line": 36,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FirstClassCallableFunctionWithoutSideEffect\\foo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/first-class-callable-function-without-side-effect.php",
+                    "line": 49,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FirstClassCallableFunctionWithoutSideEffect\\bar() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "Functions/data/function-call-without-side-effect-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-call-without-side-effect-pipe.php",
+                    "line": 28,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallWithoutSideEffectPipe\\pureFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-without-side-effect-pipe.php",
+                    "line": 29,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function FunctionCallWithoutSideEffectPipe\\maybePureFunc() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

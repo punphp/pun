@@ -43,7 +43,7 @@ fn check_in(fixture: &str, neon: &str) {
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),
-                e["line"].as_u64().unwrap_or(0) as u32,
+                e["line"].as_i64().unwrap_or(0),
                 e["identifier"].as_str().unwrap().to_string(),
                 e["message"].as_str().unwrap().replace("{root}", &dir),
                 e["tip"].as_str().map(str::to_string),

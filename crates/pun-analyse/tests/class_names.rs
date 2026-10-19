@@ -9,7 +9,7 @@ use pun_analyse::{IDENTIFIERS, Project, analyse, run};
 use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
-type Key = (String, u32, String, String, Option<String>);
+type Key = (String, i64, String, String, Option<String>);
 
 const CLASS_NAME_CHECK: &[&str] = &[
     "class.nameCase",
@@ -50,7 +50,7 @@ fn expected(neon: &str, keep: &dyn Fn(&str) -> bool) -> Vec<Key> {
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),
-                e["line"].as_u64().unwrap() as u32,
+                e["line"].as_i64().unwrap(),
                 e["identifier"].as_str().unwrap().to_string(),
                 e["message"].as_str().unwrap().to_string(),
                 e["tip"].as_str().map(str::to_string),

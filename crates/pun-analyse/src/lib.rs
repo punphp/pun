@@ -26,7 +26,8 @@ pub use rules::Larastan;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Error {
     pub file: String,
-    pub line: u32,
+    /// PHPStan's `-1` for a node without a position (a synthetic `break`).
+    pub line: i64,
     pub identifier: String,
     pub message: String,
     pub tip: Option<String>,
@@ -69,6 +70,10 @@ pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
         .par_iter()
         .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
         .collect();
+    let mut errors = errors;
+    if project.level >= 4 && !project.only_files {
+        errors.extend(rules::unused_traits(&codebase, &sources, &project.analysed));
+    }
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();
@@ -81,7 +86,7 @@ pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
         .into_iter()
         .map(|e| Error {
             file: e.file,
-            line: e.line.map_or(0, |l| l as u32),
+            line: e.line.unwrap_or(0),
             identifier: e.identifier.unwrap_or_default(),
             message: e.message,
             tip: e.tip,

@@ -26,7 +26,7 @@ pub enum FrameKind {
 /// A scope boundary, with the goto labels and gotos directly in it (GotoLabelVisitor's scope stack).
 pub struct Frame {
     pub kind: FrameKind,
-    labels: Vec<Vec<u8>>,
+    labels: Vec<(Vec<u8>, Span)>,
     gotos: Vec<(Vec<u8>, Span)>,
 }
 
@@ -48,8 +48,21 @@ impl Checker<'_, '_> {
     /// Leaves a scope boundary: GotoUndefinedLabelRule reports its gotos to labels it does not hold.
     pub(super) fn pop_frame(&mut self) {
         let frame = self.frames.pop().expect("pushed");
+        // UnusedLabelRule (level 4, `featureToggles.unusedLabel`)
+        if self.unused_label && self.level >= 4 {
+            for (label, at) in &frame.labels {
+                if !frame.gotos.iter().any(|(g, _)| g == label) {
+                    self.report(
+                        *at,
+                        "label.unused",
+                        format!("Label '{}' is unused.", String::from_utf8_lossy(label)),
+                        None,
+                    );
+                }
+            }
+        }
         for (label, at) in frame.gotos {
-            if frame.labels.contains(&label) {
+            if frame.labels.iter().any(|(l, _)| *l == label) {
                 continue;
             }
             self.report_non_ignorable(
@@ -99,7 +112,7 @@ impl Checker<'_, '_> {
 
     pub(super) fn label(&mut self, l: &Label) {
         let frame = self.frames.last_mut().expect("top frame");
-        frame.labels.push(l.name.value.to_vec());
+        frame.labels.push((l.name.value.to_vec(), l.span()));
     }
 
     pub(super) fn goto(&mut self, g: &Goto) {

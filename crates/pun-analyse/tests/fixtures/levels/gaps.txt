@@ -4,5 +4,11 @@
 2 Generics/ClassAncestorsRuleTest::testRuleExtends
 # Mago callable union contracts and array-shape insertion order; function NoDiscard stays unported (PLAN.md).
 2 Functions/HelperFunctionDiscard::testRule
-# PHPStan synthetic multi-level break has line -1; the public Error line is u32 (PLAN.md).
-4 Exceptions/HelperFinally::testRule
+# Anonymous class names print the fixture path relative to the exporter's working directory.
+4 DeadCode/NoopRuleTest::testRuleImpurePoints
+4 DeadCode/UnusedPrivatePropertyRuleTest::testRule/0
+# PHPStan remembers `$dt->getTimestamp() === 1000` from assert(), so the while loop never ends; Mago does not.
+4 DeadCode/UnreachableStatementRuleTest::testRule
+# `$y !== 'doBar'` leaves mixed~'doBar', which Mago's types cannot express (a dynamic name may be any member).
+4 DeadCode/UnusedPrivateMethodRuleTest::testBug11802
+4 DeadCode/UnusedPrivatePropertyRuleTest::testBug11802

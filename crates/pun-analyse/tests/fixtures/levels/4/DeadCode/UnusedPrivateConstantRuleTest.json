@@ -1,0 +1,160 @@
+{
+    "test": "DeadCode/UnusedPrivateConstantRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "DeadCode/data/unused-private-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/unused-private-constant.php",
+                    "line": 10,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant UnusedPrivateConstant\\Foo::BAR_CONST is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-constant.php",
+                    "line": 21,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant UnusedPrivateConstant\\TestExtension::USED is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-constant.php",
+                    "line": 23,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant UnusedPrivateConstant\\TestExtension::UNUSED is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "DeadCode/data/unused-private-constant.php",
+                    "line": 36,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5651",
+            "files": [
+                "DeadCode/data/bug-5651.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "DeadCode/data/unused-private-constant-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/unused-private-constant-enum.php",
+                    "line": 9,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant UnusedPrivateConstantEnum\\Foo::TEST_2 is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6758",
+            "files": [
+                "DeadCode/data/bug-6758.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8204",
+            "files": [
+                "DeadCode/data/bug-8204.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9005",
+            "files": [
+                "DeadCode/data/bug-9005.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9765",
+            "files": [
+                "DeadCode/data/bug-9765.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 11,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 38,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 40,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-9765.php",
+                    "line": 61,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $this",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDynamicConstantFetch",
+            "files": [
+                "DeadCode/data/unused-private-constant-dynamic-fetch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/unused-private-constant-dynamic-fetch.php",
+                    "line": 32,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant UnusedPrivateConstantDynamicFetch\\Baz::FOO is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14880",
+            "files": [
+                "DeadCode/data/bug-14880-constant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

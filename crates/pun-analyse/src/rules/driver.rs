@@ -47,6 +47,9 @@ pub(crate) struct Checks {
     internal: Option<super::internal::Names>,
     /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension (config.level0.neon).
     internal_tag: bool,
+    /// [`Project::precise_unused_parameter_line`] and [`Project::unused_label`].
+    precise_unused_parameter_line: bool,
+    unused_label: bool,
 }
 
 impl Checks {
@@ -68,6 +71,8 @@ impl Checks {
             internal: (project.level >= 2 && project.internal_tag)
                 .then(|| super::internal::Names::of(codebase)),
             internal_tag: project.internal_tag,
+            precise_unused_parameter_line: project.precise_unused_parameter_line,
+            unused_label: project.unused_label,
         }
     }
 }
@@ -158,6 +163,9 @@ fn checker<'a, 'arena>(
         larastan_state: Default::default(),
         internal: project.internal.as_ref(),
         internal_tag: project.internal_tag,
+        precise_unused_parameter_line: project.precise_unused_parameter_line,
+        unused_label: project.unused_label,
+        unreachable: HashSet::new(),
         errors: Vec::new(),
     }
 }
