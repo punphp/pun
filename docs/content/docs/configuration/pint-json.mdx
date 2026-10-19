@@ -8,7 +8,7 @@ Pun doesn't read `pint.json` at run time. [`pun migrate`](/docs/commands/migrate
 | pint.json | pun.toml |
 | --- | --- |
 | `"preset": "laravel"` | `[format] preset = "laravel"` |
-| `"rules"` that differ from the preset | `[format.rules]`, under Pun IDs and [option names](/docs/configuration/pun-toml#format-rule-options) |
+| `"rules"` that differ from the preset | `[format.rules]`, under Pun IDs and [option names](/docs/configuration/pun-toml#rule-options) |
 | Risky rules (`final_class`, `strict_comparison`, ...) | `[lint.rules]` at `"error"` |
 | `"in"` | `[files] paths` |
 | `"exclude"`, `"notName"`, `"notPath"` | `[format] exclude`, `not-name`, `not-path` |

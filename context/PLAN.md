@@ -184,7 +184,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| analyse spike follow-up (pun-config): add as variants in rules/mapping.toml the Mago codes that make the same check but are mapped elsewhere (invalid-method-access, non-existent-property, invalid-property-write, incompatible-static-modifier, unimplemented-abstract-method, array-append-in-read-context, invalid-unset, extend-final-class, invalid-extend, non-existent-class-like, invalid-assignment, incompatible-property-hook-parameter-type); see reports/analyse-spike.md | doing (config, main) |
 
 ### Step 2. The shared output (plan/output.md Build 1-6)
 
@@ -211,16 +210,12 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | format 6: swap `vendor/bin/pint` for Pun in Pinkary's CI | todo |
 | format 7: port the remaining format rules (186 of 208 native, 1 format rule left; batches 1-8 done: the PER-CS and Symfony operator, type and loop rules, the Symfony comment, concat, phpdoc, semicolon and echo tag rules, then the rest of the Symfony preset plus phpdoc_no_duplicate_types, phpdoc_order_by_value, explicit_indirect_variable and explicit_string_variable, then no_whitespace_in_empty_array, multiline_comment_opening_closing, string_implicit_backslashes, octal_notation, heredoc_indentation, new_expression_parentheses and not_operator_with_space, then attribute_empty_parentheses, phpdoc_tag_casing, numeric_literal_separator and multiline_string_to_heredoc, then phpdoc_line_span, phpdoc_param_order, multiline_promoted_properties and ordered_attributes, then group_import and header_comment, then the four doctrine_annotation rules; heredoc_closing_marker is ported but held back, see the request below) | doing (format) |
 | format 7 (format) request (pun-cli, docs): crates/pun-cli/tests/output.rs:1257, tests/cli.rs:616-652 and docs/content/docs/commands/format.mdx:106,128 use `format/strings/heredoc-closing-marker` as the unported format rule; the format track ports it last (held back until then), after which no format rule is unported, so switch them to an unported `later = true` lint rule | request |
-| audit 76 follow-up (format): make `Token.id`/`Token.content` private once nothing outside pun-tokens reads them: the lint tracks' new pun-fixers files (non_printable_character, ternary_to_null_coalescing, phpdoc_to_{param,property,return}_type, analyzers/abstract_phpdoc_to_type_declaration_fixer) and pun-cli/src/migrate.rs:716-735 should use `get_content()`/`get_id()` and `Token::new`/`char`/`with_id` | todo |
 | audit 26/88 (format) request (pun-cli, platform): the agent `MODE: OnceLock` in pun-cli/src/agent.rs (item 26's second half) becomes an `OutputMode` passed down from main; fix_report.rs's hand-written md5 becomes the `md-5` crate (item 88, approved; same bytes, its md5_like_php test stays) | request |
+| audit 76 follow-up (format): make `Token.id`/`Token.content` private once nothing outside pun-tokens reads them: the lint tracks' new pun-fixers files (non_printable_character, ternary_to_null_coalescing, phpdoc_to_{param,property,return}_type, analyzers/abstract_phpdoc_to_type_declaration_fixer) and pun-cli/src/migrate.rs:716-735 should use `get_content()`/`get_id()` and `Token::new`/`char`/`with_id` | todo |
 | format 7 follow-up: `"header_comment": true` (no `header`) is a pun.toml config error (exit 2) in Pun; Pint configures it and reports `[header_comment] Configuration is required.` as an error on every file | todo |
 | format 7 follow-up: heavy-slot target dirs are shared across worktrees, so cargo reuses another worktree's artifacts; give each worktree its own target dir or touch sources inside each heavy call | todo |
-| format 7 follow-up: run scripts/coverage.sh punphp-fixers over the whole crate to confirm switch_analyzer.rs (cache now keyed on the whole token list) and analyzers/docblock/type_expression.rs (sortTypes, removeDuplicateTypes, php_spaceship from batch 3) stays at 100% | todo |
 | format 7 follow-up: laravel-framework pun-harness format runs exceed one 600-second heavy call; run Pint with --parallel in the harness or split the corpus run | todo |
 | format 7 follow-up: with the symfony preset Pun's Blade path does not apply the symfony PHP rules Pint applies inside Blade directives (yoda_style, not_operator_with_successor_space); blocks a 0-diff symfony-preset pinkary run once phpdoc_to_comment is in lint | todo |
-| migrate 2-3: unsupported list with the PR request, the new output | doing (config, main) |
-| migrate 2-3 follow-up: docs/content/docs/commands/migrate.mdx still promises baseline conversion and workflow switching, which plan/migrate.md §3 rules out; fix with migrate 2-3 | doing (config, main) |
-| init follow-up: switch init's prompts to dialoguer's ColorfulTheme to match the '? Code style ›' look in the plan/init.md §2 sample, and pin it in tests/init.rs | doing (config, main) |
 | init 4: one `pun check`, then offer fix and baseline | blocked (analyse 1-2) |
 
 **Gate:** the Pinkary CI swap from `vendor/bin/pint` to Pun, and the 8-core benchmark.
@@ -237,13 +232,11 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 3-6 follow-up (platform): a token-path (PHP-CS-Fixer) lint rule reports its file at the first changed line, not one diagnostic per change; split its diff into per-rule hunks so each change is a problem with its own span and `@pun-ignore` line forms work for it (today only `@pun-ignore-file`) | todo |
 | lint 3-6 follow-up (platform): Pint's checkstyle, junit and gitlab reporters list a file's lint and analyse problems by rule ID only (PHP-CS-Fixer's per-file shape); give each problem its line and message there | todo |
 | platform decision (lint 1-2, from config 7): `pun lint`, the lint half of `pun check` and `pun analyse` skip Blade templates and Pint's default directories (bootstrap/cache, build, node_modules, storage) besides their own excludes, as Mago and PHPStan see only PHP sources; `pun lint --mago` is gone (its Laravel rules are native lint rules) | done |
-| platform request (pun-config): make the `[meta.groups]` list and an identifier-to-rule lookup (`analyse_rule_of(identifier)`, with the `%s` wildcards) public; pun-cli's src/mapping.rs parses mapping.toml again until then | request |
-| platform request (pun-config, mapping.toml): `class.notFound` maps to `analyse/types/invalid-pipe`; PHPStan reports it for every unknown class (`new Missing()`), so it belongs to an `undefined/class` rule | request |
+| platform (from config): `pun_config::groups()` and `pun_config::rule_of_identifier()` are public now (with the `%s` patterns, over phpstan, larastan, strict-rules and deprecation-rules); drop pun-cli's src/mapping.rs | todo |
 | platform request (every crate owner, AUDIT item 28): add `[lints] workspace = true` to your crate's Cargo.toml and fix the clippy hits (`cargo clippy -p <crate> --all-targets --no-deps`); pun-cli, pun-workspace and pun-problem already opt in | request |
 | platform request (pun-analyse): a `run` that takes the analysed files' sources, so `pun check` reads each file once instead of again after format and lint | request |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | doing (lint-c, main) |
 | lint 7 (lint-c): the 119 1.0 rules of the `types` (79) and `laravel` (40) groups; syntax-only rules first | doing (lint-c, main); 9 of 119 native (batch 1: 9 syntax-only laravel rules) |
-| lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | doing (config, main) |
 | lint 7: the 428 lint rules for 1.0 native, in usage order (`later = true` rules wait) | todo; 98 of 428 native (batch 1: 13 syntax-only dead-code rules done; batch 2: 14 syntax-only code-quality rules done; batch 3: 11 syntax-only dead-code, early-return and code-quality statement rules done; batch 4: 10 code-quality rules done) |
 | lint 7 (lint-a): the dead-code, complexity, control-flow, operators, strings, arrays, statements, comments, tags and refactor groups (98 rules), first the unfinished wf/lint-5 and wf/lint-7 work | doing (lint-a, crates/pun-lint, crates/pun-fixers new fixer files) |
 | lint 7 (lint-b): the style, classes, functions, phpdoc, security, php-8.4, php-8.5 and php-8.6 groups (113 rules), first their part of wf/lint-5 and wf/lint-7 | doing (lint-b, crates/pun-lint, crates/pun-fixers new fixer files); 9 of 113 ported |
@@ -263,9 +256,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 7 follow-up (from batch 3): merge rules/rector_stmts.rs (a copy of php_parser.rs's token helpers) with batch 1's rules/php_parser.rs and rules/used_variable.rs | todo |
 | lint 7 follow-up (from batch 3): laravel-framework tests/View/Fixtures/section-exception.php: Rector reprints the whole `<?php ... ?>` file, Pun removes only the unreachable statement and its `?>` (a Pun/ fixture); no-else-after-return and no-identical-branches match Rector only after format on colon `if`s and single-statement bodies | todo |
 | lint 7 follow-up (from batch 4): when a `switch` with only a `default` is a whole function body, or an `if`+`return null` pair is a whole `if`/loop body, php-parser reprints the parent; Pun does so only for no-redundant-null-check's function bodies (context/plan/lint.md §7 batch 4) | todo |
-| lint (from mapping): write summaries in rules/mapping.toml for the 286 lint rules added by the one-to-one mapping (several have none) | doing (config, main) |
-| lint (from mapping): look at the upstream rector-laravel laravel-120 set's RenameMethod bug, and decide whether the livewire-40 set belongs in scope | doing (config, main) |
-| migrate 4: rector.php | doing (config, main) |
 
 **Gate:** `format(pun lint --fix)` equals `format(rector process)` on Rector's fixtures and the corpus, for every rule.
 
@@ -306,7 +296,12 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
 | analyse: enable Larastan from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
 | analyse 8: result cache | todo |
-| migrate 5-6: phpstan.neon; offer the closest preset | doing (config, main) |
+| migrate 5 follow-up: rewrite `@phpstan-ignore*` comments to `@pun-ignore` with Pun IDs; carry phpstan-parameters into rule options (they are named and skipped today) | todo |
+| migrate 6: on a terminal, offer the closest analyse preset with the count of errors the switch would report | todo |
+| migrate 4 follow-up: Rector rules registered with a configuration (`withConfiguredRule`) are named and skipped; carry their configuration into the Pun rule's options | todo |
+| platform request (from config): pun-harness runs `pun migrate` without `--from`; rector.php and phpstan.neon migrate now too, so pass `--from pint` (or the project's format config) to keep comparing with Pint | request |
+| analyse request (from config, migrate 5): honour `[analyse] stubs` and `[[analyse.ignore]]` (`Config.analyse.stubs` and `.ignore`: rule, identifier, `message` as a PCRE pattern, `raw-message`, paths as fnmatch, `count`), which `pun migrate` writes from phpstan.neon | request |
+| platform request (from config, AUDIT 51 and 53): use `cfg.php_version().to_id()` for pun-lint instead of `analyse::php_version_id(&cfg.php)`, and match `pun_config::rule(id).fix` as `FixSafety` in report.rs instead of comparing strings; pun-config then turns `Config.php` into a `PhpVersion` | request |
 
 **Gate:** the same errors as PHPStan + Larastan (file, line, identifier) on the corpus, at every preset.
 
@@ -356,7 +351,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit items 10, 18, 29, 74 (pun-cli report.rs, watch.rs, main.rs, run.rs, pint_error.rs): validated and still open, deferred to the platform/format tracks that own those files; item 10's fix pads the prettier-plugin-tailwindcss version with `.chain([0; 3]).take(3)` and adds a same_abort case to output.rs `prettier_preflight_like_pint` | todo |
 | tests: crates/pun-cli/tests/cli.rs:327 and output.rs:816 fake read errors with mode 000 like audit item 34 did; assert the error only when std::fs::read really fails | todo |
 | tests: crates/pun-tokens/tests/api.rs:317 swaps the process panic hook (as docblock tests did, audit item 80); use catch_unwind alone | todo |
-| coverage: pun-config lib.rs:389,395,397 (options(): Boolean and bail arms) are uncovered; its only caller (schema.rs:449) always passes a Table, so delete the dead arms | doing (config, main) |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
 | coverage: reports/COVERAGE.md still lists punphp-fixers at 100% while scripts/coverage.sh reports 99.99% (method_argument_space.rs:336, yoda_style.rs:426, same on main); update the row with the fix | todo |

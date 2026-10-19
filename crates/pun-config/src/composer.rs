@@ -15,13 +15,6 @@ pub struct Version {
     pub patch: u64,
 }
 
-impl Version {
-    /// `major.minor`, the form of `[php] version`.
-    pub fn short(&self) -> String {
-        format!("{}.{}", self.major, self.minor)
-    }
-}
-
 impl From<constraint::V> for Version {
     fn from((major, minor, patch): constraint::V) -> Self {
         Version {
@@ -67,9 +60,13 @@ pub struct Composer {
 }
 
 impl Composer {
-    /// The default `[php] version`: the lowest PHP version composer.json admits, as `major.minor`.
-    pub fn php_version(&self) -> Option<String> {
-        Some(self.php.as_ref()?.lowest?.short())
+    /// The default `[php] version`: the lowest PHP version composer.json admits.
+    pub fn php_version(&self) -> Option<crate::PhpVersion> {
+        let v = self.php.as_ref()?.lowest?;
+        Some(crate::PhpVersion {
+            major: v.major.try_into().ok()?,
+            minor: v.minor.try_into().ok()?,
+        })
     }
 }
 
@@ -220,7 +217,11 @@ mod tests {
                 }),
                 "{c}"
             );
-            assert_eq!(got.php_version().as_deref(), Some(short), "{c}");
+            assert_eq!(
+                got.php_version().map(|v| v.to_string()).as_deref(),
+                Some(short),
+                "{c}"
+            );
         }
         // Admits nothing: no version to take.
         let none = php(">=8.4 <8.3");
@@ -274,7 +275,10 @@ mod tests {
             ("composer.lock", &text),
         ]);
         let c = detect(&d).unwrap();
-        assert_eq!(c.php_version().as_deref(), Some("8.4"));
+        assert_eq!(
+            c.php_version().map(|v| v.to_string()).as_deref(),
+            Some("8.4")
+        );
         assert_eq!(c.laravel, locked("v13.23.0", Some(v(13, 23, 0)), false));
         assert_eq!(c.pest, locked("v5.0.3", Some(v(5, 0, 3)), true));
         assert_eq!(c.phpunit, locked("13.2.6", Some(v(13, 2, 6)), true));

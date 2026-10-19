@@ -6,15 +6,17 @@
 pub mod composer;
 mod constraint;
 mod explain;
+mod identifiers;
 mod mapping;
 pub mod migrate;
 pub mod options;
 mod schema;
 
 pub use explain::{MAPPING_URL, explain};
+pub use identifiers::rule_of_identifier;
 pub use schema::{
-    Analyse, AnalysePreset, AnalyseRule, Ecosystem, Files, LINT_SETS, Level, Lint, LintRule,
-    LintSetting, Override,
+    Analyse, AnalysePreset, AnalyseRule, Ecosystem, Files, FixSafety, FormatPreset, Ignore,
+    LINT_SETS, Level, Lint, LintRule, LintSetting, Override, PhpVersion, groups,
 };
 
 use anyhow::{Context, Result, bail};
@@ -51,7 +53,11 @@ pub const NO_CONFIG: &str =
 
 /// The format presets pun.toml and `--preset` take. `per` and `symfony` stay in [`PRESETS`] only for `pun migrate`,
 /// which expands them over `empty`; `format`, `lint`, `check` and `config` reject them with [`RemovedPreset`].
-pub const FORMAT_PRESETS: [&str; 3] = ["laravel", "psr12", "empty"];
+pub const FORMAT_PRESETS: [&str; 3] = [
+    FormatPreset::Laravel.name(),
+    FormatPreset::Psr12.name(),
+    FormatPreset::Empty.name(),
+];
 
 /// A dropped format preset (`per`, `symfony`) in pun.toml or `--preset`: the message names the replacement, and the
 /// CLI exits 2 on it.
@@ -90,8 +96,9 @@ pub struct Finder {
 pub struct Config {
     pub root: PathBuf,
     /// The format preset.
-    pub preset: String,
-    /// Target PHP version: `[php] version`, else the lowest composer.json admits, else 8.4.
+    pub preset: FormatPreset,
+    /// Target PHP version: `[php] version`, else the lowest composer.json admits, else 8.4. [`Config::php_version`]
+    /// is the same as a [`PhpVersion`]; this string goes once pun-cli reads that.
     pub php: String,
     /// `pun format`'s fixers: the preset's and `[format.rules]`, minus lint rules. The pipeline sorts by priority.
     pub rules: Vec<Rule>,
@@ -255,17 +262,15 @@ fn parse(
         _ => {}
     }
     let php = match php.version {
-        Some(v) if schema::version(&v).is_none() || v.split('.').count() != 2 => bail!(
-            "{at}: [php] version = \"{v}\": expected a PHP version as major.minor, such as \"8.4\""
-        ),
-        Some(v) => v,
-        None => composer.php_version().unwrap_or_else(|| "8.4".into()),
+        Some(v) => v.parse::<PhpVersion>().map_err(|_| {
+            anyhow::anyhow!(
+                "{at}: [php] version = \"{v}\": expected a PHP version as major.minor, such as \"8.4\""
+            )
+        })?,
+        None => composer.php_version().unwrap_or(PhpVersion::FLOOR),
     };
     let files = Files::from(files);
-    let gates = schema::Gates {
-        php: schema::version(&php).unwrap(),
-        composer,
-    };
+    let gates = schema::Gates { php, composer };
     let lint = schema::lint(path, lint, &files, &gates)?;
     let analyse = schema::analyse(path, analyse, &files, &gates)?;
 
@@ -274,12 +279,12 @@ fn parse(
             "--preset {p} was removed: use --preset empty with its rules under [format.rules] in pun.toml (`pun migrate --preset {p}` expands it)"
         )));
     }
-    let preset = opts
-        .preset
-        .clone()
-        .or(f.preset)
-        .unwrap_or_else(|| "laravel".into());
-    let mut rules = resolve_set(preset_rules(&preset).context("Preset not found.")?)?;
+    let preset = opts.preset.clone().or(f.preset);
+    let preset = match preset.as_deref() {
+        None => FormatPreset::Laravel,
+        Some(p) => FormatPreset::parse(p).context("Preset not found.")?,
+    };
+    let mut rules = resolve_set(preset_rules(&preset).unwrap())?;
     for (name, v) in f.rules {
         let id = schema::rule_id(path, "format", &name)?;
         // Every format rule is a PHP-CS-Fixer or Pint fixer (rules/mapping.toml).
@@ -299,7 +304,7 @@ fn parse(
     Ok(Config {
         root: root.to_path_buf(),
         preset,
-        php,
+        php: php.to_string(),
         rules,
         finder: Finder {
             in_dirs: files.paths.clone(),
@@ -374,7 +379,7 @@ fn upstream() -> &'static Vec<(String, &'static str)> {
 #[derive(Debug)]
 pub struct RuleMeta {
     /// `safe`, `unsafe`, `mixed` or `none` (analyse rules have no fix).
-    pub fix: &'static str,
+    pub fix: FixSafety,
     pub summary: Option<&'static str>,
 }
 
@@ -398,18 +403,9 @@ pub fn rule(id: &str) -> Option<RuleMeta> {
     let (_, e) = rules().iter().find(|(r, _)| r == id)?;
     let str = |k| e.get(k).and_then(toml::Value::as_str);
     Some(RuleMeta {
-        fix: str("fix").unwrap_or("none"),
+        fix: FixSafety::parse(str("fix").unwrap_or("none")),
         summary: str("summary"),
     })
-}
-
-/// A lint rule's options table as PHP-CS-Fixer takes it: snake_case keys.
-fn options(t: toml::Table) -> Value {
-    Value::Object(
-        t.into_iter()
-            .map(|(k, v)| (k.replace('-', "_"), serde_json::to_value(v).unwrap()))
-            .collect(),
-    )
 }
 
 /// A preset's `getRules()` (sets unresolved), or `None` for an unknown preset.
@@ -506,6 +502,11 @@ fn check_composer(composer: &Composer) -> Result<()> {
 }
 
 impl Config {
+    /// The target PHP version ([`Config::php`]), always valid.
+    pub fn php_version(&self) -> PhpVersion {
+        self.php.parse().unwrap()
+    }
+
     /// `pun config`: the resolved pun.toml, in its own sections and keys. Every rule that runs is listed under
     /// `[<command>.rules]` as pun.toml writes it (`<group>/<name>`; a rule with no Pun ID keeps its upstream name), each
     /// command's `exclude` includes `[files] exclude`, and `ecosystems` and `switches` show what composer.lock and the
@@ -547,6 +548,12 @@ impl Config {
         // TOML has no null: no baseline is no key.
         if let Some(b) = &a.baseline {
             analyse["baseline"] = b.as_str().into();
+        }
+        if !a.stubs.is_empty() {
+            analyse["stubs"] = serde_json::json!(a.stubs);
+        }
+        if !a.ignore.is_empty() {
+            analyse["ignore"] = serde_json::json!(a.ignore);
         }
         let f = &self.finder;
         serde_json::json!({

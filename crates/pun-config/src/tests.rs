@@ -46,7 +46,7 @@ fn needs_pun_toml() {
         },
     )
     .unwrap();
-    assert_eq!((c.preset.as_str(), c.sources.len()), ("laravel", 0));
+    assert_eq!((&*c.preset, c.sources.len()), ("laravel", 0));
     // --config names the file; a missing one is an error, not "no config".
     let o = Options {
         config: Some("other.toml".into()),
@@ -56,7 +56,7 @@ fn needs_pun_toml() {
     std::fs::write(d.join("other.toml"), "[format]\npreset = \"empty\"\n").unwrap();
     let c = load(&d, &o).unwrap();
     assert_eq!(
-        (c.preset.as_str(), c.sources),
+        (&*c.preset, c.sources),
         ("empty", vec![d.join("other.toml")])
     );
     assert_eq!(err(&d, preset("nope")), "Preset not found.");
@@ -408,7 +408,7 @@ fn upgrade_gates() {
     };
     let check = |composer: &composer::Composer, group: &str| {
         let g = schema::Gates {
-            php: (8, 4),
+            php: crate::PhpVersion::FLOOR,
             composer,
         };
         g.allows(group, &g.ecosystems(|_| false))
@@ -484,6 +484,8 @@ fn analyse() {
             paths: vec!["app".into()],
             exclude: vec!["storage".into()],
             baseline: None,
+            stubs: vec![],
+            ignore: vec![],
             switches: vec![],
             ecosystems: vec![],
             rules: a.rules.clone(),
@@ -617,14 +619,22 @@ fn mapping_lookups() {
 fn rule_metadata() {
     // Hand-read from rules/mapping.toml.
     let m = rule("lint/dead-code/no-self-assignment").unwrap();
-    assert_eq!((m.fix, m.summary), ("safe", None));
+    assert_eq!(
+        (m.fix.name(), m.summary),
+        (
+            "safe",
+            Some(
+                "Detects and removes self-assignments where a variable or property is assigned to itself."
+            )
+        )
+    );
     assert_eq!(
         rule("lint/types/require-strict-param").unwrap().fix,
         "mixed"
     );
     let m = rule("format/arrays/syntax").unwrap();
     assert_eq!(
-        (m.fix, m.summary),
+        (m.fix.name(), m.summary),
         (
             "safe",
             Some("PHP arrays should be declared using the configured syntax.")
@@ -784,6 +794,12 @@ upstream  CallMethodsRule (phpstan-classes)
           NonExistentMethod (mago-analyzer)
           PossiblyNonExistentMethod (mago-analyzer)
 "
+    );
+    // A Mago analyzer code that reports for this rule besides its own (`also`, from reports/analyse-spike.md).
+    let out = explained("analyse/undefined/trait", "undefined/trait");
+    assert!(
+        out.contains("\n          NonExistentClassLike (mago-analyzer, also)\n"),
+        "{out}"
     );
     // Intent, and a Pun-only rule.
     assert_eq!(
@@ -1160,7 +1176,7 @@ not-path = ["y"]
 "imports/no-unused" = "error"
 "control-flow/no-useless-return" = "error"
 "style/require-ordered-traits" = "error"
-"phpunit/require-method-casing" = { case = "snake_case" }
+"phpunit/require-method-casing" = { case = "snake-case" }
 "phpunit/require-protected-setup" = "error"
 "phpdoc/no-access" = "error"
 "phpdoc/no-package" = "error"
@@ -1256,7 +1272,7 @@ not-path = ["y"]
     #[test]
     fn lists_unsupported_rules() {
         let m = pint(
-            r#"{"preset":"empty","rules":{"braces":true,"Custom/fixer":true,"header_comment":{"header":"h","validator":null},"final_internal_class":{"include":null},"@auto":true}}"#,
+            r#"{"preset":"empty","rules":{"braces":true,"Custom/fixer":true,"header_comment":{"header":"h","validator":null},"no_whitespace_before_comma_in_array":{"after_heredoc":[null]},"@auto":true}}"#,
         );
         assert_eq!(m.unsupported.len(), 4);
         assert!(
@@ -1264,13 +1280,31 @@ not-path = ["y"]
                 "braces: deprecated upstream; successor: single_space_around_construct"
             )
         );
+        let mut rest = m.unsupported[1..].to_vec();
+        rest.sort();
         assert_eq!(
-            m.unsupported[1..],
+            rest,
             [
-                "Custom/fixer: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
-                "final_internal_class: an option is null, which TOML can't hold",
                 "@auto: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
+                "Custom/fixer: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
+                "no_whitespace_before_comma_in_array: an option is null, which TOML can't hold",
             ]
+        );
+        // A lint rule's options go through PHP-CS-Fixer's checks too: `include` takes no null.
+        let e = from_pint(
+            &dir(&[(
+                "pint.json",
+                r#"{"preset":"empty","rules":{"final_internal_class":{"include":null}}}"#,
+            )])
+            .join("pint.json"),
+            None,
+            &|_| true,
+        )
+        .err()
+        .unwrap();
+        assert_eq!(
+            e.to_string(),
+            "[final_internal_class] Invalid configuration: The option \"include\" with value null is expected to be of type \"string[]\", but is of type \"null\"."
         );
         // The rest still migrates.
         assert_eq!(
@@ -1455,6 +1489,8 @@ not-path = ["y"]
 }
 
 mod options;
+mod phpstan;
+mod rector;
 
 /// PHP-CS-Fixer's `UtilsTest::provideNaturalLanguageJoinCases` (default wrapper): one name is not joined.
 #[test]
@@ -1466,4 +1502,15 @@ fn natural_language_join_matches_upstream() {
         natural_language_join(["a", "b", "c"]),
         r#""a", "b" and "c""#
     );
+}
+
+/// The target version as `PHP_VERSION_ID` (PHP's own numbering: 8.5.0 is 80500), shown as `[php] version` writes it.
+#[test]
+fn php_version_id() {
+    let d = dir(&[("pun.toml", "[php]\nversion = \"8.5\"\n")]);
+    let c = load(&d, &Options::default()).unwrap();
+    assert_eq!(c.php_version().to_id(), 80500);
+    assert_eq!(c.show()["php"]["version"], "8.5");
+    assert_eq!(crate::PhpVersion::FLOOR.to_id(), 80400);
+    assert!("8".parse::<crate::PhpVersion>().is_err());
 }

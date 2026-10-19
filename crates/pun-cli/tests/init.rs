@@ -36,7 +36,14 @@ fn toml(style: &str, sets: &str, analyse: &str) -> String {
 /// What `pun_config::load` makes of the written pun.toml: the format preset, the lint sets, the analyse preset.
 fn loaded(d: &Path) -> (String, Vec<String>, AnalysePreset) {
     let c = pun_config::load(d, &Options::default()).unwrap();
-    (c.preset, c.lint.sets, c.analyse.preset)
+    (c.preset.to_string(), c.lint.sets, c.analyse.preset)
+}
+
+/// `pun init` on a pseudo-terminal, typing `keys`; the output without ANSI sequences (dialoguer's theme colours its
+/// prompts whatever `NO_COLOR` says).
+fn tty(d: &Path, keys: &str) -> (String, Option<i32>) {
+    let (out, code) = common::pty::pty(d, "init", keys, ENV);
+    (common::pty::strip_ansi(&out), code)
 }
 
 const NEXT: &str = "\n  ✔ Wrote pun.toml\n\n  Done. Run `pun check` any time; `pun check --fix` before you commit.\n  Add `pun check` to CI and your composer scripts.\n";
@@ -218,16 +225,18 @@ fn agent_mode() {
 #[test]
 fn terminal_accepts_the_defaults() {
     let d = laravel("tty", &[]);
-    let (out, code) = common::pty::pty(&d, "init", "\\r\\r\\r", ENV);
+    let (out, code) = tty(&d, "\\r\\r\\r");
     assert_eq!(code, Some(0), "{out}");
     assert!(
         out.contains("  Pun · new project setup\n  Found Laravel 13, Pest 4, PHP ^8.4 (composer.json, composer.lock)\n"),
         "{out}"
     );
+    // dialoguer's ColorfulTheme: `? <prompt> ›` while asking, `✔ <prompt> · <answer>` once answered.
     for answer in [
-        "Code style: laravel",
-        "Lint sets (space toggles, enter confirms): dead-code, modernize",
-        "Analysis preset: recommended",
+        "? Code style ›",
+        "✔ Code style · laravel",
+        "✔ Lint sets (space toggles, enter confirms) · dead-code, modernize",
+        "✔ Analysis preset · recommended",
     ] {
         assert!(out.contains(answer), "{answer}: {out}");
     }
@@ -244,9 +253,9 @@ fn terminal_accepts_the_defaults() {
 
     // Down from psr12 wraps to laravel; tick `code-quality` too; one down to `strict`.
     let d = plain("tty-pick");
-    let (out, code) = common::pty::pty(&d, "init", "\\033[B\\r\\033[B\\033[B \\r\\033[B\\r", ENV);
+    let (out, code) = tty(&d, "\\033[B\\r\\033[B\\033[B \\r\\033[B\\r");
     assert_eq!(code, Some(0), "{out}");
-    assert!(out.contains("Code style: laravel"), "{out}");
+    assert!(out.contains("✔ Code style · laravel"), "{out}");
     assert_eq!(
         read(&d, "pun.toml"),
         toml(
@@ -271,20 +280,20 @@ fn terminal_accepts_the_defaults() {
 #[test]
 fn terminal_offers_migrate() {
     let d = laravel("tty-migrate", &[("pint.json", r#"{"preset":"psr12"}"#)]);
-    let (out, code) = common::pty::pty(&d, "init", "\\r\\r", ENV);
+    let (out, code) = tty(&d, "\\r\\r");
     assert_eq!(code, Some(0), "{out}");
     assert!(
-        out.contains("Found pint.json. Migrate it instead?"),
+        out.contains("✔ Found pint.json. Migrate it instead? · yes"),
         "{out}"
     );
     assert!(
-        out.ends_with("pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 file(s).\n  pint.json  migrated\n"),
+        out.ends_with(" ✔ pint.json  → [format] preset psr12, 0 rules changed, 2 rules → [lint]\n ✔ Wrote pun.toml\n"),
         "{out}"
     );
     assert!(read(&d, "pun.toml").starts_with("# Written by `pun migrate` from pint.json.\n"));
 
     let d = laravel("tty-no-migrate", &[("pint.json", "{}")]);
-    let (out, code) = common::pty::pty(&d, "init", "n\\r\\r\\r", ENV);
+    let (out, code) = tty(&d, "n\\r\\r\\r");
     assert_eq!(code, Some(0), "{out}");
     assert!(out.ends_with(NEXT), "{out}");
     assert_eq!(

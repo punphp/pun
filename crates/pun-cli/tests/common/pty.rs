@@ -39,3 +39,21 @@ pub fn pty(dir: &Path, args: &str, keys: &str, env: &[(&str, &str)]) -> (String,
     let (out, _, code) = run(Command::new("sh").args(["-c", &sh]), dir, env);
     (out.replace('\r', ""), code)
 }
+
+/// `out` without ANSI CSI sequences (`ESC [`, parameters, one final byte in `@`..=`~`).
+pub fn strip_ansi(out: &str) -> String {
+    let mut plain = String::new();
+    let mut chars = out.chars();
+    while let Some(c) = chars.next() {
+        if c != '\x1b' {
+            plain.push(c);
+        } else if chars.next() == Some('[') {
+            for c in chars.by_ref() {
+                if ('@'..='~').contains(&c) {
+                    break;
+                }
+            }
+        }
+    }
+    plain
+}

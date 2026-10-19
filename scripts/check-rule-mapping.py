@@ -7,7 +7,8 @@ prefixes only in the refactor group); an analyse name phrased as a fix; a field 
 tier, severity, group); format `presets`, lint `sets` or analyse `preset` outside their lists; a broken `pun` /
 `fixed_by` / `conflicts` / `merged` reference; an upstream entry that is not exactly one of pun / drop / unsupported; a
 Rector entry without its class; a rule that no upstream entry maps to (unless `pun_only = true`); a PHPStan/Larastan
-entry without `variant` when its rule replaces several identifiers; and a conflict whose two sides one format preset,
+entry without `variant` when its rule replaces several identifiers; `also` (the further rules a Mago analyzer code
+reports for) outside mago-analyzer entries with `pun`, or naming no other rule; and a conflict whose two sides one format preset,
 the lint sets together, or one analyse preset would enable.
 
 Against the pinned upstream inventories in crates/pun-config/rules/upstream/*.json (context/plan/rules.md §5) it also
@@ -151,6 +152,12 @@ def check(data):
                 if u["pun"] not in ids:
                     err(f"{where}: pun = {u['pun']!r} is not a rule")
                 sources[u["pun"]].add(f"{tool}:{key}")
+            # Further rules a Mago analyzer code reports for (context/reports/analyse-spike.md): evidence, not sources.
+            if "also" in u and (tool != "mago-analyzer" or "pun" not in u):
+                err(f"{where}: `also` is for mago-analyzer entries with `pun` only")
+            for a in u.get("also", []):
+                if a not in ids or a == u.get("pun"):
+                    err(f"{where}: also {a!r} is not another rule")
             if tool.startswith("rector") or tool == "pest-plugin-rector":
                 if "\\" not in key and "\\" not in u.get("class", ""):
                     err(f"{where}: Rector entry without its fully qualified `class`")
@@ -397,6 +404,10 @@ def selftest():
     bad(lambda d: d["upstream"]["phpstan"].update({"y.notFound": {"pun": "analyse/undefined/x", "status": "decided"}}),
         "needs variant")
     bad(lambda d: d["upstream"]["phpstan"]["x.notFound"].update(variant="other.id"), "variant must be")
+    bad(lambda d: d["upstream"]["phpstan"]["x.notFound"].update(also=["lint/dead-code/no-x"]), "`also` is for")
+    bad(lambda d: d["upstream"].update(**{"mago-analyzer": {"X": {"pun": "analyse/undefined/x", "also": ["analyse/undefined/x"]}}}),
+        "is not another rule")
+    fine(lambda d: d["upstream"].update(**{"mago-analyzer": {"X": {"pun": "analyse/undefined/x", "also": ["lint/dead-code/no-x"]}}}))
 
     def conflict(d):
         add("lint", "dead-code/no-y", sets=["dead-code"])(d)

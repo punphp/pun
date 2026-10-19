@@ -116,7 +116,7 @@ paths = ["app/Http/*"]
 
 Rules use Pun IDs of the form `<command>/<group>/<name>`: `format/imports/ordered`, `lint/style/require-final-class`, `analyse/undefined/method`. Inside a `[<command>.rules]` table the command is implied, so the key is `"imports/ordered"` (quoted, because of the `/`). Groups are one fixed list shared by all three commands: topics such as `arrays`, `imports`, `phpdoc` and `types`, the ecosystems `laravel`, `pest`, `phpunit` and `doctrine`, and one upgrade group per target such as `php-8.4`. There are no aliases: an earlier Pun name (`ordered-imports`), a PHP-CS-Fixer name (`ordered_imports`), a PHPStan identifier (`method.notFound`) or a rule of another command gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
 
-## Format rule options
+## Rule options
 
 Options have Pun names in kebab-case, and so do their values. Most are PHP-CS-Fixer's with `_` written as `-`
 (`on_multiline = "ensure_fully_multiline"` is `on-multiline = "ensure-fully-multiline"`); PHP keywords such as
@@ -145,8 +145,12 @@ pun.toml: `imports/ordered` has no option `sort-algorithm`: use `sort`
 pun.toml: `arrays/syntax` option `syntax` = "medium": expected one of "long", "short"
 ```
 
+The lint rules a PHP-CS-Fixer fixer runs (the risky and code-deleting ones) name their options the same way, beside
+`level` and `fix`: `"phpunit/require-method-casing" = { case = "snake-case" }`,
+`"phpdoc/no-superfluous-tags" = { allow-mixed = true }`.
+
 `pun migrate` translates PHP-CS-Fixer's names and values, and `pun config` prints options under Pun's. Every rule's
-options are listed in `crates/pun-config/rules/mapping.toml`, under `[options."format/<group>/<name>"]`.
+options are listed in `crates/pun-config/rules/mapping.toml`, under `[options."<command>/<group>/<name>"]`.
 
 ## Removed keys
 

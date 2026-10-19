@@ -21,13 +21,13 @@ fn write(fixer: &str, options: Value) -> Result<Value, String> {
     to_pun(fixer, rule_of(fixer).unwrap(), &options).map_err(|e| e.to_string())
 }
 
-/// Every option of every fixer behind a format rule has a Pun name and type, and nothing else is listed.
+/// Every option of every fixer behind a format or lint rule has a Pun name and type, and nothing else is listed.
 #[test]
 fn every_option_is_mapped() {
     let up = upstream();
     let mut seen = 0;
     for (fixer, defs) in &up {
-        let Some(id) = rule_of(fixer).filter(|id| id.starts_with("format/")) else {
+        let Some(id) = rule_of(fixer) else {
             continue;
         };
         let opts = rule_options(id);
@@ -77,18 +77,18 @@ fn every_option_is_mapped() {
             seen += 1;
         }
     }
-    // Every format rule with options is backed by a fixer above (none are Pun's own).
+    // Every format or lint rule with options is backed by a fixer above (none are Pun's own).
     let fixers: Vec<&str> = up.keys().map(String::as_str).collect();
     for (fixer, e) in fixer_entries() {
         let id = e.get("pun").and_then(toml::Value::as_str).unwrap_or("");
         assert_eq!(
             !rule_options(id).is_empty(),
-            id.starts_with("format/") && fixers.contains(&fixer.as_str()),
+            !id.starts_with("analyse/") && !id.is_empty() && fixers.contains(&fixer.as_str()),
             "{fixer}"
         );
     }
-    // Hand count from the export: 82 fixers behind format rules, 156 options.
-    assert_eq!(seen, 156);
+    // Hand count from the export: 82 fixers behind format rules with 156 options, 45 behind lint rules with 81.
+    assert_eq!(seen, 156 + 81);
 }
 
 /// Every option value of every upstream preset, and every value of every closed list, survives pun.toml and back.
@@ -726,5 +726,57 @@ fn migrate_entry_types() {
             "[group_import] {}",
             elements("group_types", "string[]", "null")
         )
+    );
+}
+
+/// A lint rule a fixer runs takes its options under Pun names too: the fixer gets PHP-CS-Fixer's names and values,
+/// `pun config` shows pun.toml's, and PHP-CS-Fixer's spelling is an error naming the Pun one (php_unit_method_casing's
+/// `case` is `camel_case` or `snake_case`; no_superfluous_phpdoc_tags has `allow_mixed`).
+#[test]
+fn lint_rule_options() {
+    let d = dir(&[(
+        "pun.toml",
+        "[lint.rules]\n\"phpunit/require-method-casing\" = { case = \"snake-case\" }\n\"phpdoc/no-superfluous-tags\" = { level = \"warn\", allow-mixed = true }\n",
+    )]);
+    let cfg = load(&d, &Options::default()).unwrap();
+    let rule = |id: &str| cfg.lint.rules.iter().find(|r| r.id == id).unwrap();
+    assert_eq!(
+        rule("lint/phpunit/require-method-casing").options,
+        json!({ "case": "snake_case" })
+    );
+    assert_eq!(
+        rule("lint/phpdoc/no-superfluous-tags").options,
+        json!({ "allow_mixed": true })
+    );
+    let shown = cfg.show();
+    assert_eq!(
+        shown["lint"]["rules"]["phpunit/require-method-casing"],
+        json!({ "case": "snake-case" })
+    );
+    assert_eq!(
+        shown["lint"]["rules"]["phpdoc/no-superfluous-tags"],
+        json!({ "level": "warn", "allow-mixed": true })
+    );
+    let d = dir(&[(
+        "pun.toml",
+        "[lint.rules]\n\"phpdoc/no-superfluous-tags\" = { allow_mixed = true }\n",
+    )]);
+    assert!(
+        err(&d, Options::default()).ends_with(
+            "`phpdoc/no-superfluous-tags` has no option `allow_mixed`: use `allow-mixed`"
+        ),
+        "{}",
+        err(&d, Options::default())
+    );
+    let d = dir(&[(
+        "pun.toml",
+        "[lint.rules]\n\"phpunit/require-method-casing\" = { case = \"snake_case\" }\n",
+    )]);
+    assert!(
+        err(&d, Options::default()).ends_with(
+            "option `case` = \"snake_case\": expected one of \"camel-case\", \"snake-case\""
+        ),
+        "{}",
+        err(&d, Options::default())
     );
 }

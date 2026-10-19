@@ -93,10 +93,19 @@ fn text(id: &str) -> String {
     if !fixed_by.is_empty() {
         row("fixed by", &fixed_by.join(", "));
     }
-    // The upstream rows that map here (every `merged` source has one).
+    // The upstream rows that map here (every `merged` source has one), then the Mago analyzer codes that also report
+    // for it (`also`).
     let names: Vec<(String, String)> = (entries().into_iter())
         .filter(|(_, _, e)| e.get("pun").and_then(toml::Value::as_str) == Some(id))
         .map(|(tool, k, _)| (tool, k))
+        .chain(
+            (entries().into_iter())
+                .filter(|(_, _, e)| {
+                    (e.get("also").and_then(toml::Value::as_array))
+                        .is_some_and(|a| a.iter().any(|r| r.as_str() == Some(id)))
+                })
+                .map(|(tool, k, _)| (format!("{tool}, also"), k)),
+        )
         .collect();
     if names.is_empty() {
         row("upstream", "none (Pun's own rule)");

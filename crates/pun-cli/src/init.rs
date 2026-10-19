@@ -83,7 +83,7 @@ pub(crate) fn run(a: InitArgs) -> Result<u8> {
     }
     let term = Term::stdout();
     if !old.is_empty() {
-        let migrate = dialoguer::Confirm::new()
+        let migrate = dialoguer::Confirm::with_theme(&theme())
             .with_prompt(format!(
                 "Found {}. Migrate {} instead?",
                 and(&old),
@@ -143,7 +143,8 @@ fn ask(
     sets: &[String],
     analyse: AnalysePreset,
 ) -> Result<(Style, Vec<String>, AnalysePreset)> {
-    let style = dialoguer::Select::new()
+    let theme = theme();
+    let style = dialoguer::Select::with_theme(&theme)
         .with_prompt("Code style")
         .items(STYLES)
         .default(style as usize)
@@ -152,13 +153,13 @@ fn ask(
         .iter()
         .map(|s| sets.iter().any(|t| t == s))
         .collect();
-    let sets = dialoguer::MultiSelect::new()
+    let sets = dialoguer::MultiSelect::with_theme(&theme)
         .with_prompt("Lint sets (space toggles, enter confirms)")
         .items(LINT_SETS)
         .defaults(&ticked)
         .interact_on(term)?;
     let names = AnalysePreset::ALL.map(AnalysePreset::name);
-    let analyse = dialoguer::Select::new()
+    let analyse = dialoguer::Select::with_theme(&theme)
         .with_prompt("Analysis preset")
         .items(names)
         .default(analyse as usize)
@@ -168,6 +169,12 @@ fn ask(
         sets.into_iter().map(|i| LINT_SETS[i].to_string()).collect(),
         AnalysePreset::ALL[analyse],
     ))
+}
+
+/// The prompts' look (`? Code style ›`, then `✔ Code style · laravel`; context/plan/init.md §2), shared with
+/// `pun migrate`'s checklist.
+pub(crate) fn theme() -> dialoguer::theme::ColorfulTheme {
+    dialoguer::theme::ColorfulTheme::default()
 }
 
 /// `--lint-sets`, each checked against the lint sets with schema.rs's wording. `--lint-sets ""` is no sets.

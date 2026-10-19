@@ -1,6 +1,6 @@
 ---
 title: pun migrate
-description: Move a project onto one pun.toml from pint.json, .php-cs-fixer.php, phpstan.neon and rector.php, with zero behaviour change.
+description: Move a project onto one pun.toml from pint.json, .php-cs-fixer.php, rector.php and phpstan.neon, with zero behaviour change.
 ---
 
 ```bash
@@ -14,70 +14,87 @@ pun migrate --dry-run          # show what it would write, change nothing
 
 `pun migrate` looks for these in the project root and lists only the ones it finds, each with its file:
 
-| Tool | Files | Migrated today |
+| Tool | Files | Becomes |
 | --- | --- | --- |
-| Pint | `pint.json` (or `--config`) | yes |
-| PHP-CS-Fixer | `.php-cs-fixer.php`, `.php-cs-fixer.dist.php` | yes |
-| PHPStan | `phpstan.neon`, `phpstan.neon.dist`, `phpstan.dist.neon` | not yet |
-| Rector | `rector.php` | not yet |
-| Mago | `mago.toml` | not yet |
+| Pint | `pint.json` (or `--config`) | `[files]`, `[format]`, and `[lint.rules]` for the risky fixers |
+| PHP-CS-Fixer | `.php-cs-fixer.php`, `.php-cs-fixer.dist.php` | the same as Pint |
+| Rector | `rector.php` | `[lint]` |
+| PHPStan | `phpstan.neon`, `phpstan.neon.dist`, `phpstan.dist.neon` | `[analyse]` |
+| Mago | `mago.toml` | not supported yet |
 
 On a terminal it shows a checklist with every found config checked; space toggles, enter confirms, Esc cancels. Only
 the checked ones are migrated. Without a terminal, under a [coding agent](/docs/guides/coding-agents), with `--yes`
-or with `--from`, it never asks: `--from` picks, otherwise everything found is migrated and the output says so.
+or with `--from`, it never asks: `--from` picks, otherwise everything found is migrated.
+
+With pint.json and a `.php-cs-fixer.php` both picked, pint.json gives `[format]`, as in Pint. With neither found,
+`[format]` gets Pint's default (laravel, or `--preset`). Leaving both out of the selection writes nothing.
 
 ```text
 $ pun migrate --yes
-pun migrate: migrating everything detected (pick with --from): pint.json, phpstan.neon, rector.php
-pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 file(s).
-  pint.json     migrated
-  phpstan.neon  skipped: PHPStan migration is not supported yet; phpstan.neon left untouched
-  rector.php    skipped: Rector migration is not supported yet; rector.php left untouched
+ ✔ pint.json         → [format] preset laravel, 2 rules changed, 15 rules → [lint]
+ ✔ rector.php        → [lint] sets dead-code, code-quality, modernize; 12 on, 40 off, 2 paths excluded
+ ✔ phpstan.neon      → [analyse] preset max (level 10), 0 on, 7 off, 3 error patterns ignored
+ ⚠ 105 Rector rules  only in php52..php83 upgrade sets (below the PHP 8.4 floor); skipped
+ ⚠ vendor/phpstan/phpstan/conf/bleedingEdge.neon  Pun checks as PHPStan does without bleeding edge; skipped
+   Want them? Send a PR to https://github.com/punphp/pun
+ ⚠ phpstan-baseline.neon was not copied. Run `pun analyse --generate-baseline` for a Pun baseline.
+ ✔ Wrote pun.toml
 ```
 
-PHPStan, Rector and Mago are listed as "(not supported yet)". If you pick them, the summary says they were skipped and
-their config is left as it was. With pint.json and a `.php-cs-fixer.php` both picked, pint.json gives `[format]`, as in
-Pint. With neither found, `[format]` gets Pint's default (laravel, or `--preset`).
-
-With no config at all it says "no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found" and offers
-a starter pun.toml (written without asking when there is no terminal):
+Everything Pun can't take is one ⚠ line with its reason, followed once by the request to send a PR. The rest is
+written, and migrate exits 0. Mago's config is listed as not supported yet and left untouched. With no config at all
+it says so and offers a starter pun.toml (written without asking when there is no terminal):
 
 ```toml
 [format]
 preset = "laravel"
 ```
 
-The starter's `[lint.rules]` also lists the four risky rules and the eleven code-deleting rules Pint's laravel preset applies, so `pun check --fix` still
-matches `pint`.
+The starter's `[lint.rules]` also lists the risky and code-deleting rules Pint's laravel preset applies, so
+`pun check --fix` still matches `pint`.
 
-Pun reads only `pun.toml`, so `pun migrate` is the one place the old configs are read. Migration day changes no behaviour: `pun check --fix` writes the same bytes Pint did, and `pun analyse` reports the same errors PHPStan did.
+Pun reads only `pun.toml`, so `pun migrate` is the one place the old configs are read. Migration changes no
+behaviour: `pun check --fix` writes the same bytes Pint did, `pun lint` runs the rules Rector ran, and `pun analyse`
+runs the checks PHPStan ran.
 
 <Steps>
-  <Step title="Read and report">
+  <Step title="pint.json and .php-cs-fixer.php">
 
-Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.php-cs-fixer.php` through PHP-CS-Fixer itself. Every rule Pun can't run yet (a custom fixer, a deprecated rule, a rule not ported) and every Finder setting pun.toml has no key for is named on its own line and skipped; the rest is written, and migrate exits 0. Rule options are written under their [Pun names](/docs/configuration/pun-toml#format-rule-options); an option PHP-CS-Fixer would reject stops the migration with PHP-CS-Fixer's own message, as it stops Pint. An error that stops the migration (no config to read, a `pun.toml` that differs, a config PHP-CS-Fixer can't load) exits 2. Planned: `phpstan.neon` with its baseline, and `rector.php`.
-
-  </Step>
-  <Step title="Write pun.toml">
-
-`[format]` gets the preset plus only what differs from it. The risky fixers and the fixers that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) go under `[lint.rules]` at `"error"`, so `pun check --fix` applies them as Pint did. The Finder moves too: Pint's `in`, or the `in()` folders of a `.php-cs-fixer.php` Finder, become `[files] paths`, and `exclude`, `notName` and `notPath` become `[format] exclude`, `not-name` and `not-path`. A `per` or `symfony` preset, and any PHP-CS-Fixer rule set such as `@PER-CS` or `@PHP84Migration`, is expanded into explicit rules over `empty`; every format rule of `per` and `symfony` runs natively. Every rule gets its Pun ID (`"imports/ordered"`, `"imports/no-unused"`). Planned: PHPStan levels expanded into the exact rules they ran.
+Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.php-cs-fixer.php` through PHP-CS-Fixer itself. `[format]` gets the preset plus only what differs from it. The risky fixers and the fixers that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) go under `[lint.rules]` at `"error"`, so `pun check --fix` applies them as Pint did. Pint's `in`, or the `in()` folders of a Finder, become `[files] paths`, and `exclude`, `notName` and `notPath` become `[format] exclude`, `not-name` and `not-path`. Rule sets such as `@PER-CS` are expanded into explicit rules. Rule options are written under their [Pun names](/docs/configuration/pun-toml#rule-options); an option PHP-CS-Fixer would reject stops the migration with PHP-CS-Fixer's own message.
 
   </Step>
-  <Step title="Convert the baseline (planned)">
+  <Step title="rector.php">
 
-`phpstan-baseline.neon` becomes `pun-baseline.toml`, under Pun rule IDs.
-
-  </Step>
-  <Step title="Rewrite ignore comments">
-
-`// @php-cs-fixer-ignore rule` becomes `// @pun-ignore-file format/<group>/<name>` (planned: `@phpstan-ignore` comments become `@pun-ignore` with Pun rule IDs). See [Ignore comments](/docs/configuration/ignore-comments).
+Read through the project's own Rector with the system PHP (run `composer install` first). Rector's prepared sets become `[lint] sets` one to one (`type-declaration` is `types`) and its PHP sets the `modernize` set. Every rule Rector runs is matched to its Pun rule; then `[lint.rules]` gets `"error"` for each one no set turns on and `"off"` for each set rule Rector didn't run, so `pun lint` runs exactly Rector's rules. A rule skipped for some paths is off in a `[[lint.overrides]]`, a skipped path goes to `[lint] exclude`, and files outside `withPaths()` are excluded. Custom rules, configured rules, and the upgrade rules below Pun's PHP 8.4 floor are named and skipped.
 
   </Step>
-  <Step title="Switch the workflow">
+  <Step title="phpstan.neon">
 
-Composer scripts, CI steps, editor settings and pre-commit hooks move to `pun check`. If Laravel Boost is installed, a Pun guideline is added so coding agents call `pun`.
+Resolved the way PHPStan resolves it, includes and all. The level becomes the [analyse preset](/docs/configuration/pun-toml) that holds it, plus `"on"` and `"off"` lines so that exactly the checks PHPStan ran at that level run. Larastan, strict-rules and deprecation-rules are built in, so their checks count only when the config includes them, each only when its parameter (such as `strictRules.disallowedEmpty`) is on; without Larastan the `laravel` group is off. A strict-rules check that is a lint rule in Pun is turned on in `[lint.rules]`. `paths`, `excludePaths` and `stubFiles` become `[analyse] paths`, `exclude` and `stubs`, and each `ignoreErrors` entry becomes an `[[analyse.ignore]]` table under its Pun rule:
+
+```toml
+[[analyse.ignore]]
+rule = "undefined/method"
+identifier = "method.notFound"
+message = "#^Call to an undefined method#"
+paths = ["app/Models/User.php"]
+count = 2
+```
+
+Other extensions, the project's own neon files, `bleedingEdge.neon` and parameters pun.toml has no key for are named and skipped.
+
+  </Step>
+  <Step title="Baselines">
+
+Baselines are never copied. For each `phpstan-baseline.neon` the config includes, migrate prints the note to run `pun analyse --generate-baseline`.
+
+  </Step>
+  <Step title="Ignore comments">
+
+`// @php-cs-fixer-ignore rule` becomes `// @pun-ignore-file format/<group>/<name>`. See [Ignore comments](/docs/configuration/ignore-comments).
 
   </Step>
 </Steps>
 
-Running it twice changes nothing the second time. Replaced dev dependencies and the old config files stay unless you pass `--remove-tools`, so rolling back is reverting one commit.
+Running it twice changes nothing the second time. Migrate edits no Composer scripts, CI steps or editor settings, and
+it leaves the old config files and dev dependencies in place, so rolling back is reverting one commit.

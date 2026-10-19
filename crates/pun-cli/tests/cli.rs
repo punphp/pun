@@ -789,15 +789,12 @@ fn migrates_php_cs_fixer_config() {
     );
     // The custom fixer is named and skipped; the rest migrates, the Finder's `in` to [files] paths.
     reset(&dir, &tree);
-    let skipped = "pun migrate: .php-cs-fixer.php: Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set); skipped\n";
+    let skipped = " ! Acme/upper_todo  not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set); skipped\n   Want them? Send a PR to https://github.com/punphp/pun\n ok Wrote pun.toml\n";
     let (out, err, code) = pun(&dir, &["migrate"]);
-    assert_eq!(
-        (out.as_str(), err.as_str(), code),
-        (
-            "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\npun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n  .php-cs-fixer.php  migrated\n",
-            skipped,
-            Some(0)
-        )
+    assert_eq!((err.as_str(), code), ("", Some(0)));
+    assert!(
+        out.starts_with(" ok .php-cs-fixer.php  -> [format] preset empty, ") && out.ends_with(skipped),
+        "{out}"
     );
     let toml = std::fs::read_to_string(dir.join("pun.toml")).unwrap();
     assert!(
@@ -816,7 +813,7 @@ fn migrates_php_cs_fixer_config() {
     );
     assert_eq!(
         rest,
-        ".php-cs-fixer.php migrated\n.php-cs-fixer.php unsupported Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"
+        ".php-cs-fixer.php migrated\n.php-cs-fixer.php unsupported Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\nsend a PR for what is skipped: https://github.com/punphp/pun\n"
     );
     // A Finder over the project root: no [files] paths; exclude and notName go to [format]; depth() and
     // ignoreVCSIgnored() have no key.
@@ -829,12 +826,8 @@ fn migrates_php_cs_fixer_config() {
     let (out, err, code) = pun(&dir, &["migrate"]);
     assert_eq!(code, Some(0), "{err}");
     assert_eq!(
-        err,
-        "pun migrate: .php-cs-fixer.php: Finder depth(): no pun.toml key for it; skipped\npun migrate: .php-cs-fixer.php: Finder ignoreVCSIgnored(): no pun.toml key for it; skipped\n"
-    );
-    assert_eq!(
         out,
-        "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\npun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n  .php-cs-fixer.php  migrated\n"
+        " ok .php-cs-fixer.php  -> [format] preset empty, 1 rule changed, 1 rule -> [lint]\n ! Finder depth()             no pun.toml key for it; skipped\n ! Finder ignoreVCSIgnored()  no pun.toml key for it; skipped\n   Want them? Send a PR to https://github.com/punphp/pun\n ok Wrote pun.toml\n"
     );
     assert_eq!(
         std::fs::read_to_string(dir.join("pun.toml")).unwrap(),

@@ -1,5 +1,5 @@
-//! Format rule options under their Pun names (context/plan/format.md Decisions, "Option names"): `[options.*]` of
-//! rules/mapping.toml. pun.toml's `[format.rules]` values are translated to the options of the PHP-CS-Fixer fixer
+//! Format and lint rule options under their Pun names (context/plan/format.md Decisions, "Option names"): `[options.*]` of
+//! rules/mapping.toml, for every rule a PHP-CS-Fixer fixer runs. pun.toml's `[format.rules]` and `[lint.rules]` values are translated to the options of the PHP-CS-Fixer fixer
 //! behind the rule (`to_fixer`), and a fixer's options back to pun.toml's spelling (`to_pun`) for `pun migrate` and
 //! `pun config`.
 
@@ -26,7 +26,7 @@ pub enum Kind {
     IntOrMap,
 }
 
-/// One option of a format rule.
+/// One option of a format or lint rule.
 #[derive(Debug)]
 pub struct RuleOption {
     /// The Pun name (kebab-case), as pun.toml writes it.
@@ -94,7 +94,7 @@ fn all() -> &'static Vec<(String, Vec<RuleOption>)> {
     &T
 }
 
-/// The options of a format rule (`format/imports/ordered`), in name order; empty when it has none.
+/// The options of a rule (`format/imports/ordered`), in name order; empty when it has none.
 pub fn rule_options(id: &str) -> &'static [RuleOption] {
     all()
         .iter()
@@ -300,7 +300,9 @@ pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value> {
             out.insert(o.name.clone(), p);
         }
     }
-    Ok(match shorthand(opts) {
+    // A lint rule's string value is its level, so its options stay a table.
+    let short = shorthand(opts).filter(|_| id.starts_with("format/"));
+    Ok(match short {
         Some(o) if out.len() == 1 && out.contains_key(&o.name) => out.remove(&o.name).unwrap(),
         _ => Value::Object(out),
     })

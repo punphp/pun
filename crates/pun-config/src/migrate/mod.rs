@@ -5,17 +5,74 @@
 //! take, expand into explicit rules. The Finder's `in` becomes `[files] paths`; its other keys stay format-only under
 //! `[format]`. What pun.toml can't hold is named in `Migration::unsupported` and skipped (context/plan/migrate.md §3).
 
+pub mod phpstan;
+mod rector;
+
+pub use rector::{Reconciled, Rector, RectorConfig, compose, from_rector};
+
 use crate::{Rule, fixer_entries, preset_rules, rule_of, rule_set};
 use anyhow::{Context, Result, bail};
 use serde_json::{Map, Value};
 use std::fmt::Write;
 use std::path::Path;
 
+/// The sections of a migrated pun.toml, each as the lines under its header; [`Parts::render`] joins the non-empty
+/// ones in pun.toml's order.
+#[derive(Debug, Clone, Default)]
+pub struct Parts {
+    pub files: String,
+    pub format: String,
+    pub format_rules: String,
+    pub lint: String,
+    /// `[lint.rules]` as (`<group>/<name>`, value).
+    pub lint_rules: Vec<(String, String)>,
+    /// `[[lint.overrides]]` tables, each with its header.
+    pub overrides: String,
+    pub analyse: String,
+    pub analyse_rules: Vec<(String, String)>,
+    /// `[[analyse.ignore]]` tables, each with its header.
+    pub analyse_ignores: String,
+}
+
+impl Parts {
+    pub fn render(&self) -> String {
+        let pairs = |rules: &[(String, String)]| -> String {
+            rules
+                .iter()
+                .map(|(k, v)| format!("\"{k}\" = {v}\n"))
+                .collect()
+        };
+        let sections = [
+            ("[files]\n", self.files.clone()),
+            ("[format]\n", self.format.clone()),
+            ("[format.rules]\n", self.format_rules.clone()),
+            ("[lint]\n", self.lint.clone()),
+            ("[lint.rules]\n", pairs(&self.lint_rules)),
+            ("", self.overrides.clone()),
+            ("[analyse]\n", self.analyse.clone()),
+            ("[analyse.rules]\n", pairs(&self.analyse_rules)),
+            ("", self.analyse_ignores.clone()),
+        ];
+        let shown: Vec<String> = (sections.into_iter())
+            .filter(|(_, body)| !body.is_empty())
+            .map(|(head, body)| format!("{head}{body}"))
+            .collect();
+        shown.join("\n")
+    }
+}
+
 pub struct Migration {
+    /// [`Parts::render`] of `parts`.
     pub toml: String,
+    pub parts: Parts,
     /// What pun.toml can't hold, as `name: reason`: rules Pun can't run and Finder settings without a pun.toml key.
     /// They are left out of `toml` (a preset rule Pun can't run is written as `false`); the rest still migrates.
     pub unsupported: Vec<String>,
+    /// `[format] preset`.
+    pub preset: &'static str,
+    /// Lines under `[format.rules]` (what differs from the preset) and under `[lint.rules]`.
+    pub format_rules: usize,
+    pub lint_rules: usize,
 }
 
 /// Whether Pun has a fixer for an upstream rule name (pun-cli asks `pun_fixers::all`).
@@ -192,11 +249,10 @@ fn write(
     mut unsupported: Vec<String>,
     runs: Runs,
 ) -> Result<Migration> {
-    let preset = if crate::FORMAT_PRESETS.contains(&preset) {
-        preset
-    } else {
-        "empty"
-    };
+    let preset = (crate::FORMAT_PRESETS.iter())
+        .find(|p| **p == preset)
+        .copied()
+        .unwrap_or("empty");
     // Pun runs the deprecated visibility_required as modifier_keywords (as upstream's proxy does). Both on: one
     // modifier_keywords for the union of their `elements` (no options = all elements).
     if let Some(i) = rules.iter().position(|r| r.name == "visibility_required") {
@@ -222,7 +278,12 @@ fn write(
         }
     }
     let base = rule_set(preset_rules(preset).unwrap())?;
-    let (mut format, mut lints) = (String::new(), String::new());
+    let mut parts = Parts {
+        files: paths.to_string(),
+        format: format!("preset = \"{preset}\"\n{finder}"),
+        ..Parts::default()
+    };
+    let mut format_rules = 0;
     for r in &rules {
         let id = rule_of(&r.name);
         let lint = id.is_some_and(|id| id.starts_with("lint/"));
@@ -249,10 +310,9 @@ fn write(
             continue;
         }
         let name = &id[id.find('/').unwrap() + 1..];
-        let v = match (lint, value(&r.options)) {
-            (true, Value::Bool(true)) => Value::from("error"),
-            (true, v) => v,
-            (false, _) => crate::options::to_pun(&r.name, id, &r.options)?,
+        let v = match crate::options::to_pun(&r.name, id, &r.options)? {
+            Value::Bool(true) if lint => Value::from("error"),
+            v => v,
         };
         let Some(v) = toml_value(&v) else {
             unsupported.push(format!(
@@ -261,44 +321,30 @@ fn write(
             ));
             continue;
         };
-        writeln!(
-            if lint { &mut lints } else { &mut format },
-            "\"{name}\" = {v}"
-        )
-        .unwrap();
+        if lint {
+            parts.lint_rules.push((name.to_string(), v));
+        } else {
+            writeln!(parts.format_rules, "\"{name}\" = {v}").unwrap();
+            format_rules += 1;
+        }
     }
     for b in &base {
         let off = !rules.iter().any(|r| r.name == b.name) || !runs(&b.name);
         if let Some(name) = rule_of(&b.name).and_then(|id| id.strip_prefix("format/"))
             && off
         {
-            writeln!(format, "\"{name}\" = false").unwrap();
+            writeln!(parts.format_rules, "\"{name}\" = false").unwrap();
+            format_rules += 1;
         }
     }
-    let mut toml = String::new();
-    if !paths.is_empty() {
-        toml += &format!("[files]\n{paths}\n");
-    }
-    toml += &format!("[format]\npreset = \"{preset}\"\n{finder}");
-    if !format.is_empty() {
-        toml += &format!("\n[format.rules]\n{format}");
-    }
-    if !lints.is_empty() {
-        toml += &format!("\n[lint.rules]\n{lints}");
-    }
-    Ok(Migration { toml, unsupported })
-}
-
-/// A rule's options as pun.toml writes them: `true` for none, top-level option keys kebab-cased.
-pub fn value(options: &Value) -> Value {
-    match options {
-        Value::Object(m) => Value::Object(
-            m.iter()
-                .map(|(k, v)| (k.replace('_', "-"), v.clone()))
-                .collect(),
-        ),
-        _ => Value::Bool(true),
-    }
+    Ok(Migration {
+        toml: parts.render(),
+        lint_rules: parts.lint_rules.len(),
+        parts,
+        unsupported,
+        preset,
+        format_rules,
+    })
 }
 
 /// `v` as an inline TOML value; `None` when it holds a null.
