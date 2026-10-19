@@ -353,7 +353,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 
 | Work | Status |
 | --- | --- |
-| docs 3: group, preset and set pages | todo |
 | docs 4: migration mapping pages | todo |
 | docs 5: searchable rules directory with URL filters | todo |
 | docs 6: CLI rule-page links | todo |

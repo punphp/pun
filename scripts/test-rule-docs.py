@@ -36,6 +36,19 @@ def main() -> None:
     ordered = output[docs.CONTENT / "rules/format/imports/ordered.mdx"]
     assert '`"alphabetical"` | `sort_algorithm`' in ordered
     assert "@pun-ignore-file format/imports/ordered" in ordered
+    laravel = output[docs.CONTENT / "rules/presets/format-laravel.mdx"]
+    assert '`{ "order" = ["const", "class", "function"], "sort" = "alphabetical" }`' in laravel
+    empty = output[docs.CONTENT / "rules/presets/format-empty.mdx"]
+    assert "## Enabled rules (0)" in empty
+    assert docs.rule_link("format/imports/ordered") in empty.split("## Rules left off")[1]
+    for preset in ("laravel", "psr12", "empty"):
+        expected = {f"format/{k}" for k, r in data["rules"]["format"].items() if preset in r.get("presets", [])}
+        assert set(docs.format_config(data, preset)) == expected
+    basic = output[docs.CONTENT / "rules/presets/analyse-basic.mdx"]
+    strict = output[docs.CONTENT / "rules/presets/analyse-strict.mdx"]
+    assert "levels 0–1" in basic and "levels 6–8" in strict
+    assert "union-types = true" in strict and "explicit-mixed = true" not in strict
+    assert "explicit-mixed = true" in output[docs.CONTENT / "rules/presets/analyse-max.mdx"]
     for command, rules in data["rules"].items():
         for key in rules:
             assert docs.CONTENT / f"rules/{command}/{key}.mdx" in output

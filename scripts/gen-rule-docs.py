@@ -190,6 +190,81 @@ def meta(title: str, pages: list[str]) -> str:
             f'pages: {json.dumps(pages)} }});\n')
 
 
+def format_config(data: dict, preset: str) -> dict[str, object]:
+    """Expand the same pinned set exports as pun_config::rule_set / resolve_subset."""
+    sets = json.loads((ROOT / "crates/pun-config/presets/sets.json").read_text())
+
+    def subset(name: str, on: bool) -> dict:
+        definition = sets[name]
+        result = dict(definition)
+        # resolve_subset visits the BTreeMap in key order, not declaration order.
+        for key, value in sorted(definition.items()):
+            if key.startswith("@"):
+                result.pop(key)
+                result.update(subset(key, on))
+            else:
+                result[key] = value if on else False
+        return result
+
+    path = ROOT / ("docs/presets/laravel.json" if preset == "laravel" else f"crates/pun-config/presets/{preset}.json")
+    raw = json.loads(path.read_text())
+    resolved = {}
+    for key, value in raw.get("rules_as_configured", raw).items():
+        resolved.update(subset(key, value is True) if key in sets else {key: value})
+    result = {}
+    for tool in ("php-cs-fixer", "pint", "pun"):
+        for name, source in data["upstream"].get(tool, {}).items():
+            rid = source.get("pun", "")
+            if rid.startswith("format/") and name in resolved and resolved[name] is not False:
+                value = resolved[name]
+                if isinstance(value, dict):
+                    schema = data.get("options", {}).get(rid, {})
+                    value = {key: pun_value(value[option["upstream"]], option)
+                             for key, option in schema.items() if option["upstream"] in value}
+                    value = {k: v for k, v in value.items() if v is not None}
+                result[rid] = value or True
+    return result
+
+
+def selection_page(data: dict, command: str, name: str, on: dict) -> str:
+    is_set = command == "lint"
+    title = f"{name} {'set' if is_set else command + ' preset'}"
+    body = code(f'[{command}]\n' + (f'sets = ["{name}"]' if is_set else f'preset = "{name}"'), "toml")
+    body += "\nEcosystem and target-version gates still apply. Planned rules are listed, but cannot run until ported.\n"
+    if command == "analyse":
+        presets = data["meta"]["presets"]["analyse"]
+        bands = [(0, 1), (2, 3), (4, 5), (6, 8), (9, 10)]
+        low, high = bands[presets.index(name)]
+        body += f"\nThis preset covers PHPStan levels {low}–{high} and includes every lower preset (levels 0–{high}). "
+        body += "Extension rules are included by their mapping preset, not by a PHPStan core level.\n\n"
+        switches = [s for p in presets[:presets.index(name) + 1] for s in data["meta"]["preset_switches"].get(p, [])]
+        if switches:
+            body += "Type switches applied:\n\n" + code("[analyse]\n" + "\n".join(f"{s} = true" for s in switches), "toml")
+        body += "\n### What each PHPStan level adds\n\n"
+        for level in range(high + 1):
+            added = sorted({r["pun"] for r in data["upstream"]["phpstan-classes"].values()
+                            if str(r.get("level")) == str(level) and r.get("pun", "").startswith("analyse/")})
+            body += f"\n#### Level {level}\n\n"
+            body += "\n".join(f"- {rule_link(r)}" for r in added) or {
+                7: "Checks each member of a union (`union-types = true`).",
+                8: "Checks nullable values (`nullables = true`).",
+                9: "Checks explicit mixed (`explicit-mixed = true`).",
+                10: "Checks implicit mixed (`implicit-mixed = true`).",
+            }.get(level, "No additional mapped rule classes.")
+            body += "\n"
+    body += f"\n## Enabled rules ({len(on)})\n\n| Rule | Configuration applied | Status |\n| --- | --- | --- |\n"
+    for rid, config in sorted(on.items()):
+        rule = data["rules"][command][rid.split("/", 1)[1]]
+        status = "Ported" if rule.get("ported") else "Planned"
+        body += f"| {rule_link(rid)} | `{toml_value(config)}` | {status} |\n"
+    if not on:
+        body += "\nNo rules.\n"
+    off = [f"{command}/{key}" for key in sorted(data["rules"][command]) if f"{command}/{key}" not in on]
+    body += f"\n## Rules left off ({len(off)})\n\n"
+    body += "\n".join(f"- {rule_link(r)}" for r in off) or "None."
+    return page(title, body)
+
+
 def generate(data: dict) -> dict[Path, str]:
     out = {}
     urls = source_urls()
@@ -199,7 +274,7 @@ def generate(data: dict) -> dict[Path, str]:
         for rid in [source.get("pun"), *source.get("also", [])]:
             if rid:
                 sources[rid].append(source)
-    out[CONTENT / "rules/meta.ts"] = meta("Rules", ["index", *COMMANDS])
+    out[CONTENT / "rules/meta.ts"] = meta("Rules", [*COMMANDS, "presets", "sets"])
     for command in COMMANDS:
         groups = {}
         for key, rule in sorted(data["rules"][command].items()):
@@ -210,6 +285,35 @@ def generate(data: dict) -> dict[Path, str]:
         out[CONTENT / f"rules/{command}/meta.ts"] = meta(command, list(groups))
         for group, names in groups.items():
             out[CONTENT / f"rules/{command}/{group}/meta.ts"] = meta(group, names)
+            counts = ", ".join(f"{cmd}: {sum(key.startswith(group + '/') for key in rules)}"
+                               for cmd, rules in data["rules"].items())
+            body = prose(data["meta"]["groups"][group]) + f".\n\nAcross commands: {counts}.\n\n<CardGroup cols={{2}}>\n"
+            for name in names:
+                rid = f"{command}/{group}/{name}"
+                rule = data["rules"][command][f"{group}/{name}"]
+                body += f'<Card title="{rid}" href="/docs/rules/{rid}">\n\n'
+                body += prose(rule.get("summary", "Summary not written yet.")) + "\n\n" + badges(data, rid, rule) + "\n\n</Card>\n"
+            out[CONTENT / f"rules/{command}/{group}/index.mdx"] = page(f"{command}/{group}", body + "</CardGroup>")
+        links = "\n".join(f"- [{g}](/docs/rules/{command}/{g}) ({len(ns)} rules)" for g, ns in groups.items())
+        out[CONTENT / f"rules/{command}/index.mdx"] = page(f"{command} rules", links)
+    preset_names = []
+    for command in ("format", "analyse"):
+        for preset in data["meta"]["presets"][command]:
+            slug = f"{command}-{preset}"
+            preset_names.append(slug)
+            on = format_config(data, preset) if command == "format" else {
+                f"analyse/{key}": True for key, rule in data["rules"]["analyse"].items()
+                if slug in memberships(data, "analyse", rule)}
+            out[CONTENT / f"rules/presets/{slug}.mdx"] = selection_page(data, command, preset, on)
+    out[CONTENT / "rules/presets/meta.ts"] = meta("Presets", preset_names)
+    out[CONTENT / "rules/presets/index.mdx"] = page("Rule presets", "\n".join(
+        f"- [{name}](/docs/rules/presets/{name})" for name in preset_names))
+    for name in data["meta"]["sets"]:
+        on = {f"lint/{key}": "error" for key, rule in data["rules"]["lint"].items() if name in rule.get("sets", [])}
+        out[CONTENT / f"rules/sets/{name}.mdx"] = selection_page(data, "lint", name, on)
+    out[CONTENT / "rules/sets/meta.ts"] = meta("Sets", data["meta"]["sets"])
+    out[CONTENT / "rules/sets/index.mdx"] = page("Lint sets", "\n".join(
+        f"- [{name}](/docs/rules/sets/{name})" for name in data["meta"]["sets"]))
     return out
 
 

@@ -94,7 +94,7 @@ identifiers (`%s.alwaysFalse`) expanded.
 | --- | --- | --- |
 | 1. Generator and folder metadata | built | `python3 scripts/gen-rule-docs.py --check`; checked beside the mapping in CI |
 | 2. Rule page and content schema | built | `python3 scripts/test-rule-docs.py`: ordered sections, content fields, defaults, reverse links and Planned state |
-| 3. Groups, presets and sets | todo | Exact configs, off rules and PHPStan level additions |
+| 3. Groups, presets and sets | built | All 64 command groups, 8 presets and 8 sets; format configs from the pinned preset exports; cumulative analyse switches and level additions |
 | 4. Migration mapping | todo | All six tools, concrete PHPStan identifiers |
 | 5. Rules directory | todo | Search and URL-kept filters |
 | 6. CLI links | todo | Explain and terminal hyperlinks target rule pages |
