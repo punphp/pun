@@ -131,8 +131,20 @@ impl<'a> Checker<'a, '_> {
         }
     }
 
+    /// The native property `name` (with its `$`) of `class` as PhpClassReflectionExtension finds it (a parent's
+    /// private one excluded): the class declaring it and `isReadable()`.
+    pub(super) fn native_readable(&self, class: &'a ClassLikeMetadata, name: &[u8]) -> Option<(String, bool)> {
+        let (declaring, _, p) = self.declared_property(class, name)?;
+        if p.read_visibility == Visibility::Private && declaring.name != class.name {
+            return None;
+        }
+        let virtual_ = self.property_virtual(declaring, p, name);
+        let hooks = self.property_hooks(declaring, hook_names(p), name);
+        Some((self.display(declaring), accessible(p.flags.is_static(), virtual_, hooks.0)))
+    }
+
     /// BetterReflection's `isVirtual()`: virtual hooks, and a virtual parent property if there is one.
-    fn property_virtual(&self, class: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8]) -> bool {
+    pub(super) fn property_virtual(&self, class: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8]) -> bool {
         p.flags.is_virtual_property()
             && class
                 .direct_parent_class

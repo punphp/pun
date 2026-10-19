@@ -2,6 +2,27 @@
  "general": [],
  "errors": [
   {
+   "file": "versions/DynamicFetch.php",
+   "line": 11,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, $this(Versions\\DynamicFetch) given.",
+   "tip": null
+  },
+  {
+   "file": "versions/DynamicFetch.php",
+   "line": 12,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, $this(Versions\\DynamicFetch) given.",
+   "tip": null
+  },
+  {
+   "file": "versions/DynamicFetch.php",
+   "line": 14,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
    "file": "versions/Versions.php",
    "line": 14,
    "identifier": "interface.duplicateMethod",

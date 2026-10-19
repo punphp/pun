@@ -65,6 +65,41 @@
    "tip": null
   },
   {
+   "file": "src/ReadonlyInit.php",
+   "line": 8,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class ReadonlyInit\\ByRef has an uninitialized @readonly property $matches. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "src/ReadonlyInit.php",
+   "line": 17,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Access to an uninitialized @readonly property ReadonlyInit\\ByRef::$matches.",
+   "tip": null
+  },
+  {
+   "file": "src/ReadonlyInit.php",
+   "line": 18,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Access to an uninitialized @readonly property ReadonlyInit\\ByRef::$matches.",
+   "tip": null
+  },
+  {
+   "file": "src/ReadonlyInit.php",
+   "line": 20,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyInit\\ByRef::$sorted is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "src/ReadonlyInit.php",
+   "line": 37,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class ReadonlyInit\\AliasedUncalled has an uninitialized readonly property $fromTrait. Assign it in the constructor.",
+   "tip": null
+  },
+  {
    "file": "src/TraitContext.php (in context of class TraitContext\\Child)",
    "line": 9,
    "identifier": "function.notFound",
@@ -147,6 +182,118 @@
    "identifier": "function.notFound",
    "message": "Function missing_in_other_hello not found.",
    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 12,
+   "identifier": "property.hooksNotSupported",
+   "message": "Property hooks are supported only on PHP 8.4 and later.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 13,
+   "identifier": "property.hooksNotSupported",
+   "message": "Property hooks are supported only on PHP 8.4 and later.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 15,
+   "identifier": "property.hooksNotSupported",
+   "message": "Property hooks are supported only on PHP 8.4 and later.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 19,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 21,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 27,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 28,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$virt is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 30,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$virt is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 33,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$priv is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 34,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 35,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 37,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 38,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 39,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 47,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$w is not readable.",
+   "tip": null
+  },
+  {
+   "file": "src/WriteOnly.php",
+   "line": 48,
+   "identifier": "property.writeOnly",
+   "message": "Property Rwo\\Foo::$virt is not readable.",
+   "tip": null
   }
  ]
 }

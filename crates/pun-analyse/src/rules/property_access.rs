@@ -25,6 +25,9 @@ pub struct State {
     /// `isInExpressionAssign()`: the property fetch an assignment (not a compound one) writes, or whose offset it
     /// writes.
     assigned: HashSet<(u32, u32)>,
+    /// `isInExpressionAssign()` as ReadingWriteOnlyPropertiesRule sees it: also the target of `??=`, of a foreach
+    /// and the referenced side of `= &`.
+    expression_assign: HashSet<(u32, u32)>,
     /// Whether `$this` is defined in each function-like entered (static methods and closures have none).
     this: Vec<bool>,
 }
@@ -81,10 +84,35 @@ impl Contexts<'_> {
             Expression::ArrayAppend(a) => self.assigned(a.array),
             e @ Expression::Access(Access::Property(_) | Access::StaticProperty(_)) => {
                 self.state.assigned.insert(key(e.span()));
+                self.state.expression_assign.insert(key(e.span()));
             }
             Expression::List(l) => l.elements.iter().for_each(|el| self.destructured(el)),
             Expression::Array(a) => a.elements.iter().for_each(|el| self.destructured(el)),
             _ => {}
+        }
+    }
+
+    /// A target [`State::expression_assign`] adds (through a `&`).
+    fn expression_assigned(&mut self, e: &Expression) {
+        let mut root = unparenthesized(e);
+        loop {
+            match root {
+                Expression::UnaryPrefix(u) if u.operator.is_reference() => root = unparenthesized(u.operand),
+                Expression::ArrayAccess(a) => root = unparenthesized(a.array),
+                Expression::ArrayAppend(a) => root = unparenthesized(a.array),
+                _ => break,
+            }
+        }
+        match root {
+            Expression::List(_) | Expression::Array(_) => {
+                let assigned = self.state.assigned.clone();
+                self.assigned(root);
+                // a destructuring only adds to the expression assigns
+                self.state.assigned = assigned;
+            }
+            _ => {
+                self.state.expression_assign.insert(key(root.span()));
+            }
         }
     }
 
@@ -131,7 +159,20 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Contexts<'_> {
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
         if matches!(a.operator, AssignmentOperator::Assign(_)) {
             self.assigned(a.lhs);
+            if let Expression::UnaryPrefix(u) = unparenthesized(a.rhs)
+                && u.operator.is_reference()
+            {
+                self.expression_assigned(u.operand);
+            }
+        } else if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
+            self.expression_assigned(a.lhs);
         }
+    }
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+        if let ForeachTarget::KeyValue(t) = &f.target {
+            self.expression_assigned(t.key);
+        }
+        self.expression_assigned(f.target.value());
     }
 }
 
@@ -312,6 +353,15 @@ impl Checker<'_, '_> {
         {
             *this = false;
         }
+    }
+
+    /// Whether `$this` is defined where the walk is.
+    pub(super) fn this_defined(&self) -> bool {
+        self.property_access.this.last().copied().unwrap_or(false)
+    }
+
+    pub(super) fn allows_dynamic_properties(&self, k: &ClassLikeMetadata) -> bool {
+        allows_dynamic_properties(self, k)
     }
 
     pub(super) fn leave_this(&mut self) {
@@ -772,4 +822,9 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
         c.display(declaring)
     );
     c.report(at, &format!("staticProperty.{v}"), message, None);
+}
+
+/// `isInExpressionAssign()` of a property fetch, for ReadingWriteOnlyPropertiesRule.
+pub(super) fn in_expression_assign(c: &Checker, e: Span) -> bool {
+    c.property_access.expression_assign.contains(&key(e))
 }
