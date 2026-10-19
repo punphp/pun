@@ -141,7 +141,11 @@ fn main() -> Result<ExitCode> {
                 fs::write(&defaults, "{}\n")?;
                 migrate_args.splice(0..0, ["--config".into(), defaults.display().to_string()]);
             }
-            run(pun_cmd(&["migrate"]).args(&migrate_args), "pun migrate")?;
+            // Only the format config: rector.php and phpstan.neon would migrate too and need vendor/.
+            run(
+                pun_cmd(&["migrate", "--from", "pint"]).args(&migrate_args),
+                "pun migrate",
+            )?;
             run(&mut pun_cmd(&["check", "--fix", "--no-cache"]), "pun")?;
         }
 

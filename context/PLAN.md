@@ -331,7 +331,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse: enable Larastan from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
 | analyse 8: result cache | todo |
 | analyse/lint (from config, migrate 4-5 follow-ups): `pun migrate` now writes Rector configurations and changed PHPStan parameters as rule options (mapping.toml [phpstan-parameters]); the rules should read them once ported | todo |
-| harness: pun-harness runs `pun migrate` without `--from`; rector.php and phpstan.neon migrate now too, so pass `--from pint` (or the project's format config) to keep comparing with Pint | todo |
 | analyse (from migrate 5): honour `[analyse] stubs` and `[[analyse.ignore]]` (`Config.analyse.stubs` and `.ignore`: rule, identifier, `message` as a PCRE pattern, `raw-message`, paths as fnmatch, `count`), which `pun migrate` writes from phpstan.neon | todo |
 
 **Gate:** the same errors as PHPStan + Larastan (file, line, identifier) on the corpus, at every preset.
