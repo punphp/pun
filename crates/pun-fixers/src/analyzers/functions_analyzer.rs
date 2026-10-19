@@ -188,7 +188,9 @@ impl FunctionsAnalyzer {
                 {
                     continue;
                 }
-                if php_compat::strtolower(tokens[function_name_index].get_content()) == function_name {
+                if php_compat::strtolower(tokens[function_name_index].get_content())
+                    == function_name
+                {
                     return false;
                 }
             }

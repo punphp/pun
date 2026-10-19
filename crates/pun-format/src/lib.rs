@@ -525,7 +525,9 @@ mod tests {
             true
         }
         fn fix(&self, _: &Path, t: &mut Tokens) {
-            let i = (0..t.count()).find(|&i| t[i].is_kind(Kind::T_STRING)).unwrap();
+            let i = (0..t.count())
+                .find(|&i| t[i].is_kind(Kind::T_STRING))
+                .unwrap();
             t.set(i, Token::new(Kind::T_STRING, self.0.as_str()));
         }
         fn set_preset(&mut self, preset: &str) {
@@ -535,7 +537,9 @@ mod tests {
 
     #[test]
     fn set_preset_reaches_every_fixer() {
-        let all = || -> Vec<Box<dyn Fixer>> { vec![Box::new(ShowPreset("laravel".into())), Box::new(Plain)] };
+        let all = || -> Vec<Box<dyn Fixer>> {
+            vec![Box::new(ShowPreset("laravel".into())), Box::new(Plain)]
+        };
         let mut p = Pipeline::new(&[rule("show_preset"), rule("plain")], &all).unwrap();
         p.set_preset("psr12");
         let fixed = p.run(Path::new("a.php"), b"<?php foo;").unwrap().unwrap();

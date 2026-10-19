@@ -1317,7 +1317,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::arguments(self, assign::Callee::New(new));
     }
 
-    fn walk_in_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
+    fn walk_in_null_safe_method_call(
+        &mut self,
+        call: &'ast NullSafeMethodCall<'arena>,
+        _: &mut (),
+    ) {
         internal::method_call(self, call.span(), call.object, &call.method);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {

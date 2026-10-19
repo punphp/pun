@@ -69,25 +69,26 @@ fn template(name: &str) -> Template {
 
 /// tests/fixtures/scope-classes.php as PHPStan's reflection sees it.
 fn class(name: &str) -> Option<Arc<Class>> {
-    let class = |name: &str, ancestors: &[&str], templates, constants: &[(&str, &str)], generics| Class {
-        name: name.to_string(),
-        ancestors: ancestors.iter().map(|a| a.to_string()).collect(),
-        templates,
-        cases: Vec::new(),
-        is_interface: false,
-        is_trait: false,
-        is_enum: false,
-        is_final: false,
-        properties: Vec::new(),
-        constants: constants
-            .iter()
-            .map(|(n, t)| (n.to_string(), t.to_string()))
-            .collect(),
-        methods: HashMap::new(),
-        iterable: None,
-        generics,
-        property_docs: HashMap::new(),
-    };
+    let class =
+        |name: &str, ancestors: &[&str], templates, constants: &[(&str, &str)], generics| Class {
+            name: name.to_string(),
+            ancestors: ancestors.iter().map(|a| a.to_string()).collect(),
+            templates,
+            cases: Vec::new(),
+            is_interface: false,
+            is_trait: false,
+            is_enum: false,
+            is_final: false,
+            properties: Vec::new(),
+            constants: constants
+                .iter()
+                .map(|(n, t)| (n.to_string(), t.to_string()))
+                .collect(),
+            methods: HashMap::new(),
+            iterable: None,
+            generics,
+            property_docs: HashMap::new(),
+        };
     match name {
         "PunProbe\\Coll" => Some(Arc::new(class(
             name,
@@ -182,7 +183,8 @@ fn decide_types() {
         let phpdoc = row[1].as_str();
         let want = row[2].as_str().unwrap();
         let native_type = native.map_or(Type::Mixed { explicit: false }, |n| resolve_str(n, None));
-        let got = decide_type(native_type, phpdoc.map(|p| resolve_str(p, None))).describe(Level::Precise);
+        let got =
+            decide_type(native_type, phpdoc.map(|p| resolve_str(p, None))).describe(Level::Precise);
         if got != want {
             failures.push(format!("{native:?} / {phpdoc:?}: want {want}, got {got}"));
         }
@@ -237,10 +239,14 @@ fn project_iterables_and_ancestors() {
             let ty = resolve_in(&phpdoc::parse(input).unwrap(), &InNamespace);
             let ancestor = match &ty {
                 // a class is its own ancestor
-                Type::Object(name, _) if name == "PunProbe\\Coll" => Some(ty.describe(Level::Precise)),
+                Type::Object(name, _) if name == "PunProbe\\Coll" => {
+                    Some(ty.describe(Level::Precise))
+                }
                 Type::Object(name, args) => symbols::lookup(name)
                     .and_then(|c| ancestor_args(&c, "PunProbe\\Coll", args))
-                    .map(|args| Type::Object("PunProbe\\Coll".to_string(), args).describe(Level::Precise)),
+                    .map(|args| {
+                        Type::Object("PunProbe\\Coll".to_string(), args).describe(Level::Precise)
+                    }),
                 _ => None,
             };
             let got = (

@@ -230,7 +230,8 @@ impl DocTokens {
         let start = if token.kind == T_OPEN_PARENTHESIS {
             index + 2
         } else if token.kind == T_NONE
-            && t.get(index + 3).is_some_and(|t| t.kind == T_OPEN_PARENTHESIS)
+            && t.get(index + 3)
+                .is_some_and(|t| t.kind == T_OPEN_PARENTHESIS)
             && Preg::r#match(r"/^(\R\s*\*\s*)*\s*$/", &token.content)
         {
             index + 3
