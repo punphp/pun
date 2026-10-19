@@ -83,7 +83,7 @@ fn bool_value(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
 }
 
 /// The declared type of the parameter `name` of the enclosing function, when the function never writes it (so the
-/// variable keeps its native type), and it is not by reference.
+/// variable keeps its native type).
 pub(crate) fn parameter_hint<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     name: &[u8],
@@ -95,7 +95,7 @@ pub(crate) fn parameter_hint<'ast, 'arena>(
     param.hint.as_ref()
 }
 
-/// The unwritten, non-reference parameter `name` of the function around the code.
+/// The unwritten parameter `name` of the function around the code (by reference too: PHPStan types it as declared).
 fn parameter<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     name: &[u8],
@@ -117,9 +117,6 @@ fn parameter<'ast, 'arena>(
         _ => unreachable!(),
     };
     let param = params.parameters.iter().find(|p| p.variable.name == name)?;
-    if param.ampersand.is_some() {
-        return None;
-    }
     let written = written(*body, name);
     if written {
         return None;

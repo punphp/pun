@@ -371,28 +371,30 @@ fn unnecessary_ternary_expression() {
 #[test]
 fn remove_useless_ternary() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoUselessTernary, 80400),
-        "RemoveUselessTernaryRector/Fixture",
-    );
+    let linter = only(rules::NoUselessTernary, 80400);
+    run(&linter, "RemoveUselessTernaryRector/Fixture");
+    run(&linter, "RemoveUselessTernaryRector/Oracle");
 }
 
 #[test]
 fn ternary_to_boolean_or_false_to_boolean_and() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::NoFalseTernary, 80400),
-        "TernaryToBooleanOrFalseToBooleanAndRector/Fixture",
-    );
+    let linter = only(rules::NoFalseTernary, 80400);
+    run(&linter, "TernaryToBooleanOrFalseToBooleanAndRector/Fixture");
+    run(&linter, "TernaryToBooleanOrFalseToBooleanAndRector/Oracle");
+    // Where Rector drops the parentheses an assignment or arrow function needs; the expected code is derived by hand.
+    run(&linter, "TernaryToBooleanOrFalseToBooleanAndRector/Pun");
 }
 
 #[test]
 fn strlen_zero_to_identical_empty_string() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::PreferEmptyStringIdentical, 80400),
-        "StrlenZeroToIdenticalEmptyStringRector/Fixture",
-    );
+    let linter = only(rules::PreferEmptyStringIdentical, 80400);
+    run(&linter, "StrlenZeroToIdenticalEmptyStringRector/Fixture");
+    run(&linter, "StrlenZeroToIdenticalEmptyStringRector/Oracle");
+    // Where Rector unpacks `...$s`, crashes on `strlen()` or drops the parentheses a `?:` or assignment needs under the
+    // cast; the expected code is derived by hand.
+    run(&linter, "StrlenZeroToIdenticalEmptyStringRector/Pun");
 }
 
 #[test]
@@ -411,14 +413,14 @@ fn simplify_empty_check_on_empty_array() {
     // an element assignment of an untyped parameter and variadic parameters.
     let linter = only(rules::PreferEmptyArrayIdentical, 80400);
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Fixture");
+    run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Oracle");
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Pun");
 }
 
 #[test]
 fn number_compare_to_max_func_call() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version.
-    run(
-        &only(rules::PreferMinMax, 80400),
-        "NumberCompareToMaxFuncCallRector/Fixture",
-    );
+    let linter = only(rules::PreferMinMax, 80400);
+    run(&linter, "NumberCompareToMaxFuncCallRector/Fixture");
+    run(&linter, "NumberCompareToMaxFuncCallRector/Oracle");
 }
