@@ -458,7 +458,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/no-useless-with-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Removes redundant with helper calls" }
 "laravel/prefer-abort-if" = { fix = "unsafe", ported = true, status = "decided", summary = "Change if abort to abort_if" }
 "laravel/prefer-aliases-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes the aliases property to use the Aliases attribute" }
-"laravel/prefer-anonymous-migration" = { fix = "none", sets = ["code-quality"], ported = false, status = "decided", summary = "Prefer using anonymous classes for Laravel migrations instead of named classes." }
+"laravel/prefer-anonymous-migration" = { fix = "none", sets = ["code-quality"], ported = true, status = "decided", summary = "Prefer using anonymous classes for Laravel migrations instead of named classes." }
 "laravel/prefer-appends-attribute" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Changes model appends property to use the appends attribute" }
 "laravel/prefer-array-validation-rules" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Use array syntax for validation rules instead of 'a|b' strings." }
 "laravel/prefer-back-helper" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace `redirect()->back()` and `Redirect::back()` with `back()`" }

@@ -320,6 +320,15 @@ fn mago_prefer_casts_method() {
 }
 
 #[test]
+fn mago_prefer_anonymous_migration() {
+    report_as(
+        PreferAnonymousMigration,
+        "laravel/prefer-anonymous-migration",
+        true,
+    );
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
     let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
@@ -397,6 +406,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(PreferCastsMethod),
             &["lint7_report/laravel/prefer-casts-method"],
+        ),
+        (
+            || Box::new(PreferAnonymousMigration),
+            &["lint7_report/laravel/prefer-anonymous-migration"],
         ),
     ];
     for (rule, dirs) in cases {
