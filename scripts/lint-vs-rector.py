@@ -7,8 +7,9 @@
 Uses scripts/bench.py's lint setup: a scratch copy under BENCH_SCRATCH (default target-bench/) with composer's
 vendor/, the paths of the project's rector.php, `pun-bench-rector.php` with exactly the Rector classes of pun-lint's
 ported rules, and `pun-rector-lint.toml` with the Pun IDs of those classes at `error`. Runs Rector (`--dry-run
---output-format=json`) and `pun lint --format=json -v`, maps each applied Rector class to its Pun ID through rules/mapping.toml, and prints the
-(file, rule) pairs only one tool reports, grouped by rule. Exits 1 when they differ.
+--output-format=json`) and `pun lint --fix --test --format=json -v`, maps each applied Rector class to its Pun ID
+through rules/mapping.toml, and prints the (file, rule) pairs only one tool reports, grouped by rule. Exits 1 when
+they differ.
 """
 
 import importlib.util
@@ -30,6 +31,9 @@ def pairs_of_rector(out: str, pun_id: dict[str, str]) -> set[tuple[str, str]]:
     data = json.loads(out[out.index("{"):])
     if data.get("fatal_errors"):
         sys.exit(f"Rector: {data['fatal_errors']}")
+    # A crashed Rector worker drops its whole batch of files, so every Pun report in it would look like a difference.
+    for e in data.get("errors", []):
+        print(f"Rector error: {e.get('file', '')} {e['message'][:200]}", file=sys.stderr)
     return {(d["file"], pun_id[c]) for d in data.get("file_diffs", []) for c in d["applied_rectors"]}
 
 
@@ -44,15 +48,20 @@ def compare(name: str, pun: str, env: dict) -> bool:
     mapping = tomllib.loads((ROOT / "crates/pun-config/rules/mapping.toml").read_text())
     pun_id = {e["class"]: e["pun"] for t, rules in mapping["upstream"].items() if "rector" in t
               for e in rules.values() if isinstance(e, dict) and "class" in e and "pun" in e}
-    rector = subprocess.run(["php", str(bench.RECTOR), "process", "--dry-run", "--clear-cache", "--no-progress-bar",
-                             "--output-format=json", "--memory-limit=-1", "--config", "pun-bench-rector.php"],
+    # Rector's workers ignore --memory-limit and stop at php.ini's limit, losing their batch of files.
+    rector = subprocess.run(["php", "-d", "memory_limit=-1", str(bench.RECTOR), "process", "--dry-run", "--clear-cache",
+                             "--no-progress-bar", "--output-format=json", "--memory-limit=-1", "--config",
+                             "pun-bench-rector.php"],
                             cwd=work, env=env, capture_output=True, text=True)
-    # Only the rules with a Rector class: the Mago-ported ones have nothing to compare with.
+    # `--fix --test` writes nothing and lists the rules of every fix round: Rector reports a rule that applies to
+    # another rule's output (ThrowIfRector, then ThrowIfAndThrowUnlessExceptionsToUseClassStringRector), which a
+    # check-only run sees only in a later round. Only the rules with a Rector class: the Mago-ported ones have
+    # nothing to compare with.
     ids = sorted(set(pun_id[c] for c in classes))
     (work / "pun-rector-lint.toml").write_text(
         "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in ids))
-    ours = subprocess.run([pun, "lint", "--config", "pun-rector-lint.toml", "--format=json", "-v", "--no-cache",
-                           *bench.LINT[name]], cwd=work, env=env, capture_output=True, text=True)
+    ours = subprocess.run([pun, "lint", "--config", "pun-rector-lint.toml", "--fix", "--test", "--format=json", "-v",
+                           "--no-cache", *bench.LINT[name]], cwd=work, env=env, capture_output=True, text=True)
     if ours.returncode not in (0, 1):
         sys.exit(f"pun lint exited {ours.returncode}: {ours.stderr.strip()[-500:]}")
     theirs, mine = pairs_of_rector(rector.stdout, pun_id), pairs_of_pun(ours.stdout)
