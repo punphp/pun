@@ -1,0 +1,96 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "typeAlias.notFound",
+   "message": "Cannot import type alias NoDocAlias: type alias does not exist in TypeAliases\\NoDoc.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "typeAlias.circular",
+   "message": "Circular definition detected in type alias C1.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "typeAlias.circular",
+   "message": "Circular definition detected in type alias C2.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "class.notFound",
+   "message": "Type alias Gen contains unknown class TypeAliases\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "generics.notGeneric",
+   "message": "Type alias NotGeneric contains generic type TypeAliases\\Exporter<int> but class TypeAliases\\Exporter is not generic.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "typeAlias.duplicate",
+   "message": "Type alias SomeEnum already exists as an enum in scope of TypeAliases\\Duplicates.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "typeAlias.duplicate",
+   "message": "Type alias SomeInterface already exists as an interface in scope of TypeAliases\\Duplicates.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 30,
+   "identifier": "typeAlias.duplicate",
+   "message": "Type alias SomeTrait already exists as a trait in scope of TypeAliases\\Duplicates.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 42,
+   "identifier": "typeAlias.invalidName",
+   "message": "Imported type alias Exported has an invalid name: int.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 66,
+   "identifier": "typeAlias.circular",
+   "message": "Circular definition detected in type alias L.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 83,
+   "identifier": "class.notFound",
+   "message": "Type alias IfaceAlias contains unknown class TypeAliases\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "aliases.php",
+   "line": 88,
+   "identifier": "class.notFound",
+   "message": "Type alias EnumAlias contains unknown class TypeAliases\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "aliases.php (in context of class TypeAliases\\UsesTrait)",
+   "line": 73,
+   "identifier": "class.notFound",
+   "message": "Type alias Missing contains unknown class TypeAliases\\Nope.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

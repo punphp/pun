@@ -1175,12 +1175,12 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/invalid-trait-property-tag" = { preset = "essential", status = "decided" }
 "phpdoc/invalid-trait-require-extends" = { preset = "essential", status = "decided" }
 "phpdoc/invalid-trait-require-implements" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-trait-type-alias" = { preset = "basic", status = "decided" }
+"phpdoc/invalid-trait-type-alias" = { preset = "basic", ported = true, status = "decided" }
 "phpdoc/invalid-trait-use-method-tag" = { preset = "essential", status = "decided" }
 "phpdoc/invalid-trait-use-mixin-tag" = { preset = "essential", status = "decided" }
 "phpdoc/invalid-trait-use-property-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-trait-use-type-alias" = { preset = "basic", status = "decided" }
-"phpdoc/invalid-type-alias" = { preset = "basic", status = "decided" }
+"phpdoc/invalid-trait-use-type-alias" = { preset = "basic", ported = true, status = "decided" }
+"phpdoc/invalid-type-alias" = { preset = "basic", ported = true, status = "decided" }
 "phpdoc/invalid-var-tag" = { preset = "essential", fixed_by = ["lint/dead-code/no-invalid-var-tag"], status = "decided" }
 "phpdoc/invalid-var-tag-type" = { preset = "essential", status = "decided" }
 "phpdoc/misplaced-require-implements" = { preset = "essential", status = "decided" }

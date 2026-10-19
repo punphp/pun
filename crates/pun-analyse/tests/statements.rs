@@ -109,6 +109,13 @@ fn declarations_php_7_4() {
     check_in("declarations", "phpstan-70400");
 }
 
+/// Type aliases that PHPStan's LocalTypeAliases fixtures miss: duplicates of an interface, trait or enum, invalid tag
+/// values, aliases with invalid types, circular imports, `parent` in aliases, and aliases of a trait, interface and enum.
+#[test]
+fn type_aliases() {
+    check_in("type_aliases", "phpstan");
+}
+
 /// A PHP_VERSION_ID guard does not lift the non-capturing catch check; 8.0 allows catches and throw expressions.
 #[test]
 fn declarations_php_8_0() {
