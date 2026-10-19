@@ -137,9 +137,14 @@ edit files in it directly: it only hosts the worktrees and the shared `.oracle/`
 2. Each agent, from inside the `pun` clone: `git fetch origin && git worktree add ../pun-<name> -b
    helper/<name> origin/main`, then work in `../pun-<name>`. Link the shared heavy data instead of copying it:
    `ln -s "$PWD/.oracle" "$PWD/corpus" "$PWD/target-bench" ../pun-<name>/` (skip any that do not exist).
-3. Your branch is private, so before each push: `git fetch origin && git rebase origin/main`, then
-   `git push origin HEAD:main`. Never force-push and never push the helper branch itself.
-4. When you stop: `git worktree remove ../pun-<name>` and `git branch -D helper/<name>` after everything
+3. Never push to main. Push your own branch only: `git fetch origin && git rebase origin/main &&
+   git push -f origin HEAD:helper/<name>` (force only on your own branch). The Mac coordinator merges
+   `helper/*` into main every 10 minutes (~/Projects/pun-wf/integrate.py).
+4. Server helpers own the helper-queue slices outright; Mac agents never touch them. Split the slices among
+   server helpers with the server's claims file, not PLAN.md:
+   `flock ~/pun/.claims.lock sh -c 'cat ~/pun/.claims'` to read,
+   `flock ~/pun/.claims.lock sh -c 'echo "<slice> | <name>" >> ~/pun/.claims'` to claim an unclaimed slice.
+5. When you stop: `git worktree remove ../pun-<name>` and `git branch -D helper/<name>` after everything
    is on origin/main.
 
 ## Finishing
