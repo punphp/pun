@@ -270,8 +270,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/prefer-new-self" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `new static()` to `new self()` in a final class" }
 "classes/prefer-self-in-final" = { fix = "safe", sets = ["modernize", "code-quality"], ported = true, status = "decided", summary = "Inside an enum or `final`/anonymous class, `self` should be preferred over `static`." }
 "classes/prefer-self-over-static" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `static::*` to `self::*` on final class or private static members" }
-"classes/prefer-serialize-method" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Change __sleep() to __serialize() with correct return values" }
-"classes/prefer-unserialize-method" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Change __wakeup() to __unserialize()" }
+"classes/prefer-serialize-method" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Change __sleep() to __serialize() with correct return values" }
+"classes/prefer-unserialize-method" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Change __wakeup() to __unserialize()" }
 "classes/require-class-matches-file" = { fix = "unsafe", intent = "correctness", sets = ["code-quality"], ported = true, status = "decided", summary = "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name." }
 "classes/require-member-order" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Orders the elements of classes/interfaces/traits/enums." }
 "comments/no-unused-ignore" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], status = "decided", pun_only = true, summary = "A @pun-ignore comment that suppressed nothing. Fix removes it." }
@@ -419,10 +419,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }
 "dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove useless variable assigns" }
 "functions/no-assign-in-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects assignments in function call arguments which can lead to unexpected behavior and make" }
-"functions/no-call-user-func-method" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Refactor `call_user_func()` on known class method to a method call" }
+"functions/no-call-user-func-method" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `call_user_func()` on known class method to a method call" }
 "functions/no-extra-arguments" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Remove extra parameters" }
 "functions/no-missing-format-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `sprintf`-style format calls where the number of placeholders" }
-"functions/no-required-after-optional" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Report or fix optional parameters declared before required ones." }
+"functions/no-required-after-optional" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Report or fix optional parameters declared before required ones." }
 "functions/no-swapped-explode-arguments" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `explode` calls whose arguments appear to be swapped." }
 "functions/no-unreachable-default-argument-value" = { fix = "unsafe", intent = "correctness", sets = ["code-quality"], ported = true, status = "decided", summary = "In function arguments there must not be arguments with default values before non-default ones.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }
 "functions/no-unused-closure-use" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Lambda must not import variables it doesn't use." }
@@ -616,15 +616,15 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/no-access" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@access` annotations must be removed from PHPDoc." }
 "phpdoc/no-empty-return" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@return void` and `@return null` annotations must be removed from PHPDoc." }
 "phpdoc/no-misplaced" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Docblocks should only be used on structural elements." }
-"phpdoc/no-mixed-overruled-by-native" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @param mixed and @return mixed docblock that duplicates an already declared native type" }
+"phpdoc/no-mixed-overruled-by-native" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @param mixed and @return mixed docblock that duplicates an already declared native type" }
 "phpdoc/no-package" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@package` and `@subpackage` annotations must be removed from PHPDoc." }
 "phpdoc/no-superfluous-tags" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes `@param`, `@return` and `@var` tags that don't provide any useful information." }
 "phpdoc/no-useless-inheritdoc" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Classy that does not inherit must not have `@inheritdoc` tags." }
 "phpdoc/no-useless-param" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @param docblock with same type as parameter type" }
-"phpdoc/no-useless-readonly" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove useless `@readonly` annotation on native readonly type" }
+"phpdoc/no-useless-readonly" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless `@readonly` annotation on native readonly type" }
 "phpdoc/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock with same type as defined in PHP" }
 "phpdoc/no-useless-var" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused `@var` annotation for properties and class constants" }
-"phpdoc/no-void-on-magic-method" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove useless @return void docblock from magic methods __construct, __destruct, and __clone" }
+"phpdoc/no-void-on-magic-method" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless @return void docblock from magic methods __construct, __destruct, and __clone" }
 "phpdoc/require-no-named-arguments" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
 "phpunit/add-allow-mock-objects-attribute" = { fix = "safe", ported = false, later = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] to PHPUnit test classes whose mocks have no expectations." }
 "phpunit/add-closure-return-type-from-assert" = { fix = "unsafe", sets = ["types"], ported = false, later = true, status = "decided", summary = "Add return type to closures narrowed by assertInstanceOf() inside PHPUnit test case classes" }

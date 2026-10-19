@@ -42,27 +42,32 @@ pub fn remove_argument(list: &ArgumentList<'_>, index: usize) -> Edit {
 
 /// The edit php-parser's printer makes when it appends `code` as a new last argument.
 pub fn append_argument(source: &str, list: &ArgumentList<'_>, code: &str) -> Edit {
-    match list.arguments.last() {
-        Some(last) => {
-            let end = node_span(last).end;
-            // `isMultiline()`: with a line break between every two arguments, the new one goes on a line of its own
-            // at the indent of the last.
-            let spans: Vec<Span> = list.arguments.iter().map(node_span).collect();
-            let multiline = spans.len() >= 2
-                && spans
-                    .windows(2)
-                    .all(|w| source[w[0].end..w[1].end].contains('\n'));
-            if multiline {
-                let indent = line_indent(source, node_span(last).start);
-                return Edit::new(Span::new(end, end), format!(",\n{indent}{code}"));
-            }
-            Edit::new(Span::new(end, end), format!(", {code}"))
-        }
-        None => {
-            let at = list.right_parenthesis.start.offset as usize;
-            Edit::new(Span::new(at, at), code.to_string())
-        }
+    let spans: Vec<Span> = list.arguments.iter().map(node_span).collect();
+    append_item(
+        source,
+        &spans,
+        list.left_parenthesis.end.offset as usize,
+        code,
+    )
+}
+
+/// The edit for an item php-parser's format-preserving printer appends to a comma-separated list whose items span
+/// `spans` and whose `(` ends at `open`: after the last item, or (`emptyListInsertionMap`) right after the `(`.
+/// `isMultiline()`: with a line break between every two items, the new one goes on a line of its own at the indent
+/// of the last.
+pub fn append_item(source: &str, spans: &[Span], open: usize, code: &str) -> Edit {
+    let Some(last) = spans.last() else {
+        return Edit::new(Span::new(open, open), code.to_string());
+    };
+    let multiline = spans.len() >= 2
+        && spans
+            .windows(2)
+            .all(|w| source[w[0].end..w[1].end].contains('\n'));
+    if multiline {
+        let indent = line_indent(source, last.start);
+        return Edit::new(Span::new(last.end, last.end), format!(",\n{indent}{code}"));
     }
+    Edit::new(Span::new(last.end, last.end), format!(", {code}"))
 }
 
 /// The namespace and the class imports (`use A\B as C;`: alias lower-cased => `A\B`) that apply at a node, from its

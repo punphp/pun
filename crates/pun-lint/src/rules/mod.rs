@@ -2,12 +2,14 @@
 
 mod add_csv_escape_argument;
 mod laravel;
+mod lint_b_doc;
 mod lint_b_early_exit;
 mod lint_b_foreach;
 mod lint_b_helpers;
 mod lint_b_names;
 mod lint_b_privatize;
 mod lint_b_security;
+mod lint_b_serialize;
 mod mago_const_value;
 mod mago_usage;
 mod no_and_assignment;
@@ -16,6 +18,7 @@ mod no_array_accumulation_in_loop;
 mod no_assign_in_argument;
 mod no_assign_in_condition;
 mod no_assign_in_ternary_branch;
+mod no_call_user_func_method;
 mod no_cast_in_concat;
 mod no_concat_assign_new_item;
 mod no_condition_exact_return;
@@ -47,6 +50,7 @@ mod no_iterator_to_array_in_foreach;
 mod no_literal_password;
 mod no_mirror_assignment;
 mod no_missing_format_argument;
+mod no_mixed_overruled_by_native;
 mod no_multi_assign;
 mod no_negated_and;
 mod no_negated_boolean_literal;
@@ -69,6 +73,7 @@ mod no_redundant_property_default;
 mod no_redundant_readonly_property;
 mod no_redundant_write_visibility;
 mod no_request_variable;
+mod no_required_after_optional;
 mod no_return_in_constructor;
 mod no_short_ternary;
 mod no_single_argument_sprintf;
@@ -95,7 +100,9 @@ mod no_useless_block;
 mod no_useless_catch;
 mod no_useless_condition;
 mod no_useless_continue;
+mod no_useless_readonly;
 mod no_variable_variable;
+mod no_void_on_magic_method;
 mod no_void_reference_return;
 mod php_parser;
 mod prefer_absolute_include;
@@ -130,7 +137,9 @@ mod prefer_property_default;
 mod prefer_property_over_local_getter;
 mod prefer_round_mode_enum;
 mod prefer_self_over_static;
+mod prefer_serialize_method;
 mod prefer_simple_condition;
+mod prefer_unserialize_method;
 mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
@@ -154,6 +163,7 @@ pub use no_array_accumulation_in_loop::NoArrayAccumulationInLoop;
 pub use no_assign_in_argument::NoAssignInArgument;
 pub use no_assign_in_condition::NoAssignInCondition;
 pub use no_assign_in_ternary_branch::NoAssignInTernaryBranch;
+pub use no_call_user_func_method::NoCallUserFuncMethod;
 pub use no_cast_in_concat::NoCastInConcat;
 pub use no_concat_assign_new_item::NoConcatAssignNewItem;
 pub use no_condition_exact_return::NoConditionExactReturn;
@@ -185,6 +195,7 @@ pub use no_iterator_to_array_in_foreach::NoIteratorToArrayInForeach;
 pub use no_literal_password::NoLiteralPassword;
 pub use no_mirror_assignment::NoMirrorAssignment;
 pub use no_missing_format_argument::NoMissingFormatArgument;
+pub use no_mixed_overruled_by_native::NoMixedOverruledByNative;
 pub use no_multi_assign::NoMultiAssign;
 pub use no_negated_and::NoNegatedAnd;
 pub use no_negated_boolean_literal::NoNegatedBooleanLiteral;
@@ -207,6 +218,7 @@ pub use no_redundant_property_default::NoRedundantPropertyDefault;
 pub use no_redundant_readonly_property::NoRedundantReadonlyProperty;
 pub use no_redundant_write_visibility::NoRedundantWriteVisibility;
 pub use no_request_variable::NoRequestVariable;
+pub use no_required_after_optional::NoRequiredAfterOptional;
 pub use no_return_in_constructor::NoReturnInConstructor;
 pub use no_short_ternary::NoShortTernary;
 pub use no_single_argument_sprintf::NoSingleArgumentSprintf;
@@ -233,7 +245,9 @@ pub use no_useless_block::NoUselessBlock;
 pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_continue::NoUselessContinue;
+pub use no_useless_readonly::NoUselessReadonly;
 pub use no_variable_variable::NoVariableVariable;
+pub use no_void_on_magic_method::NoVoidOnMagicMethod;
 pub use no_void_reference_return::NoVoidReferenceReturn;
 pub use prefer_absolute_include::PreferAbsoluteInclude;
 pub use prefer_array_all::PreferArrayAll;
@@ -267,9 +281,11 @@ pub use prefer_property_default::PreferPropertyDefault;
 pub use prefer_property_over_local_getter::PreferPropertyOverLocalGetter;
 pub use prefer_round_mode_enum::PreferRoundModeEnum;
 pub use prefer_self_over_static::PreferSelfOverStatic;
+pub use prefer_serialize_method::PreferSerializeMethod;
 pub use prefer_simple_condition::PreferSimpleCondition;
 pub use no_sole_value_sprintf::NoSoleValueSprintf;
 pub use no_compact::NoCompact;
+pub use prefer_unserialize_method::PreferUnserializeMethod;
 pub use require_assign_set_padding::RequireAssignSetPadding;
 pub use require_is_a_allow_string::RequireIsAAllowString;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
@@ -418,5 +434,12 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireStatementPadding),
         Box::new(RequireAssignSetPadding),
         Box::new(PreferPhpVersionId),
+        Box::new(PreferSerializeMethod),
+        Box::new(PreferUnserializeMethod),
+        Box::new(NoVoidOnMagicMethod),
+        Box::new(NoUselessReadonly),
+        Box::new(NoCallUserFuncMethod),
+        Box::new(NoMixedOverruledByNative),
+        Box::new(NoRequiredAfterOptional),
     ]
 }

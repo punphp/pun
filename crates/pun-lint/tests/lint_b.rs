@@ -273,3 +273,66 @@ fn version_compare_func_call_to_constant() {
         "VersionCompareFuncCallToConstantRector",
     );
 }
+
+#[test]
+fn sleep_to_serialize() {
+    run(
+        rules::PreferSerializeMethod,
+        80500,
+        "SleepToSerializeRector",
+    );
+}
+
+#[test]
+fn wakeup_to_unserialize() {
+    run(
+        rules::PreferUnserializeMethod,
+        80500,
+        "WakeupToUnserializeRector",
+    );
+}
+
+#[test]
+fn remove_void_docblock_from_magic_method() {
+    run(
+        rules::NoVoidOnMagicMethod,
+        80500,
+        "RemoveVoidDocblockFromMagicMethodRector",
+    );
+}
+
+#[test]
+fn remove_useless_read_only_tag() {
+    run(
+        rules::NoUselessReadonly,
+        80500,
+        "RemoveUselessReadOnlyTagRector",
+    );
+}
+
+#[test]
+fn call_user_func_to_method_call() {
+    run(
+        rules::NoCallUserFuncMethod,
+        80500,
+        "CallUserFuncToMethodCallRector",
+    );
+}
+
+#[test]
+fn remove_mixed_docblock_overruled_by_native_type() {
+    run(
+        rules::NoMixedOverruledByNative,
+        80500,
+        "RemoveMixedDocblockOverruledByNativeTypeRector",
+    );
+}
+
+#[test]
+fn optional_parameters_after_required() {
+    run(
+        rules::NoRequiredAfterOptional,
+        80500,
+        "OptionalParametersAfterRequiredRector",
+    );
+}

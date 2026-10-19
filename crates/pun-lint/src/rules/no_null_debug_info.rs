@@ -66,7 +66,10 @@ impl Rule for NoNullDebugInfo {
 }
 
 /// Every `return` under `node`, outside nested classes, functions and closures.
-fn returns<'ast, 'arena>(node: Node<'ast, 'arena>, f: &mut impl FnMut(&'ast Return<'arena>)) {
+pub(crate) fn returns<'ast, 'arena>(
+    node: Node<'ast, 'arena>,
+    f: &mut impl FnMut(&'ast Return<'arena>),
+) {
     node.visit_children(|child| match child {
         Node::Class(_) | Node::AnonymousClass(_) | Node::Function(_) | Node::Closure(_) => {}
         Node::Return(r) => {
