@@ -5,6 +5,7 @@
 mod appends;
 mod calls;
 mod classes;
+mod collections;
 mod config;
 mod console;
 mod dispatch;
@@ -45,6 +46,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "larastan.console.undefinedArgument",
     "larastan.console.undefinedOption",
     "larastan.configCollection",
+    "larastan.unnecessaryEnumerableToArrayCall",
 ];
 
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
@@ -71,6 +73,8 @@ pub struct Larastan {
     pub check_model_appends: bool,
     /// The analysed models' database properties, by lowercase class name (filled by [`Larastan::load`]).
     pub(crate) database_properties: HashMap<String, HashSet<String>>,
+    /// `noUnnecessaryEnumerableToArrayCalls` (default false).
+    pub no_unnecessary_enumerable_to_array_calls: bool,
     /// `checkConfigTypes` (default false).
     pub check_config_types: bool,
     /// The app's config files (filled by [`Larastan::load`] when `checkConfigTypes` is on).
@@ -94,6 +98,7 @@ impl Larastan {
             database_properties: HashMap::new(),
             commands: Vec::new(),
             check_config_types: false,
+            no_unnecessary_enumerable_to_array_calls: false,
             configs: Default::default(),
         }
     }
@@ -151,6 +156,8 @@ impl Larastan {
             flag("checkAuthCallsWhenInRequestScope", false);
         larastan.check_model_appends = flag("checkModelAppends", true);
         larastan.check_config_types = flag("checkConfigTypes", false);
+        larastan.no_unnecessary_enumerable_to_array_calls =
+            flag("noUnnecessaryEnumerableToArrayCalls", false);
         Some(larastan)
     }
 }
@@ -298,6 +305,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        if self.larastan.no_unnecessary_enumerable_to_array_calls
+            && collections::to_array(call).is_some()
+        {
+            self.spans.push(call.object.span());
+        }
         if let Some((_, arg)) = console::input_call(call) {
             self.spans.extend([call.object.span(), arg.span()]);
         }

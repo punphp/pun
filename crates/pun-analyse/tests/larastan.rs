@@ -30,6 +30,7 @@ const PORTED: &[&str] = &[
     "larastan.console.undefinedArgument",
     "larastan.console.undefinedOption",
     "larastan.configCollection",
+    "larastan.unnecessaryEnumerableToArrayCall",
 ];
 
 /// Whether the test compares an error: one of a ported rule, or the dispatch rule's argument count (core
@@ -83,6 +84,7 @@ fn larastan_rule_fixtures() {
     larastan.check_model_method_visibility = true;
     larastan.check_auth_calls_when_in_request_scope = true;
     larastan.check_config_types = true;
+    larastan.no_unnecessary_enumerable_to_array_calls = true;
     let mut failing = BTreeSet::new();
     let mut details = Vec::new();
     let mut compared = 0;

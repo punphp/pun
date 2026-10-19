@@ -1,0 +1,21 @@
+{
+    "test": "Rules/NoUnnecessaryEnumerableToArrayCallsRuleTest",
+    "cases": [
+        {
+            "method": "test_rule",
+            "files": [
+                "Rules/data/unnecessary-enumerable-toArray-calls.php"
+            ],
+            "scanned": [],
+            "errors": [
+                {
+                    "file": "Rules/data/unnecessary-enumerable-toArray-calls.php",
+                    "line": 27,
+                    "identifier": "larastan.unnecessaryEnumerableToArrayCall",
+                    "message": "Called [toArray()] on an Enumerable which does not contain any Arrayables.",
+                    "tip": "Use [all()] to get the items as an array."
+                }
+            ]
+        }
+    ]
+}

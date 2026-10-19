@@ -105,9 +105,93 @@ namespace Illuminate\Http {
     }
 }
 
-namespace Illuminate\Database\Eloquent {
-    abstract class Model
+namespace Illuminate\Contracts\Support {
+    /**
+     * @template TKey of array-key
+     * @template TValue
+     */
+    interface Arrayable
     {
+        /** @return array<TKey, TValue> */
+        public function toArray();
+    }
+}
+
+namespace Illuminate\Support {
+    /**
+     * @template TKey of array-key
+     * @template-covariant TValue
+     * @extends \Illuminate\Contracts\Support\Arrayable<TKey, TValue>
+     * @extends \IteratorAggregate<TKey, TValue>
+     */
+    interface Enumerable extends \Illuminate\Contracts\Support\Arrayable, \Countable, \IteratorAggregate
+    {
+    }
+
+    /**
+     * @template TKey of array-key
+     * @template-covariant TValue
+     * @implements \Illuminate\Support\Enumerable<TKey, TValue>
+     */
+    class Collection implements Enumerable
+    {
+        /** @return array<TKey, mixed> */
+        public function toArray()
+        {
+        }
+
+        /** @return array<TKey, TValue> */
+        public function all()
+        {
+        }
+
+        public function count(): int
+        {
+        }
+
+        public function getIterator(): \ArrayIterator
+        {
+        }
+    }
+
+    /**
+     * @template TKey of array-key
+     * @template-covariant TValue
+     * @implements \Illuminate\Support\Enumerable<TKey, TValue>
+     */
+    class LazyCollection implements Enumerable
+    {
+        /** @return array<TKey, mixed> */
+        public function toArray()
+        {
+        }
+
+        public function count(): int
+        {
+        }
+
+        public function getIterator(): \Traversable
+        {
+        }
+    }
+}
+
+namespace Illuminate\Database\Eloquent {
+    /**
+     * @template TKey of array-key
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     * @extends \Illuminate\Support\Collection<TKey, TModel>
+     */
+    class Collection extends \Illuminate\Support\Collection
+    {
+    }
+
+    abstract class Model implements \Illuminate\Contracts\Support\Arrayable
+    {
+        public function toArray()
+        {
+        }
+
         public static function __callStatic($method, $parameters)
         {
         }

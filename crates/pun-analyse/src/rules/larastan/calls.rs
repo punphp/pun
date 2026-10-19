@@ -303,6 +303,9 @@ pub(crate) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall
         return;
     };
     super::console::check(c, call);
+    if larastan.no_unnecessary_enumerable_to_array_calls {
+        super::collections::check(c, call);
+    }
     if larastan.check_octane_compatibility {
         octane::check(c, call);
     }
