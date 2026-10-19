@@ -255,6 +255,55 @@ fn run_errors_exit_2() {
     let (out, err, code) = pun(&d, &[], &[]);
     assert_eq!((out.as_str(), code), ("", Some(2)));
     assert!(err.contains("unknown field `nope`"), "{err}");
+    // A configured baseline that is missing or not TOML, and a baseline path that can't be written.
+    let d = sample("bad-baseline", ERRORS);
+    std::fs::write(
+        d.join("pun.toml"),
+        "[analyse]\npaths = [\"src\"]\nbaseline = \"b.toml\"\n",
+    )
+    .unwrap();
+    let b = d.join("b.toml");
+    let hint = "  run `pun analyse --generate-baseline` to write it again\n";
+    let (out, err, code) = pun(&d, &["--color=never"], &[]);
+    assert_eq!(
+        (out.as_str(), err, code),
+        (
+            "",
+            format!(
+                "x {}  can't read the baseline: No such file or directory (os error 2)\n{hint}",
+                b.display()
+            ),
+            Some(2)
+        )
+    );
+    std::fs::write(&b, "x = \n").unwrap();
+    let (_, err, code) = pun(&d, &["--color=never"], &[]);
+    assert_eq!(
+        (err, code),
+        (
+            format!(
+                "x {}  invalid baseline: string values must be quoted, expected literal string\n{hint}",
+                b.display()
+            ),
+            Some(2)
+        )
+    );
+    std::fs::create_dir(d.join("dir.toml")).unwrap();
+    let (_, err, code) = pun(
+        &d,
+        &["--generate-baseline", "dir.toml", "--color=never"],
+        &[],
+    );
+    assert_eq!(
+        (err, code),
+        (
+            format!(
+                "x can't write the baseline to {}: Is a directory (os error 21)\n",
+                d.join("dir.toml").display()
+            ),
+            Some(2)
+        )
+    );
     // A file that exists but can't be read stops the run, as it stops PHPStan's (CouldNotReadFileException).
     use std::os::unix::fs::PermissionsExt;
     let d = sample("unreadable", CLEAN);

@@ -229,3 +229,61 @@ fn native_rule_options_reach_the_rule() {
         )
     );
 }
+
+#[test]
+fn overrides_set_levels_and_name_only_ported_rules() {
+    let toml = "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"security/no-eval\" = \"error\"\n\"security/no-global\" = \"warn\"\n\n[[lint.overrides]]\nfiles = [\"src/legacy/**\"]\nrules = { \"security/no-eval\" = \"warn\" }\n";
+    let d = project(
+        "lint",
+        "override-levels",
+        &[
+            ("pun.toml", toml),
+            ("src/a.php", "<?php\n\nfunction f()\n{\n    global $y;\n}\n"),
+            ("src/legacy/b.php", LEGACY),
+        ],
+    );
+    let global = "src/a.php:5:5 lint/security/no-global Unsafe use of `global` keyword.";
+    let eval = "src/legacy/b.php:3:1 lint/security/no-eval Unsafe use of `eval` construct.";
+    let warn = |l: &str| l.replacen(" Unsafe", " [warn] Unsafe", 1);
+    // The override turns the error into a warning for the legacy files.
+    assert_eq!(
+        agent(&d, &["lint"]),
+        (
+            vec![warn(global), warn(eval)],
+            "pun lint: pass, 2 warnings".into(),
+            Some(0)
+        )
+    );
+    // `-W`/`-D` win over both, with or without the `lint/` prefix.
+    assert_eq!(
+        agent(
+            &d,
+            &[
+                "lint",
+                "-W",
+                "lint/security/no-global",
+                "-D",
+                "security/no-eval"
+            ]
+        ),
+        (
+            vec![warn(global), eval.into()],
+            "pun lint: fail, 1 error, 1 warning".into(),
+            Some(1)
+        )
+    );
+    // An override that turns on a rule Pun has not ported is a config error naming it.
+    std::fs::write(
+        d.join("pun.toml"),
+        format!("{toml}\n[[lint.overrides]]\nfiles = [\"x\"]\nrules = {{ \"complexity/no-boolean-flag-parameter\" = \"error\" }}\n"),
+    )
+    .unwrap();
+    let (lines, summary, code) = agent(&d, &["lint"]);
+    assert_eq!((lines, code), (vec![], Some(2)));
+    assert!(
+        summary.ends_with(
+            "rule not supported by Pun yet: `lint/complexity/no-boolean-flag-parameter`"
+        ),
+        "{summary}"
+    );
+}
