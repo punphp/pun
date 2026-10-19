@@ -402,7 +402,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-unused-expression" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead code statements" }
 "dead-code/no-unused-foreach-key" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused key in foreach" }
 "dead-code/no-unused-global" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flags `global $x;` declarations whose name is never read or written" }
-"dead-code/no-unused-private-constant" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused class constants" }
+"dead-code/no-unused-private-constant" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused class constants" }
 "dead-code/no-unused-private-method" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused private method" }
 "dead-code/no-unused-private-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameters of private methods, including test-method parameters overwritten before use." }
 "dead-code/no-unused-private-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused private properties" }

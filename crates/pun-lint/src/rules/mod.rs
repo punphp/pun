@@ -101,6 +101,7 @@ mod no_unused_expression;
 mod no_unused_foreach_key;
 mod no_unused_global;
 mod no_unused_label;
+mod no_unused_private_constant;
 mod no_unused_private_method_param;
 mod no_unused_private_property;
 mod no_unused_public_method_param;
@@ -262,6 +263,7 @@ pub use no_unused_expression::NoUnusedExpression;
 pub use no_unused_foreach_key::NoUnusedForeachKey;
 pub use no_unused_global::NoUnusedGlobal;
 pub use no_unused_label::NoUnusedLabel;
+pub use no_unused_private_constant::NoUnusedPrivateConstant;
 pub use no_unused_private_method_param::NoUnusedPrivateMethodParam;
 pub use no_unused_private_property::NoUnusedPrivateProperty;
 pub use no_unused_public_method_param::NoUnusedPublicMethodParam;
@@ -487,5 +489,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireNamedArgumentOrder),
         Box::new(RequireAttributeArgumentOrder),
         Box::new(NoLoopVariableOverwrite),
+        Box::new(NoUnusedPrivateConstant),
     ]
 }

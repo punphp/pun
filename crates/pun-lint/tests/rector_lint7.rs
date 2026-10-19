@@ -220,9 +220,24 @@ impl Rule for Everywhere {
 }
 
 #[test]
+fn remove_unused_private_class_constant() {
+    let linter = only(NoUnusedPrivateConstant);
+    let sources = [
+        "RemoveUnusedPrivateClassConstantRector/Source/AbstractEnum.php",
+        "RemoveUnusedPrivateClassConstantRector/Source/TraitUsingPrivateConstant.php",
+    ];
+    run_with_sources(
+        &linter,
+        "RemoveUnusedPrivateClassConstantRector/Fixture",
+        &sources,
+    );
+    run(&linter, "RemoveUnusedPrivateClassConstantRector/Oracle");
+}
+
+#[test]
 fn rules_ignore_nodes_outside_their_targets() {
     // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
-    let cases: [(fn() -> Box<dyn Rule>, &[&str]); 8] = [
+    let cases: Vec<(fn() -> Box<dyn Rule>, &[&str])> = vec![
         (
             || Box::new(NoNegatedComparison),
             &["rector/BooleanNotIdenticalToNotIdenticalRector"],
@@ -257,6 +272,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(RequireAttributeArgumentOrder),
             &["rector/SortAttributeNamedArgsRector"],
+        ),
+        (
+            || Box::new(NoUnusedPrivateConstant),
+            &["rector/RemoveUnusedPrivateClassConstantRector"],
         ),
     ];
     for (rule, dirs) in cases {
