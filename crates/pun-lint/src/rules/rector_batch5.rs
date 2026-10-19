@@ -36,17 +36,20 @@ pub(crate) fn replace_with<'a>(
     };
     let span = node_span(list.stmts[index]);
     let indent = line_indent(source, span.start);
-    let text = if list.frame == Frame::Bare {
-        // php-parser prints the statements the single statement of a control structure becomes in braces.
-        let inner = format!("{indent}    ");
-        format!(
-            "{{\n{inner}{}\n{indent}}}",
+    if list.frame == Frame::Bare && stmts.len() > 1 {
+        // php-parser prints the statements the single statement of a control structure becomes in braces, after the
+        // header at the control structure's indent; one statement takes its place.
+        let from = source[..span.start].trim_end().len();
+        let outer = line_indent(source, from);
+        let inner = format!("{outer}    ");
+        let text = format!(
+            " {{\n{inner}{}\n{outer}}}",
             moved_statements(source, stmts, &inner)
-        )
-    } else {
-        inserted_statements(source, stmts, indent)
-    };
-    if alone && stmts.len() > 1 && list.frame != Frame::Bare {
+        );
+        return vec![Edit::new(Span::new(from, span.end), text)];
+    }
+    let text = inserted_statements(source, stmts, indent);
+    if alone && stmts.len() > 1 {
         // php-parser's differ sees one removal and several additions (not a replacement), and pArray drops the
         // removed statement with its comments and the whitespace on one side: after it when it is first (the
         // additions wait for the next kept statement), before it otherwise.
@@ -571,10 +574,7 @@ fn uses_param(node: Node<'_, '_>, name: &[u8]) -> bool {
         }
         Node::FunctionCall(call) if named(call, "compact") => {
             let names = call.argument_list.arguments.iter().any(|a| {
-                let Argument::Positional(a) = a else {
-                    return false;
-                };
-                matches!(value(a.value), Some(Value::Str(s)) if s.as_bytes().eq_ignore_ascii_case(&name[1..]))
+                matches!(value(a.value()), Some(Value::Str(s)) if s.as_bytes().eq_ignore_ascii_case(&name[1..]))
             });
             if names {
                 return true;
@@ -807,8 +807,7 @@ fn array_property(ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
     let members = ancestors.iter().rev().find_map(|n| match n {
         Node::Class(c) => Some(&c.members),
         Node::AnonymousClass(c) => Some(&c.members),
-        Node::Trait(t) => Some(&t.members),
-        Node::Enum(_) | Node::Interface(_) => None,
+        // A trait's methods run without a class in Rector's scope, so PHPStan knows no property type there.
         _ => None,
     });
     let Some(members) = members else { return false };
@@ -833,13 +832,15 @@ fn function_like<'a>(
     ancestors: &[Node<'a, 'a>],
 ) -> Option<(&'a FunctionLikeParameterList<'a>, Node<'a, 'a>)> {
     ancestors.iter().rev().find_map(|n| match n {
-        Node::Method(m) => match &m.body {
-            MethodBody::Concrete(b) => Some((&m.parameter_list, Node::Block(b))),
-            MethodBody::Abstract(_) => None,
-        },
+        Node::Method(
+            m @ Method {
+                body: MethodBody::Concrete(b),
+                ..
+            },
+        ) => Some((&m.parameter_list, Node::Block(b))),
         Node::Function(f) => Some((&f.parameter_list, Node::Block(&f.body))),
+        // An arrow function holds no statement, so no `foreach` asks from inside one.
         Node::Closure(c) => Some((&c.parameter_list, Node::Block(&c.body))),
-        Node::ArrowFunction(a) => Some((&a.parameter_list, Node::Expression(a.expression))),
         _ => None,
     })
 }

@@ -145,8 +145,8 @@ fn unwrap_future_compatible_if_php_version() {
         &only(rules::NoFuturePhpVersionCheck, 80400),
         "UnwrapFutureCompatibleIfPhpVersionRector/Oracle",
     );
-    // Where Rector crashes on an unknown sign, or decides a check on a call's value or an unknown sign; the expected
-    // code (left alone) is derived by hand.
+    // Where Rector crashes on an unknown sign, or decides a check on a call's value, an unknown sign or a negated
+    // string (which Pun does not evaluate); the expected code (left alone) is derived by hand.
     run(
         &only(rules::NoFuturePhpVersionCheck, 80400),
         "UnwrapFutureCompatibleIfPhpVersionRector/Pun",
@@ -269,7 +269,8 @@ fn foreach_to_in_array() {
         "ForeachToInArrayRector/Oracle",
     );
     // Derived by hand: Rector drops an `else` the `if` has, and Pun leaves a list whose first statements would go
-    // ahead of kept ones (php-parser's reprint there is not ported).
+    // ahead of kept ones (php-parser's reprint there is not ported), a file-level variable, and a local whose other
+    // writes (`+=`, a list, a reference, a `foreach` target, a by-reference `use`) PHPStan still types as an array.
     run(
         &only(rules::PreferInArrayOverForeach, 80400),
         "ForeachToInArrayRector/Pun",
