@@ -28,7 +28,10 @@ bench = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bench)
 
 
-def pairs_of_rector(out: str, pun_id: dict[str, str]) -> set[tuple[str, str]]:
+def pairs_of_rector(rector: subprocess.CompletedProcess, pun_id: dict[str, str]) -> set[tuple[str, str]]:
+    out = rector.stdout
+    if "{" not in out:
+        sys.exit(f"Rector exited {rector.returncode}: {(out + rector.stderr).strip()[-1000:]}")
     data = json.loads(out[out.index("{"):])
     if data.get("fatal_errors"):
         sys.exit(f"Rector: {data['fatal_errors']}")
@@ -70,7 +73,7 @@ def compare(name: str, pun: str, env: dict) -> bool:
                            "--no-cache", *bench.LINT[name]], cwd=work, env=env, capture_output=True, text=True)
     if ours.returncode not in (0, 1):
         sys.exit(f"pun lint exited {ours.returncode}: {ours.stderr.strip()[-500:]}")
-    theirs, mine = pairs_of_rector(rector.stdout, pun_id), pairs_of_pun(ours.stdout)
+    theirs, mine = pairs_of_rector(rector, pun_id), pairs_of_pun(ours.stdout)
     by_rule = defaultdict(list)
     for f, r in sorted(theirs - mine):
         by_rule[r].append(f"  rector only  {f}")
