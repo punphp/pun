@@ -7,12 +7,6 @@ Classes/ClassConstantRuleTest::testDynamicAccess
 # `new $object` where Mago types an object of an unknown class as mixed
 Classes/InstantiationRuleTest::testInstantiation
 Classes/InstantiationRuleTest::testBug4471
-# @phpstan-type / @phpstan-import-type aliases (LocalTypeAliasesRule & co.) not ported
-Classes/LocalTypeAliasesRuleTest::testRule
-Classes/LocalTypeAliasesRuleTest::testEnums
-Classes/LocalTypeTraitAliasesRuleTest::testRule
-Classes/LocalTypeTraitUseAliasesRuleTest::testRule
-Classes/LocalTypeTraitUseAliasesRuleTest::testRuleSpecific
 # `abstract final` on a property is a php-parser error (phpstan.parse, nothing else reported); Mago parses it
 Properties/PropertyInClassRuleTest::testPhp84AndAbstractFinalHookedPropertiesParseError
 Properties/PropertyInClassRuleTest::testPhp84FinalPropertyHooks

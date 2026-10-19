@@ -31,6 +31,7 @@ mod signatures;
 mod statements;
 mod syntax;
 mod through_static;
+mod type_aliases;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -56,6 +57,14 @@ pub use larastan::Larastan;
 pub(crate) use reflection::builtins;
 
 pub const IDENTIFIERS: &[&str] = &[
+    "typeAlias.circular",
+    "typeAlias.duplicate",
+    "typeAlias.invalidName",
+    "typeAlias.invalidType",
+    "typeAlias.notFound",
+    "typeAlias.trait",
+    "typeAlias.unresolvableType",
+    "generics.notGeneric",
     "function.notFound",
     "class.notFound",
     "new.static",
@@ -727,6 +736,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         hierarchy::in_class(self, class.span(), &name);
         hierarchy::allowed_subtypes(self, class.span(), &name);
+        type_aliases::class_like(self, class.span());
         missing_types::class(self, class);
         larastan::class(self, class);
         constants::read_only_class(self, class.span(), class.modifiers.as_slice(), false);
@@ -768,6 +778,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &name,
         );
         hierarchy::allowed_subtypes(self, i.span(), &name);
+        type_aliases::class_like(self, i.span());
         missing_types::interface(self, i);
     }
     fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
@@ -807,6 +818,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         hierarchy::in_class(self, e.span(), &name);
         hierarchy::allowed_subtypes(self, e.span(), &name);
+        type_aliases::class_like(self, e.span());
         missing_types::enum_(self, e);
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
@@ -822,6 +834,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let Some(class) = self.trait_context.as_ref().map(|t| t.class.clone()) else {
             attributes::trait_declaration(self, t);
             hierarchy::sealed_trait(self, t);
+            let name = self.resolved_span(t.name.span);
+            type_aliases::trait_definition(self, t.span(), &name);
             missing_types::trait_(self, t);
             return;
         };
@@ -846,6 +860,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             .map_or_else(|| name.clone(), |k| self.display(k));
         declarations::trait_duplicates(self, t.members.as_slice(), &display);
         attributes::trait_in_context(self, t);
+        type_aliases::trait_use(self, t.span(), &name, &class);
         for member in t.members.iter() {
             if let ClassLikeMember::Method(m) = member {
                 let original = String::from_utf8_lossy(m.name.value).into_owned();
