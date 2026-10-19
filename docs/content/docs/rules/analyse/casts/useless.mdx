@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/casts/useless" />
 
-Enabled by the [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.uselessCast`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Additional upstream gates: `strictRules.uselessCast`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
@@ -15,24 +15,17 @@ Enabled by the [`analyse-recommended`](/docs/rules/presets/analyse-recommended),
 - [`RedundantCast`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
 - [`cast.useless`](https://phpstan.org/error-identifiers/cast.useless) (phpstan-strict-rules).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"casts/useless" = true
+"casts/useless" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/casts/useless -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
@@ -41,9 +34,5 @@ No configurable options.
 ## Linked rules
 
 - Fixed by [`lint/dead-code/no-useless-cast`](/docs/rules/lint/dead-code/no-useless-cast).
-
-## Other rules in analyse/casts
-
-- [`analyse/casts/unset-not-supported`](/docs/rules/analyse/casts/unset-not-supported)
 
 [Group reference](/docs/rules/analyse/casts) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

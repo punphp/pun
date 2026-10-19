@@ -16,7 +16,7 @@ Across commands: format: 0, lint: 63, analyse: 0.
 
 Split 2 assigns with "and" to separate lines
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-boolean-flag-parameter">
@@ -25,7 +25,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Flags function-like parameters that use a boolean type and drive the function's behaviour.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-boolean-literal-compare">
@@ -34,7 +34,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Simplify bool value compare to true or false
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-compact">
@@ -43,7 +43,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change `compact()` call to own array
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-concat-assign-new-item">
@@ -52,7 +52,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change concat assign on a new array item to plain assign, as the new item is always null
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-constant-condition">
@@ -61,7 +61,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Detects `if` statements where the condition is a constant that always
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-constant-via-variable">
@@ -70,7 +70,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Change variable class constant fetch to direct class constant fetch when class or constant target is final
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-double-negation">
@@ -79,7 +79,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Replace the Double not operator (!!) by type-casting to boolean
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-duplicate-match-arm">
@@ -88,7 +88,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Detects `match` arms that produce the same result as an earlier arm.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/complexity/no-else-clause">
@@ -97,7 +97,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Flags `if` statements that include an `else` or `elseif` branch.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-empty-file">
@@ -106,7 +106,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects redundant files that contain no executable code or declarations.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-cyclomatic">
@@ -115,7 +115,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Checks the cyclomatic complexity of classes, traits, enums, interfaces, functions, and closures.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-enum-cases">
@@ -124,7 +124,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects enums with too many cases.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-halstead">
@@ -133,7 +133,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Computes Halstead metrics (volume, difficulty, effort) and reports if they exceed configured thresholds.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-kan-defect">
@@ -142,7 +142,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects classes, traits, interfaces, functions, and closures with high kan defect.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-methods">
@@ -151,7 +151,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects class-like structures with too many methods.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-nesting">
@@ -160,7 +160,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Checks if the nesting level in any block exceeds a configurable threshold.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-parameters">
@@ -169,7 +169,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects functions, closures, and methods with too many parameters.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-excessive-properties">
@@ -178,7 +178,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects class-like structures with too many properties.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-goto">
@@ -187,7 +187,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects the use of `goto` statements and labels.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-iterator-to-array-in-foreach">
@@ -196,7 +196,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects `iterator_to_array()` calls used directly as a `foreach` expression.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/complexity/no-negated-and">
@@ -205,7 +205,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Simplify negated "and" conditions to "or" with de Morgan theorem
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-negated-boolean-literal">
@@ -214,7 +214,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Replace negated boolean literals (!false, !true) with their simplified equivalents (true, false)
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-negated-comparison">
@@ -223,7 +223,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Replace negated comparisons such as `!($a === $b)` with the inverse operator.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-negated-group">
@@ -232,7 +232,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Simplify negated conditions with de Morgan theorem
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-phpdoc-class-case-mismatch">
@@ -241,7 +241,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Fix a misspelled class name casing in a @var docblock to match the real class name
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-redundant-isset">
@@ -250,7 +250,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Detects redundant arguments in `isset()` calls where a nested access already implies the parent checks.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-redundant-literal-return">
@@ -259,7 +259,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Detects redundant literal guard patterns where an if statement checks if a variable equals a literal and returns that same literal, followed by returning the variable.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-redundant-null-check">
@@ -268,7 +268,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Return the value directly instead of checking it for null first.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-redundant-nullable-check">
@@ -277,7 +277,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Direct return on if nullable check before return
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/no-redundant-nullsafe">
@@ -286,7 +286,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Flags the use of the nullsafe operator (`?->`) in contexts where its null-checking behavior is redundant.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-redundant-write-visibility">
@@ -295,7 +295,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Detects redundant write visibility modifiers on properties.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/complexity/no-single-case-switch">
@@ -304,7 +304,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Change `switch` with only 1 check to `if`
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-single-item-in-array">
@@ -313,7 +313,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Changes in_array() with single element to ===
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-sole-value-sprintf">
@@ -322,7 +322,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Remove `sprintf()` wrapper if not needed
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-unused-label">
@@ -331,7 +331,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Detects redundant `goto` labels that are declared but not used.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/complexity/no-useless-array-values">
@@ -340,7 +340,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Removes unneeded array_values() in in_array() call
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/no-useless-block">
@@ -349,7 +349,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Remove `{ }` blocks that do not belong to a control structure.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-absolute-include">
@@ -358,7 +358,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Migrate include/require to absolute path. This Rector might introduce backwards incompatible code, when the include/require being changed depends on the current working directory.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-array-literal">
@@ -367,7 +367,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change array_merge of non arrays to array directly
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-coalesce-chain">
@@ -376,7 +376,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Turn consecutive `if ($x !== null) return $x;` checks into one `??` chain.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-coalesce-over-empty-ternary">
@@ -385,7 +385,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change ternary empty on array property with array dim fetch to coalesce operator
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/prefer-coalesce-over-foreach">
@@ -394,7 +394,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Replace a foreach that looks up a key with `??`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-empty-array-compare">
@@ -403,7 +403,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Compare with `[]` instead of empty()/is_array() on arrays.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-empty-array-identical">
@@ -412,7 +412,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Simplify empty() functions calls on empty arrays
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-func-num-args">
@@ -421,7 +421,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Simplify count of func_get_args() to func_num_args()
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-in-array">
@@ -430,7 +430,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Use in_array() instead of repeated `||`/`&&` comparisons, array_search() checks and foreach loops.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-in-array-over-foreach">
@@ -439,7 +439,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Replace a foreach that returns a boolean on a match with `in_array()`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-in-array-over-search">
@@ -448,7 +448,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Simplify `array_search()` compared with `false` to `in_array()`
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-inline-array-return">
@@ -457,7 +457,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Inline just in time array dim fetch assigns to direct return
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/prefer-instance-method">
@@ -466,7 +466,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change static method and local-only calls to non-static
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/prefer-min-max">
@@ -475,7 +475,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change ternary number compare to `max()` call
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-named-literal-argument">
@@ -484,7 +484,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Name literal arguments (true, false, null, numbers) in calls.
 
-Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/prefer-not-in-array">
@@ -493,7 +493,7 @@ Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour
 
 Use `! in_array()` instead of repeated `!==`/`!=` comparisons of one value joined by `&&`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-null-coalesce">
@@ -502,7 +502,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Gated by php-version.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Gated by php-version.
 
 </Card>
 <Card title="lint/complexity/prefer-property-default">
@@ -511,7 +511,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Move property default from constructor to property default
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/prefer-property-exists">
@@ -520,7 +520,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Use property_exists() instead of array_key_exists() or isset() on object properties.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. Gated by php-version. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Gated by php-version. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/prefer-simple-condition">
@@ -529,7 +529,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Simplify a negated comparison or a comparison with a boolean
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/require-attribute-argument-order">
@@ -538,7 +538,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Sort named arguments in PHP 8 attributes to match their declaration order
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/require-consistent-return">
@@ -547,7 +547,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Add explicit return null to method/function that returns a value, but missed main return
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/require-is-a-allow-string">
@@ -556,7 +556,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Complete missing 3rd argument in case is_a() function in case of strings
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/complexity/require-named-argument-order">
@@ -565,7 +565,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Order named arguments as the parameters are declared.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/complexity/require-previous-exception">
@@ -574,7 +574,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 When throwing into a catch block, checks that the previous exception is passed to the new throw clause
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 </CardGroup>

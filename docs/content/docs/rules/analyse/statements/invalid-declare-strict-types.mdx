@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/statements/invalid-declare-strict-types" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -15,39 +15,20 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 - [`declareStrictTypes.notFirst`](https://phpstan.org/error-identifiers/declareStrictTypes.notFirst) (phpstan).
 - [`declareStrictTypes.value`](https://phpstan.org/error-identifiers/declareStrictTypes.value) (phpstan).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"statements/invalid-declare-strict-types" = true
+"statements/invalid-declare-strict-types" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/statements/invalid-declare-strict-types -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/statements
-
-- [`analyse/statements/invalid-empty`](/docs/rules/analyse/statements/invalid-empty)
-- [`analyse/statements/invalid-isset`](/docs/rules/analyse/statements/invalid-isset)
-- [`analyse/statements/magic-constant-out-of-context`](/docs/rules/analyse/statements/magic-constant-out-of-context)
-- [`analyse/statements/non-capturing-catch-not-supported`](/docs/rules/analyse/statements/non-capturing-catch-not-supported)
-- [`analyse/statements/throw-expression-not-supported`](/docs/rules/analyse/statements/throw-expression-not-supported)
 
 [Group reference](/docs/rules/analyse/statements) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

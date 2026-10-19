@@ -13,7 +13,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 - [`require-preg-quote-delimiter`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#require-preg-quote-delimiter) (mago-linter).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,31 +28,8 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 This rule requires that when using `preg_quote()`, the second `$delimiter` argument is always provided.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/security
-
-- [`lint/security/add-sensitive-parameter`](/docs/rules/lint/security/add-sensitive-parameter)
-- [`lint/security/no-debug-calls`](/docs/rules/lint/security/no-debug-calls)
-- [`lint/security/no-eval`](/docs/rules/lint/security/no-eval)
-- [`lint/security/no-ffi`](/docs/rules/lint/security/no-ffi)
-- [`lint/security/no-global`](/docs/rules/lint/security/no-global)
-- [`lint/security/no-homoglyph-names`](/docs/rules/lint/security/no-homoglyph-names)
-- [`lint/security/no-insecure-comparison`](/docs/rules/lint/security/no-insecure-comparison)
-- [`lint/security/no-literal-password`](/docs/rules/lint/security/no-literal-password)
-- [`lint/security/no-request-variable`](/docs/rules/lint/security/no-request-variable)
-- [`lint/security/no-restricted-functions`](/docs/rules/lint/security/no-restricted-functions)
-- [`lint/security/no-restricted-instantiation`](/docs/rules/lint/security/no-restricted-instantiation)
-- [`lint/security/no-tainted-data`](/docs/rules/lint/security/no-tainted-data)
 
 [Group reference](/docs/rules/lint/security) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

@@ -16,7 +16,7 @@ Across commands: format: 0, lint: 4, analyse: 0.
 
 Detects calls to `preg_split()` whose pattern has no regex meta-characters and no modifiers, which means the split could be done with `explode()`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/performance/prefer-static-closure">
@@ -25,7 +25,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Lambdas not (indirectly) referencing `$this` must be declared `static`.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/performance/require-qualified-native-constant">
@@ -34,7 +34,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Add leading `\` before constant invocation of internal constant to speed up resolving. Constant name match is case-sensitive, except for `null`, `false` and `true`.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/performance/require-qualified-native-function">
@@ -43,7 +43,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Add leading `\` before function invocation to speed up resolving.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 </CardGroup>

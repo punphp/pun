@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/functions/invalid-pure" />
 
-Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
@@ -58,48 +58,20 @@ Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`a
 - [`pureMethod.redundantUnlessCallable`](https://phpstan.org/error-identifiers/pureMethod.redundantUnlessCallable) (phpstan).
 - [`void.pure`](https://phpstan.org/error-identifiers/void.pure) (phpstan).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"functions/invalid-pure" = true
+"functions/invalid-pure" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/functions/invalid-pure -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/functions
-
-- [`analyse/functions/closure-uses-this`](/docs/rules/analyse/functions/closure-uses-this)
-- [`analyse/functions/conflicting-filter-var-flags`](/docs/rules/analyse/functions/conflicting-filter-var-flags)
-- [`analyse/functions/duplicate-parameter`](/docs/rules/analyse/functions/duplicate-parameter)
-- [`analyse/functions/internal-function-call`](/docs/rules/analyse/functions/internal-function-call)
-- [`analyse/functions/internal-function-callable`](/docs/rules/analyse/functions/internal-function-callable)
-- [`analyse/functions/invalid-callable-call`](/docs/rules/analyse/functions/invalid-callable-call)
-- [`analyse/functions/invalid-closure-use`](/docs/rules/analyse/functions/invalid-closure-use)
-- [`analyse/functions/invalid-first-class-callable`](/docs/rules/analyse/functions/invalid-first-class-callable)
-- [`analyse/functions/invalid-parameter-name`](/docs/rules/analyse/functions/invalid-parameter-name)
-- [`analyse/functions/invalid-pure-method`](/docs/rules/analyse/functions/invalid-pure-method)
-- [`analyse/functions/invalid-vprintf-arguments`](/docs/rules/analyse/functions/invalid-vprintf-arguments)
-- [`analyse/functions/printf-placeholder-count`](/docs/rules/analyse/functions/printf-placeholder-count)
-- [`analyse/functions/unanalysed-inner-function`](/docs/rules/analyse/functions/unanalysed-inner-function)
-- [`analyse/functions/variadic-not-last`](/docs/rules/analyse/functions/variadic-not-last)
 
 [Group reference](/docs/rules/analyse/functions) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

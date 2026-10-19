@@ -14,7 +14,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 - [`StrictFunctionCallsRule`](https://github.com/phpstan/phpstan-strict-rules#readme) (phpstan-classes).
 - [`function.strict`](https://phpstan.org/error-identifiers/function.strict) (phpstan-strict-rules).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -29,33 +29,8 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Requires the strict flag of `in_array()`, `array_search()`, `array_keys()` with a search value and `base64_decode()`.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/functions
-
-- [`lint/functions/no-assign-in-argument`](/docs/rules/lint/functions/no-assign-in-argument)
-- [`lint/functions/no-call-user-func-method`](/docs/rules/lint/functions/no-call-user-func-method)
-- [`lint/functions/no-extra-arguments`](/docs/rules/lint/functions/no-extra-arguments)
-- [`lint/functions/no-missing-format-argument`](/docs/rules/lint/functions/no-missing-format-argument)
-- [`lint/functions/no-required-after-optional`](/docs/rules/lint/functions/no-required-after-optional)
-- [`lint/functions/no-swapped-explode-arguments`](/docs/rules/lint/functions/no-swapped-explode-arguments)
-- [`lint/functions/no-unreachable-default-argument-value`](/docs/rules/lint/functions/no-unreachable-default-argument-value)
-- [`lint/functions/no-unused-closure-use`](/docs/rules/lint/functions/no-unused-closure-use)
-- [`lint/functions/no-unused-closure-variable`](/docs/rules/lint/functions/no-unused-closure-variable)
-- [`lint/functions/no-void-reference-return`](/docs/rules/lint/functions/no-void-reference-return)
-- [`lint/functions/require-array-filter-callback`](/docs/rules/lint/functions/require-array-filter-callback)
-- [`lint/functions/require-assert-description`](/docs/rules/lint/functions/require-assert-description)
-- [`lint/functions/require-strict-array-search`](/docs/rules/lint/functions/require-strict-array-search)
-- [`lint/functions/require-strict-in-array`](/docs/rules/lint/functions/require-strict-in-array)
 
 [Group reference](/docs/rules/lint/functions) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

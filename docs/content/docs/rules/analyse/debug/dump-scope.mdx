@@ -7,45 +7,27 @@ pagination: false
 
 <RuleId id="analyse/debug/dump-scope" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
 - [`DebugScopeRule`](https://phpstan.org/error-identifiers/phpstan.debugScope) (phpstan-classes).
 - [`phpstan.debugScope`](https://phpstan.org/error-identifiers/phpstan.debugScope) (phpstan).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"debug/dump-scope" = true
+"debug/dump-scope" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/debug/dump-scope -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/debug
-
-- [`analyse/debug/assert-type`](/docs/rules/analyse/debug/assert-type)
-- [`analyse/debug/dump-native-type`](/docs/rules/analyse/debug/dump-native-type)
-- [`analyse/debug/dump-phpdoc-type`](/docs/rules/analyse/debug/dump-phpdoc-type)
-- [`analyse/debug/dump-type`](/docs/rules/analyse/debug/dump-type)
 
 [Group reference](/docs/rules/analyse/debug) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

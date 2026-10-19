@@ -7,7 +7,7 @@ pagination: false
 
 ## Config translation
 
-Pun reads only pun.toml. `pun migrate` leaves the source config in place. Unported rules and unsupported items are named and skipped, with a request to send a PR. There is no PHP fallback.
+`pun migrate` leaves source configs in place and reports skipped items. Planned rules are not implemented. Pun never falls back to PHP for missing rules.
 
 Larastan is part of the PHPStan migration: run `pun migrate --from phpstan` on the config that includes `larastan/larastan/extension.neon`.
 
@@ -19,7 +19,7 @@ Larastan is part of the PHPStan migration: run `pun migrate --from phpstan` on t
 | Rule booleans and changed parameters | Rule on/off settings and kebab-case options for each running rule that reads them |
 | `ignoreErrors` and `@phpstan-ignore larastan.*` | Pun rule IDs, retaining the original identifier in ignore tables |
 
-Planned checks remain documented here but do not run until ported. The Laravel groundwork is still in progress.
+Laravel analysis is incomplete. See [analysis limitations](/docs/commands/analyse#configuration).
 
 ## Rule mapping
 

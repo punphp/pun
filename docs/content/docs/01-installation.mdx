@@ -1,64 +1,33 @@
 ---
 title: Installation
-description: Install the pun binary with the shell installer, Homebrew, npm or Composer, or build it from source.
+description: Build Pun from source and check its runtime requirements.
 ---
 
-Pun is one native binary with no PHP or Node dependency. Prebuilt binaries cover Linux x64 and arm64 (glibc and musl) and macOS x64 and arm64.
+## Build from source
 
-<Tabs param="install">
-  <Tab title="Shell">
-
-```bash
-curl -LsSf https://github.com/punphp/pun/releases/latest/download/punphp-installer.sh | sh
-```
-
-  </Tab>
-  <Tab title="Homebrew">
+Requires Rust 1.99 or later and access to the repository. Release packages are not published yet.
 
 ```bash
-brew install punphp/tap/pun
-```
-
-  </Tab>
-  <Tab title="npm">
-
-```bash
-npm install --save-dev @punphp/pun
-```
-
-  </Tab>
-  <Tab title="Composer">
-
-```bash
-composer require --dev punphp/pun
-```
-
-The Composer package downloads the native binary on first run.
-
-  </Tab>
-  <Tab title="From source">
-
-```bash
-cargo install --git https://github.com/punphp/pun punphp --features mago-lint
-```
-
-Release builds ship with the `mago-lint` feature, which `pun lint --mago` needs.
-
-  </Tab>
-</Tabs>
-
-Check it works:
-
-```bash
+cargo install --locked --git https://github.com/punphp/pun punphp
 pun --version
 ```
 
-## Next
-
-Pun reads one file, `pun.toml`. In a project that uses Pint today, write it with:
+From a local checkout, install with:
 
 ```bash
-pun migrate
+cargo install --locked --path crates/pun-cli
 ```
 
-See the [Quickstart](/docs/quickstart).
+## Runtime requirements
+
+- Projects must target PHP 8.4 or later. Pun reads the target from `composer.json` unless `[php] version` overrides it.
+- PHP checks need no PHP or Node runtime.
+- Blade formatting requires Node.js and these project dependencies:
+
+```bash
+npm install --save-dev prettier@^3.8.4 prettier-plugin-blade@^3.2.2 prettier-plugin-tailwindcss@^0.8.0
+```
+
+- Migrating `.php-cs-fixer.php` or `rector.php` requires PHP and the corresponding tool. For Rector, run `composer install` first.
+
+Continue with the [quickstart](/docs/quickstart).

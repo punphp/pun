@@ -1,41 +1,24 @@
 ---
 title: From pint.json
-description: How pun migrate maps a pint.json onto pun.toml, rule by rule.
+description: Configuration keys and rule names translated from Pint.
 ---
 
-Pun doesn't read `pint.json` at run time. [`pun migrate`](/docs/commands/migrate) reads it once, the way Pint does, and writes `pun.toml`:
+Pun commands read `pun.toml`, not `pint.json`. [`pun migrate --from pint`](/docs/commands/migrate) translates these settings:
 
 | pint.json | pun.toml |
 | --- | --- |
 | `"preset": "laravel"` | `[format] preset = "laravel"` |
 | `"rules"` that differ from the preset | `[format.rules]`, under Pun IDs and [option names](/docs/configuration/pun-toml#rule-options) |
-| Risky rules (`final_class`, `strict_comparison`, ...) | `[lint.rules]` at `"error"` |
+| Risky and code-deleting rules | `[lint.rules]` at `"error"` |
 | `"in"` | `[files] paths` |
 | `"exclude"`, `"notName"`, `"notPath"` | `[format] exclude`, `not-name`, `not-path` |
 | `"extend"` | Resolved the way Pint resolves it |
 | `"Pun/prefer_fake_helper": true` | `[lint.rules] "laravel/prefer-fake-helper" = "error"` |
 
-A `.php-cs-fixer.php` without a `pint.json` is read through PHP-CS-Fixer itself, so whatever it computes is what gets migrated.
+A `.php-cs-fixer.php` is read through PHP-CS-Fixer with system PHP. When both configs are selected, Pint takes precedence.
 
-```json pint.json
-{
-  "preset": "laravel",
-  "rules": { "concat_space": { "spacing": "one" }, "final_class": true },
-  "exclude": ["build"]
-}
-```
+Pint's `per` and `symfony` presets expand into explicit rules over `preset = "empty"`. Rule options are translated to Pun names and values.
 
-```toml pun.toml
-[format]
-preset = "laravel"
-exclude = ["build"]
+The [Pint rule mapping](/docs/migrate/from/pint) lists upstream names, translated options, and unsupported items. Skipped rules are reported during migration.
 
-[format.rules]
-"operators/concat-spacing" = "one"
-
-[lint.rules]
-# ...the laravel preset's 15 risky and code-deleting rules, each at "error", then:
-"style/require-final-class" = "error"
-```
-
-`pun check --fix` on the migrated project writes exactly what `pint` wrote on the original.
+Use `pun check --fix` to apply both format and lint rules from a migrated config. The [migration guide](/docs/guides/migrating-from-pint) covers comparison and script changes.

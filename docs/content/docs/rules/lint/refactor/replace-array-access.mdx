@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/refactor/replace-array-access" />
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
 - [`ArrayDimFetchToMethodCall`](https://getrector.com/rule-detail/array-dim-fetch-to-method-call-rector) (rector).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,38 +28,8 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Change array dim fetch to method call
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/refactor
-
-- [`lint/refactor/add-override-attribute`](/docs/rules/lint/refactor/add-override-attribute)
-- [`lint/refactor/no-negated-condition`](/docs/rules/lint/refactor/no-negated-condition)
-- [`lint/refactor/prefer-attribute-over-annotation`](/docs/rules/lint/refactor/prefer-attribute-over-annotation)
-- [`lint/refactor/prefer-constant`](/docs/rules/lint/refactor/prefer-constant)
-- [`lint/refactor/remove-attribute`](/docs/rules/lint/refactor/remove-attribute)
-- [`lint/refactor/remove-function-argument`](/docs/rules/lint/refactor/remove-function-argument)
-- [`lint/refactor/remove-function-call`](/docs/rules/lint/refactor/remove-function-call)
-- [`lint/refactor/remove-phpdoc-annotation`](/docs/rules/lint/refactor/remove-phpdoc-annotation)
-- [`lint/refactor/rename-cast`](/docs/rules/lint/refactor/rename-cast)
-- [`lint/refactor/rename-class`](/docs/rules/lint/refactor/rename-class)
-- [`lint/refactor/rename-class-constant`](/docs/rules/lint/refactor/rename-class-constant)
-- [`lint/refactor/rename-constant`](/docs/rules/lint/refactor/rename-constant)
-- [`lint/refactor/rename-function`](/docs/rules/lint/refactor/rename-function)
-- [`lint/refactor/rename-method`](/docs/rules/lint/refactor/rename-method)
-- [`lint/refactor/rename-phpdoc-tag`](/docs/rules/lint/refactor/rename-phpdoc-tag)
-- [`lint/refactor/replace-function-with-constant`](/docs/rules/lint/refactor/replace-function-with-constant)
-- [`lint/refactor/replace-function-with-new`](/docs/rules/lint/refactor/replace-function-with-new)
-- [`lint/refactor/replace-function-with-static`](/docs/rules/lint/refactor/replace-function-with-static)
-- [`lint/refactor/replace-static-with-method`](/docs/rules/lint/refactor/replace-static-with-method)
 
 [Group reference](/docs/rules/lint/refactor) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

@@ -7,158 +7,26 @@ pagination: false
 
 <RuleId id="analyse/types/missing-method-return-type" />
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
 - [`MissingMethodReturnTypehintRule`](https://phpstan.org/error-identifiers/missingType.callable) (phpstan-classes).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"types/missing-method-return-type" = true
+"types/missing-method-return-type" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/types/missing-method-return-type -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/types
-
-- [`analyse/types/argument`](/docs/rules/analyse/types/argument)
-- [`analyse/types/argument-not-numeric`](/docs/rules/analyse/types/argument-not-numeric)
-- [`analyse/types/argument-not-stringable`](/docs/rules/analyse/types/argument-not-stringable)
-- [`analyse/types/arrow-function-nullsafe-by-ref`](/docs/rules/analyse/types/arrow-function-nullsafe-by-ref)
-- [`analyse/types/arrow-function-param-default`](/docs/rules/analyse/types/arrow-function-param-default)
-- [`analyse/types/arrow-function-return`](/docs/rules/analyse/types/arrow-function-return)
-- [`analyse/types/assign-to-this`](/docs/rules/analyse/types/assign-to-this)
-- [`analyse/types/by-ref-foreach-on-expression`](/docs/rules/analyse/types/by-ref-foreach-on-expression)
-- [`analyse/types/call-user-func-argument`](/docs/rules/analyse/types/call-user-func-argument)
-- [`analyse/types/catch-non-throwable`](/docs/rules/analyse/types/catch-non-throwable)
-- [`analyse/types/class-constant-value`](/docs/rules/analyse/types/class-constant-value)
-- [`analyse/types/clone-non-object`](/docs/rules/analyse/types/clone-non-object)
-- [`analyse/types/closure-param-default`](/docs/rules/analyse/types/closure-param-default)
-- [`analyse/types/closure-return`](/docs/rules/analyse/types/closure-return)
-- [`analyse/types/constant-value`](/docs/rules/analyse/types/constant-value)
-- [`analyse/types/dead-catch`](/docs/rules/analyse/types/dead-catch)
-- [`analyse/types/define-value`](/docs/rules/analyse/types/define-value)
-- [`analyse/types/echo-non-string`](/docs/rules/analyse/types/echo-non-string)
-- [`analyse/types/enum-template-not-allowed`](/docs/rules/analyse/types/enum-template-not-allowed)
-- [`analyse/types/foreach-non-iterable`](/docs/rules/analyse/types/foreach-non-iterable)
-- [`analyse/types/foreach-on-empty-array`](/docs/rules/analyse/types/foreach-on-empty-array)
-- [`analyse/types/function-return`](/docs/rules/analyse/types/function-return)
-- [`analyse/types/function-variance`](/docs/rules/analyse/types/function-variance)
-- [`analyse/types/generator`](/docs/rules/analyse/types/generator)
-- [`analyse/types/implode-non-string`](/docs/rules/analyse/types/implode-non-string)
-- [`analyse/types/interpolated-non-string`](/docs/rules/analyse/types/interpolated-non-string)
-- [`analyse/types/invalid-arrow-function-signature`](/docs/rules/analyse/types/invalid-arrow-function-signature)
-- [`analyse/types/invalid-assignment-target`](/docs/rules/analyse/types/invalid-assignment-target)
-- [`analyse/types/invalid-binary-operation`](/docs/rules/analyse/types/invalid-binary-operation)
-- [`analyse/types/invalid-cast`](/docs/rules/analyse/types/invalid-cast)
-- [`analyse/types/invalid-class-generics`](/docs/rules/analyse/types/invalid-class-generics)
-- [`analyse/types/invalid-class-template`](/docs/rules/analyse/types/invalid-class-template)
-- [`analyse/types/invalid-closure-signature`](/docs/rules/analyse/types/invalid-closure-signature)
-- [`analyse/types/invalid-comparison`](/docs/rules/analyse/types/invalid-comparison)
-- [`analyse/types/invalid-enum-generics`](/docs/rules/analyse/types/invalid-enum-generics)
-- [`analyse/types/invalid-function-signature`](/docs/rules/analyse/types/invalid-function-signature)
-- [`analyse/types/invalid-function-template`](/docs/rules/analyse/types/invalid-function-template)
-- [`analyse/types/invalid-hook-signature`](/docs/rules/analyse/types/invalid-hook-signature)
-- [`analyse/types/invalid-inc-dec`](/docs/rules/analyse/types/invalid-inc-dec)
-- [`analyse/types/invalid-interface-generics`](/docs/rules/analyse/types/invalid-interface-generics)
-- [`analyse/types/invalid-interface-template`](/docs/rules/analyse/types/invalid-interface-template)
-- [`analyse/types/invalid-method-signature`](/docs/rules/analyse/types/invalid-method-signature)
-- [`analyse/types/invalid-method-tag-template`](/docs/rules/analyse/types/invalid-method-tag-template)
-- [`analyse/types/invalid-method-template`](/docs/rules/analyse/types/invalid-method-template)
-- [`analyse/types/invalid-offset`](/docs/rules/analyse/types/invalid-offset)
-- [`analyse/types/invalid-pipe`](/docs/rules/analyse/types/invalid-pipe)
-- [`analyse/types/invalid-property-assignment`](/docs/rules/analyse/types/invalid-property-assignment)
-- [`analyse/types/invalid-property-type`](/docs/rules/analyse/types/invalid-property-type)
-- [`analyse/types/invalid-regex`](/docs/rules/analyse/types/invalid-regex)
-- [`analyse/types/invalid-self-out-tag`](/docs/rules/analyse/types/invalid-self-out-tag)
-- [`analyse/types/invalid-throws-tag`](/docs/rules/analyse/types/invalid-throws-tag)
-- [`analyse/types/invalid-trait-method-tag-template`](/docs/rules/analyse/types/invalid-trait-method-tag-template)
-- [`analyse/types/invalid-trait-template`](/docs/rules/analyse/types/invalid-trait-template)
-- [`analyse/types/invalid-trait-use-generics`](/docs/rules/analyse/types/invalid-trait-use-generics)
-- [`analyse/types/invalid-unary-operand`](/docs/rules/analyse/types/invalid-unary-operand)
-- [`analyse/types/invalid-union-type`](/docs/rules/analyse/types/invalid-union-type)
-- [`analyse/types/invalid-unset`](/docs/rules/analyse/types/invalid-unset)
-- [`analyse/types/invalid-void-cast`](/docs/rules/analyse/types/invalid-void-cast)
-- [`analyse/types/method-param-default`](/docs/rules/analyse/types/method-param-default)
-- [`analyse/types/method-variance`](/docs/rules/analyse/types/method-variance)
-- [`analyse/types/missing-constant-type`](/docs/rules/analyse/types/missing-constant-type)
-- [`analyse/types/missing-hook-throws`](/docs/rules/analyse/types/missing-hook-throws)
-- [`analyse/types/missing-method-param-type`](/docs/rules/analyse/types/missing-method-param-type)
-- [`analyse/types/missing-method-throws`](/docs/rules/analyse/types/missing-method-throws)
-- [`analyse/types/missing-param-type`](/docs/rules/analyse/types/missing-param-type)
-- [`analyse/types/missing-preg-quote-delimiter`](/docs/rules/analyse/types/missing-preg-quote-delimiter)
-- [`analyse/types/missing-property-type`](/docs/rules/analyse/types/missing-property-type)
-- [`analyse/types/missing-return`](/docs/rules/analyse/types/missing-return)
-- [`analyse/types/missing-return-type`](/docs/rules/analyse/types/missing-return-type)
-- [`analyse/types/missing-self-out-type`](/docs/rules/analyse/types/missing-self-out-type)
-- [`analyse/types/missing-throws`](/docs/rules/analyse/types/missing-throws)
-- [`analyse/types/nullsafe-by-ref-return`](/docs/rules/analyse/types/nullsafe-by-ref-return)
-- [`analyse/types/offset-assign`](/docs/rules/analyse/types/offset-assign)
-- [`analyse/types/offset-assign-op`](/docs/rules/analyse/types/offset-assign-op)
-- [`analyse/types/offset-assign-value`](/docs/rules/analyse/types/offset-assign-value)
-- [`analyse/types/param-default`](/docs/rules/analyse/types/param-default)
-- [`analyse/types/param-out`](/docs/rules/analyse/types/param-out)
-- [`analyse/types/param-out-at-end`](/docs/rules/analyse/types/param-out-at-end)
-- [`analyse/types/phpdoc-readonly-by-ref`](/docs/rules/analyse/types/phpdoc-readonly-by-ref)
-- [`analyse/types/phpdoc-readonly-property-write`](/docs/rules/analyse/types/phpdoc-readonly-property-write)
-- [`analyse/types/print-non-string`](/docs/rules/analyse/types/print-non-string)
-- [`analyse/types/printf-argument`](/docs/rules/analyse/types/printf-argument)
-- [`analyse/types/property-assign`](/docs/rules/analyse/types/property-assign)
-- [`analyse/types/property-default`](/docs/rules/analyse/types/property-default)
-- [`analyse/types/property-variance`](/docs/rules/analyse/types/property-variance)
-- [`analyse/types/random-int-range`](/docs/rules/analyse/types/random-int-range)
-- [`analyse/types/readonly-property-by-ref`](/docs/rules/analyse/types/readonly-property-by-ref)
-- [`analyse/types/readonly-property-write`](/docs/rules/analyse/types/readonly-property-write)
-- [`analyse/types/redundant-array-values`](/docs/rules/analyse/types/redundant-array-values)
-- [`analyse/types/redundant-nullsafe`](/docs/rules/analyse/types/redundant-nullsafe)
-- [`analyse/types/redundant-nullsafe-method-call`](/docs/rules/analyse/types/redundant-nullsafe-method-call)
-- [`analyse/types/renamed-parameter-in-subtype`](/docs/rules/analyse/types/renamed-parameter-in-subtype)
-- [`analyse/types/return`](/docs/rules/analyse/types/return)
-- [`analyse/types/sort-non-stringable`](/docs/rules/analyse/types/sort-non-stringable)
-- [`analyse/types/this-in-global`](/docs/rules/analyse/types/this-in-global)
-- [`analyse/types/this-in-static`](/docs/rules/analyse/types/this-in-static)
-- [`analyse/types/throw-non-throwable`](/docs/rules/analyse/types/throw-non-throwable)
-- [`analyse/types/throws-not-covariant`](/docs/rules/analyse/types/throws-not-covariant)
-- [`analyse/types/throws-void-function`](/docs/rules/analyse/types/throws-void-function)
-- [`analyse/types/throws-void-hook`](/docs/rules/analyse/types/throws-void-hook)
-- [`analyse/types/throws-void-method`](/docs/rules/analyse/types/throws-void-method)
-- [`analyse/types/too-wide-arrow-function-return`](/docs/rules/analyse/types/too-wide-arrow-function-return)
-- [`analyse/types/too-wide-closure-return`](/docs/rules/analyse/types/too-wide-closure-return)
-- [`analyse/types/too-wide-function-param-out`](/docs/rules/analyse/types/too-wide-function-param-out)
-- [`analyse/types/too-wide-function-return`](/docs/rules/analyse/types/too-wide-function-return)
-- [`analyse/types/too-wide-method-param-out`](/docs/rules/analyse/types/too-wide-method-param-out)
-- [`analyse/types/too-wide-method-return`](/docs/rules/analyse/types/too-wide-method-return)
-- [`analyse/types/too-wide-property`](/docs/rules/analyse/types/too-wide-property)
-- [`analyse/types/unpack-non-iterable`](/docs/rules/analyse/types/unpack-non-iterable)
-- [`analyse/types/unpack-string-key`](/docs/rules/analyse/types/unpack-string-key)
-- [`analyse/types/unused-hook-throws-type`](/docs/rules/analyse/types/unused-hook-throws-type)
-- [`analyse/types/unused-method-throws-type`](/docs/rules/analyse/types/unused-method-throws-type)
-- [`analyse/types/unused-throws-type`](/docs/rules/analyse/types/unused-throws-type)
-- [`analyse/types/useless-array-filter`](/docs/rules/analyse/types/useless-array-filter)
-- [`analyse/types/void-match-used`](/docs/rules/analyse/types/void-match-used)
-- [`analyse/types/write-to-readonly-property`](/docs/rules/analyse/types/write-to-readonly-property)
-- [`analyse/types/yield-from-non-iterable`](/docs/rules/analyse/types/yield-from-non-iterable)
-- [`analyse/types/yield-outside-function`](/docs/rules/analyse/types/yield-outside-function)
 
 [Group reference](/docs/rules/analyse/types) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

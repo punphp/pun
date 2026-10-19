@@ -16,7 +16,7 @@ Across commands: format: 0, lint: 63, analyse: 44.
 
 Reduce always false in a `if (a || b)` condition
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-always-true-if">
@@ -25,7 +25,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove if condition that is always true
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-always-true-instanceof">
@@ -34,7 +34,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove instanceof checks and assert(instanceof) calls that are always true for the known type.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-always-true-instanceof-assert">
@@ -43,7 +43,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove assert() with instanceof check on a value whose type is already known
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-and-true">
@@ -52,7 +52,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove `and true` that has no added value
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-bool-ternary">
@@ -61,7 +61,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unnecessary ternary expressions
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-cast-in-concat">
@@ -70,7 +70,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Remove (string) casting when it comes to concat, that does this by default
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-condition-exact-return">
@@ -79,7 +79,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove an if that returns the value it compares when the next statement returns the compared expression.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-dead-catch">
@@ -88,7 +88,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove dead catches
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-dead-php-version-check">
@@ -97,7 +97,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove PHP_VERSION_ID / version_compare() checks that are always true for the configured PHP version.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-double-self-assignment">
@@ -115,7 +115,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove duplicated key in defined arrays
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-duplicate-case-body">
@@ -124,7 +124,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 2 following switch keys with identical  will be reduced to one result
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-empty-block">
@@ -133,7 +133,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove or report if/for/foreach/while statements with an empty body.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-empty-loop">
@@ -142,7 +142,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove loop with no body
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-empty-method">
@@ -151,7 +151,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove empty class methods not required by parents
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-false-ternary">
@@ -160,7 +160,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Change ternary of `bool : false` to `&& bool`
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-future-php-version-check">
@@ -169,7 +169,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Unwrap `if` checks on a PHP version that the configured PHP version always meets.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-identical-branches">
@@ -178,7 +178,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove if/else if they have same content
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-implode-ternary">
@@ -187,7 +187,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Drop an empty-array ternary around `implode()`
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-invalid-return-tag">
@@ -196,7 +196,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Remove @return docblock that contradicts the declared native return type
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-invalid-var-tag">
@@ -205,7 +205,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Removes non-existing @var annotations above the code
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-mirror-assignment">
@@ -223,7 +223,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove default null argument, where null is already a default param value
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-null-default-named-argument">
@@ -232,7 +232,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove named null argument, where null is already a default param value
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-null-tag-value">
@@ -241,7 +241,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove @var/@param/@return null docblock
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-overwritten-assignment">
@@ -250,7 +250,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove an assignment that the next statement overwrites without reading it.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-parent-call-without-parent">
@@ -259,7 +259,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused parent call with no parent class
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-redundant-condition">
@@ -268,7 +268,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Merge an if into the if before it when both check the same condition.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-redundant-default-argument">
@@ -277,7 +277,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove arguments that equal the parameter default value.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-redundant-foreach-guard">
@@ -286,7 +286,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused if check to non-empty array before foreach of the array
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-redundant-promoted-assign">
@@ -295,7 +295,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove useless re-assign from property promotion
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-redundant-property-default">
@@ -304,7 +304,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove redundant default value from property that is always assigned in the constructor
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-return-in-constructor">
@@ -313,7 +313,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove useless return Expr in __construct()
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-self-assignment">
@@ -331,7 +331,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Use the value a ternary always gives when it compares the two values it chooses between.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-typed-property-instanceof">
@@ -340,7 +340,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Remove dead instanceof check on type hinted property
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-unreachable-code">
@@ -349,7 +349,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unreachable statements
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-unused-assignment">
@@ -358,7 +358,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove assignments whose value is never read, including stores overwritten before use.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-unused-constructor-param">
@@ -367,7 +367,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused parameter in constructor
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-unused-expression">
@@ -376,7 +376,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove dead code statements
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-unused-foreach-key">
@@ -385,7 +385,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused key in foreach
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-unused-global">
@@ -403,7 +403,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Remove unused class constants
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-unused-private-method">
@@ -412,7 +412,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused private method
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-unused-private-method-param">
@@ -421,7 +421,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused parameters of private methods, including test-method parameters overwritten before use.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-unused-private-property">
@@ -430,7 +430,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused private properties
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-unused-promoted-property">
@@ -439,7 +439,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused promoted property
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-unused-public-method-param">
@@ -448,7 +448,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove unused parameter in public method on final class without extends and interface
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-unused-return-type">
@@ -457,7 +457,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Narrow overly wide union return type declaration if possible
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-unused-static">
@@ -475,7 +475,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Remove parameter of private test class method, that is overridden by direct assign before its first use
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-useless-cast">
@@ -484,7 +484,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove casts to the type the value already has, including (string) inside concatenation.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-useless-catch">
@@ -493,7 +493,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove dead try/catch
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-useless-condition">
@@ -502,7 +502,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove if conditions whose branches return the same value.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-useless-constructor">
@@ -511,7 +511,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove constructor that only delegates call to parent class with same values
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-useless-continue">
@@ -520,7 +520,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove `continue` as the last statement of a loop.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-useless-filter-var">
@@ -529,7 +529,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Removes filter_var() calls with exact type
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-useless-math">
@@ -538,7 +538,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...).
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-useless-override">
@@ -547,7 +547,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove methods and constructors that only call the parent with the same arguments.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-useless-phpdoc-type">
@@ -556,7 +556,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type).
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/dead-code/no-useless-ternary">
@@ -565,7 +565,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression.
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/dead-code/no-useless-variable">
@@ -574,7 +574,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove useless variable assigns
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 </CardGroup>

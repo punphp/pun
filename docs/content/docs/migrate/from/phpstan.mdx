@@ -7,7 +7,7 @@ pagination: false
 
 ## Config translation
 
-Pun reads only pun.toml. `pun migrate` leaves the source config in place. Unported rules and unsupported items are named and skipped, with a request to send a PR. There is no PHP fallback.
+`pun migrate` leaves source configs in place and reports skipped items. Planned rules are not implemented. Pun never falls back to PHP for missing rules.
 
 Run `pun migrate --from phpstan`. PHPStan config includes are resolved before migration.
 
@@ -21,9 +21,11 @@ Run `pun migrate --from phpstan`. PHPStan config includes are resolved before mi
 | strict-rules or deprecation-rules includes | Their built-in Pun checks, only when their parameter enables them |
 | `@phpstan-ignore method.notFound` | `@pun-ignore analyse/undefined/method` |
 | Baselines | Not copied. Run `pun analyse --generate-baseline`. |
-| Custom extensions, bleeding edge | Named and skipped. Send a PR. |
+| Custom extensions, bleeding edge | Reported and skipped |
 
-The table is at identifier level, not PHPStan class level. Pattern entries are expanded against the pinned inventories; exact identifiers take precedence over patterns, just as they do during migration.
+The table maps PHPStan identifiers. Exact identifiers take precedence over patterns.
+
+The analysis CLI does not yet apply migrated stubs, ignore tables, rule options, or preset type switches. See [analysis limitations](/docs/commands/analyse#configuration).
 
 ## Rule mapping
 
@@ -35,13 +37,9 @@ The table is at identifier level, not PHPStan class level. Pattern entries are e
 
 [`phpParser.classRenamed`](https://phpstan.org/error-identifiers/phpParser.classRenamed), [`phpParser.nodeConnectingAttribute`](https://phpstan.org/error-identifiers/phpParser.nodeConnectingAttribute), [`phpstanApi.class`](https://phpstan.org/error-identifiers/phpstanApi.class), [`phpstanApi.classConstant`](https://phpstan.org/error-identifiers/phpstanApi.classConstant), [`phpstanApi.constructor`](https://phpstan.org/error-identifiers/phpstanApi.constructor), [`phpstanApi.enum`](https://phpstan.org/error-identifiers/phpstanApi.enum), [`phpstanApi.getTemplateType`](https://phpstan.org/error-identifiers/phpstanApi.getTemplateType), [`phpstanApi.instanceofAssumption`](https://phpstan.org/error-identifiers/phpstanApi.instanceofAssumption), [`phpstanApi.instanceofType`](https://phpstan.org/error-identifiers/phpstanApi.instanceofType), [`phpstanApi.interface`](https://phpstan.org/error-identifiers/phpstanApi.interface), [`phpstanApi.method`](https://phpstan.org/error-identifiers/phpstanApi.method), [`phpstanApi.phpstanNamespace`](https://phpstan.org/error-identifiers/phpstanApi.phpstanNamespace), [`phpstanApi.runtimeReflection`](https://phpstan.org/error-identifiers/phpstanApi.runtimeReflection), [`phpstanApi.trait`](https://phpstan.org/error-identifiers/phpstanApi.trait), [`phpstanApi.varTagAssumption`](https://phpstan.org/error-identifiers/phpstanApi.varTagAssumption).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### phpstan.org playground only
 
 [`phpstanPlayground.arrayDimFetchCast`](https://phpstan.org/error-identifiers/phpstanPlayground.arrayDimFetchCast), [`phpstanPlayground.arrayKeyCast`](https://phpstan.org/error-identifiers/phpstanPlayground.arrayKeyCast), [`phpstanPlayground.configParameter`](https://phpstan.org/error-identifiers/phpstanPlayground.configParameter), [`phpstanPlayground.never`](https://phpstan.org/error-identifiers/phpstanPlayground.never), [`phpstanPlayground.noPhp`](https://phpstan.org/error-identifiers/phpstanPlayground.noPhp), [`phpstanPlayground.phpDoc`](https://phpstan.org/error-identifiers/phpstanPlayground.phpDoc), [`phpstanPlayground.staticWithoutType`](https://phpstan.org/error-identifiers/phpstanPlayground.staticWithoutType), [`phpstanPlayground.traitUnused`](https://phpstan.org/error-identifiers/phpstanPlayground.traitUnused).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 
 ## Pun-only rules

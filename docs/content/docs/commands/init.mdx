@@ -1,53 +1,31 @@
 ---
 title: pun init
-description: Write pun.toml for a new project by answering three questions, or take the defaults with --yes.
+description: Create pun.toml for a project without existing tool configs.
 ---
 
 ```bash
-pun init                                                  # on a terminal: three questions
-pun init --yes                                            # the defaults, no questions
+pun init
+pun init --yes
 pun init --style psr12 --lint-sets dead-code,types --analyse strict
 ```
 
-`pun init` is for a project with no Pint, PHP-CS-Fixer, PHPStan, Rector or Mago config yet. A project that has one
-runs [`pun migrate`](/docs/commands/migrate) instead.
+For an existing Pint, PHP-CS-Fixer, PHPStan, Rector, or Mago config, use [`pun migrate`](/docs/commands/migrate).
 
-## The flow
+## Choices and defaults
 
-```text
-$ pun init
+On a terminal, `pun init` asks three questions:
 
-  Pun · new project setup
-  Found Laravel 13, Pest 4, PHP ^8.4 (composer.json, composer.lock)
+| Setting | Choices | Default | Flag |
+| --- | --- | --- | --- |
+| Format preset | `laravel`, `psr12` | `laravel` when detected, otherwise `psr12` | `--style` |
+| Lint sets | The eight [lint sets](/docs/configuration/presets#lint-sets) | `dead-code`, `modernize` | `--lint-sets a,b` |
+| Analyse preset | `basic`, `essential`, `recommended`, `strict`, `max` | `recommended` | `--analyse` |
 
-✔ Code style · laravel
-✔ Lint sets (space toggles, enter confirms) · dead-code, modernize
-✔ Analysis preset · recommended
+`--lint-sets ""` selects no lint sets. The `empty` format preset is valid in `pun.toml` but is not an init choice.
 
-  Laravel, Pest and PHPUnit rules turn on by themselves (composer.lock).
-
-  ✔ Wrote pun.toml
-
-  Done. Run `pun check` any time; `pun check --fix` before you commit.
-  Add `pun check` to CI and your composer scripts.
-```
-
-1. **Detect.** composer.json gives the PHP constraint; composer.lock gives the Laravel, Pest and PHPUnit versions.
-2. **Ask three questions** (`? Code style ›` while asking, `✔ Code style · laravel` once answered), each starting on
-   a default that fits the project:
-
-   | Question | Choices | Default | Flag |
-   | --- | --- | --- | --- |
-   | Code style (`[format] preset`) | `laravel`, `psr12` | `laravel` for a Laravel app, else `psr12` | `--style` |
-   | Lint sets (`[lint] sets`) | `dead-code`, `modernize`, `code-quality`, `types`, `early-return`, `privatization`, `naming`, `coding-style` | `dead-code`, `modernize` | `--lint-sets a,b` (`""` for none) |
-   | Analysis preset (`[analyse] preset`) | `basic`, `essential`, `recommended`, `strict`, `max` | `recommended` | `--analyse` |
-
-   `empty` is not offered, but stays a valid `[format] preset` in pun.toml.
-3. **Write pun.toml** with only those three choices. The presets and sets carry the rules; `pun config` prints the
-   resolved list. Laravel, Pest and PHPUnit rules need no setting: they follow composer.lock.
+Pun reads the PHP constraint from `composer.json` and ecosystem versions from `composer.lock`. The generated config contains only the three choices:
 
 ```toml
-# Written by `pun init`.
 [format]
 preset = "laravel"
 
@@ -58,24 +36,20 @@ sets = ["dead-code", "modernize"]
 preset = "recommended"
 ```
 
-`pun init` never writes composer scripts, CI files, git hooks or editor settings. It prints the commands to add.
+Init prints next steps but does not run checks, apply fixes, or generate a baseline. It does not edit Composer scripts, CI, Git hooks, or editor settings.
 
 ## Without a terminal
 
-With `--yes`, under a [coding agent](/docs/guides/coding-agents), with `CI` set, or when stdin or stdout is not a
-terminal, nothing is asked: the defaults or the flags are used and the next steps are printed, not run. An unknown
-set or preset stops the run with exit code 2 and names the valid ones.
+`--yes`, agent mode, `CI`, or a non-terminal input or output disables prompts. Pun uses defaults and explicit flags.
 
 ## Existing configs
 
-- **pun.toml exists:** `pun init` never overwrites it. It exits 2 and leaves the file as it was.
-- **pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found:** on a terminal, `pun init` asks
-  "Found pint.json. Migrate it instead?" (default yes). Yes runs `pun migrate`; no goes on with the questions. Without
-  a terminal it writes nothing, says that `pun migrate` fits the project, and exits 2.
+- If `pun.toml` exists, init leaves it unchanged and exits 2.
+- If an upstream config exists, interactive init offers migration. Without prompts, it writes nothing and exits 2 with a migration hint.
 
 ## Exit codes
 
 | Code | When |
 | --- | --- |
-| 0 | pun.toml written, or `pun migrate` ran and succeeded |
-| 2 | pun.toml exists, an old config points to `pun migrate` (without a terminal), or a flag is invalid |
+| 0 | Configuration written or migration succeeded |
+| 2 | Existing config, invalid flag, or another run error |

@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/laravel/prefer-connection-attribute" />
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
 - [`ConnectionPropertyToConnectionAttribute`](https://getrector.com/rule-detail/connection-property-to-connection-attribute-rector) (rector-laravel).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,107 +28,8 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Changes model connection property to use the Connection attribute
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/laravel
-
-- [`lint/laravel/add-factory-extends-phpdoc`](/docs/rules/lint/laravel/add-factory-extends-phpdoc)
-- [`lint/laravel/add-has-factory-trait`](/docs/rules/lint/laravel/add-has-factory-trait)
-- [`lint/laravel/add-query-closure-type`](/docs/rules/lint/laravel/add-query-closure-type)
-- [`lint/laravel/add-relation-generics`](/docs/rules/lint/laravel/add-relation-generics)
-- [`lint/laravel/add-relation-query-closure-type`](/docs/rules/lint/laravel/add-relation-query-closure-type)
-- [`lint/laravel/add-tap-closure-type`](/docs/rules/lint/laravel/add-tap-closure-type)
-- [`lint/laravel/no-app-array-access`](/docs/rules/lint/laravel/no-app-array-access)
-- [`lint/laravel/no-collection-aliases`](/docs/rules/lint/laravel/no-collection-aliases)
-- [`lint/laravel/no-controller-middleware`](/docs/rules/lint/laravel/no-controller-middleware)
-- [`lint/laravel/no-implicit-model-query`](/docs/rules/lint/laravel/no-implicit-model-query)
-- [`lint/laravel/no-negated-blank-filled`](/docs/rules/lint/laravel/no-negated-blank-filled)
-- [`lint/laravel/no-negated-contains`](/docs/rules/lint/laravel/no-negated-contains)
-- [`lint/laravel/no-negated-filter`](/docs/rules/lint/laravel/no-negated-filter)
-- [`lint/laravel/no-negated-when`](/docs/rules/lint/laravel/no-negated-when)
-- [`lint/laravel/no-request-all`](/docs/rules/lint/laravel/no-request-all)
-- [`lint/laravel/no-useless-value-call`](/docs/rules/lint/laravel/no-useless-value-call)
-- [`lint/laravel/no-useless-with-call`](/docs/rules/lint/laravel/no-useless-with-call)
-- [`lint/laravel/prefer-abort-if`](/docs/rules/lint/laravel/prefer-abort-if)
-- [`lint/laravel/prefer-aliases-attribute`](/docs/rules/lint/laravel/prefer-aliases-attribute)
-- [`lint/laravel/prefer-anonymous-migration`](/docs/rules/lint/laravel/prefer-anonymous-migration)
-- [`lint/laravel/prefer-appends-attribute`](/docs/rules/lint/laravel/prefer-appends-attribute)
-- [`lint/laravel/prefer-array-validation-rules`](/docs/rules/lint/laravel/prefer-array-validation-rules)
-- [`lint/laravel/prefer-back-helper`](/docs/rules/lint/laravel/prefer-back-helper)
-- [`lint/laravel/prefer-backoff-attribute`](/docs/rules/lint/laravel/prefer-backoff-attribute)
-- [`lint/laravel/prefer-casts-method`](/docs/rules/lint/laravel/prefer-casts-method)
-- [`lint/laravel/prefer-class-container-key`](/docs/rules/lint/laravel/prefer-class-container-key)
-- [`lint/laravel/prefer-closure-only-bind`](/docs/rules/lint/laravel/prefer-closure-only-bind)
-- [`lint/laravel/prefer-collected-by-attribute`](/docs/rules/lint/laravel/prefer-collected-by-attribute)
-- [`lint/laravel/prefer-collection-all`](/docs/rules/lint/laravel/prefer-collection-all)
-- [`lint/laravel/prefer-collects-attribute`](/docs/rules/lint/laravel/prefer-collects-attribute)
-- [`lint/laravel/prefer-command-hidden-attribute`](/docs/rules/lint/laravel/prefer-command-hidden-attribute)
-- [`lint/laravel/prefer-constructor-injection`](/docs/rules/lint/laravel/prefer-constructor-injection)
-- [`lint/laravel/prefer-date-facade`](/docs/rules/lint/laravel/prefer-date-facade)
-- [`lint/laravel/prefer-date-format-attribute`](/docs/rules/lint/laravel/prefer-date-format-attribute)
-- [`lint/laravel/prefer-dedicated-status-assertion`](/docs/rules/lint/laravel/prefer-dedicated-status-assertion)
-- [`lint/laravel/prefer-default-argument`](/docs/rules/lint/laravel/prefer-default-argument)
-- [`lint/laravel/prefer-delay-attribute`](/docs/rules/lint/laravel/prefer-delay-attribute)
-- [`lint/laravel/prefer-delete-when-missing-models-attribute`](/docs/rules/lint/laravel/prefer-delete-when-missing-models-attribute)
-- [`lint/laravel/prefer-description-attribute`](/docs/rules/lint/laravel/prefer-description-attribute)
-- [`lint/laravel/prefer-dispatch-helper`](/docs/rules/lint/laravel/prefer-dispatch-helper)
-- [`lint/laravel/prefer-env-helper`](/docs/rules/lint/laravel/prefer-env-helper)
-- [`lint/laravel/prefer-environment-check`](/docs/rules/lint/laravel/prefer-environment-check)
-- [`lint/laravel/prefer-error-bag-attribute`](/docs/rules/lint/laravel/prefer-error-bag-attribute)
-- [`lint/laravel/prefer-exception-class-string`](/docs/rules/lint/laravel/prefer-exception-class-string)
-- [`lint/laravel/prefer-explicit-json-call`](/docs/rules/lint/laravel/prefer-explicit-json-call)
-- [`lint/laravel/prefer-facade-over-app`](/docs/rules/lint/laravel/prefer-facade-over-app)
-- [`lint/laravel/prefer-fail-on-timeout-attribute`](/docs/rules/lint/laravel/prefer-fail-on-timeout-attribute)
-- [`lint/laravel/prefer-fake-helper`](/docs/rules/lint/laravel/prefer-fake-helper)
-- [`lint/laravel/prefer-fillable-attribute`](/docs/rules/lint/laravel/prefer-fillable-attribute)
-- [`lint/laravel/prefer-guarded-attribute`](/docs/rules/lint/laravel/prefer-guarded-attribute)
-- [`lint/laravel/prefer-help-attribute`](/docs/rules/lint/laravel/prefer-help-attribute)
-- [`lint/laravel/prefer-hidden-attribute`](/docs/rules/lint/laravel/prefer-hidden-attribute)
-- [`lint/laravel/prefer-job-connection-attribute`](/docs/rules/lint/laravel/prefer-job-connection-attribute)
-- [`lint/laravel/prefer-latest-oldest`](/docs/rules/lint/laravel/prefer-latest-oldest)
-- [`lint/laravel/prefer-max-exceptions-attribute`](/docs/rules/lint/laravel/prefer-max-exceptions-attribute)
-- [`lint/laravel/prefer-nullsafe`](/docs/rules/lint/laravel/prefer-nullsafe)
-- [`lint/laravel/prefer-preserve-keys-attribute`](/docs/rules/lint/laravel/prefer-preserve-keys-attribute)
-- [`lint/laravel/prefer-protected-model-methods`](/docs/rules/lint/laravel/prefer-protected-model-methods)
-- [`lint/laravel/prefer-query-builder-call`](/docs/rules/lint/laravel/prefer-query-builder-call)
-- [`lint/laravel/prefer-queue-attribute`](/docs/rules/lint/laravel/prefer-queue-attribute)
-- [`lint/laravel/prefer-report-if`](/docs/rules/lint/laravel/prefer-report-if)
-- [`lint/laravel/prefer-request-facade`](/docs/rules/lint/laravel/prefer-request-facade)
-- [`lint/laravel/prefer-request-server`](/docs/rules/lint/laravel/prefer-request-server)
-- [`lint/laravel/prefer-request-validate`](/docs/rules/lint/laravel/prefer-request-validate)
-- [`lint/laravel/prefer-resolve-helper`](/docs/rules/lint/laravel/prefer-resolve-helper)
-- [`lint/laravel/prefer-session-facade`](/docs/rules/lint/laravel/prefer-session-facade)
-- [`lint/laravel/prefer-signature-attribute`](/docs/rules/lint/laravel/prefer-signature-attribute)
-- [`lint/laravel/prefer-sleep-facade`](/docs/rules/lint/laravel/prefer-sleep-facade)
-- [`lint/laravel/prefer-status-assertion-method`](/docs/rules/lint/laravel/prefer-status-assertion-method)
-- [`lint/laravel/prefer-stop-on-first-failure-attribute`](/docs/rules/lint/laravel/prefer-stop-on-first-failure-attribute)
-- [`lint/laravel/prefer-str-starts-with`](/docs/rules/lint/laravel/prefer-str-starts-with)
-- [`lint/laravel/prefer-table-attribute`](/docs/rules/lint/laravel/prefer-table-attribute)
-- [`lint/laravel/prefer-throw-if`](/docs/rules/lint/laravel/prefer-throw-if)
-- [`lint/laravel/prefer-timeout-attribute`](/docs/rules/lint/laravel/prefer-timeout-attribute)
-- [`lint/laravel/prefer-to-route-helper`](/docs/rules/lint/laravel/prefer-to-route-helper)
-- [`lint/laravel/prefer-today`](/docs/rules/lint/laravel/prefer-today)
-- [`lint/laravel/prefer-touches-attribute`](/docs/rules/lint/laravel/prefer-touches-attribute)
-- [`lint/laravel/prefer-travel-to`](/docs/rules/lint/laravel/prefer-travel-to)
-- [`lint/laravel/prefer-tries-attribute`](/docs/rules/lint/laravel/prefer-tries-attribute)
-- [`lint/laravel/prefer-typed-assert-closure`](/docs/rules/lint/laravel/prefer-typed-assert-closure)
-- [`lint/laravel/prefer-unique-for-attribute`](/docs/rules/lint/laravel/prefer-unique-for-attribute)
-- [`lint/laravel/prefer-validation-rule-array`](/docs/rules/lint/laravel/prefer-validation-rule-array)
-- [`lint/laravel/prefer-view-array`](/docs/rules/lint/laravel/prefer-view-array)
-- [`lint/laravel/prefer-visible-attribute`](/docs/rules/lint/laravel/prefer-visible-attribute)
-- [`lint/laravel/prefer-without-incrementing-attribute`](/docs/rules/lint/laravel/prefer-without-incrementing-attribute)
-- [`lint/laravel/prefer-without-timestamps-attribute`](/docs/rules/lint/laravel/prefer-without-timestamps-attribute)
-- [`lint/laravel/require-final-controller`](/docs/rules/lint/laravel/require-final-controller)
-- [`lint/laravel/require-phpdoc-types-only`](/docs/rules/lint/laravel/require-phpdoc-types-only)
 
 [Group reference](/docs/rules/lint/laravel) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

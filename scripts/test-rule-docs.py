@@ -27,16 +27,22 @@ def main() -> None:
     assert 'title: "lint/style/no-alias-function"' in lint
     assert "An alias hides `{intent}` and &lt;meaning>." in lint
     assert "<?php chop($value);" in lint and "<?php rtrim($value);" in lint
-    headings = ["## Replaces", "## Turn it on", "## What it does", "### Why", "## Examples", "## Options", "## Linked rules", "## Other rules"]
+    headings = ["## Replaces", "## Configuration", "## What it does", "### Why", "## Examples", "## Options"]
     positions = [lint.index(h) for h in headings]
     assert positions == sorted(positions)
+    assert "@pun-ignore-file lint/style/no-alias-function" in lint
     analyse = output[docs.CONTENT / "rules/analyse/undefined/method.mdx"]
     assert "**Planned: not in Pun yet.**" in analyse
     assert "Call to an undefined method X::missing()." in analyse
     assert "https://phpstan.org/error-identifiers/method.notFound" in analyse
+    assert '"undefined/method" = "on"' in analyse
+    assert "@pun-ignore analyse/undefined/method" in analyse
     ordered = output[docs.CONTENT / "rules/format/imports/ordered.mdx"]
     assert '`"alphabetical"` | `sort_algorithm`' in ordered
     assert "@pun-ignore-file format/imports/ordered" in ordered
+    assert "## Examples" not in ordered and "not written yet" not in ordered
+    assert "## Linked rules" not in ordered and "## Other rules" not in ordered
+    assert "[Group reference](/docs/rules/format/imports)" in ordered
     laravel = output[docs.CONTENT / "rules/presets/format-laravel.mdx"]
     assert '`{ "order" = ["const", "class", "function"], "sort" = "alphabetical" }`' in laravel
     empty = output[docs.CONTENT / "rules/presets/format-empty.mdx"]

@@ -13,7 +13,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 - [`no-insecure-comparison`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#no-insecure-comparison) (mago-linter).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,31 +28,8 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Detects insecure comparison of passwords or tokens using `==`, `!=`, `===`, or `!==`.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/security
-
-- [`lint/security/add-sensitive-parameter`](/docs/rules/lint/security/add-sensitive-parameter)
-- [`lint/security/no-debug-calls`](/docs/rules/lint/security/no-debug-calls)
-- [`lint/security/no-eval`](/docs/rules/lint/security/no-eval)
-- [`lint/security/no-ffi`](/docs/rules/lint/security/no-ffi)
-- [`lint/security/no-global`](/docs/rules/lint/security/no-global)
-- [`lint/security/no-homoglyph-names`](/docs/rules/lint/security/no-homoglyph-names)
-- [`lint/security/no-literal-password`](/docs/rules/lint/security/no-literal-password)
-- [`lint/security/no-request-variable`](/docs/rules/lint/security/no-request-variable)
-- [`lint/security/no-restricted-functions`](/docs/rules/lint/security/no-restricted-functions)
-- [`lint/security/no-restricted-instantiation`](/docs/rules/lint/security/no-restricted-instantiation)
-- [`lint/security/no-tainted-data`](/docs/rules/lint/security/no-tainted-data)
-- [`lint/security/require-preg-quote-delimiter`](/docs/rules/lint/security/require-preg-quote-delimiter)
 
 [Group reference](/docs/rules/lint/security) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

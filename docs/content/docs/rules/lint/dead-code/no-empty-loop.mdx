@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/dead-code/no-empty-loop" />
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`RemoveDeadLoop`](https://getrector.com/rule-detail/remove-dead-loop-rector) (rector).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,81 +28,8 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove loop with no body
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/dead-code
-
-- [`lint/dead-code/no-always-false-condition`](/docs/rules/lint/dead-code/no-always-false-condition)
-- [`lint/dead-code/no-always-true-if`](/docs/rules/lint/dead-code/no-always-true-if)
-- [`lint/dead-code/no-always-true-instanceof`](/docs/rules/lint/dead-code/no-always-true-instanceof)
-- [`lint/dead-code/no-always-true-instanceof-assert`](/docs/rules/lint/dead-code/no-always-true-instanceof-assert)
-- [`lint/dead-code/no-and-true`](/docs/rules/lint/dead-code/no-and-true)
-- [`lint/dead-code/no-bool-ternary`](/docs/rules/lint/dead-code/no-bool-ternary)
-- [`lint/dead-code/no-cast-in-concat`](/docs/rules/lint/dead-code/no-cast-in-concat)
-- [`lint/dead-code/no-condition-exact-return`](/docs/rules/lint/dead-code/no-condition-exact-return)
-- [`lint/dead-code/no-dead-catch`](/docs/rules/lint/dead-code/no-dead-catch)
-- [`lint/dead-code/no-dead-php-version-check`](/docs/rules/lint/dead-code/no-dead-php-version-check)
-- [`lint/dead-code/no-double-self-assignment`](/docs/rules/lint/dead-code/no-double-self-assignment)
-- [`lint/dead-code/no-duplicate-array-key`](/docs/rules/lint/dead-code/no-duplicate-array-key)
-- [`lint/dead-code/no-duplicate-case-body`](/docs/rules/lint/dead-code/no-duplicate-case-body)
-- [`lint/dead-code/no-empty-block`](/docs/rules/lint/dead-code/no-empty-block)
-- [`lint/dead-code/no-empty-method`](/docs/rules/lint/dead-code/no-empty-method)
-- [`lint/dead-code/no-false-ternary`](/docs/rules/lint/dead-code/no-false-ternary)
-- [`lint/dead-code/no-future-php-version-check`](/docs/rules/lint/dead-code/no-future-php-version-check)
-- [`lint/dead-code/no-identical-branches`](/docs/rules/lint/dead-code/no-identical-branches)
-- [`lint/dead-code/no-implode-ternary`](/docs/rules/lint/dead-code/no-implode-ternary)
-- [`lint/dead-code/no-invalid-return-tag`](/docs/rules/lint/dead-code/no-invalid-return-tag)
-- [`lint/dead-code/no-invalid-var-tag`](/docs/rules/lint/dead-code/no-invalid-var-tag)
-- [`lint/dead-code/no-mirror-assignment`](/docs/rules/lint/dead-code/no-mirror-assignment)
-- [`lint/dead-code/no-null-default-argument`](/docs/rules/lint/dead-code/no-null-default-argument)
-- [`lint/dead-code/no-null-default-named-argument`](/docs/rules/lint/dead-code/no-null-default-named-argument)
-- [`lint/dead-code/no-null-tag-value`](/docs/rules/lint/dead-code/no-null-tag-value)
-- [`lint/dead-code/no-overwritten-assignment`](/docs/rules/lint/dead-code/no-overwritten-assignment)
-- [`lint/dead-code/no-parent-call-without-parent`](/docs/rules/lint/dead-code/no-parent-call-without-parent)
-- [`lint/dead-code/no-redundant-condition`](/docs/rules/lint/dead-code/no-redundant-condition)
-- [`lint/dead-code/no-redundant-default-argument`](/docs/rules/lint/dead-code/no-redundant-default-argument)
-- [`lint/dead-code/no-redundant-foreach-guard`](/docs/rules/lint/dead-code/no-redundant-foreach-guard)
-- [`lint/dead-code/no-redundant-promoted-assign`](/docs/rules/lint/dead-code/no-redundant-promoted-assign)
-- [`lint/dead-code/no-redundant-property-default`](/docs/rules/lint/dead-code/no-redundant-property-default)
-- [`lint/dead-code/no-return-in-constructor`](/docs/rules/lint/dead-code/no-return-in-constructor)
-- [`lint/dead-code/no-self-assignment`](/docs/rules/lint/dead-code/no-self-assignment)
-- [`lint/dead-code/no-tautology-ternary`](/docs/rules/lint/dead-code/no-tautology-ternary)
-- [`lint/dead-code/no-typed-property-instanceof`](/docs/rules/lint/dead-code/no-typed-property-instanceof)
-- [`lint/dead-code/no-unreachable-code`](/docs/rules/lint/dead-code/no-unreachable-code)
-- [`lint/dead-code/no-unused-assignment`](/docs/rules/lint/dead-code/no-unused-assignment)
-- [`lint/dead-code/no-unused-constructor-param`](/docs/rules/lint/dead-code/no-unused-constructor-param)
-- [`lint/dead-code/no-unused-expression`](/docs/rules/lint/dead-code/no-unused-expression)
-- [`lint/dead-code/no-unused-foreach-key`](/docs/rules/lint/dead-code/no-unused-foreach-key)
-- [`lint/dead-code/no-unused-global`](/docs/rules/lint/dead-code/no-unused-global)
-- [`lint/dead-code/no-unused-private-constant`](/docs/rules/lint/dead-code/no-unused-private-constant)
-- [`lint/dead-code/no-unused-private-method`](/docs/rules/lint/dead-code/no-unused-private-method)
-- [`lint/dead-code/no-unused-private-method-param`](/docs/rules/lint/dead-code/no-unused-private-method-param)
-- [`lint/dead-code/no-unused-private-property`](/docs/rules/lint/dead-code/no-unused-private-property)
-- [`lint/dead-code/no-unused-promoted-property`](/docs/rules/lint/dead-code/no-unused-promoted-property)
-- [`lint/dead-code/no-unused-public-method-param`](/docs/rules/lint/dead-code/no-unused-public-method-param)
-- [`lint/dead-code/no-unused-return-type`](/docs/rules/lint/dead-code/no-unused-return-type)
-- [`lint/dead-code/no-unused-static`](/docs/rules/lint/dead-code/no-unused-static)
-- [`lint/dead-code/no-unused-test-method-param`](/docs/rules/lint/dead-code/no-unused-test-method-param)
-- [`lint/dead-code/no-useless-cast`](/docs/rules/lint/dead-code/no-useless-cast)
-- [`lint/dead-code/no-useless-catch`](/docs/rules/lint/dead-code/no-useless-catch)
-- [`lint/dead-code/no-useless-condition`](/docs/rules/lint/dead-code/no-useless-condition)
-- [`lint/dead-code/no-useless-constructor`](/docs/rules/lint/dead-code/no-useless-constructor)
-- [`lint/dead-code/no-useless-continue`](/docs/rules/lint/dead-code/no-useless-continue)
-- [`lint/dead-code/no-useless-filter-var`](/docs/rules/lint/dead-code/no-useless-filter-var)
-- [`lint/dead-code/no-useless-math`](/docs/rules/lint/dead-code/no-useless-math)
-- [`lint/dead-code/no-useless-override`](/docs/rules/lint/dead-code/no-useless-override)
-- [`lint/dead-code/no-useless-phpdoc-type`](/docs/rules/lint/dead-code/no-useless-phpdoc-type)
-- [`lint/dead-code/no-useless-ternary`](/docs/rules/lint/dead-code/no-useless-ternary)
-- [`lint/dead-code/no-useless-variable`](/docs/rules/lint/dead-code/no-useless-variable)
 
 [Group reference](/docs/rules/lint/dead-code) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

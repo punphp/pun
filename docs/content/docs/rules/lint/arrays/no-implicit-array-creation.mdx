@@ -14,7 +14,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 - [`DisallowedImplicitArrayCreationRule`](https://github.com/phpstan/phpstan-strict-rules#readme) (phpstan-classes).
 - [`variable.implicitArray`](https://phpstan.org/error-identifiers/variable.implicitArray) (phpstan-strict-rules).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -29,21 +29,8 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Disallows implicit array creation: appending to or writing an offset of an undefined or `null` variable.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/arrays
-
-- [`lint/arrays/prefer-array-append`](/docs/rules/lint/arrays/prefer-array-append)
-- [`lint/arrays/prefer-array-spread`](/docs/rules/lint/arrays/prefer-array-spread)
 
 [Group reference](/docs/rules/lint/arrays) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

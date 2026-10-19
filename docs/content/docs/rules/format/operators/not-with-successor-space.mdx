@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="format/operators/not-with-successor-space" />
 
-Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fix: safe (keeps behaviour). Intent: layout.
+Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`not_operator_with_successor_space`](https://cs.symfony.com/doc/rules/operator/not_operator_with_successor_space.html) (php-cs-fixer).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [format.rules]
@@ -28,33 +28,8 @@ Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fi
 
 Logical NOT operators (`!`) should have one trailing whitespace.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in format/operators
-
-- [`format/operators/binary-spacing`](/docs/rules/format/operators/binary-spacing)
-- [`format/operators/concat-spacing`](/docs/rules/format/operators/concat-spacing)
-- [`format/operators/increment-style`](/docs/rules/format/operators/increment-style)
-- [`format/operators/linebreak`](/docs/rules/format/operators/linebreak)
-- [`format/operators/new-expression-parentheses`](/docs/rules/format/operators/new-expression-parentheses)
-- [`format/operators/new-parentheses`](/docs/rules/format/operators/new-parentheses)
-- [`format/operators/no-space-around-arrow`](/docs/rules/format/operators/no-space-around-arrow)
-- [`format/operators/no-space-around-double-colon`](/docs/rules/format/operators/no-space-around-double-colon)
-- [`format/operators/no-useless-concat`](/docs/rules/format/operators/no-useless-concat)
-- [`format/operators/not-with-space`](/docs/rules/format/operators/not-with-space)
-- [`format/operators/standardize-increment`](/docs/rules/format/operators/standardize-increment)
-- [`format/operators/standardize-not-equals`](/docs/rules/format/operators/standardize-not-equals)
-- [`format/operators/ternary-spacing`](/docs/rules/format/operators/ternary-spacing)
-- [`format/operators/unary-spacing`](/docs/rules/format/operators/unary-spacing)
 
 [Group reference](/docs/rules/format/operators) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

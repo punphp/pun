@@ -1,30 +1,35 @@
 ---
 title: pun config
-description: Print the configuration Pun will actually use.
+description: Print resolved settings and enabled rules as TOML or JSON.
 ---
 
 ```bash
-pun config                  # resolved config, as TOML
+pun config
 pun config --format json
-pun config --preset psr12   # what a built-in preset resolves to
+pun config --preset psr12
 ```
 
-Prints the resolved `pun.toml`, in the same sections and keys you write: `[php]`, `[files]`, `[format]`, `[lint]` and `[analyse]`. Use it to check what a change to `pun.toml` did, or to see what a preset contains.
+Output uses the same sections as `pun.toml`: `[php]`, `[files]`, `[format]`, `[lint]`, and `[analyse]`.
 
-- Every rule that runs is listed under its command's `rules` table as `<group>/<name>`: the preset's format rules, the lint rules your sets, groups and rule lines turn on (with their level, and `fix = "off"` where set), and the analyse rules of your preset. Rules switched off are left out. `[[lint.overrides]]` are listed as written.
-- Each command's `exclude` is the full list it applies: `[files] exclude` plus its own.
-- `ecosystems` shows what composer.lock turned on (Laravel, Pest, PHPUnit), and `[analyse] switches` the type switches of the analyse preset.
-- `[php] version` is your setting, else the lowest version composer.json's `require.php` allows, else 8.4.
+## Resolved values
 
-The TOML starts with a comment naming the files it was resolved from:
+| Field | Contents |
+| --- | --- |
+| Command `rules` tables | Enabled rules after preset, set, group, and rule settings, with levels and options |
+| `[[lint.overrides]]` | Path overrides as configured, not applied to a particular file |
+| Command `exclude` lists | Shared exclusions plus command-specific exclusions |
+| `ecosystems` | Dependencies detected from `composer.lock` |
+| `[analyse] switches` | Preset type switches resolved by config; not yet applied by the analysis CLI |
+| `[php] version` | Explicit setting, otherwise the lowest version `require.php` allows, otherwise 8.4 |
 
-```toml
-# Resolved from composer.json, pun.toml.
+Disabled rules are omitted. The TOML starts with a comment naming the configuration sources.
 
-[php]
-version = "8.4"
+## Options
 
-[format]
-preset = "laravel"
-...
-```
+| Flag | Meaning |
+| --- | --- |
+| `--format toml\|json` | Output format; default `toml` |
+| `--config <path>` | Read another config file |
+| `--preset <name>` | Resolve a built-in format preset without `pun.toml` |
+
+Resolution does not prove full runtime support for migrated analysis settings. See [analysis limitations](/docs/commands/analyse#configuration).

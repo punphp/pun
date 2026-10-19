@@ -1,19 +1,40 @@
 ---
 title: pun check
-description: Format, lint and analyse in one process. The command for CI, pre-commit hooks and agents.
+description: Report format, lint, and analysis findings. Apply format and lint fixes with --fix.
 ---
 
 ```bash
-pun check          # report everything
-pun check --fix    # format and apply lint fixes
+pun check
+pun check --fix
 ```
 
-`pun check` runs format and lint in one pass over each file, then analyses the project. Format and lint fixers run in PHP-CS-Fixer's priority order, as Pint runs them, so on a migrated project `pun check --fix` writes exactly what `pint` wrote.
+`pun check` reports findings without editing files. `--fix` applies formatting and available lint fixes, except rules with `fix = "off"`. Analysis never edits files.
 
-- It reports everything and exits non-zero on any format diff, any lint `error` or any analyse `error`.
-- `--fix` applies format, plus the fixes of every enabled lint rule. It never edits based on analysis. The findings of lint rules with `fix = "off"` are listed as remaining (`✖`, or `[remaining]` under a coding agent) and the run exits 1.
-- It takes the same flags as `pun format` (paths, `--staged`, `--dirty`, `--format=agent`) and `pun lint`'s (`-A`, `-W`, `-D`, `--deny-warnings`, `--max-warnings`, `--concise`). Analyse errors show as problems with the lint ones; `[analyse] baseline` and `@pun-ignore` comments apply as in `pun analyse`.
-- It exits 0 when clean, 1 on findings, and 2 when Pun couldn't run (a bad `pun.toml`, an unported rule, an unreadable path, a rule that failed on a file). See [exit codes](/docs/commands/format#exit-codes).
-- Under GitHub Actions (`GITHUB_ACTIONS=true`) the output is followed by one annotation per file to fix, titled with its rule IDs; `--format=github` prints only the annotations. See [GitHub Actions](/docs/commands/format#github-actions).
+## Rule order
 
-The single commands stay for editors, for running one stage, and for exact PHPStan output.
+Token-based format and lint fixers run in PHP-CS-Fixer's priority order to preserve Pint compatibility. Pun also runs native lint rules, then analyses the project. The combined command does not yet share one parse across all three stages.
+
+A migrated Pint configuration uses `pun check --fix`, not `pun format`: risky and code-deleting Pint fixers are lint rules. Review [migration warnings](/docs/commands/migrate) before relying on equivalent output.
+
+## Options
+
+`pun check` accepts the [format flags](/docs/commands/format#pints-flags) and [lint level flags](/docs/commands/lint#levels-on-the-command-line). Analysis uses `[analyse]` settings, ignore comments, and the configured baseline.
+
+```bash
+pun check --dirty
+pun check --staged
+pun check --deny-warnings
+pun check --format=github
+```
+
+`--staged` selects files with staged changes but reads their working-tree contents. It does not read only the staged diff.
+
+## Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| 0 | No remaining errors or format changes |
+| 1 | Format changes, lint errors, analysis errors, or a warning limit exceeded |
+| 2 | Pun could not run |
+
+Use the individual commands for editor integration or to run one stage. Use [`pun analyse`](/docs/commands/analyse) for PHPStan-compatible reports.

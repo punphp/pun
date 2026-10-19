@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/style/prefer-early-continue" />
 
-Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`prefer-early-continue`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#prefer-early-continue) (mago-linter).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,110 +28,8 @@ Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (k
 
 Continue early instead of nesting the loop body in an if.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/style
-
-- [`lint/style/add-param-type-from-phpdoc`](/docs/rules/lint/style/add-param-type-from-phpdoc)
-- [`lint/style/add-property-type-from-phpdoc`](/docs/rules/lint/style/add-property-type-from-phpdoc)
-- [`lint/style/add-return-type-from-phpdoc`](/docs/rules/lint/style/add-return-type-from-phpdoc)
-- [`lint/style/no-alias-function`](/docs/rules/lint/style/no-alias-function)
-- [`lint/style/no-ambiguous-constant`](/docs/rules/lint/style/no-ambiguous-constant)
-- [`lint/style/no-ambiguous-function`](/docs/rules/lint/style/no-ambiguous-function)
-- [`lint/style/no-array-accumulation-in-loop`](/docs/rules/lint/style/no-array-accumulation-in-loop)
-- [`lint/style/no-array-push`](/docs/rules/lint/style/no-array-push)
-- [`lint/style/no-assign-in-ternary-branch`](/docs/rules/lint/style/no-assign-in-ternary-branch)
-- [`lint/style/no-call-user-func`](/docs/rules/lint/style/no-call-user-func)
-- [`lint/style/no-dynamic-method-call`](/docs/rules/lint/style/no-dynamic-method-call)
-- [`lint/style/no-dynamic-method-callable`](/docs/rules/lint/style/no-dynamic-method-callable)
-- [`lint/style/no-dynamic-name`](/docs/rules/lint/style/no-dynamic-name)
-- [`lint/style/no-dynamic-property`](/docs/rules/lint/style/no-dynamic-property)
-- [`lint/style/no-dynamic-static-call`](/docs/rules/lint/style/no-dynamic-static-call)
-- [`lint/style/no-dynamic-static-callable`](/docs/rules/lint/style/no-dynamic-static-callable)
-- [`lint/style/no-dynamic-static-property`](/docs/rules/lint/style/no-dynamic-static-property)
-- [`lint/style/no-empty`](/docs/rules/lint/style/no-empty)
-- [`lint/style/no-ereg`](/docs/rules/lint/style/no-ereg)
-- [`lint/style/no-escaped-quotes`](/docs/rules/lint/style/no-escaped-quotes)
-- [`lint/style/no-hash-emoji`](/docs/rules/lint/style/no-hash-emoji)
-- [`lint/style/no-ini-set`](/docs/rules/lint/style/no-ini-set)
-- [`lint/style/no-inline-html`](/docs/rules/lint/style/no-inline-html)
-- [`lint/style/no-invalid-phpdoc`](/docs/rules/lint/style/no-invalid-phpdoc)
-- [`lint/style/no-is-null`](/docs/rules/lint/style/no-is-null)
-- [`lint/style/no-isset`](/docs/rules/lint/style/no-isset)
-- [`lint/style/no-multi-assign`](/docs/rules/lint/style/no-multi-assign)
-- [`lint/style/no-multiple-classes-per-file`](/docs/rules/lint/style/no-multiple-classes-per-file)
-- [`lint/style/no-nested-ternary`](/docs/rules/lint/style/no-nested-ternary)
-- [`lint/style/no-parameter-shadowing`](/docs/rules/lint/style/no-parameter-shadowing)
-- [`lint/style/no-php4-constructor`](/docs/rules/lint/style/no-php4-constructor)
-- [`lint/style/no-redundant-final`](/docs/rules/lint/style/no-redundant-final)
-- [`lint/style/no-redundant-final-const`](/docs/rules/lint/style/no-redundant-final-const)
-- [`lint/style/no-redundant-yield-from`](/docs/rules/lint/style/no-redundant-yield-from)
-- [`lint/style/no-short-ternary`](/docs/rules/lint/style/no-short-ternary)
-- [`lint/style/no-side-effects-with-declarations`](/docs/rules/lint/style/no-side-effects-with-declarations)
-- [`lint/style/no-sleep-wakeup`](/docs/rules/lint/style/no-sleep-wakeup)
-- [`lint/style/no-sprintf-concat`](/docs/rules/lint/style/no-sprintf-concat)
-- [`lint/style/no-unreachable-loop`](/docs/rules/lint/style/no-unreachable-loop)
-- [`lint/style/no-useless-printf`](/docs/rules/lint/style/no-useless-printf)
-- [`lint/style/no-useless-sprintf`](/docs/rules/lint/style/no-useless-sprintf)
-- [`lint/style/no-variable-variable`](/docs/rules/lint/style/no-variable-variable)
-- [`lint/style/prefer-arrow-function`](/docs/rules/lint/style/prefer-arrow-function)
-- [`lint/style/prefer-cast-over-intval`](/docs/rules/lint/style/prefer-cast-over-intval)
-- [`lint/style/prefer-cast-over-settype`](/docs/rules/lint/style/prefer-cast-over-settype)
-- [`lint/style/prefer-catch-name-from-type`](/docs/rules/lint/style/prefer-catch-name-from-type)
-- [`lint/style/prefer-class-constant`](/docs/rules/lint/style/prefer-class-constant)
-- [`lint/style/prefer-class-keyword`](/docs/rules/lint/style/prefer-class-keyword)
-- [`lint/style/prefer-class-keyword-on-object`](/docs/rules/lint/style/prefer-class-keyword-on-object)
-- [`lint/style/prefer-class-name-constant`](/docs/rules/lint/style/prefer-class-name-constant)
-- [`lint/style/prefer-compound-assignment`](/docs/rules/lint/style/prefer-compound-assignment)
-- [`lint/style/prefer-create-from-timestamp`](/docs/rules/lint/style/prefer-create-from-timestamp)
-- [`lint/style/prefer-date-time-immutable`](/docs/rules/lint/style/prefer-date-time-immutable)
-- [`lint/style/prefer-dir-constant`](/docs/rules/lint/style/prefer-dir-constant)
-- [`lint/style/prefer-dirname-levels`](/docs/rules/lint/style/prefer-dirname-levels)
-- [`lint/style/prefer-early-return`](/docs/rules/lint/style/prefer-early-return)
-- [`lint/style/prefer-early-return-of-variable`](/docs/rules/lint/style/prefer-early-return-of-variable)
-- [`lint/style/prefer-early-return-over-prepared-value`](/docs/rules/lint/style/prefer-early-return-over-prepared-value)
-- [`lint/style/prefer-empty-string-compare`](/docs/rules/lint/style/prefer-empty-string-compare)
-- [`lint/style/prefer-generic-array-phpdoc`](/docs/rules/lint/style/prefer-generic-array-phpdoc)
-- [`lint/style/prefer-instanceof-stringable`](/docs/rules/lint/style/prefer-instanceof-stringable)
-- [`lint/style/prefer-list-phpdoc`](/docs/rules/lint/style/prefer-list-phpdoc)
-- [`lint/style/prefer-php-version-id`](/docs/rules/lint/style/prefer-php-version-id)
-- [`lint/style/prefer-phpdoc-comment`](/docs/rules/lint/style/prefer-phpdoc-comment)
-- [`lint/style/prefer-pow-operator`](/docs/rules/lint/style/prefer-pow-operator)
-- [`lint/style/prefer-property-over-local-getter`](/docs/rules/lint/style/prefer-property-over-local-getter)
-- [`lint/style/prefer-random-int`](/docs/rules/lint/style/prefer-random-int)
-- [`lint/style/prefer-readonly-keyword`](/docs/rules/lint/style/prefer-readonly-keyword)
-- [`lint/style/prefer-self-reference`](/docs/rules/lint/style/prefer-self-reference)
-- [`lint/style/prefer-short-ternary`](/docs/rules/lint/style/prefer-short-ternary)
-- [`lint/style/prefer-spread`](/docs/rules/lint/style/prefer-spread)
-- [`lint/style/prefer-static-private-method`](/docs/rules/lint/style/prefer-static-private-method)
-- [`lint/style/prefer-str-contains`](/docs/rules/lint/style/prefer-str-contains)
-- [`lint/style/prefer-variadic-param`](/docs/rules/lint/style/prefer-variadic-param)
-- [`lint/style/prefer-while-loop`](/docs/rules/lint/style/prefer-while-loop)
-- [`lint/style/require-assign-set-padding`](/docs/rules/lint/style/require-assign-set-padding)
-- [`lint/style/require-create-from-format-bang`](/docs/rules/lint/style/require-create-from-format-bang)
-- [`lint/style/require-final-class`](/docs/rules/lint/style/require-final-class)
-- [`lint/style/require-final-internal-class`](/docs/rules/lint/style/require-final-internal-class)
-- [`lint/style/require-final-public-method`](/docs/rules/lint/style/require-final-public-method)
-- [`lint/style/require-fopen-binary-flag`](/docs/rules/lint/style/require-fopen-binary-flag)
-- [`lint/style/require-fopen-flag-order`](/docs/rules/lint/style/require-fopen-flag-order)
-- [`lint/style/require-implode-separator`](/docs/rules/lint/style/require-implode-separator)
-- [`lint/style/require-namespace`](/docs/rules/lint/style/require-namespace)
-- [`lint/style/require-naming-convention`](/docs/rules/lint/style/require-naming-convention)
-- [`lint/style/require-ordered-traits`](/docs/rules/lint/style/require-ordered-traits)
-- [`lint/style/require-parent-visibility`](/docs/rules/lint/style/require-parent-visibility)
-- [`lint/style/require-phpdoc`](/docs/rules/lint/style/require-phpdoc)
-- [`lint/style/require-sorted-integer-keys`](/docs/rules/lint/style/require-sorted-integer-keys)
-- [`lint/style/require-statement-padding`](/docs/rules/lint/style/require-statement-padding)
-- [`lint/style/require-todo-reference`](/docs/rules/lint/style/require-todo-reference)
 
 [Group reference](/docs/rules/lint/style) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

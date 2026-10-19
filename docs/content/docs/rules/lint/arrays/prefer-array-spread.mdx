@@ -7,14 +7,14 @@ pagination: false
 
 <RuleId id="lint/arrays/prefer-array-spread" />
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 ## Replaces
 
 - [`Pun/prefer_array_spread`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/) (pun).
 - [`prefer-array-spread`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#prefer-array-spread) (mago-linter).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -29,21 +29,8 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Detects calls to `array_merge()` and suggests using the array spread operator (`...`) in an array literal instead.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/arrays
-
-- [`lint/arrays/no-implicit-array-creation`](/docs/rules/lint/arrays/no-implicit-array-creation)
-- [`lint/arrays/prefer-array-append`](/docs/rules/lint/arrays/prefer-array-append)
 
 [Group reference](/docs/rules/lint/arrays) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

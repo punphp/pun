@@ -1,9 +1,9 @@
 ---
 title: Coding agents
-description: Pun detects coding agents and switches to compact output, so agents spend fewer tokens.
+description: Automatic compact output, detection overrides, and machine reports.
 ---
 
-When Pun runs under a coding agent, every command (`format`, `lint`, `check`, `migrate`, `config`) switches to a compact plain-text format. It is not JSON, because quotes, braces and repeated keys cost tokens. The first line is a summary, then each finding gets its own line (`path:line:col rule [fix:safe|unsafe] message`), with paths relative to the project:
+Pun detects coding agents and uses compact plain text. Check output starts with a summary, followed by findings with project-relative paths:
 
 ```
 pun check: fail, 1 error, 2 files with fixes (412 checked, 0.21s)
@@ -12,20 +12,26 @@ app/B.php lint/style/no-alias-function [fix:unsafe] Master functions shall be us
 app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line 2.
 ```
 
-- A passing run prints only the summary line: `pun format: pass (412 checked, 0.21s)`.
-- Lists stop after 20 items and end with `+N more; run with -v for all`. With `-v` you get every item, each followed by its bare unified diff.
-- There are no colours, progress dots or boxes. A run error is one line: `pun format: error: <message>`.
-- Exit codes are the same as without an agent.
-- `pun migrate` prints the written config (preset and rule counts), with each unsupported rule or unmigrated ignore comment as a finding. `pun config` prints a summary line, then the TOML.
+Clean runs print only the summary. Lists stop after 20 items; `-v` shows all items and available diffs. Output has no color, progress indicator, or boxes. Exit codes do not change.
 
-Pun detects agents from their environment variables, using [laravel/agent-detector](https://github.com/laravel/agent-detector)'s list (plus its `/opt/.devin` check for Devin) and then the [agent-detector](https://crates.io/crates/agent-detector) crate: Claude Code, Cursor, Codex, Gemini CLI, Copilot, Amp, OpenCode, Junie, Kiro, Grok, Kimi, Augment, Cline, Goose, Roo, Replit and others, plus any agent that sets `AI_AGENT` or `AGENT`. A missing TTY doesn't count as an agent. `CURSOR_TRACE_ID` alone doesn't count either: Cursor sets it in your own terminal too, while its agent sets `CURSOR_AGENT`. You can override detection, highest priority first:
+`pun migrate` reports the written config and skipped items. `pun config` prints a summary before its TOML.
+
+## Detection and overrides
+
+Detection uses agent-specific environment variables and the `agent-detector` crate. A missing terminal does not enable agent mode. `CURSOR_TRACE_ID` alone does not count; `CURSOR_AGENT` does.
+
+Overrides apply in this order, highest priority first:
 
 | Override | Effect |
 | --- | --- |
 | `--agent` / `--no-agent` | Force agent output on or off for this run |
 | `PUN_AGENT=1` / `PUN_AGENT=0` | Same, from the environment |
-| `PAO_DISABLE=1` / `PAO_FORCE=1` | [Laravel PAO](https://laravel.com/blog/introducing-laravel-pao-cleaner-output-for-ai-agents)'s switches, honoured too (disable wins) |
+| `PAO_DISABLE=1` / `PAO_FORCE=1` | Disable or force agent mode; disable wins |
 
-An explicit `--format` keeps its reporter under an agent. `--format=json` is PHP-CS-Fixer's JSON, and `--format=agent` is Pint's JSON agent reporter.
+## Explicit reports
 
-This site is agent-ready too: every page is available as Markdown by adding `.md` to its URL, and the whole site is summarised at [`/llms.txt`](/llms.txt).
+An explicit `--format` takes precedence over automatic compact output. For format, lint, and check, `--format=json` selects PHP-CS-Fixer's JSON and `--format=agent` selects Pint's JSON agent reporter. Neither is Pun's plain-text agent mode.
+
+## Markdown docs
+
+Append `.md` to a docs URL for Markdown. [`/llms.txt`](/llms.txt) lists the documentation pages.

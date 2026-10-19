@@ -1,56 +1,67 @@
 ---
 title: pun analyse
-description: Report type errors with the same results as PHPStan and Larastan, including baselines and ignores. It never edits files.
+description: Report type errors without editing files. PHPStan and Larastan support is incomplete.
 ---
 
 ```bash
-pun analyse          # alias: pun analyze
+pun analyse
 pun analyse app tests
 ```
 
-`pun analyse` reports the same errors as PHPStan with Larastan, honours your baseline and ignores, and never edits a file. Larastan's Laravel knowledge (models, relations, facades, container bindings, config) is built in.
+`pun analyze` is an alias. The [rule reference](/docs/rules/analyse) lists implemented and Planned checks. Pun does not yet replace every PHPStan or Larastan check.
 
 ## Configuration
-
-`pun migrate` writes this from your `phpstan.neon`:
 
 ```toml pun.toml
 [analyse]
 preset = "strict"
 paths = ["app", "tests"]
-baseline = "pun-baseline.toml"
 
 [analyse.rules]
 "types/missing-return-type" = "off"
 ```
 
-There are no levels. An [analyse preset](/docs/configuration/presets#analyse-presets) picks PHPStan's levels in five bands, and rules turn on and off one by one. `pun migrate` expands your PHPStan level into the exact list of rules it ran, so nothing changes on migration day.
+The five [analyse presets](/docs/configuration/presets#analyse-presets) group PHPStan levels. Individual rules use `"on"` or `"off"`.
+
+`pun migrate` converts PHPStan configuration, but the CLI does not yet apply migrated `stubs`, `[[analyse.ignore]]`, rule options, or preset type switches. Config conversion alone does not establish equivalent analysis results.
 
 ## Rule names
 
-Errors carry Pun's own IDs, `analyse/<group>/<name>`: `analyse/undefined/method` rather than `method.notFound`. Silence one with an [ignore comment](/docs/configuration/ignore-comments):
+Human output uses Pun IDs such as `analyse/undefined/function`. Machine reports retain PHPStan identifiers such as `function.notFound`.
+
+An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching finding:
 
 ```php
-$user->fullName(); // @pun-ignore analyse/undefined/method -- added by a macro
+legacy_hook(); // @pun-ignore analyse/undefined/function -- provided at runtime
 ```
-
-`functions/printf-placeholder-count` checks `printf`, `sprintf`, `sscanf`, and `fscanf` for invalid placeholders and argument counts. `functions/invalid-vprintf-arguments` checks `vprintf` and `vsprintf` against known array sizes, including optional items. Both rules belong to the `basic` preset.
 
 ## Files
 
-`pun analyse` checks `[analyse] paths` (else `[files] paths`, else the project) or the paths you give it, without Blade templates and Pint's default directories (`bootstrap/cache`, `build`, `node_modules`, `storage`). `[analyse] exclude` globs drop files from the analysis and from the symbol scan, like PHPStan's `excludePaths`.
+Path arguments replace `[analyse] paths`, which otherwise defaults to `[files] paths` or the project root. Analysis skips Blade templates, `vendor/`, `bootstrap/cache`, `build`, `node_modules`, and `storage`.
+
+`[analyse] exclude` removes matching files from analysis and the symbol scan. Pun still reads Composer dependencies for symbols. [`pun list-files --command analyse`](/docs/commands/list-files) shows the analysed files.
 
 ## Baseline
 
 ```bash
-pun analyse --generate-baseline              # [analyse] baseline, else pun-baseline.toml
-pun analyse --generate-baseline old.toml
+pun analyse --generate-baseline
 ```
 
-The baseline lists each file's errors by rule and message with a count, so an error that moves to another line stays covered. A run with `[analyse] baseline` drops the errors it lists and notes entries that no longer match. A PHPStan baseline is never read; `pun migrate` asks you to generate a new one.
+This writes to `[analyse] baseline`, or `pun-baseline.toml` when unset, and exits 0. An optional path selects another file: `pun analyse --generate-baseline old.toml`.
+
+Configure the file to suppress its findings on later runs:
+
+```toml
+[analyse]
+baseline = "pun-baseline.toml"
+```
+
+Entries match by file, rule, message, and count, not line number. Pun notes entries that no longer match. PHPStan baselines are not read or copied.
 
 ## Output and exit codes
 
-Humans get code frames and a summary line; `--concise` prints one line per error. `--format` (alias `--error-format`) prints PHPStan's formats byte for byte: `table`, `raw`, `json`, `prettyJson`, `checkstyle`, `junit`, `gitlab`, `github` and `teamcity`, with PHPStan's identifiers (`method.notFound`); `-v` adds them to `raw`. Under GitHub Actions the human output is followed by one annotation per error.
+Default output includes code frames and a summary. `--concise` prints one line per finding. `--max-processes` caps worker threads.
 
-`pun analyse` exits 0 without errors, 1 with errors, and 2 when Pun couldn't run (a bad `pun.toml` or baseline, an unknown format, an unreadable file). `--max-processes` caps the threads.
+`--format`, also spelled `--error-format`, selects a PHPStan-compatible report: `table`, `raw`, `json`, `prettyJson`, `checkstyle`, `junit`, `gitlab`, `github`, or `teamcity`. `-v` adds identifiers to `raw` output.
+
+Exit code 0 means no errors, 1 means errors, and 2 means Pun could not run.

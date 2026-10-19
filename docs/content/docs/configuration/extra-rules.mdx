@@ -1,9 +1,11 @@
 ---
 title: Extra rules
-description: Opt-in lint rules ported from Mago for Laravel and Pest idioms and redundant code. None is in a preset.
+description: Mago-derived lint rules for Laravel, Pest, and code cleanup.
 ---
 
-Pun adds opt-in lint rules ported from [Mago](https://github.com/carthage-software/mago) for things PHP-CS-Fixer and Pint don't cover. **None is in a format preset**, so format output stays identical to Pint. Enable them under `[lint.rules]`; `--fix` applies them:
+Pun ports additional lint rules from [Mago](https://github.com/carthage-software/mago). They are not format rules. Individual [rule pages](/docs/rules/lint) list set membership and implementation status.
+
+Explicit rule settings use `[lint.rules]`:
 
 ```toml pun.toml
 [lint.rules]
@@ -11,13 +13,13 @@ Pun adds opt-in lint rules ported from [Mago](https://github.com/carthage-softwa
 "laravel/prefer-fake-helper" = "error"
 ```
 
-Rules marked **risky** can change behaviour; review their diff.
+`pun lint --fix` applies available fixes. Review changes from rules marked risky below.
 
 ## Laravel
 
 | Rule | Rewrites |
 | --- | --- |
-| `laravel/prefer-dedicated-status-assertion` | `->assertStatus(404)` → `->assertNotFound()` (25 codes) |
+| `laravel/prefer-dedicated-status-assertion` | `->assertStatus(404)` → `->assertNotFound()` |
 | `laravel/prefer-fake-helper` | `$this->faker` → `fake()` in `*Factory` classes |
 | `laravel/prefer-array-validation-rules` | `'required\|string'` → `['required', 'string']` in `rules()` |
 | `laravel/no-implicit-model-query` (risky) | `User::where(...)` → `User::query()->where(...)` |
@@ -45,4 +47,4 @@ Rules marked **risky** can change behaviour; review their diff.
 | `php-8.1/prefer-first-class-callable` (risky) | `fn ($x) => $this->m($x)` → `$this->m(...)` |
 | `security/add-sensitive-parameter` | adds `#[\SensitiveParameter]` to `$password`, `$token`, `$secret` and API-key parameters |
 
-Each rule ports only the rewrites that keep the code's meaning; the edge cases each one skips are listed in the repository's `context/reference/mago-extras.md`.
+The [Mago mapping](/docs/migrate/from/mago) lists upstream names and Pun equivalents.

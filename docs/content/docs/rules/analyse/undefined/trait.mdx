@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/undefined/trait" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -19,51 +19,20 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 - [`traitUse.enum`](https://phpstan.org/error-identifiers/traitUse.enum) (phpstan).
 - [`traitUse.interface`](https://phpstan.org/error-identifiers/traitUse.interface) (phpstan).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"undefined/trait" = true
+"undefined/trait" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/undefined/trait -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/undefined
-
-- [`analyse/undefined/assigned-property`](/docs/rules/analyse/undefined/assigned-property)
-- [`analyse/undefined/assigned-static-property`](/docs/rules/analyse/undefined/assigned-static-property)
-- [`analyse/undefined/class-constant`](/docs/rules/analyse/undefined/class-constant)
-- [`analyse/undefined/compact-variable`](/docs/rules/analyse/undefined/compact-variable)
-- [`analyse/undefined/constant`](/docs/rules/analyse/undefined/constant)
-- [`analyse/undefined/function`](/docs/rules/analyse/undefined/function)
-- [`analyse/undefined/goto-label`](/docs/rules/analyse/undefined/goto-label)
-- [`analyse/undefined/group-import`](/docs/rules/analyse/undefined/group-import)
-- [`analyse/undefined/import`](/docs/rules/analyse/undefined/import)
-- [`analyse/undefined/include-file`](/docs/rules/analyse/undefined/include-file)
-- [`analyse/undefined/instanceof-class`](/docs/rules/analyse/undefined/instanceof-class)
-- [`analyse/undefined/method`](/docs/rules/analyse/undefined/method)
-- [`analyse/undefined/offset`](/docs/rules/analyse/undefined/offset)
-- [`analyse/undefined/property`](/docs/rules/analyse/undefined/property)
-- [`analyse/undefined/static-method`](/docs/rules/analyse/undefined/static-method)
-- [`analyse/undefined/static-property`](/docs/rules/analyse/undefined/static-property)
-- [`analyse/undefined/variable`](/docs/rules/analyse/undefined/variable)
 
 [Group reference](/docs/rules/analyse/undefined) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

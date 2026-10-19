@@ -1,36 +1,33 @@
 ---
 title: CI
-description: Run pun check in CI. One binary, no PHP setup.
+description: Check a project without edits and publish CI reports.
 ---
 
-[`pun check`](/docs/commands/check) formats, lints and analyses in one pass and exits non-zero on any problem, which is all CI needs.
+Run [`pun check`](/docs/commands/check) without `--fix`. It reports formatting changes, lint errors, and analysis errors without editing files.
+
+## GitHub Actions
+
+Add this step after installing Pun on the runner's `PATH` and installing project dependencies. See [installation](/docs/installation) for build requirements. For analysis, include your usual PHP and Composer setup and `composer install` before the check.
 
 ```yaml .github/workflows/style.yml
-name: Pun
-
-on: [push, pull_request]
-
-jobs:
-  pun:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Pun
-        run: curl -LsSf https://github.com/punphp/pun/releases/latest/download/punphp-installer.sh | sh
-      - name: Check
-        run: pun check
+- name: Check
+  run: pun check
 ```
 
-On GitHub Actions, Pun sees `GITHUB_ACTIONS=true` and adds an annotation for each finding after its normal output, so the pull request shows them inline with no extra step. `--format=github` prints only the annotations.
+Under `GITHUB_ACTIONS=true`, Pun adds annotations to its default output. `pun check --format=github` prints annotations only.
 
-On other CIs, write a report in a format your CI understands:
+## Report files
+
+For a formatting-only check with a Checkstyle report:
 
 ```bash
 pun format --test --output-to-file=pun.xml --output-format=checkstyle
 ```
 
-`junit`, `gitlab`, `json`, `xml` and `txt` work the same way.
+`--output-format` also accepts `junit`, `gitlab`, `json`, `xml`, and `txt`.
 
-:::tip[Pre-commit hook]
-`pun check --staged` checks only staged files, so a hook stays instant.
-:::
+## Pre-commit hook
+
+Use `pun check --staged` to select files with staged changes. Pun reads working-tree contents, including unstaged edits in those files.
+
+Exit code 0 means clean, 1 means findings, and 2 means Pun could not run. Warnings fail only with `--deny-warnings` or when they exceed `--max-warnings`.

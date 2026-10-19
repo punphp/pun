@@ -7,54 +7,26 @@ pagination: false
 
 <RuleId id="analyse/operators/non-numeric-post-increment" />
 
-Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. Additional upstream gates: `strictRules.numericOperandsInArithmeticOperators`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Additional upstream gates: `strictRules.numericOperandsInArithmeticOperators`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
 - [`OperandInArithmeticPostIncrementRule`](https://github.com/phpstan/phpstan-strict-rules#readme) (phpstan-classes).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"operators/non-numeric-post-increment" = true
+"operators/non-numeric-post-increment" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/operators/non-numeric-post-increment -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/operators
-
-- [`analyse/operators/non-boolean-and-operand`](/docs/rules/analyse/operators/non-boolean-and-operand)
-- [`analyse/operators/non-boolean-not-operand`](/docs/rules/analyse/operators/non-boolean-not-operand)
-- [`analyse/operators/non-boolean-or-operand`](/docs/rules/analyse/operators/non-boolean-or-operand)
-- [`analyse/operators/non-numeric-addition`](/docs/rules/analyse/operators/non-numeric-addition)
-- [`analyse/operators/non-numeric-division`](/docs/rules/analyse/operators/non-numeric-division)
-- [`analyse/operators/non-numeric-exponentiation`](/docs/rules/analyse/operators/non-numeric-exponentiation)
-- [`analyse/operators/non-numeric-modulo`](/docs/rules/analyse/operators/non-numeric-modulo)
-- [`analyse/operators/non-numeric-multiplication`](/docs/rules/analyse/operators/non-numeric-multiplication)
-- [`analyse/operators/non-numeric-post-decrement`](/docs/rules/analyse/operators/non-numeric-post-decrement)
-- [`analyse/operators/non-numeric-pre-decrement`](/docs/rules/analyse/operators/non-numeric-pre-decrement)
-- [`analyse/operators/non-numeric-pre-increment`](/docs/rules/analyse/operators/non-numeric-pre-increment)
-- [`analyse/operators/non-numeric-subtraction`](/docs/rules/analyse/operators/non-numeric-subtraction)
-- [`analyse/operators/non-numeric-unary-minus`](/docs/rules/analyse/operators/non-numeric-unary-minus)
-- [`analyse/operators/non-numeric-unary-plus`](/docs/rules/analyse/operators/non-numeric-unary-plus)
 
 [Group reference](/docs/rules/analyse/operators) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

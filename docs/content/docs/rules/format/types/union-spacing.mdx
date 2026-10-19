@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="format/types/union-spacing" />
 
-Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fix: safe (keeps behaviour). Intent: layout.
+Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`types_spaces`](https://cs.symfony.com/doc/rules/whitespace/types_spaces.html) (php-cs-fixer).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [format.rules]
@@ -28,10 +28,6 @@ Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fi
 
 A single space or none should be around union type and intersection type operators.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 | Name | Type | Allowed values | Default | Upstream name |
@@ -39,17 +35,5 @@ Examples not written yet.
 | `space` | `enum` | `none`, `single` | `"none"` | `space` |
 | `space-multiple-catch` | `enum` | `none`, `single` | `"same-as-space"` | `space_multiple_catch` |
 
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in format/types
-
-- [`format/types/compact-nullable`](/docs/rules/format/types/compact-nullable)
-- [`format/types/declaration-spacing`](/docs/rules/format/types/declaration-spacing)
-- [`format/types/nullable-for-null-default`](/docs/rules/format/types/nullable-for-null-default)
-- [`format/types/nullable-syntax`](/docs/rules/format/types/nullable-syntax)
-- [`format/types/ordered`](/docs/rules/format/types/ordered)
 
 [Group reference](/docs/rules/format/types) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

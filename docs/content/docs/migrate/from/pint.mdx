@@ -7,7 +7,7 @@ pagination: false
 
 ## Config translation
 
-Pun reads only pun.toml. `pun migrate` leaves the source config in place. Unported rules and unsupported items are named and skipped, with a request to send a PR. There is no PHP fallback.
+`pun migrate` leaves source configs in place and reports skipped items. Planned rules are not implemented. Pun never falls back to PHP for missing rules.
 
 Run `pun migrate --from pint`. Pint's risky and code-deleting fixers become lint rules, not format rules.
 
@@ -30,91 +30,61 @@ Run `pun migrate --from pint`. Pint's risky and code-deleting fixers become lint
 
 [`no_blank_lines_before_namespace`](https://cs.symfony.com/doc/rules/namespace_notation/no_blank_lines_before_namespace.html), [`single_blank_line_before_namespace`](https://cs.symfony.com/doc/rules/namespace_notation/single_blank_line_before_namespace.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: braces_position
 
 [`curly_braces_position`](https://cs.symfony.com/doc/rules/basic/curly_braces_position.html).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 ### deprecated upstream; successor: compact_nullable_type_declaration
 
 [`compact_nullable_typehint`](https://cs.symfony.com/doc/rules/whitespace/compact_nullable_typehint.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: modifier_keywords
 
 [`visibility_required`](https://cs.symfony.com/doc/rules/class_notation/visibility_required.html).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 ### deprecated upstream; successor: native_type_declaration_casing
 
 [`native_function_type_declaration_casing`](https://cs.symfony.com/doc/rules/casing/native_function_type_declaration_casing.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: new_with_parentheses
 
 [`new_with_braces`](https://cs.symfony.com/doc/rules/operator/new_with_braces.html).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 ### deprecated upstream; successor: no_trailing_comma_in_singleline
 
 [`no_trailing_comma_in_list_call`](https://cs.symfony.com/doc/rules/control_structure/no_trailing_comma_in_list_call.html), [`no_trailing_comma_in_singleline_array`](https://cs.symfony.com/doc/rules/array_notation/no_trailing_comma_in_singleline_array.html), [`no_trailing_comma_in_singleline_function_call`](https://cs.symfony.com/doc/rules/function_notation/no_trailing_comma_in_singleline_function_call.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: no_unneeded_braces
 
 [`no_unneeded_curly_braces`](https://cs.symfony.com/doc/rules/control_structure/no_unneeded_curly_braces.html).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 ### deprecated upstream; successor: none (removed)
 
 [`class_keyword_remove`](https://cs.symfony.com/doc/rules/language_construct/class_keyword_remove.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: phpdoc_no_duplicate_types
 
 [`phpdoc_types_no_duplicates`](https://cs.symfony.com/doc/rules/phpdoc/phpdoc_types_no_duplicates.html).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 ### deprecated upstream; successor: single_space_around_construct
 
 [`single_space_after_construct`](https://cs.symfony.com/doc/rules/language_construct/single_space_after_construct.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: single_space_around_construct, control_structure_braces, control_structure_continuation_position, declare_parentheses, no_multiple_statements_per_line, braces_position, statement_indentation, no_extra_blank_lines
 
 [`braces`](https://cs.symfony.com/doc/rules/basic/braces.html).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 ### deprecated upstream; successor: spaces_inside_parentheses
 
 [`no_spaces_inside_parenthesis`](https://cs.symfony.com/doc/rules/whitespace/no_spaces_inside_parenthesis.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: string_implicit_backslashes
 
 [`escape_implicit_backslashes`](https://cs.symfony.com/doc/rules/string_notation/escape_implicit_backslashes.html).
 
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
-
 ### deprecated upstream; successor: type_declaration_spaces
 
 [`function_typehint_space`](https://cs.symfony.com/doc/rules/function_notation/function_typehint_space.html).
-
-Want support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.
 
 
 ## Pun-only rules

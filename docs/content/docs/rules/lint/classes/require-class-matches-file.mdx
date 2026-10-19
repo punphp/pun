@@ -14,7 +14,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 - [`psr_autoloading`](https://cs.symfony.com/doc/rules/basic/psr_autoloading.html) (php-cs-fixer, risky).
 - [`file-name`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#file-name) (mago-linter).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -22,16 +22,12 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 ```
 
 ```php
-// @pun-ignore lint/classes/require-class-matches-file -- explain the exception
+// @pun-ignore-file lint/classes/require-class-matches-file -- explain the exception
 ```
 
 ## What it does
 
 Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
@@ -39,32 +35,5 @@ Examples not written yet.
 | --- | --- | --- | --- | --- |
 | `dir` | `string` | Any value of this type | omit (upstream null) | `dir` |
 
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/classes
-
-- [`lint/classes/add-dynamic-properties`](/docs/rules/lint/classes/add-dynamic-properties)
-- [`lint/classes/add-stringable`](/docs/rules/lint/classes/add-stringable)
-- [`lint/classes/no-explicit-constructor-call`](/docs/rules/lint/classes/no-explicit-constructor-call)
-- [`lint/classes/no-null-property-default`](/docs/rules/lint/classes/no-null-property-default)
-- [`lint/classes/no-null-property-init`](/docs/rules/lint/classes/no-null-property-init)
-- [`lint/classes/no-protected-constant-in-final`](/docs/rules/lint/classes/no-protected-constant-in-final)
-- [`lint/classes/no-protected-in-final`](/docs/rules/lint/classes/no-protected-in-final)
-- [`lint/classes/no-protected-method-in-final`](/docs/rules/lint/classes/no-protected-method-in-final)
-- [`lint/classes/no-protected-property-in-final`](/docs/rules/lint/classes/no-protected-property-in-final)
-- [`lint/classes/no-redundant-readonly`](/docs/rules/lint/classes/no-redundant-readonly)
-- [`lint/classes/no-redundant-readonly-property`](/docs/rules/lint/classes/no-redundant-readonly-property)
-- [`lint/classes/no-static-constructor-call`](/docs/rules/lint/classes/no-static-constructor-call)
-- [`lint/classes/no-underscore-class`](/docs/rules/lint/classes/no-underscore-class)
-- [`lint/classes/no-unset-on-property`](/docs/rules/lint/classes/no-unset-on-property)
-- [`lint/classes/prefer-new-self`](/docs/rules/lint/classes/prefer-new-self)
-- [`lint/classes/prefer-self-in-final`](/docs/rules/lint/classes/prefer-self-in-final)
-- [`lint/classes/prefer-self-over-static`](/docs/rules/lint/classes/prefer-self-over-static)
-- [`lint/classes/prefer-serialize-method`](/docs/rules/lint/classes/prefer-serialize-method)
-- [`lint/classes/prefer-unserialize-method`](/docs/rules/lint/classes/prefer-unserialize-method)
-- [`lint/classes/require-member-order`](/docs/rules/lint/classes/require-member-order)
 
 [Group reference](/docs/rules/lint/classes) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

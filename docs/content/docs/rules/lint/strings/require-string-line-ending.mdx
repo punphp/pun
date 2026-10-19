@@ -13,7 +13,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 - [`string_line_ending`](https://cs.symfony.com/doc/rules/string_notation/string_line_ending.html) (php-cs-fixer, risky).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -21,32 +21,15 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 ```
 
 ```php
-// @pun-ignore lint/strings/require-string-line-ending -- explain the exception
+// @pun-ignore-file lint/strings/require-string-line-ending -- explain the exception
 ```
 
 ## What it does
 
 All multi-line strings must use correct line ending.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/strings
-
-- [`lint/strings/no-non-printable-character`](/docs/rules/lint/strings/no-non-printable-character)
-- [`lint/strings/no-single-argument-sprintf`](/docs/rules/lint/strings/no-single-argument-sprintf)
-- [`lint/strings/no-trailing-whitespace-in-string`](/docs/rules/lint/strings/no-trailing-whitespace-in-string)
-- [`lint/strings/prefer-empty-string-identical`](/docs/rules/lint/strings/prefer-empty-string-identical)
-- [`lint/strings/prefer-mb-functions`](/docs/rules/lint/strings/prefer-mb-functions)
-- [`lint/strings/require-interpolation-style`](/docs/rules/lint/strings/require-interpolation-style)
 
 [Group reference](/docs/rules/lint/strings) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

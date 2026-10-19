@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/strings/prefer-empty-string-identical" />
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour).
 
 ## Replaces
 
 - [`StrlenZeroToIdenticalEmptyString`](https://getrector.com/rule-detail/strlen-zero-to-identical-empty-string-rector) (rector).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,25 +28,8 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Changes strlen comparison to 0 to direct empty string compare
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/strings
-
-- [`lint/strings/no-non-printable-character`](/docs/rules/lint/strings/no-non-printable-character)
-- [`lint/strings/no-single-argument-sprintf`](/docs/rules/lint/strings/no-single-argument-sprintf)
-- [`lint/strings/no-trailing-whitespace-in-string`](/docs/rules/lint/strings/no-trailing-whitespace-in-string)
-- [`lint/strings/prefer-mb-functions`](/docs/rules/lint/strings/prefer-mb-functions)
-- [`lint/strings/require-interpolation-style`](/docs/rules/lint/strings/require-interpolation-style)
-- [`lint/strings/require-string-line-ending`](/docs/rules/lint/strings/require-string-line-ending)
 
 [Group reference](/docs/rules/lint/strings) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

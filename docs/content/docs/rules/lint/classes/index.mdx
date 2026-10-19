@@ -16,7 +16,7 @@ Across commands: format: 8, lint: 21, analyse: 63.
 
 Add missing dynamic properties
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/classes/add-stringable">
@@ -25,7 +25,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 A class that implements the `__toString()` method must explicitly implement the `Stringable` interface.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-explicit-constructor-call">
@@ -43,7 +43,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4).
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-null-property-init">
@@ -52,7 +52,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Remove initialization with null value from property declarations
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-protected-constant-in-final">
@@ -61,7 +61,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Change protected constant to private if possible
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-protected-in-final">
@@ -70,7 +70,7 @@ Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe 
 
 Converts `protected` variables and methods to `private` where possible.
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-protected-method-in-final">
@@ -79,7 +79,7 @@ Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe 
 
 Change protected class method to private if possible
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-protected-property-in-final">
@@ -88,7 +88,7 @@ Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe 
 
 Change property to private if possible
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-redundant-readonly">
@@ -97,7 +97,7 @@ Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: safe 
 
 Removes redundant readonly from properties in readonly classes.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-redundant-readonly-property">
@@ -106,7 +106,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 In a readonly class, drop `readonly` from properties and promoted parameters
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/no-static-constructor-call">
@@ -124,7 +124,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Detects class, interface, trait, or enum declarations named `_`.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/classes/no-unset-on-property">
@@ -142,7 +142,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Change `new static()` to `new self()` in a final class
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/prefer-self-in-final">
@@ -151,7 +151,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Inside an enum or `final`/anonymous class, `self` should be preferred over `static`.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize), [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize), [`code-quality`](/docs/rules/sets/code-quality) sets. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/prefer-self-over-static">
@@ -160,7 +160,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize), [`code-quality`](/docs
 
 Change `static::*` to `self::*` on final class or private static members
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/classes/prefer-serialize-method">
@@ -169,7 +169,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change __sleep() to __serialize() with correct return values
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/classes/prefer-unserialize-method">
@@ -178,7 +178,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Change __wakeup() to __unserialize()
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/classes/require-class-matches-file">
@@ -196,7 +196,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Orders the elements of classes/interfaces/traits/enums.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 </Card>
 </CardGroup>

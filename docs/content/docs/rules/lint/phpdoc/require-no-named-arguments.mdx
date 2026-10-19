@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/phpdoc/require-no-named-arguments" />
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`phpdoc_tag_no_named_arguments`](https://cs.symfony.com/doc/rules/phpdoc/phpdoc_tag_no_named_arguments.html) (php-cs-fixer).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -21,16 +21,12 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 ```
 
 ```php
-// @pun-ignore lint/phpdoc/require-no-named-arguments -- explain the exception
+// @pun-ignore-file lint/phpdoc/require-no-named-arguments -- explain the exception
 ```
 
 ## What it does
 
 There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
@@ -40,25 +36,5 @@ Examples not written yet.
 | `fix-attribute` | `bool` | Any value of this type | `true` | `fix_attribute` |
 | `fix-internal` | `bool` | Any value of this type | `true` | `fix_internal` |
 
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/phpdoc
-
-- [`lint/phpdoc/add-missing-param`](/docs/rules/lint/phpdoc/add-missing-param)
-- [`lint/phpdoc/no-access`](/docs/rules/lint/phpdoc/no-access)
-- [`lint/phpdoc/no-empty-return`](/docs/rules/lint/phpdoc/no-empty-return)
-- [`lint/phpdoc/no-misplaced`](/docs/rules/lint/phpdoc/no-misplaced)
-- [`lint/phpdoc/no-mixed-overruled-by-native`](/docs/rules/lint/phpdoc/no-mixed-overruled-by-native)
-- [`lint/phpdoc/no-package`](/docs/rules/lint/phpdoc/no-package)
-- [`lint/phpdoc/no-superfluous-tags`](/docs/rules/lint/phpdoc/no-superfluous-tags)
-- [`lint/phpdoc/no-useless-inheritdoc`](/docs/rules/lint/phpdoc/no-useless-inheritdoc)
-- [`lint/phpdoc/no-useless-param`](/docs/rules/lint/phpdoc/no-useless-param)
-- [`lint/phpdoc/no-useless-readonly`](/docs/rules/lint/phpdoc/no-useless-readonly)
-- [`lint/phpdoc/no-useless-return`](/docs/rules/lint/phpdoc/no-useless-return)
-- [`lint/phpdoc/no-useless-var`](/docs/rules/lint/phpdoc/no-useless-var)
-- [`lint/phpdoc/no-void-on-magic-method`](/docs/rules/lint/phpdoc/no-void-on-magic-method)
 
 [Group reference](/docs/rules/lint/phpdoc) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

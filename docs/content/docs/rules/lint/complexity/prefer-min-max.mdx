@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/complexity/prefer-min-max" />
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`NumberCompareToMaxFuncCall`](https://getrector.com/rule-detail/number-compare-to-max-func-call-rector) (rector).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,81 +28,8 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Change ternary number compare to `max()` call
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/complexity
-
-- [`lint/complexity/no-and-assignment`](/docs/rules/lint/complexity/no-and-assignment)
-- [`lint/complexity/no-boolean-flag-parameter`](/docs/rules/lint/complexity/no-boolean-flag-parameter)
-- [`lint/complexity/no-boolean-literal-compare`](/docs/rules/lint/complexity/no-boolean-literal-compare)
-- [`lint/complexity/no-compact`](/docs/rules/lint/complexity/no-compact)
-- [`lint/complexity/no-concat-assign-new-item`](/docs/rules/lint/complexity/no-concat-assign-new-item)
-- [`lint/complexity/no-constant-condition`](/docs/rules/lint/complexity/no-constant-condition)
-- [`lint/complexity/no-constant-via-variable`](/docs/rules/lint/complexity/no-constant-via-variable)
-- [`lint/complexity/no-double-negation`](/docs/rules/lint/complexity/no-double-negation)
-- [`lint/complexity/no-duplicate-match-arm`](/docs/rules/lint/complexity/no-duplicate-match-arm)
-- [`lint/complexity/no-else-clause`](/docs/rules/lint/complexity/no-else-clause)
-- [`lint/complexity/no-empty-file`](/docs/rules/lint/complexity/no-empty-file)
-- [`lint/complexity/no-excessive-cyclomatic`](/docs/rules/lint/complexity/no-excessive-cyclomatic)
-- [`lint/complexity/no-excessive-enum-cases`](/docs/rules/lint/complexity/no-excessive-enum-cases)
-- [`lint/complexity/no-excessive-halstead`](/docs/rules/lint/complexity/no-excessive-halstead)
-- [`lint/complexity/no-excessive-kan-defect`](/docs/rules/lint/complexity/no-excessive-kan-defect)
-- [`lint/complexity/no-excessive-methods`](/docs/rules/lint/complexity/no-excessive-methods)
-- [`lint/complexity/no-excessive-nesting`](/docs/rules/lint/complexity/no-excessive-nesting)
-- [`lint/complexity/no-excessive-parameters`](/docs/rules/lint/complexity/no-excessive-parameters)
-- [`lint/complexity/no-excessive-properties`](/docs/rules/lint/complexity/no-excessive-properties)
-- [`lint/complexity/no-goto`](/docs/rules/lint/complexity/no-goto)
-- [`lint/complexity/no-iterator-to-array-in-foreach`](/docs/rules/lint/complexity/no-iterator-to-array-in-foreach)
-- [`lint/complexity/no-negated-and`](/docs/rules/lint/complexity/no-negated-and)
-- [`lint/complexity/no-negated-boolean-literal`](/docs/rules/lint/complexity/no-negated-boolean-literal)
-- [`lint/complexity/no-negated-comparison`](/docs/rules/lint/complexity/no-negated-comparison)
-- [`lint/complexity/no-negated-group`](/docs/rules/lint/complexity/no-negated-group)
-- [`lint/complexity/no-phpdoc-class-case-mismatch`](/docs/rules/lint/complexity/no-phpdoc-class-case-mismatch)
-- [`lint/complexity/no-redundant-isset`](/docs/rules/lint/complexity/no-redundant-isset)
-- [`lint/complexity/no-redundant-literal-return`](/docs/rules/lint/complexity/no-redundant-literal-return)
-- [`lint/complexity/no-redundant-null-check`](/docs/rules/lint/complexity/no-redundant-null-check)
-- [`lint/complexity/no-redundant-nullable-check`](/docs/rules/lint/complexity/no-redundant-nullable-check)
-- [`lint/complexity/no-redundant-nullsafe`](/docs/rules/lint/complexity/no-redundant-nullsafe)
-- [`lint/complexity/no-redundant-write-visibility`](/docs/rules/lint/complexity/no-redundant-write-visibility)
-- [`lint/complexity/no-single-case-switch`](/docs/rules/lint/complexity/no-single-case-switch)
-- [`lint/complexity/no-single-item-in-array`](/docs/rules/lint/complexity/no-single-item-in-array)
-- [`lint/complexity/no-sole-value-sprintf`](/docs/rules/lint/complexity/no-sole-value-sprintf)
-- [`lint/complexity/no-unused-label`](/docs/rules/lint/complexity/no-unused-label)
-- [`lint/complexity/no-useless-array-values`](/docs/rules/lint/complexity/no-useless-array-values)
-- [`lint/complexity/no-useless-block`](/docs/rules/lint/complexity/no-useless-block)
-- [`lint/complexity/prefer-absolute-include`](/docs/rules/lint/complexity/prefer-absolute-include)
-- [`lint/complexity/prefer-array-literal`](/docs/rules/lint/complexity/prefer-array-literal)
-- [`lint/complexity/prefer-coalesce-chain`](/docs/rules/lint/complexity/prefer-coalesce-chain)
-- [`lint/complexity/prefer-coalesce-over-empty-ternary`](/docs/rules/lint/complexity/prefer-coalesce-over-empty-ternary)
-- [`lint/complexity/prefer-coalesce-over-foreach`](/docs/rules/lint/complexity/prefer-coalesce-over-foreach)
-- [`lint/complexity/prefer-empty-array-compare`](/docs/rules/lint/complexity/prefer-empty-array-compare)
-- [`lint/complexity/prefer-empty-array-identical`](/docs/rules/lint/complexity/prefer-empty-array-identical)
-- [`lint/complexity/prefer-func-num-args`](/docs/rules/lint/complexity/prefer-func-num-args)
-- [`lint/complexity/prefer-in-array`](/docs/rules/lint/complexity/prefer-in-array)
-- [`lint/complexity/prefer-in-array-over-foreach`](/docs/rules/lint/complexity/prefer-in-array-over-foreach)
-- [`lint/complexity/prefer-in-array-over-search`](/docs/rules/lint/complexity/prefer-in-array-over-search)
-- [`lint/complexity/prefer-inline-array-return`](/docs/rules/lint/complexity/prefer-inline-array-return)
-- [`lint/complexity/prefer-instance-method`](/docs/rules/lint/complexity/prefer-instance-method)
-- [`lint/complexity/prefer-named-literal-argument`](/docs/rules/lint/complexity/prefer-named-literal-argument)
-- [`lint/complexity/prefer-not-in-array`](/docs/rules/lint/complexity/prefer-not-in-array)
-- [`lint/complexity/prefer-null-coalesce`](/docs/rules/lint/complexity/prefer-null-coalesce)
-- [`lint/complexity/prefer-property-default`](/docs/rules/lint/complexity/prefer-property-default)
-- [`lint/complexity/prefer-property-exists`](/docs/rules/lint/complexity/prefer-property-exists)
-- [`lint/complexity/prefer-simple-condition`](/docs/rules/lint/complexity/prefer-simple-condition)
-- [`lint/complexity/require-attribute-argument-order`](/docs/rules/lint/complexity/require-attribute-argument-order)
-- [`lint/complexity/require-consistent-return`](/docs/rules/lint/complexity/require-consistent-return)
-- [`lint/complexity/require-is-a-allow-string`](/docs/rules/lint/complexity/require-is-a-allow-string)
-- [`lint/complexity/require-named-argument-order`](/docs/rules/lint/complexity/require-named-argument-order)
-- [`lint/complexity/require-previous-exception`](/docs/rules/lint/complexity/require-previous-exception)
 
 [Group reference](/docs/rules/lint/complexity) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

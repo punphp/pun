@@ -1,18 +1,20 @@
 ---
 title: pun lint
-description: Report and fix code rules that change behaviour, from PHP-CS-Fixer's risky fixers, Rector and Mago.
+description: Report code issues and apply available fixes with --fix.
 ---
 
 ```bash
-pun lint          # report what the [lint] rules would change
-pun lint --fix    # apply the fixes of every enabled rule
+pun lint
+pun lint --fix
 ```
 
-Lint rules are the ones that can change what code does, so Pun applies them only with `--fix`. They include PHP-CS-Fixer's risky fixers (`final_class`, `strict_comparison`, `declare_strict_types` and the rest), the PHP-CS-Fixer fixers that delete or restructure code (`no_unused_imports`, `no_useless_return`, `phpdoc_no_package` and 37 more), Rector's rules, and the extra rules ported from Mago.
+`pun lint` reports `[lint]` findings without editing files. `--fix` applies available fixes. Rules include risky and code-deleting PHP-CS-Fixer fixers, Rector ports, and Mago ports.
+
+Lint does not format the result. [`pun check --fix`](/docs/commands/check) runs both.
 
 ## Configure rules
 
-Each rule under `[lint.rules]` takes a level, or a table with `level`, `fix = "off"` and the rule's options:
+Rules accept a level or a table with a level, fix setting, and options:
 
 ```toml pun.toml
 [lint]
@@ -20,7 +22,7 @@ sets = ["dead-code", "modernize"]
 
 [lint.rules]
 "style/require-final-class" = "error"
-"types/no-loose-comparison" = { level = "warn", fix = "off" }   # reported, never applied
+"types/no-loose-comparison" = { level = "warn", fix = "off" }
 "style/no-short-ternary" = "off"
 ```
 
@@ -31,50 +33,37 @@ sets = ["dead-code", "modernize"]
 | `"off"` | Disable |
 | `{ fix = "off" }` | Report, never apply |
 
-`--fix` applies the fix of every enabled rule. `pun lint --fix` lists what it did not apply (rules with `fix = "off"`) as remaining, like `pun lint` reports it, and exits 1 when anything remains.
+Rules with `fix = "off"` remain report-only, including under `--fix`. Only errors fail the run unless a warning limit is set.
 
-`pun lint` exits 0 when clean, 1 on any `error`, and 2 when Pun couldn't run (a bad `pun.toml`, an unported rule, an unreadable path, a rule that failed on a file); see [exit codes](/docs/commands/format#exit-codes). Under GitHub Actions (`GITHUB_ACTIONS=true`), or with `--format=github`, each file a rule can fix gets an annotation (`::error file=app/L.php,line=3,col=0,title=lint/style/no-alias-function::lint/style/no-alias-function can fix this file`).
-
-Options for a rule go in the same table, under `[lint.rules]` only: `[[lint.overrides]]` change levels, and options there are an error. A rule that takes no options rejects any (`` pun.toml: `lint/security/no-global` takes no options ``). Rule names are Pun IDs, `<group>/<name>` inside `[lint.rules]` (`lint/<group>/<name>` in full); an earlier Pun name or a PHP-CS-Fixer name gets an error that names its Pun ID.
-
-Which rules run comes from your [lint sets](/docs/configuration/presets#lint-sets), `[lint.groups]` and `[lint.rules]` ([pun.toml](/docs/configuration/pun-toml#lint)). `pun migrate` moves the risky and code-deleting rules your `pint.json` enabled here at `"error"`, so `pun check --fix` applies them as Pint did.
-
-## Laravel helpers and sessions
-
-```toml pun.toml
-[lint.rules]
-"laravel/prefer-session-facade" = "error"
-"laravel/prefer-abort-if" = "error"
-"laravel/prefer-report-if" = "error"
-"laravel/prefer-throw-if" = "error"
-"laravel/prefer-facade-over-app" = "error"
-```
-
-The conditional rules replace a single `abort()`, `report()`, or `throw` inside an `if` with the corresponding `_if` helper. A negated condition uses `_unless`. An `else`, an `elseif`, or extra statements leave the `if` unchanged. The rules keep Rector's checks for variables assigned in the condition and exception expressions that would be evaluated too early.
-
-`prefer-session-facade` replaces session reads, direct item assignments, `isset()`, `unset()`, and the session lifecycle functions with `Illuminate\Support\Facades\Session` calls. It leaves writable expressions and string interpolation unchanged when a call would produce invalid PHP. Rector emits invalid PHP for some of those inputs.
-
-`prefer-facade-over-app` replaces `app(...)` and `resolve(...)` with `Illuminate\Support\Facades\App::make(...)` when they have arguments. Calls with no arguments stay unchanged. First-class callables also stay unchanged; Rector fails on those inputs.
+Rule selection follows [sets, groups, rules, and path overrides](/docs/configuration/pun-toml#lint). Options belong in `[lint.rules]`; path overrides accept levels only. The [rule reference](/docs/rules/lint) lists individual checks, options, and implementation status.
 
 ## Levels on the command line
 
 ```bash
-pun lint -A lint/style                     # turn a group off for this run
-pun lint -W security/no-global             # turn a rule on as a warning
+pun lint -A lint/style
+pun lint -W security/no-global
 pun lint -D lint/security -A security/no-eval
-pun lint --deny-warnings                   # warnings fail the run too
-pun lint --max-warnings 10                 # fail on more than 10 warnings
+pun lint --deny-warnings
+pun lint --max-warnings 10
 ```
 
-`-A` (allow, off), `-W` (warn) and `-D` (deny, error) take a rule or a group and apply after `pun.toml`, in the order given, so a later flag wins. A group means every rule of it Pun can run. A rule Pun can't run yet is an error (exit 2) when you name it; a group skips it.
+`-A` disables a rule or group, `-W` selects warnings, and `-D` selects errors. Flags apply after config and path overrides, in command-line order. The last matching flag wins.
 
-`[[lint.overrides]]` set levels per file: each override whose `files` globs match the file applies after `[lint.rules]`, later ones winning, and the command line applies last.
+Groups select implemented rules only. Naming an unimplemented rule directly is a configuration error.
+
+`--deny-warnings` fails on any warning. `--max-warnings N` fails on more than `N` warnings.
 
 ## Output
 
-A rule on Mago's tree reports each problem with a code frame, its level (`✖` error, `⚠` warning) and `fixable` when `--fix` can apply it; `--concise` prints one line per problem. A PHP-CS-Fixer rule reports the file it would change, with its rule ID. `--format` takes Pint's reporters (`json`, `txt`, `checkstyle`, `junit`, `xml`, `gitlab`, `github`, `agent`), which list each file's rule IDs.
+Native lint rules report code frames and fixability. Token-based PHP-CS-Fixer ports report each affected file and its rule IDs. `--concise` prints one line per problem.
 
-Only `error` fails a run, unless `--deny-warnings` or `--max-warnings` says otherwise. Lint skips Blade templates and Pint's default directories (`bootstrap/cache`, `build`, `node_modules`, `storage`) besides `[lint] exclude`, and keeps a cache of clean files apart from `pun format`'s (`--no-cache` turns it off).
+`--format` selects `json`, `txt`, `checkstyle`, `junit`, `xml`, `gitlab`, `github`, or `agent`. Non-GitHub machine reports use Pint's per-file shape.
+
+## Files and cache
+
+Lint applies shared and lint-specific paths and exclusions. It skips Blade templates, `vendor/`, `bootstrap/cache`, `build`, `node_modules`, and `storage`. [`pun list-files --command lint`](/docs/commands/list-files) shows the selection.
+
+Clean-file cache entries are separate from format entries. `--no-cache` disables cache reads and writes.
 
 ## Ignore comments
 
@@ -82,4 +71,14 @@ Only `error` fails a run, unless `--deny-warnings` or `--max-warnings` says othe
 $x = eval($code); // @pun-ignore lint/security/no-eval -- legacy plugin loader
 ```
 
-See [ignore comments](/docs/configuration/ignore-comments) for every form. A PHP-CS-Fixer rule changes a whole file, so only `@pun-ignore-file` turns it off. With `comments/no-unused-ignore` on, an ignore ID that suppressed nothing is reported, and `--fix` deletes it; an `@pun-ignore` without a rule ID is an `invalid-ignore-comment` error.
+Token-based PHP-CS-Fixer ports support only `@pun-ignore-file`. Other lint rules also support line and region ignores. A bare ignore without a rule ID is an error.
+
+See [ignore comments](/docs/configuration/ignore-comments) for all forms and unused-ignore checks.
+
+## Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| 0 | No remaining errors and no warning limit exceeded |
+| 1 | Remaining errors or a warning limit exceeded |
+| 2 | Pun could not run |

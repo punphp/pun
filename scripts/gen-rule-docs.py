@@ -132,8 +132,8 @@ def badges(data: dict, rid: str, rule: dict, sources: list[dict]) -> str:
     fix = rule.get("fix", "none")
     sentences.append("Fix: " + {"safe": "safe (keeps behaviour).", "unsafe": "unsafe (can change behaviour).",
                                 "mixed": "mixed (safe where types prove it, unsafe otherwise).", "none": "none (report only)."}[fix])
-    intent = rule.get("intent", {"format": "layout", "lint": "a better way to write it", "analyse": "type correctness"}[command])
-    sentences.append(f"Intent: {intent}.")
+    if rule.get("intent"):
+        sentences.append(f"Intent: {rule['intent']}.")
     ecosystem = next((e for e in data["meta"]["ecosystems"] if group == e or group.startswith(e + "-")), None)
     if ecosystem:
         sentences.append(f"Runs when {ecosystem} is installed.")
@@ -177,15 +177,17 @@ def rule_page(data: dict, rid: str, rule: dict, sources: list[dict], urls: dict,
     body += "\n\n## Replaces\n\n"
     body += "\n".join(f"- {upstream_link(s, urls)} ({s['tool']}{', risky' if s.get('risky') else ''})."
                       for s in sources) or "Pun-only rule. No upstream equivalent."
-    body += "\n\n## Turn it on\n\n" + code(f'[{command}.rules]\n"{group}/{name}" = ' + ('"error"' if command == "lint" else "true"), "toml title=\"pun.toml\"")
-    ignore = "@pun-ignore-file" if command == "format" else "@pun-ignore"
+    value = {"format": "true", "lint": '"error"', "analyse": '"on"'}[command]
+    body += "\n\n## Configuration\n\n" + code(f'[{command}.rules]\n"{group}/{name}" = {value}', "toml title=\"pun.toml\"")
+    file_only = command == "format" or any(s["tool"] in ("php-cs-fixer", "pint") for s in sources)
+    ignore = "@pun-ignore-file" if file_only else "@pun-ignore"
     body += "\n" + code(f"// {ignore} {rid} -- explain the exception")
-    body += "\n## What it does\n\n" + prose(rule.get("summary", "Summary not written yet."))
+    if rule.get("summary"):
+        body += "\n## What it does\n\n" + prose(rule["summary"])
     if rule.get("why"):
         body += "\n\n### Why\n\n" + prose(rule["why"])
-    body += "\n\n## Examples\n\n"
-    if not rule.get("examples"):
-        body += "Examples not written yet."
+    if rule.get("examples"):
+        body += "\n\n## Examples\n\n"
     for example in rule.get("examples", []):
         if example.get("title"):
             body += "### " + prose(example["title"]) + "\n\n"
@@ -209,15 +211,11 @@ def rule_page(data: dict, rid: str, rule: dict, sources: list[dict], urls: dict,
     fixed = rule.get("fixed_by", [])
     fixes = [f"{cmd}/{key}" for cmd, rules in data["rules"].items() for key, r in rules.items() if rid in r.get("fixed_by", [])]
     conflicts = [b if a == rid else a for a, b in data["meta"]["conflicts"] if rid in (a, b)]
-    body += "\n\n## Linked rules\n\n"
+    if fixed or fixes or conflicts:
+        body += "\n\n## Linked rules\n\n"
     body += "\n".join(f"- Fixed by {rule_link(r)}." for r in fixed)
     body += "\n".join(f"\n- Fixes reports from {rule_link(r)}." for r in fixes)
     body += "\n".join(f"\n- Conflicts with {rule_link(r)}. A config cannot enable both." for r in conflicts)
-    if not (fixed or fixes or conflicts):
-        body += "No linked rules or conflicts."
-    siblings = [f"{command}/{key}" for key in sorted(data["rules"][command]) if key.startswith(group + "/") and key != f"{group}/{name}"]
-    body += f"\n\n## Other rules in {command}/{group}\n\n"
-    body += "\n".join(f"- {rule_link(r)}" for r in siblings) or "This is the only rule in this group."
     body += f"\n\n[Group reference](/docs/rules/{command}/{group}) · [Source mapping]({SOURCE}) · [Edit this page]({EDIT})"
     return page(rid, body)
 
@@ -288,7 +286,7 @@ def selection_page(data: dict, command: str, name: str, on: dict) -> str:
     }
     body = purposes[command][name] + "\n\n"
     body += code(f'[{command}]\n' + (f'sets = ["{name}"]' if is_set else f'preset = "{name}"'), "toml")
-    body += "\nEcosystem and target-version gates still apply. Planned rules are listed, but cannot run until ported.\n"
+    body += "\nEcosystem and target-version settings still apply. Planned rules are not implemented.\n"
     if command == "analyse":
         presets = data["meta"]["presets"]["analyse"]
         bands = [(0, 1), (2, 3), (4, 5), (6, 8), (9, 10)]
@@ -297,7 +295,7 @@ def selection_page(data: dict, command: str, name: str, on: dict) -> str:
         body += "Extension rules are included by their mapping preset, not by a PHPStan core level.\n\n"
         switches = [s for p in presets[:presets.index(name) + 1] for s in data["meta"]["preset_switches"].get(p, [])]
         if switches:
-            body += "Type switches applied:\n\n" + code("[analyse]\n" + "\n".join(f"{s} = true" for s in switches), "toml")
+            body += "Type switches resolved by config, but not yet applied by the analysis CLI:\n\n" + code("[analyse]\n" + "\n".join(f"{s} = true" for s in switches), "toml")
         body += "\n### What each PHPStan level adds\n\n"
         for level in range(high + 1):
             added = sorted({r["pun"] for r in data["upstream"]["phpstan-classes"].values()
@@ -324,7 +322,7 @@ def selection_page(data: dict, command: str, name: str, on: dict) -> str:
 
 
 def translation(tool: str) -> str:
-    shared = "Pun reads only pun.toml. `pun migrate` leaves the source config in place. Unported rules and unsupported items are named and skipped, with a request to send a PR. There is no PHP fallback.\n\n"
+    shared = "`pun migrate` leaves source configs in place and reports skipped items. Planned rules are not implemented. Pun never falls back to PHP for missing rules.\n\n"
     sections = {
         "pint": """Run `pun migrate --from pint`. Pint's risky and code-deleting fixers become lint rules, not format rules.
 
@@ -345,7 +343,7 @@ def translation(tool: str) -> str:
 | `setRiskyAllowed(true)` | Enabled risky fixers become lint rules at `\"error\"` |
 | Configured options | Pun names and values on the linked rule pages |
 | Finder `in()`, `exclude()`, `notName()`, `notPath()` | `[files] paths`; `[format] exclude`, `not-name`, `not-path` |
-| Custom fixer classes | Unsupported; named and skipped. Send a PR. |
+| Custom fixer classes | Unsupported; reported and skipped |
 """,
         "rector": """Run `pun migrate --from rector` after `composer install`. The project's own Rector resolves `rector.php` with system PHP.
 
@@ -357,7 +355,7 @@ def translation(tool: str) -> str:
 | Explicit rules and set differences | `[lint.rules]` at `\"error\"` or `\"off\"`, preserving the selected rules |
 | `->withConfiguredRule()` | Rule options with kebab-case keys; lists under `items` |
 | `->withPaths()`, path skips | `[lint] exclude` and `[[lint.overrides]]` |
-| Closures, null values, custom rules, excluded sets | Named and skipped. Send a PR. |
+| Closures, null values, custom rules, excluded sets | Reported and skipped |
 
 Layout-only Rector rules map to format and are left to `[format]`. The migration reports when the format config does not run them.
 """,
@@ -373,9 +371,11 @@ Layout-only Rector rules map to format and are left to `[format]`. The migration
 | strict-rules or deprecation-rules includes | Their built-in Pun checks, only when their parameter enables them |
 | `@phpstan-ignore method.notFound` | `@pun-ignore analyse/undefined/method` |
 | Baselines | Not copied. Run `pun analyse --generate-baseline`. |
-| Custom extensions, bleeding edge | Named and skipped. Send a PR. |
+| Custom extensions, bleeding edge | Reported and skipped |
 
-The table is at identifier level, not PHPStan class level. Pattern entries are expanded against the pinned inventories; exact identifiers take precedence over patterns, just as they do during migration.
+The table maps PHPStan identifiers. Exact identifiers take precedence over patterns.
+
+The analysis CLI does not yet apply migrated stubs, ignore tables, rule options, or preset type switches. See [analysis limitations](/docs/commands/analyse#configuration).
 """,
         "larastan": """Larastan is part of the PHPStan migration: run `pun migrate --from phpstan` on the config that includes `larastan/larastan/extension.neon`.
 
@@ -387,7 +387,7 @@ The table is at identifier level, not PHPStan class level. Pattern entries are e
 | Rule booleans and changed parameters | Rule on/off settings and kebab-case options for each running rule that reads them |
 | `ignoreErrors` and `@phpstan-ignore larastan.*` | Pun rule IDs, retaining the original identifier in ignore tables |
 
-Planned checks remain documented here but do not run until ported. The Laravel groundwork is still in progress.
+Laravel analysis is incomplete. See [analysis limitations](/docs/commands/analyse#configuration).
 """,
         "mago": """`pun migrate` detects `mago.toml` but does not translate it yet. It reports the file as unsupported and leaves it untouched. Use the table to select equivalent Pun rules by hand.
 
@@ -443,13 +443,13 @@ def migration_pages(data: dict, rows: list[dict], urls: dict) -> dict[Path, str]
         for reason, entries in sorted(unsupported.items()):
             body += "### " + prose(reason) + "\n\n"
             body += ", ".join(upstream_link(r, urls) for r in entries)
-            body += ".\n\nWant support? [Send a PR](https://github.com/punphp/pun). Pun never runs a PHP fallback.\n\n"
+            body += ".\n\n"
         body += "\n## Pun-only rules\n\n" + "\n".join(f"- {rule_link(r)}" for r in pun_only)
         out[CONTENT / f"migrate/from/{tool}.mdx"] = page(f"Coming from {tool}", body)
     out[GENERATED / "migrations.json"] = json.dumps({"_generated": MARKER, "tools": tables}, ensure_ascii=False, indent=2) + "\n"
     out[CONTENT / "migrate/meta.ts"] = meta("Migration mappings", ["from"])
     out[CONTENT / "migrate/from/meta.ts"] = meta("Coming from", list(TOOLS))
-    body = "Find the Pun rule for an upstream name, how its options move, and why unsupported rules are left out. Planned means mapped but not ported, not a PHP fallback.\n\n"
+    body = "Upstream rule names, option translations, and unsupported items. Planned rules have a mapping but are not implemented.\n\n"
     body += "\n".join(f"- [{tool}](/docs/migrate/from/{tool})" for tool in TOOLS)
     body += "\n\n[Run the migration](/docs/commands/migrate)."
     out[CONTENT / "migrate/from/index.mdx"] = page("Coming from another tool", body)
@@ -475,7 +475,7 @@ def directory(data: dict, sources: dict) -> dict[Path, str]:
                 elif source["tool"] == "phpstan-parameters":
                     tools.add("phpstan")
             ecosystem = next((e for e in data["meta"]["ecosystems"] if group == e or group.startswith(e + "-")), "core")
-            rows.append(dict(id=rid, command=command, group=group, summary=re.sub(r"`+", "", rule.get("summary", "Summary not written yet.")),
+            rows.append(dict(id=rid, command=command, group=group, summary=re.sub(r"`+", "", rule.get("summary", "")),
                              enabled=memberships(data, command, rule), fix=rule.get("fix", "none"), ecosystem=ecosystem,
                              tools=sorted(tools), upstream=sorted(names), ported=bool(rule.get("ported"))))
     counts = ", ".join(f"{len(data['rules'][c])} {c}" for c in COMMANDS)
@@ -531,7 +531,7 @@ def generate(data: dict) -> dict[Path, str]:
                 rid = f"{command}/{group}/{name}"
                 rule = data["rules"][command][f"{group}/{name}"]
                 body += f'<Card title="{rid}">\n\n{rule_link(rid)}\n\n'
-                body += prose(rule.get("summary", "Summary not written yet.")) + "\n\n" + badges(data, rid, rule, sources[rid]) + "\n\n</Card>\n"
+                body += prose(rule.get("summary", "")) + "\n\n" + badges(data, rid, rule, sources[rid]) + "\n\n</Card>\n"
             out[CONTENT / f"rules/{command}/{group}/index.mdx"] = page(f"{command}/{group}", body + "</CardGroup>")
         links = "\n".join(f"- [{g}](/docs/rules/{command}/{g}) ({len(ns)} rules)" for g, ns in groups.items())
         out[CONTENT / f"rules/{command}/index.mdx"] = page(f"{command} rules", links)

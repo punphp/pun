@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/control-flow/prefer-returned-condition" />
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
 - [`SimplifyIfReturnBool`](https://getrector.com/rule-detail/simplify-if-return-bool-rector) (rector).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,35 +28,8 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Shortens if return false/true to direct return
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/control-flow
-
-- [`lint/control-flow/no-assign-in-condition`](/docs/rules/lint/control-flow/no-assign-in-condition)
-- [`lint/control-flow/no-else-after-return`](/docs/rules/lint/control-flow/no-else-after-return)
-- [`lint/control-flow/no-empty-catch`](/docs/rules/lint/control-flow/no-empty-catch)
-- [`lint/control-flow/no-for-init-overwrite`](/docs/rules/lint/control-flow/no-for-init-overwrite)
-- [`lint/control-flow/no-loop-variable-overwrite`](/docs/rules/lint/control-flow/no-loop-variable-overwrite)
-- [`lint/control-flow/no-return-assignment`](/docs/rules/lint/control-flow/no-return-assignment)
-- [`lint/control-flow/no-superfluous-elseif`](/docs/rules/lint/control-flow/no-superfluous-elseif)
-- [`lint/control-flow/no-switch-continue`](/docs/rules/lint/control-flow/no-switch-continue)
-- [`lint/control-flow/no-unsafe-finally`](/docs/rules/lint/control-flow/no-unsafe-finally)
-- [`lint/control-flow/no-useless-else`](/docs/rules/lint/control-flow/no-useless-else)
-- [`lint/control-flow/no-useless-return`](/docs/rules/lint/control-flow/no-useless-return)
-- [`lint/control-flow/prefer-bare-return`](/docs/rules/lint/control-flow/prefer-bare-return)
-- [`lint/control-flow/prefer-bool-return`](/docs/rules/lint/control-flow/prefer-bool-return)
-- [`lint/control-flow/prefer-combined-isset`](/docs/rules/lint/control-flow/prefer-combined-isset)
-- [`lint/control-flow/prefer-combined-unset`](/docs/rules/lint/control-flow/prefer-combined-unset)
-- [`lint/control-flow/prefer-yield-from`](/docs/rules/lint/control-flow/prefer-yield-from)
 
 [Group reference](/docs/rules/lint/control-flow) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

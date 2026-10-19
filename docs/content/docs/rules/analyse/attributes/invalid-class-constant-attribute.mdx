@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/attributes/invalid-class-constant-attribute" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
@@ -19,47 +19,20 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 - [`attribute.notAttribute`](https://phpstan.org/error-identifiers/attribute.notAttribute) (phpstan).
 - [`attribute.notFound`](https://phpstan.org/error-identifiers/attribute.notFound) (phpstan).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"attributes/invalid-class-constant-attribute" = true
+"attributes/invalid-class-constant-attribute" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/attributes/invalid-class-constant-attribute -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/attributes
-
-- [`analyse/attributes/invalid`](/docs/rules/analyse/attributes/invalid)
-- [`analyse/attributes/invalid-arrow-function-attribute`](/docs/rules/analyse/attributes/invalid-arrow-function-attribute)
-- [`analyse/attributes/invalid-class-attribute`](/docs/rules/analyse/attributes/invalid-class-attribute)
-- [`analyse/attributes/invalid-closure-attribute`](/docs/rules/analyse/attributes/invalid-closure-attribute)
-- [`analyse/attributes/invalid-constant-attribute`](/docs/rules/analyse/attributes/invalid-constant-attribute)
-- [`analyse/attributes/invalid-enum-case-attribute`](/docs/rules/analyse/attributes/invalid-enum-case-attribute)
-- [`analyse/attributes/invalid-function-attribute`](/docs/rules/analyse/attributes/invalid-function-attribute)
-- [`analyse/attributes/invalid-hook-attribute`](/docs/rules/analyse/attributes/invalid-hook-attribute)
-- [`analyse/attributes/invalid-method-attribute`](/docs/rules/analyse/attributes/invalid-method-attribute)
-- [`analyse/attributes/invalid-parameter-attribute`](/docs/rules/analyse/attributes/invalid-parameter-attribute)
-- [`analyse/attributes/invalid-property-attribute`](/docs/rules/analyse/attributes/invalid-property-attribute)
-- [`analyse/attributes/invalid-trait-attribute`](/docs/rules/analyse/attributes/invalid-trait-attribute)
-- [`analyse/attributes/trait-as-attribute`](/docs/rules/analyse/attributes/trait-as-attribute)
 
 [Group reference](/docs/rules/analyse/attributes) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

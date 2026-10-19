@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="lint/strings/require-interpolation-style" />
 
-Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
 - [`string-style`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#string-style) (mago-linter).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -28,25 +28,8 @@ Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour
 
 Enforces a consistent string style: either prefer string interpolation
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/strings
-
-- [`lint/strings/no-non-printable-character`](/docs/rules/lint/strings/no-non-printable-character)
-- [`lint/strings/no-single-argument-sprintf`](/docs/rules/lint/strings/no-single-argument-sprintf)
-- [`lint/strings/no-trailing-whitespace-in-string`](/docs/rules/lint/strings/no-trailing-whitespace-in-string)
-- [`lint/strings/prefer-empty-string-identical`](/docs/rules/lint/strings/prefer-empty-string-identical)
-- [`lint/strings/prefer-mb-functions`](/docs/rules/lint/strings/prefer-mb-functions)
-- [`lint/strings/require-string-line-ending`](/docs/rules/lint/strings/require-string-line-ending)
 
 [Group reference](/docs/rules/lint/strings) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

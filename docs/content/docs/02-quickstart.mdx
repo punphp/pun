@@ -1,59 +1,61 @@
 ---
 title: Quickstart
-description: Move a Laravel project onto Pun in four commands, with zero changed bytes.
+description: Create a configuration, check your project, and apply fixes.
 ---
 
-Pun reads one config file, `pun.toml`. `pun migrate` writes it from what you have today.
+Run these commands from your project root after [installing Pun](/docs/installation).
 
 <Steps>
-  <Step title="Migrate your config">
+  <Step title="Create pun.toml">
+
+If you have a Pint, PHP-CS-Fixer, Rector, or PHPStan config, start from a clean Git working tree. Migration can rewrite ignore comments in PHP files. Preview and run the migration:
 
 ```bash
-pun migrate --dry-run   # show the pun.toml it would write
+pun migrate --dry-run
 pun migrate
 ```
 
-Reads `pint.json` (or `.php-cs-fixer.php`), `phpstan.neon` and `rector.php`, and writes `pun.toml` with Pun's rule names. If a rule can't run, it says so and writes nothing.
+Review warnings about unsupported items. Migration skips those items and writes the supported configuration.
+
+For a project without tool configs, use:
+
+```bash
+pun init
+```
+
+Both commands write `pun.toml`. Neither changes your scripts or CI configuration.
 
   </Step>
-  <Step title="Check everything">
+  <Step title="Check the project">
 
 ```bash
 pun check
 ```
 
-Format, lint and analyse in one pass. Exits non-zero on any format diff, lint error or analyse error.
+Pun reports format, lint, and analysis findings without editing files. Exit code 0 means clean, 1 means findings, and 2 means Pun could not run.
 
   </Step>
-  <Step title="Fix what can be fixed">
+  <Step title="Apply fixes">
 
 ```bash
 pun check --fix
+git diff
 ```
 
-Formats and applies the fixes of every enabled lint rule. On a migrated project this writes exactly what `pint` wrote.
+Review the format and lint changes. Analysis never edits files, and lint rules with `fix = "off"` remain report-only.
 
   </Step>
-  <Step title="Only what you touched">
+  <Step title="Check changed files">
 
 ```bash
-pun check --dirty        # uncommitted changes
-pun check --staged       # staged changes, for a pre-commit hook
-pun format --diff=main   # changed since branching off main
+pun check --dirty
+pun check --staged
+pun format --diff=main
 ```
+
+`--dirty` selects uncommitted changes. `--staged` selects files with staged changes. `--diff=main` selects files changed since branching from `main`.
 
   </Step>
 </Steps>
 
-:::tip[Why is the second run so fast?]
-Pun caches results per file under `~/.cache/pun`. On laravel/framework, `pun format` takes 3.7 s cold and 0.07 s warm. Use `--no-cache` to check every file.
-:::
-
-<CardGroup cols={2}>
-  <Card title="Migrating from Pint" href="/docs/guides/migrating-from-pint" icon="arrow-right-left">
-Scripts and CI.
-  </Card>
-  <Card title="pun.toml" href="/docs/configuration/pun-toml" icon="file-cog">
-One file for every command.
-  </Card>
-</CardGroup>
+See the [configuration reference](/docs/configuration/pun-toml) and [CI guide](/docs/guides/ci) for the remaining setup.

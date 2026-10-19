@@ -16,7 +16,7 @@ Across commands: format: 0, lint: 92, analyse: 0.
 
 Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/add-property-type-from-phpdoc">
@@ -25,7 +25,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Takes `@var` annotation of non-mixed types and adjusts accordingly the property signature..
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/add-return-type-from-phpdoc">
@@ -34,7 +34,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Takes `@return` annotation of non-mixed types and adjusts accordingly the function signature.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-alias-function">
@@ -43,7 +43,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Master functions shall be used instead of aliases.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-ambiguous-constant">
@@ -52,7 +52,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Enforces that all constant references made from within a namespace are explicit.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-ambiguous-function">
@@ -61,7 +61,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Enforces that all function calls made from within a namespace are explicit.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-array-accumulation-in-loop">
@@ -70,7 +70,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects O(n²) array accumulation patterns inside loops.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/style/no-array-push">
@@ -79,7 +79,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Converts simple usages of `array_push($x, $y);` to `$x[] = $y;`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-assign-in-ternary-branch">
@@ -88,7 +88,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Assign outcome of ternary condition to variable, where applicable
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/no-call-user-func">
@@ -97,7 +97,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Call callables directly instead of through call_user_func().
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality), [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality), [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-dynamic-method-call">
@@ -106,7 +106,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality), [`coding-style`]
 
 Disallows calling a method by a variable name (`$object->$method()`).
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-dynamic-method-callable">
@@ -115,7 +115,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Disallows a first-class callable of a method with a variable name (`$object->$method(...)`).
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-dynamic-name">
@@ -124,7 +124,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Discourages usage of PHP's variable variables feature.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/style/no-dynamic-property">
@@ -133,7 +133,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Disallows accessing a property by a variable name (`$object->$property`).
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-dynamic-static-call">
@@ -142,7 +142,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Disallows calling a static method by a variable name (`Foo::$method()`).
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-dynamic-static-callable">
@@ -151,7 +151,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Disallows a first-class callable of a static method with a variable name (`Foo::$method(...)`).
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-dynamic-static-property">
@@ -160,7 +160,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Disallows accessing a static property by a variable name (`Foo::$$property`).
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.noVariableVariables`. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-empty">
@@ -178,7 +178,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Replace deprecated `ereg` regular expression functions with `preg`.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-escaped-quotes">
@@ -187,7 +187,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Prefer quote that are not inside the string
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/no-hash-emoji">
@@ -196,7 +196,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Discourages usage of the `#️⃣` emoji in place of the ASCII `#`.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/no-ini-set">
@@ -205,7 +205,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Enforces that ini_set is not used.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-inline-html">
@@ -214,7 +214,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Disallows inline content (text outside of PHP tags) in source files.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-invalid-phpdoc">
@@ -223,7 +223,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Checks for syntax errors in docblock comments, such as malformed `{@see}` or
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-is-null">
@@ -232,7 +232,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Replaces `is_null($var)` expression with `null === $var`.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-isset">
@@ -241,7 +241,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Detects the use of the `isset()` construct.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-multi-assign">
@@ -250,7 +250,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Split chained assignments (`$a = $b = 1`) into one assignment per statement.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/no-multiple-classes-per-file">
@@ -259,7 +259,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Ensures that each file contains at most one class-like definition (class, interface, enum, or trait).
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-nested-ternary">
@@ -268,7 +268,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Nested ternary expressions are disallowed to improve code clarity and prevent potential bugs arising from confusion over operator associativity.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/style/no-parameter-shadowing">
@@ -277,7 +277,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Detects when a function or method parameter is shadowed by a loop variable,
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/style/no-php4-constructor">
@@ -286,7 +286,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Convert PHP4-style constructors to `__construct`.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-redundant-final">
@@ -295,7 +295,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Removes `final` from methods where possible.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-redundant-final-const">
@@ -304,7 +304,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Remove final from constants in classes defined as final
 
-Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/no-redundant-yield-from">
@@ -313,7 +313,7 @@ Enabled by the [`dead-code`](/docs/rules/sets/dead-code) set. Fix: safe (keeps b
 
 Yield from array must be unpacked to series of yields.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-short-ternary">
@@ -322,7 +322,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Detects the use of the shorthand ternary and elvis operators.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.disallowedShortTernary`.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.disallowedShortTernary`.
 
 </Card>
 <Card title="lint/style/no-side-effects-with-declarations">
@@ -331,7 +331,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Enforces that a PHP file either declares symbols (classes, functions,
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-sleep-wakeup">
@@ -340,7 +340,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Replace __sleep()/__wakeup() with __serialize()/__unserialize().
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Gated by php-version.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Gated by php-version.
 
 </Card>
 <Card title="lint/style/no-sprintf-concat">
@@ -349,7 +349,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Disallows string concatenation with the result of an `sprintf` call.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/no-unreachable-loop">
@@ -358,7 +358,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects loops (for, foreach, while, do-while) that unconditionally break or return
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/style/no-useless-printf">
@@ -367,7 +367,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 There must be no `printf` calls with only the first argument.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-useless-sprintf">
@@ -376,7 +376,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Remove sprintf() calls with only the format argument.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/no-variable-variable">
@@ -385,7 +385,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Disallows variable variables (`$$name`).
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it. Additional upstream gates: `strictRules.noVariableVariables`.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Additional upstream gates: `strictRules.noVariableVariables`.
 
 </Card>
 <Card title="lint/style/prefer-arrow-function">
@@ -394,7 +394,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 Anonymous functions with return as the only statement must use arrow functions.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-cast-over-intval">
@@ -403,7 +403,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Replaces `intval`, `floatval`, `doubleval`, `strval` and `boolval` function calls with according type casting operator.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-cast-over-settype">
@@ -412,7 +412,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Cast shall be used, not `settype`.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-catch-name-from-type">
@@ -421,7 +421,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Type and name of catch exception should match
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-class-constant">
@@ -430,7 +430,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Use `Foo::class` instead of class-name strings.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize), [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`modernize`](/docs/rules/sets/modernize), [`coding-style`](/docs/rules/sets/coding-style) sets. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-class-keyword">
@@ -439,7 +439,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize), [`coding-style`](/docs
 
 Use `class` keyword for class name resolution in string instead of hardcoded string reference
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-class-keyword-on-object">
@@ -448,7 +448,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Replace `get_class` calls on object variables with class keyword syntax.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-class-name-constant">
@@ -457,7 +457,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Replace string class names by `<class>::class` constant
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-compound-assignment">
@@ -466,7 +466,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Shorthand notation for operators should be used if possible.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-create-from-timestamp">
@@ -475,7 +475,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Suggests `DateTimeImmutable::createFromTimestamp()` when a Unix timestamp is converted
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-date-time-immutable">
@@ -493,7 +493,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Replaces `dirname(__FILE__)` expression with equivalent `__DIR__` constant.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-dirname-levels">
@@ -502,7 +502,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Replace nested dirname() calls with one call and a `$levels` argument.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it. Gated by php-version.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Gated by php-version.
 
 </Card>
 <Card title="lint/style/prefer-early-continue">
@@ -511,7 +511,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Continue early instead of nesting the loop body in an if.
 
-Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/prefer-early-return">
@@ -520,7 +520,7 @@ Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (k
 
 Return early instead of nesting the rest of the function in an if or else.
 
-Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/prefer-early-return-of-variable">
@@ -529,7 +529,7 @@ Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (k
 
 Return the value directly where an if overrides a variable that is returned right after.
 
-Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/prefer-early-return-over-prepared-value">
@@ -538,7 +538,7 @@ Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (k
 
 Return early from each if instead of preparing a variable that is returned at the end.
 
-Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/prefer-empty-string-compare">
@@ -547,7 +547,7 @@ Enabled by the [`early-return`](/docs/rules/sets/early-return) set. Fix: safe (k
 
 Compare with `''` instead of strlen() === 0.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-generic-array-phpdoc">
@@ -556,7 +556,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 PHPDoc `array<T>` type must be used instead of `T[]`.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-instanceof-stringable">
@@ -565,7 +565,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Detects the legacy pattern `is_object($x) && method_exists($x, '__toString')` and suggests
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (report only).
 
 </Card>
 <Card title="lint/style/prefer-list-phpdoc">
@@ -574,7 +574,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: none (r
 
 PHPDoc `list` type must be used instead of `array` without a key.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-php-version-id">
@@ -583,7 +583,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Changes use of call to version compare function to use of PHP version constant
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/prefer-phpdoc-comment">
@@ -592,7 +592,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Comments with annotation should be docblock when used on structural elements.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-pow-operator">
@@ -601,7 +601,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Converts `pow` to the `**` operator.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-property-over-local-getter">
@@ -610,7 +610,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Privatize getter of local property to property
 
-Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-random-int">
@@ -619,7 +619,7 @@ Enabled by the [`privatization`](/docs/rules/sets/privatization) set. Fix: unsaf
 
 Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-readonly-keyword">
@@ -628,7 +628,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Converts readonly comment on classes to the readonly keyword.
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-self-reference">
@@ -637,7 +637,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Inside class or interface element `self` should be preferred to the class name itself.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-short-ternary">
@@ -646,7 +646,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Use the Elvis operator `?:` where possible.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-spread">
@@ -655,7 +655,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Replace `call_user_func_array()` with variadic
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-static-private-method">
@@ -664,7 +664,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts private methods to `static` where possible.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-str-contains">
@@ -673,7 +673,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/prefer-variadic-param">
@@ -682,7 +682,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Refactor `func_get_args()` in to a variadic param
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/prefer-while-loop">
@@ -691,7 +691,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Suggests using a `while` loop instead of a `for` loop when the `for` loop does not have any
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-assign-set-padding">
@@ -700,7 +700,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Add extra space before new assign set
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/require-create-from-format-bang">
@@ -709,7 +709,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 The first argument of `DateTime::createFromFormat` method must start with `!`.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-final-class">
@@ -718,7 +718,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 All classes must be final, except abstract ones and Doctrine entities.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/require-final-internal-class">
@@ -727,7 +727,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Internal classes should be `final`.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/require-final-public-method">
@@ -736,7 +736,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 All `public` methods of `abstract` classes should be `final`.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/require-fopen-binary-flag">
@@ -745,7 +745,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 The flags in `fopen` calls must omit `t`, and `b` must be omitted or included consistently.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-fopen-flag-order">
@@ -754,7 +754,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Order the flags in `fopen` calls, `b` and `t` must be last.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-implode-separator">
@@ -763,7 +763,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Function `implode` must be called with 2 arguments in the documented order.
 
-Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/require-namespace">
@@ -772,7 +772,7 @@ Enabled by the [`modernize`](/docs/rules/sets/modernize) set. Fix: unsafe (can c
 
 Detects files that contain definitions (classes, interfaces, enums, traits, functions, or constants)
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-naming-convention">
@@ -781,7 +781,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Enforce naming conventions for classes, interfaces, traits, enums, functions, methods, properties, constants and variables (options per kind).
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-ordered-traits">
@@ -790,7 +790,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Trait `use` statements must be sorted alphabetically.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Intent: a better way to write it.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour).
 
 </Card>
 <Card title="lint/style/require-parent-visibility">
@@ -799,7 +799,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Make method visibility same as parent one
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-phpdoc">
@@ -808,7 +808,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Detects declarations that are missing a docblock.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-sorted-integer-keys">
@@ -817,7 +817,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Detects array literals with integer keys that are not in ascending order.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 <Card title="lint/style/require-statement-padding">
@@ -826,7 +826,7 @@ Not in any preset or set. Enable it by name or group. Fix: none (report only). I
 
 Add empty new line after different-type statements to improve code readability
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Intent: a better way to write it.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour).
 
 </Card>
 <Card title="lint/style/require-todo-reference">
@@ -835,7 +835,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Require TODO and FIXME comments to reference a user or issue.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Intent: a better way to write it. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 </Card>
 </CardGroup>

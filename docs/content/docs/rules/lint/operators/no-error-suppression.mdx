@@ -14,7 +14,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 - [`error_suppression`](https://cs.symfony.com/doc/rules/language_construct/error_suppression.html) (php-cs-fixer, risky).
 - [`no-error-control-operator`](https://mago.carthage.software/1.57.0/en/tools/linter/rules/#no-error-control-operator) (mago-linter).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -22,16 +22,12 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 ```
 
 ```php
-// @pun-ignore lint/operators/no-error-suppression -- explain the exception
+// @pun-ignore-file lint/operators/no-error-suppression -- explain the exception
 ```
 
 ## What it does
 
 Error control operator should be added to deprecation notices and/or removed from other cases.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
@@ -41,19 +37,5 @@ Examples not written yet.
 | `noise-remaining-usages` | `bool` | Any value of this type | `false` | `noise_remaining_usages` |
 | `noise-remaining-usages-exclude` | `list` | Any value of this type | `[]` | `noise_remaining_usages_exclude` |
 
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/operators
-
-- [`lint/operators/no-and-or-keywords`](/docs/rules/lint/operators/no-and-or-keywords)
-- [`lint/operators/no-loose-equality`](/docs/rules/lint/operators/no-loose-equality)
-- [`lint/operators/no-useless-nullsafe`](/docs/rules/lint/operators/no-useless-nullsafe)
-- [`lint/operators/prefer-boolean-and-or`](/docs/rules/lint/operators/prefer-boolean-and-or)
-- [`lint/operators/prefer-coalesce`](/docs/rules/lint/operators/prefer-coalesce)
-- [`lint/operators/prefer-coalesce-assign`](/docs/rules/lint/operators/prefer-coalesce-assign)
-- [`lint/operators/prefer-shorthand-operator`](/docs/rules/lint/operators/prefer-shorthand-operator)
 
 [Group reference](/docs/rules/lint/operators) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

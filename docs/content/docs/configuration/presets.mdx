@@ -1,19 +1,23 @@
 ---
 title: Presets
-description: Three format presets, lint sets you tick, and five analyse presets instead of ten levels.
+description: Format presets, lint sets, and analyse presets.
 ---
 
-Each command picks its rules on its own. There is no top-level preset.
+Each command selects rules independently. There is no top-level preset.
 
 ## Format presets
 
-`[format] preset` is `laravel` (the default, Pint's), `psr12` or `empty`. `[format.rules]` holds only what differs from it.
+| Preset | Rules |
+| --- | --- |
+| `laravel` | Pint's default layout rules; the default format preset |
+| `psr12` | PSR-12 layout rules |
+| `empty` | No rules unless explicitly enabled |
 
-Pint's `per` and `symfony` presets were removed, from `pun.toml` and from `--preset`. Either one is an error (exit 2) that names the replacement: `preset = "empty"` with the preset's rules under `[format.rules]`. `pun migrate` writes exactly that for a `pint.json` that uses one, or for `pun migrate --preset per`.
+`[format.rules]` overrides the preset. Pint's `per` and `symfony` are not accepted as Pun presets. `pun migrate` expands them into explicit rules over `empty`.
 
 ## Lint sets
 
-Lint rules come in sets, Rector's prepared sets. Tick the ones you want; a rule can be in several, and a rule a set turns on is an `error`:
+Sets select groups of lint rules. A rule can belong to several sets. Selected rules default to `"error"`:
 
 | Set | What it turns on |
 | --- | --- |
@@ -23,7 +27,7 @@ Lint rules come in sets, Rector's prepared sets. Tick the ones you want; a rule 
 | `types` | Missing type declarations and PHPDoc types |
 | `early-return` | Early returns and continues instead of nesting |
 | `privatization` | Narrower visibility, final classes and constants |
-| `naming` | Names that match their types |
+| `naming` | Names that match their types; currently no rules after upstream deprecations |
 | `coding-style` | One consistent way to write the same thing |
 
 ```toml pun.toml
@@ -31,17 +35,19 @@ Lint rules come in sets, Rector's prepared sets. Tick the ones you want; a rule 
 sets = ["dead-code", "modernize"]
 ```
 
-The Laravel, Pest and PHPUnit rules of each set turn on by themselves when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`; `[lint.groups] laravel = "off"` switches one off. Rules in no set are opt-in by name or by group. See [pun.toml](/docs/configuration/pun-toml#lint) for levels, groups and overrides.
+Ecosystem rules depend on packages detected in `composer.lock`. PHP upgrade rules depend on the target PHP version. Rules outside sets can be enabled by name or group.
+
+See [lint configuration](/docs/configuration/pun-toml#lint) for precedence and path overrides.
 
 ## Analyse presets
 
-`[analyse] preset` groups PHPStan's levels in five bands, each including the ones before it:
+Analyse presets map PHPStan levels into five groups. Each includes the lower presets:
 
 | Preset | PHPStan levels | Adds |
 | --- | --- | --- |
 | `basic` | 0–1 | Unknown classes, functions and methods on `$this`, wrong argument counts, undefined variables |
 | `essential` | 2–3 | Unknown methods and properties on every expression, PHPDoc, return and property types |
-| `recommended` | 4–5 | **The default.** Dead code, always-true conditions, argument types |
+| `recommended` | 4–5 | Dead code, constant conditions, argument types; the default |
 | `strict` | 6–8 | Missing typehints; union types and nullables checked |
 | `max` | 9–10 | Explicit and implicit `mixed` checked |
 
@@ -50,8 +56,8 @@ The Laravel, Pest and PHPUnit rules of each set turn on by themselves when compo
 preset = "strict"
 ```
 
-The Laravel rules (Larastan's) run when composer.lock locks `laravel/framework`; `[analyse.rules] laravel = "off"` switches them off.
+The mapping does not imply complete PHPStan-level support. Some rules remain Planned, and preset type switches are not yet applied by the analysis CLI. See [analysis limitations](/docs/commands/analyse#configuration).
 
 ## Coming from PHPStan levels
 
-`pun migrate` writes the exact rules your level ran rather than guessing a preset. In pun.toml, `[analyse] level = 5` is an error that names the preset holding that level (`recommended`).
+`pun migrate` selects the containing preset and writes explicit rule differences for your PHPStan level. Numeric `[analyse] level` is not accepted in `pun.toml`.

@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="format/whitespace/final-newline" />
 
-Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel), [`format-psr12`](/docs/rules/presets/format-psr12) presets. Fix: safe (keeps behaviour). Intent: layout.
+Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel), [`format-psr12`](/docs/rules/presets/format-psr12) presets. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`single_blank_line_at_eof`](https://cs.symfony.com/doc/rules/whitespace/single_blank_line_at_eof.html) (php-cs-fixer).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [format.rules]
@@ -28,27 +28,8 @@ Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel), [`format-
 
 A PHP file without end tag must always end with a single empty line feed.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in format/whitespace
-
-- [`format/whitespace/encoding`](/docs/rules/format/whitespace/encoding)
-- [`format/whitespace/indentation-type`](/docs/rules/format/whitespace/indentation-type)
-- [`format/whitespace/inside-parentheses`](/docs/rules/format/whitespace/inside-parentheses)
-- [`format/whitespace/line-ending`](/docs/rules/format/whitespace/line-ending)
-- [`format/whitespace/no-blank-line-whitespace`](/docs/rules/format/whitespace/no-blank-line-whitespace)
-- [`format/whitespace/no-extra-blank-lines`](/docs/rules/format/whitespace/no-extra-blank-lines)
-- [`format/whitespace/no-trailing`](/docs/rules/format/whitespace/no-trailing)
-- [`format/whitespace/statement-indentation`](/docs/rules/format/whitespace/statement-indentation)
 
 [Group reference](/docs/rules/format/whitespace) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

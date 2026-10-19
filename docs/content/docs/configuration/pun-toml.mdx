@@ -1,37 +1,38 @@
 ---
 title: pun.toml
-description: The one config file for every Pun command, with Pun's own rule IDs.
+description: Paths, exclusions, presets, rule levels, and options.
 ---
 
-Pun reads only `pun.toml`. Write it with [`pun migrate`](/docs/commands/migrate), or by hand. Every section is optional:
+Pun reads `pun.toml`. [`pun init`](/docs/commands/init) creates it; [`pun migrate`](/docs/commands/migrate) converts existing tool configs. Every section is optional.
+
+This example shows the main settings:
 
 ```toml pun.toml
 [php]
-version = "8.4"                       # override; the default comes from composer.json's "require.php"
+version = "8.4"
 
-[files]                               # shared by every command
-paths = ["app", "tests"]              # what to check when no paths are given
+[files]
+paths = ["app", "tests"]
 exclude = ["build", "storage"]
 
 [format]
-preset = "laravel"                    # laravel | psr12 | empty
-exclude = ["app/Generated"]           # added to [files] exclude, for format only
+preset = "laravel"
+exclude = ["app/Generated"]
 not-name = ["*.blade.php"]
 not-path = ["app/Legacy.php"]
 
-[format.rules]                        # only what differs from the preset
+[format.rules]
 "imports/ordered" = { sort = "length", case-sensitive = true }
-"operators/concat-spacing" = "one"    # a rule with one option takes its value directly
+"operators/concat-spacing" = "one"
 "arrays/syntax" = false
 
 [lint]
 sets = ["dead-code", "modernize"]
 
-[lint.groups]                         # a level for a whole group
+[lint.groups]
 style = "warn"
-laravel-12 = "error"                  # turn an upgrade on
 
-[lint.rules]                          # a rule's own line wins over its group
+[lint.rules]
 "style/require-final-class" = "error"
 "style/require-ordered-traits" = { level = "warn", fix = "off" }
 "types/no-loose-comparison" = "off"
@@ -41,26 +42,26 @@ files = ["tests/**"]
 rules = { "style/require-final-class" = "off" }
 
 [analyse]
-preset = "recommended"                # basic | essential | recommended | strict | max
-exclude = ["tests/**"]                # added to [files] exclude, for analyse only
-baseline = "pun-baseline.toml"
+preset = "recommended"
+exclude = ["tests/**"]
 
 [analyse.rules]
 "types/missing-return-type" = "off"
-"undefined/method" = { magic = true } # options in a table mean "on, with these options"
 ```
 
 ## [php] and [files]
 
 | Key | Meaning |
 | --- | --- |
-| `[php] version` | The PHP version rules target, as `major.minor`. Without it, the lowest version composer.json's `require.php` allows (`^8.4` gives 8.4), else 8.4 |
-| `[files] paths` | What every command checks when no paths are given |
-| `[files] exclude` | What every command skips. Each command's own `exclude` adds to it |
+| `[php] version` | Target PHP version as `major.minor`. Default: lowest version allowed by `composer.json` `require.php`, otherwise 8.4 |
+| `[files] paths` | Default paths when no command-line paths are given |
+| `[files] exclude` | Shared exclusions, combined with command-specific exclusions |
 
 `vendor/` is never checked, nor are dot folders such as `.git`.
 
-An `exclude` entry with `*`, `?`, `[` or `{` is a glob matched against the path from the project root, as in Mago: `storage/**` skips `storage/` but not `app/storage/`, and `*` also matches `/`. Any other entry is a path from the project root that skips itself and everything under it (`build` skips `build/`). Format is the exception: a plain entry in `[files] exclude` or `[format] exclude` keeps Pint's meaning, a folder of that name at any depth, and format also skips what Pint's finder skips. Run [`pun list-files`](/docs/commands/list-files) to see the result.
+Entries containing `*`, `?`, `[` or `{` are globs relative to the project root. `*` also matches `/`. For example, `storage/**` skips root-level `storage`, not `app/storage`.
+
+Other entries exclude a project-relative path and its descendants. Format retains Pint's exception: plain entries match folders at any depth. [`pun list-files`](/docs/commands/list-files) shows the selected files.
 
 ## [format]
 
@@ -71,7 +72,9 @@ An `exclude` entry with `*`, `?`, `[` or `{` is a glob matched against the path 
 | `not-name`, `not-path` | File names and paths format skips, as in Pint's finder |
 | `rules` | `true`, `false`, a table of options, or the value of a rule's only option |
 
-Format rules only change layout, casing and spelling. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, and the ones that delete or restructure code, like `no_unused_imports`, are [lint rules](/docs/commands/lint). Pint's `per` and `symfony` presets are not format presets: `pun migrate` writes a `pint.json` that used one as `empty` plus its rules.
+Format rules change layout, casing, and spelling. Risky and code-deleting fixers are [lint rules](/docs/commands/lint). Migration expands Pint's `per` and `symfony` presets into explicit rules over `empty`.
+
+`not-name` and `not-path` accept Pint-style patterns, including PHP regular expressions. An invalid regex is a run error.
 
 ## [lint]
 
@@ -83,11 +86,17 @@ Format rules only change layout, casing and spelling. Risky ones, like `final_cl
 | `rules` | `"error"`, `"warn"` or `"off"` per rule, or a table with `level`, `fix = "off"` and the rule's options |
 | `[[lint.overrides]]` | `files` (globs) and `rules`: rule levels for the files they match |
 
-A rule a set turns on is an `error`. A group's level wins over the sets, and a rule's own line wins over its group. A table without `level` is `error`. Only `error` fails a run. `--fix` applies the fix of every enabled rule; `fix = "off"` keeps a rule report-only.
+Selection applies in this order, with later settings taking precedence:
 
-`[[lint.overrides]]` apply per file, after `[lint.rules]`; later overrides win, and `-A`/`-W`/`-D` on the command line apply last.
+1. Sets, at `"error"`.
+2. Groups.
+3. Individual rules.
+4. Matching path overrides, in declaration order.
+5. Command-line `-A`, `-W`, and `-D`, in argument order.
 
-The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`. Switch one off with its group: `[lint.groups] laravel = "off"`. A set's PHP upgrade rules (`php-8.4/...`) run from that `[php] version` on; upgrade groups such as `laravel-12` run when you turn the group on.
+A table without `level` defaults to `"error"`. Warnings do not fail unless a warning limit is set. `--fix` applies available fixes except rules with `fix = "off"`.
+
+Laravel, Pest, and PHPUnit set rules depend on packages detected in `composer.lock`. PHP upgrade rules depend on `[php] version`. Groups such as `laravel-12` require explicit selection.
 
 ## [analyse]
 
@@ -97,13 +106,13 @@ The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `larav
 | `paths` | What analyse checks, instead of `[files] paths` |
 | `exclude` | Added to `[files] exclude`, for analyse only |
 | `baseline` | The baseline file |
-| `stubs` | Stub files to read for symbols (PHPStan's `stubFiles`) |
+| `stubs` | Migrated PHPStan `stubFiles`; not yet applied by the CLI |
 | `rules` | `"on"`, `"off"` or a table of options per rule; `"on"` or `"off"` per group |
-| `[[analyse.ignore]]` | Errors to ignore (PHPStan's `ignoreErrors`), one table each |
+| `[[analyse.ignore]]` | Migrated PHPStan `ignoreErrors`; not yet applied by the CLI |
 
-Analyse rules are on or off; every finding is an error. The Laravel rules run when composer.lock locks `laravel/framework`; `[analyse.rules] laravel = "off"` switches them off.
+Analyse rules are on or off. Every finding is an error. Rule options and preset type switches are accepted by config but are not yet applied by the CLI. See [analysis limitations](/docs/commands/analyse#configuration).
 
-An `[[analyse.ignore]]` table ignores the errors that match every key it gives: `rule` (a Pun ID), `identifier` (the PHPStan identifier), `message` (a PCRE pattern, as in PHPStan) or `raw-message` (the exact text), and `paths` (paths or fnmatch patterns, relative to the project). It needs a rule, an identifier or a message. With `count`, exactly that many are ignored. `pun migrate` writes these from `ignoreErrors`.
+Migration preserves ignore entries as tables with `rule`, `identifier`, `message` or `raw-message`, `paths`, and optional `count`:
 
 ```toml
 [[analyse.ignore]]
@@ -114,13 +123,17 @@ paths = ["app/Http/*"]
 
 ## Rule names
 
-Rules use Pun IDs of the form `<command>/<group>/<name>`: `format/imports/ordered`, `lint/style/require-final-class`, `analyse/undefined/method`. Inside a `[<command>.rules]` table the command is implied, so the key is `"imports/ordered"` (quoted, because of the `/`). Groups are one fixed list shared by all three commands: topics such as `arrays`, `imports`, `phpdoc` and `types`, the ecosystems `laravel`, `pest`, `phpunit` and `doctrine`, and one upgrade group per target such as `php-8.4`. There are no aliases: an earlier Pun name (`ordered-imports`), a PHP-CS-Fixer name (`ordered_imports`), a PHPStan identifier (`method.notFound`) or a rule of another command gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
+Rule IDs use `<command>/<group>/<name>`, such as `format/imports/ordered`. Omit the command inside its rules table: `[format.rules]` uses `"imports/ordered"`.
+
+Groups describe topics, ecosystems, or upgrade targets. The [rule directory](/docs/rules) lists them.
+
+Config accepts no upstream or old-name aliases. Invalid names produce an error with the current Pun ID. `pun explain <name>` accepts upstream names for lookup; `pun config` prints resolved settings.
 
 ## Rule options
 
-Options have Pun names in kebab-case, and so do their values. Most are PHP-CS-Fixer's with `_` written as `-`
-(`on_multiline = "ensure_fully_multiline"` is `on-multiline = "ensure-fully-multiline"`); PHP keywords such as
-`require_once` keep their spelling. A few read better under new names:
+Option names and most string values use kebab-case. For example, PHP-CS-Fixer's `on_multiline = "ensure_fully_multiline"` becomes `on-multiline = "ensure-fully-multiline"`. PHP keywords such as `require_once` retain their spelling.
+
+Some options have different names:
 
 | Rules | PHP-CS-Fixer | Pun |
 | --- | --- | --- |
@@ -149,8 +162,7 @@ The lint rules a PHP-CS-Fixer fixer runs (the risky and code-deleting ones) name
 `level` and `fix`: `"phpunit/require-method-casing" = { case = "snake-case" }`,
 `"phpdoc/no-superfluous-tags" = { allow-mixed = true }`.
 
-`pun migrate` translates PHP-CS-Fixer's names and values, and `pun config` prints options under Pun's. Every rule's
-options are listed in `crates/pun-config/rules/mapping.toml`, under `[options."<command>/<group>/<name>"]`.
+`pun migrate` translates names and values. The [rule reference](/docs/rules) lists options for each rule.
 
 ## Removed keys
 
@@ -169,7 +181,7 @@ Each of these is an error that names what to write instead:
 
 ## Without pun.toml
 
-Every command stops with:
+Commands that load config stop with:
 
 ```text
 No pun.toml found. Run `pun migrate`, or `pun init` for a new project.

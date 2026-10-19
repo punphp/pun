@@ -1,13 +1,15 @@
 ---
 title: Parity
-description: Pun's output is checked against the real Pint on real projects, file by file, plus mutation fuzzing.
+description: Recorded Pint comparisons, benchmark conditions, and compatibility limits.
 ---
 
-Every claim here is reproduced by the harness in the repository (`cargo run -p punphp-harness -- format`), against Pint 1.29.3 and PHP-CS-Fixer 3.95.17.
+Pun's formatter is compared with Pint 1.29.3 and PHP-CS-Fixer 3.95.17. The results below are recorded runs, not a guarantee for every configuration.
+
+PHPStan, Larastan, and Rector support is incomplete. A mapped rule is not necessarily implemented. The [rule reference](/docs/rules) marks unimplemented rules as Planned.
 
 ## Speed
 
-On laravel/framework:
+The 2026-10-16 benchmark used a profiling build on a shared 2-core, 7 GB machine. These are median wall times from three runs on laravel/framework:
 
 | | Time |
 | --- | --- |
@@ -15,11 +17,11 @@ On laravel/framework:
 | Pun, cold | 3.7 s |
 | Pun, warm cache | 0.07 s |
 
-That's 51× faster cold, and over 2,700× faster warm.
+Cold runs disable Pun's cache. Warm runs use a clean tree with cached results. Pint does not cache in this comparison. These timings are not measurements of the current checkout.
 
 ## Byte-for-byte output
 
-For each project the harness runs Pint on one copy, and `pun migrate` then `pun check --fix` on another, then compares every file. So every run also proves the migration. `differing` must be 0.
+The harness runs Pint on one project copy and `pun migrate` followed by `pun check --fix` on another. It then compares each file. The recorded results are:
 
 | Project | Files | Identical | Differing |
 | --- | --- | --- | --- |
@@ -31,12 +33,22 @@ For each project the harness runs Pint on one copy, and `pun migrate` then `pun 
 | pinkary | 799 | 799 | 0 |
 | pinkary (unformatted copy) | 799 | 799 | 0 |
 
-Exit codes and the machine formats (`--format=json`, `checkstyle`, ...) are compared with Pint's by `scripts/cli-parity.sh`. They match, with one deliberate difference: when Pun couldn't run (a bad `--format`, a report it can't write, a missing path), it exits 2 where Pint exits 1.
+`scripts/cli-parity.sh` compares exit codes, machine reports, and changed files. Pun deliberately exits 2 when it cannot run, where Pint exits 1.
 
-Pinkary runs twice: as committed, and as a deliberately unformatted copy where Pint changes 346 files. The same holds with `--preset psr12` on every run.
+Pinkary appears twice: as committed and as an unformatted copy where Pint changes 346 files. The report also records zero differing files for the `psr12` preset.
 
 ## Fuzzing
 
-`scripts/fuzz-parity.sh` applies seeded style mutations to real files so Pint has work to do, formats one copy with Pint and one with Pun, and compares every file. On pinkary and laravel/framework, three seeds each, Pint changed 1,763 of 2,196 mutated files, and Pun differed on none.
+`scripts/fuzz-parity.sh` mutates style in real PHP files, formats copies with both tools, and compares the results. The report includes seeded runs on Pinkary and laravel/framework, plus CRLF and mixed-line-ending cases.
 
-The full, current tables are in [`context/reports/scoreboard.md`](https://github.com/punphp/pun/blob/main/context/reports/scoreboard.md).
+## Reproduce a comparison
+
+From the repository root:
+
+```bash
+scripts/oracle.sh
+scripts/corpus.sh pinkary
+cargo run -p punphp-harness -- format --corpus pinkary --diffs 5
+```
+
+The [scoreboard](https://github.com/punphp/pun/blob/main/context/reports/scoreboard.md) records the full results, commands, and benchmark conditions.

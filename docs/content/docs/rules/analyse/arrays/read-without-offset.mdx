@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/arrays/read-without-offset" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -15,37 +15,20 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 - [`ArrayAppendInReadContext`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
 - [`offsetAccess.noDim`](https://phpstan.org/error-identifiers/offsetAccess.noDim) (phpstan).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"arrays/read-without-offset" = true
+"arrays/read-without-offset" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/arrays/read-without-offset -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/arrays
-
-- [`analyse/arrays/duplicate-array-key`](/docs/rules/analyse/arrays/duplicate-array-key)
-- [`analyse/arrays/invalid-array-key`](/docs/rules/analyse/arrays/invalid-array-key)
-- [`analyse/arrays/invalid-destructuring`](/docs/rules/analyse/arrays/invalid-destructuring)
 
 [Group reference](/docs/rules/analyse/arrays) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

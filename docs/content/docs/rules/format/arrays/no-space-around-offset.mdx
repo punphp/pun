@@ -7,13 +7,13 @@ pagination: false
 
 <RuleId id="format/arrays/no-space-around-offset" />
 
-Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fix: safe (keeps behaviour). Intent: layout.
+Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fix: safe (keeps behaviour).
 
 ## Replaces
 
 - [`no_spaces_around_offset`](https://cs.symfony.com/doc/rules/whitespace/no_spaces_around_offset.html) (php-cs-fixer).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [format.rules]
@@ -28,33 +28,11 @@ Enabled by the [`format-laravel`](/docs/rules/presets/format-laravel) preset. Fi
 
 There MUST NOT be spaces around offset braces.
 
-## Examples
-
-Examples not written yet.
-
 ## Options
 
 | Name | Type | Allowed values | Default | Upstream name |
 | --- | --- | --- | --- | --- |
 | `positions` | `list` | `inside`, `outside` | `["inside", "outside"]` | `positions` |
 
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in format/arrays
-
-- [`format/arrays/indentation`](/docs/rules/format/arrays/indentation)
-- [`format/arrays/index-brace`](/docs/rules/format/arrays/index-brace)
-- [`format/arrays/list-syntax`](/docs/rules/format/arrays/list-syntax)
-- [`format/arrays/no-multiline-double-arrow`](/docs/rules/format/arrays/no-multiline-double-arrow)
-- [`format/arrays/no-space-before-comma`](/docs/rules/format/arrays/no-space-before-comma)
-- [`format/arrays/no-space-in-empty`](/docs/rules/format/arrays/no-space-in-empty)
-- [`format/arrays/no-trailing-comma-single-line`](/docs/rules/format/arrays/no-trailing-comma-single-line)
-- [`format/arrays/space-after-comma`](/docs/rules/format/arrays/space-after-comma)
-- [`format/arrays/syntax`](/docs/rules/format/arrays/syntax)
-- [`format/arrays/trailing-comma-multiline`](/docs/rules/format/arrays/trailing-comma-multiline)
-- [`format/arrays/trim-spaces`](/docs/rules/format/arrays/trim-spaces)
 
 [Group reference](/docs/rules/format/arrays) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

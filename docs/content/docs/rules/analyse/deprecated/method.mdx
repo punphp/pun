@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/deprecated/method" />
 
-Enabled by the [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
@@ -16,43 +16,20 @@ Enabled by the [`analyse-recommended`](/docs/rules/presets/analyse-recommended),
 - [`method.deprecated`](https://phpstan.org/error-identifiers/method.deprecated) (phpstan-deprecation-rules).
 - [`staticMethod.deprecated`](https://phpstan.org/error-identifiers/staticMethod.deprecated) (phpstan-deprecation-rules).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"deprecated/method" = true
+"deprecated/method" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/deprecated/method -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/deprecated
-
-- [`analyse/deprecated/backtick`](/docs/rules/analyse/deprecated/backtick)
-- [`analyse/deprecated/cast`](/docs/rules/analyse/deprecated/cast)
-- [`analyse/deprecated/class`](/docs/rules/analyse/deprecated/class)
-- [`analyse/deprecated/class-constant`](/docs/rules/analyse/deprecated/class-constant)
-- [`analyse/deprecated/constant`](/docs/rules/analyse/deprecated/constant)
-- [`analyse/deprecated/function`](/docs/rules/analyse/deprecated/function)
-- [`analyse/deprecated/ini-option`](/docs/rules/analyse/deprecated/ini-option)
-- [`analyse/deprecated/property`](/docs/rules/analyse/deprecated/property)
-- [`analyse/deprecated/to-string`](/docs/rules/analyse/deprecated/to-string)
 
 [Group reference](/docs/rules/analyse/deprecated) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

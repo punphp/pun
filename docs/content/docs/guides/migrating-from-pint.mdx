@@ -1,44 +1,50 @@
 ---
 title: Migrating from Pint
-description: Switch a project from Pint to Pun without a single changed byte, then move scripts and CI over.
+description: Convert Pint config, compare formatting results, and update scripts.
 ---
 
+Start from a clean Git working tree with [Pun installed](/docs/installation). Keep Pint available until you have compared the results.
+
 <Steps>
-  <Step title="Write pun.toml">
+  <Step title="Convert the config">
 
 ```bash
-pun migrate --dry-run
-pun migrate
+pun migrate --from pint --dry-run
+pun migrate --from pint
 ```
 
-Reads `pint.json` and writes `pun.toml`. Risky rules your `pint.json` enabled move to `[lint.rules]` at `"error"`.
+Review migration warnings. Unsupported rules are skipped, so a successful migration alone does not prove equivalent formatting.
 
   </Step>
-  <Step title="Prove nothing changes">
+  <Step title="Compare the results">
 
 ```bash
+vendor/bin/pint
 pun check --fix
-git diff --stat
+vendor/bin/pint --test
+pun check
+git diff
 ```
 
-On a project Pint already formatted, the diff is empty: `pun check --fix` writes exactly what `pint` wrote.
+Investigate differences before switching. `pun check` can also report lint or analysis findings that Pint does not check.
+
+The [recorded parity tests](/docs/parity) compare file contents in separate project copies. The commands above are a project-level check, not an exhaustive parity test.
 
   </Step>
-  <Step title="Switch your scripts">
+  <Step title="Update scripts and CI">
+
+Replace Pint commands in your existing Composer scripts:
 
 ```json composer.json
 {
-  "scripts": {
-    "lint": "pun check --fix",
-    "test:lint": "pun check"
-  }
+	"scripts": {
+		"lint": "pun check --fix",
+		"test:lint": "pun check"
+	}
 }
 ```
 
-  </Step>
-  <Step title="Switch CI">
-
-Replace `vendor/bin/pint --test` with `pun check` ([CI](/docs/guides/ci)).
+Replace `vendor/bin/pint --test` in CI with `pun check`. See the [CI guide](/docs/guides/ci).
 
   </Step>
 </Steps>
@@ -48,8 +54,6 @@ Replace `vendor/bin/pint --test` with `pun check` ([CI](/docs/guides/ci)).
 The [Pint mapping](/docs/migrate/from/pint) lists every upstream fixer, its Pun rule, option translation and dropped rules.
 For other configs, use the [migration mapping overview](/docs/migrate/from).
 
-`pint` did two kinds of thing in one run: layout, and rewrites that change code, like making classes `final`, comparisons strict, or removing unused imports and superfluous PHPDoc tags. Pun splits them: the rewrites are lint rules. `pun format` runs layout only, which is what format-on-save should do. `pun check --fix` runs both, like `pint` did.
+Layout rules become format rules. Risky and code-deleting rules become lint rules. `pun format` alone therefore does not apply the full Pint configuration.
 
-:::tip[Rolling back]
-Your code doesn't change, and `pint.json` stays unless you pass `--remove-tools`. Switching back is reverting the script and CI lines.
-:::
+Migration keeps `pint.json` and the Pint dependency. To roll back, restore your scripts and CI commands and review any rewritten ignore comments. There is no `--remove-tools` flag.

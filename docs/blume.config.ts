@@ -3,7 +3,7 @@ import { defineConfig } from "blume";
 export default defineConfig({
   title: "Pun",
   description:
-    "One fast Rust binary for the whole PHP toolchain: format, lint, analyse and migrate, with the same results as Pint, Rector and PHPStan.",
+    "Format, lint, and analyse PHP 8.4+ projects with one binary and one pun.toml.",
   logo: { image: "/logo.svg", text: "" },
 
   content: {
@@ -47,7 +47,7 @@ export default defineConfig({
   agents: {
     llmsTxt: {
       details:
-        "Pun is a single Rust binary that replaces Pint, PHP-CS-Fixer, Rector, PHPStan and Larastan for PHP 8.4+ projects, with output identical to the tools it replaces: `pun format` (layout, behaviour-safe), `pun lint` (risky fixers, Rector and Mago rules), `pun analyse` (PHPStan + Larastan), `pun check` (all three in one pass; `pun check --fix` writes exactly what Pint wrote) and `pun migrate` (writes pun.toml from pint.json, phpstan.neon and rector.php). Pun reads only pun.toml. Under a coding agent, every command switches to compact agent output automatically.",
+        "Pun is a Rust toolchain for PHP 8.4+ projects. It reads pun.toml. `pun format` changes layout; `pun lint --fix` applies code fixes; `pun analyse` reports type errors; `pun check` runs all three, with --fix for format and lint edits. `pun migrate` converts existing tool configs and reports skipped items. PHPStan, Larastan, and Rector support is incomplete; Planned rules are not implemented. Blade formatting requires Node.js and Prettier. Coding agents receive compact output automatically.",
     },
   },
 

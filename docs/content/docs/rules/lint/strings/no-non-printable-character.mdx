@@ -13,7 +13,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 - [`non_printable_character`](https://cs.symfony.com/doc/rules/basic/non_printable_character.html) (php-cs-fixer, risky).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [lint.rules]
@@ -21,16 +21,12 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 ```
 
 ```php
-// @pun-ignore lint/strings/no-non-printable-character -- explain the exception
+// @pun-ignore-file lint/strings/no-non-printable-character -- explain the exception
 ```
 
 ## What it does
 
 Remove Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
@@ -38,18 +34,5 @@ Examples not written yet.
 | --- | --- | --- | --- | --- |
 | `use-escape-sequences-in-strings` | `bool` | Any value of this type | `true` | `use_escape_sequences_in_strings` |
 
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in lint/strings
-
-- [`lint/strings/no-single-argument-sprintf`](/docs/rules/lint/strings/no-single-argument-sprintf)
-- [`lint/strings/no-trailing-whitespace-in-string`](/docs/rules/lint/strings/no-trailing-whitespace-in-string)
-- [`lint/strings/prefer-empty-string-identical`](/docs/rules/lint/strings/prefer-empty-string-identical)
-- [`lint/strings/prefer-mb-functions`](/docs/rules/lint/strings/prefer-mb-functions)
-- [`lint/strings/require-interpolation-style`](/docs/rules/lint/strings/require-interpolation-style)
-- [`lint/strings/require-string-line-ending`](/docs/rules/lint/strings/require-string-line-ending)
 
 [Group reference](/docs/rules/lint/strings) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

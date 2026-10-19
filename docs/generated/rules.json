@@ -17104,7 +17104,7 @@
       "id": "analyse/arrays/duplicate-array-key",
       "command": "analyse",
       "group": "arrays",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17130,7 +17130,7 @@
       "id": "analyse/arrays/invalid-array-key",
       "command": "analyse",
       "group": "arrays",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -17155,7 +17155,7 @@
       "id": "analyse/arrays/invalid-destructuring",
       "command": "analyse",
       "group": "arrays",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -17186,7 +17186,7 @@
       "id": "analyse/arrays/read-without-offset",
       "command": "analyse",
       "group": "arrays",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17212,7 +17212,7 @@
       "id": "analyse/attributes/invalid",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17247,7 +17247,7 @@
       "id": "analyse/attributes/invalid-arrow-function-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17270,7 +17270,7 @@
       "id": "analyse/attributes/invalid-class-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17301,7 +17301,7 @@
       "id": "analyse/attributes/invalid-class-constant-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17331,7 +17331,7 @@
       "id": "analyse/attributes/invalid-closure-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17354,7 +17354,7 @@
       "id": "analyse/attributes/invalid-constant-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17379,7 +17379,7 @@
       "id": "analyse/attributes/invalid-enum-case-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17402,7 +17402,7 @@
       "id": "analyse/attributes/invalid-function-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17425,7 +17425,7 @@
       "id": "analyse/attributes/invalid-hook-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17448,7 +17448,7 @@
       "id": "analyse/attributes/invalid-method-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17471,7 +17471,7 @@
       "id": "analyse/attributes/invalid-parameter-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17494,7 +17494,7 @@
       "id": "analyse/attributes/invalid-property-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17518,7 +17518,7 @@
       "id": "analyse/attributes/invalid-trait-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17542,7 +17542,7 @@
       "id": "analyse/attributes/trait-as-attribute",
       "command": "analyse",
       "group": "attributes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17566,7 +17566,7 @@
       "id": "analyse/casing/inherited-method-case",
       "command": "analyse",
       "group": "casing",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17590,7 +17590,7 @@
       "id": "analyse/casts/unset-not-supported",
       "command": "analyse",
       "group": "casts",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17614,7 +17614,7 @@
       "id": "analyse/casts/useless",
       "command": "analyse",
       "group": "casts",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -17639,7 +17639,7 @@
       "id": "analyse/classes/abstract-method-in-concrete-class",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17666,7 +17666,7 @@
       "id": "analyse/classes/abstract-private-method",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17690,7 +17690,7 @@
       "id": "analyse/classes/callable-property-type",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17714,7 +17714,7 @@
       "id": "analyse/classes/class-named-constant",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17738,7 +17738,7 @@
       "id": "analyse/classes/conflicting-trait-constant",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17762,7 +17762,7 @@
       "id": "analyse/classes/constant-in-trait",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17786,7 +17786,7 @@
       "id": "analyse/classes/constructor-with-return-type",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17810,7 +17810,7 @@
       "id": "analyse/classes/disallowed-subtype",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17838,7 +17838,7 @@
       "id": "analyse/classes/duplicate-declaration",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17889,7 +17889,7 @@
       "id": "analyse/classes/duplicate-trait-member",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17912,7 +17912,7 @@
       "id": "analyse/classes/dynamic-static-call",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -17936,7 +17936,7 @@
       "id": "analyse/classes/dynamic-static-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -17957,7 +17957,7 @@
       "id": "analyse/classes/enum-case-outside-enum",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -17981,7 +17981,7 @@
       "id": "analyse/classes/final-constant-not-supported",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18005,7 +18005,7 @@
       "id": "analyse/classes/final-private-constant",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18029,7 +18029,7 @@
       "id": "analyse/classes/final-private-method",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18053,7 +18053,7 @@
       "id": "analyse/classes/get-hook-without-read",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -18076,7 +18076,7 @@
       "id": "analyse/classes/inaccessible-class-constant",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -18099,7 +18099,7 @@
       "id": "analyse/classes/inaccessible-method",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -18122,7 +18122,7 @@
       "id": "analyse/classes/inaccessible-property",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -18145,7 +18145,7 @@
       "id": "analyse/classes/incompatible-constant-override",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18175,7 +18175,7 @@
       "id": "analyse/classes/incompatible-override",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18250,7 +18250,7 @@
       "id": "analyse/classes/incompatible-property-override",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18307,7 +18307,7 @@
       "id": "analyse/classes/inconsistent-constructor",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18330,7 +18330,7 @@
       "id": "analyse/classes/internal-constant-access",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18354,7 +18354,7 @@
       "id": "analyse/classes/internal-method-call",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18377,7 +18377,7 @@
       "id": "analyse/classes/internal-method-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18400,7 +18400,7 @@
       "id": "analyse/classes/internal-property-access",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18423,7 +18423,7 @@
       "id": "analyse/classes/internal-static-method-call",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18446,7 +18446,7 @@
       "id": "analyse/classes/internal-static-method-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18469,7 +18469,7 @@
       "id": "analyse/classes/internal-static-property-access",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18503,7 +18503,7 @@
       "id": "analyse/classes/invalid-dynamic-constant-fetch",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18528,7 +18528,7 @@
       "id": "analyse/classes/invalid-enum",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18564,7 +18564,7 @@
       "id": "analyse/classes/invalid-enum-implements",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18590,7 +18590,7 @@
       "id": "analyse/classes/invalid-extends",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18628,7 +18628,7 @@
       "id": "analyse/classes/invalid-implements",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18655,7 +18655,7 @@
       "id": "analyse/classes/invalid-interface-extends",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18681,7 +18681,7 @@
       "id": "analyse/classes/invalid-interface-property",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18712,7 +18712,7 @@
       "id": "analyse/classes/invalid-method-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18742,7 +18742,7 @@
       "id": "analyse/classes/invalid-new",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18783,7 +18783,7 @@
       "id": "analyse/classes/invalid-phpdoc-readonly",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18807,7 +18807,7 @@
       "id": "analyse/classes/invalid-promoted-property",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18832,7 +18832,7 @@
       "id": "analyse/classes/invalid-property-declaration",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18869,7 +18869,7 @@
       "id": "analyse/classes/invalid-property-hook",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18896,7 +18896,7 @@
       "id": "analyse/classes/invalid-readonly-property",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18923,7 +18923,7 @@
       "id": "analyse/classes/invalid-static-method-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18952,7 +18952,7 @@
       "id": "analyse/classes/missing-method-implementation",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18975,7 +18975,7 @@
       "id": "analyse/classes/missing-parent-constructor-call",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -18997,7 +18997,7 @@
       "id": "analyse/classes/missing-required-interface",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -19020,7 +19020,7 @@
       "id": "analyse/classes/missing-required-parent",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -19046,7 +19046,7 @@
       "id": "analyse/classes/missing-serialize-methods",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19070,7 +19070,7 @@
       "id": "analyse/classes/new-as-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19094,7 +19094,7 @@
       "id": "analyse/classes/new-static-in-abstract",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19118,7 +19118,7 @@
       "id": "analyse/classes/non-public-interface-method",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19141,7 +19141,7 @@
       "id": "analyse/classes/private-consistent-constructor",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19165,7 +19165,7 @@
       "id": "analyse/classes/read-write-only-property",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19189,7 +19189,7 @@
       "id": "analyse/classes/readonly-class-not-supported",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19213,7 +19213,7 @@
       "id": "analyse/classes/set-hook-without-assign",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -19236,7 +19236,7 @@
       "id": "analyse/classes/typed-constant-not-supported",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19259,7 +19259,7 @@
       "id": "analyse/classes/uninitialized-phpdoc-readonly",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19286,7 +19286,7 @@
       "id": "analyse/classes/uninitialized-property",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19313,7 +19313,7 @@
       "id": "analyse/classes/uninitialized-readonly",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19337,7 +19337,7 @@
       "id": "analyse/classes/unsafe-new-static",
       "command": "analyse",
       "group": "classes",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19363,7 +19363,7 @@
       "id": "analyse/comments/invalid-ignore",
       "command": "analyse",
       "group": "comments",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19387,7 +19387,7 @@
       "id": "analyse/control-flow/break-outside-loop",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19416,7 +19416,7 @@
       "id": "analyse/control-flow/non-boolean-condition",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -19438,7 +19438,7 @@
       "id": "analyse/control-flow/non-boolean-do-while",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -19460,7 +19460,7 @@
       "id": "analyse/control-flow/non-boolean-elseif",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -19482,7 +19482,7 @@
       "id": "analyse/control-flow/non-boolean-ternary",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -19504,7 +19504,7 @@
       "id": "analyse/control-flow/non-boolean-while",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -19526,7 +19526,7 @@
       "id": "analyse/control-flow/switch-type-mismatch",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -19548,7 +19548,7 @@
       "id": "analyse/control-flow/unhandled-match",
       "command": "analyse",
       "group": "control-flow",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19574,7 +19574,7 @@
       "id": "analyse/dead-code/boolean-and-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19595,7 +19595,7 @@
       "id": "analyse/dead-code/boolean-not-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19616,7 +19616,7 @@
       "id": "analyse/dead-code/boolean-or-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19637,7 +19637,7 @@
       "id": "analyse/dead-code/call-condition-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19658,7 +19658,7 @@
       "id": "analyse/dead-code/discarded-function-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19685,7 +19685,7 @@
       "id": "analyse/dead-code/discarded-method-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19710,7 +19710,7 @@
       "id": "analyse/dead-code/discarded-static-method-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -19735,7 +19735,7 @@
       "id": "analyse/dead-code/do-while-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19756,7 +19756,7 @@
       "id": "analyse/dead-code/elseif-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19777,7 +19777,7 @@
       "id": "analyse/dead-code/finally-overrides-exit",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19799,7 +19799,7 @@
       "id": "analyse/dead-code/if-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19820,7 +19820,7 @@
       "id": "analyse/dead-code/impossible-in-array",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19842,7 +19842,7 @@
       "id": "analyse/dead-code/impossible-instanceof",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19866,7 +19866,7 @@
       "id": "analyse/dead-code/impossible-method-type-check",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19889,7 +19889,7 @@
       "id": "analyse/dead-code/impossible-static-type-check",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19912,7 +19912,7 @@
       "id": "analyse/dead-code/impossible-type-check",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19942,7 +19942,7 @@
       "id": "analyse/dead-code/loose-comparison-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -19963,7 +19963,7 @@
       "id": "analyse/dead-code/number-comparison-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20035,7 +20035,7 @@
       "id": "analyse/dead-code/pure-function-result-unused",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20056,7 +20056,7 @@
       "id": "analyse/dead-code/pure-method-result-unused",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20077,7 +20077,7 @@
       "id": "analyse/dead-code/pure-new-result-unused",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20098,7 +20098,7 @@
       "id": "analyse/dead-code/pure-static-method-result-unused",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20119,7 +20119,7 @@
       "id": "analyse/dead-code/redundant-null-coalesce",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20145,7 +20145,7 @@
       "id": "analyse/dead-code/strict-comparison-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20166,7 +20166,7 @@
       "id": "analyse/dead-code/ternary-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20187,7 +20187,7 @@
       "id": "analyse/dead-code/trait-condition-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20210,7 +20210,7 @@
       "id": "analyse/dead-code/unreachable-code",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20234,7 +20234,7 @@
       "id": "analyse/dead-code/unused-argument",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20258,7 +20258,7 @@
       "id": "analyse/dead-code/unused-closure-use",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20282,7 +20282,7 @@
       "id": "analyse/dead-code/unused-constructor-parameter",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20306,7 +20306,7 @@
       "id": "analyse/dead-code/unused-function-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20328,7 +20328,7 @@
       "id": "analyse/dead-code/unused-label",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20350,7 +20350,7 @@
       "id": "analyse/dead-code/unused-method-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20372,7 +20372,7 @@
       "id": "analyse/dead-code/unused-new-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20394,7 +20394,7 @@
       "id": "analyse/dead-code/unused-private-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20416,7 +20416,7 @@
       "id": "analyse/dead-code/unused-private-method",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20440,7 +20440,7 @@
       "id": "analyse/dead-code/unused-private-property",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20469,7 +20469,7 @@
       "id": "analyse/dead-code/unused-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20502,7 +20502,7 @@
       "id": "analyse/dead-code/unused-static-method-result",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20524,7 +20524,7 @@
       "id": "analyse/dead-code/unused-trait",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20547,7 +20547,7 @@
       "id": "analyse/dead-code/useless-return-value",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20569,7 +20569,7 @@
       "id": "analyse/dead-code/while-always-false",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20591,7 +20591,7 @@
       "id": "analyse/dead-code/while-always-true",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20613,7 +20613,7 @@
       "id": "analyse/dead-code/xor-always-constant",
       "command": "analyse",
       "group": "dead-code",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20658,7 +20658,7 @@
       "id": "analyse/debug/assert-type",
       "command": "analyse",
       "group": "debug",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20686,7 +20686,7 @@
       "id": "analyse/debug/dump-native-type",
       "command": "analyse",
       "group": "debug",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20710,7 +20710,7 @@
       "id": "analyse/debug/dump-phpdoc-type",
       "command": "analyse",
       "group": "debug",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20734,7 +20734,7 @@
       "id": "analyse/debug/dump-scope",
       "command": "analyse",
       "group": "debug",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20758,7 +20758,7 @@
       "id": "analyse/debug/dump-type",
       "command": "analyse",
       "group": "debug",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20785,7 +20785,7 @@
       "id": "analyse/deprecated/backtick",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20809,7 +20809,7 @@
       "id": "analyse/deprecated/cast",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20833,7 +20833,7 @@
       "id": "analyse/deprecated/class",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20858,7 +20858,7 @@
       "id": "analyse/deprecated/class-constant",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20884,7 +20884,7 @@
       "id": "analyse/deprecated/constant",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20909,7 +20909,7 @@
       "id": "analyse/deprecated/function",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20934,7 +20934,7 @@
       "id": "analyse/deprecated/ini-option",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20956,7 +20956,7 @@
       "id": "analyse/deprecated/method",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -20982,7 +20982,7 @@
       "id": "analyse/deprecated/property",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21008,7 +21008,7 @@
       "id": "analyse/deprecated/to-string",
       "command": "analyse",
       "group": "deprecated",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21033,7 +21033,7 @@
       "id": "analyse/functions/closure-uses-this",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21057,7 +21057,7 @@
       "id": "analyse/functions/conflicting-filter-var-flags",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21081,7 +21081,7 @@
       "id": "analyse/functions/duplicate-parameter",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21105,7 +21105,7 @@
       "id": "analyse/functions/internal-function-call",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21128,7 +21128,7 @@
       "id": "analyse/functions/internal-function-callable",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21152,7 +21152,7 @@
       "id": "analyse/functions/invalid-callable-call",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -21175,7 +21175,7 @@
       "id": "analyse/functions/invalid-closure-use",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21203,7 +21203,7 @@
       "id": "analyse/functions/invalid-first-class-callable",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21227,7 +21227,7 @@
       "id": "analyse/functions/invalid-parameter-name",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21252,7 +21252,7 @@
       "id": "analyse/functions/invalid-pure",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -21322,7 +21322,7 @@
       "id": "analyse/functions/invalid-pure-method",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -21344,7 +21344,7 @@
       "id": "analyse/functions/invalid-vprintf-arguments",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21367,7 +21367,7 @@
       "id": "analyse/functions/printf-placeholder-count",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21390,7 +21390,7 @@
       "id": "analyse/functions/unanalysed-inner-function",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21414,7 +21414,7 @@
       "id": "analyse/functions/variadic-not-last",
       "command": "analyse",
       "group": "functions",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21438,7 +21438,7 @@
       "id": "analyse/imports/name-already-in-use",
       "command": "analyse",
       "group": "imports",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21469,7 +21469,7 @@
       "id": "analyse/laravel/config-collection",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21490,7 +21490,7 @@
       "id": "analyse/laravel/deferrable-provider-missing-provides",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21512,7 +21512,7 @@
       "id": "analyse/laravel/missing-translation",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21534,7 +21534,7 @@
       "id": "analyse/laravel/no-auth-facade-in-request-scope",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21555,7 +21555,7 @@
       "id": "analyse/laravel/no-auth-helper-in-request-scope",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21576,7 +21576,7 @@
       "id": "analyse/laravel/no-env-outside-config",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21598,7 +21598,7 @@
       "id": "analyse/laravel/no-model-make",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21620,7 +21620,7 @@
       "id": "analyse/laravel/no-public-scope-or-accessor",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-max"
       ],
@@ -21641,7 +21641,7 @@
       "id": "analyse/laravel/octane-compatibility",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21662,7 +21662,7 @@
       "id": "analyse/laravel/redundant-collection-call",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21684,7 +21684,7 @@
       "id": "analyse/laravel/redundant-to-array-call",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21706,7 +21706,7 @@
       "id": "analyse/laravel/undefined-console-input",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -21730,7 +21730,7 @@
       "id": "analyse/laravel/undefined-model-append",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -21753,7 +21753,7 @@
       "id": "analyse/laravel/undefined-relation",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -21776,7 +21776,7 @@
       "id": "analyse/laravel/unexpected-dispatch-arguments",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -21801,7 +21801,7 @@
       "id": "analyse/laravel/unused-view",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21823,7 +21823,7 @@
       "id": "analyse/laravel/useless-value-call",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21845,7 +21845,7 @@
       "id": "analyse/laravel/useless-with-call",
       "command": "analyse",
       "group": "laravel",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -21867,7 +21867,7 @@
       "id": "analyse/operators/non-boolean-and-operand",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21898,7 +21898,7 @@
       "id": "analyse/operators/non-boolean-not-operand",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21920,7 +21920,7 @@
       "id": "analyse/operators/non-boolean-or-operand",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21941,7 +21941,7 @@
       "id": "analyse/operators/non-numeric-addition",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21964,7 +21964,7 @@
       "id": "analyse/operators/non-numeric-division",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -21987,7 +21987,7 @@
       "id": "analyse/operators/non-numeric-exponentiation",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22010,7 +22010,7 @@
       "id": "analyse/operators/non-numeric-modulo",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22033,7 +22033,7 @@
       "id": "analyse/operators/non-numeric-multiplication",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22056,7 +22056,7 @@
       "id": "analyse/operators/non-numeric-post-decrement",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22077,7 +22077,7 @@
       "id": "analyse/operators/non-numeric-post-increment",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22098,7 +22098,7 @@
       "id": "analyse/operators/non-numeric-pre-decrement",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22119,7 +22119,7 @@
       "id": "analyse/operators/non-numeric-pre-increment",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22140,7 +22140,7 @@
       "id": "analyse/operators/non-numeric-subtraction",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22163,7 +22163,7 @@
       "id": "analyse/operators/non-numeric-unary-minus",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22190,7 +22190,7 @@
       "id": "analyse/operators/non-numeric-unary-plus",
       "command": "analyse",
       "group": "operators",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -22212,7 +22212,7 @@
       "id": "analyse/phpdoc/constant-type-mismatch",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22235,7 +22235,7 @@
       "id": "analyse/phpdoc/hook-type-mismatch",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22257,7 +22257,7 @@
       "id": "analyse/phpdoc/invalid",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22282,7 +22282,7 @@
       "id": "analyse/phpdoc/invalid-assert-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22309,7 +22309,7 @@
       "id": "analyse/phpdoc/invalid-conditional-return",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22333,7 +22333,7 @@
       "id": "analyse/phpdoc/invalid-method-assert-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22355,7 +22355,7 @@
       "id": "analyse/phpdoc/invalid-method-conditional-return",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22377,7 +22377,7 @@
       "id": "analyse/phpdoc/invalid-method-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22401,7 +22401,7 @@
       "id": "analyse/phpdoc/invalid-mixin-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22426,7 +22426,7 @@
       "id": "analyse/phpdoc/invalid-param-callable-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22454,7 +22454,7 @@
       "id": "analyse/phpdoc/invalid-phpstan-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22477,7 +22477,7 @@
       "id": "analyse/phpdoc/invalid-property-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22501,7 +22501,7 @@
       "id": "analyse/phpdoc/invalid-require-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22546,7 +22546,7 @@
       "id": "analyse/phpdoc/invalid-sealed-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22570,7 +22570,7 @@
       "id": "analyse/phpdoc/invalid-trait-method-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22592,7 +22592,7 @@
       "id": "analyse/phpdoc/invalid-trait-mixin-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22614,7 +22614,7 @@
       "id": "analyse/phpdoc/invalid-trait-property-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22636,7 +22636,7 @@
       "id": "analyse/phpdoc/invalid-trait-require-extends",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22658,7 +22658,7 @@
       "id": "analyse/phpdoc/invalid-trait-require-implements",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22681,7 +22681,7 @@
       "id": "analyse/phpdoc/invalid-trait-type-alias",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -22704,7 +22704,7 @@
       "id": "analyse/phpdoc/invalid-trait-use-method-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22726,7 +22726,7 @@
       "id": "analyse/phpdoc/invalid-trait-use-mixin-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22748,7 +22748,7 @@
       "id": "analyse/phpdoc/invalid-trait-use-property-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22770,7 +22770,7 @@
       "id": "analyse/phpdoc/invalid-trait-use-type-alias",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -22793,7 +22793,7 @@
       "id": "analyse/phpdoc/invalid-type-alias",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -22823,7 +22823,7 @@
       "id": "analyse/phpdoc/invalid-var-tag",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22850,7 +22850,7 @@
       "id": "analyse/phpdoc/invalid-var-tag-type",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22874,7 +22874,7 @@
       "id": "analyse/phpdoc/misplaced-require-implements",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22896,7 +22896,7 @@
       "id": "analyse/phpdoc/property-type-mismatch",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22920,7 +22920,7 @@
       "id": "analyse/phpdoc/sealed-on-trait",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -22944,7 +22944,7 @@
       "id": "analyse/phpdoc/type-mismatch",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22973,7 +22973,7 @@
       "id": "analyse/phpdoc/var-tag-type-mismatch",
       "command": "analyse",
       "group": "phpdoc",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -22997,7 +22997,7 @@
       "id": "analyse/statements/invalid-declare-strict-types",
       "command": "analyse",
       "group": "statements",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23022,7 +23022,7 @@
       "id": "analyse/statements/invalid-empty",
       "command": "analyse",
       "group": "statements",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23062,7 +23062,7 @@
       "id": "analyse/statements/invalid-isset",
       "command": "analyse",
       "group": "statements",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23085,7 +23085,7 @@
       "id": "analyse/statements/magic-constant-out-of-context",
       "command": "analyse",
       "group": "statements",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23112,7 +23112,7 @@
       "id": "analyse/statements/non-capturing-catch-not-supported",
       "command": "analyse",
       "group": "statements",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23136,7 +23136,7 @@
       "id": "analyse/statements/throw-expression-not-supported",
       "command": "analyse",
       "group": "statements",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23160,7 +23160,7 @@
       "id": "analyse/strings/invalid-date-interval",
       "command": "analyse",
       "group": "strings",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23182,7 +23182,7 @@
       "id": "analyse/strings/invalid-date-time",
       "command": "analyse",
       "group": "strings",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23203,7 +23203,7 @@
       "id": "analyse/types/argument",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23288,7 +23288,7 @@
       "id": "analyse/types/argument-not-numeric",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23309,7 +23309,7 @@
       "id": "analyse/types/argument-not-stringable",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23330,7 +23330,7 @@
       "id": "analyse/types/arrow-function-nullsafe-by-ref",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23353,7 +23353,7 @@
       "id": "analyse/types/arrow-function-param-default",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23375,7 +23375,7 @@
       "id": "analyse/types/arrow-function-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23399,7 +23399,7 @@
       "id": "analyse/types/assign-to-this",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23425,7 +23425,7 @@
       "id": "analyse/types/by-ref-foreach-on-expression",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23449,7 +23449,7 @@
       "id": "analyse/types/call-user-func-argument",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23470,7 +23470,7 @@
       "id": "analyse/types/catch-non-throwable",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23499,7 +23499,7 @@
       "id": "analyse/types/class-constant-value",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23523,7 +23523,7 @@
       "id": "analyse/types/clone-non-object",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23548,7 +23548,7 @@
       "id": "analyse/types/closure-param-default",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23570,7 +23570,7 @@
       "id": "analyse/types/closure-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23592,7 +23592,7 @@
       "id": "analyse/types/constant-value",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23615,7 +23615,7 @@
       "id": "analyse/types/dead-catch",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23640,7 +23640,7 @@
       "id": "analyse/types/define-value",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23665,7 +23665,7 @@
       "id": "analyse/types/echo-non-string",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23688,7 +23688,7 @@
       "id": "analyse/types/enum-template-not-allowed",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23711,7 +23711,7 @@
       "id": "analyse/types/foreach-non-iterable",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23742,7 +23742,7 @@
       "id": "analyse/types/foreach-on-empty-array",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23764,7 +23764,7 @@
       "id": "analyse/types/function-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23787,7 +23787,7 @@
       "id": "analyse/types/function-variance",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23809,7 +23809,7 @@
       "id": "analyse/types/generator",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23841,7 +23841,7 @@
       "id": "analyse/types/implode-non-string",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -23862,7 +23862,7 @@
       "id": "analyse/types/interpolated-non-string",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23885,7 +23885,7 @@
       "id": "analyse/types/invalid-arrow-function-signature",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23911,7 +23911,7 @@
       "id": "analyse/types/invalid-assignment-target",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -23939,7 +23939,7 @@
       "id": "analyse/types/invalid-binary-operation",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23961,7 +23961,7 @@
       "id": "analyse/types/invalid-cast",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -23990,7 +23990,7 @@
       "id": "analyse/types/invalid-class-generics",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24028,7 +24028,7 @@
       "id": "analyse/types/invalid-class-template",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24056,7 +24056,7 @@
       "id": "analyse/types/invalid-closure-signature",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24092,7 +24092,7 @@
       "id": "analyse/types/invalid-comparison",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24132,7 +24132,7 @@
       "id": "analyse/types/invalid-enum-generics",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24154,7 +24154,7 @@
       "id": "analyse/types/invalid-function-signature",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24178,7 +24178,7 @@
       "id": "analyse/types/invalid-function-template",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24200,7 +24200,7 @@
       "id": "analyse/types/invalid-hook-signature",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24223,7 +24223,7 @@
       "id": "analyse/types/invalid-inc-dec",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24252,7 +24252,7 @@
       "id": "analyse/types/invalid-interface-generics",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24274,7 +24274,7 @@
       "id": "analyse/types/invalid-interface-template",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24296,7 +24296,7 @@
       "id": "analyse/types/invalid-method-signature",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24320,7 +24320,7 @@
       "id": "analyse/types/invalid-method-tag-template",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24343,7 +24343,7 @@
       "id": "analyse/types/invalid-method-template",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24366,7 +24366,7 @@
       "id": "analyse/types/invalid-offset",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24394,7 +24394,7 @@
       "id": "analyse/types/invalid-pipe",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24422,7 +24422,7 @@
       "id": "analyse/types/invalid-property-assignment",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24451,7 +24451,7 @@
       "id": "analyse/types/invalid-property-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24476,7 +24476,7 @@
       "id": "analyse/types/invalid-regex",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24500,7 +24500,7 @@
       "id": "analyse/types/invalid-self-out-tag",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24525,7 +24525,7 @@
       "id": "analyse/types/invalid-throws-tag",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24548,7 +24548,7 @@
       "id": "analyse/types/invalid-trait-method-tag-template",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24570,7 +24570,7 @@
       "id": "analyse/types/invalid-trait-template",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24592,7 +24592,7 @@
       "id": "analyse/types/invalid-trait-use-generics",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24615,7 +24615,7 @@
       "id": "analyse/types/invalid-unary-operand",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24638,7 +24638,7 @@
       "id": "analyse/types/invalid-union-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24667,7 +24667,7 @@
       "id": "analyse/types/invalid-unset",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24698,7 +24698,7 @@
       "id": "analyse/types/invalid-void-cast",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24723,7 +24723,7 @@
       "id": "analyse/types/method-param-default",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24746,7 +24746,7 @@
       "id": "analyse/types/method-variance",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24768,7 +24768,7 @@
       "id": "analyse/types/missing-constant-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -24792,7 +24792,7 @@
       "id": "analyse/types/missing-hook-throws",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-max"
       ],
@@ -24811,7 +24811,7 @@
       "id": "analyse/types/missing-method-param-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -24831,7 +24831,7 @@
       "id": "analyse/types/missing-method-return-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -24851,7 +24851,7 @@
       "id": "analyse/types/missing-method-throws",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-max"
       ],
@@ -24870,7 +24870,7 @@
       "id": "analyse/types/missing-param-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -24893,7 +24893,7 @@
       "id": "analyse/types/missing-preg-quote-delimiter",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -24915,7 +24915,7 @@
       "id": "analyse/types/missing-property-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -24938,7 +24938,7 @@
       "id": "analyse/types/missing-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24967,7 +24967,7 @@
       "id": "analyse/types/missing-return-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -24991,7 +24991,7 @@
       "id": "analyse/types/missing-self-out-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-strict",
         "analyse-max"
@@ -25011,7 +25011,7 @@
       "id": "analyse/types/missing-throws",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-max"
       ],
@@ -25033,7 +25033,7 @@
       "id": "analyse/types/nullsafe-by-ref-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -25056,7 +25056,7 @@
       "id": "analyse/types/offset-assign",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25079,7 +25079,7 @@
       "id": "analyse/types/offset-assign-op",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25101,7 +25101,7 @@
       "id": "analyse/types/offset-assign-value",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25124,7 +25124,7 @@
       "id": "analyse/types/param-default",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25150,7 +25150,7 @@
       "id": "analyse/types/param-out",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25173,7 +25173,7 @@
       "id": "analyse/types/param-out-at-end",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25195,7 +25195,7 @@
       "id": "analyse/types/phpdoc-readonly-by-ref",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25218,7 +25218,7 @@
       "id": "analyse/types/phpdoc-readonly-property-write",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25243,7 +25243,7 @@
       "id": "analyse/types/print-non-string",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25266,7 +25266,7 @@
       "id": "analyse/types/printf-argument",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25287,7 +25287,7 @@
       "id": "analyse/types/property-assign",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25316,7 +25316,7 @@
       "id": "analyse/types/property-default",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25342,7 +25342,7 @@
       "id": "analyse/types/property-variance",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25364,7 +25364,7 @@
       "id": "analyse/types/random-int-range",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25385,7 +25385,7 @@
       "id": "analyse/types/readonly-property-by-ref",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25408,7 +25408,7 @@
       "id": "analyse/types/readonly-property-write",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25436,7 +25436,7 @@
       "id": "analyse/types/redundant-array-values",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25459,7 +25459,7 @@
       "id": "analyse/types/redundant-nullsafe",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25483,7 +25483,7 @@
       "id": "analyse/types/redundant-nullsafe-method-call",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25504,7 +25504,7 @@
       "id": "analyse/types/renamed-parameter-in-subtype",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -25530,7 +25530,7 @@
       "id": "analyse/types/return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25560,7 +25560,7 @@
       "id": "analyse/types/sort-non-stringable",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25581,7 +25581,7 @@
       "id": "analyse/types/this-in-global",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -25605,7 +25605,7 @@
       "id": "analyse/types/this-in-static",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -25629,7 +25629,7 @@
       "id": "analyse/types/throw-non-throwable",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25654,7 +25654,7 @@
       "id": "analyse/types/throws-not-covariant",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -25680,7 +25680,7 @@
       "id": "analyse/types/throws-void-function",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25703,7 +25703,7 @@
       "id": "analyse/types/throws-void-hook",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25725,7 +25725,7 @@
       "id": "analyse/types/throws-void-method",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25747,7 +25747,7 @@
       "id": "analyse/types/too-wide-arrow-function-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25785,7 +25785,7 @@
       "id": "analyse/types/too-wide-closure-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25806,7 +25806,7 @@
       "id": "analyse/types/too-wide-function-param-out",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25827,7 +25827,7 @@
       "id": "analyse/types/too-wide-function-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25848,7 +25848,7 @@
       "id": "analyse/types/too-wide-method-param-out",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25869,7 +25869,7 @@
       "id": "analyse/types/too-wide-method-return",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25890,7 +25890,7 @@
       "id": "analyse/types/too-wide-property",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25911,7 +25911,7 @@
       "id": "analyse/types/unpack-non-iterable",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25934,7 +25934,7 @@
       "id": "analyse/types/unpack-string-key",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -25957,7 +25957,7 @@
       "id": "analyse/types/unused-hook-throws-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25978,7 +25978,7 @@
       "id": "analyse/types/unused-method-throws-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -25999,7 +25999,7 @@
       "id": "analyse/types/unused-throws-type",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -26021,7 +26021,7 @@
       "id": "analyse/types/useless-array-filter",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-recommended",
         "analyse-strict",
@@ -26045,7 +26045,7 @@
       "id": "analyse/types/void-match-used",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -26068,7 +26068,7 @@
       "id": "analyse/types/write-to-readonly-property",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26094,7 +26094,7 @@
       "id": "analyse/types/yield-from-non-iterable",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -26120,7 +26120,7 @@
       "id": "analyse/types/yield-outside-function",
       "command": "analyse",
       "group": "types",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -26146,7 +26146,7 @@
       "id": "analyse/undefined/assigned-property",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26179,7 +26179,7 @@
       "id": "analyse/undefined/assigned-static-property",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26211,7 +26211,7 @@
       "id": "analyse/undefined/class-constant",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26253,7 +26253,7 @@
       "id": "analyse/undefined/compact-variable",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26276,7 +26276,7 @@
       "id": "analyse/undefined/constant",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26302,7 +26302,7 @@
       "id": "analyse/undefined/function",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26328,7 +26328,7 @@
       "id": "analyse/undefined/goto-label",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26352,7 +26352,7 @@
       "id": "analyse/undefined/group-import",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26385,7 +26385,7 @@
       "id": "analyse/undefined/import",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26408,7 +26408,7 @@
       "id": "analyse/undefined/include-file",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26435,7 +26435,7 @@
       "id": "analyse/undefined/instanceof-class",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26467,7 +26467,7 @@
       "id": "analyse/undefined/method",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26496,7 +26496,7 @@
       "id": "analyse/undefined/offset",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -26526,7 +26526,7 @@
       "id": "analyse/undefined/property",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26554,7 +26554,7 @@
       "id": "analyse/undefined/static-method",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26590,7 +26590,7 @@
       "id": "analyse/undefined/static-property",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26616,7 +26616,7 @@
       "id": "analyse/undefined/trait",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -26646,7 +26646,7 @@
       "id": "analyse/undefined/variable",
       "command": "analyse",
       "group": "undefined",
-      "summary": "Summary not written yet.",
+      "summary": "",
       "enabled": [
         "analyse-basic",
         "analyse-essential",

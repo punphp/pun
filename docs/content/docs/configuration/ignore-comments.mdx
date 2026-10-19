@@ -1,7 +1,9 @@
 ---
 title: Ignore comments
-description: One ignore syntax for format, lint and analyse, with rule IDs and reasons.
+description: Suppress specific rules for a line, region, or file.
 ---
+
+Ignore comments require rule IDs or groups. Multiple IDs are comma-separated. Use full IDs such as `lint/security/no-eval` or groups such as `lint/dead-code`.
 
 | Form | Applies to |
 | --- | --- |
@@ -11,16 +13,16 @@ description: One ignore syntax for format, lint and analyse, with rule IDs and r
 | `// @pun-ignore-file <id>` before the first statement | the whole file |
 | `// @pun-ignore-start <id>` … `// @pun-ignore-end` | a region |
 
-- Give one or more rule IDs, comma-separated. Use full IDs, `<command>/<group>/<name>`. A group like `lint/dead-code` works too.
-- A bare `@pun-ignore` with no ID is an error: silent blanket ignores are how real problems hide.
-- Add a reason after ` -- `:
+Add a reason after ` -- `:
 
 ```php
 eval($code); // @pun-ignore lint/security/no-eval -- legacy plugin loader
 ```
 
-- `/* */` and `/** */` forms work too.
-- Format rules can only be ignored per file, since a format rule can't be half-applied to a line.
-- Unused ignores are reported by `lint/comments/no-unused-ignore`, which fixes them by deleting them.
+## Scope and validation
 
-`pun migrate` rewrites `@phpstan-ignore` and `@php-cs-fixer-ignore` comments to this form.
+`/* */` and `/** */` comments are also supported. Format rules and token-based PHP-CS-Fixer lint ports support only file-level ignores.
+
+A bare ignore without an ID is an error. `lint/comments/no-unused-ignore` reports IDs that suppress nothing; `--fix` removes them.
+
+[`pun migrate`](/docs/commands/migrate#ignore-comments) converts recognized PHPStan and PHP-CS-Fixer ignore comments.

@@ -1,59 +1,58 @@
 # Pun
 
-Pun is a PHP code formatter written in Rust that produces byte-for-byte the same output as
-[Laravel Pint](https://github.com/laravel/pint), only much faster. `pun migrate` turns your `pint.json` into a
-`pun.toml`, Pun ports Pint's and PHP-CS-Fixer's fixers natively, and it is checked against the real Pint on real
-projects (Pinkary, laravel/framework, Pest, Larastan, ...) on every commit.
+Pun formats, lints, and analyses PHP 8.4+ projects. It is written in Rust and reads one configuration file, `pun.toml`.
 
-## Install (after v0.1)
+| Command | Purpose |
+| --- | --- |
+| `pun format` | Format code with Pint's layout rules |
+| `pun lint` | Report code issues; `--fix` applies available fixes |
+| `pun analyse` | Report type errors without editing files |
+| `pun check` | Run format, lint, and analyse; `--fix` applies format and lint fixes |
+| `pun migrate` | Convert existing tool configs to `pun.toml` |
+| `pun init` | Create `pun.toml` for a new project |
 
-```sh
-# Shell (Linux, macOS)
-curl -LsSf https://github.com/punphp/pun/releases/latest/download/punphp-installer.sh | sh
+Pint compatibility is checked against pinned upstream tools on a project corpus and with mutation fuzzing.
+PHPStan, Larastan, and Rector support is incomplete. See the [parity report](context/reports/scoreboard.md) and the rule reference under [docs](docs/content/docs/index.mdx).
 
-# Homebrew
-brew install punphp/tap/pun
+## Build from source
 
-# npm
-npm install --save-dev @punphp/pun
-
-# Composer (downloads the native binary on first run)
-composer require --dev punphp/pun
-```
-
-Prebuilt binaries: Linux x64/arm64 (glibc and musl), macOS x64/arm64.
-
-## Usage
+Requires Rust 1.99 or later. Release packages are not published yet.
 
 ```sh
-pun migrate             # once: pick the detected configs to migrate -> pun.toml; --dry-run shows the diff
-pun init                # a new project: three questions (style, lint sets, analysis) -> pun.toml; --yes takes the defaults
-pun check --fix         # what `pint` did: format + the risky rules pint.json enabled
-pun format              # layout only (behaviour-safe; what format-on-save runs)
-pun format --test       # check only; exits 1 if anything would change
-pun format app/Models   # specific paths; Pint's flags (--dirty, --diff=main, --blade, --format, ...) work too
-pun lint [--fix]        # the [lint] rules (today: PHP-CS-Fixer's risky fixers)
+cargo install --locked --git https://github.com/punphp/pun punphp
+pun --version
 ```
 
-**Config.** Pun reads only `pun.toml`. Without one every command stops with "No pun.toml found. Run `pun migrate`, or `pun init` for a new project."
-(unless `--preset` or `--no-config` is given: both explicitly ask for a built-in preset, `--no-config` for laravel, as in
-Pint; `--preset` takes `laravel`, `psr12` or `empty`, and Pint's `per` and `symfony` exit 2 naming `empty` plus
-`[format.rules]`, which `pun migrate --preset per` writes). Rule names in `pun.toml` are Pun IDs (`<command>/<group>/<name>`, the command implied inside its own table); there are
-no aliases, so an earlier Pun name or a PHP-CS-Fixer name gets an error naming its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
-`--preset`) or, without one, a `.php-cs-fixer(.dist).php` through PHP-CS-Fixer itself, and writes a `pun.toml` with
-Pun rule IDs ([context/plan/rules.md](context/plan/rules.md)): the preset plus what differs from it under `[format.rules]`, and the
-risky and code-deleting fixers under `[lint.rules]` at `"error"`, so `pun check --fix` applies them as Pint did. It rewrites
-`// @php-cs-fixer-ignore rule` comments to `// @pun-ignore-file format/<group>/<name>`, lists any rule Pun can't run before
-writing anything (and then writes nothing), and is idempotent. On a terminal it first lists the configs it found
-(pint.json, .php-cs-fixer.php, phpstan.neon, rector.php, mago.toml) as a checklist, all checked, and migrates only
-what you keep checked; `--from pint,phpstan` picks without asking, and `--yes`, agent mode or no terminal migrate
-everything found. PHPStan, Rector and Mago are listed as "not supported yet" and left untouched. With no config at all
-it writes a starter pun.toml (`[format] preset = "laravel"`). `pun config` prints the
-resolved configuration.
+PHP files need no PHP or Node runtime. Blade formatting requires Node.js and the Prettier packages listed in the [installation guide](docs/content/docs/01-installation.mdx).
+
+## Start a project
+
+For an existing Pint, PHP-CS-Fixer, Rector, or PHPStan configuration:
+
+```sh
+pun migrate --dry-run
+pun migrate
+```
+
+Migration reports unsupported items and writes the supported configuration. Review those warnings before replacing your existing tools.
+For a project without tool configs, run `pun init` instead.
+
+Check the project, then apply available fixes:
+
+```sh
+pun check
+pun check --fix
+```
+
+`pun format` changes layout only. Risky and code-deleting Pint fixers belong to lint, so use `pun check --fix` to apply a migrated Pint configuration.
+
+## Configure rules
+
+Rule IDs use `<command>/<group>/<name>`. Omit the command inside its rules table:
 
 ```toml
 [format]
-preset = "laravel"            # Pint's preset; its risky and code-deleting rules are lint rules
+preset = "laravel"
 exclude = ["build"]
 
 [format.rules]
@@ -61,66 +60,15 @@ exclude = ["build"]
 "arrays/syntax" = false
 
 [lint.rules]
-"style/require-final-class" = "error"                           # applied by `pun lint --fix` / `pun check --fix`
-"types/no-loose-comparison" = { level = "warn", fix = "off" }   # reported by `pun lint` / `pun check`, never applied
+"style/require-final-class" = "error"
+"types/no-loose-comparison" = { level = "warn", fix = "off" }
 ```
 
-**Format, lint, check.** `pun format` runs only behaviour-safe rules that change layout, casing or
-spelling. Risky PHP-CS-Fixer fixers (`strict_comparison`, `final_class`, `declare_strict_types`, ...) and the 40 that
-delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) are lint rules: `pun lint` reports
-what they would change, `pun lint --fix` applies every enabled rule but those with `fix = "off"`. `pun check` runs format and lint in one pass
-(fixers in PHP-CS-Fixer's priority order, as Pint runs them), so `pun check --fix` on a migrated project writes exactly
-what `pint` wrote; `pun analyse` joins it once it exists. The human output is Pun's own (one line per changed file,
-one summary line); the `--format` reporters are Pint's.
+`pun config` prints the resolved configuration. `pun explain <rule>` describes a rule and its upstream names.
+Pun never falls back to PHP for an unsupported rule. Enabling one is a configuration error.
 
-**Exit codes.** 0 when nothing needs changing, 1 for findings (a file needs formatting, a lint error, a syntax error
-in the input), as in Pint. 2 when Pun couldn't run, in every command: a bad `pun.toml` or `--format`, a rule Pun
-hasn't ported, a path it can't read, a report it can't write, Node or prettier missing for Blade, or a rule that
-failed on a file. Pint exits 1 there; Pun prints one red line and a hint on stderr (`--format` and `-q` runs keep
-Pint's error box on stdout).
-
-**GitHub Actions.** Under GitHub Actions (`GITHUB_ACTIONS=true`) `pun format`, `pun lint` and `pun check` follow
-their human output with one annotation per finding, so the pull request shows them inline; `--format=github` prints
-only the annotations. They have PHPStan's shape:
-
-```
-::error file=app/Models/User.php,line=12,col=0,title=format/arrays/syntax::File needs formatting
-::error file=app/Broken.php,line=3,col=1,title=syntax-error::Unclosed '(' on line 2
-```
-
-**Coding agents.** Under a coding agent (detected from the agent's environment variables with
-[laravel/agent-detector](https://github.com/laravel/agent-detector)'s list, then the
-[agent-detector](https://crates.io/crates/agent-detector) crate; Cursor's `CURSOR_TRACE_ID` alone doesn't count, as
-Cursor sets it in human terminals too) every command prints a summary line and one line per finding instead of
-the human output, with no colours, boxes or progress. The list stops after 20 items (`-v` shows all, with diffs):
-
-```
-pun check: fail, 1 error, 2 files with fixes (412 checked, 0.21s)
-app/A.php format/arrays/syntax, format/tags/blank-line-after-opening
-app/B.php format/arrays/syntax
-app/B.php lint/style/no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.
-app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line 2.
-```
-
-A clean run prints only the summary line (`pun format: pass (412 checked, 0.21s)`); run errors are one line
-(`pun format: error: ...`). Exit codes are the same as without an agent. An explicit `--format` keeps its reporter
-(`--format=agent` is Pint's JSON). The override order is `--agent` / `--no-agent`, then `PUN_AGENT=1|0`, then PAO's
-`PAO_DISABLE` / `PAO_FORCE`, then detection. Without an agent the output is unchanged.
-
-**Rules Pun hasn't ported.** Pun never runs PHP for a rule it lacks. A `pun.toml` that enables one stops `pun format`,
-`pun lint` and `pun check` with exit code 2 and a line naming the rule (`pun.toml  rule not supported by Pun yet: ...`). Remove
-it, or send a PR.
-
-**Extra rules.** Opt-in `Pun/` rules ported from Mago (Laravel and Pest idioms, redundant code, ...) are
-listed in [context/reference/mago-extras.md](context/reference/mago-extras.md). They are lint rules (`pest/no-only`, `laravel/prefer-fake-helper`, ...)
-in no preset, so default output stays identical to Pint; enable them under `[lint.rules]`.
-
-**Watch.** `pun format --watch [paths...]` does a normal run, then re-formats files as they change (same
-discovery, config and exclusions, the usual output per run). Pun's own writes don't trigger runs.
-
-## Parity
-
-Per-project parity with the pinned Pint (benchmarks to follow): [context/reports/scoreboard.md](context/reports/scoreboard.md).
+Checks exit 0 when clean, 1 for findings, and 2 when Pun cannot run. Coding agents get compact output automatically.
+See the [command reference](docs/content/docs/commands/format.mdx), [configuration reference](docs/content/docs/configuration/pun-toml.mdx), and [CI guide](docs/content/docs/guides/ci.mdx).
 
 ## Credits
 

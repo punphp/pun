@@ -1,48 +1,38 @@
 ---
 title: Introduction
-description: Pun is one fast Rust binary for the whole PHP toolchain, with the same results as the tools you use today.
+description: Format, lint, and analyse PHP 8.4+ projects with one binary and one configuration file.
 ---
 
-Pun is to PHP what Bun is to JavaScript: one install that replaces the pile of tools a Laravel project runs on every commit. It formats like Pint, refactors like Rector and analyses like PHPStan and Larastan, from one `pun.toml`, in one process.
+Pun is a PHP toolchain written in Rust. It reads `pun.toml` and provides these commands:
 
-![The Pun mascot, sprinting](/mascot-512.png)
+| Command | Purpose |
+| --- | --- |
+| [`pun format`](/docs/commands/format) | Fix layout, casing, and spelling |
+| [`pun lint`](/docs/commands/lint) | Report code issues and apply fixes with `--fix` |
+| [`pun analyse`](/docs/commands/analyse) | Report type errors without editing files |
+| [`pun check`](/docs/commands/check) | Run format, lint, and analyse |
+| [`pun migrate`](/docs/commands/migrate) | Convert existing tool configs to `pun.toml` |
+| [`pun init`](/docs/commands/init) | Create `pun.toml` for a new project |
 
-## Why Pun
+## Compatibility
 
-A Laravel project runs four or five PHP tools on every commit. Each one is slow (Pint takes 190 s on laravel/framework), has its own config format, rule names and ignore comments, overlaps with the others, and prints for humans while coding agents pay for every token.
+Pun ports rules from Pint, PHP-CS-Fixer, Rector, PHPStan, Larastan, and Mago. PHPStan, Larastan, and Rector support is incomplete. The [rule reference](/docs/rules) marks unimplemented rules as Planned.
 
-Pun goes for **exact parity first**, so switching changes nothing: `pun migrate` writes your config once, and `pun check --fix` writes exactly what Pint wrote. Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer. Then it gives you a better model: one config, one set of rule names, no levels.
+`pun format` runs layout rules only. Risky and code-deleting Pint fixers are lint rules, so a migrated Pint configuration uses `pun check --fix`. See [parity](/docs/parity) for recorded comparisons and their limits.
 
-## Commands
-
-| Command | Does | Replaces |
-| --- | --- | --- |
-| [`pun format`](/docs/commands/format) | Fixes layout, byte for byte like Pint | Pint, PHP-CS-Fixer |
-| [`pun lint`](/docs/commands/lint) | Reports and fixes code rules | Rector, Mago's linter |
-| [`pun analyse`](/docs/commands/analyse) | Reports type errors | PHPStan, Larastan |
-| [`pun check`](/docs/commands/check) | All three in one pass | `rector process && pint && phpstan` |
-| [`pun migrate`](/docs/commands/migrate) | Moves a project onto `pun.toml` | Hand-editing configs |
-
-Under a coding agent, every command switches to compact `path:line:col rule message` output.
-
-## Principles
-
-- **Prove it.** Every speed and parity claim is checked against the real tool. See [Parity](/docs/parity).
-- **No PHP or Node needed** to check a project.
-- **Laravel first.** Larastan and rector-laravel behaviour are built in, not plugins.
-- **PHP 8.4+.** Pun targets modern PHP and says so clearly on older projects.
+PHP checks need no PHP runtime. Blade formatting requires Node.js and Prettier. Some config migrations require PHP and the original tool.
 
 <CardGroup cols={2}>
   <Card title="Installation" href="/docs/installation" icon="download">
-Shell, Homebrew, npm, Composer, or from source.
+Build and runtime requirements.
   </Card>
   <Card title="Quickstart" href="/docs/quickstart" icon="zap">
-Your first pun check in a minute.
+Configure a project, check it, and apply fixes.
   </Card>
-  <Card title="pun migrate" href="/docs/commands/migrate" icon="arrow-right-left">
-Move pint.json, phpstan.neon and rector.php onto one file.
+  <Card title="Configuration" href="/docs/configuration/pun-toml" icon="file-cog">
+Paths, exclusions, rules, and options.
   </Card>
-  <Card title="Presets" href="/docs/configuration/presets" icon="layers">
-Lint sets you tick, five analyse presets instead of ten levels.
+  <Card title="Migration" href="/docs/commands/migrate" icon="arrow-right-left">
+Supported configs and migration limits.
   </Card>
 </CardGroup>

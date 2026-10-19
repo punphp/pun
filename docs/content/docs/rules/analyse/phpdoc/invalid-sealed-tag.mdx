@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/phpdoc/invalid-sealed-tag" />
 
-Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). Intent: type correctness. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
 
 ## Replaces
 
@@ -15,65 +15,20 @@ Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`a
 - [`sealed.nonObject`](https://phpstan.org/error-identifiers/sealed.nonObject) (phpstan).
 - [`sealed.onEnum`](https://phpstan.org/error-identifiers/sealed.onEnum) (phpstan).
 
-## Turn it on
+## Configuration
 
 ```toml title="pun.toml"
 [analyse.rules]
-"phpdoc/invalid-sealed-tag" = true
+"phpdoc/invalid-sealed-tag" = "on"
 ```
 
 ```php
 // @pun-ignore analyse/phpdoc/invalid-sealed-tag -- explain the exception
 ```
 
-## What it does
-
-Summary not written yet.
-
-## Examples
-
-Examples not written yet.
 
 ## Options
 
 No configurable options.
-
-## Linked rules
-
-No linked rules or conflicts.
-
-## Other rules in analyse/phpdoc
-
-- [`analyse/phpdoc/constant-type-mismatch`](/docs/rules/analyse/phpdoc/constant-type-mismatch)
-- [`analyse/phpdoc/hook-type-mismatch`](/docs/rules/analyse/phpdoc/hook-type-mismatch)
-- [`analyse/phpdoc/invalid`](/docs/rules/analyse/phpdoc/invalid)
-- [`analyse/phpdoc/invalid-assert-tag`](/docs/rules/analyse/phpdoc/invalid-assert-tag)
-- [`analyse/phpdoc/invalid-conditional-return`](/docs/rules/analyse/phpdoc/invalid-conditional-return)
-- [`analyse/phpdoc/invalid-method-assert-tag`](/docs/rules/analyse/phpdoc/invalid-method-assert-tag)
-- [`analyse/phpdoc/invalid-method-conditional-return`](/docs/rules/analyse/phpdoc/invalid-method-conditional-return)
-- [`analyse/phpdoc/invalid-method-tag`](/docs/rules/analyse/phpdoc/invalid-method-tag)
-- [`analyse/phpdoc/invalid-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-mixin-tag)
-- [`analyse/phpdoc/invalid-param-callable-tag`](/docs/rules/analyse/phpdoc/invalid-param-callable-tag)
-- [`analyse/phpdoc/invalid-phpstan-tag`](/docs/rules/analyse/phpdoc/invalid-phpstan-tag)
-- [`analyse/phpdoc/invalid-property-tag`](/docs/rules/analyse/phpdoc/invalid-property-tag)
-- [`analyse/phpdoc/invalid-require-tag`](/docs/rules/analyse/phpdoc/invalid-require-tag)
-- [`analyse/phpdoc/invalid-trait-method-tag`](/docs/rules/analyse/phpdoc/invalid-trait-method-tag)
-- [`analyse/phpdoc/invalid-trait-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-trait-mixin-tag)
-- [`analyse/phpdoc/invalid-trait-property-tag`](/docs/rules/analyse/phpdoc/invalid-trait-property-tag)
-- [`analyse/phpdoc/invalid-trait-require-extends`](/docs/rules/analyse/phpdoc/invalid-trait-require-extends)
-- [`analyse/phpdoc/invalid-trait-require-implements`](/docs/rules/analyse/phpdoc/invalid-trait-require-implements)
-- [`analyse/phpdoc/invalid-trait-type-alias`](/docs/rules/analyse/phpdoc/invalid-trait-type-alias)
-- [`analyse/phpdoc/invalid-trait-use-method-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-method-tag)
-- [`analyse/phpdoc/invalid-trait-use-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-mixin-tag)
-- [`analyse/phpdoc/invalid-trait-use-property-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-property-tag)
-- [`analyse/phpdoc/invalid-trait-use-type-alias`](/docs/rules/analyse/phpdoc/invalid-trait-use-type-alias)
-- [`analyse/phpdoc/invalid-type-alias`](/docs/rules/analyse/phpdoc/invalid-type-alias)
-- [`analyse/phpdoc/invalid-var-tag`](/docs/rules/analyse/phpdoc/invalid-var-tag)
-- [`analyse/phpdoc/invalid-var-tag-type`](/docs/rules/analyse/phpdoc/invalid-var-tag-type)
-- [`analyse/phpdoc/misplaced-require-implements`](/docs/rules/analyse/phpdoc/misplaced-require-implements)
-- [`analyse/phpdoc/property-type-mismatch`](/docs/rules/analyse/phpdoc/property-type-mismatch)
-- [`analyse/phpdoc/sealed-on-trait`](/docs/rules/analyse/phpdoc/sealed-on-trait)
-- [`analyse/phpdoc/type-mismatch`](/docs/rules/analyse/phpdoc/type-mismatch)
-- [`analyse/phpdoc/var-tag-type-mismatch`](/docs/rules/analyse/phpdoc/var-tag-type-mismatch)
 
 [Group reference](/docs/rules/analyse/phpdoc) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)
