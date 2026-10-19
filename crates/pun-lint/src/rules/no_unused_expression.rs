@@ -299,23 +299,21 @@ fn may_be_object(scope: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
     if v.name == b"$this" {
         return true;
     }
-    let Some(body) = scope.iter().rev().find(|n| {
-        matches!(
-            n,
-            Node::Function(_)
-                | Node::Method(_)
-                | Node::Closure(_)
-                | Node::ArrowFunction(_)
-                | Node::Program(_)
-        )
-    }) else {
-        return false;
-    };
+    // The statement's function, or the file (an arrow function holds no statement).
+    let body = scope
+        .iter()
+        .rev()
+        .find(|n| {
+            matches!(
+                n,
+                Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::Program(_)
+            )
+        })
+        .unwrap();
     let parameters = match body {
         Node::Function(f) => Some(&f.parameter_list),
         Node::Method(m) => Some(&m.parameter_list),
         Node::Closure(c) => Some(&c.parameter_list),
-        Node::ArrowFunction(a) => Some(&a.parameter_list),
         _ => None,
     };
     if parameters.is_some_and(|list| {

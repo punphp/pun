@@ -140,9 +140,6 @@ impl<'s> Doc<'s> {
         if !output.starts_with("/**") {
             output.insert_str(0, "/**");
         }
-        if !output.trim_end().ends_with("*/") {
-            output.push_str(" */");
-        }
         output.replace(" \n", "\n")
     }
 }

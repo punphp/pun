@@ -46,10 +46,8 @@ impl Rule for AddReturnTypeFromConstant {
         }
         // matchAlwaysReturnConstFetch
         let mut types = Vec::new();
-        for r in &returns {
-            let Some(value) = r.value else {
-                return;
-            };
+        // `has_only_return_with_expr` made sure each return has a value.
+        for value in returns.iter().filter_map(|r| r.value) {
             if !matches!(
                 value,
                 Expression::ConstantAccess(_)

@@ -126,7 +126,8 @@ fn logical_to_boolean() {
         &only(rules::PreferBooleanAndOr, 80400),
         "LogicalToBooleanRector/Oracle",
     );
-    // Where Rector keeps an operand's own parentheses inside the ones it adds; the expected code is derived by hand.
+    // Where Rector keeps an operand's own parentheses inside the ones it adds, or drops those a ternary or `xor` operand
+    // needs (changing the meaning); the expected code is derived by hand.
     run(
         &only(rules::PreferBooleanAndOr, 80400),
         "LogicalToBooleanRector/Pun",
@@ -396,6 +397,11 @@ fn is_a_with_string_with_third_argument() {
         &only(rules::RequireIsAAllowString, 80400),
         "IsAWithStringWithThirdArgumentRector/Fixture",
     );
+    // Pun's own cases; the expected code is the oracle's (.oracle/rector-bin, this rule alone, PHP 8.4).
+    run(
+        &only(rules::RequireIsAAllowString, 80400),
+        "IsAWithStringWithThirdArgumentRector/Oracle",
+    );
 }
 
 #[test]
@@ -452,7 +458,7 @@ fn simplify_empty_check_on_empty_array() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: a property of a class in another
     // file, which Pun can't read without analyse's index, and Rector's own run on the `is_array() &&` guard, a trait,
     // an element assignment of an untyped parameter and variadic parameters; a file-level variable, which Pun does not
-    // type.
+    // type, and an element assignment of a typed parameter the method writes, which Pun does not follow.
     let linter = only(rules::PreferEmptyArrayIdentical, 80400);
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Fixture");
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Oracle");

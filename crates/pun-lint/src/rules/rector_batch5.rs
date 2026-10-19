@@ -789,9 +789,9 @@ pub(crate) fn native_array(expr: &Expression<'_>, ancestors: &[Node<'_, '_>]) ->
                     matches!(p.hint, Some(Hint::Array(_)))
                         && p.ampersand.is_none()
                         && p.ellipsis.is_none()
+                        // `null` in any case is a literal.
                         && !p.default_value.as_ref().is_some_and(|d| {
                             matches!(unparenthesize(d.value), Expression::Literal(Literal::Null(_)))
-                                || matches!(unparenthesize(d.value), Expression::ConstantAccess(c) if c.name.value().eq_ignore_ascii_case(b"null"))
                         })
                         && writes == Some(0)
                 }
