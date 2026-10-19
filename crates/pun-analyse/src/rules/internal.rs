@@ -261,7 +261,7 @@ pub fn static_method_callable(c: &mut Checker, m: &StaticMethodPartialApplicatio
 }
 
 /// A first-class callable's `(...)`.
-fn is_callable(args: &PartialArgumentList) -> bool {
+pub(super) fn is_callable(args: &PartialArgumentList) -> bool {
     matches!(args.arguments.iter().collect::<Vec<_>>().as_slice(), [PartialArgument::VariadicPlaceholder(_)])
 }
 

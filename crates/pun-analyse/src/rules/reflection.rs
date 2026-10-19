@@ -45,6 +45,20 @@ impl Checker<'_, '_> {
         String::from_utf8_lossy(name).into_owned()
     }
 
+    /// `ClassReflection::getName()`: the display name, or an anonymous class's internal `AnonymousClass<md5>`.
+    pub(super) fn class_name(&self, k: &ClassLikeMetadata) -> String {
+        let display = self.display(k);
+        if !k.original_name.as_bytes().starts_with(b"{anonymous-class:") {
+            return display;
+        }
+        let file = self
+            .files
+            .get(&k.span.file_id)
+            .map(|p| crate::relative_path::absolute(p))
+            .unwrap_or_default();
+        anonymous::internal_name(&display, &file, self.relative_path)
+    }
+
     /// `describe(VerbosityLevel::typeOnly())` of the static object type of `$this` in class `k`: its name, with its
     /// template types as arguments.
     pub(super) fn describe_object(&self, k: &ClassLikeMetadata) -> String {

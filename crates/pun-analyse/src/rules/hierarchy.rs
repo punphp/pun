@@ -526,17 +526,7 @@ pub fn allowed_subtypes(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
         )
         .collect();
     // getName(): an anonymous class's internal name
-    let class_name = match c.display(k) {
-        d if k.original_name.as_bytes().starts_with(b"{anonymous-class:") => {
-            let file = c
-                .files
-                .get(&k.span.file_id)
-                .map(|p| crate::relative_path::absolute(p))
-                .unwrap_or_default();
-            super::anonymous::internal_name(&d, &file, c.relative_path)
-        }
-        d => d,
-    };
+    let class_name = c.class_name(k);
     let kind = match k.kind {
         SymbolKind::Interface => "interface",
         SymbolKind::Enum => "enum",

@@ -336,18 +336,14 @@ impl<'a> Checker<'a, '_> {
         if depth > ANCESTRY {
             return None;
         }
-        let k = match implementing {
-            Class::Builtin(b) => {
-                let p = self.reflected(b.methods.get(lower)?.prototype.as_deref()?)?;
-                return self.native_method(p, lower);
-            }
-            Class::User(k) => k,
-        };
-        if k.kind != SymbolKind::Trait {
-            for i in self.immediate_interfaces(implementing) {
-                if let Some(m) = self.native_method(i, lower) {
-                    return Some(m);
-                }
+        if let Class::Builtin(b) = implementing {
+            let p = self.reflected(b.methods.get(lower)?.prototype.as_deref()?)?;
+            return self.native_method(p, lower);
+        }
+        // a trait has no interfaces
+        for i in self.immediate_interfaces(implementing) {
+            if let Some(m) = self.native_method(i, lower) {
+                return Some(m);
             }
         }
         let parent = self.native_method(self.parent_class(implementing)?, lower)?;
@@ -1062,4 +1058,55 @@ fn consistent_constructor<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'
     let mut out = compare_parameters(&facts, &declaring, &method, &class, true);
     out.extend(compare_visibility(&facts, &declaring, &method, &class));
     out
+}
+
+/// WrongCaseOfInheritedMethodRule (phpstan-strict-rules, `matchingInheritedMethodNames`): method `name` of the
+/// class-like being walked written in another case than the same method of its parent class or of one of its
+/// interfaces (`hasNativeMethod()`, private ones included).
+pub fn inherited_case(c: &mut Checker, m: &Method, name: &str) {
+    if !c.strict.matching_inherited_method_names {
+        return;
+    }
+    let k = c.class_scope().expect("a method is walked inside its class-like");
+    let class = Class::User(k);
+    let lower = name.to_ascii_lowercase();
+    let mut ancestors: Vec<(Class, &str)> = c.parent_class(class).map(|p| (p, "parent")).into_iter().collect();
+    let mut seen = Vec::new();
+    for i in c.all_interfaces(class) {
+        let display = class_display(c, i);
+        if !seen.contains(&display) {
+            seen.push(display);
+            ancestors.push((i, "interface"));
+        }
+    }
+    let messages = declared::with_classes(c, || {
+        let mut messages = Vec::new();
+        for (ancestor, kind) in ancestors {
+            let Some(found) = c.native_method(ancestor, &lower) else {
+                continue;
+            };
+            let found_name = match found {
+                Found::User { f, .. } => String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
+                Found::Builtin { m, .. } => m.name.clone(),
+            };
+            if found_name != name {
+                messages.push(format!(
+                    "Method {}::{name}() does not match {kind} method name: {}::{found_name}().",
+                    c.display(k),
+                    c.ancestor_display(k, &class_display(c, ancestor))
+                ));
+            }
+        }
+        messages
+    });
+    for message in messages {
+        c.report(m, "method.nameCase", message, None);
+    }
+}
+
+fn class_display(c: &Checker, class: Class) -> String {
+    match class {
+        Class::User(p) => c.display(p),
+        Class::Builtin(b) => b.name.clone(),
+    }
 }

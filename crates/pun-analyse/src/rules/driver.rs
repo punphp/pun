@@ -35,7 +35,7 @@ pub(crate) struct Checks {
     /// `*.nameCase` only with it on. Set from [`Project::check_class_case_sensitivity`], which the presets will set.
     check_class_case_sensitivity: bool,
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
-    level: u8,
+    pub(super) level: u8,
     generic_iterable_classes: bool,
     /// [`Project::new_static_in_abstract_class_static_method`].
     new_static_in_abstract_class_static_method: bool,
@@ -54,6 +54,8 @@ pub(crate) struct Checks {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with [`Project::unused_label`].
     unused_label: bool,
+    /// [`Project::strict_rules`].
+    pub(super) strict: crate::StrictRules,
 }
 
 impl Checks {
@@ -80,6 +82,7 @@ impl Checks {
             deprecations: project.deprecation_rules,
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
+            strict: project.strict_rules,
         }
     }
 }
@@ -112,6 +115,7 @@ fn checker<'a, 'arena>(
     typed.extend(super::function_checks::typed_expressions(
         names, codebase, program,
     ));
+    typed.extend(super::strict::typed_expressions(project, codebase, program));
     Checker {
         anonymous: anonymous::names(file, program, names, &project.relative_path),
         property_access: property_access::state(program),
@@ -174,6 +178,8 @@ fn checker<'a, 'arena>(
         deprecations: project.deprecations,
         bleeding_edge: project.bleeding_edge,
         unused_label: project.unused_label,
+        strict: project.strict,
+        closure_bind: 0,
         errors: Vec::new(),
     }
 }

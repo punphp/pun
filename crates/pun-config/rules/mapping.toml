@@ -977,7 +977,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "attributes/invalid-property-attribute" = { preset = "basic", status = "decided" }
 "attributes/invalid-trait-attribute" = { preset = "basic", status = "decided" }
 "attributes/trait-as-attribute" = { preset = "basic", ported = true, status = "decided" }
-"casing/inherited-method-case" = { preset = "basic", status = "decided" }
+"casing/inherited-method-case" = { preset = "basic", ported = true, status = "decided" }
 "casts/unset-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "casts/useless" = { preset = "recommended", fixed_by = ["lint/dead-code/no-useless-cast"], status = "decided" }
 "classes/abstract-method-in-concrete-class" = { preset = "basic", ported = true, status = "decided" }
@@ -990,13 +990,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/disallowed-subtype" = { preset = "basic", ported = true, status = "decided" }
 "classes/duplicate-declaration" = { preset = "basic", ported = true, status = "decided" }
 "classes/duplicate-trait-member" = { preset = "basic", ported = true, status = "decided" }
-"classes/dynamic-static-call" = { preset = "strict", status = "decided" }
-"classes/dynamic-static-callable" = { preset = "strict", status = "decided" }
+"classes/dynamic-static-call" = { preset = "strict", ported = true, status = "decided" }
+"classes/dynamic-static-callable" = { preset = "strict", ported = true, status = "decided" }
 "classes/enum-case-outside-enum" = { preset = "basic", ported = true, status = "decided" }
 "classes/final-constant-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "classes/final-private-constant" = { preset = "basic", ported = true, status = "decided" }
 "classes/final-private-method" = { preset = "basic", ported = true, status = "decided" }
-"classes/get-hook-without-read" = { preset = "essential", status = "decided" }
+"classes/get-hook-without-read" = { preset = "essential", ported = true, status = "decided" }
 "classes/inaccessible-class-constant" = { preset = "essential", ported = true, status = "decided" }
 "classes/inaccessible-method" = { preset = "essential", ported = true, status = "decided" }
 "classes/inaccessible-property" = { preset = "essential", ported = true, status = "decided" }
@@ -1027,7 +1027,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/invalid-readonly-property" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-static-method-callable" = { preset = "basic", status = "decided" }
 "classes/missing-method-implementation" = { preset = "basic", ported = true, status = "decided" }
-"classes/missing-parent-constructor-call" = { preset = "strict", status = "decided" }
+"classes/missing-parent-constructor-call" = { preset = "strict", ported = true, status = "decided" }
 "classes/missing-required-interface" = { preset = "essential", status = "decided" }
 "classes/missing-required-parent" = { preset = "essential", status = "decided" }
 "classes/missing-serialize-methods" = { preset = "basic", ported = true, status = "decided" }
@@ -1037,7 +1037,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/private-consistent-constructor" = { preset = "basic", ported = true, status = "decided" }
 "classes/read-write-only-property" = { preset = "basic", ported = true, status = "decided" }
 "classes/readonly-class-not-supported" = { preset = "basic", ported = true, status = "decided" }
-"classes/set-hook-without-assign" = { preset = "essential", status = "decided" }
+"classes/set-hook-without-assign" = { preset = "essential", ported = true, status = "decided" }
 "classes/typed-constant-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "classes/uninitialized-phpdoc-readonly" = { preset = "basic", ported = true, status = "decided" }
 "classes/uninitialized-property" = { preset = "basic", status = "decided" }
@@ -1111,7 +1111,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "deprecated/method" = { preset = "recommended", ported = true, status = "decided" }
 "deprecated/property" = { preset = "recommended", ported = true, status = "decided" }
 "deprecated/to-string" = { preset = "basic", ported = true, status = "decided" }
-"functions/closure-uses-this" = { preset = "basic", status = "decided" }
+"functions/closure-uses-this" = { preset = "basic", ported = true, status = "decided" }
 "functions/conflicting-filter-var-flags" = { preset = "basic", status = "decided" }
 "functions/duplicate-parameter" = { preset = "basic", ported = true, status = "decided" }
 "functions/internal-function-call" = { preset = "basic", ported = true, status = "decided" }

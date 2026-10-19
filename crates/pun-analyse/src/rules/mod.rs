@@ -36,12 +36,14 @@ mod printf_helper;
 mod properties;
 mod readonly_init;
 mod property_access;
+mod property_hooks;
 mod reflection;
 mod restricted_functions;
 mod scope;
 mod set_hook;
 mod signatures;
 mod statements;
+mod strict;
 mod syntax;
 mod through_static;
 mod type_aliases;
@@ -173,6 +175,11 @@ pub const IDENTIFIERS: &[&str] = &[
     "goto.labelUndefined",
     "label.unused",
     "trait.unused",
+    "constructor.missingParentCall",
+    "propertyGetHook.noRead",
+    "propertySetHook.noAssign",
+    "staticMethod.dynamicCall",
+    "method.nameCase",
     "constructor.returnType",
     "cast.deprecated",
     "cast.unset",
@@ -669,6 +676,10 @@ pub struct Checker<'a, 'arena> {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with `featureToggles.unusedLabel`.
     unused_label: bool,
+    /// The phpstan-strict-rules switches.
+    strict: crate::StrictRules,
+    /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
+    closure_bind: usize,
     errors: Vec<Error>,
 }
 
@@ -757,6 +768,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             _ => self.names.get(&id.span()),
         };
         String::from_utf8_lossy(text).into_owned()
+    }
+
+    /// `Closure::bind(...)`.
+    fn is_closure_bind(&self, call: &StaticMethodCall<'arena>) -> bool {
+        matches!((call.class, &call.method), (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(m))
+            if self.resolved(id).eq_ignore_ascii_case("Closure") && m.value.eq_ignore_ascii_case(b"bind"))
     }
 
     fn rebind(&mut self, mut e: &Expression) {
@@ -1306,6 +1323,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         declarations::method(self, m, &method);
         hierarchy::method(self, m, &method);
         overriding::method(self, m, &method);
+        overriding::inherited_case(self, m, &method);
+        strict::constructor(self, m);
         hierarchy::interface_method_visibility(self, m);
         dead_code::constructor(self, m, &method);
         missing_types::method(self, m);
@@ -1612,9 +1631,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         _: &mut (),
     ) {
         internal::method_call(self, call.span(), call.object, &call.method);
+        strict::dynamic_call(self, call.span(), call.object, &call.method);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         internal::method_call(self, call.span(), call.object, &call.method);
+        strict::dynamic_call(self, call.span(), call.object, &call.method);
         larastan::method_call(self, call);
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && m.value.eq_ignore_ascii_case(b"call")
@@ -1648,6 +1669,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         statements::first_class_callable(self, m.span(), &m.argument_list);
         internal::method_callable(self, m);
+        if internal::is_callable(&m.argument_list) {
+            strict::dynamic_call(self, m.span(), m.object, &m.method);
+        }
     }
     fn walk_in_static_method_partial_application(
         &mut self,
@@ -1661,16 +1685,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         through_static::method(self, call);
         internal::static_method_call(self, call);
         larastan::static_method_call(self, call);
-        if let (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(m)) =
-            (call.class, &call.method)
-            && self.resolved(id).eq_ignore_ascii_case("Closure")
-            && m.value.eq_ignore_ascii_case(b"bind")
-            && let Some(Argument::Positional(a)) = call.argument_list.arguments.first()
-        {
-            self.rebind(a.value);
+        if self.is_closure_bind(call) {
+            self.closure_bind += 1;
+            if let Some(Argument::Positional(a)) = call.argument_list.arguments.first() {
+                self.rebind(a.value);
+            }
         }
         calls::static_method_call(self, call);
         assign::arguments(self, assign::Callee::StaticMethod(call));
+    }
+    fn walk_out_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        if self.is_closure_bind(call) {
+            self.closure_bind -= 1;
+        }
     }
     // ponytail: a rebound closure gets no class scope (PHPStan checks it against the bound object's class)
     fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
@@ -1773,6 +1800,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         attributes::constant(self, k);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        strict::closure(self, f);
         self.enter_closure_this(f.r#static.is_some());
         functions::function_like(self, f, &f.parameter_list);
         functions::closure_use(self, f);

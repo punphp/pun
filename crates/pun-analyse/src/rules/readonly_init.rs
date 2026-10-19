@@ -666,21 +666,21 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 _ => break,
             }
         }
-        if !dims.is_empty() || !std::ptr::eq(root, target) {
-            if let Some(property) = this_property(root) {
-                for d in dims.iter().rev() {
-                    self.node(Node::Expression(d), s);
-                }
-                // the write is gathered, and initializes the property, even when the value never returns
-                let flow = self.node(Node::Expression(a.rhs), s);
-                let (object, array_access) = self.ctx.offsets.get(&text(property)).copied().unwrap_or((true, false));
-                if object {
-                    self.usage(s, property, root, None);
-                }
-                self.usage(s, property, root, Some(array_access));
-                s.insert(text(property), Tri::Yes);
-                return flow;
+        if (!dims.is_empty() || !std::ptr::eq(root, target))
+            && let Some(property) = this_property(root)
+        {
+            for d in dims.iter().rev() {
+                self.node(Node::Expression(d), s);
             }
+            // the write is gathered, and initializes the property, even when the value never returns
+            let flow = self.node(Node::Expression(a.rhs), s);
+            let (object, array_access) = self.ctx.offsets.get(&text(property)).copied().unwrap_or((true, false));
+            if object {
+                self.usage(s, property, root, None);
+            }
+            self.usage(s, property, root, Some(array_access));
+            s.insert(text(property), Tri::Yes);
+            return flow;
         }
         // list() and [] destructuring: the value first, then each element's target
         if let Expression::List(_) | Expression::Array(_) | Expression::LegacyArray(_) = target {
@@ -1204,13 +1204,9 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
                                 additional.push((usage.property.clone(), usage.line));
                             }
                         }
+                        // (a read in an additional constructor of a property the constructor initializes is skipped
+                        // upstream; Pun has no additional constructors)
                         None => {
-                            if !function.eq_ignore_ascii_case("__construct")
-                                && in_constructor.contains(&usage.property)
-                                && constructors.contains(function)
-                            {
-                                continue;
-                            }
                             let mut has = or(known, usage.state);
                             if has != Tri::Yes
                                 && let Some(parent) = usage.parent

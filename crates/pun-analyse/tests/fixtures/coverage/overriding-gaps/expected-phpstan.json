@@ -28,6 +28,13 @@
    "identifier": "method.parentMethodFinalByPhpDoc",
    "message": "Method OverridingGaps\\FinalCtorChild::__construct() overrides @final method OverridingGaps\\FinalCtorParent::__construct().",
    "tip": null
+  },
+  {
+   "file": "interface-constructor.php",
+   "line": 19,
+   "identifier": "method.childParameterType",
+   "message": "Parameter #1 $a (string) of method OverridingInterfaceConstructor\\C::__construct() is not contravariant with parameter #1 $a (int) of method OverridingInterfaceConstructor\\HasCtor::__construct().",
+   "tip": null
   }
  ]
 }

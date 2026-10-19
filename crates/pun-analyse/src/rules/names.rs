@@ -344,7 +344,7 @@ pub fn typehints<'arena>(
         .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned());
     let function = || match kind {
         FunctionKind::Anonymous => Some(Function::Anonymous),
-        FunctionKind::Function(name) => Some(Function::Function(name.to_string())),
+        FunctionKind::Function(name) => Some(Function::Named(name.to_string())),
         FunctionKind::Method(_, method) => Some(Function::Method {
             name: method.to_string(),
             class: class.clone(),

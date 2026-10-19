@@ -48,10 +48,38 @@ pub struct Project {
     pub unused_label: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
     pub deprecation_rules: bool,
+    /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
+    pub strict_rules: StrictRules,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
     pub larastan: Option<crate::Larastan>,
+}
+
+/// phpstan-strict-rules' `strictRules.*` switches of the ported rules.
+#[derive(Clone, Copy, Default)]
+pub struct StrictRules {
+    /// `closureUsesThis`: ClosureUsesThisRule.
+    pub closure_uses_this: bool,
+    /// `requireParentConstructorCall`: RequireParentConstructCallRule.
+    pub require_parent_constructor_call: bool,
+    /// `matchingInheritedMethodNames`: WrongCaseOfInheritedMethodRule.
+    pub matching_inherited_method_names: bool,
+    /// `dynamicCallOnStaticMethod`: DynamicCallOnStaticMethodsRule and DynamicCallOnStaticMethodsCallableRule.
+    pub dynamic_call_on_static_method: bool,
+}
+
+impl StrictRules {
+    fn from_params(params: &Array) -> StrictRules {
+        let strict = params.get_str("strictRules").and_then(Value::as_array);
+        let on = |k: &str| strict.and_then(|s| s.get_str(k)) == Some(&Value::Bool(true));
+        StrictRules {
+            closure_uses_this: on("closureUsesThis"),
+            require_parent_constructor_call: on("requireParentConstructorCall"),
+            matching_inherited_method_names: on("matchingInheritedMethodNames"),
+            dynamic_call_on_static_method: on("dynamicCallOnStaticMethod"),
+        }
+    }
 }
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
@@ -163,6 +191,7 @@ impl Project {
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
             deprecation_rules: flag("deprecationRulesInstalled"),
+            strict_rules: StrictRules::from_params(params),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
         }
@@ -189,6 +218,7 @@ impl Project {
             bleeding_edge: false,
             unused_label: false,
             deprecation_rules: false,
+            strict_rules: StrictRules::default(),
             larastan: None,
         }
     }

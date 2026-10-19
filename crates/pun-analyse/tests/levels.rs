@@ -116,6 +116,8 @@ const PORTED: &[&str] = &[
     "staticProperty.internalEnum",
     "label.unused",
     "trait.unused",
+    "propertyGetHook.noRead",
+    "propertySetHook.noAssign",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).

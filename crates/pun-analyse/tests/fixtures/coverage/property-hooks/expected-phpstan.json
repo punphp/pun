@@ -1,0 +1,82 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "hooks.php",
+   "line": 22,
+   "identifier": "propertySetHook.noAssign",
+   "message": "Set hook for non-virtual property CoverageHooks\\Foo::$b does not always assign value to it.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 35,
+   "identifier": "propertySetHook.noAssign",
+   "message": "Set hook for non-virtual property CoverageHooks\\Foo::$c does not always assign value to it.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 79,
+   "identifier": "propertySetHook.noAssign",
+   "message": "Set hook for non-virtual property CoverageHooks\\Foo::$g does not always assign value to it.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 80,
+   "identifier": "return.void",
+   "message": "Set hook for property CoverageHooks\\Foo::$g with return type void returns int but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 86,
+   "identifier": "propertySetHook.noAssign",
+   "message": "Set hook for non-virtual property CoverageHooks\\Foo::$h does not assign value to it.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 94,
+   "identifier": "propertyGetHook.noRead",
+   "message": "Get hook for non-virtual property CoverageHooks\\Foo::$i does not read its value.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 113,
+   "identifier": "propertyGetHook.noRead",
+   "message": "Get hook for non-virtual property CoverageHooks\\Foo::$k does not read its value.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 141,
+   "identifier": "propertySetHook.noAssign",
+   "message": "Set hook for non-virtual property CoverageHooks\\Foo::$o does not assign value to it.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 155,
+   "identifier": "propertyGetHook.noRead",
+   "message": "Get hook for non-virtual property CoverageHooks\\Foo::$n does not read its value.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 162,
+   "identifier": "propertyGetHook.noRead",
+   "message": "Get hook for non-virtual property CoverageHooks\\Foo::$promoted does not read its value.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 172,
+   "identifier": "propertyGetHook.noRead",
+   "message": "Get hook for non-virtual property CoverageHooks\\UsesHookTrait::$t does not read its value.",
+   "tip": null
+  }
+ ]
+}

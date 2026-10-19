@@ -772,6 +772,27 @@
    "tip": null
   },
   {
+   "file": "pun-extra4.php",
+   "line": 9,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method kill() of class mysqli.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra4.php",
+   "line": 10,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method kill() of class mysqli.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra4.php",
+   "line": 21,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $old of class DeprecationsExtra4\\HasStatic.",
+   "tip": null
+  },
+  {
    "file": "typehint-anonymous-function-deprecated-class.php",
    "line": 6,
    "identifier": "parameter.deprecatedClass",

@@ -126,7 +126,7 @@ pub enum Function {
     Anonymous,
     /// The method's name, and its class's name unless it is an anonymous class.
     Method { name: String, class: Option<String> },
-    Function(String),
+    Named(String),
 }
 
 impl Location {
@@ -153,7 +153,7 @@ impl Location {
                 Function::Method { name, class: None } => {
                     format!("Parameter ${parameter} of method {name}() in anonymous class has typehint with {part}.")
                 }
-                Function::Function(name) => {
+                Function::Named(name) => {
                     format!("Parameter ${parameter} of function {name}() has typehint with {part}.")
                 }
             },
@@ -165,7 +165,7 @@ impl Location {
                 Function::Method { name, class: None } => {
                     format!("Return type of method {name}() in anonymous class has typehint with {part}.")
                 }
-                Function::Function(name) => format!("Return type of function {name}() has typehint with {part}."),
+                Function::Named(name) => format!("Return type of function {name}() has typehint with {part}."),
             },
             Location::Instantiation => format!("Instantiation of {part}."),
             Location::StaticMethodCall(Some(m)) => format!("Call to static method {}() on {part}.", m.name),

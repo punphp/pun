@@ -315,6 +315,20 @@
    "identifier": "assign.readOnlyProperty",
    "message": "Readonly property ReadonlyFlow2\\ParenthesizedByRef::$list is already assigned.",
    "tip": null
+  },
+  {
+   "file": "upper-constructor.php",
+   "line": 11,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyUpperConstructor\\Upper::$p.",
+   "tip": null
+  },
+  {
+   "file": "upper-constructor.php",
+   "line": 22,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property ReadonlyUpperConstructor\\Lower::$p.",
+   "tip": null
   }
  ]
 }

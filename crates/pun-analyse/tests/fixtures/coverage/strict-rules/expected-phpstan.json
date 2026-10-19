@@ -1,0 +1,292 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "casing.php",
+   "line": 27,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\Child::parentmethod() does not match parent method name: StrictCasing\\ParentClass::parentMethod().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 31,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\Child::INTERFACEMETHOD() does not match interface method name: StrictCasing\\Iface::interfaceMethod().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 35,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\Child::privatemethod() does not match parent method name: StrictCasing\\ParentClass::privateMethod().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 50,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\Grand::PARENTMETHOD() does not match parent method name: StrictCasing\\Child::parentmethod().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 54,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\Grand::interfacemethod() does not match interface method name: StrictCasing\\Iface::interfaceMethod().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 54,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\Grand::interfacemethod() does not match parent method name: StrictCasing\\Child::INTERFACEMETHOD().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 73,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\ExtendsBuiltin::COUNT() does not match interface method name: Countable::count().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 73,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\ExtendsBuiltin::COUNT() does not match parent method name: ArrayObject<(int|string),mixed>::count().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 89,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\ImplementsBuiltinWrong::Count() does not match interface method name: Countable::count().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 97,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\ChildIface::interfacemethod() does not match interface method name: StrictCasing\\Iface::interfaceMethod().",
+   "tip": null
+  },
+  {
+   "file": "casing.php",
+   "line": 102,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\CasingEnum::interfacemethod() does not match interface method name: StrictCasing\\Iface::interfaceMethod().",
+   "tip": null
+  },
+  {
+   "file": "casing.php (in context of class StrictCasing\\WithTrait)",
+   "line": 61,
+   "identifier": "method.nameCase",
+   "message": "Method StrictCasing\\WithTrait::parentmethod() does not match parent method name: StrictCasing\\ParentClass::parentMethod().",
+   "tip": null
+  },
+  {
+   "file": "closure.php",
+   "line": 11,
+   "identifier": "closure.useThis",
+   "message": "Anonymous function uses $this assigned to variable $self. Use $this directly in the function body.",
+   "tip": null
+  },
+  {
+   "file": "closure.php",
+   "line": 17,
+   "identifier": "closure.useThis",
+   "message": "Anonymous function uses $this assigned to variable $self. Use $this directly in the function body.",
+   "tip": null
+  },
+  {
+   "file": "closure.php",
+   "line": 29,
+   "identifier": "closure.useThis",
+   "message": "Anonymous function uses $this assigned to variable $that. Use $this directly in the function body.",
+   "tip": null
+  },
+  {
+   "file": "closure.php",
+   "line": 37,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "closure.php",
+   "line": 62,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $undefined",
+   "tip": null
+  },
+  {
+   "file": "construct-global.php",
+   "line": 12,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictFromOldStyle::__construct() does not call parent constructor from StrictOldStyle.",
+   "tip": null
+  },
+  {
+   "file": "construct-global.php",
+   "line": 42,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictUpperParent::__construct() does not call parent constructor from StrictFromOldStyle.",
+   "tip": null
+  },
+  {
+   "file": "construct-global.php",
+   "line": 97,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  },
+  {
+   "file": "construct-global.php",
+   "line": 99,
+   "identifier": "method.staticCall",
+   "message": "Static call to instance method StrictFromOldStyle::__construct().",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 14,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\NoCall::__construct() does not call parent constructor from StrictConstruct\\Base.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 47,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\InElse::__construct() does not call parent constructor from StrictConstruct\\Base.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 58,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\InFunction::__construct() does not call parent constructor from StrictConstruct\\Base.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 68,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\Grandchild::__construct() does not call parent constructor from StrictConstruct\\NoCall.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 79,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\GreatGrandchild::__construct() does not call parent constructor from StrictConstruct\\Base.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 160,
+   "identifier": "method.abstractOverridingNonAbstract",
+   "message": "Cannot make non-abstract method StrictConstruct\\Base::__construct() abstract in class StrictConstruct\\AbstractChild.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 171,
+   "identifier": "constructor.missingParentCall",
+   "message": "AnonymousClass630f2cf9a629c2507ab4c2c87b08f641::__construct() does not call parent constructor from StrictConstruct\\Base.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 179,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\FromException::__construct() does not call parent constructor from Exception.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 186,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\FromArrayObject::__construct() does not call parent constructor from ArrayObject.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 193,
+   "identifier": "constructor.missingParentCall",
+   "message": "StrictConstruct\\OtherStatic::__construct() does not call parent constructor from StrictConstruct\\Base.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 196,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method StrictConstruct\\Base::other().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 17,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\Foo::staticMethod().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 20,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\Foo::staticMethod().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 23,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\Foo::staticMethod().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 41,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\Foo::staticMethod().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 42,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\Bar::inherited().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 44,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\Bar::inherited().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 90,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 105,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\E::make().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php (in context of class StrictDynamic\\UsesDynTrait)",
+   "line": 57,
+   "identifier": "staticMethod.dynamicCall",
+   "message": "Dynamic call to static method StrictDynamic\\UsesDynTrait::fromTrait().",
+   "tip": null
+  }
+ ]
+}
