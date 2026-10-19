@@ -63,7 +63,7 @@ struct BlockCache {
 pub struct Tokens {
     tokens: Vec<Token>,
     found_kinds: Vec<i64>,
-    found_contents: HashMap<Vec<u8>, i64>,
+    found_contents: HashMap<crate::Content, i64>,
     /// `blockStartCache` / `blockEndCache`; interior mutability so `find_block_end` takes `&self`.
     blocks: RefCell<BlockCache>,
     /// `$namespaceDeclarations`: NamespacesAnalyzer's result, dropped on every change.
@@ -266,7 +266,7 @@ impl Tokens {
         for r in &raw {
             let tok = Token {
                 id: r.kind,
-                content: r.text.to_vec(),
+                content: r.text.into(),
             };
             self.register_found_token(&tok);
             self.tokens.push(tok);
@@ -380,7 +380,7 @@ impl Tokens {
         }
         // Tokens moved: index-based caches go (upstream resets namespaceDeclarations here too).
         self.drop_derived();
-        self.found_contents.insert(Vec::new(), 0);
+        self.found_contents.insert(crate::Content::default(), 0);
         // updateSizeByTrimmingTrailingEmptyTokens
         while self
             .tokens

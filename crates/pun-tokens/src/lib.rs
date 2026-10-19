@@ -1,5 +1,6 @@
 //! PHP-CS-Fixer's token model in Rust. See context/reference/tokens.md.
 
+pub mod content;
 pub mod kind;
 pub mod lexer;
 pub mod namespaces_analyzer;
@@ -11,6 +12,7 @@ pub mod tokens;
 pub mod tokens_analyzer;
 pub mod transformers;
 
+pub use content::Content;
 pub use kind::Kind;
 pub use lexer::{RawToken, tokenize};
 pub use namespaces_analyzer::{NamespaceAnalysis, NamespacesAnalyzer};
