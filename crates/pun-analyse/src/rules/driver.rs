@@ -43,6 +43,8 @@ pub(crate) struct Checks {
     larastan: Option<super::Larastan>,
     /// The `@internal` method names, at level 2 with `featureToggles.internalTag` (config.level2.neon).
     internal: Option<super::internal::Names>,
+    /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension (config.level0.neon).
+    internal_tag: bool,
 }
 
 impl Checks {
@@ -62,6 +64,7 @@ impl Checks {
             larastan,
             internal: (project.level >= 2 && project.internal_tag)
                 .then(|| super::internal::Names::of(codebase)),
+            internal_tag: project.internal_tag,
         }
     }
 }
@@ -141,6 +144,7 @@ fn checker<'a, 'arena>(
         larastan: project.larastan.as_ref(),
         larastan_state: Default::default(),
         internal: project.internal.as_ref(),
+        internal_tag: project.internal_tag,
         errors: Vec::new(),
     }
 }

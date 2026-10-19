@@ -1,0 +1,60 @@
+//! RestrictedFunctionUsageRule and RestrictedFunctionCallableUsageRule with RestrictedInternalFunctionUsageExtension
+//! (config.level0.neon, under `featureToggles.internalTag`): a call to, or first-class callable of, an `@internal`
+//! function from outside the root namespace that declares it.
+
+use mago_span::HasSpan;
+use mago_syntax::cst::*;
+
+use super::{Checker, function_checks, internal};
+
+pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &FunctionCall<'arena>) {
+    if let Expression::Identifier(id) = call.function {
+        check(c, id, call);
+    }
+}
+
+/// `x |> f(...)` is the call `f(x)` (PipeHandler).
+pub(super) fn pipe<'arena>(c: &mut Checker<'_, 'arena>, pipe: &Pipe<'arena>) {
+    if let Some(id) = function_checks::piped_function(pipe) {
+        check(c, id, pipe.callable);
+    }
+}
+
+/// `f(...)` outside a pipe (FunctionCallableNode).
+pub(super) fn callable<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    callable: &FunctionPartialApplication<'arena>,
+) {
+    if !c.piped.contains(&callable.span())
+        && let [PartialArgument::VariadicPlaceholder(_)] =
+            callable.argument_list.arguments.as_slice()
+        && let Expression::Identifier(id) = callable.function
+    {
+        check(c, id, callable);
+    }
+}
+
+/// RestrictedInternalFunctionUsageExtension::isRestrictedFunctionUsage().
+fn check<'arena>(c: &mut Checker<'_, 'arena>, id: &Identifier<'arena>, at: impl HasSpan) {
+    if !c.internal_tag {
+        return;
+    }
+    let resolved = function_checks::function_name(c.names, c.codebase, id);
+    let Some(function) = c.codebase.get_function(resolved.as_bytes()) else {
+        return;
+    };
+    if !function.flags.is_internal() {
+        return;
+    }
+    let name = String::from_utf8_lossy(function.original_name.as_bytes()).into_owned();
+    if !internal::should_be_reported(c, &name) {
+        return;
+    }
+    let message = match internal::root_namespace(&name) {
+        Some(root) => {
+            format!("Call to internal function {name}() from outside its root namespace {root}.")
+        }
+        None => format!("Call to internal function {name}()."),
+    };
+    c.report(at, "function.internal", message, None);
+}

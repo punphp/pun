@@ -187,3 +187,11 @@ fn through_static() {
 fn internal_methods() {
     check_in("internal", "phpstan");
 }
+
+/// RestrictedFunctionUsageRule and RestrictedFunctionCallableUsageRule with the `@internal` extension (level 0,
+/// `featureToggles.internalTag`): calls, first-class callables and pipes, the root-namespace and same-named-class
+/// exemptions (upstream's function-internal-tag.php plus functions.php).
+#[test]
+fn internal_functions() {
+    check_in("restricted_functions", "phpstan");
+}

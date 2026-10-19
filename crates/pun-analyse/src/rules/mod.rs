@@ -30,6 +30,7 @@ mod printf_helper;
 mod properties;
 mod property_access;
 mod reflection;
+mod restricted_functions;
 mod scope;
 mod signatures;
 mod statements;
@@ -298,6 +299,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "staticMethod.internalInterface",
     "staticMethod.internalTrait",
     "staticMethod.internalEnum",
+    "function.internal",
     "property.callableType",
     "class.serializable",
     "parameter.requiredAfterOptional",
@@ -461,6 +463,8 @@ pub struct Checker<'a, 'arena> {
     larastan_state: larastan::State,
     /// [`driver::Checks`]'s `@internal` method names, when the internal usage rules run.
     internal: Option<&'a internal::Names>,
+    /// [`driver::Checks`]'s `featureToggles.internalTag`.
+    internal_tag: bool,
     errors: Vec<Error>,
 }
 
@@ -1348,6 +1352,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         larastan::function_call(self, call);
         function_checks::function_call(self, call);
+        restricted_functions::function_call(self, call);
         calls::function_call(self, call);
         dead_code::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
@@ -1388,6 +1393,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.piped.insert(p.callable.span());
         calls::pipe(self, p);
         function_checks::pipe(self, p);
+        restricted_functions::pipe(self, p);
     }
     fn walk_in_function_partial_application(
         &mut self,
@@ -1397,6 +1403,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let whole = f.function.span().join(f.argument_list.span());
         if !statements::first_class_callable(self, whole, &f.argument_list) {
             calls::function_callable(self, f);
+            restricted_functions::callable(self, f);
         }
     }
     fn walk_in_method_partial_application(

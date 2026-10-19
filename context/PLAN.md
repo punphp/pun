@@ -9,7 +9,7 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for parallel work (AGENTS.md "How work runs"). All earlier
 agents and helper branches are stopped and merged; there is nothing in flight.
 
-- **Counts** (mapping.toml `ported = true`): format 167 of 168, lint 270 of 703, analyse 108 of 378.
+- **Counts** (mapping.toml `ported = true`): format 167 of 168, lint 270 of 703, analyse 110 of 378.
 - **Green on main:** `cargo test -p punphp-analyse` (levels included; the generics wiring from salvage/handoff is applied).
 - **Salvage refs on origin** (not branches to work on; read, port what is missing, then delete the ref):
   `salvage/handoff` (format-handoff: heredoc_closing_marker + fixtures, the inline `Content` type and fmtbench;
@@ -292,7 +292,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| analyse 3: finish level 0 and the level-2 class rules. 108 of 378 analyse rules ported. Not yet: OverridingMethodRule (needs a Mago TUnion to pun Type converter), ConsistentConstructorRule, OverridingPropertyRule, MissingReadOnly(ByPhpDoc)PropertyAssignRule, SetPropertyHookParameterRule, NewStaticInAbstractClassStaticMethodRule, the internal callable/class-name/constant/function extensions, the first-class-callable restricted-usage rules, DynamicClassConstantFetch, ReadingWriteOnlyProperties, the debug rules, facade aliases (analyse 6); levels.rs PORTED does not list staticClassAccess.* or *.internal. Corpus diffs at level 0 were pinkary 1 / larastan 6 / pest 5 / laravel-framework 14 | todo |
+| analyse 3: finish level 0 and the level-2 class rules. 110 of 378 analyse rules ported. Not yet: OverridingMethodRule (needs a Mago TUnion to pun Type converter), ConsistentConstructorRule, OverridingPropertyRule, MissingReadOnly(ByPhpDoc)PropertyAssignRule, SetPropertyHookParameterRule, NewStaticInAbstractClassStaticMethodRule, the internal callable/class-name/constant extensions, the first-class-callable restricted-usage rules, DynamicClassConstantFetch, ReadingWriteOnlyProperties, the debug rules, facade aliases (analyse 6); levels.rs PORTED does not list staticClassAccess.* or *.internal. Corpus diffs at level 0 were pinkary 1 / larastan 6 / pest 5 / laravel-framework 14 | todo |
 | analyse coverage: punphp-analyse is about 97% (open lines in rules/mod.rs, scope.rs, reflection.rs, signatures.rs, statements.rs, driver.rs, infer.rs catch_unwind, calls.rs, classes.rs; rules/generics.rs about 95%) | todo |
 | analyse dead-code: 5 of 44 native (DefineParametersRule, UselessFunctionReturnValueRule, method/static NoDiscard, the trait condition) plus argument.unused, output and discarded method checks. Held unported: unused closure use / constructor parameter (need featureToggles.reportPreciseLineForUnusedFunctionParameter through Project, Checks and Checker: default false, bleedingEdge true), function/callable NoDiscard (Mago callable unions keep different NoDiscard metadata, shapes lose insertion order, ConstString loses the class-string flag; reproducer tests/fixtures/rules/data/Functions/data/helper-function-discard.php), finally.exitPoint (PHPStan reports line -1 for a synthetic `break 2`; Error.line is u32) | todo |
 | analyse undefined/functions: PrintfParametersRule and PrintfArrayParametersRule ported. FilterVarRule waits for PHP-version builtin constants in inference (Mago infers FILTER_THROW_ON_FAILURE as mixed); seed them from pun-phpstan symbols | todo |

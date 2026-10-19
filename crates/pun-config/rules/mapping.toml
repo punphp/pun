@@ -1110,8 +1110,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/closure-uses-this" = { preset = "basic", status = "decided" }
 "functions/conflicting-filter-var-flags" = { preset = "basic", status = "decided" }
 "functions/duplicate-parameter" = { preset = "basic", ported = true, status = "decided" }
-"functions/internal-function-call" = { preset = "basic", status = "decided" }
-"functions/internal-function-callable" = { preset = "basic", status = "decided" }
+"functions/internal-function-call" = { preset = "basic", ported = true, status = "decided" }
+"functions/internal-function-callable" = { preset = "basic", ported = true, status = "decided" }
 "functions/invalid-callable-call" = { preset = "essential", status = "decided" }
 "functions/invalid-closure-use" = { preset = "basic", ported = true, status = "decided" }
 "functions/invalid-first-class-callable" = { preset = "basic", status = "decided" }
