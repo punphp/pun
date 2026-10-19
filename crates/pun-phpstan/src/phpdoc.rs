@@ -425,6 +425,11 @@ fn parse_generic(t: &mut Tokens, base: String) -> R<Node> {
             args.push(Node::Star("*".to_string()));
         } else {
             t.index = save;
+            // `parseGenericTypeArgument()`: a call-site variance keyword before the type
+            // ponytail: the variance is dropped (described as the invariant argument)
+            if t.is(Tok::Ident) && matches!(t.value(), "covariant" | "contravariant") {
+                t.next();
+            }
             args.push(parse_type(t)?);
         }
         if !t.try_consume(Tok::Comma) {

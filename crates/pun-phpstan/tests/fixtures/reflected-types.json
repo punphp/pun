@@ -95457,5 +95457,4716 @@
         "void",
         "void",
         "void"
+    ],
+    [
+        "AMQPQueue",
+        "(callable | null)",
+        "(callable(): mixed)|null",
+        "(callable(): mixed)|null",
+        "(callable)|null"
+    ],
+    [
+        "AMQPQueue",
+        "callable",
+        "callable(): mixed",
+        "callable(): mixed",
+        "callable"
+    ],
+    [
+        "APCIterator",
+        "(bool | int)",
+        "bool|int",
+        "bool|int",
+        "bool|int"
+    ],
+    [
+        "APCIterator",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "APCIterator",
+        "(int | string | false)",
+        "int|string|false",
+        "int|string|false",
+        "int|string|false"
+    ],
+    [
+        "APCIterator",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "APCUIterator",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "APCUIterator",
+        "(int | string | false)",
+        "int|string|false",
+        "int|string|false",
+        "int|string|false"
+    ],
+    [
+        "APCUIterator",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "AppendIterator",
+        "(int | null)",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        "AppendIterator",
+        "Iterator<__template<TKey, 'class OuterIterator', mixed>, __template<TValue, 'class OuterIterator', mixed>>",
+        "Iterator<TKey (class OuterIterator, parameter), TValue (class OuterIterator, parameter)>",
+        "Iterator<TKey, TValue>",
+        "Iterator<TKey, TValue>"
+    ],
+    [
+        "AppendIterator",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "AppendIterator",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "AppendIterator",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "ArrayIterator",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "ArrayIterator",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "ArrayIterator",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "ArrayIterator",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "ArrayIterator",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "ArrayIterator",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "ArrayObject",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "ArrayObject",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "ArrayObject",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "ArrayObject",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "CachingIterator",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "CachingIterator",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "CachingIterator",
+        "Iterator<__template<TKey, 'class OuterIterator', mixed>, __template<TValue, 'class OuterIterator', mixed>>",
+        "Iterator<TKey (class OuterIterator, parameter), TValue (class OuterIterator, parameter)>",
+        "Iterator<TKey, TValue>",
+        "Iterator<TKey, TValue>"
+    ],
+    [
+        "CachingIterator",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "CachingIterator",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "CallbackFilterIterator",
+        "Traversable<__template<TKey, 'class IteratorIterator', mixed>, __template<TValue, 'class IteratorIterator', mixed>>",
+        "Traversable<TKey (class IteratorIterator, parameter), TValue (class IteratorIterator, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "CallbackFilterIterator",
+        "__template<TIterator, 'class IteratorIterator', Traversable<__template<TKey, 'class IteratorIterator', mixed>, __template<TValue, 'class IteratorIterator', mixed>>>",
+        "TIterator of Traversable<TKey (class IteratorIterator, parameter), TValue (class IteratorIterator, parameter)> (class IteratorIterator, parameter)",
+        "TIterator of Traversable<TKey, TValue>",
+        "TIterator of Traversable<TKey, TValue>"
+    ],
+    [
+        "Closure",
+        "(class-string | object | null)",
+        "class-string|object|null",
+        "class-string|object|null",
+        "class-string|object|null"
+    ],
+    [
+        "Collator",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "Couchbase\\DateRangeSearchFacet",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
+    ],
+    [
+        "Couchbase\\NoopTracer",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "Couchbase\\RequestTracer",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "Couchbase\\ThresholdLoggingTracer",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "DDTrace\\SpanData",
+        "array<DDTrace\\SpanLink>",
+        "array<DDTrace\\SpanLink>",
+        "array<DDTrace\\SpanLink>",
+        "array<DDTrace\\SpanLink>"
+    ],
+    [
+        "DDTrace\\SpanData",
+        "array<float>",
+        "array<float>",
+        "array<float>",
+        "array<float>"
+    ],
+    [
+        "DDTrace\\SpanData",
+        "array<string>",
+        "array<string>",
+        "array<string>",
+        "array<string>"
+    ],
+    [
+        "DDTrace\\SpanLink",
+        "array<string>",
+        "array<string>",
+        "array<string>",
+        "array<string>"
+    ],
+    [
+        "DOMAttr",
+        "DOMElement",
+        "DOMElement",
+        "DOMElement",
+        "DOMElement"
+    ],
+    [
+        "DOMCharacterData",
+        "(DOMNode | string | null)",
+        "DOMNode|string|null",
+        "DOMNode|string|null",
+        "DOMNode|string|null"
+    ],
+    [
+        "DOMCharacterData",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "DOMCharacterData",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "DOMChildNode",
+        "(DOMNode | string | null)",
+        "DOMNode|string|null",
+        "DOMNode|string|null",
+        "DOMNode|string|null"
+    ],
+    [
+        "DOMChildNode",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "DOMDocument",
+        "(DOMComment | false)",
+        "DOMComment|false",
+        "DOMComment|false",
+        "DOMComment|false"
+    ],
+    [
+        "DOMDocument",
+        "(DOMDocumentFragment | false)",
+        "DOMDocumentFragment|false",
+        "DOMDocumentFragment|false",
+        "DOMDocumentFragment|false"
+    ],
+    [
+        "DOMDocument",
+        "(DOMDocumentType | null)",
+        "DOMDocumentType|null",
+        "DOMDocumentType|null",
+        "DOMDocumentType|null"
+    ],
+    [
+        "DOMDocument",
+        "(DOMNode | string | null)",
+        "DOMNode|string|null",
+        "DOMNode|string|null",
+        "DOMNode|string|null"
+    ],
+    [
+        "DOMDocument",
+        "(DOMText | false)",
+        "DOMText|false",
+        "DOMText|false",
+        "DOMText|false"
+    ],
+    [
+        "DOMDocument",
+        "(bool | DOMDocument)",
+        "bool|DOMDocument",
+        "bool|DOMDocument",
+        "bool|DOMDocument"
+    ],
+    [
+        "DOMDocument",
+        "DOMConfiguration",
+        "DOMConfiguration",
+        "DOMConfiguration",
+        "DOMConfiguration"
+    ],
+    [
+        "DOMDocument",
+        "DOMDocument",
+        "DOMDocument",
+        "DOMDocument",
+        "DOMDocument"
+    ],
+    [
+        "DOMDocument",
+        "DOMDocumentType",
+        "DOMDocumentType",
+        "DOMDocumentType",
+        "DOMDocumentType"
+    ],
+    [
+        "DOMDocument",
+        "DOMImplementation",
+        "DOMImplementation",
+        "DOMImplementation",
+        "DOMImplementation"
+    ],
+    [
+        "DOMDocumentFragment",
+        "(DOMNode | string | null)",
+        "DOMNode|string|null",
+        "DOMNode|string|null",
+        "DOMNode|string|null"
+    ],
+    [
+        "DOMDocumentFragment",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "DOMDocumentType",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "DOMDocumentType",
+        "DOMNamedNodeMap<DOMEntity>",
+        "DOMNamedNodeMap<DOMEntity>",
+        "DOMNamedNodeMap<DOMEntity>",
+        "DOMNamedNodeMap<DOMEntity>"
+    ],
+    [
+        "DOMDocumentType",
+        "DOMNamedNodeMap<DOMNotation>",
+        "DOMNamedNodeMap<DOMNotation>",
+        "DOMNamedNodeMap<DOMNotation>",
+        "DOMNamedNodeMap<DOMNotation>"
+    ],
+    [
+        "DOMDocumentType",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "DOMDocumentType",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "DOMElement",
+        "(DOMNode | null)",
+        "DOMNode|null",
+        "DOMNode|null",
+        "DOMNode|null"
+    ],
+    [
+        "DOMElement",
+        "(DOMNode | string | null)",
+        "DOMNode|string|null",
+        "DOMNode|string|null",
+        "DOMNode|string|null"
+    ],
+    [
+        "DOMElement",
+        "DOMNamedNodeMap<DOMAttr>",
+        "DOMNamedNodeMap<DOMAttr>",
+        "DOMNamedNodeMap<DOMAttr>",
+        "DOMNamedNodeMap<DOMAttr>"
+    ],
+    [
+        "DOMEntity",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "DOMEntity",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "DOMEntity",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "DOMException",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "DOMImplementation",
+        "(DOMDocument | false)",
+        "DOMDocument|false",
+        "DOMDocument|false",
+        "DOMDocument|false"
+    ],
+    [
+        "DOMImplementation",
+        "(DOMDocumentType | false)",
+        "DOMDocumentType|false",
+        "DOMDocumentType|false",
+        "DOMDocumentType|false"
+    ],
+    [
+        "DOMImplementation",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "DOMNode",
+        "(DOMDocument | null)",
+        "DOMDocument|null",
+        "DOMDocument|null",
+        "DOMDocument|null"
+    ],
+    [
+        "DOMNode",
+        "(DOMNamedNodeMap<DOMAttr> | null)",
+        "DOMNamedNodeMap<DOMAttr>|null",
+        "DOMNamedNodeMap<DOMAttr>|null",
+        "DOMNamedNodeMap<DOMAttr>|null"
+    ],
+    [
+        "DOMNode",
+        "(__template<TNode, 'method DOMNode::replaceChild()', DOMNode> | false)",
+        "TNode of DOMNode (method DOMNode::replaceChild(), parameter)|false",
+        "(TNode of DOMNode)|false",
+        "(TNode of DOMNode)|false"
+    ],
+    [
+        "DOMNode",
+        "(static | false)",
+        "static(DOMNode)|false",
+        "static(DOMNode)|false",
+        "static(DOMNode)|false"
+    ],
+    [
+        "DOMNode",
+        "DOMDocument",
+        "DOMDocument",
+        "DOMDocument",
+        "DOMDocument"
+    ],
+    [
+        "DOMNode",
+        "DOMNamedNodeMap<DOMAttr>",
+        "DOMNamedNodeMap<DOMAttr>",
+        "DOMNamedNodeMap<DOMAttr>",
+        "DOMNamedNodeMap<DOMAttr>"
+    ],
+    [
+        "DOMNode",
+        "DOMNodeList<DOMNode>",
+        "DOMNodeList<DOMNode>",
+        "DOMNodeList<DOMNode>",
+        "DOMNodeList<DOMNode>"
+    ],
+    [
+        "DOMNode",
+        "static",
+        "static(DOMNode)",
+        "static(DOMNode)",
+        "static(DOMNode)"
+    ],
+    [
+        "DOMNodeList",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "DOMNodeList",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "DOMNotation",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "DOMParentNode",
+        "(DOMNode | string | null)",
+        "DOMNode|string|null",
+        "DOMNode|string|null",
+        "DOMNode|string|null"
+    ],
+    [
+        "DOMParentNode",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "DOMXPath",
+        "(array<string> | string)",
+        "array<string>|string",
+        "array<string>|string",
+        "array<string>|string"
+    ],
+    [
+        "DateInterval",
+        "(DateInterval | false)",
+        "DateInterval|false",
+        "DateInterval|false",
+        "DateInterval|false"
+    ],
+    [
+        "DateInterval",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "DateInterval",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "DateInterval",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "DateInterval",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "DatePeriod",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "DatePeriod",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "DatePeriod",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "DateTime",
+        "(DateTime | false)",
+        "DateTime|false",
+        "DateTime|false",
+        "DateTime|false"
+    ],
+    [
+        "DateTime",
+        "(DateTimeZone | false)",
+        "DateTimeZone|false",
+        "DateTimeZone|false",
+        "DateTimeZone|false"
+    ],
+    [
+        "DateTime",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "DateTime",
+        "DateTime",
+        "DateTime",
+        "DateTime",
+        "DateTime"
+    ],
+    [
+        "DateTimeImmutable",
+        "(DateTimeImmutable | false)",
+        "DateTimeImmutable|false",
+        "DateTimeImmutable|false",
+        "DateTimeImmutable|false"
+    ],
+    [
+        "DateTimeImmutable",
+        "(DateTimeZone | false)",
+        "DateTimeZone|false",
+        "DateTimeZone|false",
+        "DateTimeZone|false"
+    ],
+    [
+        "DateTimeImmutable",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "DateTimeImmutable",
+        "DateTimeImmutable",
+        "DateTimeImmutable",
+        "DateTimeImmutable",
+        "DateTimeImmutable"
+    ],
+    [
+        "DateTimeInterface",
+        "(DateTimeZone | false)",
+        "DateTimeZone|false",
+        "DateTimeZone|false",
+        "DateTimeZone|false"
+    ],
+    [
+        "DateTimeInterface",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "DateTimeZone",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "Directory",
+        "resource",
+        "resource",
+        "resource",
+        "resource"
+    ],
+    [
+        "Dom\\AdjacentPosition",
+        "('AfterBegin' | 'AfterEnd' | 'BeforeBegin' | 'BeforeEnd')",
+        "'AfterBegin'|'AfterEnd'|'BeforeBegin'|'BeforeEnd'",
+        "'AfterBegin'|'AfterEnd'|'BeforeBegin'|'BeforeEnd'",
+        "string"
+    ],
+    [
+        "Dom\\Node",
+        "Dom\\NodeList<Dom\\Node>",
+        "Dom\\NodeList<Dom\\Node>",
+        "Dom\\NodeList<Dom\\Node>",
+        "Dom\\NodeList<Dom\\Node>"
+    ],
+    [
+        "Ds\\Deque",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "Ds\\Deque",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "Ds\\Deque",
+        "(callable(__template<TValue, 'class Ds\\\\Sequence', mixed>, __template<TValue, 'class Ds\\\\Sequence', mixed>): int | null)",
+        "(callable(TValue, TValue): int)|null",
+        "(callable(TValue, TValue): int)|null",
+        "(callable)|null"
+    ],
+    [
+        "Ds\\Deque",
+        "(int & __template<TKey, 'class Ds\\\\Collection', mixed>)",
+        "int&TKey (class Ds\\Collection, parameter)",
+        "int&TKey",
+        "int&TKey"
+    ],
+    [
+        "Ds\\Deque",
+        "(string & __template<TKey, 'class Ds\\\\Collection', mixed>)",
+        "string&TKey (class Ds\\Collection, parameter)",
+        "string&TKey",
+        "string&TKey"
+    ],
+    [
+        "Ds\\Deque",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "Ds\\Deque",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Deque",
+        "__template<TKey, 'class Ds\\\\Collection', mixed>",
+        "TKey (class Ds\\Collection, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Deque",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\Deque",
+        "__template<TValue, 'class Ds\\\\Sequence', mixed>",
+        "TValue (class Ds\\Sequence, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\Deque",
+        "array<((int & __template<TKey, 'class Ds\\\\Collection', mixed>) | (string & __template<TKey, 'class Ds\\\\Collection', mixed>)), __template<TValue, 'class Ds\\\\Collection', mixed>>",
+        "array<(int&TKey (class Ds\\Collection, parameter))|(string&TKey (class Ds\\Collection, parameter)), TValue (class Ds\\Collection, parameter)>",
+        "array<(int&TKey)|(string&TKey), TValue>",
+        "array<(int&TKey)|(string&TKey), TValue>"
+    ],
+    [
+        "Ds\\Deque",
+        "callable(__template<TCarry, 'method Ds\\\\Sequence::reduce()', mixed>, __template<TValue, 'class Ds\\\\Sequence', mixed>): __template<TCarry, 'method Ds\\\\Sequence::reduce()', mixed>",
+        "callable(TCarry, TValue): TCarry",
+        "callable(TCarry, TValue): TCarry",
+        "callable"
+    ],
+    [
+        "Ds\\Deque",
+        "callable(__template<TValue, 'class Ds\\\\Sequence', mixed>): __template<TValue, 'class Ds\\\\Sequence', mixed>",
+        "callable(TValue): TValue",
+        "callable(TValue): TValue",
+        "callable"
+    ],
+    [
+        "Ds\\Deque",
+        "callable(__template<TValue, 'class Ds\\\\Sequence', mixed>, __template<TValue, 'class Ds\\\\Sequence', mixed>): int",
+        "callable(TValue, TValue): int",
+        "callable(TValue, TValue): int",
+        "callable"
+    ],
+    [
+        "Ds\\Map",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "Ds\\Map",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "Ds\\Map",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "Ds\\Map",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Map",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\PriorityQueue",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "Ds\\Queue",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "Ds\\Queue",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "Ds\\Queue",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "Ds\\Queue",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Queue",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\Set",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "Ds\\Set",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "Ds\\Set",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "Ds\\Set",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "Ds\\Set",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Set",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\Stack",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "Ds\\Stack",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "Ds\\Stack",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "Ds\\Stack",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Stack",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\Vector",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "Ds\\Vector",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "Ds\\Vector",
+        "(callable(__template<TValue, 'class Ds\\\\Sequence', mixed>, __template<TValue, 'class Ds\\\\Sequence', mixed>): int | null)",
+        "(callable(TValue, TValue): int)|null",
+        "(callable(TValue, TValue): int)|null",
+        "(callable)|null"
+    ],
+    [
+        "Ds\\Vector",
+        "(int & __template<TKey, 'class Ds\\\\Collection', mixed>)",
+        "int&TKey (class Ds\\Collection, parameter)",
+        "int&TKey",
+        "int&TKey"
+    ],
+    [
+        "Ds\\Vector",
+        "(string & __template<TKey, 'class Ds\\\\Collection', mixed>)",
+        "string&TKey (class Ds\\Collection, parameter)",
+        "string&TKey",
+        "string&TKey"
+    ],
+    [
+        "Ds\\Vector",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "Ds\\Vector",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Vector",
+        "__template<TKey, 'class Ds\\\\Collection', mixed>",
+        "TKey (class Ds\\Collection, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Ds\\Vector",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\Vector",
+        "__template<TValue, 'class Ds\\\\Sequence', mixed>",
+        "TValue (class Ds\\Sequence, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Ds\\Vector",
+        "array<((int & __template<TKey, 'class Ds\\\\Collection', mixed>) | (string & __template<TKey, 'class Ds\\\\Collection', mixed>)), __template<TValue, 'class Ds\\\\Collection', mixed>>",
+        "array<(int&TKey (class Ds\\Collection, parameter))|(string&TKey (class Ds\\Collection, parameter)), TValue (class Ds\\Collection, parameter)>",
+        "array<(int&TKey)|(string&TKey), TValue>",
+        "array<(int&TKey)|(string&TKey), TValue>"
+    ],
+    [
+        "Ds\\Vector",
+        "callable(__template<TCarry, 'method Ds\\\\Sequence::reduce()', mixed>, __template<TValue, 'class Ds\\\\Sequence', mixed>): __template<TCarry, 'method Ds\\\\Sequence::reduce()', mixed>",
+        "callable(TCarry, TValue): TCarry",
+        "callable(TCarry, TValue): TCarry",
+        "callable"
+    ],
+    [
+        "Ds\\Vector",
+        "callable(__template<TValue, 'class Ds\\\\Sequence', mixed>): __template<TValue, 'class Ds\\\\Sequence', mixed>",
+        "callable(TValue): TValue",
+        "callable(TValue): TValue",
+        "callable"
+    ],
+    [
+        "Ds\\Vector",
+        "callable(__template<TValue, 'class Ds\\\\Sequence', mixed>, __template<TValue, 'class Ds\\\\Sequence', mixed>): int",
+        "callable(TValue, TValue): int",
+        "callable(TValue, TValue): int",
+        "callable"
+    ],
+    [
+        "Elastic\\Apm\\CustomErrorData",
+        "(int | string | null)",
+        "int|string|null",
+        "int|string|null",
+        "int|string|null"
+    ],
+    [
+        "Elastic\\Apm\\CustomErrorData",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "Elastic\\Apm\\CustomErrorData",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Elastic\\Apm\\CustomErrorData",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "Elastic\\Apm\\CustomErrorData",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "Elastic\\Apm\\DistributedTracingData",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "EvEmbed",
+        "EvEmbed",
+        "EvEmbed",
+        "EvEmbed",
+        "EvEmbed"
+    ],
+    [
+        "EvFork",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "EvLoop",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "EvPeriodic",
+        "(callable | null)",
+        "(callable(): mixed)|null",
+        "(callable(): mixed)|null",
+        "(callable)|null"
+    ],
+    [
+        "EvStat",
+        "EvStat",
+        "EvStat",
+        "EvStat",
+        "EvStat"
+    ],
+    [
+        "EvWatcher",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "EventBase",
+        "(EventConfig | null)",
+        "EventConfig|null",
+        "EventConfig|null",
+        "EventConfig|null"
+    ],
+    [
+        "EventBuffer",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "EventBuffer",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "EventBufferEvent",
+        "(EventDnsBase | null)",
+        "EventDnsBase|null",
+        "EventDnsBase|null",
+        "EventDnsBase|null"
+    ],
+    [
+        "EventBufferEvent",
+        "(callable | null)",
+        "(callable(): mixed)|null",
+        "(callable(): mixed)|null",
+        "(callable)|null"
+    ],
+    [
+        "EventBufferEvent",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "EventBufferEvent",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "EventBufferEvent",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "EventHttp",
+        "(EventSslContext | null)",
+        "EventSslContext|null",
+        "EventSslContext|null",
+        "EventSslContext|null"
+    ],
+    [
+        "EventHttp",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "EventHttpConnection",
+        "(EventBase | false)",
+        "EventBase|false",
+        "EventBase|false",
+        "EventBase|false"
+    ],
+    [
+        "EventHttpConnection",
+        "(EventSslContext | null)",
+        "EventSslContext|null",
+        "EventSslContext|null",
+        "EventSslContext|null"
+    ],
+    [
+        "EventHttpConnection",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "EventSslContext",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "EventUtil",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "EventUtil",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "EventUtil",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "FFI",
+        "(FFI\\CData | null)",
+        "FFI\\CData|null",
+        "FFI\\CData|null",
+        "FFI\\CData|null"
+    ],
+    [
+        "FFI",
+        "(FFI\\CType | null)",
+        "FFI\\CType|null",
+        "FFI\\CType|null",
+        "FFI\\CType|null"
+    ],
+    [
+        "FFI",
+        "array<int<0, max>>",
+        "array<int<0, max>>",
+        "array<int<0, max>>",
+        "array<int<0, max>>"
+    ],
+    [
+        "FilterIterator",
+        "Iterator<__template<TKey, 'class OuterIterator', mixed>, __template<TValue, 'class OuterIterator', mixed>>",
+        "Iterator<TKey (class OuterIterator, parameter), TValue (class OuterIterator, parameter)>",
+        "Iterator<TKey, TValue>",
+        "Iterator<TKey, TValue>"
+    ],
+    [
+        "FilterIterator",
+        "Traversable<__template<TKey, 'class IteratorIterator', mixed>, __template<TValue, 'class IteratorIterator', mixed>>",
+        "Traversable<TKey (class IteratorIterator, parameter), TValue (class IteratorIterator, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "FilterIterator",
+        "__template<TIterator, 'class IteratorIterator', Traversable<__template<TKey, 'class IteratorIterator', mixed>, __template<TValue, 'class IteratorIterator', mixed>>>",
+        "TIterator of Traversable<TKey (class IteratorIterator, parameter), TValue (class IteratorIterator, parameter)> (class IteratorIterator, parameter)",
+        "TIterator of Traversable<TKey, TValue>",
+        "TIterator of Traversable<TKey, TValue>"
+    ],
+    [
+        "FilterIterator",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "FilterIterator",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "GearmanClient",
+        "(GearmanTask | false)",
+        "GearmanTask|false",
+        "GearmanTask|false",
+        "GearmanTask|false"
+    ],
+    [
+        "GearmanClient",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "GearmanClient",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "GearmanTask",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "GearmanTask",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "GearmanTask",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "GearmanTask",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "Generator",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Generator",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "GmagickDraw",
+        "(GmagickPixel | string)",
+        "GmagickPixel|string",
+        "GmagickPixel|string",
+        "GmagickPixel|string"
+    ],
+    [
+        "GmagickDraw",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "GmagickDraw",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "HttpDeflateStream",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "HttpDeflateStream",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "HttpInflateStream",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "HttpInflateStream",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "HttpMessage",
+        "(HttpMessage | null)",
+        "HttpMessage|null",
+        "HttpMessage|null",
+        "HttpMessage|null"
+    ],
+    [
+        "HttpMessage",
+        "(HttpRequest | HttpResponse | null)",
+        "HttpRequest|HttpResponse|null",
+        "HttpRequest|HttpResponse|null",
+        "HttpRequest|HttpResponse|null"
+    ],
+    [
+        "HttpMessage",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "HttpMessage",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "HttpMessage",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "HttpMessage",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "HttpRequest",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "HttpRequestPool",
+        "(HttpRequest | null)",
+        "HttpRequest|null",
+        "HttpRequest|null",
+        "HttpRequest|null"
+    ],
+    [
+        "HttpResponse",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "HttpResponse",
+        "(bool | null)",
+        "bool|null",
+        "bool|null",
+        "bool|null"
+    ],
+    [
+        "HttpResponse",
+        "(int | null)",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        "HttpResponse",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "HttpResponse",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "HttpResponse",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "Imagick",
+        "array<float>",
+        "array<float>",
+        "array<float>",
+        "array<float>"
+    ],
+    [
+        "Imagick",
+        "array<int>",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        "ImagickDraw",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "ImagickDraw",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "ImagickDraw",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "ImagickKernel",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "IntlBreakIterator",
+        "(IntlBreakIterator | null)",
+        "IntlBreakIterator|null",
+        "IntlBreakIterator|null",
+        "IntlBreakIterator|null"
+    ],
+    [
+        "IntlBreakIterator",
+        "IntlBreakIterator",
+        "IntlBreakIterator",
+        "IntlBreakIterator",
+        "IntlBreakIterator"
+    ],
+    [
+        "IntlCalendar",
+        "(DateTime | false)",
+        "DateTime|false",
+        "DateTime|false",
+        "DateTime|false"
+    ],
+    [
+        "IntlCalendar",
+        "(IntlCalendar | null)",
+        "IntlCalendar|null",
+        "IntlCalendar|null",
+        "IntlCalendar|null"
+    ],
+    [
+        "IntlCalendar",
+        "(IntlTimeZone | false)",
+        "IntlTimeZone|false",
+        "IntlTimeZone|false",
+        "IntlTimeZone|false"
+    ],
+    [
+        "IntlCalendar",
+        "(Iterator | false)",
+        "Iterator|false",
+        "Iterator|false",
+        "Iterator|false"
+    ],
+    [
+        "IntlCalendar",
+        "(float | false)",
+        "float|false",
+        "float|false",
+        "float|false"
+    ],
+    [
+        "IntlCalendar",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "IntlCalendar",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "IntlCalendar",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "IntlChar",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "IntlChar",
+        "(bool | null)",
+        "bool|null",
+        "bool|null",
+        "bool|null"
+    ],
+    [
+        "IntlChar",
+        "(float | null)",
+        "float|null",
+        "float|null",
+        "float|null"
+    ],
+    [
+        "IntlChar",
+        "(int | false | null)",
+        "int|false|null",
+        "int|false|null",
+        "int|false|null"
+    ],
+    [
+        "IntlChar",
+        "(int | null)",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        "IntlChar",
+        "(string | false | null)",
+        "string|false|null",
+        "string|false|null",
+        "string|false|null"
+    ],
+    [
+        "IntlChar",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "IntlChar",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "IntlChar",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "IntlChar",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "IntlDateFormatter",
+        "(bool | null)",
+        "bool|null",
+        "bool|null",
+        "bool|null"
+    ],
+    [
+        "IntlDateFormatter",
+        "object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        "IntlRuleBasedBreakIterator",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "IntlRuleBasedBreakIterator",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "IntlTimeZone",
+        "(DateTimeZone | false)",
+        "DateTimeZone|false",
+        "DateTimeZone|false",
+        "DateTimeZone|false"
+    ],
+    [
+        "IntlTimeZone",
+        "(IntlIterator | false)",
+        "IntlIterator|false",
+        "IntlIterator|false",
+        "IntlIterator|false"
+    ],
+    [
+        "IntlTimeZone",
+        "(IntlTimeZone | null)",
+        "IntlTimeZone|null",
+        "IntlTimeZone|null",
+        "IntlTimeZone|null"
+    ],
+    [
+        "IntlTimeZone",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "IteratorIterator",
+        "Iterator<__template<TKey, 'class OuterIterator', mixed>, __template<TValue, 'class OuterIterator', mixed>>",
+        "Iterator<TKey (class OuterIterator, parameter), TValue (class OuterIterator, parameter)>",
+        "Iterator<TKey, TValue>",
+        "Iterator<TKey, TValue>"
+    ],
+    [
+        "IteratorIterator",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "IteratorIterator",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Judy",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
+    ],
+    [
+        "LibXMLError",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "LibXMLError",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "LimitIterator",
+        "Iterator<__template<TKey, 'class OuterIterator', mixed>, __template<TValue, 'class OuterIterator', mixed>>",
+        "Iterator<TKey (class OuterIterator, parameter), TValue (class OuterIterator, parameter)>",
+        "Iterator<TKey, TValue>",
+        "Iterator<TKey, TValue>"
+    ],
+    [
+        "Locale",
+        "(array | false | null)",
+        "array|false|null",
+        "array|false|null",
+        "array|false|null"
+    ],
+    [
+        "Lua",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "Lua",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "MaxMind\\Db\\Metadata",
+        "array<string, string>",
+        "array<string, string>",
+        "array<string, string>",
+        "array<string, string>"
+    ],
+    [
+        "MaxMind\\Db\\Metadata",
+        "array<string>",
+        "array<string>",
+        "array<string>",
+        "array<string>"
+    ],
+    [
+        "MaxMind\\Db\\Metadata",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "MaxMind\\Db\\Metadata",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "Memcache",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "MemcachePool",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "MemcachePool",
+        "(array | int)",
+        "array|int",
+        "array|int",
+        "array|int"
+    ],
+    [
+        "MemcachePool",
+        "(array | string | false)",
+        "array|string|false",
+        "array|string|false",
+        "array|string|false"
+    ],
+    [
+        "MemcachePool",
+        "(array | string)",
+        "array|string",
+        "array|string",
+        "array|string"
+    ],
+    [
+        "MemcachePool",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "MemcachePool",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "MessageFormatter",
+        "(MessageFormatter | null)",
+        "MessageFormatter|null",
+        "MessageFormatter|null",
+        "MessageFormatter|null"
+    ],
+    [
+        "MessageFormatter",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "MessageFormatter",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "MongoCollection",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "MongoCollection",
+        "(array | stdClass)",
+        "array|stdClass",
+        "array|stdClass",
+        "array|stdClass"
+    ],
+    [
+        "MongoCollection",
+        "stdClass",
+        "stdClass",
+        "stdClass",
+        "stdClass"
+    ],
+    [
+        "MongoCommandCursor",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "MongoDBRef",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "MongoDB\\BSON\\Document",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>"
+    ],
+    [
+        "MongoDB\\BSON\\PackedArray",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>"
+    ],
+    [
+        "MongoDB\\BSON\\VectorType",
+        "('Float32' | 'Int8' | 'PackedBit')",
+        "'Float32'|'Int8'|'PackedBit'",
+        "'Float32'|'Int8'|'PackedBit'",
+        "string"
+    ],
+    [
+        "MongoDB\\Driver\\ClientEncryption",
+        "MongoDB\\BSON\\BinaryInterface",
+        "MongoDB\\BSON\\BinaryInterface",
+        "MongoDB\\BSON\\BinaryInterface",
+        "MongoDB\\BSON\\BinaryInterface"
+    ],
+    [
+        "MongoDB\\Driver\\Cursor",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "MongoDB\\Driver\\CursorInterface",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "MongoDB\\Driver\\WriteConcern",
+        "(array | object)",
+        "array|object",
+        "array|object",
+        "array|object"
+    ],
+    [
+        "MongoGridFS",
+        "(MongoGridFSFile | null)",
+        "MongoGridFSFile|null",
+        "MongoGridFSFile|null",
+        "MongoGridFSFile|null"
+    ],
+    [
+        "MongoGridFS",
+        "(resource | string)",
+        "resource|string",
+        "resource|string",
+        "resource|string"
+    ],
+    [
+        "MongoGridFS",
+        "MongoCollection",
+        "MongoCollection",
+        "MongoCollection",
+        "MongoCollection"
+    ],
+    [
+        "MongoGridFS",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "MongoGridFS",
+        "resource",
+        "resource",
+        "resource",
+        "resource"
+    ],
+    [
+        "MongoGridFSCursor",
+        "(MongoGridFS | null)",
+        "MongoGridFS|null",
+        "MongoGridFS|null",
+        "MongoGridFS|null"
+    ],
+    [
+        "MongoGridFSCursor",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "MongoGridFSCursor",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "MongoGridFSFile",
+        "(MongoGridFS | null)",
+        "MongoGridFS|null",
+        "MongoGridFS|null",
+        "MongoGridFS|null"
+    ],
+    [
+        "MongoGridFSFile",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Mosquitto\\Message",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "NoRewindIterator",
+        "Iterator<__template<TKey, 'class OuterIterator', mixed>, __template<TValue, 'class OuterIterator', mixed>>",
+        "Iterator<TKey (class OuterIterator, parameter), TValue (class OuterIterator, parameter)>",
+        "Iterator<TKey, TValue>",
+        "Iterator<TKey, TValue>"
+    ],
+    [
+        "NumberFormatter",
+        "(NumberFormatter | false)",
+        "NumberFormatter|false",
+        "NumberFormatter|false",
+        "NumberFormatter|false"
+    ],
+    [
+        "NumberFormatter",
+        "(float | int | false)",
+        "float|int|false",
+        "float|int|false",
+        "float|int|false"
+    ],
+    [
+        "NumberFormatter",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "OAuthException",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "OAuthException",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "OCICollection",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "PDO",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "PDO",
+        "(int | null)",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        "PDO",
+        "(resource | false)",
+        "resource|false",
+        "resource|false",
+        "resource|false"
+    ],
+    [
+        "Parle\\ErrorInfo",
+        "(Parle\\Token | null)",
+        "Parle\\Token|null",
+        "Parle\\Token|null",
+        "Parle\\Token|null"
+    ],
+    [
+        "Parle\\ErrorInfo",
+        "Parle\\Token",
+        "Parle\\Token",
+        "Parle\\Token",
+        "Parle\\Token"
+    ],
+    [
+        "Parle\\ErrorInfo",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Parle\\ErrorInfo",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "Parle\\Lexer",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "Parle\\RLexer",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "Parle\\RParser",
+        "Parle\\RLexer",
+        "Parle\\RLexer",
+        "Parle\\RLexer",
+        "Parle\\RLexer"
+    ],
+    [
+        "Parle\\Stack",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "Parle\\Stack",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Parle\\Token",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Parle\\Token",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "Pcntl\\QosClass",
+        "('Background' | 'Default' | 'UserInitiated' | 'UserInteractive' | 'Utility')",
+        "'Background'|'Default'|'UserInitiated'|'UserInteractive'|'Utility'",
+        "'Background'|'Default'|'UserInitiated'|'UserInteractive'|'Utility'",
+        "string"
+    ],
+    [
+        "Phar",
+        "(Phar | null)",
+        "Phar|null",
+        "Phar|null",
+        "Phar|null"
+    ],
+    [
+        "Phar",
+        "(PharData | null)",
+        "PharData|null",
+        "PharData|null",
+        "PharData|null"
+    ],
+    [
+        "Phar",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Phar",
+        "(static | null)",
+        "static(Phar)|null",
+        "static(Phar)|null",
+        "static(Phar)|null"
+    ],
+    [
+        "Phar",
+        "Traversable",
+        "Traversable",
+        "Traversable",
+        "Traversable"
+    ],
+    [
+        "PharData",
+        "(Phar | null)",
+        "Phar|null",
+        "Phar|null",
+        "Phar|null"
+    ],
+    [
+        "PharData",
+        "(PharData | null)",
+        "PharData|null",
+        "PharData|null",
+        "PharData|null"
+    ],
+    [
+        "PharData",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "PharData",
+        "(static | null)",
+        "static(PharData)|null",
+        "static(PharData)|null",
+        "static(PharData)|null"
+    ],
+    [
+        "PharData",
+        "SplFileInfo",
+        "SplFileInfo",
+        "SplFileInfo",
+        "SplFileInfo"
+    ],
+    [
+        "PharData",
+        "Traversable",
+        "Traversable",
+        "Traversable",
+        "Traversable"
+    ],
+    [
+        "PhpToken",
+        "(array | int | string)",
+        "array|int|string",
+        "array|int|string",
+        "array|int|string"
+    ],
+    [
+        "PhpToken",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "PhpToken",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "Pool",
+        "(callable | null)",
+        "(callable(): mixed)|null",
+        "(callable(): mixed)|null",
+        "(callable)|null"
+    ],
+    [
+        "PropertyHookType",
+        "('Get' | 'Set')",
+        "'Get'|'Set'",
+        "'Get'|'Set'",
+        "string"
+    ],
+    [
+        "RRDGraph",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "RRDGraph",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "Random\\IntervalBoundary",
+        "('ClosedClosed' | 'ClosedOpen' | 'OpenClosed' | 'OpenOpen')",
+        "'ClosedClosed'|'ClosedOpen'|'OpenClosed'|'OpenOpen'",
+        "'ClosedClosed'|'ClosedOpen'|'OpenClosed'|'OpenOpen'",
+        "string"
+    ],
+    [
+        "RarArchive",
+        "(callable | null)",
+        "(callable(): mixed)|null",
+        "(callable(): mixed)|null",
+        "(callable)|null"
+    ],
+    [
+        "RarEntry",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "RarEntry",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "RdKafka\\Message",
+        "array<string, string>",
+        "array<string, string>",
+        "array<string, string>",
+        "array<string, string>"
+    ],
+    [
+        "RdKafka\\Message",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "RecursiveCachingIterator",
+        "(RecursiveCachingIterator | null)",
+        "RecursiveCachingIterator|null",
+        "RecursiveCachingIterator|null",
+        "RecursiveCachingIterator|null"
+    ],
+    [
+        "RecursiveCachingIterator",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "RecursiveCallbackFilterIterator",
+        "Traversable<__template<TKey, 'class IteratorIterator', mixed>, __template<TValue, 'class IteratorIterator', mixed>>",
+        "Traversable<TKey (class IteratorIterator, parameter), TValue (class IteratorIterator, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "RecursiveCallbackFilterIterator",
+        "__template<TIterator, 'class IteratorIterator', Traversable<__template<TKey, 'class IteratorIterator', mixed>, __template<TValue, 'class IteratorIterator', mixed>>>",
+        "TIterator of Traversable<TKey (class IteratorIterator, parameter), TValue (class IteratorIterator, parameter)> (class IteratorIterator, parameter)",
+        "TIterator of Traversable<TKey, TValue>",
+        "TIterator of Traversable<TKey, TValue>"
+    ],
+    [
+        "RecursiveFilterIterator",
+        "(RecursiveFilterIterator | null)",
+        "RecursiveFilterIterator|null",
+        "RecursiveFilterIterator|null",
+        "RecursiveFilterIterator|null"
+    ],
+    [
+        "RecursiveFilterIterator",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "RecursiveIterator",
+        "(RecursiveIterator | null)",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null"
+    ],
+    [
+        "RecursiveIterator",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "RecursiveIteratorIterator",
+        "(RecursiveIterator | null)",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null"
+    ],
+    [
+        "RecursiveIteratorIterator",
+        "Iterator<__template<TKey, 'class OuterIterator', mixed>, __template<TValue, 'class OuterIterator', mixed>>",
+        "Iterator<TKey (class OuterIterator, parameter), TValue (class OuterIterator, parameter)>",
+        "Iterator<TKey, TValue>",
+        "Iterator<TKey, TValue>"
+    ],
+    [
+        "RecursiveIteratorIterator",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "RecursiveIteratorIterator",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "RecursiveTreeIterator",
+        "(RecursiveIterator | null)",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null"
+    ],
+    [
+        "RecursiveTreeIterator",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "Redis",
+        "(array | Redis)",
+        "array|Redis",
+        "array|Redis",
+        "array|Redis"
+    ],
+    [
+        "Redis",
+        "(array | bool | int | Redis | null)",
+        "array|bool|int|Redis|null",
+        "array|bool|int|Redis|null",
+        "array|bool|int|Redis|null"
+    ],
+    [
+        "Redis",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "Redis",
+        "(array | float | int)",
+        "array|float|int",
+        "array|float|int",
+        "array|float|int"
+    ],
+    [
+        "Redis",
+        "(array<(int | string), mixed> | Redis | false)",
+        "array<int|string, mixed>|Redis|false",
+        "array<int|string, mixed>|Redis|false",
+        "array<int|string, mixed>|Redis|false"
+    ],
+    [
+        "Redis",
+        "(int | string | null)",
+        "int|string|null",
+        "int|string|null",
+        "int|string|null"
+    ],
+    [
+        "Redis",
+        "(list<mixed> | Redis | false)",
+        "list<mixed>|Redis|false",
+        "list<mixed>|Redis|false",
+        "list<mixed>|Redis|false"
+    ],
+    [
+        "Redis",
+        "array<(int | string), mixed>",
+        "array<int|string, mixed>",
+        "array<int|string, mixed>",
+        "array<int|string, mixed>"
+    ],
+    [
+        "Redis",
+        "list<mixed>",
+        "list<mixed>",
+        "list<mixed>",
+        "list<mixed>"
+    ],
+    [
+        "RedisArray",
+        "(array<string> | string)",
+        "array<string>|string",
+        "array<string>|string",
+        "array<string>|string"
+    ],
+    [
+        "RedisArray",
+        "(bool | string | null)",
+        "bool|string|null",
+        "bool|string|null",
+        "bool|string|null"
+    ],
+    [
+        "RedisCluster",
+        "(array | RedisCluster | string | false)",
+        "array|RedisCluster|string|false",
+        "array|RedisCluster|string|false",
+        "array|RedisCluster|string|false"
+    ],
+    [
+        "RedisCluster",
+        "(array | bool | RedisCluster | string)",
+        "array|bool|RedisCluster|string",
+        "array|bool|RedisCluster|string",
+        "array|bool|RedisCluster|string"
+    ],
+    [
+        "RedisCluster",
+        "(array | float)",
+        "array|float",
+        "array|float",
+        "array|float"
+    ],
+    [
+        "RedisCluster",
+        "(bool | RedisCluster | string)",
+        "bool|RedisCluster|string",
+        "bool|RedisCluster|string",
+        "bool|RedisCluster|string"
+    ],
+    [
+        "RedisCluster",
+        "(float | RedisCluster | false)",
+        "float|RedisCluster|false",
+        "float|RedisCluster|false",
+        "float|RedisCluster|false"
+    ],
+    [
+        "RedisCluster",
+        "(float | int | RedisCluster | false)",
+        "float|int|RedisCluster|false",
+        "float|int|RedisCluster|false",
+        "float|int|RedisCluster|false"
+    ],
+    [
+        "RedisCluster",
+        "(float | int | string)",
+        "float|int|string",
+        "float|int|string",
+        "float|int|string"
+    ],
+    [
+        "RedisCluster",
+        "(int | RedisCluster | string | false)",
+        "int|RedisCluster|string|false",
+        "int|RedisCluster|string|false",
+        "int|RedisCluster|string|false"
+    ],
+    [
+        "RedisCluster",
+        "(int | RedisCluster)",
+        "int|RedisCluster",
+        "int|RedisCluster",
+        "int|RedisCluster"
+    ],
+    [
+        "RedisCluster",
+        "(int | string | null)",
+        "int|string|null",
+        "int|string|null",
+        "int|string|null"
+    ],
+    [
+        "RedisCluster",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "RedisCluster",
+        "callable",
+        "callable(): mixed",
+        "callable(): mixed",
+        "callable"
+    ],
+    [
+        "ReflectionClass",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "ReflectionClass",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "ReflectionClass",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "ReflectionClass",
+        "array<ReflectionClass>",
+        "array<ReflectionClass>",
+        "array<ReflectionClass>",
+        "array<ReflectionClass>"
+    ],
+    [
+        "ReflectionClass",
+        "array<ReflectionClassConstant>",
+        "array<ReflectionClassConstant>",
+        "array<ReflectionClassConstant>",
+        "array<ReflectionClassConstant>"
+    ],
+    [
+        "ReflectionClass",
+        "array<ReflectionMethod>",
+        "array<ReflectionMethod>",
+        "array<ReflectionMethod>",
+        "array<ReflectionMethod>"
+    ],
+    [
+        "ReflectionClass",
+        "array<ReflectionProperty>",
+        "array<ReflectionProperty>",
+        "array<ReflectionProperty>",
+        "array<ReflectionProperty>"
+    ],
+    [
+        "ReflectionClass",
+        "array<mixed>",
+        "array<mixed>",
+        "array<mixed>",
+        "array<mixed>"
+    ],
+    [
+        "ReflectionClass",
+        "array<string>",
+        "array<string>",
+        "array<string>",
+        "array<string>"
+    ],
+    [
+        "ReflectionEnum",
+        "(ReflectionType | null)",
+        "ReflectionType|null",
+        "ReflectionType|null",
+        "ReflectionType|null"
+    ],
+    [
+        "ReflectionEnum",
+        "(class-string<__template<T, 'class ReflectionClass', object>> | __template<T, 'class ReflectionClass', object>)",
+        "class-string<T of object (class ReflectionClass, parameter)>|T of object (class ReflectionClass, parameter)",
+        "class-string<T of object>|T of object",
+        "class-string<T of object>|T of object"
+    ],
+    [
+        "ReflectionEnum",
+        "ReflectionType",
+        "ReflectionType",
+        "ReflectionType",
+        "ReflectionType"
+    ],
+    [
+        "ReflectionEnum",
+        "__template<T, 'class ReflectionClass', object>",
+        "T of object (class ReflectionClass, parameter)",
+        "T of object",
+        "T of object"
+    ],
+    [
+        "ReflectionEnum",
+        "class-string<__template<T, 'class ReflectionClass', object>>",
+        "class-string<T of object (class ReflectionClass, parameter)>",
+        "class-string<T of object>",
+        "class-string<T of object>"
+    ],
+    [
+        "ReflectionEnum",
+        "object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        "ReflectionExtension",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "ReflectionExtension",
+        "array<ReflectionClass>",
+        "array<ReflectionClass>",
+        "array<ReflectionClass>",
+        "array<ReflectionClass>"
+    ],
+    [
+        "ReflectionExtension",
+        "array<ReflectionFunction>",
+        "array<ReflectionFunction>",
+        "array<ReflectionFunction>",
+        "array<ReflectionFunction>"
+    ],
+    [
+        "ReflectionExtension",
+        "array<string>",
+        "array<string>",
+        "array<string>",
+        "array<string>"
+    ],
+    [
+        "ReflectionFunction",
+        "(Closure | null)",
+        "Closure|null",
+        "Closure|null",
+        "Closure|null"
+    ],
+    [
+        "ReflectionFunction",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "ReflectionFunctionAbstract",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "ReflectionFunctionAbstract",
+        "array<ReflectionParameter>",
+        "array<ReflectionParameter>",
+        "array<ReflectionParameter>",
+        "array<ReflectionParameter>"
+    ],
+    [
+        "ReflectionGenerator",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "ReflectionMethod",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "ReflectionMethod",
+        "class-string",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        "ReflectionMethod",
+        "non-falsy-string",
+        "non-falsy-string",
+        "non-falsy-string",
+        "string"
+    ],
+    [
+        "ReflectionParameter",
+        "callable",
+        "callable(): mixed",
+        "callable(): mixed",
+        "callable"
+    ],
+    [
+        "Relay\\Cluster",
+        "(array | Relay\\Cluster)",
+        "array|Relay\\Cluster",
+        "array|Relay\\Cluster",
+        "array|Relay\\Cluster"
+    ],
+    [
+        "Relay\\Cluster",
+        "Relay\\AdaptiveCache",
+        "Relay\\AdaptiveCache",
+        "Relay\\AdaptiveCache",
+        "Relay\\AdaptiveCache"
+    ],
+    [
+        "Relay\\Event",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "Relay\\Event",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Relay\\Event",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Relay\\Event\\Flushed",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Relay\\Event\\Invalidated",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Relay\\KeyType",
+        "('Hash' | 'List' | 'NotFound' | 'Set' | 'Stream' | 'String' | 'Zset')",
+        "'Hash'|'List'|'NotFound'|'Set'|'Stream'|'String'|'Zset'",
+        "'Hash'|'List'|'NotFound'|'Set'|'Stream'|'String'|'Zset'",
+        "string"
+    ],
+    [
+        "Relay\\Relay",
+        "(array | Relay\\Relay)",
+        "array|Relay\\Relay",
+        "array|Relay\\Relay",
+        "array|Relay\\Relay"
+    ],
+    [
+        "Relay\\Relay",
+        "(int | Relay\\Relay)",
+        "int|Relay\\Relay",
+        "int|Relay\\Relay",
+        "int|Relay\\Relay"
+    ],
+    [
+        "Relay\\Relay",
+        "Relay\\AdaptiveCache",
+        "Relay\\AdaptiveCache",
+        "Relay\\AdaptiveCache",
+        "Relay\\AdaptiveCache"
+    ],
+    [
+        "RoundingMode",
+        "('AwayFromZero' | 'HalfAwayFromZero' | 'HalfEven' | 'HalfOdd' | 'HalfTowardsZero' | 'NegativeInfinity' | 'PositiveInfinity' | 'TowardsZero')",
+        "'AwayFromZero'|'HalfAwayFromZero'|'HalfEven'|'HalfOdd'|'HalfTowardsZero'|'NegativeInfinity'|'PositiveInfinity'|'TowardsZero'",
+        "'AwayFromZero'|'HalfAwayFromZero'|'HalfEven'|'HalfOdd'|'HalfTowardsZero'|'NegativeInfinity'|'PositiveInfinity'|'TowardsZero'",
+        "string"
+    ],
+    [
+        "SNMP",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "SNMPException",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "SQLite3",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "SQLite3Result",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "SQLite3Result",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "SQLite3Stmt",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "SQLiteDatabase",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "SQLiteDatabase",
+        "(resource | false)",
+        "resource|false",
+        "resource|false",
+        "resource|false"
+    ],
+    [
+        "SQLiteDatabase",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "SQLiteDatabase",
+        "resource",
+        "resource",
+        "resource",
+        "resource"
+    ],
+    [
+        "SQLiteResult",
+        "void",
+        "void",
+        "void",
+        "void"
+    ],
+    [
+        "SVM",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Serializable",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "Serializable",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "SessionHandler",
+        "(bool | int)",
+        "bool|int",
+        "bool|int",
+        "bool|int"
+    ],
+    [
+        "SessionHandler",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "SimpleKafkaClient\\Message",
+        "array<string, mixed>",
+        "array<string, mixed>",
+        "array<string, mixed>",
+        "array<string, mixed>"
+    ],
+    [
+        "SimpleXMLElement",
+        "(RecursiveIterator | null)",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null"
+    ],
+    [
+        "SimpleXMLElement",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "SimpleXMLElement",
+        "RecursiveIterator",
+        "RecursiveIterator",
+        "RecursiveIterator",
+        "RecursiveIterator"
+    ],
+    [
+        "SimpleXMLElement",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SimpleXMLElement",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SimpleXMLElement",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SimpleXMLElement",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SimpleXMLElement",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "SimpleXMLIterator",
+        "(SimpleXMLElement | null)",
+        "SimpleXMLElement|null",
+        "SimpleXMLElement|null",
+        "SimpleXMLElement|null"
+    ],
+    [
+        "SimpleXMLIterator",
+        "SimpleXMLElement",
+        "SimpleXMLElement",
+        "SimpleXMLElement",
+        "SimpleXMLElement"
+    ],
+    [
+        "SimpleXMLIterator",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "SoapClient",
+        "(bool | int)",
+        "bool|int",
+        "bool|int",
+        "bool|int"
+    ],
+    [
+        "SolrDocumentField",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "SolrException",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "SolrException",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "SolrInputDocument",
+        "(SolrDocumentField | false)",
+        "SolrDocumentField|false",
+        "SolrDocumentField|false",
+        "SolrDocumentField|false"
+    ],
+    [
+        "SolrInputDocument",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "SolrInputDocument",
+        "(float | false)",
+        "float|false",
+        "float|false",
+        "float|false"
+    ],
+    [
+        "SolrInputDocument",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "SolrInputDocument",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "SolrParams",
+        "(SolrParams | false)",
+        "SolrParams|false",
+        "SolrParams|false",
+        "SolrParams|false"
+    ],
+    [
+        "SolrParams",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "SolrQuery",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "SolrQuery",
+        "(bool | null)",
+        "bool|null",
+        "bool|null",
+        "bool|null"
+    ],
+    [
+        "SolrQuery",
+        "(float | null)",
+        "float|null",
+        "float|null",
+        "float|null"
+    ],
+    [
+        "SolrQuery",
+        "(int | null)",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SplFileInfo",
+        "(__template<T, 'method SplFileInfo::getPathInfo()', SplFileInfo> | null)",
+        "T of SplFileInfo (method SplFileInfo::getPathInfo(), parameter)|null",
+        "(T of SplFileInfo)|null",
+        "(T of SplFileInfo)|null"
+    ],
+    [
+        "SplFileInfo",
+        "__template<T, 'method SplFileInfo::getPathInfo()', SplFileInfo>",
+        "T of SplFileInfo (method SplFileInfo::getPathInfo(), parameter)",
+        "T of SplFileInfo",
+        "T of SplFileInfo"
+    ],
+    [
+        "SplFileObject",
+        "(RecursiveIterator | null)",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null",
+        "RecursiveIterator|null"
+    ],
+    [
+        "SplFileObject",
+        "(array | false | null)",
+        "array|false|null",
+        "array|false|null",
+        "array|false|null"
+    ],
+    [
+        "SplFileObject",
+        "(array | int | null)",
+        "array|int|null",
+        "array|int|null",
+        "array|int|null"
+    ],
+    [
+        "SplFileObject",
+        "RecursiveIterator",
+        "RecursiveIterator",
+        "RecursiveIterator",
+        "RecursiveIterator"
+    ],
+    [
+        "SplFileObject",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "SplFixedArray",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "SplFixedArray",
+        "(__template<TValue, 'class ArrayAccess', mixed> | null)",
+        "TValue (class ArrayAccess, parameter)|null",
+        "TValue|null",
+        "TValue|null"
+    ],
+    [
+        "SplFixedArray",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "SplFixedArray",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SplFixedArray",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SplFixedArray",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SplFixedArray",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SplObjectStorage",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "SplObjectStorage",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SplObjectStorage",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SplObjectStorage",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SplObjectStorage",
+        "__template<TValue, 'class Iterator', mixed>",
+        "TValue (class Iterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SplPriorityQueue",
+        "__template<TKey, 'class Iterator', mixed>",
+        "TKey (class Iterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Stomp",
+        "(object | false)",
+        "object|false",
+        "object|false",
+        "object|false"
+    ],
+    [
+        "Stomp",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "Stomp",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "Stomp",
+        "object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        "StompFrame",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "StompFrame",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "Swoole\\Process",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Swoole\\Server",
+        "Swoole\\Coroutine\\Http\\Server",
+        "Swoole\\Coroutine\\Http\\Server",
+        "Swoole\\Coroutine\\Http\\Server",
+        "Swoole\\Coroutine\\Http\\Server"
+    ],
+    [
+        "Threaded",
+        "Worker",
+        "Worker",
+        "Worker",
+        "Worker"
+    ],
+    [
+        "Transliterator",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "Transliterator",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "UConverter",
+        "(array | false | null)",
+        "array|false|null",
+        "array|false|null",
+        "array|false|null"
+    ],
+    [
+        "UConverter",
+        "(int | false | null)",
+        "int|false|null",
+        "int|false|null",
+        "int|false|null"
+    ],
+    [
+        "UConverter",
+        "(string | false | null)",
+        "string|false|null",
+        "string|false|null",
+        "string|false|null"
+    ],
+    [
+        "UConverter",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "UnitEnum",
+        "(non-decimal-int-string & non-falsy-string)",
+        "non-decimal-int-string&non-falsy-string",
+        "non-decimal-int-string&non-falsy-string",
+        "string"
+    ],
+    [
+        "UnitEnum",
+        "array<static>",
+        "array<static(UnitEnum)>",
+        "array<static(UnitEnum)>",
+        "array<static(UnitEnum)>"
+    ],
+    [
+        "Uri\\UriComparisonMode",
+        "('ExcludeFragment' | 'IncludeFragment')",
+        "'ExcludeFragment'|'IncludeFragment'",
+        "'ExcludeFragment'|'IncludeFragment'",
+        "string"
+    ],
+    [
+        "Uri\\WhatWg\\UrlValidationErrorType",
+        "('DomainInvalidCodePoint' | 'DomainToAscii' | 'DomainToUnicode' | 'FileInvalidWindowsDriveLetter' | 'FileInvalidWindowsDriveLetterHost' | 'HostInvalidCodePoint' | 'HostMissing' | 'InvalidCredentials' | 'InvalidReverseSoldius' | 'InvalidUrlUnit' | 'Ipv4EmptyPart' | 'Ipv4InIpv6InvalidCodePoint' | 'Ipv4InIpv6OutOfRangePart' | 'Ipv4InIpv6TooFewParts' | 'Ipv4InIpv6TooManyPieces' | 'Ipv4NonDecimalPart' | 'Ipv4NonNumericPart' | 'Ipv4OutOfRangePart' | 'Ipv4TooManyParts' | 'Ipv6InvalidCodePoint' | 'Ipv6InvalidCompression' | 'Ipv6MultipleCompression' | 'Ipv6TooFewPieces' | 'Ipv6TooManyPieces' | 'Ipv6Unclosed' | 'MissingSchemeNonRelativeUrl' | 'PortInvalid' | 'PortOutOfRange' | 'SpecialSchemeMissingFollowingSolidus')",
+        "'DomainInvalidCodePoint'|'DomainToAscii'|'DomainToUnicode'|'FileInvalidWindowsDriveLetter'|'FileInvalidWindowsDriveLetterHost'|'HostInvalidCodePoint'|'HostMissing'|'InvalidCredentials'|'InvalidReverseSoldius'|'InvalidUrlUnit'|'Ipv4EmptyPart'|'Ipv4InIpv6InvalidCodePoint'|'Ipv4InIpv6OutOfRangePart'|'Ipv4InIpv6TooFewParts'|'Ipv4InIpv6TooManyPieces'|'Ipv4NonDecimalPart'|'Ipv4NonNumericPart'|'Ipv4OutOfRangePart'|'Ipv4TooManyParts'|'Ipv6InvalidCodePoint'|'Ipv6InvalidCompression'|'Ipv6MultipleCompression'|'Ipv6TooFewPieces'|'Ipv6TooManyPieces'|'Ipv6Unclosed'|'MissingSchemeNonRelativeUrl'|'PortInvalid'|'PortOutOfRange'|'SpecialSchemeMissingFollowingSolidus'",
+        "'DomainInvalidCodePo…'|'DomainToAscii'|'DomainToUnicode'|'FileInvalidWindowsD…'|'HostInvalidCodePoint'|'HostMissing'|'InvalidCredentials'|'InvalidReverseSoldi…'|'InvalidUrlUnit'|'Ipv4EmptyPart'|'Ipv4InIpv6InvalidCo…'|'Ipv4InIpv6OutOfRang…'|'Ipv4InIpv6TooFewPar…'|'Ipv4InIpv6TooManyPi…'|'Ipv4NonDecimalPart'|'Ipv4NonNumericPart'|'Ipv4OutOfRangePart'|'Ipv4TooManyParts'|'Ipv6InvalidCodePoint'|'Ipv6InvalidCompress…'|'Ipv6MultipleCompres…'|'Ipv6TooFewPieces'|'Ipv6TooManyPieces'|'Ipv6Unclosed'|'MissingSchemeNonRel…'|'PortInvalid'|'PortOutOfRange'|'SpecialSchemeMissin…'",
+        "string"
+    ],
+    [
+        "V8Js",
+        "(V8JsScriptException | null)",
+        "V8JsScriptException|null",
+        "V8JsScriptException|null",
+        "V8JsScriptException|null"
+    ],
+    [
+        "V8Js",
+        "V8JsScriptException",
+        "V8JsScriptException",
+        "V8JsScriptException",
+        "V8JsScriptException"
+    ],
+    [
+        "WeakMap",
+        "(__template<TKey, 'class ArrayAccess', mixed> | null)",
+        "TKey (class ArrayAccess, parameter)|null",
+        "TKey|null",
+        "TKey|null"
+    ],
+    [
+        "WeakMap",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "WeakMap",
+        "__template<TKey, 'class ArrayAccess', mixed>",
+        "TKey (class ArrayAccess, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "WeakMap",
+        "__template<TValue, 'class ArrayAccess', mixed>",
+        "TValue (class ArrayAccess, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "Worker",
+        "(callable | null)",
+        "(callable(): mixed)|null",
+        "(callable(): mixed)|null",
+        "(callable)|null"
+    ],
+    [
+        "XMLWriter",
+        "(bool | int)",
+        "bool|int",
+        "bool|int",
+        "bool|int"
+    ],
+    [
+        "XSLTProcessor",
+        "(DOMDocument | SimpleXMLElement)",
+        "DOMDocument|SimpleXMLElement",
+        "DOMDocument|SimpleXMLElement",
+        "DOMDocument|SimpleXMLElement"
+    ],
+    [
+        "XSLTProcessor",
+        "object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        "Yaf\\Registry",
+        "Yaf\\Registry",
+        "Yaf\\Registry",
+        "Yaf\\Registry",
+        "Yaf\\Registry"
+    ],
+    [
+        "Yaf\\Registry",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "Yaf\\Route\\Map",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract"
+    ],
+    [
+        "Yaf\\Route\\Regex",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract"
+    ],
+    [
+        "Yaf\\Route\\Rewrite",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract"
+    ],
+    [
+        "Yaf\\Route\\Simple",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract"
+    ],
+    [
+        "Yaf\\Route\\Supervar",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract",
+        "Yaf\\Request_Abstract"
+    ],
+    [
+        "Yaf\\Session",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "Yaf_Config_Ini",
+        "(array | string)",
+        "array|string",
+        "array|string",
+        "array|string"
+    ],
+    [
+        "Yaf_Config_Simple",
+        "(array | string)",
+        "array|string",
+        "array|string",
+        "array|string"
+    ],
+    [
+        "Yaf_Controller_Abstract",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Yaf_Exception",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "Yaf_Plugin_Abstract",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "Yaf_Registry",
+        "(bool | void)",
+        "bool|void",
+        "bool|void",
+        "bool|void"
+    ],
+    [
+        "Yaf_Registry",
+        "Yaf_Registry",
+        "Yaf_Registry",
+        "Yaf_Registry",
+        "Yaf_Registry"
+    ],
+    [
+        "Yaf_Registry",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "Yaf_Request_Abstract",
+        "(bool | Yaf_Request_Abstract | null)",
+        "bool|Yaf_Request_Abstract|null",
+        "bool|Yaf_Request_Abstract|null",
+        "bool|Yaf_Request_Abstract|null"
+    ],
+    [
+        "Yaf_Request_Abstract",
+        "(bool | Yaf_Request_Abstract)",
+        "bool|Yaf_Request_Abstract",
+        "bool|Yaf_Request_Abstract",
+        "bool|Yaf_Request_Abstract"
+    ],
+    [
+        "Yaf_Response_Http",
+        "(Yaf_Response_Abstract | false)",
+        "Yaf_Response_Abstract|false",
+        "Yaf_Response_Abstract|false",
+        "Yaf_Response_Abstract|false"
+    ],
+    [
+        "Yaf_Response_Http",
+        "Yaf_Response_Abstract",
+        "Yaf_Response_Abstract",
+        "Yaf_Response_Abstract",
+        "Yaf_Response_Abstract"
+    ],
+    [
+        "Yaf_Route_Interface",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Yaf_Route_Map",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Yaf_Route_Regex",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Yaf_Route_Rewrite",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Yaf_Route_Rewrite",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "Yaf_Route_Simple",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Yaf_Route_Static",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Yaf_Route_Supervar",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "Yaf_Router",
+        "(Yaf_Router | false)",
+        "Yaf_Router|false",
+        "Yaf_Router|false",
+        "Yaf_Router|false"
+    ],
+    [
+        "Yaf_Router",
+        "Yaf_Router",
+        "Yaf_Router",
+        "Yaf_Router",
+        "Yaf_Router"
+    ],
+    [
+        "Yaf_Router",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "Yaf_Session",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "Yaf_Session",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "Yaf_View_Interface",
+        "(array | string)",
+        "array|string",
+        "array|string",
+        "array|string"
+    ],
+    [
+        "Yaf_View_Simple",
+        "(bool | Yaf_View_Interface)",
+        "bool|Yaf_View_Interface",
+        "bool|Yaf_View_Interface",
+        "bool|Yaf_View_Interface"
+    ],
+    [
+        "Yaf_View_Simple",
+        "(bool | string)",
+        "bool|string",
+        "bool|string",
+        "bool|string"
+    ],
+    [
+        "Yaf_View_Simple",
+        "(void | false)",
+        "void|false",
+        "void|false",
+        "void|false"
+    ],
+    [
+        "Yaf_View_Simple",
+        "Yaf_View_Interface",
+        "Yaf_View_Interface",
+        "Yaf_View_Interface",
+        "Yaf_View_Interface"
+    ],
+    [
+        "Yar_Client",
+        "(static | false)",
+        "static(Yar_Client)|false",
+        "static(Yar_Client)|false",
+        "static(Yar_Client)|false"
+    ],
+    [
+        "Yar_Client",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "Yar_Client",
+        "static",
+        "static(Yar_Client)",
+        "static(Yar_Client)",
+        "static(Yar_Client)"
+    ],
+    [
+        "Yar_Client_Exception",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "ZMQDevice",
+        "(ZMQSocket | null)",
+        "ZMQSocket|null",
+        "ZMQSocket|null",
+        "ZMQSocket|null"
+    ],
+    [
+        "ZMQSocket",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "ZMQSocket",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "ZendAPI_Job",
+        "(int | false)",
+        "int|false",
+        "int|false",
+        "int|false"
+    ],
+    [
+        "ZendAPI_Job",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "ZipArchive",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "ZipArchive",
+        "(bool | int)",
+        "bool|int",
+        "bool|int",
+        "bool|int"
+    ],
+    [
+        "Zookeeper",
+        "(array | false)",
+        "array|false",
+        "array|false",
+        "array|false"
+    ],
+    [
+        "Zookeeper",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "__PHP_Incomplete_Class",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "ast\\Metadata",
+        "array<string>",
+        "array<string>",
+        "array<string>",
+        "array<string>"
+    ],
+    [
+        "ast\\Metadata",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "ast\\Metadata",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "ast\\Metadata",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "ast\\Node",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "ast\\Node",
+        "(int | null)",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        "classObj",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "classObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj"
+    ],
+    [
+        "clusterObj",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "errorObj",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "errorObj",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "gridObj",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "http\\Env\\Request",
+        "http\\QueryString",
+        "http\\QueryString",
+        "http\\QueryString",
+        "http\\QueryString"
+    ],
+    [
+        "http\\Env\\Response",
+        "http\\Env\\Request",
+        "http\\Env\\Request",
+        "http\\Env\\Request",
+        "http\\Env\\Request"
+    ],
+    [
+        "http\\QueryString",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>",
+        "Traversable<mixed, mixed>"
+    ],
+    [
+        "http\\Url",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "labelObj",
+        "colorObj",
+        "colorObj",
+        "colorObj",
+        "colorObj"
+    ],
+    [
+        "labelObj",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "labelcacheMemberObj",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "labelcacheMemberObj",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "layerObj",
+        "(classObj | null)",
+        "classObj|null",
+        "classObj|null",
+        "classObj|null"
+    ],
+    [
+        "layerObj",
+        "(string | null)",
+        "string|null",
+        "string|null",
+        "string|null"
+    ],
+    [
+        "layerObj",
+        "clusterObj",
+        "clusterObj",
+        "clusterObj",
+        "clusterObj"
+    ],
+    [
+        "layerObj",
+        "colorObj",
+        "colorObj",
+        "colorObj",
+        "colorObj"
+    ],
+    [
+        "layerObj",
+        "gridObj",
+        "gridObj",
+        "gridObj",
+        "gridObj"
+    ],
+    [
+        "layerObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj"
+    ],
+    [
+        "layerObj",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "layerObj",
+        "projectionObj",
+        "projectionObj",
+        "projectionObj",
+        "projectionObj"
+    ],
+    [
+        "legendObj",
+        "colorObj",
+        "colorObj",
+        "colorObj",
+        "colorObj"
+    ],
+    [
+        "legendObj",
+        "labelObj",
+        "labelObj",
+        "labelObj",
+        "labelObj"
+    ],
+    [
+        "mapObj",
+        "(imageObj | null)",
+        "imageObj|null",
+        "imageObj|null",
+        "imageObj|null"
+    ],
+    [
+        "mapObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj"
+    ],
+    [
+        "mapObj",
+        "labelcacheObj",
+        "labelcacheObj",
+        "labelcacheObj",
+        "labelcacheObj"
+    ],
+    [
+        "mapObj",
+        "legendObj",
+        "legendObj",
+        "legendObj",
+        "legendObj"
+    ],
+    [
+        "mapObj",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "mapObj",
+        "outputformatObj",
+        "outputformatObj",
+        "outputformatObj",
+        "outputformatObj"
+    ],
+    [
+        "mapObj",
+        "projectionObj",
+        "projectionObj",
+        "projectionObj",
+        "projectionObj"
+    ],
+    [
+        "mapObj",
+        "querymapObj",
+        "querymapObj",
+        "querymapObj",
+        "querymapObj"
+    ],
+    [
+        "mapObj",
+        "referenceMapObj",
+        "referenceMapObj",
+        "referenceMapObj",
+        "referenceMapObj"
+    ],
+    [
+        "mapObj",
+        "scalebarObj",
+        "scalebarObj",
+        "scalebarObj",
+        "scalebarObj"
+    ],
+    [
+        "mapObj",
+        "webObj",
+        "webObj",
+        "webObj",
+        "webObj"
+    ],
+    [
+        "mysqli",
+        "(int<-1, max> | numeric-string)",
+        "int<-1, max>|numeric-string",
+        "int<-1, max>|numeric-string",
+        "int<-1, max>|string"
+    ],
+    [
+        "mysqli",
+        "(object | null)",
+        "object|null",
+        "object|null",
+        "object|null"
+    ],
+    [
+        "mysqli",
+        "int<-1, max>",
+        "int<-1, max>",
+        "int<-1, max>",
+        "int<-1, max>"
+    ],
+    [
+        "mysqli",
+        "numeric-string",
+        "numeric-string",
+        "numeric-string",
+        "string"
+    ],
+    [
+        "mysqli_driver",
+        "bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        "mysqli_driver",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "mysqli_driver",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "mysqli_result",
+        "(int<0, max> | numeric-string)",
+        "int<0, max>|numeric-string",
+        "int<0, max>|numeric-string",
+        "int<0, max>|string"
+    ],
+    [
+        "mysqli_result",
+        "(object | false)",
+        "object|false",
+        "object|false",
+        "object|false"
+    ],
+    [
+        "mysqli_result",
+        "Traversable<__template<TKey, 'class IteratorAggregate', mixed>, __template<TValue, 'class IteratorAggregate', mixed>>",
+        "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
+    ],
+    [
+        "mysqli_result",
+        "int<0, max>",
+        "int<0, max>",
+        "int<0, max>",
+        "int<0, max>"
+    ],
+    [
+        "mysqli_result",
+        "numeric-string",
+        "numeric-string",
+        "numeric-string",
+        "string"
+    ],
+    [
+        "mysqli_sql_exception",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "mysqli_stmt",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
+    ],
+    [
+        "mysqli_stmt",
+        "(int<-1, max> | numeric-string)",
+        "int<-1, max>|numeric-string",
+        "int<-1, max>|numeric-string",
+        "int<-1, max>|string"
+    ],
+    [
+        "mysqli_stmt",
+        "(object | false)",
+        "object|false",
+        "object|false",
+        "object|false"
+    ],
+    [
+        "mysqli_stmt",
+        "int<-1, max>",
+        "int<-1, max>",
+        "int<-1, max>",
+        "int<-1, max>"
+    ],
+    [
+        "mysqli_stmt",
+        "list<array{errno: int, sqlstate: string, error: string}>",
+        "list<array{errno: int, sqlstate: string, error: string}>",
+        "list<array{errno: int, sqlstate: string, error: string}>",
+        "list<array<string, int|string>>"
+    ],
+    [
+        "mysqli_stmt",
+        "non-empty-string",
+        "non-empty-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        "mysqli_stmt",
+        "object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        "mysqli_warning",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "mysqli_warning",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "parallel\\Events\\Event",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "parallel\\Events\\Event",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "parallel\\Events\\Event",
+        "object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        "parallel\\Events\\Event",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "pq\\Exception\\DomainException",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "pq\\LOB",
+        "resource",
+        "resource",
+        "resource",
+        "resource"
+    ],
+    [
+        "pq\\Result",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "querymapObj",
+        "colorObj",
+        "colorObj",
+        "colorObj",
+        "colorObj"
+    ],
+    [
+        "referenceMapObj",
+        "ColorObj",
+        "ColorObj",
+        "colorObj",
+        "colorObj"
+    ],
+    [
+        "referenceMapObj",
+        "rectObj",
+        "rectObj",
+        "rectObj",
+        "rectObj"
+    ],
+    [
+        "scalebarObj",
+        "colorObj",
+        "colorObj",
+        "colorObj",
+        "colorObj"
+    ],
+    [
+        "scalebarObj",
+        "labelObj",
+        "labelObj",
+        "labelObj",
+        "labelObj"
+    ],
+    [
+        "shapeObj",
+        "(shapeObj | null)",
+        "shapeObj|null",
+        "shapeObj|null",
+        "shapeObj|null"
+    ],
+    [
+        "shapeObj",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "shapeObj",
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        "shapeObj",
+        "rectObj",
+        "rectObj",
+        "rectObj",
+        "rectObj"
+    ],
+    [
+        "styleObj",
+        "colorObj",
+        "colorObj",
+        "colorObj",
+        "colorObj"
+    ],
+    [
+        "styleObj",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "symbolObj",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "tidy",
+        "(string | false)",
+        "string|false",
+        "string|false",
+        "string|false"
+    ],
+    [
+        "tidy",
+        "(tidyNode | null)",
+        "tidyNode|null",
+        "tidyNode|null",
+        "tidyNode|null"
+    ],
+    [
+        "tidy",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "tidyNode",
+        "(array | null)",
+        "array|null",
+        "array|null",
+        "array|null"
+    ],
+    [
+        "tidyNode",
+        "(int | null)",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        "tidyNode",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "tidyNode",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "tidyNode",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        "webObj",
+        "float",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        "webObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj",
+        "hashTableObj"
+    ],
+    [
+        "webObj",
+        "rectObj",
+        "rectObj",
+        "rectObj",
+        "rectObj"
     ]
 ]

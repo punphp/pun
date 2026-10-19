@@ -109,6 +109,8 @@ pub enum Accessory {
     LiteralString,
     LowercaseString,
     UppercaseString,
+    /// `AccessoryDecimalIntegerStringType`, `inverse` is `non-decimal-int-string`
+    DecimalIntString { inverse: bool },
     List,
     NonEmptyArray,
 }
@@ -193,7 +195,8 @@ pub enum Type {
     ObjectWithoutClass,
     /// `ObjectType` (no args) or `GenericObjectType`, with the class name as written
     Object(String, Vec<Type>),
-    Static(String),
+    /// `StaticType`; with arguments `GenericStaticType` (`static<T>`)
+    Static(String, Vec<Type>),
     This(String),
     Array(Box<Type>, Box<Type>),
     ConstArray(Box<ConstArray>),
@@ -347,6 +350,7 @@ impl Type {
                             | Accessory::LiteralString
                             | Accessory::LowercaseString
                             | Accessory::UppercaseString
+                            | Accessory::DecimalIntString { .. }
                     )
             ))
         })
@@ -453,7 +457,7 @@ impl Type {
             | Type::ConstArray(_)
             | Type::Iterable(..)
             | Type::Accessory(Accessory::List | Accessory::NonEmptyArray) => Tri::Yes,
-            Type::Object(class, _) | Type::Static(class) | Type::This(class) => {
+            Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
                 is_instance_of(class, "Traversable")
             }
             Type::ObjectWithoutClass | Type::ObjectShape(_) => Tri::Maybe,
@@ -486,7 +490,10 @@ impl Type {
     fn is_non_empty_string(&self) -> Tri {
         self.query_c(&|t| match t {
             Type::Accessory(
-                Accessory::NonEmptyString | Accessory::NonFalsyString | Accessory::NumericString,
+                Accessory::NonEmptyString
+                | Accessory::NonFalsyString
+                | Accessory::NumericString
+                | Accessory::DecimalIntString { inverse: false },
             ) => Tri::Yes,
             Type::ConstString(s) => Tri::from(!s.is_empty()),
             Type::ClassString(_) => Tri::Yes,
@@ -513,13 +520,33 @@ impl Type {
 
     fn is_numeric_string(&self) -> Tri {
         self.query(&|t| match t {
-            Type::Accessory(Accessory::NumericString) => Tri::Yes,
+            Type::Accessory(Accessory::NumericString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
             Type::ConstString(s) => Tri::from(crate::value::numeric(s).is_some()),
             Type::ClassString(_) => Tri::No,
             Type::String
             | Type::StringAcceptingStringable
             | Type::StringNotAcceptingStringable
             | Type::Accessory(_) => Tri::Maybe,
+            _ => Tri::No,
+        })
+    }
+
+    /// `isDecimalIntegerString()`
+    fn is_decimal_int_string(&self) -> Tri {
+        self.query(&|t| match t {
+            Type::Accessory(Accessory::DecimalIntString { inverse }) => Tri::from(!inverse),
+            Type::ConstString(s) => Tri::from(s.parse::<i64>().is_ok_and(|i| i.to_string() == *s)),
+            Type::String
+            | Type::StringAcceptingStringable
+            | Type::StringNotAcceptingStringable
+            | Type::Accessory(
+                Accessory::NonEmptyString
+                | Accessory::NonFalsyString
+                | Accessory::NumericString
+                | Accessory::LiteralString
+                | Accessory::LowercaseString
+                | Accessory::UppercaseString,
+            ) => Tri::Maybe,
             _ => Tri::No,
         })
     }
@@ -538,7 +565,7 @@ impl Type {
 
     fn is_lowercase_string(&self) -> Tri {
         self.query_c(&|t| match t {
-            Type::Accessory(Accessory::LowercaseString) => Tri::Yes,
+            Type::Accessory(Accessory::LowercaseString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
             Type::ConstString(s) => Tri::from(s.to_ascii_lowercase() == *s),
             Type::String
             | Type::StringAcceptingStringable
@@ -551,7 +578,7 @@ impl Type {
 
     fn is_uppercase_string(&self) -> Tri {
         self.query_c(&|t| match t {
-            Type::Accessory(Accessory::UppercaseString) => Tri::Yes,
+            Type::Accessory(Accessory::UppercaseString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
             Type::ConstString(s) => Tri::from(s.to_ascii_uppercase() == *s),
             Type::String
             | Type::StringAcceptingStringable
@@ -565,7 +592,7 @@ impl Type {
     pub fn is_callable(&self) -> Tri {
         self.query(&|t| match t {
             Type::Callable(_) | Type::Closure(_) => Tri::Yes,
-            Type::Accessory(Accessory::NumericString) => Tri::No,
+            Type::Accessory(Accessory::NumericString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::No,
             Type::String
             | Type::StringAcceptingStringable
             | Type::StringNotAcceptingStringable
@@ -577,7 +604,7 @@ impl Type {
             Type::ConstString(s) => Tri::from(symbols::function(s).is_some()),
             Type::Array(_, item) => Tri::Maybe.and(item.is_string()),
             Type::ConstArray(a) => a.is_callable(),
-            Type::Object(class, _) | Type::Static(class) | Type::This(class) => {
+            Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
                 match symbols::lookup(class) {
                     Some(c) if has_method(&c, "__invoke") => Tri::Yes,
                     Some(c) if c.is_final => Tri::No,
@@ -592,7 +619,7 @@ impl Type {
     fn object_class_names(&self) -> Vec<String> {
         match self {
             Type::Object(class, _)
-            | Type::Static(class)
+            | Type::Static(class, _)
             | Type::This(class)
             | Type::EnumCase(class, _) => vec![class.clone()],
             Type::Closure(_) => vec!["Closure".to_string()],
@@ -623,7 +650,8 @@ impl Type {
             Type::Union(types) => union(types.iter().map(Type::iterable_key_type).collect()),
             Type::Template(t) => t.bound.iterable_key_type(),
             Type::Object(class, args) => iterable_arg(class, args, true),
-            Type::Static(class) | Type::This(class) => static_object(class).iterable_key_type(),
+            Type::Static(class, args) => static_of(class, args).iterable_key_type(),
+            Type::This(class) => static_object(class).iterable_key_type(),
             Type::Never(_) => Type::Never(NeverKind::Implicit),
             _ => mixed(),
         }
@@ -661,7 +689,8 @@ impl Type {
                     value
                 }
             }
-            Type::Static(class) | Type::This(class) => static_object(class).iterable_value_type(),
+            Type::Static(class, args) => static_of(class, args).iterable_value_type(),
+            Type::This(class) => static_object(class).iterable_value_type(),
             Type::Never(_) => Type::Never(NeverKind::Implicit),
             _ => mixed(),
         }
@@ -716,7 +745,7 @@ impl Type {
                     format!("{name}<{}>", args.join(", "))
                 }
             }
-            Type::Static(class) => format!("static({})", static_object(class).describe(level)),
+            Type::Static(class, args) => format!("static({})", static_of(class, args).describe(level)),
             Type::This(class) => format!("$this({})", static_object(class).describe(level)),
             Type::EnumCase(class, case) => format!("{class}::{case}"),
             Type::Wildcard => "*".to_string(),
@@ -868,6 +897,9 @@ impl Type {
                 Type::Object(class.clone(), args.iter().map(f).collect())
             }
             Type::ClassString(Some(g)) => Type::ClassString(Some(bx(f(g)))),
+            Type::Static(class, args) if !args.is_empty() => {
+                Type::Static(class.clone(), args.iter().map(f).collect())
+            }
             Type::Template(t) => Type::Template(Box::new(Template {
                 bound: f(&t.bound),
                 ..(**t).clone()
@@ -910,6 +942,8 @@ impl Accessory {
             Accessory::LiteralString => "literal-string",
             Accessory::LowercaseString => "lowercase-string",
             Accessory::UppercaseString => "uppercase-string",
+            Accessory::DecimalIntString { inverse: false } => "decimal-int-string",
+            Accessory::DecimalIntString { inverse: true } => "non-decimal-int-string",
             Accessory::List => "list",
             Accessory::NonEmptyArray => "non-empty-array",
         }
@@ -943,6 +977,15 @@ fn static_object(class: &str) -> Type {
     Type::Object(c.name.clone(), args)
 }
 
+/// `getStaticObjectType()` of a `static` (`GenericStaticType`'s is the class with its arguments).
+fn static_of(class: &str, args: &[Type]) -> Type {
+    if args.is_empty() {
+        static_object(class)
+    } else {
+        Type::Object(class.to_string(), args.to_vec())
+    }
+}
+
 /// `getIterableKeyType()` (`key`) or `getIterableValueType()` of a class with these template arguments (an error
 /// for a class that is not `Traversable`).
 fn iterable_arg(class: &str, args: &[Type], key: bool) -> Type {
@@ -955,6 +998,18 @@ fn iterable_arg(class: &str, args: &[Type], key: bool) -> Type {
         .map_or(Type::Error, |s| {
             with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), &c, args)
         })
+}
+
+/// The type arguments `c<args>` gives its generic ancestor `ancestor` (`getAncestorWithClassName()`), `None` when
+/// `c` does not name them.
+pub fn ancestor_args(c: &symbols::Class, ancestor: &str, args: &[Type]) -> Option<Vec<Type>> {
+    let generic = c.generics.get(ancestor)?;
+    Some(
+        generic
+            .iter()
+            .map(|s| with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), c, args))
+            .collect(),
+    )
 }
 
 /// `t` with the class's own templates replaced by its arguments (by their bounds when missing).
@@ -1382,7 +1437,7 @@ pub fn to_phpdoc(t: &Type) -> String {
             )
         }
         Type::Object(class, _) => class.clone(),
-        Type::Static(_) => "static".to_string(),
+        Type::Static(..) => "static".to_string(),
         Type::This(_) => "$this".to_string(),
         Type::Array(key, item) => {
             if key.is_plain_implicit_mixed() {
@@ -1948,7 +2003,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 let named = T::Object(x.clone(), vec![]);
                 let r = match &**g {
                     T::Template(tpl) => is_super_type_of(&tpl.bound, &named),
-                    T::Static(c) => is_super_type_of(&static_object(c), &named),
+                    T::Static(c, args) => is_super_type_of(&static_of(c, args), &named),
                     g => is_super_type_of(g, &named),
                 };
                 if r.yes() { Tri::Maybe } else { Tri::No }
@@ -1992,13 +2047,18 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         },
         T::Object(class, args) => object_super(class, args, b),
         T::This(class) if !matches!(b, T::This(_)) => {
-            is_super_type_of(&T::Static(class.clone()), b).and(Tri::Maybe)
+            is_super_type_of(&T::Static(class.clone(), vec![]), b).and(Tri::Maybe)
         }
-        T::Static(class) | T::This(class) => match b {
-            T::Static(_) | T::This(_) => is_super_type_of(&static_object(class), b),
-            T::ObjectWithoutClass => Tri::Maybe,
-            T::Object(c, _) => {
-                let r = is_super_type_of(&static_object(class), b);
+        T::Static(class, _) | T::This(class) => {
+            let object = match a {
+                T::Static(_, args) => static_of(class, args),
+                _ => static_object(class),
+            };
+            match b {
+                T::Static(..) | T::This(_) => is_super_type_of(&object, b),
+                T::ObjectWithoutClass => Tri::Maybe,
+                T::Object(c, _) => {
+                    let r = is_super_type_of(&object, b);
                 if r.yes() && symbols::lookup(c).is_some_and(|c| c.is_final) {
                     r
                 } else {
@@ -2006,7 +2066,8 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 }
             }
             _ => Tri::No,
-        },
+            }
+        }
         T::Array(_, item) => match b {
             T::Array(..) | T::ConstArray(_) => is_super_type_of(item, &b.iterable_value_type())
                 .and(is_super_type_of(
@@ -2066,7 +2127,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             }
             T::ObjectWithoutClass => Tri::Maybe,
             T::ObjectShape(_) => Tri::from(a == b).or(Tri::Maybe),
-            T::Object(..) | T::Static(_) | T::This(_) => Tri::Maybe,
+            T::Object(..) | T::Static(..) | T::This(_) => Tri::Maybe,
             _ => Tri::No,
         },
         // (b is not compound here)
@@ -2225,9 +2286,17 @@ fn accessory_super(acc: &Accessory, b: &Type) -> Tri {
         Accessory::LiteralString => b.is_literal_string(),
         Accessory::LowercaseString => b.is_lowercase_string(),
         Accessory::UppercaseString => b.is_uppercase_string(),
+        Accessory::DecimalIntString { inverse } => decimal_int_super(*inverse, b),
         Accessory::List => b.is_list(),
         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
     }
+}
+
+/// `AccessoryDecimalIntegerStringType::isSuperTypeOf()`
+fn decimal_int_super(inverse: bool, b: &Type) -> Tri {
+    let decimal = b.is_decimal_int_string();
+    b.is_string()
+        .and(if inverse { decimal.negate() } else { decimal })
 }
 
 fn int_range_super(a: &Type, b: &Type) -> Tri {
@@ -2297,9 +2366,11 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     } else if c.ancestors.contains(&class) {
         // ponytail: every built-in class names its generic ancestors' arguments; for user classes add PHPStan's
         // non-generic ancestor case (the class relation and maybe)
-        c.generics
-            .get(&class)
-            .expect("a generic ancestor's arguments")
+        // an ancestor named without type arguments: the class relation only
+        let Some(generic) = c.generics.get(&class) else {
+            return result;
+        };
+        generic
             .iter()
             .map(|s| with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), &c, b_args))
             .collect()
@@ -2429,6 +2500,18 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                 {
                     Tri::Yes
                 }
+                Accessory::DecimalIntString { inverse: false }
+                    if matches!(
+                        b,
+                        T::Accessory(
+                            Accessory::NumericString
+                                | Accessory::LowercaseString
+                                | Accessory::UppercaseString
+                        )
+                    ) =>
+                {
+                    Tri::Yes
+                }
                 _ => {
                     let q = match acc {
                         Accessory::NonEmptyString => b.is_non_empty_string(),
@@ -2437,6 +2520,9 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         Accessory::LiteralString => b.is_literal_string(),
                         Accessory::LowercaseString => b.is_lowercase_string(),
                         Accessory::UppercaseString => b.is_uppercase_string(),
+                        Accessory::DecimalIntString { inverse } => {
+                            decimal_int_super(*inverse, b)
+                        }
                         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
                         Accessory::List => b.is_list(),
                     };
@@ -2684,7 +2770,7 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
             Type::Object(..)
                 | Type::Mixed { .. }
                 | Type::ObjectWithoutClass
-                | Type::Static(_)
+                | Type::Static(..)
                 | Type::This(_)
                 | Type::EnumCase(..)
         )

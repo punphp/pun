@@ -21,7 +21,7 @@ use pun_phpstan::types::{
 };
 
 use super::Checker;
-use super::declarations::doc_before;
+use super::doc::doc_before;
 use super::doc::{Doc, FileScopes, NameScope, scopes_of};
 
 fn text(b: &[u8]) -> String {
@@ -107,6 +107,62 @@ fn class_templates(c: &Checker, k: &ClassLikeMetadata) -> Vec<TemplateType> {
     templates(&doc, &scope, &format!("class {}", original_name(k)))
 }
 
+/// FileTypeMapper's template types of trait `t` used by `context`: the `@use T<...>` arguments of the `use`
+/// statement (`typeMapFromList()`), else the templates' bounds.
+fn trait_templates(
+    c: &Checker,
+    t: &ClassLikeMetadata,
+    context: &ClassLikeMetadata,
+) -> Vec<(String, Type)> {
+    let own = class_templates(c, t);
+    if own.is_empty() {
+        return Vec::new();
+    }
+    let trait_name = original_name(t);
+    let mut args: Option<Vec<Type>> = None;
+    if let Some(contents) = c.file_contents(context.span.file_id) {
+        let scopes = scopes_of(context.span.file_id, &contents);
+        let scope = scope_at(c, context.span, Some(context));
+        for (offset, names) in scopes.trait_uses(context.span.start.offset, context.span.end.offset)
+        {
+            let names_here = scopes.at(*offset);
+            let uses_it = names.iter().any(|n| {
+                let (resolved, _) =
+                    names_here.resolve(mago_names::kind::NameKind::Default, n.as_bytes());
+                resolved.eq_ignore_ascii_case(trait_name.as_bytes())
+            });
+            let Some(doc) = uses_it
+                .then(|| doc_before(&contents, *offset as usize))
+                .flatten()
+            else {
+                continue;
+            };
+            for node in &Doc::parse(&doc).uses {
+                if let Type::Object(name, found) = resolve_in(node, &scope)
+                    && !found.is_empty()
+                    && name.eq_ignore_ascii_case(&trait_name)
+                {
+                    args = Some(found);
+                }
+            }
+        }
+    }
+    own.into_iter()
+        .enumerate()
+        .map(|(i, tpl)| {
+            let ty = match &args {
+                Some(args) => args
+                    .get(i)
+                    .cloned()
+                    .or_else(|| tpl.default.clone())
+                    .unwrap_or_else(|| tpl.bound.clone()),
+                None => tpl.bound.clone(),
+            };
+            (tpl.name, ty)
+        })
+        .collect()
+}
+
 /// `ParserNodeTypeToPHPStanType::resolve()` of a native type in the analysed file, in class `class`.
 pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Type {
     match hint {
@@ -141,7 +197,7 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
         Hint::Array(_) => Type::array(mixed(), mixed()),
         Hint::Callable(_) => Type::Callable(None),
         Hint::Static(_) => match class {
-            Some(k) => Type::Static(original_name(k)),
+            Some(k) => Type::Static(original_name(k), vec![]),
             None => Type::Object("static".to_string(), vec![]),
         },
         Hint::Self_(_) => match class {
@@ -187,14 +243,19 @@ struct Resolved {
     exists: bool,
 }
 
+/// The own PHPDoc of method `m` declared in `class`, `self` being `context`.
 fn resolved_own(
     c: &Checker,
     m: &FunctionLikeMetadata,
     class: &ClassLikeMetadata,
+    context: &ClassLikeMetadata,
 ) -> Option<Resolved> {
     let (doc, _) = doc_at(c, m.span)?;
     let doc = Doc::parse(&doc);
-    let mut scope = scope_at(c, m.span, Some(class));
+    let mut scope = scope_at(c, m.span, Some(context));
+    if class.kind == SymbolKind::Trait && !std::ptr::eq(class, context) {
+        scope.templates.extend(trait_templates(c, class, context));
+    }
     let method = text(m.original_name.as_bytes());
     for t in templates(
         &doc,
@@ -228,8 +289,11 @@ fn method_doc(
     depth: usize,
 ) -> Option<Resolved> {
     let m = c.codebase.get_method(class.name.as_bytes(), name)?;
+    if class.flags.contains(MetadataFlags::BUILTIN) {
+        return builtin_method_doc(class, m, name);
+    }
     let own = if m.has_docblock {
-        resolved_own(c, m, class)
+        resolved_own(c, m, class, class)
     } else {
         None
     };
@@ -239,6 +303,34 @@ fn method_doc(
         .map(|p| text(&p.name.0.as_bytes()[1..]))
         .collect();
     inherit(c, class, name, own, &names, depth)
+}
+
+/// A built-in method's resolved PHPDoc, from PHPStan's reflection (its stubs), keyed by Mago's parameter names.
+fn builtin_method_doc(
+    class: &ClassLikeMetadata,
+    m: &FunctionLikeMetadata,
+    name: &[u8],
+) -> Option<Resolved> {
+    let k = symbols::class(&text(class.name.as_bytes()))?;
+    let doc = k
+        .methods
+        .get(&text(name).to_ascii_lowercase())?
+        .doc
+        .as_ref()?;
+    let resolve = |s: &str| pun_phpstan::resolve::resolve_str(s, Some(&k.name));
+    Some(Resolved {
+        params: doc
+            .params
+            .iter()
+            .filter_map(|(i, t)| {
+                let p = m.parameters.get(*i)?;
+                Some((text(&p.name.0.as_bytes()[1..]), resolve(t)))
+            })
+            .collect(),
+        ret: doc.ret.as_deref().map(resolve),
+        exists: true,
+        ..Resolved::default()
+    })
 }
 
 /// `PhpDocInheritanceResolver::resolvePhpDocForMethod()`: the PHPDoc `current` with what the parent class's,
@@ -274,6 +366,7 @@ fn inherit(
             parent_doc,
             positional,
             &declaring.1.parameters,
+            is_constructor(declaring.0, &lower),
         ))
     };
     if let Some(parent) = class
@@ -291,6 +384,28 @@ fn inherit(
         {
             return Some(found);
         }
+    }
+    // an abstract method with a PHPDoc in one of the class's own traits
+    for t in class.used_traits.iter() {
+        let (Some(trait_), Some(m)) = (
+            c.codebase.get_class_like(t.as_bytes()),
+            c.codebase.get_method(t.as_bytes(), &lower),
+        ) else {
+            continue;
+        };
+        if !m.has_docblock || !m.method_metadata.as_ref().is_some_and(|mm| mm.is_abstract) {
+            continue;
+        }
+        let Some(own) = resolved_own(c, m, trait_, class) else {
+            continue;
+        };
+        return Some(merge(
+            current,
+            own,
+            positional,
+            &m.parameters,
+            is_constructor(trait_, &lower),
+        ));
     }
     current
 }
@@ -317,13 +432,19 @@ fn merge(
     parent: Resolved,
     positional: &[String],
     parent_params: &[mago_codex::metadata::parameter::FunctionLikeParameterMetadata],
+    constructor: bool,
 ) -> Resolved {
     let mut out = current.unwrap_or_default();
     out.exists = true;
-    let parent_names: Vec<String> = parent_params
-        .iter()
-        .map(|p| text(&p.name.0.as_bytes()[1..]))
-        .collect();
+    // a constructor's parameters map by name (`resolveMethodPhpDocFromParentClass()`)
+    let parent_names: Vec<String> = if constructor {
+        positional.to_vec()
+    } else {
+        parent_params
+            .iter()
+            .map(|p| text(&p.name.0.as_bytes()[1..]))
+            .collect()
+    };
     if out.ret.is_none() {
         out.ret = parent.ret;
     }
@@ -361,10 +482,14 @@ pub fn method(
     let own = doc_before(&c.file.contents, m.span().start.offset as usize).map(|doc| {
         let doc = Doc::parse(doc);
         let mut scope = scope_at(c, m.span(), Some(context));
-        for t in class_templates(c, k) {
-            scope
-                .templates
-                .insert(t.name.clone(), Type::Template(Box::new(t)));
+        if k.kind == SymbolKind::Trait && !std::ptr::eq(k, context) {
+            scope.templates.extend(trait_templates(c, k, context));
+        } else {
+            for t in class_templates(c, k) {
+                scope
+                    .templates
+                    .insert(t.name.clone(), Type::Template(Box::new(t)));
+            }
         }
         let method = text(m.name.value);
         for t in templates(
@@ -464,19 +589,16 @@ fn signature(
             } else {
                 None
             };
-            let phpdoc = promoted
-                .or_else(|| doc.params.get(&name).cloned())
-                .map(|t| {
-                    // a variadic parameter's `@param array<T> ...$x` is T
-                    match (&t, p.ellipsis.is_some()) {
-                        (Type::Array(_, item), true) if native.is_none() => (**item).clone(),
-                        _ => t,
-                    }
-                });
-            let ty = match native {
-                Some(n) => decide_type(n, phpdoc),
-                None => phpdoc.unwrap_or_else(mixed),
-            };
+            let mut phpdoc = promoted.or_else(|| doc.params.get(&name).cloned());
+            // PhpParameterFromParserNodeReflection::getType(): a `null` default makes the PHPDoc type nullable
+            // unless it infers a template type from it
+            if default_is_null(p)
+                && let Some(t) = &phpdoc
+                && !has_template(t)
+            {
+                phpdoc = Some(t.clone().add_null());
+            }
+            let ty = decide_type(native.unwrap_or_else(mixed), phpdoc);
             let out = doc.outs.get(&name).cloned();
             let closure_this = doc.closure_this.get(&name).cloned();
             (name, ty, out, closure_this)
@@ -485,10 +607,7 @@ fn signature(
     let native_ret = ret
         .map(|r| native(c, &r.hint, class))
         .or_else(|| method.and_then(magic_return));
-    let ret = match native_ret {
-        Some(n) => decide_type(n, doc.ret),
-        None => doc.ret.unwrap_or_else(mixed),
-    };
+    let ret = decide_type(native_ret.unwrap_or_else(mixed), doc.ret);
     Signature {
         params,
         ret,
@@ -529,6 +648,32 @@ fn promoted_var(
     }
 }
 
+fn has_template(t: &Type) -> bool {
+    let found = std::cell::Cell::new(false);
+    fn walk(t: &Type, found: &std::cell::Cell<bool>) {
+        if matches!(t, Type::Template(_)) {
+            found.set(true);
+        }
+        t.traverse(&|inner| {
+            walk(inner, found);
+            inner.clone()
+        });
+    }
+    walk(t, &found);
+    found.get()
+}
+
+/// A constructor: `__construct` or a method named as its class (`resolveMethodPhpDocFromParentClass()`).
+fn is_constructor(k: &ClassLikeMetadata, lower: &[u8]) -> bool {
+    let short = k
+        .name
+        .as_bytes()
+        .rsplit(|b| *b == b'\\')
+        .next()
+        .unwrap_or(b"");
+    lower == b"__construct" || short.eq_ignore_ascii_case(lower)
+}
+
 /// A `= null` default.
 fn default_is_null(p: &FunctionLikeParameter) -> bool {
     matches!(
@@ -552,6 +697,7 @@ pub fn property(
     let native = hint.map(|h| native(c, h, Some(context)));
     let mut phpdoc = doc_before(&c.file.contents, at.start.offset as usize).and_then(|doc| {
         let doc = Doc::parse(doc);
+        // (a trait's templates are not in scope: PHPStan reports nothing for a `@var` of one)
         let scope = scope_at(c, at, Some(context));
         doc.var_types(&scope)
             .into_iter()
@@ -605,6 +751,13 @@ fn inherited_property_doc(
         if p.read_visibility == mago_codex::visibility::Visibility::Private {
             continue;
         }
+        if declaring.flags.contains(MetadataFlags::BUILTIN) {
+            let class = symbols::class(&text(declaring.name.as_bytes()))?;
+            return class
+                .property_docs
+                .get(&text(name))
+                .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
+        }
         let Some(span) = p.span else {
             continue;
         };
@@ -619,6 +772,38 @@ fn inherited_property_doc(
         return own.or_else(|| inherited_property_doc(c, declaring, name, depth + 1));
     }
     None
+}
+
+/// The `NameScope` of a class-like's own PHPDoc (at `span`), with its templates.
+pub fn class_scope(c: &Checker, span: Span, k: &ClassLikeMetadata) -> NameScope {
+    scope_at(c, span, Some(k))
+}
+
+/// `scope` with a `@method` tag's own templates (`TemplateTypeScope::createWithMethod()`).
+pub fn with_method_templates(
+    scope: &NameScope,
+    k: &ClassLikeMetadata,
+    method: &str,
+    tags: &[super::doc::TemplateTag],
+) -> NameScope {
+    let mut scope = scope.clone();
+    let described = format!("method {}::{method}()", original_name(k));
+    for t in tags {
+        let template = TemplateType {
+            name: t.name.clone(),
+            scope: described.clone(),
+            bound: t
+                .bound
+                .as_ref()
+                .map_or(Type::Mixed { explicit: false }, |b| resolve_in(b, &scope)),
+            default: t.default.as_ref().map(|d| resolve_in(d, &scope)),
+            argument: false,
+        };
+        scope
+            .templates
+            .insert(t.name.clone(), Type::Template(Box::new(template)));
+    }
+    scope
 }
 
 /// The doc comment of the class constant declaration whose item starts at `offset`: the one before its modifiers.
@@ -710,6 +895,8 @@ fn inherited_constant_doc(
 pub struct Classes<'c, 'a, 'arena> {
     checker: &'c Checker<'a, 'arena>,
     cache: RefCell<HashMap<String, Option<Arc<Class>>>>,
+    /// classes being built (a cyclic hierarchy finds no class)
+    building: RefCell<std::collections::HashSet<String>>,
 }
 
 impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
@@ -717,6 +904,7 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
         Classes {
             checker,
             cache: RefCell::new(HashMap::new()),
+            building: RefCell::new(std::collections::HashSet::new()),
         }
     }
 
@@ -725,7 +913,11 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
         if let Some(found) = self.cache.borrow().get(&key) {
             return found.clone();
         }
+        if !self.building.borrow_mut().insert(key.clone()) {
+            return None;
+        }
         let built = self.build(name).map(Arc::new);
+        self.building.borrow_mut().remove(&key);
         self.cache.borrow_mut().insert(key, built.clone());
         built
     }
@@ -744,7 +936,9 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             .chain(k.all_parent_interfaces.iter())
             .map(canonical)
             .collect();
-        let templates = class_templates(c, k)
+        let own = class_templates(c, k);
+        let generics = self.generics(k, &own);
+        let templates = own
             .into_iter()
             .map(|t| Template {
                 name: t.name,
@@ -762,11 +956,106 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             is_enum: k.kind == SymbolKind::Enum,
             is_final: k.flags.contains(MetadataFlags::FINAL),
             properties: Vec::new(),
-            constants: Vec::new(),
+            // ponytail: a constant whose value is not a literal (arrays, expressions) reads as `mixed`
+            constants: k
+                .constants
+                .values()
+                .map(|m| {
+                    let value = m
+                        .inferred_type
+                        .as_ref()
+                        .and_then(|a| super::enums::constant_value(c, a));
+                    (
+                        text(m.name.as_bytes()),
+                        value.map_or_else(|| "mixed".to_string(), |t| to_phpdoc(&t)),
+                    )
+                })
+                .collect(),
             methods: HashMap::new(),
             iterable: None,
-            generics: HashMap::new(),
+            generics,
+            property_docs: HashMap::new(),
         })
+    }
+
+    /// The type arguments of each generic ancestor (`@extends` / `@implements`, through the parents' own), over the
+    /// class's templates.
+    fn generics(
+        &self,
+        k: &ClassLikeMetadata,
+        own: &[TemplateType],
+    ) -> HashMap<String, Vec<String>> {
+        let c = self.checker;
+        let canonical = |w: &mago_word::Word| {
+            c.codebase
+                .get_class_like(w.as_bytes())
+                .map_or_else(|| text(w.as_bytes()), original_name)
+        };
+        let mut direct: HashMap<String, Vec<Type>> = HashMap::new();
+        if let Some((doc, scopes)) = doc_at(c, k.span) {
+            let doc = Doc::parse(&doc);
+            let mut scope = NameScope {
+                names: scopes.at(k.span.start.offset),
+                class: Some(original_name(k)),
+                parent: parent_name(c.codebase, k),
+                templates: HashMap::new(),
+            };
+            for t in own {
+                scope
+                    .templates
+                    .insert(t.name.clone(), Type::Template(Box::new(t.clone())));
+            }
+            for node in &doc.ancestors {
+                if let Type::Object(name, args) = resolve_in(node, &scope)
+                    && !args.is_empty()
+                {
+                    let name = c
+                        .codebase
+                        .get_class_like(name.as_bytes())
+                        .map_or(name, original_name);
+                    direct.insert(name.to_ascii_lowercase(), args);
+                }
+            }
+        }
+        let mut out = HashMap::new();
+        let parents = k
+            .direct_parent_class
+            .iter()
+            .chain(k.direct_parent_interfaces.iter())
+            .map(canonical);
+        for parent in parents {
+            let Some(p) = symbols::lookup(&parent) else {
+                continue;
+            };
+            if p.templates.is_empty() {
+                // a non-generic parent passes its own ancestors' arguments on as they are
+                for (ancestor, args) in &p.generics {
+                    out.entry(ancestor.clone()).or_insert_with(|| args.clone());
+                }
+                continue;
+            }
+            // without `@extends`, the parent's templates resolve to their defaults, else their bounds
+            let args = direct
+                .get(&parent.to_ascii_lowercase())
+                .cloned()
+                .unwrap_or_else(|| {
+                    p.templates
+                        .iter()
+                        .map(|t| {
+                            let s = t.default.as_deref().unwrap_or(&t.bound);
+                            pun_phpstan::resolve::resolve_str(s, Some(&p.name))
+                        })
+                        .collect()
+                });
+            for ancestor in p.generics.keys() {
+                if let Some(mapped) = pun_phpstan::types::ancestor_args(&p, ancestor, &args) {
+                    out.entry(ancestor.clone())
+                        .or_insert_with(|| mapped.iter().map(to_phpdoc).collect());
+                }
+            }
+            out.insert(p.name.clone(), args.iter().map(to_phpdoc).collect());
+        }
+        out
     }
 }
 

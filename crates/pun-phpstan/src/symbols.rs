@@ -52,6 +52,15 @@ pub struct Function {
     /// `getNamedArgumentsVariants()`, when it differs from the positional ones
     pub named: Option<Vec<Variant>>,
     pub is_static: bool,
+    /// A method's resolved PHPDoc (`getResolvedPhpDoc()`), which an overriding user method inherits.
+    pub doc: Option<MethodDoc>,
+}
+
+/// The `@param` types (by parameter position) and `@return` type of a built-in method's PHPDoc.
+#[derive(Debug, PartialEq, Default)]
+pub struct MethodDoc {
+    pub params: HashMap<usize, String>,
+    pub ret: Option<String>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -81,6 +90,8 @@ pub struct Class {
     pub iterable: Option<(String, String)>,
     /// generic ancestors' type arguments over the class's own templates
     pub generics: HashMap<String, Vec<String>>,
+    /// the `@var` type of each declared, non-private property with one
+    pub property_docs: HashMap<String, String>,
 }
 
 pub struct Symbols {
@@ -148,6 +159,14 @@ struct RawFunction {
     named: Option<Vec<RawVariant>>,
     #[serde(rename = "static", default)]
     is_static: bool,
+    doc: Option<RawDoc>,
+}
+
+#[derive(Deserialize)]
+struct RawDoc {
+    params: Entries<String>,
+    #[serde(rename = "return")]
+    ret: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -164,6 +183,8 @@ struct RawClass {
     methods: Entries<RawFunction>,
     iterable: Option<(String, String)>,
     generics: Option<Entries<Vec<String>>>,
+    #[serde(rename = "propertyDocs")]
+    property_docs: Option<Entries<String>>,
 }
 
 /// `null`: gone in 8.5.
@@ -213,6 +234,15 @@ fn read_function(v: RawFunction) -> Function {
         variants: variants(v.variants),
         named: v.named.map(variants),
         is_static: v.is_static,
+        doc: v.doc.map(|d| MethodDoc {
+            params: d
+                .params
+                .0
+                .into_iter()
+                .filter_map(|(i, t)| Some((i.parse().ok()?, t)))
+                .collect(),
+            ret: d.ret,
+        }),
     }
 }
 
@@ -246,6 +276,10 @@ fn read_class(v: RawClass) -> Class {
         iterable: v.iterable,
         generics: v
             .generics
+            .map(|g| g.0.into_iter().collect())
+            .unwrap_or_default(),
+        property_docs: v
+            .property_docs
             .map(|g| g.0.into_iter().collect())
             .unwrap_or_default(),
     }

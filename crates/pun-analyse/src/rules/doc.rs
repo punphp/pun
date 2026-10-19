@@ -41,6 +41,33 @@ pub fn tags(doc: &[u8]) -> Vec<(String, String)> {
     tags
 }
 
+/// The doc comment (`/** ...`) that ends right before `offset`, skipping other comments in between: the one PHP's
+/// tokenizer reads (the start is the last `/**` before its `*/`, so `/*` inside the text is no start).
+pub fn doc_before(contents: &[u8], offset: usize) -> Option<&[u8]> {
+    let mut end = offset.min(contents.len());
+    loop {
+        end -= contents[..end]
+            .iter()
+            .rev()
+            .take_while(|b| b.is_ascii_whitespace())
+            .count();
+        if !contents[..end].ends_with(b"*/") || end < 4 {
+            return None;
+        }
+        let start = contents[..end - 2].windows(3).rposition(|w| w == b"/**");
+        let plain = contents[..end - 2].windows(2).rposition(|w| w == b"/*");
+        match start {
+            Some(start)
+                if contents.get(start + 3).is_some_and(u8::is_ascii_whitespace)
+                    && !contents[start + 3..end - 2].windows(2).any(|w| w == b"*/") =>
+            {
+                return Some(&contents[start..end]);
+            }
+            _ => end = plain?,
+        }
+    }
+}
+
 /// A `@param` value: the type, `...`, and the parameter's name without `$` (`parseParamTagValue()`; a typeless one
 /// is not a ParamTagValueNode).
 fn param_value(value: &str) -> Option<(Node, bool, String)> {
@@ -70,6 +97,131 @@ fn type_value(value: &str) -> Option<(Node, &str)> {
     Some((node, value[offset..].trim_start()))
 }
 
+/// A `@method` tag as written (`parseMethodTagValue()`).
+pub struct MethodTag {
+    pub name: String,
+    pub ret: Option<Node>,
+    /// (name without `$`, type, whether the default is `null`)
+    pub params: Vec<(String, Option<Node>, bool)>,
+    pub templates: Vec<TemplateTag>,
+}
+
+/// Splits `s` at the commas outside brackets and quotes.
+fn split_top(s: &str) -> Vec<&str> {
+    let mut out = Vec::new();
+    let (mut depth, mut quote, mut start) = (0i32, None, 0);
+    let bytes = s.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        let b = bytes[i];
+        match quote {
+            Some(_) if b == b'\\' => i += 1,
+            Some(q) if b == q => quote = None,
+            Some(_) => {}
+            None => match b {
+                b'\'' | b'"' => quote = Some(b),
+                b'(' | b'<' | b'[' | b'{' => depth += 1,
+                b')' | b'>' | b']' | b'}' => depth -= 1,
+                b',' if depth == 0 => {
+                    out.push(&s[start..i]);
+                    start = i + 1;
+                }
+                _ => {}
+            },
+        }
+        i += 1;
+    }
+    out.push(&s[start..]);
+    out
+}
+
+/// The leading identifier of `s` (a method or class name).
+fn identifier(s: &str) -> &str {
+    let len = s
+        .find(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '_' || ch == '\\' || !ch.is_ascii()))
+        .unwrap_or(s.len());
+    &s[..len]
+}
+
+fn method_value(value: &str) -> Option<MethodTag> {
+    let mut rest = value.trim_start();
+    let mut is_static = false;
+    if let Some(after) = rest.strip_prefix("static")
+        && after.starts_with(char::is_whitespace)
+    {
+        is_static = true;
+        rest = after.trim_start();
+    }
+    let first = identifier(rest);
+    let after_first = rest[first.len()..].trim_start();
+    let (ret, name, after) =
+        if !first.is_empty() && (after_first.starts_with('(') || after_first.starts_with('<')) {
+            // no return type: `static` alone was the return type
+            let ret = if is_static {
+                Some(phpdoc::parse_prefix("static").ok()?.0)
+            } else {
+                None
+            };
+            (ret, first, after_first)
+        } else {
+            let (node, offset) = phpdoc::parse_prefix(rest).ok()?;
+            let after = rest[offset..].trim_start();
+            let name = identifier(after);
+            if name.is_empty() {
+                return None;
+            }
+            (Some(node), name, after[name.len()..].trim_start())
+        };
+    let mut after = after;
+    let mut templates = Vec::new();
+    if let Some(inner) = after.strip_prefix('<') {
+        let close = inner.find('>')?;
+        for t in split_top(&inner[..close]) {
+            templates.push(template_value(t.trim())?);
+        }
+        after = inner[close + 1..].trim_start();
+    }
+    let inner = after.strip_prefix('(')?;
+    let mut depth = 1;
+    let close = inner.char_indices().find_map(|(i, ch)| {
+        match ch {
+            '(' => depth += 1,
+            ')' => depth -= 1,
+            _ => {}
+        }
+        (depth == 0).then_some(i)
+    })?;
+    let mut params = Vec::new();
+    for param in split_top(&inner[..close]) {
+        let param = param.trim();
+        if param.is_empty() {
+            continue;
+        }
+        let (decl, default) = match param.split_once('=') {
+            Some((d, v)) => (d.trim_end(), Some(v.trim())),
+            None => (param, None),
+        };
+        let at = decl.rfind('$')?;
+        let pname = identifier(&decl[at + 1..]).to_string();
+        let mut ty = decl[..at].trim_end();
+        ty = ty.strip_suffix("...").unwrap_or(ty).trim_end();
+        ty = ty.strip_suffix('&').unwrap_or(ty).trim_end();
+        let node = if ty.is_empty() {
+            None
+        } else {
+            Some(phpdoc::parse(ty).ok()?)
+        };
+        let null_default = default.is_some_and(|d| d.eq_ignore_ascii_case("null"));
+        params.push((pname, node, null_default));
+    }
+    Some(MethodTag {
+        name: name.to_string(),
+        ret,
+        params,
+        templates,
+    })
+}
+
 /// `@template` (with its variants) as written.
 pub struct TemplateTag {
     pub name: String,
@@ -93,6 +245,28 @@ const SELF_OUT_TAGS: [&str; 4] = [
     "@psalm-this-out",
     "@psalm-self-out",
 ];
+const METHOD_TAGS: [&str; 4] = [
+    "@method",
+    "@phan-method",
+    "@psalm-method",
+    "@phpstan-method",
+];
+const PROPERTY_TAGS: [&str; 2] = ["@property", "@phpstan-property"];
+const PROPERTY_READ_TAGS: [&str; 2] = ["@property-read", "@phpstan-property-read"];
+const PROPERTY_WRITE_TAGS: [&str; 2] = ["@property-write", "@phpstan-property-write"];
+
+/// `resolveExtendsTags()` and `resolveImplementsTags()`
+const ANCESTOR_TAGS: [&str; 8] = [
+    "@extends",
+    "@phan-extends",
+    "@phan-inherits",
+    "@template-extends",
+    "@phpstan-extends",
+    "@implements",
+    "@template-implements",
+    "@phpstan-implements",
+];
+const USE_TAGS: [&str; 3] = ["@use", "@template-use", "@phpstan-use"];
 const VAR_TAGS: [&str; 4] = ["@var", "@phan-var", "@psalm-var", "@phpstan-var"];
 const TEMPLATE_TAGS: [&str; 4] = [
     "@template",
@@ -116,6 +290,16 @@ pub struct Doc {
     pub closure_this: Vec<(String, String, Node)>,
     /// `resolveSelfOutTypeTag()`: the first tag of the first kind that has one
     pub self_out: Option<Node>,
+    /// `@extends` and `@implements` types, in tag order (a later one for the same class wins)
+    pub ancestors: Vec<Node>,
+    /// `resolveMethodTags()`: by name in first-seen order, a later tag replacing an earlier one
+    pub methods: Vec<MethodTag>,
+    /// `resolvePropertyTags()`: (name, readable type, writable type)
+    pub properties: Vec<(String, Option<Node>, Option<Node>)>,
+    /// `@mixin` types
+    pub mixins: Vec<Node>,
+    /// `resolveUsesTags()`: `@use` types, in tag-kind order (a later one for the same trait wins)
+    pub uses: Vec<Node>,
     pub templates: Vec<TemplateTag>,
 }
 
@@ -130,6 +314,10 @@ impl Doc {
         let mut outs = Vec::new();
         let mut closure_this = Vec::new();
         let mut self_out: Option<(usize, Node)> = None;
+        let mut ancestors = Vec::new();
+        let mut uses = Vec::new();
+        let mut methods: Vec<(usize, MethodTag)> = Vec::new();
+        let mut properties: Vec<(usize, String, Node)> = Vec::new();
         for (tag, value) in &tags {
             if let Some(rank) = order(&PARAM_TAGS, tag) {
                 if let Some((node, variadic, name)) = param_value(value) {
@@ -138,6 +326,34 @@ impl Doc {
             } else if let Some(rank) = order(&OUT_TAGS, tag) {
                 if let Some((node, _, name)) = param_value(value) {
                     outs.push((rank, (tag.clone(), name, node)));
+                }
+            } else if let Some(rank) = order(&METHOD_TAGS, tag) {
+                if let Some(m) = method_value(value) {
+                    methods.push((rank, m));
+                }
+            } else if let Some(rank) = order(&PROPERTY_TAGS, tag)
+                .or_else(|| order(&PROPERTY_READ_TAGS, tag).map(|r| 10 + r))
+                .or_else(|| order(&PROPERTY_WRITE_TAGS, tag).map(|r| 20 + r))
+            {
+                if let Some((node, rest)) = type_value(value)
+                    && let Some(name) = rest.strip_prefix('$')
+                {
+                    let name = identifier(name);
+                    if !name.is_empty() {
+                        properties.push((rank, name.to_string(), node));
+                    }
+                }
+            } else if tag == "@mixin" {
+                if let Some((node, _)) = type_value(value) {
+                    out.mixins.push(node);
+                }
+            } else if let Some(rank) = order(&ANCESTOR_TAGS, tag) {
+                if let Some((node, _)) = type_value(value) {
+                    ancestors.push((rank, node));
+                }
+            } else if let Some(rank) = order(&USE_TAGS, tag) {
+                if let Some((node, _)) = type_value(value) {
+                    uses.push((rank, node));
                 }
             } else if let Some(rank) = order(&SELF_OUT_TAGS, tag) {
                 if let Some((node, _)) = type_value(value)
@@ -187,6 +403,36 @@ impl Doc {
         outs.sort_by_key(|(rank, _)| *rank);
         closure_this.sort_by_key(|(rank, _)| *rank);
         out.self_out = self_out.map(|(_, n)| n);
+        ancestors.sort_by_key(|(rank, _)| *rank);
+        methods.sort_by_key(|(rank, _)| *rank);
+        for (_, m) in methods {
+            match out.methods.iter_mut().find(|x| x.name == m.name) {
+                Some(slot) => *slot = m,
+                None => out.methods.push(m),
+            }
+        }
+        properties.sort_by_key(|(rank, _, _)| *rank);
+        for (rank, name, node) in properties {
+            let slot = match out.properties.iter().position(|(n, _, _)| *n == name) {
+                Some(i) => i,
+                None => {
+                    out.properties.push((name, None, None));
+                    out.properties.len() - 1
+                }
+            };
+            let entry = &mut out.properties[slot];
+            match rank / 10 {
+                0 => {
+                    entry.1 = Some(node.clone());
+                    entry.2 = Some(node);
+                }
+                1 => entry.1 = Some(node),
+                _ => entry.2 = Some(node),
+            }
+        }
+        out.ancestors = ancestors.into_iter().map(|(_, n)| n).collect();
+        uses.sort_by_key(|(rank, _)| *rank);
+        out.uses = uses.into_iter().map(|(_, n)| n).collect();
         out.outs = outs.into_iter().map(|(_, p)| p).collect();
         out.closure_this = closure_this.into_iter().map(|(_, p)| p).collect();
         out.params = params.into_iter().map(|(_, p)| p).collect();
@@ -338,6 +584,21 @@ impl Scope for NameScope {
         let (resolved, _) = self.names.resolve(NameKind::Default, name.as_bytes());
         String::from_utf8_lossy(&resolved).into_owned()
     }
+    fn constant_names(&self, name: &str) -> Vec<String> {
+        if let Some(alias) = self
+            .names
+            .resolve_alias(NameKind::Constant, name.as_bytes())
+        {
+            return vec![String::from_utf8_lossy(&alias).into_owned()];
+        }
+        match self.names.namespace_name() {
+            Some(namespace) => vec![
+                format!("{}\\{name}", String::from_utf8_lossy(namespace)),
+                name.to_string(),
+            ],
+            None => vec![name.to_string()],
+        }
+    }
     fn template(&self, name: &str) -> Option<Type> {
         self.templates.get(name).cloned()
     }
@@ -346,6 +607,8 @@ impl Scope for NameScope {
 /// The namespaces of a file with their imports (FileTypeMapper's walk), by byte range.
 pub struct FileScopes {
     namespaces: Vec<(u32, u32, NamespaceScope)>,
+    /// each `use Trait, ...;` in a class body: its offset and the trait names as written
+    trait_uses: Vec<(u32, Vec<String>)>,
 }
 
 impl FileScopes {
@@ -374,7 +637,32 @@ impl FileScopes {
         if !any {
             namespaces.push((0, u32::MAX, global));
         }
-        FileScopes { namespaces }
+        let mut trait_uses = Vec::new();
+        fn walk(node: mago_syntax::cst::Node<'_, '_>, out: &mut Vec<(u32, Vec<String>)>) {
+            if let mago_syntax::cst::Node::TraitUse(t) = node {
+                let names = t
+                    .trait_names
+                    .iter()
+                    .map(|n| String::from_utf8_lossy(n.value()).into_owned())
+                    .collect();
+                out.push((t.span().start.offset, names));
+            }
+            for child in node.children() {
+                walk(child, out);
+            }
+        }
+        walk(mago_syntax::cst::Node::Program(program), &mut trait_uses);
+        FileScopes {
+            namespaces,
+            trait_uses,
+        }
+    }
+
+    /// The `use` statements of traits between `start` and `end`: offset and written names.
+    pub fn trait_uses(&self, start: u32, end: u32) -> impl Iterator<Item = &(u32, Vec<String>)> {
+        self.trait_uses
+            .iter()
+            .filter(move |(at, _)| start <= *at && *at <= end)
     }
 
     /// The namespace scope at `offset`.

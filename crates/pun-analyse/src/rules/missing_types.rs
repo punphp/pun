@@ -441,3 +441,232 @@ pub fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
         report(c, k.span(), found);
     }
 }
+
+/// The class-level checks of InClassNode (or a trait's own node): MethodTagCheck, PropertyTagCheck and MixinCheck
+/// (`checkMissingTypehints`, in the trait definition context for a trait) and GenericAncestorsCheck's generic
+/// ancestors named without type arguments (ClassAncestorsRule, InterfaceAncestorsRule, EnumAncestorsRule).
+fn class_level(
+    c: &mut Checker,
+    span: mago_span::Span,
+    name: &str,
+    kind: &str,
+    natives: &[(String, &str)],
+) {
+    if c.level < 6 {
+        return;
+    }
+    let Some(k) = c.codebase.get_class_like(name.as_bytes()) else {
+        return;
+    };
+    let display = declared::original_name(k);
+    let iterables = c.generic_iterable_classes;
+    let doc =
+        super::doc::doc_before(&c.file.contents, span.start.offset as usize).map(<[u8]>::to_vec);
+    let found = declared::with_classes(c, || {
+        let mut out: Found = Vec::new();
+        let generics_of = |ty: &Type, out: &mut Found, text: &dyn Fn(&str, &str) -> String| {
+            for (inner, list) in generics_without_args(ty, iterables) {
+                out.push(("missingType.generics", text(&inner, &list), None));
+            }
+        };
+        let iterables_of = |ty: &Type, out: &mut Found, text: &dyn Fn(&str) -> String| {
+            for iterable in iterables_without_value(ty) {
+                out.push(("missingType.iterableValue", text(&iterable), Some(TIP)));
+            }
+        };
+        let mut described: Vec<String> = Vec::new();
+        if let Some(doc) = &doc {
+            let parsed = super::doc::Doc::parse(doc);
+            let scope = declared::class_scope(c, span, k);
+            for m in &parsed.methods {
+                let scope = declared::with_method_templates(&scope, k, &m.name, &m.templates);
+                let check_one = |what: &str, ty: &Type, out: &mut Found| {
+                    generics_of(ty, out, &|inner, list| {
+                        format!(
+                            "PHPDoc tag @method for method {display}::{}() {what} contains generic {inner} but does not specify its types: {list}",
+                            m.name
+                        )
+                    });
+                    iterables_of(ty, out, &|iterable| {
+                        format!(
+                            "{kind} {display} has PHPDoc tag @method for method {}() {what} with no value type specified in {iterable}.",
+                            m.name
+                        )
+                    });
+                };
+                for (i, (pname, node, null_default)) in m.params.iter().enumerate() {
+                    let mut ty = node.as_ref().map_or_else(pun_phpstan::types::mixed, |n| {
+                        pun_phpstan::resolve::resolve_in(n, &scope)
+                    });
+                    if *null_default {
+                        ty = ty.add_null();
+                    }
+                    check_one(&format!("parameter #{} ${pname}", i + 1), &ty, &mut out);
+                }
+                let ret = m.ret.as_ref().map_or_else(pun_phpstan::types::mixed, |n| {
+                    pun_phpstan::resolve::resolve_in(n, &scope)
+                });
+                check_one("return type", &ret, &mut out);
+            }
+            for (pname, read, write) in &parsed.properties {
+                let read = read
+                    .as_ref()
+                    .map(|n| pun_phpstan::resolve::resolve_in(n, &scope));
+                let write = write
+                    .as_ref()
+                    .map(|n| pun_phpstan::resolve::resolve_in(n, &scope));
+                let (tag, types) = match (read, write) {
+                    (Some(r), Some(w)) if r == w => ("@property", vec![r]),
+                    (Some(r), Some(w)) => ("@property", vec![r, w]),
+                    (Some(r), None) => ("@property-read", vec![r]),
+                    (None, Some(w)) => ("@property-write", vec![w]),
+                    (None, None) => continue,
+                };
+                for ty in &types {
+                    generics_of(ty, &mut out, &|inner, list| {
+                        format!(
+                            "PHPDoc tag {tag} for property {display}::${pname} contains generic {inner} but does not specify its types: {list}"
+                        )
+                    });
+                    iterables_of(ty, &mut out, &|iterable| {
+                        format!(
+                            "{kind} {display} has PHPDoc tag {tag} for property ${pname} with no value type specified in {iterable}."
+                        )
+                    });
+                }
+            }
+            for node in &parsed.mixins {
+                let ty = pun_phpstan::resolve::resolve_in(node, &scope);
+                // (a non-object mixin is mixin.nonObject instead)
+                if !matches!(
+                    ty,
+                    Type::Object(..)
+                        | Type::ObjectWithoutClass
+                        | Type::Template(_)
+                        | Type::Intersection(_)
+                ) {
+                    continue;
+                }
+                iterables_of(&ty, &mut out, &|iterable| {
+                    format!(
+                        "{kind} {display} has PHPDoc tag @mixin with no value type specified in {iterable}."
+                    )
+                });
+                generics_of(&ty, &mut out, &|inner, list| {
+                    format!(
+                        "PHPDoc tag @mixin contains generic {inner} but does not specify its types: {list}"
+                    )
+                });
+            }
+            for node in &parsed.ancestors {
+                if let Type::Object(name, args) = pun_phpstan::resolve::resolve_in(node, &scope)
+                    && !args.is_empty()
+                {
+                    described.push(name);
+                }
+            }
+        }
+        // GenericAncestorsCheck: the native ancestors no `@extends` / `@implements` describes
+        for (native, message) in natives {
+            if described.iter().any(|d| d == native) {
+                continue;
+            }
+            let Some(class) = symbols::lookup(native) else {
+                continue;
+            };
+            if SKIP_GENERIC.contains(&class.name.as_str()) || class.templates.is_empty() {
+                continue;
+            }
+            let total = class.templates.len();
+            let required = class
+                .templates
+                .iter()
+                .filter(|t| t.default.is_none())
+                .count();
+            if required == 0 {
+                continue;
+            }
+            let mut list = class
+                .templates
+                .iter()
+                .map(|t| t.name.as_str())
+                .collect::<Vec<_>>()
+                .join(", ");
+            if required != total {
+                list.push_str(&format!(" ({required}-{total} required)"));
+            }
+            out.push((
+                "missingType.generics",
+                format!("{message} {native} but does not specify its types: {list}"),
+                None,
+            ));
+        }
+        out
+    });
+    report(c, span, found);
+}
+
+fn names<'a>(c: &Checker, ids: impl Iterator<Item = &'a Identifier<'a>>) -> Vec<String> {
+    ids.map(|id| String::from_utf8_lossy(c.names.get(&id.span())).into_owned())
+        .collect()
+}
+
+pub fn class(c: &mut Checker, class: &Class) {
+    let name = String::from_utf8_lossy(c.names.get(&class.name.span)).into_owned();
+    let extends = format!("Class {name} extends generic class");
+    let implements = format!("Class {name} implements generic interface");
+    let mut natives: Vec<(String, &str)> = Vec::new();
+    if let Some(e) = &class.extends {
+        natives.extend(
+            names(c, e.types.iter())
+                .into_iter()
+                .map(|n| (n, extends.as_str())),
+        );
+    }
+    if let Some(i) = &class.implements {
+        natives.extend(
+            names(c, i.types.iter())
+                .into_iter()
+                .map(|n| (n, implements.as_str())),
+        );
+    }
+    class_level(c, class.span(), &name, "Class", &natives);
+}
+
+pub fn interface(c: &mut Checker, i: &Interface) {
+    let name = String::from_utf8_lossy(c.names.get(&i.name.span)).into_owned();
+    let extends = format!("Interface {name} extends generic interface");
+    let natives: Vec<(String, &str)> = i
+        .extends
+        .as_ref()
+        .map(|e| {
+            names(c, e.types.iter())
+                .into_iter()
+                .map(|n| (n, extends.as_str()))
+                .collect()
+        })
+        .unwrap_or_default();
+    class_level(c, i.span(), &name, "Interface", &natives);
+}
+
+pub fn enum_(c: &mut Checker, e: &Enum) {
+    let name = String::from_utf8_lossy(c.names.get(&e.name.span)).into_owned();
+    let implements = format!("Enum {name} implements generic interface");
+    let natives: Vec<(String, &str)> = e
+        .implements
+        .as_ref()
+        .map(|i| {
+            names(c, i.types.iter())
+                .into_iter()
+                .map(|n| (n, implements.as_str()))
+                .collect()
+        })
+        .unwrap_or_default();
+    class_level(c, e.span(), &name, "Enum", &natives);
+}
+
+/// A trait's own node (MethodTagTraitRule, PropertyTagTraitRule, MixinTraitRule in the definition context).
+pub fn trait_(c: &mut Checker, t: &Trait) {
+    let name = String::from_utf8_lossy(c.names.get(&t.name.span)).into_owned();
+    class_level(c, t.span(), &name, "Trait", &[]);
+}

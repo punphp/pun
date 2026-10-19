@@ -42,6 +42,10 @@ pub trait Scope {
     fn resolve_name(&self, name: &str) -> String {
         name.trim_start_matches('\\').to_string()
     }
+    /// `resolveConstantNames()`: the full names a written constant name may have, in lookup order.
+    fn constant_names(&self, name: &str) -> Vec<String> {
+        vec![name.trim_start_matches('\\').to_string()]
+    }
     /// `resolveTemplateTypeName()`: a template type in scope.
     fn template(&self, _name: &str) -> Option<Type> {
         None
@@ -311,6 +315,12 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             ]);
         }
         "string" => return Type::String,
+        "decimal-int-string" => {
+            return accessory(string(), &[A::DecimalIntString { inverse: false }]);
+        }
+        "non-decimal-int-string" => {
+            return accessory(string(), &[A::DecimalIntString { inverse: true }]);
+        }
         "lowercase-string" => return accessory(string(), &[A::LowercaseString]),
         "uppercase-string" => return accessory(string(), &[A::UppercaseString]),
         "literal-string" => return accessory(string(), &[A::LiteralString]),
@@ -387,7 +397,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             }
             "static" => {
                 return match symbols::lookup(class) {
-                    Some(c) => Type::Static(c.name.clone()),
+                    Some(c) => Type::Static(c.name.clone(), vec![]),
                     None => Type::Error,
                 };
             }
@@ -406,11 +416,14 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
     if name.contains('-') && !name.starts_with("OCI-") {
         return Type::Error;
     }
+    // `tryResolveConstant()`
+    let constants = &symbols::symbols(symbols::PhpVersion::Php84).constants;
     if might_be_constant(written)
         && symbols::lookup(name).is_none()
-        && let Some(ty) = symbols::symbols(symbols::PhpVersion::Php84)
-            .constants
-            .get(name)
+        && let Some(ty) = scope
+            .constant_names(written)
+            .iter()
+            .find_map(|n| constants.get(n.as_str()))
     {
         return match ty.as_str() {
             "INF" => Type::ConstFloat(f64::INFINITY),
@@ -497,7 +510,11 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             _ => Type::Error,
         },
         "class-string" | "interface-string" => match types.as_slice() {
-            [g] if g.is_object_yes() || matches!(g, Type::Mixed { .. }) => {
+            // (a `TemplateMixedType` is a `MixedType`)
+            [g] if g.is_object_yes()
+                || matches!(g, Type::Mixed { .. })
+                || matches!(g, Type::Template(t) if matches!(t.bound, Type::Mixed { .. })) =>
+            {
                 Type::ClassString(Some(Box::new(g.clone())))
             }
             _ => Type::Error,
@@ -523,6 +540,11 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             [t] => int_mask(t.clone()).unwrap_or(Type::Error),
             _ => Type::Error,
         },
+        // GenericStaticType
+        "static" => match scope.class().and_then(symbols::lookup) {
+            Some(c) => Type::Static(c.name.clone(), types),
+            None => Type::Error,
+        },
         "__benevolent" => match types.as_slice() {
             [t] => to_benevolent(t.clone()),
             _ => Type::Error,
@@ -536,7 +558,7 @@ impl Type {
         match self {
             Type::Object(..)
             | Type::ObjectWithoutClass
-            | Type::Static(_)
+            | Type::Static(..)
             | Type::This(_)
             | Type::ObjectShape(_)
             | Type::Closure(_) => true,
@@ -665,6 +687,7 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
                 if is_static && !reflection.is_final {
                     return Type::ClassString(Some(Box::new(Type::Static(
                         reflection.name.clone(),
+                        vec![],
                     ))));
                 }
                 return Type::ConstString(reflection.name.clone());

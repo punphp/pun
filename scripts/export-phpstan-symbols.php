@@ -239,6 +239,35 @@ function dump(int $phpVersion, array &$typeStrings): array
             if ($method->getDeclaringClass()->getName() === $class->getName()) {
                 $m = $class->getNativeMethod($method->getName());
                 $entry['methods'][strtolower($method->getName())] = ['static' => $m->isStatic()] + callable_entry($m);
+                // the PHPDoc a user method overriding this one inherits (PhpDocInheritanceResolver): its
+                // `@param` types by parameter position and its `@return` type
+                $doc = $m->getResolvedPhpDoc();
+                if ($doc !== null) {
+                    $positions = array_map(fn ($p) => $p->getName(), $method->getParameters());
+                    $params = [];
+                    foreach ($doc->getParamTags() as $paramName => $tag) {
+                        $i = array_search($paramName, $positions, true);
+                        if ($i !== false) {
+                            $params[(string) $i] = t($tag->getType());
+                        }
+                    }
+                    ksort($params);
+                    $return = $doc->getReturnTag();
+                    $entry['methods'][strtolower($method->getName())]['doc'] = [
+                        'params' => (object) $params,
+                        'return' => $return !== null ? t($return->getType()) : null,
+                    ];
+                }
+            }
+        }
+        // the `@var` type of each declared, non-private property with one (inherited by a user property)
+        foreach ($class->getNativeReflection()->getProperties() as $property) {
+            if ($property->getDeclaringClass()->getName() !== $class->getName() || $property->isPrivate()) {
+                continue;
+            }
+            $p = $class->getNativeProperty($property->getName());
+            if ($p->hasPhpDocType()) {
+                $entry['propertyDocs'][$property->getName()] = t($p->getPhpDocType());
             }
         }
         $classes[strtolower($class->getName())] = $entry;
