@@ -126,6 +126,11 @@ fn logical_to_boolean() {
         &only(rules::PreferBooleanAndOr, 80400),
         "LogicalToBooleanRector/Oracle",
     );
+    // Where Rector keeps an operand's own parentheses inside the ones it adds; the expected code is derived by hand.
+    run(
+        &only(rules::PreferBooleanAndOr, 80400),
+        "LogicalToBooleanRector/Pun",
+    );
 }
 
 #[test]
