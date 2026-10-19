@@ -25,15 +25,16 @@ mod larastan;
 mod members;
 mod missing_types;
 mod names;
+mod new_static_abstract;
 mod overriding;
 mod overriding_property;
-mod set_hook;
 mod params;
 mod printf_helper;
 mod properties;
 mod property_access;
 mod reflection;
 mod scope;
+mod set_hook;
 mod signatures;
 mod statements;
 mod syntax;
@@ -365,6 +366,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "property.nativeType",
     "property.extraNativeType",
     "propertySetHook.nativeParameterType",
+    "new.staticInAbstractClassStaticMethod",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -488,6 +490,8 @@ pub struct Checker<'a, 'arena> {
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.
     level: u8,
     generic_iterable_classes: bool,
+    /// [`driver::Checks`]'s `featureToggles.newStaticInAbstractClassStaticMethod`.
+    new_static_in_abstract_class_static_method: bool,
     /// [`driver::Checks`]'s Larastan switches, when the config includes Larastan.
     larastan: Option<&'a Larastan>,
     larastan_state: larastan::State,
@@ -1401,6 +1405,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, _: &mut ()) {
+        new_static_abstract::instantiation(self, new);
         if statements::instantiation_callable(self, new) {
             return;
         }

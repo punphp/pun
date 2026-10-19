@@ -77,6 +77,7 @@ const PORTED: &[&str] = &[
     "property.nativeType",
     "property.extraNativeType",
     "propertySetHook.nativeParameterType",
+    "new.staticInAbstractClassStaticMethod",
 ];
 
 /// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).

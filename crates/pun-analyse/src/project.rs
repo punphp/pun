@@ -38,6 +38,8 @@ pub struct Project {
     pub check_generic_iterable_classes: bool,
     /// `featureToggles.internalTag` (on with bleedingEdge): the `@internal` usage rules.
     pub internal_tag: bool,
+    /// `featureToggles.newStaticInAbstractClassStaticMethod` (on with bleedingEdge).
+    pub new_static_in_abstract_class_static_method: bool,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
@@ -151,6 +153,11 @@ impl Project {
                 .and_then(Value::as_array)
                 .and_then(|t| t.get_str("internalTag"))
                 == Some(&Value::Bool(true)),
+            new_static_in_abstract_class_static_method: params
+                .get_str("featureToggles")
+                .and_then(Value::as_array)
+                .and_then(|t| t.get_str("newStaticInAbstractClassStaticMethod"))
+                == Some(&Value::Bool(true)),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
         }
@@ -172,6 +179,7 @@ impl Project {
             level: 0,
             check_generic_iterable_classes: false,
             internal_tag: false,
+            new_static_in_abstract_class_static_method: false,
             larastan: None,
         }
     }
