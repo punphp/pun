@@ -277,7 +277,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "comments/no-unused-ignore" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], status = "decided", pun_only = true, summary = "A @pun-ignore comment that suppressed nothing. Fix removes it." }
 "complexity/no-and-assignment" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Split 2 assigns with \"and\" to separate lines" }
 "complexity/no-boolean-flag-parameter" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Flags function-like parameters that use a boolean type and drive the function's behaviour." }
-"complexity/no-boolean-literal-compare" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify bool value compare to true or false" }
+"complexity/no-boolean-literal-compare" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify bool value compare to true or false" }
 "complexity/no-compact" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `compact()` call to own array" }
 "complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
 "complexity/no-constant-condition" = { fix = "safe", sets = ["dead-code"], status = "decided", summary = "Detects `if` statements where the condition is a constant that always" }
@@ -319,14 +319,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-coalesce-over-empty-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change ternary empty on array property with array dim fetch to coalesce operator" }
 "complexity/prefer-coalesce-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace a foreach that looks up a key with `??`." }
 "complexity/prefer-empty-array-compare" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Compare with `[]` instead of empty()/is_array() on arrays." }
-"complexity/prefer-empty-array-identical" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify empty() functions calls on empty arrays" }
+"complexity/prefer-empty-array-identical" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify empty() functions calls on empty arrays" }
 "complexity/prefer-func-num-args" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify count of func_get_args() to func_num_args()" }
 "complexity/prefer-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use in_array() instead of repeated `||`/`&&` comparisons, array_search() checks and foreach loops." }
 "complexity/prefer-in-array-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace a foreach that returns a boolean on a match with `in_array()`." }
 "complexity/prefer-in-array-over-search" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `array_search()` compared with `false` to `in_array()`" }
 "complexity/prefer-inline-array-return" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Inline just in time array dim fetch assigns to direct return" }
 "complexity/prefer-instance-method" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change static method and local-only calls to non-static" }
-"complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change ternary number compare to `max()` call" }
+"complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change ternary number compare to `max()` call" }
 "complexity/prefer-named-literal-argument" = { fix = "safe", ported = false, origin = "mago", later = true, status = "decided", summary = "Name literal arguments (true, false, null, numbers) in calls." }
 "complexity/prefer-not-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `! in_array()` instead of repeated `!==`/`!=` comparisons of one value joined by `&&`." }
 "complexity/prefer-null-coalesce" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups." }
@@ -360,7 +360,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
 "dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
 "dead-code/no-and-true" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `and true` that has no added value" }
-"dead-code/no-bool-ternary" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove unnecessary ternary expressions" }
+"dead-code/no-bool-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove unnecessary ternary expressions" }
 "dead-code/no-cast-in-concat" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove (string) casting when it comes to concat, that does this by default" }
 "dead-code/no-condition-exact-return" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove an if that returns the value it compares when the next statement returns the compared expression." }
 "dead-code/no-dead-catch" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove dead catches" }
@@ -371,7 +371,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-empty-block" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove or report if/for/foreach/while statements with an empty body." }
 "dead-code/no-empty-loop" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove loop with no body" }
 "dead-code/no-empty-method" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove empty class methods not required by parents" }
-"dead-code/no-false-ternary" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Change ternary of `bool : false` to `&& bool`" }
+"dead-code/no-false-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Change ternary of `bool : false` to `&& bool`" }
 "dead-code/no-future-php-version-check" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Unwrap `if` checks on a PHP version that the configured PHP version always meets." }
 "dead-code/no-identical-branches" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if/else if they have same content" }
 "dead-code/no-implode-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Drop an empty-array ternary around `implode()`" }
@@ -416,7 +416,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-useless-math" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...)." }
 "dead-code/no-useless-override" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove methods and constructors that only call the parent with the same arguments." }
 "dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
-"dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }
+"dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }
 "dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove useless variable assigns" }
 "functions/no-assign-in-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects assignments in function call arguments which can lead to unexpected behavior and make" }
 "functions/no-call-user-func-method" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `call_user_func()` on known class method to a method call" }
@@ -776,7 +776,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "strings/no-non-printable-character" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols." }
 "strings/no-single-argument-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the format itself instead of `sprintf()` with no values." }
 "strings/no-trailing-whitespace-in-string" = { fix = "unsafe", intent = "suspicious", ported = false, later = true, status = "decided", summary = "There must be no trailing whitespace at the end of lines in strings." }
-"strings/prefer-empty-string-identical" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes strlen comparison to 0 to direct empty string compare" }
+"strings/prefer-empty-string-identical" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes strlen comparison to 0 to direct empty string compare" }
 "strings/prefer-mb-functions" = { fix = "unsafe", intent = "correctness", ported = true, status = "decided", summary = "Replace non multibyte-safe functions with corresponding mb function." }
 "strings/require-interpolation-style" = { fix = "safe", ported = false, origin = "mago", later = true, status = "decided", summary = "Enforces a consistent string style: either prefer string interpolation" }
 "strings/require-string-line-ending" = { fix = "unsafe", intent = "suspicious", ported = false, later = true, status = "decided", summary = "All multi-line strings must use correct line ending." }

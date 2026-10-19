@@ -356,3 +356,66 @@ fn is_a_with_string_with_third_argument() {
         "IsAWithStringWithThirdArgumentRector/Fixture",
     );
 }
+
+#[test]
+fn unnecessary_ternary_expression() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on a trait, where
+    // PHPStan knows no type, and on a variadic `bool` parameter, which is an array.
+    let linter = only(rules::NoBoolTernary, 80400);
+    run(&linter, "UnnecessaryTernaryExpressionRector/Fixture");
+    run(&linter, "UnnecessaryTernaryExpressionRector/Pun");
+}
+
+#[test]
+fn remove_useless_ternary() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    run(
+        &only(rules::NoUselessTernary, 80400),
+        "RemoveUselessTernaryRector/Fixture",
+    );
+}
+
+#[test]
+fn ternary_to_boolean_or_false_to_boolean_and() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    run(
+        &only(rules::NoFalseTernary, 80400),
+        "TernaryToBooleanOrFalseToBooleanAndRector/Fixture",
+    );
+}
+
+#[test]
+fn strlen_zero_to_identical_empty_string() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    run(
+        &only(rules::PreferEmptyStringIdentical, 80400),
+        "StrlenZeroToIdenticalEmptyStringRector/Fixture",
+    );
+}
+
+#[test]
+fn simplify_bool_identical_true() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on `@call()`.
+    let linter = only(rules::NoBooleanLiteralCompare, 80400);
+    run(&linter, "SimplifyBoolIdenticalTrueRector/Fixture");
+    run(&linter, "SimplifyBoolIdenticalTrueRector/Pun");
+}
+
+#[test]
+fn simplify_empty_check_on_empty_array() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: a property of a class in another
+    // file, which Pun can't read without analyse's index, and Rector's own run on the `is_array() &&` guard, a trait,
+    // an element assignment of an untyped parameter and variadic parameters.
+    let linter = only(rules::PreferEmptyArrayIdentical, 80400);
+    run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Fixture");
+    run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Pun");
+}
+
+#[test]
+fn number_compare_to_max_func_call() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version.
+    run(
+        &only(rules::PreferMinMax, 80400),
+        "NumberCompareToMaxFuncCallRector/Fixture",
+    );
+}

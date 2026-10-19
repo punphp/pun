@@ -18,6 +18,8 @@ mod no_array_accumulation_in_loop;
 mod no_assign_in_argument;
 mod no_assign_in_condition;
 mod no_assign_in_ternary_branch;
+mod no_bool_ternary;
+mod no_boolean_literal_compare;
 mod no_call_user_func_method;
 mod no_cast_in_concat;
 mod no_concat_assign_new_item;
@@ -37,6 +39,7 @@ mod no_empty_loop;
 mod no_escaped_quotes;
 mod no_eval;
 mod no_explicit_constructor_call;
+mod no_false_ternary;
 mod no_ffi;
 mod no_finfo_buffer_context;
 mod no_future_php_version_check;
@@ -101,6 +104,7 @@ mod no_useless_catch;
 mod no_useless_condition;
 mod no_useless_continue;
 mod no_useless_readonly;
+mod no_useless_ternary;
 mod no_variable_variable;
 mod no_void_on_magic_method;
 mod no_void_reference_return;
@@ -123,11 +127,14 @@ mod prefer_early_return;
 mod prefer_early_return_of_variable;
 mod prefer_early_return_over_prepared_value;
 mod prefer_empty_array_compare;
+mod prefer_empty_array_identical;
+mod prefer_empty_string_identical;
 mod prefer_func_num_args;
 mod prefer_in_array;
 mod prefer_in_array_over_foreach;
 mod prefer_in_array_over_search;
 mod prefer_instanceof_stringable;
+mod prefer_min_max;
 mod prefer_new_self;
 mod prefer_not_in_array;
 mod prefer_null_coalesce;
@@ -149,6 +156,7 @@ mod require_preg_quote_delimiter;
 mod require_statement_padding;
 mod require_strict_array_search;
 mod side_effect;
+mod syntax_types;
 mod types;
 mod used_variable;
 mod no_sole_value_sprintf;
@@ -163,6 +171,8 @@ pub use no_array_accumulation_in_loop::NoArrayAccumulationInLoop;
 pub use no_assign_in_argument::NoAssignInArgument;
 pub use no_assign_in_condition::NoAssignInCondition;
 pub use no_assign_in_ternary_branch::NoAssignInTernaryBranch;
+pub use no_bool_ternary::NoBoolTernary;
+pub use no_boolean_literal_compare::NoBooleanLiteralCompare;
 pub use no_call_user_func_method::NoCallUserFuncMethod;
 pub use no_cast_in_concat::NoCastInConcat;
 pub use no_concat_assign_new_item::NoConcatAssignNewItem;
@@ -182,6 +192,7 @@ pub use no_empty_loop::NoEmptyLoop;
 pub use no_escaped_quotes::NoEscapedQuotes;
 pub use no_eval::NoEval;
 pub use no_explicit_constructor_call::NoExplicitConstructorCall;
+pub use no_false_ternary::NoFalseTernary;
 pub use no_ffi::NoFfi;
 pub use no_finfo_buffer_context::NoFinfoBufferContext;
 pub use no_future_php_version_check::NoFuturePhpVersionCheck;
@@ -246,6 +257,7 @@ pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_continue::NoUselessContinue;
 pub use no_useless_readonly::NoUselessReadonly;
+pub use no_useless_ternary::NoUselessTernary;
 pub use no_variable_variable::NoVariableVariable;
 pub use no_void_on_magic_method::NoVoidOnMagicMethod;
 pub use no_void_reference_return::NoVoidReferenceReturn;
@@ -267,11 +279,14 @@ pub use prefer_early_return::PreferEarlyReturn;
 pub use prefer_early_return_of_variable::PreferEarlyReturnOfVariable;
 pub use prefer_early_return_over_prepared_value::PreferEarlyReturnOverPreparedValue;
 pub use prefer_empty_array_compare::PreferEmptyArrayCompare;
+pub use prefer_empty_array_identical::PreferEmptyArrayIdentical;
+pub use prefer_empty_string_identical::PreferEmptyStringIdentical;
 pub use prefer_func_num_args::PreferFuncNumArgs;
 pub use prefer_in_array::PreferInArray;
 pub use prefer_in_array_over_foreach::PreferInArrayOverForeach;
 pub use prefer_in_array_over_search::PreferInArrayOverSearch;
 pub use prefer_instanceof_stringable::PreferInstanceofStringable;
+pub use prefer_min_max::PreferMinMax;
 pub use prefer_new_self::PreferNewSelf;
 pub use prefer_not_in_array::PreferNotInArray;
 pub use prefer_null_coalesce::PreferNullCoalesce;
@@ -434,6 +449,13 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireStatementPadding),
         Box::new(RequireAssignSetPadding),
         Box::new(PreferPhpVersionId),
+        Box::new(NoBoolTernary),
+        Box::new(NoUselessTernary),
+        Box::new(NoFalseTernary),
+        Box::new(PreferEmptyStringIdentical),
+        Box::new(NoBooleanLiteralCompare),
+        Box::new(PreferEmptyArrayIdentical),
+        Box::new(PreferMinMax),
         Box::new(PreferSerializeMethod),
         Box::new(PreferUnserializeMethod),
         Box::new(NoVoidOnMagicMethod),

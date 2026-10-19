@@ -417,3 +417,23 @@ them):
   a concatenation, `X::class`, a `string` parameter or a local that every write sets to one of those.
   `no-compact` (Rector reads a constant-array type) takes string arguments, an array literal of strings, or a local
   assigned one such literal once and never written otherwise. Each widens with analyse's index (Build 8).
+
+Lint 7 lint-a batch 9 (2026-10-19; `no-bool-ternary`, `no-useless-ternary`, `no-false-ternary`,
+`prefer-empty-string-identical`, `no-boolean-literal-compare`, `prefer-empty-array-identical`, `prefer-min-max`):
+
+- **Assistant's call (lint-a batch 9): `syntax_types` stands in for PHPStan's native types.** A `bool` is a `bool`
+  parameter never written, a local every write of which is a bool expression (comparison, logical operator,
+  `instanceof`, `!`, a `(bool)` cast, `isset`, `empty`, a built-in function whose return is `bool` per
+  `data/bool-functions.txt`, or an own method declared `: bool`). An `int` reads the same way with
+  `data/int-functions.txt`. An `array` is an `array` parameter, a local first assigned an array literal and only
+  array literals after, or an own property declared `array`. An untyped property counts when its `@var` is an array
+  type, its default is an array literal, every assignment sets an array literal, and every element assignment that
+  takes a variable takes a typed parameter its method never writes (Rector's `AssignToPropertyTypeInferer` makes any
+  other variable `mixed`). A variadic parameter is an array and never a `bool` or `int`; `@expr` has `expr`'s type.
+  `prefer-empty-array-identical` also takes an earlier `if (!is_array($v)) { ...; return; }` in the function, the
+  narrowing PHPStan does. Inside a trait nothing has a type, as in Rector's run (verified on the oracle). Each widens
+  with analyse's index (Build 8).
+- **Assistant's call (lint-a batch 9): `prefer-empty-array-identical` follows Rector's run, not its fixture.** The
+  pinned Rector 2.6.1, run on `replace_is_array_check`, leaves `is_array($v) && empty($v)` unchanged and writes
+  `!empty($v)` there as `!($v === [])`; the fixture expects `$v === []` and `$v !== []`. Pun leaves the guarded form
+  alone (`Pun/skip_is_array_guard`).
