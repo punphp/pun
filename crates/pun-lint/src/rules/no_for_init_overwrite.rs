@@ -46,21 +46,27 @@ impl Rule for NoForInitOverwrite {
 }
 
 /// `checkValueVar()`: a variable the scope has, or the items of a `list()` or `[]` destructuring.
-fn check_value_var(r#for: Node<'_, '_>, ancestors: &[Node<'_, '_>], expr: &Expression<'_>, out: &mut Vec<Report>) {
+fn check_value_var(
+    r#for: Node<'_, '_>,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+    out: &mut Vec<Report>,
+) {
     match unparenthesize(expr) {
         Expression::Variable(Variable::Direct(v)) => {
             if defined(r#for, ancestors, v.name) {
                 out.push(Report {
                     span: node_span(v),
-                    message: format!("For loop initial assignment overwrites variable {}.", String::from_utf8_lossy(v.name)),
+                    message: format!(
+                        "For loop initial assignment overwrites variable {}.",
+                        String::from_utf8_lossy(v.name)
+                    ),
                     help: None,
                     fix: None,
                 });
             }
         }
-        Expression::Array(Array { elements, .. })
-        | Expression::List(List { elements, .. })
-        | Expression::LegacyArray(LegacyArray { elements, .. }) => {
+        Expression::Array(Array { elements, .. }) | Expression::List(List { elements, .. }) => {
             for element in elements.iter() {
                 match element {
                     ArrayElement::KeyValue(e) => check_value_var(r#for, ancestors, e.value, out),
@@ -74,11 +80,19 @@ fn check_value_var(r#for: Node<'_, '_>, ancestors: &[Node<'_, '_>], expr: &Expre
 }
 
 const SUPERGLOBALS: &[&[u8]] = &[
-    b"$GLOBALS", b"$_SERVER", b"$_GET", b"$_POST", b"$_FILES", b"$_COOKIE", b"$_SESSION", b"$_REQUEST", b"$_ENV",
+    b"$GLOBALS",
+    b"$_SERVER",
+    b"$_GET",
+    b"$_POST",
+    b"$_FILES",
+    b"$_COOKIE",
+    b"$_SESSION",
+    b"$_REQUEST",
+    b"$_ENV",
 ];
 
 /// `$scope->hasVariableType($name)->yes()` before the `for` loop `node`.
-fn defined(node: Node<'_, '_>, ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
+pub(super) fn defined(node: Node<'_, '_>, ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
     if SUPERGLOBALS.contains(&name) {
         return true;
     }
@@ -116,7 +130,9 @@ fn defined(node: Node<'_, '_>, ancestors: &[Node<'_, '_>], name: &[u8]) -> bool 
                 expr_defines(x.expression, name)
                     || match &x.target {
                         ForeachTarget::Value(t) => assigns(t.value, name),
-                        ForeachTarget::KeyValue(t) => assigns(t.key, name) || assigns(t.value, name),
+                        ForeachTarget::KeyValue(t) => {
+                            assigns(t.key, name) || assigns(t.value, name)
+                        }
                     }
             }
             Node::TryCatchClause(c) => c.variable.as_ref().is_some_and(|v| v.name == name),
@@ -148,7 +164,10 @@ fn preceding(holder: Node<'_, '_>, child: Node<'_, '_>, start: usize, name: &[u8
         return false;
     }
     let before = statements(holder);
-    list_flow(before.into_iter().filter(|s| node_span(*s).end <= start), name) == Flow::Defines
+    list_flow(
+        before.into_iter().filter(|s| node_span(*s).end <= start),
+        name,
+    ) == Flow::Defines
 }
 
 fn has_parameter(list: &FunctionLikeParameterList<'_>, name: &[u8]) -> bool {
@@ -203,14 +222,17 @@ fn body_flow(stmt: &Statement<'_>, name: &[u8]) -> Flow {
 fn stmt_flow(stmt: &Statement<'_>, name: &[u8]) -> Flow {
     match stmt {
         Statement::Expression(e) => match unparenthesize(e.expression) {
-            Expression::Throw(_) | Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => Flow::Exits,
+            Expression::Throw(_)
+            | Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => Flow::Exits,
             expr => defines_if(expr_defines(expr, name)),
         },
         Statement::Return(_) | Statement::Continue(_) | Statement::Break(_) => Flow::Exits,
         Statement::Echo(e) => defines_if(e.values.iter().any(|v| expr_defines(v, name))),
-        Statement::Global(g) => {
-            defines_if(g.variables.iter().any(|v| matches!(v, Variable::Direct(d) if d.name == name)))
-        }
+        Statement::Global(g) => defines_if(
+            g.variables
+                .iter()
+                .any(|v| matches!(v, Variable::Direct(d) if d.name == name)),
+        ),
         Statement::Static(s) => defines_if(s.items.iter().any(|item| item.variable().name == name)),
         Statement::Block(b) => match list_flow(b.statements.iter(), name) {
             Flow::Exits => Flow::Exits,
@@ -223,12 +245,23 @@ fn stmt_flow(stmt: &Statement<'_>, name: &[u8]) -> Flow {
             match &x.body {
                 IfBody::Statement(b) => merge(
                     std::iter::once(body_flow(b.statement, name))
-                        .chain(b.else_if_clauses.iter().map(|c| body_flow(c.statement, name)))
-                        .chain([b.else_clause.as_ref().map_or(Flow::No, |c| body_flow(c.statement, name))]),
+                        .chain(
+                            b.else_if_clauses
+                                .iter()
+                                .map(|c| body_flow(c.statement, name)),
+                        )
+                        .chain([b
+                            .else_clause
+                            .as_ref()
+                            .map_or(Flow::No, |c| body_flow(c.statement, name))]),
                 ),
                 IfBody::ColonDelimited(b) => merge(
                     std::iter::once(list_flow(b.statements.iter(), name))
-                        .chain(b.else_if_clauses.iter().map(|c| list_flow(c.statements.iter(), name)))
+                        .chain(
+                            b.else_if_clauses
+                                .iter()
+                                .map(|c| list_flow(c.statements.iter(), name)),
+                        )
                         .chain([b
                             .else_clause
                             .as_ref()
@@ -254,13 +287,16 @@ fn stmt_flow(stmt: &Statement<'_>, name: &[u8]) -> Flow {
                 return Flow::Defines;
             }
             merge(
-                std::iter::once(list_flow(x.block.statements.iter(), name))
-                    .chain(x.catch_clauses.iter().map(|c| list_flow(c.block.statements.iter(), name))),
+                std::iter::once(list_flow(x.block.statements.iter(), name)).chain(
+                    x.catch_clauses
+                        .iter()
+                        .map(|c| list_flow(c.block.statements.iter(), name)),
+                ),
             )
         }
-        Statement::DoWhile(x) => {
-            defines_if(body_flow(x.statement, name) == Flow::Defines || expr_defines(x.condition, name))
-        }
+        Statement::DoWhile(x) => defines_if(
+            body_flow(x.statement, name) == Flow::Defines || expr_defines(x.condition, name),
+        ),
         _ => Flow::No,
     }
 }
@@ -296,9 +332,10 @@ fn defines_if(yes: bool) -> Flow {
 
 /// Whether `stmt` holds `unset($name)`.
 fn unsets(stmt: &Statement<'_>, name: &[u8]) -> bool {
-    any_node(Node::Statement(stmt), &|n| {
-        matches!(n, Node::Unset(u) if u.values.iter().any(|v| matches!(unparenthesize(v), Expression::Variable(Variable::Direct(d)) if d.name == name)))
-    })
+    any_node(
+        Node::Statement(stmt),
+        &|n| matches!(n, Node::Unset(u) if u.values.iter().any(|v| matches!(unparenthesize(v), Expression::Variable(Variable::Direct(d)) if d.name == name))),
+    )
 }
 
 /// Whether evaluating `expr` assigns `name` on every path: an assignment to it, or one inside an operand that always
@@ -340,13 +377,13 @@ fn assigns(target: &Expression<'_>, name: &[u8]) -> bool {
         Expression::Variable(Variable::Direct(v)) => v.name == name,
         Expression::ArrayAccess(a) => assigns(a.array, name),
         Expression::ArrayAppend(a) => assigns(a.array, name),
-        Expression::Array(Array { elements, .. })
-        | Expression::List(List { elements, .. })
-        | Expression::LegacyArray(LegacyArray { elements, .. }) => elements.iter().any(|e| match e {
-            ArrayElement::KeyValue(e) => assigns(e.value, name),
-            ArrayElement::Value(e) => assigns(e.value, name),
-            _ => false,
-        }),
+        Expression::Array(Array { elements, .. }) | Expression::List(List { elements, .. }) => {
+            elements.iter().any(|e| match e {
+                ArrayElement::KeyValue(e) => assigns(e.value, name),
+                ArrayElement::Value(e) => assigns(e.value, name),
+                _ => false,
+            })
+        }
         _ => false,
     }
 }

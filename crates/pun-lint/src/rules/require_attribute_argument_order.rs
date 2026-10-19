@@ -65,6 +65,9 @@ impl Rule for RequireAttributeArgumentOrder {
             list.left_parenthesis.end.offset as usize,
             list.right_parenthesis.start.offset as usize,
         );
-        out.push(report(node_span(attribute), vec![Edit::new(inner, code.join(", "))]));
+        out.push(report(
+            node_span(attribute),
+            vec![Edit::new(inner, code.join(", "))],
+        ));
     }
 }

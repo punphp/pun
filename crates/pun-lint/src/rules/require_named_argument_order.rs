@@ -43,12 +43,18 @@ impl Rule for RequireNamedArgumentOrder {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let list = match node {
-            Node::MethodCall(call) => &call.argument_list,
-            Node::StaticMethodCall(call) => &call.argument_list,
-            Node::FunctionCall(call) => &call.argument_list,
+        let (list, target) = match node {
+            Node::MethodCall(call) => (
+                &call.argument_list,
+                Target::Method(call.object, &call.method),
+            ),
+            Node::StaticMethodCall(call) => (
+                &call.argument_list,
+                Target::Static(call.class, &call.method),
+            ),
+            Node::FunctionCall(call) => (&call.argument_list, Target::Function(call.function)),
             Node::Instantiation(new) => match &new.argument_list {
-                Some(list) => list,
+                Some(list) => (list, Target::New(new.class)),
                 None => return,
             },
             _ => return,
@@ -58,7 +64,7 @@ impl Rule for RequireNamedArgumentOrder {
             return;
         }
         let facts = facts(ctx);
-        let Some(callee) = callee(&facts, node, ancestors) else {
+        let Some(callee) = callee(&facts, target, ancestors) else {
             return;
         };
         let Some(spans) = sorted(&args, callee) else {
@@ -101,7 +107,10 @@ pub(super) fn report(span: Span, edits: Vec<Edit>) -> Report {
 
 /// `NamedArgsSorter::sortArgsToMatchReflectionParameters`: the spans of `args` with the named arguments in the order
 /// of `callee`'s parameters, after the others; `None` when they already are in that order.
-pub(super) fn sorted(args: &[(Span, Option<&[u8]>)], callee: &FunctionLikeMetadata) -> Option<Vec<Span>> {
+pub(super) fn sorted(
+    args: &[(Span, Option<&[u8]>)],
+    callee: &FunctionLikeMetadata,
+) -> Option<Vec<Span>> {
     let order = |name: &[u8]| {
         callee
             .parameters
@@ -109,7 +118,8 @@ pub(super) fn sorted(args: &[(Span, Option<&[u8]>)], callee: &FunctionLikeMetada
             .position(|p| p.get_name().0.as_bytes().get(1..) == Some(name))
             .unwrap_or(usize::MAX)
     };
-    let mut named: Vec<&(Span, Option<&[u8]>)> = args.iter().filter(|(_, name)| name.is_some()).collect();
+    let mut named: Vec<&(Span, Option<&[u8]>)> =
+        args.iter().filter(|(_, name)| name.is_some()).collect();
     // `usort` is stable since PHP 8.0.
     named.sort_by_key(|(_, name)| order(name.unwrap()));
     let spans: Vec<Span> = args
@@ -121,32 +131,38 @@ pub(super) fn sorted(args: &[(Span, Option<&[u8]>)], callee: &FunctionLikeMetada
     (spans.iter().zip(args).any(|(new, old)| *new != old.0)).then_some(spans)
 }
 
-/// `ReflectionResolver::resolveFunctionLikeReflectionFromCall`: the function or method `node` calls.
-fn callee<'f>(facts: &'f Facts, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Option<&'f FunctionLikeMetadata> {
+/// What a call calls: a function name, a method of an object or a class, or a class's constructor.
+enum Target<'a> {
+    Function(&'a Expression<'a>),
+    Method(&'a Expression<'a>, &'a ClassLikeMemberSelector<'a>),
+    Static(&'a Expression<'a>, &'a ClassLikeMemberSelector<'a>),
+    New(&'a Expression<'a>),
+}
+
+/// `ReflectionResolver::resolveFunctionLikeReflectionFromCall`: the function or method `target` calls.
+fn callee<'f>(
+    facts: &'f Facts,
+    target: Target<'_>,
+    ancestors: &[Node<'_, '_>],
+) -> Option<&'f FunctionLikeMetadata> {
     let codebase = &facts.codebase;
-    let (class, method) = match node {
-        Node::FunctionCall(call) => {
-            let Expression::Identifier(name) = call.function else {
+    let (class, method) = match target {
+        Target::Function(function) => {
+            let Expression::Identifier(name) = function else {
                 return None;
             };
             return function_names(ancestors, name)
                 .iter()
                 .find_map(|n| codebase.get_function(n.as_bytes()));
         }
-        Node::MethodCall(call) => {
-            let ClassLikeMemberSelector::Identifier(method) = &call.method else {
-                return None;
-            };
-            (object_class(facts, ancestors, call.object)?, method.value)
+        Target::Method(object, ClassLikeMemberSelector::Identifier(method)) => {
+            (object_class(facts, ancestors, object)?, method.value)
         }
-        Node::StaticMethodCall(call) => {
-            let ClassLikeMemberSelector::Identifier(method) = &call.method else {
-                return None;
-            };
-            (class_name(ancestors, call.class)?, method.value)
+        Target::Static(class, ClassLikeMemberSelector::Identifier(method)) => {
+            (class_name(ancestors, class)?, method.value)
         }
-        Node::Instantiation(new) => (class_name(ancestors, new.class)?, &b"__construct"[..]),
-        _ => return None,
+        Target::New(class) => (class_name(ancestors, class)?, &b"__construct"[..]),
+        Target::Method(..) | Target::Static(..) => return None,
     };
     codebase.get_declaring_method(class.as_bytes(), method)
 }
@@ -163,7 +179,11 @@ fn class_name(ancestors: &[Node<'_, '_>], class: &Expression<'_>) -> Option<Stri
 
 /// `ClassNameFromObjectTypeResolver::resolve` on the type of a method call's object: the one class of an object type
 /// (`null` left out).
-fn object_class(facts: &Facts, ancestors: &[Node<'_, '_>], object: &Expression<'_>) -> Option<String> {
+fn object_class(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    object: &Expression<'_>,
+) -> Option<String> {
     if let Expression::Variable(Variable::Direct(v)) = unparenthesize(object)
         && v.name == b"$this"
     {
@@ -186,7 +206,10 @@ fn function_names(ancestors: &[Node<'_, '_>], name: &Identifier<'_>) -> Vec<Stri
         return vec![fq.to_string()];
     }
     let namespace = ancestors.iter().rev().find_map(|a| match a {
-        Node::Namespace(ns) => ns.name.as_ref().map(|n| String::from_utf8_lossy(n.value()).into_owned()),
+        Node::Namespace(ns) => ns
+            .name
+            .as_ref()
+            .map(|n| String::from_utf8_lossy(n.value()).into_owned()),
         _ => None,
     });
     match namespace {

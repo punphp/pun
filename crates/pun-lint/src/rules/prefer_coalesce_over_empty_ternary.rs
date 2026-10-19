@@ -54,7 +54,8 @@ impl Rule for PreferCoalesceOverEmptyTernary {
         let code = infix(ctx, then, "??", ternary.r#else, (140, 141));
         out.push(Report {
             span,
-            message: "Use `??` instead of a ternary on `! empty()` of the array it reads.".to_string(),
+            message: "Use `??` instead of a ternary on `! empty()` of the array it reads."
+                .to_string(),
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,

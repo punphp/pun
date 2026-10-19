@@ -43,7 +43,9 @@ impl Rule for NoNegatedComparison {
                 }
                 (identical.lhs, identical.rhs)
             }
-            Node::Binary(identical) if matches!(identical.operator, BinaryOperator::Identical(_)) => {
+            Node::Binary(identical)
+                if matches!(identical.operator, BinaryOperator::Identical(_)) =>
+            {
                 if !is_bool(ancestors, identical.lhs) || !is_bool(ancestors, identical.rhs) {
                     return;
                 }

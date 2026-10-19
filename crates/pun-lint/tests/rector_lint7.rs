@@ -9,6 +9,7 @@
 
 use std::path::{Path, PathBuf};
 
+use mago_syntax::cst::Node;
 use pun_format::Pipeline;
 use pun_lint::rules::*;
 use pun_lint::{Linter, Rule};
@@ -64,8 +65,13 @@ fn run_with_sources(linter: &Linter, dir: &str, sources: &[&str]) {
     let pipeline = laravel();
     let mut extra = Vec::new();
     for source in sources {
-        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector").join(source);
-        extra.push((path.display().to_string(), std::fs::read_to_string(&path).unwrap()));
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/rector")
+            .join(source);
+        extra.push((
+            path.display().to_string(),
+            std::fs::read_to_string(&path).unwrap(),
+        ));
     }
     for (path, input, expected) in fixtures(dir) {
         let name = path.file_name().unwrap().to_string_lossy();
@@ -94,8 +100,14 @@ fn boolean_not_identical_to_not_identical() {
 #[test]
 fn ternary_empty_array_array_dim_fetch_to_coalesce() {
     let linter = only(PreferCoalesceOverEmptyTernary);
-    run(&linter, "TernaryEmptyArrayArrayDimFetchToCoalesceRector/Fixture");
-    run(&linter, "TernaryEmptyArrayArrayDimFetchToCoalesceRector/Oracle");
+    run(
+        &linter,
+        "TernaryEmptyArrayArrayDimFetchToCoalesceRector/Fixture",
+    );
+    run(
+        &linter,
+        "TernaryEmptyArrayArrayDimFetchToCoalesceRector/Oracle",
+    );
 }
 
 /// Checks the report cases of `rule` in tests/lint7_report/`dir`.
@@ -127,7 +139,10 @@ fn report_as(rule: impl Rule + 'static, dir: &str, column: bool) {
                 let line_start = input[..p.span.start].rfind('\n').map_or(0, |i| i + 1);
                 let line = input[..p.span.start].matches('\n').count() + 1;
                 let at = if column {
-                    format!("{line}:{}", input[line_start..p.span.start].chars().count() + 1)
+                    format!(
+                        "{line}:{}",
+                        input[line_start..p.span.start].chars().count() + 1
+                    )
                 } else {
                     line.to_string()
                 };
@@ -175,4 +190,102 @@ fn sort_attribute_named_args() {
     let source = ["SortAttributeNamedArgsRector/Source/MyAttribute.php"];
     run_with_sources(&linter, "SortAttributeNamedArgsRector/Fixture", &source);
     run(&linter, "SortAttributeNamedArgsRector/Oracle");
+}
+
+#[test]
+fn overwrite_variables_with_foreach() {
+    report(
+        NoLoopVariableOverwrite,
+        "control-flow/no-loop-variable-overwrite",
+    );
+}
+
+/// A rule called on every node, not only the kinds of its `targets()`.
+struct Everywhere(Box<dyn Rule>);
+
+impl Rule for Everywhere {
+    fn id(&self) -> &'static str {
+        self.0.id()
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        ancestors: &[Node<'ast, 'arena>],
+        ctx: &pun_lint::Context<'_>,
+        out: &mut Vec<pun_lint::Report>,
+    ) {
+        self.0.visit(node, ancestors, ctx, out);
+    }
+}
+
+#[test]
+fn rules_ignore_nodes_outside_their_targets() {
+    // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
+    let cases: [(fn() -> Box<dyn Rule>, &[&str]); 8] = [
+        (
+            || Box::new(NoNegatedComparison),
+            &["rector/BooleanNotIdenticalToNotIdenticalRector"],
+        ),
+        (
+            || Box::new(PreferCoalesceOverEmptyTernary),
+            &["rector/TernaryEmptyArrayArrayDimFetchToCoalesceRector"],
+        ),
+        (
+            || Box::new(NoForInitOverwrite),
+            &["lint7_report/control-flow/no-for-init-overwrite"],
+        ),
+        (
+            || Box::new(NoLoopVariableOverwrite),
+            &["lint7_report/control-flow/no-loop-variable-overwrite"],
+        ),
+        (
+            || Box::new(NoLooseEquality),
+            &["lint7_report/operators/no-loose-equality"],
+        ),
+        (
+            || Box::new(NoDebugCalls),
+            &[
+                "lint7_report/security/no-debug-calls",
+                "rector/RemoveDebugExpectationsRector",
+            ],
+        ),
+        (
+            || Box::new(RequireNamedArgumentOrder),
+            &["rector/SortCallLikeNamedArgsRector"],
+        ),
+        (
+            || Box::new(RequireAttributeArgumentOrder),
+            &["rector/SortAttributeNamedArgsRector"],
+        ),
+    ];
+    for (rule, dirs) in cases {
+        let targeted = Linter::new(vec![rule()], 80400);
+        let everywhere = Linter::new(vec![Box::new(Everywhere(rule()))], 80400);
+        for dir in dirs {
+            let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("tests")
+                .join(dir);
+            let mut files = Vec::new();
+            for sub in std::fs::read_dir(&root).unwrap() {
+                let sub = sub.unwrap().path();
+                if sub.is_dir() {
+                    files.extend(std::fs::read_dir(sub).unwrap().map(|e| e.unwrap().path()));
+                } else {
+                    files.push(sub);
+                }
+            }
+            assert!(!files.is_empty(), "{dir}");
+            for path in files {
+                let content = std::fs::read_to_string(&path).unwrap();
+                let input = content.split("-----\n").next().unwrap();
+                assert_eq!(
+                    everywhere.check(&path, input).unwrap(),
+                    targeted.check(&path, input).unwrap(),
+                    "{}",
+                    path.display()
+                );
+            }
+        }
+    }
 }

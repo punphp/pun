@@ -54,6 +54,7 @@ mod no_insecure_comparison;
 mod no_invalid_open_tag;
 mod no_iterator_to_array_in_foreach;
 mod no_literal_password;
+mod no_loop_variable_overwrite;
 mod no_loose_equality;
 mod no_mirror_assignment;
 mod no_missing_format_argument;
@@ -214,6 +215,7 @@ pub use no_insecure_comparison::NoInsecureComparison;
 pub use no_invalid_open_tag::NoInvalidOpenTag;
 pub use no_iterator_to_array_in_foreach::NoIteratorToArrayInForeach;
 pub use no_literal_password::NoLiteralPassword;
+pub use no_loop_variable_overwrite::NoLoopVariableOverwrite;
 pub use no_loose_equality::NoLooseEquality;
 pub use no_mirror_assignment::NoMirrorAssignment;
 pub use no_missing_format_argument::NoMissingFormatArgument;
@@ -484,5 +486,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoDebugCalls),
         Box::new(RequireNamedArgumentOrder),
         Box::new(RequireAttributeArgumentOrder),
+        Box::new(NoLoopVariableOverwrite),
     ]
 }

@@ -40,6 +40,13 @@ class Child extends Service
         $f->call(z: 1, x: 2);
         Missing::call(z: 1, x: 2);
         run(1, 2);
+        $fn(z: 1, x: 2);
+        $this->$name(z: 1, x: 2);
+        self::$name(second: 1, first: 2);
+        $plain = new Service;
+        $dyn = new $cls(c: 3, a: 1);
+        $either = rand() ? new Service() : new Child();
+        $either->call(z: 1, x: 2);
         run(foo: 1, bar: 2);
     }
 }
@@ -103,6 +110,13 @@ class Child extends Service
         $f->call(z: 1, x: 2);
         Missing::call(z: 1, x: 2);
         run(1, 2);
+        $fn(z: 1, x: 2);
+        $this->$name(z: 1, x: 2);
+        self::$name(second: 1, first: 2);
+        $plain = new Service;
+        $dyn = new $cls(c: 3, a: 1);
+        $either = rand() ? new Service() : new Child();
+        $either->call(z: 1, x: 2);
         run(foo: 1, bar: 2);
     }
 }
