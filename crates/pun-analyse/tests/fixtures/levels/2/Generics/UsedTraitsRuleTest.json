@@ -1,0 +1,50 @@
+{
+    "test": "Generics/UsedTraitsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/used-traits.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/used-traits.php",
+                    "line": 20,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @use contains generic type UsedTraits\\NongenericTrait<stdClass> but trait UsedTraits\\NongenericTrait is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/used-traits.php",
+                    "line": 31,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type int in generic type UsedTraits\\GenericTrait<int> in PHPDoc tag @use is not subtype of template type T of object of trait UsedTraits\\GenericTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/used-traits.php",
+                    "line": 46,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type UsedTraits\\GenericTrait<stdClass, Exception> in PHPDoc tag @use specifies 2 template types, but trait UsedTraits\\GenericTrait supports only 1: T",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/used-traits.php",
+                    "line": 69,
+                    "identifier": "generics.callSiteVarianceNotAllowed",
+                    "message": "Call-site variance annotation of covariant Throwable in generic type UsedTraits\\GenericTrait<covariant Throwable> in PHPDoc tag @use is not allowed.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/used-traits.php (in context of class UsedTraits\\Ipsum)",
+                    "line": 54,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @use tag of trait UsedTraits\\NestedTrait describes UsedTraits\\NongenericTrait but the trait uses UsedTraits\\GenericTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "test": "Generics/MethodTagTemplateTypeTraitRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/method-tag-trait-template.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-tag-trait-template.php",
+                    "line": 11,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @method template U for method MethodTagTraitTemplate\\HelloWorld::sayHello() has invalid bound type MethodTagTraitTemplate\\Nonexisting.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-tag-trait-template.php",
+                    "line": 11,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @method template for method MethodTagTraitTemplate\\HelloWorld::sayHello() cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-tag-trait-template.php",
+                    "line": 11,
+                    "identifier": "methodTag.shadowTemplate",
+                    "message": "PHPDoc tag @method template T for method MethodTagTraitTemplate\\HelloWorld::sayHello() shadows @template T for class MethodTagTraitTemplate\\HelloWorld.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -48,6 +48,14 @@ pub trait Scope {
     fn template(&self, _name: &str) -> Option<Type> {
         None
     }
+    /// `hasUseAlias()`: a `use` statement imports the name.
+    fn has_use_alias(&self, _name: &str) -> bool {
+        false
+    }
+    /// `getNamespace() !== null`
+    fn in_namespace(&self) -> bool {
+        false
+    }
 }
 
 /// A scope with only a class (built-in signatures).
@@ -303,10 +311,39 @@ fn to_array_key(t: &Type) -> Type {
     }
 }
 
+/// `tryResolvePseudoTypeClassType()`: a keyword imported by `use`, or naming a class of the namespace, is that class.
+fn pseudo_type_class(name: &str, scope: &dyn Scope) -> Option<Type> {
+    if scope.has_use_alias(name) {
+        return Some(Type::Object(scope.resolve_name(name), vec![]));
+    }
+    if !scope.in_namespace() {
+        return None;
+    }
+    let class = scope.resolve_name(name);
+    symbols::lookup(&class).map(|_| Type::Object(class, vec![]))
+}
+
 fn identifier(name: &str, scope: &dyn Scope) -> Type {
     use Accessory as A;
     let string = || Type::String;
-    match name.to_ascii_lowercase().as_str() {
+    let lower = name.to_ascii_lowercase();
+    if matches!(
+        lower.as_str(),
+        "integer"
+            | "scalar"
+            | "number"
+            | "numeric"
+            | "boolean"
+            | "double"
+            | "resource"
+            | "never"
+            | "noreturn"
+            | "empty"
+    ) && let Some(class) = pseudo_type_class(name, scope)
+    {
+        return class;
+    }
+    match lower.as_str() {
         "int" | "integer" => return Type::Int,
         "positive-int" => return Type::int_range(Some(1), None),
         "negative-int" => return Type::int_range(None, Some(-1)),

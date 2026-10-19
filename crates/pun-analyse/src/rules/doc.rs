@@ -267,6 +267,8 @@ const ANCESTOR_TAGS: [&str; 8] = [
     "@phpstan-implements",
 ];
 const USE_TAGS: [&str; 3] = ["@use", "@template-use", "@phpstan-use"];
+const TYPE_ALIAS_TAGS: [&str; 3] = ["@phan-type", "@psalm-type", "@phpstan-type"];
+const TYPE_ALIAS_IMPORT_TAGS: [&str; 2] = ["@psalm-import-type", "@phpstan-import-type"];
 const VAR_TAGS: [&str; 4] = ["@var", "@phan-var", "@psalm-var", "@phpstan-var"];
 const TEMPLATE_TAGS: [&str; 4] = [
     "@template",
@@ -300,7 +302,14 @@ pub struct Doc {
     pub mixins: Vec<Node>,
     /// `resolveUsesTags()`: `@use` types, in tag-kind order (a later one for the same trait wins)
     pub uses: Vec<Node>,
+    /// `resolveExtendsTags()` and `resolveImplementsTags()` apart, in tag-kind order
+    pub extends: Vec<Node>,
+    pub implements: Vec<Node>,
     pub templates: Vec<TemplateTag>,
+    /// `resolveTypeAliasTags()`: the names of `@phpstan-type` & co.
+    pub type_aliases: Vec<String>,
+    /// `resolveTypeAliasImportTags()`: (imported alias, class as written, `as` name)
+    pub alias_imports: Vec<(String, String, Option<String>)>,
 }
 
 impl Doc {
@@ -350,6 +359,15 @@ impl Doc {
             } else if let Some(rank) = order(&ANCESTOR_TAGS, tag) {
                 if let Some((node, _)) = type_value(value) {
                     ancestors.push((rank, node));
+                }
+            } else if TYPE_ALIAS_TAGS.contains(&tag.as_str()) {
+                let name = identifier(value);
+                if !name.is_empty() {
+                    out.type_aliases.push(name.to_string());
+                }
+            } else if TYPE_ALIAS_IMPORT_TAGS.contains(&tag.as_str()) {
+                if let Some(import) = alias_import(value) {
+                    out.alias_imports.push(import);
                 }
             } else if let Some(rank) = order(&USE_TAGS, tag) {
                 if let Some((node, _)) = type_value(value) {
@@ -404,6 +422,12 @@ impl Doc {
         closure_this.sort_by_key(|(rank, _)| *rank);
         out.self_out = self_out.map(|(_, n)| n);
         ancestors.sort_by_key(|(rank, _)| *rank);
+        for (rank, node) in &ancestors {
+            match rank {
+                0..5 => out.extends.push(node.clone()),
+                _ => out.implements.push(node.clone()),
+            }
+        }
         methods.sort_by_key(|(rank, _)| *rank);
         for (_, m) in methods {
             match out.methods.iter_mut().find(|x| x.name == m.name) {
@@ -533,6 +557,30 @@ fn contains_error(ty: &Type) -> bool {
     found.get()
 }
 
+/// `parseTypeAliasImportTagValue()`: `Alias from Class` with an optional `as Name`.
+fn alias_import(value: &str) -> Option<(String, String, Option<String>)> {
+    let alias = identifier(value);
+    let rest = value[alias.len()..].trim_start().strip_prefix("from")?;
+    if alias.is_empty() || !rest.starts_with(char::is_whitespace) {
+        return None;
+    }
+    let rest = rest.trim_start();
+    let len = rest
+        .find(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '_' || ch == '\\' || !ch.is_ascii()))
+        .unwrap_or(rest.len());
+    if len == 0 {
+        return None;
+    }
+    let from = rest[..len].to_string();
+    let rest = rest[len..].trim_start();
+    let alias_as = rest
+        .strip_prefix("as")
+        .filter(|r| r.starts_with(char::is_whitespace))
+        .map(|r| identifier(r.trim_start()).to_string())
+        .filter(|n| !n.is_empty());
+    Some((alias.to_string(), from, alias_as))
+}
+
 /// `parseTemplateTagValue()`: `T`, `T of Bound`, `T as Bound`, `T = Default`.
 fn template_value(value: &str) -> Option<TemplateTag> {
     let len = value
@@ -601,6 +649,14 @@ impl Scope for NameScope {
     }
     fn template(&self, name: &str) -> Option<Type> {
         self.templates.get(name).cloned()
+    }
+    fn has_use_alias(&self, name: &str) -> bool {
+        self.names
+            .resolve_alias(NameKind::Default, name.as_bytes())
+            .is_some()
+    }
+    fn in_namespace(&self) -> bool {
+        self.names.namespace_name().is_some()
     }
 }
 

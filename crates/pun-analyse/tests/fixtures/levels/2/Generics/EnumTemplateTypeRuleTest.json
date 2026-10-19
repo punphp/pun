@@ -1,0 +1,29 @@
+{
+    "test": "Generics/EnumTemplateTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/enum-template.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/enum-template.php",
+                    "line": 8,
+                    "identifier": "enum.generic",
+                    "message": "Enum EnumTemplate\\Foo has PHPDoc @template tag but enums cannot be generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/enum-template.php",
+                    "line": 17,
+                    "identifier": "enum.generic",
+                    "message": "Enum EnumTemplate\\Bar has PHPDoc @template tags but enums cannot be generic.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

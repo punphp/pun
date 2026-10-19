@@ -1,1 +1,4 @@
 # Cases of tests/levels.rs that still differ from PHPStan: "<level> <test>::<method>".
+# FooObjectStorage's `@extends FooObjectStorage<object>` names the class being declared: PHPStan resolves it while
+# building that class's reflection and gets a plain object type, Pun the intersection with iterable<object>.
+2 Generics/ClassAncestorsRuleTest::testRuleExtends

@@ -26,7 +26,7 @@ use rayon::prelude::*;
 use crate::{Project, autoload};
 
 /// PHPStan's unprefixed classes and functions (scripts/export-phpstan-api-stub.php): PHPStan always has them loaded.
-const PHPSTAN_API: &[u8] = include_bytes!("../data/phpstan-api.php");
+pub(crate) const PHPSTAN_API: &[u8] = include_bytes!("../data/phpstan-api.php");
 
 /// Whether `code` names PHPStan's own namespaces, so the (large) API stub is worth scanning.
 fn names_phpstan(code: &[u8]) -> bool {

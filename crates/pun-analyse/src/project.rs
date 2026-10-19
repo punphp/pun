@@ -122,6 +122,11 @@ impl Project {
             .get_str("ignoreErrors")
             .and_then(Value::as_array)
             .unwrap_or(&empty);
+        let level = match params.get_str("level") {
+            Some(Value::Int(i)) => u8::try_from(*i).unwrap_or(10).min(10),
+            Some(Value::Str(s)) if s == "max" => 10,
+            _ => 0,
+        };
         Project {
             analysed,
             scanned,
@@ -130,12 +135,12 @@ impl Project {
             report_unmatched_ignores,
             report_ignores_without_comments: flag("reportIgnoresWithoutComments"),
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
-            check_class_case_sensitivity: false,
-            level: match params.get_str("level") {
-                Some(Value::Int(i)) => u8::try_from(*i).unwrap_or(10).min(10),
-                Some(Value::Str(s)) if s == "max" => 10,
-                _ => 0,
+            // config.level2.neon turns it on
+            check_class_case_sensitivity: match params.get_str("checkClassCaseSensitivity") {
+                Some(Value::Bool(b)) => *b,
+                _ => level >= 2,
             },
+            level,
             check_generic_iterable_classes: params
                 .get_str("featureToggles")
                 .and_then(Value::as_array)

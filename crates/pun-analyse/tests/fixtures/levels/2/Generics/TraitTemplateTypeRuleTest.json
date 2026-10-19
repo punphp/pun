@@ -1,0 +1,80 @@
+{
+    "test": "Generics/TraitTemplateTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/trait-template.php"
+            ],
+            "scan": [
+                "Generics/data/trait-template.php"
+            ],
+            "errors": [
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 8,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @template for trait TraitTemplateType\\Foo cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for trait TraitTemplateType\\Bar has invalid bound type TraitTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 45,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for trait TraitTemplateType\\Ipsum cannot have existing type alias ImportedAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 45,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for trait TraitTemplateType\\Ipsum cannot have existing type alias LocalAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 64,
+                    "identifier": "generics.callSiteVarianceConflict",
+                    "message": "Call-site variance of contravariant int in generic type TraitTemplateType\\Dolor<contravariant int> in PHPDoc tag @template W is in conflict with covariant template type T of class TraitTemplateType\\Dolor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 64,
+                    "identifier": "generics.callSiteVarianceRedundant",
+                    "message": "Call-site variance of covariant int in generic type TraitTemplateType\\Dolor<covariant int> in PHPDoc tag @template U is redundant, template type T of class TraitTemplateType\\Dolor has the same variance.",
+                    "tip": "You can safely remove the call-site variance annotation."
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 72,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for trait TraitTemplateType\\Adipiscing has invalid default type TraitTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 80,
+                    "identifier": "generics.templateDefaultOutOfBounds",
+                    "message": "Default type bool in PHPDoc tag @template T for trait TraitTemplateType\\Elit is not subtype of bound type object.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/trait-template.php",
+                    "line": 90,
+                    "identifier": "generics.requiredTypeAfterOptional",
+                    "message": "PHPDoc tag @template V for trait TraitTemplateType\\Consecteur does not have a default type but follows an optional @template U.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

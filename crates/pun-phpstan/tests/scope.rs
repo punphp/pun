@@ -291,9 +291,11 @@ fn traverse() {
 /// type is the first 18 bytes); a tag value has no `*NEVER*`, which is Pun's own syntax.
 #[test]
 fn tag_value_prefix() {
-    let (node, offset) = phpdoc::parse_prefix("array<int, string> $x text").unwrap();
+    let value = "array<int, string> $x text";
+    let (node, offset) = phpdoc::parse_prefix(value).unwrap();
     assert_eq!(node, phpdoc::parse("array<int, string>").unwrap());
-    assert_eq!(offset, 18);
+    // the rest starts after the type (the offset may include the whitespace after it)
+    assert_eq!(value[offset..].trim_start(), "$x text");
     assert!(phpdoc::parse_prefix("*NEVER* $x").is_err());
 }
 

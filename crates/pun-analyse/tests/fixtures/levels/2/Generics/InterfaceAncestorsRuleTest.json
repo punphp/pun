@@ -1,0 +1,353 @@
+{
+    "test": "Generics/InterfaceAncestorsRuleTest",
+    "cases": [
+        {
+            "method": "testRuleImplements",
+            "files": [
+                "Generics/data/interface-ancestors-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 35,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooDoesNotImplementAnything has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 44,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooInvalidImplementsTags has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 44,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooInvalidImplementsTags has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 52,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooWrongClassImplemented has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 60,
+                    "identifier": "generics.notCompatible",
+                    "message": "Interface InterfaceAncestorsImplements\\FooWrongTypeInImplementsTag @implements tag contains incompatible type class-string<InterfaceAncestorsImplements\\T>.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 68,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooCorrect has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 76,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooNotEnough has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 84,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooExtraTypes has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 92,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooNotSubtype has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 100,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooAlsoNotSubtype has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 108,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooUnknownClass has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 117,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 126,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric2 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 136,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric3 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 145,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric4 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 154,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric5 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 163,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric6 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 172,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric7 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 182,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric8 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 182,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooGenericGeneric8 has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-implements.php",
+                    "line": 190,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsImplements\\FooTypeProjection has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleExtends",
+            "files": [
+                "Generics/data/interface-ancestors-extends.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 35,
+                    "identifier": "generics.noParent",
+                    "message": "Interface InterfaceAncestorsExtends\\FooDoesNotImplementAnything has @extends tag, but does not extend any interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 44,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @extends tag of interface InterfaceAncestorsExtends\\FooInvalidImplementsTags describes InterfaceAncestorsExtends\\FooGeneric2 but the interface extends: InterfaceAncestorsExtends\\FooGeneric",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 52,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @extends tag of interface InterfaceAncestorsExtends\\FooWrongClassImplemented describes InterfaceAncestorsExtends\\FooGeneric2 but the interface extends: InterfaceAncestorsExtends\\FooGeneric, InterfaceAncestorsExtends\\FooGeneric3",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 60,
+                    "identifier": "generics.notCompatible",
+                    "message": "Interface InterfaceAncestorsExtends\\FooWrongTypeInImplementsTag @extends tag contains incompatible type class-string<InterfaceAncestorsExtends\\T>.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 76,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type InterfaceAncestorsExtends\\FooGeneric<int> in PHPDoc tag @extends does not specify all template types of interface InterfaceAncestorsExtends\\FooGeneric: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 84,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type InterfaceAncestorsExtends\\FooGeneric<int, InvalidArgumentException, string> in PHPDoc tag @extends specifies 3 template types, but interface InterfaceAncestorsExtends\\FooGeneric supports only 2: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 92,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Throwable in generic type InterfaceAncestorsExtends\\FooGeneric<int, Throwable> in PHPDoc tag @extends is not subtype of template type U of Exception of interface InterfaceAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 100,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type InterfaceAncestorsExtends\\FooGeneric<int, stdClass> in PHPDoc tag @extends is not subtype of template type U of Exception of interface InterfaceAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 108,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @extends has invalid type InterfaceAncestorsExtends\\Zazzuuuu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 117,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type mixed in generic type InterfaceAncestorsExtends\\FooGeneric<int, mixed> in PHPDoc tag @extends is not subtype of template type U of Exception of interface InterfaceAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 126,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Throwable in generic type InterfaceAncestorsExtends\\FooGeneric<int, Throwable> in PHPDoc tag @extends is not subtype of template type U of Exception of interface InterfaceAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 172,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type InterfaceAncestorsExtends\\FooGeneric<int, stdClass> in PHPDoc tag @extends is not subtype of template type U of Exception of interface InterfaceAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 182,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type InterfaceAncestorsExtends\\FooGeneric2<int, stdClass> in PHPDoc tag @extends is not subtype of template type V of Exception of interface InterfaceAncestorsExtends\\FooGeneric2.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 182,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type InterfaceAncestorsExtends\\FooGeneric<int, stdClass> in PHPDoc tag @extends is not subtype of template type U of Exception of interface InterfaceAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 215,
+                    "identifier": "generics.variance",
+                    "message": "Template type T is declared as covariant, but occurs in invariant position in extended type InterfaceAncestorsExtends\\FooGeneric9<T, T> of interface InterfaceAncestorsExtends\\FooGeneric10.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-ancestors-extends.php",
+                    "line": 223,
+                    "identifier": "generics.callSiteVarianceNotAllowed",
+                    "message": "Call-site variance annotation of covariant LogicException in generic type InterfaceAncestorsExtends\\FooGeneric<int, covariant LogicException> in PHPDoc tag @extends is not allowed.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCrossCheckInterfaces",
+            "files": [
+                "Generics/data/cross-check-interfaces-interfaces.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/cross-check-interfaces-interfaces.php",
+                    "line": 19,
+                    "identifier": "generics.interfaceConflict",
+                    "message": "Interface IteratorAggregate specifies template type TValue of interface Traversable as string but it's already specified as CrossCheckInterfacesInInterfaces\\Item.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9981",
+            "files": [
+                "Generics/data/bug-9981.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/bug-9981.php",
+                    "line": 28,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int, actual: TKey of int (class Bug9981\\Directory, parameter)",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-9981.php",
+                    "line": 29,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug9981\\File, actual: T of Bug9981\\File (class Bug9981\\Directory, parameter)",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-9981.php",
+                    "line": 40,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int, actual: TKey of int (class Bug9981\\Directory, parameter)",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-9981.php",
+                    "line": 41,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug9981\\Directory, actual: T of Bug9981\\Directory (class Bug9981\\Directory, parameter)",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-9981.php",
+                    "line": 52,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type int, actual: TKey of int (class Bug9981\\Directory, parameter)",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/bug-9981.php",
+                    "line": 53,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug9981\\Directory|Bug9981\\File, actual: T of Bug9981\\Directory|Bug9981\\File (class Bug9981\\Directory, parameter)",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

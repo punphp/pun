@@ -1,0 +1,213 @@
+{
+    "test": "Generics/MethodTemplateTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/method-template.php"
+            ],
+            "scan": [
+                "Generics/data/method-template.php"
+            ],
+            "errors": [
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 11,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @template for method MethodTemplateType\\Foo::doFoo() cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 11,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type stdClass of method MethodTemplateType\\Foo::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for method MethodTemplateType\\Foo::doBar() has invalid bound type MethodTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 19,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodTemplateType\\Foo::doBar() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 37,
+                    "identifier": "method.shadowTemplate",
+                    "message": "PHPDoc tag @template T for method MethodTemplateType\\Bar::doFoo() shadows @template T of Exception for class MethodTemplateType\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 37,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodTemplateType\\Bar::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 37,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method MethodTemplateType\\Bar::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 50,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodTemplateType\\Baz::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 66,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type TypeAlias of method MethodTemplateType\\Lorem::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 85,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for method MethodTemplateType\\Ipsum::doFoo() cannot have existing type alias ImportedAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 85,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for method MethodTemplateType\\Ipsum::doFoo() cannot have existing type alias LocalAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 85,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type ExportedAlias of method MethodTemplateType\\Ipsum::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 85,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type ImportedAlias of method MethodTemplateType\\Ipsum::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 85,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type LocalAlias of method MethodTemplateType\\Ipsum::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 109,
+                    "identifier": "generics.callSiteVarianceConflict",
+                    "message": "Call-site variance of contravariant int in generic type MethodTemplateType\\Dolor<contravariant int> in PHPDoc tag @template W is in conflict with covariant template type T of class MethodTemplateType\\Dolor.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 109,
+                    "identifier": "generics.callSiteVarianceRedundant",
+                    "message": "Call-site variance of covariant int in generic type MethodTemplateType\\Dolor<covariant int> in PHPDoc tag @template U is redundant, template type T of class MethodTemplateType\\Dolor has the same variance.",
+                    "tip": "You can safely remove the call-site variance annotation."
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 109,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodTemplateType\\Sit::doSit() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 109,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method MethodTemplateType\\Sit::doSit() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 109,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type V of method MethodTemplateType\\Sit::doSit() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 109,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type W of method MethodTemplateType\\Sit::doSit() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 122,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for method MethodTemplateType\\InvalidDefault::invalid() has invalid default type MethodTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 122,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodTemplateType\\InvalidDefault::invalid() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 130,
+                    "identifier": "generics.templateDefaultOutOfBounds",
+                    "message": "Default type bool in PHPDoc tag @template T for method MethodTemplateType\\InvalidDefault::outOfBounds() is not subtype of bound type object.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 130,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodTemplateType\\InvalidDefault::outOfBounds() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 140,
+                    "identifier": "generics.requiredTypeAfterOptional",
+                    "message": "PHPDoc tag @template V for method MethodTemplateType\\InvalidDefault::requiredAfterOptional() does not have a default type but follows an optional @template U.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 140,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodTemplateType\\InvalidDefault::requiredAfterOptional() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 140,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method MethodTemplateType\\InvalidDefault::requiredAfterOptional() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-template.php",
+                    "line": 140,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type V of method MethodTemplateType\\InvalidDefault::requiredAfterOptional() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

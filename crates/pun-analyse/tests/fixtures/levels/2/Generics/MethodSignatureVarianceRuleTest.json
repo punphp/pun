@@ -1,0 +1,1042 @@
+{
+    "test": "Generics/MethodSignatureVarianceRuleTest",
+    "cases": [
+        {
+            "method": "testRule/0",
+            "files": [
+                "Generics/data/method-signature-variance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-signature-variance.php",
+                    "line": 10,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method MethodSignatureVariance\\C::a() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance.php",
+                    "line": 16,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method MethodSignatureVariance\\C::b() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance.php",
+                    "line": 16,
+                    "identifier": "method.variance",
+                    "message": "Variance annotation is only allowed for type parameters of classes and interfaces, but occurs in template type U in in method MethodSignatureVariance\\C::b().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance.php",
+                    "line": 22,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method MethodSignatureVariance\\C::c() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance.php",
+                    "line": 22,
+                    "identifier": "method.variance",
+                    "message": "Variance annotation is only allowed for type parameters of classes and interfaces, but occurs in template type U in in method MethodSignatureVariance\\C::c().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule/1",
+            "files": [
+                "Generics/data/method-signature-variance-invariant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 26,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (In<Invariant<X> $e): Unexpected token \"$e\", expected '>' at offset 116 on line 6",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 30,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (Out<Invariant<X> $i): Unexpected token \"$i\", expected '>' at offset 219 on line 10",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::a() should return X but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 39,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::b() should return MethodSignatureVariance\\Invariant\\In<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 42,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::c() should return MethodSignatureVariance\\Invariant\\In<MethodSignatureVariance\\Invariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 45,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::d() should return MethodSignatureVariance\\Invariant\\In<MethodSignatureVariance\\Invariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 47,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @return has invalid value (In<Invariant<X>): Unexpected token \"*/\", expected '>' at offset 28 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 51,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::f() should return MethodSignatureVariance\\Invariant\\Out<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 54,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::g() should return MethodSignatureVariance\\Invariant\\Out<MethodSignatureVariance\\Invariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 57,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::h() should return MethodSignatureVariance\\Invariant\\Out<MethodSignatureVariance\\Invariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 59,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @return has invalid value (Out<Invariant<X>): Unexpected token \"*/\", expected '>' at offset 29 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 63,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::j() should return MethodSignatureVariance\\Invariant\\Invariant<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 66,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::k() should return MethodSignatureVariance\\Invariant\\Invariant<MethodSignatureVariance\\Invariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-invariant.php",
+                    "line": 69,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Invariant\\C::l() should return MethodSignatureVariance\\Invariant\\Invariant<MethodSignatureVariance\\Invariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule/2",
+            "files": [
+                "Generics/data/method-signature-variance-covariant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter a of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter c of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter f of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter h of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in parameter e of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in parameter i of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in parameter j of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in parameter k of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in parameter l of method MethodSignatureVariance\\Covariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::b() should return X but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 41,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in return type of method MethodSignatureVariance\\Covariant\\C::c().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 41,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::c() should return MethodSignatureVariance\\Covariant\\In<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 44,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::d() should return MethodSignatureVariance\\Covariant\\In<MethodSignatureVariance\\Covariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 47,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in return type of method MethodSignatureVariance\\Covariant\\C::e().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 47,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::e() should return MethodSignatureVariance\\Covariant\\In<MethodSignatureVariance\\Covariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 50,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Covariant\\C::f().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::f() should return MethodSignatureVariance\\Covariant\\In<MethodSignatureVariance\\Covariant\\Invariant<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::g() should return MethodSignatureVariance\\Covariant\\Out<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 56,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in return type of method MethodSignatureVariance\\Covariant\\C::h().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 56,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::h() should return MethodSignatureVariance\\Covariant\\Out<MethodSignatureVariance\\Covariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 59,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::i() should return MethodSignatureVariance\\Covariant\\Out<MethodSignatureVariance\\Covariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 62,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Covariant\\C::j().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 62,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::j() should return MethodSignatureVariance\\Covariant\\Out<MethodSignatureVariance\\Covariant\\Invariant<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 65,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Covariant\\C::k().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 65,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::k() should return MethodSignatureVariance\\Covariant\\Invariant<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 68,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Covariant\\C::l().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 68,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::l() should return MethodSignatureVariance\\Covariant\\Invariant<MethodSignatureVariance\\Covariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 71,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Covariant\\C::m().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 71,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Covariant\\C::m() should return MethodSignatureVariance\\Covariant\\Invariant<MethodSignatureVariance\\Covariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-covariant.php",
+                    "line": 77,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter o of method MethodSignatureVariance\\Covariant\\C::o().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule/3",
+            "files": [
+                "Generics/data/method-signature-variance-contravariant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in parameter b of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in parameter d of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in parameter g of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in parameter e of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in parameter i of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in parameter j of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in parameter k of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 35,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in parameter l of method MethodSignatureVariance\\Contravariant\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 38,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in return type of method MethodSignatureVariance\\Contravariant\\C::b().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::b() should return X but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 41,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::c() should return MethodSignatureVariance\\Contravariant\\In<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 44,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in return type of method MethodSignatureVariance\\Contravariant\\C::d().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 44,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::d() should return MethodSignatureVariance\\Contravariant\\In<MethodSignatureVariance\\Contravariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 47,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::e() should return MethodSignatureVariance\\Contravariant\\In<MethodSignatureVariance\\Contravariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 50,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Contravariant\\C::f().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::f() should return MethodSignatureVariance\\Contravariant\\In<MethodSignatureVariance\\Contravariant\\Invariant<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 53,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in return type of method MethodSignatureVariance\\Contravariant\\C::g().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::g() should return MethodSignatureVariance\\Contravariant\\Out<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 56,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::h() should return MethodSignatureVariance\\Contravariant\\Out<MethodSignatureVariance\\Contravariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 59,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in return type of method MethodSignatureVariance\\Contravariant\\C::i().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 59,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::i() should return MethodSignatureVariance\\Contravariant\\Out<MethodSignatureVariance\\Contravariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 62,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Contravariant\\C::j().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 62,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::j() should return MethodSignatureVariance\\Contravariant\\Out<MethodSignatureVariance\\Contravariant\\Invariant<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 65,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Contravariant\\C::k().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 65,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::k() should return MethodSignatureVariance\\Contravariant\\Invariant<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 68,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Contravariant\\C::l().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 68,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::l() should return MethodSignatureVariance\\Contravariant\\Invariant<MethodSignatureVariance\\Contravariant\\In<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 71,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in invariant position in return type of method MethodSignatureVariance\\Contravariant\\C::m().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 71,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::m() should return MethodSignatureVariance\\Contravariant\\Invariant<MethodSignatureVariance\\Contravariant\\Out<X>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 74,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\Contravariant\\C::n() should return X but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-contravariant.php",
+                    "line": 79,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in param-out type of parameter a of method MethodSignatureVariance\\Contravariant\\C::paramOut().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule/4",
+            "files": [
+                "Generics/data/method-signature-variance-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $e.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $f.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $g.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $h.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $i.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $j.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $k.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\A has an unused parameter $l.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $e.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $f.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $g.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $h.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $i.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $j.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $k.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 52,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\B has an unused parameter $l.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $a.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $b.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $c.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $d.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $e.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $f.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $g.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $h.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $i.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $j.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $k.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-constructor.php",
+                    "line": 71,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class MethodSignatureVariance\\Constructor\\C has an unused parameter $l.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule/5",
+            "files": [
+                "Generics/data/method-signature-variance-static.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 27,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\A::b() should return X but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 30,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\A::c() should return MethodSignatureVariance\\StaticMethod\\In<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\A::d() should return MethodSignatureVariance\\StaticMethod\\Out<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 43,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter a of method MethodSignatureVariance\\StaticMethod\\B::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 43,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter c of method MethodSignatureVariance\\StaticMethod\\B::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 46,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\B::b() should return X but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 49,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as covariant, but occurs in contravariant position in return type of method MethodSignatureVariance\\StaticMethod\\B::c().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 49,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\B::c() should return MethodSignatureVariance\\StaticMethod\\In<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 52,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\B::d() should return MethodSignatureVariance\\StaticMethod\\Out<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 62,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in parameter b of method MethodSignatureVariance\\StaticMethod\\C::a().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 65,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in return type of method MethodSignatureVariance\\StaticMethod\\C::b().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 65,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\C::b() should return X but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 68,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\C::c() should return MethodSignatureVariance\\StaticMethod\\In<X> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 71,
+                    "identifier": "generics.variance",
+                    "message": "Template type X is declared as contravariant, but occurs in covariant position in return type of method MethodSignatureVariance\\StaticMethod\\C::d().",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-signature-variance-static.php",
+                    "line": 71,
+                    "identifier": "return.missing",
+                    "message": "Method MethodSignatureVariance\\StaticMethod\\C::d() should return MethodSignatureVariance\\StaticMethod\\Out<X> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8880",
+            "files": [
+                "Generics/data/bug-8880.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/bug-8880.php",
+                    "line": 17,
+                    "identifier": "generics.variance",
+                    "message": "Template type T is declared as covariant, but occurs in contravariant position in parameter items of method Bug8880\\IProcessor::processItems().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9161",
+            "files": [
+                "Generics/data/bug-9161.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPr2465",
+            "files": [
+                "Generics/data/pr-2465.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/pr-2465.php",
+                    "line": 16,
+                    "identifier": "generics.variance",
+                    "message": "Template type T is declared as covariant, but occurs in invariant position in parameter thing of method Pr2465\\UnitOfTest::foo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10609",
+            "files": [
+                "Generics/data/bug-10609.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/bug-10609.php",
+                    "line": 13,
+                    "identifier": "generics.variance",
+                    "message": "Template type A is declared as covariant, but occurs in contravariant position in parameter fn of method Bug10609\\Collection::tap().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

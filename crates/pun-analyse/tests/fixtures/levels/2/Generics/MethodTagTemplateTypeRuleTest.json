@@ -1,0 +1,43 @@
+{
+    "test": "Generics/MethodTagTemplateTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/method-tag-template.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/method-tag-template.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @method for method MethodTagTemplate\\HelloWorld::sayHello() parameter #2 $b contains unknown class MethodTagTemplate\\Nonexisting.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Generics/data/method-tag-template.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @method template U for method MethodTagTemplate\\HelloWorld::sayHello() has invalid bound type MethodTagTemplate\\Nonexisting.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-tag-template.php",
+                    "line": 13,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @method template for method MethodTagTemplate\\HelloWorld::sayHello() cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/method-tag-template.php",
+                    "line": 13,
+                    "identifier": "methodTag.shadowTemplate",
+                    "message": "PHPDoc tag @method template T for method MethodTagTemplate\\HelloWorld::sayHello() shadows @template T for class MethodTagTemplate\\HelloWorld.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

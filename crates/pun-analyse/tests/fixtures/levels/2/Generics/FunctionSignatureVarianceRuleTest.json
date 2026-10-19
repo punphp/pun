@@ -1,0 +1,22 @@
+{
+    "test": "Generics/FunctionSignatureVarianceRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/function-signature-variance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/function-signature-variance.php",
+                    "line": 20,
+                    "identifier": "function.variance",
+                    "message": "Variance annotation is only allowed for type parameters of classes and interfaces, but occurs in template type T in in function FunctionSignatureVariance\\f().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

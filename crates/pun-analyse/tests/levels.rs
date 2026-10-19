@@ -18,6 +18,32 @@ const PORTED: &[&str] = &[
     "missingType.property",
     "missingType.iterableValue",
     "missingType.generics",
+    "generics.existingClass",
+    "generics.existingTypeAlias",
+    "generics.traitBound",
+    "generics.notSupportedBound",
+    "generics.requiredTypeAfterOptional",
+    "generics.templateDefaultOutOfBounds",
+    "generics.notGeneric",
+    "generics.lessTypes",
+    "generics.moreTypes",
+    "generics.notSubtype",
+    "generics.notCompatible",
+    "generics.noParent",
+    "generics.wrongParent",
+    "generics.trait",
+    "method.shadowTemplate",
+    "methodTag.shadowTemplate",
+    "enum.generic",
+];
+
+/// The `class.notFound` messages of the Generics rules (other rules report the identifier at every level).
+const GENERICS_NOT_FOUND: &[&str] = &[
+    "PHPDoc tag @template ",
+    "PHPDoc tag @method template ",
+    "PHPDoc tag @extends has invalid type",
+    "PHPDoc tag @implements has invalid type",
+    "PHPDoc tag @use has invalid type",
 ];
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
@@ -78,20 +104,29 @@ fn phpstan_level_fixtures() {
                         .map(|p| data.join(p.as_str().unwrap()))
                         .collect()
                 };
-                let ported = |id: &str| PORTED.contains(&id);
+                let ported = |id: &str, message: &str| {
+                    PORTED.contains(&id)
+                        || (id == "class.notFound"
+                            && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                };
                 let want: BTreeSet<Key> = case["errors"]
                     .as_array()
                     .unwrap()
                     .iter()
-                    .filter(|e| e["identifier"].as_str().is_some_and(ported))
+                    .filter(|e| {
+                        e["identifier"]
+                            .as_str()
+                            .is_some_and(|id| ported(id, e["message"].as_str().unwrap()))
+                    })
                     .map(key)
                     .collect();
                 let mut project = Project::new(paths("files"), paths("scan"));
                 project.level = level;
+                project.check_class_case_sensitivity = level >= 2;
                 let got: BTreeSet<Key> = run(&project)
                     .unwrap()
                     .into_iter()
-                    .filter(|e| ported(&e.identifier))
+                    .filter(|e| ported(&e.identifier, &e.message))
                     .map(|e| {
                         let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
                         (file, e.line, e.identifier, e.message, e.tip)

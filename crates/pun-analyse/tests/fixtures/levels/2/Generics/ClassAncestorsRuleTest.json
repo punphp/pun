@@ -1,0 +1,505 @@
+{
+    "test": "Generics/ClassAncestorsRuleTest",
+    "cases": [
+        {
+            "method": "testRuleExtends",
+            "files": [
+                "Generics/data/class-ancestors-extends.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 26,
+                    "identifier": "generics.noParent",
+                    "message": "Class ClassAncestorsExtends\\FooDoesNotExtendAnything has @extends tag, but does not extend any class.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 35,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @extends tag of class ClassAncestorsExtends\\FooDuplicateExtendsTags describes ClassAncestorsExtends\\FooGeneric2 but the class extends ClassAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 43,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @extends tag of class ClassAncestorsExtends\\FooWrongClassExtended describes ClassAncestorsExtends\\FooGeneric2 but the class extends ClassAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 51,
+                    "identifier": "generics.notCompatible",
+                    "message": "Class ClassAncestorsExtends\\FooWrongTypeInExtendsTag @extends tag contains incompatible type class-string<ClassAncestorsExtends\\T>.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 67,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type ClassAncestorsExtends\\FooGeneric<int> in PHPDoc tag @extends does not specify all template types of class ClassAncestorsExtends\\FooGeneric: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 75,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type ClassAncestorsExtends\\FooGeneric<int, InvalidArgumentException, string> in PHPDoc tag @extends specifies 3 template types, but class ClassAncestorsExtends\\FooGeneric supports only 2: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 83,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Throwable in generic type ClassAncestorsExtends\\FooGeneric<int, Throwable> in PHPDoc tag @extends is not subtype of template type U of Exception of class ClassAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 91,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type ClassAncestorsExtends\\FooGeneric<int, stdClass> in PHPDoc tag @extends is not subtype of template type U of Exception of class ClassAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 99,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @extends has invalid type ClassAncestorsExtends\\Zazzuuuu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 108,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type mixed in generic type ClassAncestorsExtends\\FooGeneric<int, mixed> in PHPDoc tag @extends is not subtype of template type U of Exception of class ClassAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 117,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Throwable in generic type ClassAncestorsExtends\\FooGeneric<int, Throwable> in PHPDoc tag @extends is not subtype of template type U of Exception of class ClassAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 163,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type ClassAncestorsExtends\\FooGeneric<int, stdClass> in PHPDoc tag @extends is not subtype of template type U of Exception of class ClassAncestorsExtends\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 192,
+                    "identifier": "generics.variance",
+                    "message": "Template type T is declared as covariant, but occurs in invariant position in extended type ClassAncestorsExtends\\FooGeneric8<T, T> of class ClassAncestorsExtends\\FooGeneric9.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 201,
+                    "identifier": "generics.variance",
+                    "message": "Template type T is declared as contravariant, but occurs in covariant position in extended type ClassAncestorsExtends\\FooGeneric8<T, T> of class ClassAncestorsExtends\\FooGeneric10.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 201,
+                    "identifier": "generics.variance",
+                    "message": "Template type T is declared as contravariant, but occurs in invariant position in extended type ClassAncestorsExtends\\FooGeneric8<T, T> of class ClassAncestorsExtends\\FooGeneric10.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 218,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method ClassAncestorsExtends\\FilterIteratorChild::accept() is not covariant with tentative return type bool of method FilterIterator<mixed,mixed,Traversable<mixed, mixed>>::accept().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 226,
+                    "identifier": "generics.notCompatible",
+                    "message": "Class ClassAncestorsExtends\\FooObjectStorage @extends tag contains incompatible type ClassAncestorsExtends\\FooObjectStorage.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 239,
+                    "identifier": "generics.notCompatible",
+                    "message": "Class ClassAncestorsExtends\\FooCollection @extends tag contains incompatible type ClassAncestorsExtends\\FooCollection&iterable<int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 239,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsExtends\\FooCollection contains abstract method current() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 239,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsExtends\\FooCollection contains abstract method key() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 239,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsExtends\\FooCollection contains abstract method next() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 239,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsExtends\\FooCollection contains abstract method rewind() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 239,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsExtends\\FooCollection contains abstract method valid() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 246,
+                    "identifier": "generics.callSiteVarianceNotAllowed",
+                    "message": "Call-site variance annotation of covariant Throwable in generic type ClassAncestorsExtends\\FooGeneric<covariant Throwable, InvalidArgumentException> in PHPDoc tag @extends is not allowed.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-extends.php",
+                    "line": 259,
+                    "identifier": "generics.trait",
+                    "message": "PHPDoc tag @extends has invalid type ClassAncestorsExtends\\FooTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleImplements",
+            "files": [
+                "Generics/data/class-ancestors-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 35,
+                    "identifier": "generics.noParent",
+                    "message": "Class ClassAncestorsImplements\\FooDoesNotImplementAnything has @implements tag, but does not implement any interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 44,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @implements tag of class ClassAncestorsImplements\\FooInvalidImplementsTags describes ClassAncestorsImplements\\FooGeneric2 but the class implements: ClassAncestorsImplements\\FooGeneric",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 52,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @implements tag of class ClassAncestorsImplements\\FooWrongClassImplemented describes ClassAncestorsImplements\\FooGeneric2 but the class implements: ClassAncestorsImplements\\FooGeneric, ClassAncestorsImplements\\FooGeneric3",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 60,
+                    "identifier": "generics.notCompatible",
+                    "message": "Class ClassAncestorsImplements\\FooWrongTypeInImplementsTag @implements tag contains incompatible type class-string<ClassAncestorsImplements\\T>.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 76,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type ClassAncestorsImplements\\FooGeneric<int> in PHPDoc tag @implements does not specify all template types of interface ClassAncestorsImplements\\FooGeneric: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 84,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type ClassAncestorsImplements\\FooGeneric<int, InvalidArgumentException, string> in PHPDoc tag @implements specifies 3 template types, but interface ClassAncestorsImplements\\FooGeneric supports only 2: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 92,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Throwable in generic type ClassAncestorsImplements\\FooGeneric<int, Throwable> in PHPDoc tag @implements is not subtype of template type U of Exception of interface ClassAncestorsImplements\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 100,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type ClassAncestorsImplements\\FooGeneric<int, stdClass> in PHPDoc tag @implements is not subtype of template type U of Exception of interface ClassAncestorsImplements\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 108,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @implements has invalid type ClassAncestorsImplements\\Zazzuuuu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 117,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type mixed in generic type ClassAncestorsImplements\\FooGeneric<int, mixed> in PHPDoc tag @implements is not subtype of template type U of Exception of interface ClassAncestorsImplements\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 126,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Throwable in generic type ClassAncestorsImplements\\FooGeneric<int, Throwable> in PHPDoc tag @implements is not subtype of template type U of Exception of interface ClassAncestorsImplements\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 172,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type ClassAncestorsImplements\\FooGeneric<int, stdClass> in PHPDoc tag @implements is not subtype of template type U of Exception of interface ClassAncestorsImplements\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 182,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type ClassAncestorsImplements\\FooGeneric2<int, stdClass> in PHPDoc tag @implements is not subtype of template type V of Exception of interface ClassAncestorsImplements\\FooGeneric2.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 182,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type stdClass in generic type ClassAncestorsImplements\\FooGeneric<int, stdClass> in PHPDoc tag @implements is not subtype of template type U of Exception of interface ClassAncestorsImplements\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 216,
+                    "identifier": "generics.variance",
+                    "message": "Template type T is declared as covariant, but occurs in invariant position in implemented type ClassAncestorsImplements\\FooGeneric9<T, T> of class ClassAncestorsImplements\\FooGeneric10.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 222,
+                    "identifier": "generics.notCompatible",
+                    "message": "Class ClassAncestorsImplements\\FooIterator @implements tag contains incompatible type ClassAncestorsImplements\\FooIterator&iterable<int, object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 222,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooIterator contains abstract method current() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 222,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooIterator contains abstract method key() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 222,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooIterator contains abstract method next() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 222,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooIterator contains abstract method rewind() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 222,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooIterator contains abstract method valid() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 230,
+                    "identifier": "generics.noParent",
+                    "message": "Interface ClassAncestorsImplements\\AbstractFooCollection has @implements tag, but can not implement any interface, must extend from it.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 235,
+                    "identifier": "generics.notCompatible",
+                    "message": "Class ClassAncestorsImplements\\FooCollection @implements tag contains incompatible type ClassAncestorsImplements\\FooCollection&iterable<int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 235,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooCollection contains abstract method current() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 235,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooCollection contains abstract method key() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 235,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooCollection contains abstract method next() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 235,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooCollection contains abstract method rewind() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 235,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class ClassAncestorsImplements\\FooCollection contains abstract method valid() from interface Iterator.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-ancestors-implements.php",
+                    "line": 242,
+                    "identifier": "generics.callSiteVarianceNotAllowed",
+                    "message": "Call-site variance annotation of covariant Throwable in generic type ClassAncestorsImplements\\FooGeneric<covariant Throwable, InvalidArgumentException> in PHPDoc tag @implements is not allowed.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3922",
+            "files": [
+                "Generics/data/bug-3922-ancestors.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/bug-3922-ancestors.php",
+                    "line": 54,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type Bug3922Ancestors\\BarQuery in generic type Bug3922Ancestors\\QueryHandlerInterface<string, Bug3922Ancestors\\BarQuery> in PHPDoc tag @implements is not subtype of template type TQuery of Bug3922Ancestors\\QueryInterface<string> of interface Bug3922Ancestors\\QueryHandlerInterface.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3922Reversed",
+            "files": [
+                "Generics/data/bug-3922-ancestors-reversed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/bug-3922-ancestors-reversed.php",
+                    "line": 54,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type string in generic type Bug3922AncestorsReversed\\QueryHandlerInterface<Bug3922AncestorsReversed\\BarQuery, string> in PHPDoc tag @implements is not subtype of template type int of interface Bug3922AncestorsReversed\\QueryHandlerInterface.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCrossCheckInterfaces",
+            "files": [
+                "Generics/data/cross-check-interfaces.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/cross-check-interfaces.php",
+                    "line": 19,
+                    "identifier": "generics.interfaceConflict",
+                    "message": "Interface IteratorAggregate specifies template type TValue of interface Traversable as string but it's already specified as CrossCheckInterfaces\\Item.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/cross-check-interfaces.php",
+                    "line": 67,
+                    "identifier": "generics.interfaceConflict",
+                    "message": "Interface IteratorAggregate specifies template type TValue of interface Traversable as array{a: int, ...<int, string>} but it's already specified as array{a: int, ...<int, int>}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testScalarClassName",
+            "files": [
+                "Generics/data/scalar-class-name.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8473",
+            "files": [
+                "Generics/data/bug-8473.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11552",
+            "files": [
+                "Generics/data/bug-11552.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/bug-11552.php",
+                    "line": 17,
+                    "identifier": "generics.unresolvable",
+                    "message": "Class Bug11552\\SomeResult @extends tag contains unresolvable type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7021",
+            "files": [
+                "Generics/data/bug-7021.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,179 @@
+{
+    "test": "Generics/InterfaceTemplateTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/interface-template.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 8,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @template for interface InterfaceTemplateType\\Foo cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for interface InterfaceTemplateType\\Bar has invalid bound type InterfaceTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 45,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for interface InterfaceTemplateType\\Ipsum cannot have existing type alias ImportedAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 45,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for interface InterfaceTemplateType\\Ipsum cannot have existing type alias LocalAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 74,
+                    "identifier": "generics.callSiteVarianceConflict",
+                    "message": "Call-site variance of contravariant int in generic type InterfaceTemplateType\\Covariant<contravariant int> in PHPDoc tag @template W is in conflict with covariant template type T of interface InterfaceTemplateType\\Covariant.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 74,
+                    "identifier": "generics.callSiteVarianceRedundant",
+                    "message": "Call-site variance of covariant int in generic type InterfaceTemplateType\\Covariant<covariant int> in PHPDoc tag @template U is redundant, template type T of interface InterfaceTemplateType\\Covariant has the same variance.",
+                    "tip": "You can safely remove the call-site variance annotation."
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 82,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for interface InterfaceTemplateType\\InvalidDefault has invalid default type InterfaceTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 90,
+                    "identifier": "generics.templateDefaultOutOfBounds",
+                    "message": "Default type bool in PHPDoc tag @template T for interface InterfaceTemplateType\\OutOfBoundsDefault is not subtype of bound type object.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/interface-template.php",
+                    "line": 100,
+                    "identifier": "generics.requiredTypeAfterOptional",
+                    "message": "PHPDoc tag @template V for interface InterfaceTemplateType\\RequiredAfterOptional does not have a default type but follows an optional @template U.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInClass",
+            "files": [
+                "Generics/data/class-template.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 8,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @template for class ClassTemplateType\\Foo cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for class ClassTemplateType\\Bar has invalid bound type ClassTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 32,
+                    "identifier": "class.nameCase",
+                    "message": "Class ClassTemplateType\\Baz referenced with incorrect case: ClassTemplateType\\baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 53,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for class ClassTemplateType\\Dolor cannot have existing type alias ImportedAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 53,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for class ClassTemplateType\\Dolor cannot have existing type alias LocalAlias as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 58,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @template for anonymous class cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 63,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for anonymous class has invalid bound type ClassTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 73,
+                    "identifier": "class.nameCase",
+                    "message": "Class ClassTemplateType\\Baz referenced with incorrect case: ClassTemplateType\\baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 113,
+                    "identifier": "generics.callSiteVarianceConflict",
+                    "message": "Call-site variance of contravariant int in generic type ClassTemplateType\\Consecteur<contravariant int> in PHPDoc tag @template W is in conflict with covariant template type T of class ClassTemplateType\\Consecteur.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 113,
+                    "identifier": "generics.callSiteVarianceRedundant",
+                    "message": "Call-site variance of covariant int in generic type ClassTemplateType\\Consecteur<covariant int> in PHPDoc tag @template U is redundant, template type T of class ClassTemplateType\\Consecteur has the same variance.",
+                    "tip": "You can safely remove the call-site variance annotation."
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 121,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for class ClassTemplateType\\Elit has invalid default type ClassTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 129,
+                    "identifier": "generics.templateDefaultOutOfBounds",
+                    "message": "Default type bool in PHPDoc tag @template T for class ClassTemplateType\\Venenatis is not subtype of bound type object.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/class-template.php",
+                    "line": 139,
+                    "identifier": "generics.requiredTypeAfterOptional",
+                    "message": "PHPDoc tag @template V for class ClassTemplateType\\Mauris does not have a default type but follows an optional @template U.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

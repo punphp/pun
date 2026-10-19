@@ -1,0 +1,74 @@
+{
+    "test": "Generics/EnumAncestorsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/enum-ancestors.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/enum-ancestors.php",
+                    "line": 22,
+                    "identifier": "generics.noParent",
+                    "message": "Enum EnumGenericAncestors\\Foo has @implements tag, but does not implement any interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/enum-ancestors.php",
+                    "line": 35,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @implements contains generic type EnumGenericAncestors\\NonGeneric<int> but interface EnumGenericAncestors\\NonGeneric is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/enum-ancestors.php",
+                    "line": 56,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type EnumGenericAncestors\\Generic<stdClass> in PHPDoc tag @implements does not specify all template types of interface EnumGenericAncestors\\Generic: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/enum-ancestors.php",
+                    "line": 64,
+                    "identifier": "generics.noParent",
+                    "message": "Enum EnumGenericAncestors\\Foo7 has @extends tag, but cannot extend anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/enum-ancestors.php",
+                    "line": 83,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method EnumGenericAncestors\\Foo8::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<string,string>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Generics/data/enum-ancestors.php",
+                    "line": 93,
+                    "identifier": "generics.callSiteVarianceNotAllowed",
+                    "message": "Call-site variance annotation of covariant EnumGenericAncestors\\NonGeneric in generic type EnumGenericAncestors\\Generic<covariant EnumGenericAncestors\\NonGeneric, int> in PHPDoc tag @implements is not allowed.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCrossCheckInterfaces",
+            "files": [
+                "Generics/data/cross-check-interfaces-enums.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/cross-check-interfaces-enums.php",
+                    "line": 19,
+                    "identifier": "generics.interfaceConflict",
+                    "message": "Interface IteratorAggregate specifies template type TValue of interface Traversable as string but it's already specified as CrossCheckInterfacesEnums\\Item.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

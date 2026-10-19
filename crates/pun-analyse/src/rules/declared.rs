@@ -12,6 +12,7 @@ use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::symbol::SymbolKind;
+use mago_database::file::FileId;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::resolve::resolve_in;
@@ -33,15 +34,23 @@ pub fn original_name(k: &ClassLikeMetadata) -> String {
     text(k.original_name.as_bytes())
 }
 
+/// A file's contents, PHPStan's API stub's too (no file on disk).
+fn file_contents<'a>(c: &Checker<'a, '_>, id: FileId) -> Option<std::borrow::Cow<'a, [u8]>> {
+    c.file_contents(id).or_else(|| {
+        (id == FileId::new(b"phpstan-api.php"))
+            .then_some(std::borrow::Cow::Borrowed(crate::codebase::PHPSTAN_API))
+    })
+}
+
 /// The doc comment before `offset` in the file `span` is in, with that file's contents.
-fn doc_at(c: &Checker, span: Span) -> Option<(Vec<u8>, Arc<FileScopes>)> {
-    let contents = c.file_contents(span.file_id)?;
+pub fn doc_at(c: &Checker, span: Span) -> Option<(Vec<u8>, Arc<FileScopes>)> {
+    let contents = file_contents(c, span.file_id)?;
     let doc = doc_before(&contents, span.start.offset as usize)?.to_vec();
     Some((doc, scopes_of(span.file_id, &contents)))
 }
 
 /// The `NameScope` of a PHPDoc at `span` in class-like `class` (`None` outside one), with `templates` in scope.
-fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> NameScope {
+pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> NameScope {
     let names = c
         .file_contents(span.file_id)
         .map(|contents| scopes_of(span.file_id, &contents).at(span.start.offset))
@@ -74,19 +83,50 @@ fn parent_name(codebase: &CodebaseMetadata, k: &ClassLikeMetadata) -> Option<Str
 /// `TemplateTypeFactory::fromTemplateTag()` for each `@template` of a PHPDoc, in `describe` scope (`class Foo`,
 /// `method Foo::bar()`, `function foo()`).
 fn templates(doc: &Doc, scope: &NameScope, describe: &str) -> Vec<TemplateType> {
-    doc.templates
-        .iter()
-        .map(|t| TemplateType {
+    let resolve_all = |scope: &NameScope| -> Vec<TemplateType> {
+        doc.templates
+            .iter()
+            .map(|t| TemplateType {
+                name: t.name.clone(),
+                scope: describe.to_string(),
+                bound: t
+                    .bound
+                    .as_ref()
+                    .map_or(Type::Mixed { explicit: true }, |b| resolve_in(b, scope)),
+                default: t.default.as_ref().map(|d| resolve_in(d, scope)),
+                argument: false,
+            })
+            .collect()
+    };
+    // a bound may name the PHPDoc's other templates: resolve with them unbounded, then with their bounds
+    let mut scope = scope.clone();
+    for t in &doc.templates {
+        let placeholder = TemplateType {
             name: t.name.clone(),
             scope: describe.to_string(),
-            bound: t
-                .bound
-                .as_ref()
-                .map_or(Type::Mixed { explicit: true }, |b| resolve_in(b, scope)),
-            default: t.default.as_ref().map(|d| resolve_in(d, scope)),
+            bound: Type::Mixed { explicit: true },
+            default: None,
             argument: false,
-        })
-        .collect()
+        };
+        scope
+            .templates
+            .insert(t.name.clone(), Type::Template(Box::new(placeholder)));
+    }
+    // (each pass resolves one more level of bounds naming bounds)
+    let mut resolved = resolve_all(&scope);
+    for _ in 0..doc.templates.len() {
+        for t in &resolved {
+            scope
+                .templates
+                .insert(t.name.clone(), Type::Template(Box::new(t.clone())));
+        }
+        let next = resolve_all(&scope);
+        if next == resolved {
+            break;
+        }
+        resolved = next;
+    }
+    resolved
 }
 
 /// A class-like's own `@template` types.
@@ -120,7 +160,7 @@ fn trait_templates(
     }
     let trait_name = original_name(t);
     let mut args: Option<Vec<Type>> = None;
-    if let Some(contents) = c.file_contents(context.span.file_id) {
+    if let Some(contents) = file_contents(c, context.span.file_id) {
         let scopes = scopes_of(context.span.file_id, &contents);
         let scope = scope_at(c, context.span, Some(context));
         for (offset, names) in scopes.trait_uses(context.span.start.offset, context.span.end.offset)
@@ -875,7 +915,7 @@ fn inherited_constant_doc(
         if constant.visibility == mago_codex::visibility::Visibility::Private {
             continue;
         }
-        let own = c.file_contents(constant.span.file_id).and_then(|contents| {
+        let own = file_contents(c, constant.span.file_id).and_then(|contents| {
             let doc = constant_doc(&contents, constant.span.start.offset as usize)?.to_vec();
             constant_var(c, &doc, constant.span, declaring)
         });
@@ -942,8 +982,8 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             .into_iter()
             .map(|t| Template {
                 name: t.name,
-                bound: to_phpdoc(&t.bound),
-                default: t.default.as_ref().map(to_phpdoc),
+                bound: serialize(&t.bound),
+                default: t.default.as_ref().map(serialize),
             })
             .collect();
         Some(Class {
@@ -1050,13 +1090,33 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             for ancestor in p.generics.keys() {
                 if let Some(mapped) = pun_phpstan::types::ancestor_args(&p, ancestor, &args) {
                     out.entry(ancestor.clone())
-                        .or_insert_with(|| mapped.iter().map(to_phpdoc).collect());
+                        .or_insert_with(|| mapped.iter().map(serialize).collect());
                 }
             }
-            out.insert(p.name.clone(), args.iter().map(to_phpdoc).collect());
+            out.insert(p.name.clone(), args.iter().map(serialize).collect());
         }
         out
     }
+}
+
+/// A type as the symbols' type strings write it: `to_phpdoc()` with each template as
+/// `__template<T, 'scope', bound[, default]>`, so it reads back as the same template.
+fn serialize(t: &Type) -> String {
+    fn encode(t: &Type) -> Type {
+        match t {
+            Type::Template(tpl) => {
+                let mut args = vec![
+                    Type::Object(tpl.name.clone(), vec![]),
+                    Type::ConstString(tpl.scope.clone()),
+                    encode(&tpl.bound),
+                ];
+                args.extend(tpl.default.as_ref().map(encode));
+                Type::Object("__template".to_string(), args)
+            }
+            _ => t.traverse(&encode),
+        }
+    }
+    to_phpdoc(&encode(t))
 }
 
 /// Runs `f` with the type model knowing the project's classes.

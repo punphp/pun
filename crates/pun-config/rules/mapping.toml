@@ -1214,7 +1214,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/dead-catch" = { preset = "recommended", fixed_by = ["lint/dead-code/no-dead-catch"], status = "decided" }
 "types/define-value" = { preset = "essential", status = "decided" }
 "types/echo-non-string" = { preset = "essential", status = "decided" }
-"types/enum-template-not-allowed" = { preset = "essential", status = "decided" }
+"types/enum-template-not-allowed" = { preset = "essential", ported = true, status = "decided" }
 "types/foreach-non-iterable" = { preset = "essential", status = "decided" }
 "types/foreach-on-empty-array" = { preset = "recommended", status = "decided" }
 "types/function-return" = { preset = "essential", status = "decided" }
@@ -1226,20 +1226,20 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-assignment-target" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-binary-operation" = { preset = "essential", status = "decided" }
 "types/invalid-cast" = { preset = "essential", status = "decided" }
-"types/invalid-class-generics" = { preset = "essential", status = "decided" }
-"types/invalid-class-template" = { preset = "essential", status = "decided" }
+"types/invalid-class-generics" = { preset = "essential", ported = true, status = "decided" }
+"types/invalid-class-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-closure-signature" = { preset = "basic", fixed_by = ["lint/functions/no-required-after-optional"], ported = true, status = "decided" }
 "types/invalid-comparison" = { preset = "essential", status = "decided" }
-"types/invalid-enum-generics" = { preset = "essential", status = "decided" }
+"types/invalid-enum-generics" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-function-signature" = { preset = "basic", ported = true, status = "decided" }
-"types/invalid-function-template" = { preset = "essential", status = "decided" }
+"types/invalid-function-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-hook-signature" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-inc-dec" = { preset = "basic", status = "decided" }
-"types/invalid-interface-generics" = { preset = "essential", status = "decided" }
-"types/invalid-interface-template" = { preset = "essential", status = "decided" }
+"types/invalid-interface-generics" = { preset = "essential", ported = true, status = "decided" }
+"types/invalid-interface-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-method-signature" = { preset = "basic", ported = true, status = "decided" }
-"types/invalid-method-tag-template" = { preset = "essential", status = "decided" }
-"types/invalid-method-template" = { preset = "essential", status = "decided" }
+"types/invalid-method-tag-template" = { preset = "essential", ported = true, status = "decided" }
+"types/invalid-method-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-offset" = { preset = "essential", status = "decided" }
 "types/invalid-pipe" = { preset = "basic", status = "decided" }
 "types/invalid-property-assignment" = { preset = "basic", ported = true, status = "decided" }
@@ -1247,9 +1247,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-regex" = { preset = "basic", status = "decided" }
 "types/invalid-self-out-tag" = { preset = "essential", status = "decided" }
 "types/invalid-throws-tag" = { preset = "essential", status = "decided" }
-"types/invalid-trait-method-tag-template" = { preset = "essential", status = "decided" }
-"types/invalid-trait-template" = { preset = "essential", status = "decided" }
-"types/invalid-trait-use-generics" = { preset = "essential", status = "decided" }
+"types/invalid-trait-method-tag-template" = { preset = "essential", ported = true, status = "decided" }
+"types/invalid-trait-template" = { preset = "essential", ported = true, status = "decided" }
+"types/invalid-trait-use-generics" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-unary-operand" = { preset = "essential", status = "decided" }
 "types/invalid-union-type" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-unset" = { preset = "basic", status = "decided" }

@@ -1,0 +1,229 @@
+{
+    "test": "Generics/FunctionTemplateTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generics/data/function-template.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 8,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @template for function FunctionTemplateType\\foo() cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 8,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type stdClass of function FunctionTemplateType\\foo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for function FunctionTemplateType\\bar() has invalid bound type FunctionTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 16,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\bar() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 24,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\baz() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 32,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type TypeAlias of function FunctionTemplateType\\lorem() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 38,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\ipsum() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 44,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\dolor() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 50,
+                    "identifier": "generics.notSupportedBound",
+                    "message": "PHPDoc tag @template T for function FunctionTemplateType\\resourceBound() with bound type resource is not supported.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 50,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\resourceBound() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 56,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\izumi() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 62,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\nakano() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 68,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\nullSupported() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 74,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\nullableUnionSupported() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 80,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\objectShapes() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 94,
+                    "identifier": "generics.callSiteVarianceConflict",
+                    "message": "Call-site variance of contravariant int in generic type FunctionTemplateType\\GenericCovariant<contravariant int> in PHPDoc tag @template W is in conflict with covariant template type T of class FunctionTemplateType\\GenericCovariant.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 94,
+                    "identifier": "generics.callSiteVarianceRedundant",
+                    "message": "Call-site variance of covariant int in generic type FunctionTemplateType\\GenericCovariant<covariant int> in PHPDoc tag @template U is redundant, template type T of class FunctionTemplateType\\GenericCovariant has the same variance.",
+                    "tip": "You can safely remove the call-site variance annotation."
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 94,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\typeProjections() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 94,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of function FunctionTemplateType\\typeProjections() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 94,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type V of function FunctionTemplateType\\typeProjections() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 94,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type W of function FunctionTemplateType\\typeProjections() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 102,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @template T for function FunctionTemplateType\\invalidDefault() has invalid default type FunctionTemplateType\\Zazzzu.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 102,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\invalidDefault() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 110,
+                    "identifier": "generics.templateDefaultOutOfBounds",
+                    "message": "Default type bool in PHPDoc tag @template T for function FunctionTemplateType\\outOfBoundsDefault() is not subtype of bound type object.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 110,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\outOfBoundsDefault() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 120,
+                    "identifier": "generics.requiredTypeAfterOptional",
+                    "message": "PHPDoc tag @template V for function FunctionTemplateType\\requiredAfterOptional() does not have a default type but follows an optional @template U.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 120,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionTemplateType\\requiredAfterOptional() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 120,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of function FunctionTemplateType\\requiredAfterOptional() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Generics/data/function-template.php",
+                    "line": 120,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type V of function FunctionTemplateType\\requiredAfterOptional() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3769",
+            "files": [
+                "Generics/data/bug-3769.php"
+            ],
+            "scan": [
+                "Generics/data/bug-3769.php"
+            ],
+            "errors": [],
+            "general": []
+        }
+    ]
+}
