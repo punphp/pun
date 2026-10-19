@@ -17,6 +17,8 @@ trait Helpers
 {
     private static $traitSecret;
 
+    private const TRAIT_SECRET = 1;
+
     private static function traitHidden(): void
     {
     }
@@ -59,6 +61,16 @@ class Open extends ParentClass
         echo self::$secret;
         echo Open::$secret;
         $f = fn () => static::$secret;
+        echo static::TRAIT_SECRET;
+        static::missing();
+        static::visible();
+        $m = random_bytes(1);
+        static::$m();
+        echo static::$$m;
+    }
+
+    public static function visible(): void
+    {
     }
 }
 

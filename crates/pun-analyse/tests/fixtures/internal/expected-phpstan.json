@@ -2,6 +2,55 @@
  "general": [],
  "errors": [
   {
+   "file": "src/App/More.php",
+   "line": 12,
+   "identifier": "parameter.internalEnum",
+   "message": "Parameter $enum of method App\\Sub::calls() has typehint with internal enum Vendor\\Pkg\\SecretEnum.",
+   "tip": null
+  },
+  {
+   "file": "src/App/More.php",
+   "line": 16,
+   "identifier": "staticMethod.internal",
+   "message": "Call to internal static method Vendor\\Pkg\\Lib::hiddenStatic() from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/More.php",
+   "line": 19,
+   "identifier": "method.internalEnum",
+   "message": "Call to method label() of internal enum Vendor\\Pkg\\SecretEnum from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
+   "file": "src/App/More.php",
+   "line": 21,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method App\\Sub::run().",
+   "tip": null
+  },
+  {
+   "file": "src/App/More.php",
+   "line": 22,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $unknown",
+   "tip": null
+  },
+  {
+   "file": "src/App/More.php",
+   "line": 24,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Vendor\\Pkg\\Plain::hiddenStatic().",
+   "tip": null
+  },
+  {
+   "file": "src/App/More.php",
+   "line": 25,
+   "identifier": "staticMethod.internalTrait",
+   "message": "Call to static method fromTrait() of internal trait Vendor\\Pkg\\SecretTrait from outside its root namespace Vendor.",
+   "tip": null
+  },
+  {
    "file": "src/App/Use.php",
    "line": 13,
    "identifier": "parameter.internalClass",
@@ -77,6 +126,20 @@
    "identifier": "new.static",
    "message": "Unsafe usage of new static().",
    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "src/global-classes.php",
+   "line": 18,
+   "identifier": "parameter.internalClass",
+   "message": "Parameter $secret of method GlobalCaller::call() has typehint with internal class GlobalSecret.",
+   "tip": null
+  },
+  {
+   "file": "src/global-classes.php",
+   "line": 20,
+   "identifier": "method.internalClass",
+   "message": "Call to method run() of internal class GlobalSecret.",
+   "tip": null
   },
   {
    "file": "src/global.php",

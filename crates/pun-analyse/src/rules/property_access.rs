@@ -372,7 +372,7 @@ fn written(c: &mut Checker, e: &Expression) {
         Expression::ArrayAccess(x) => written(c, x.array),
         Expression::ArrayAppend(x) => written(c, x.array),
         Expression::Access(Access::Property(p)) => check(c, p, true),
-        Expression::Access(Access::StaticProperty(p)) => static_check(c, p, true),
+        Expression::Access(Access::StaticProperty(p)) => static_check(c, p),
         Expression::List(l) => l.elements.iter().for_each(|el| written_item(c, el)),
         Expression::Array(a) => a.elements.iter().for_each(|el| written_item(c, el)),
         _ => {}
@@ -452,15 +452,14 @@ fn is_static_hooked(c: &Checker, p: &mago_codex::metadata::property::PropertyMet
     if p.hooks.is_empty() {
         return false;
     }
-    let Some(contents) = c.file_contents(span.file_id) else {
-        return false;
-    };
-    let head = &contents[span.start.offset as usize..name.start.offset as usize];
-    // past any attribute group; a property type cannot be `static`
-    let modifiers = head.rsplit(|&b| b == b']').next().unwrap_or(head);
-    modifiers
-        .split(|b| b.is_ascii_whitespace())
-        .any(|w| w.eq_ignore_ascii_case(b"static"))
+    c.file_contents(span.file_id).is_some_and(|contents| {
+        let head = &contents[span.start.offset as usize..name.start.offset as usize];
+        // past any attribute group; a property type cannot be `static`
+        let modifiers = head.rsplit(|&b| b == b']').next().unwrap_or(head);
+        modifiers
+            .split(|b| b.is_ascii_whitespace())
+            .any(|w| w.eq_ignore_ascii_case(b"static"))
+    })
 }
 
 /// `ClassReflection::hasInstanceProperty()`: a non-static native property, else (when dynamic properties are
@@ -520,10 +519,8 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
     if has_native_method(c, class, "__get") || has_native_method(c, class, "__set") {
         return;
     }
-    let name_line = match &p.property {
-        ClassLikeMemberSelector::Identifier(id) => id.span,
-        _ => p.span(),
-    };
+    // this_name() took the name from an identifier
+    let name_line = p.property.span();
     let display_name = String::from_utf8_lossy(name).into_owned();
     let mut parent = class
         .direct_parent_class
@@ -575,7 +572,7 @@ pub fn static_read(c: &mut Checker, p: &StaticPropertyAccess) {
     if c.property_access.assigned.contains(&key(p.span())) {
         return;
     }
-    static_check(c, p, false);
+    static_check(c, p);
 }
 
 /// The class a static property fetch names: `None` when nothing is left to check.
@@ -591,7 +588,7 @@ fn has_static_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> b
 }
 
 /// AccessStaticPropertiesCheck::processSingleProperty().
-fn static_check(c: &mut Checker, p: &StaticPropertyAccess, write: bool) {
+fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
     let Variable::Direct(v) = &p.property else {
         return; // ponytail: a dynamic name (`Foo::$$name`) needs its constant strings
     };
@@ -639,7 +636,11 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess, write: bool) {
             let Some(scope) = c.class_scope() else {
                 return;
             };
-            match scope.direct_parent_class {
+            // an unknown parent is no parent (`getParentClass()`)
+            let parent = scope
+                .direct_parent_class
+                .and_then(|p| c.codebase.get_class_like(p.as_bytes()));
+            match parent {
                 None => {
                     let action = format!(
                         "{}::{}() accesses parent::${name}",
@@ -649,10 +650,7 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess, write: bool) {
                     c.report_no_parent(at, scope, &action);
                     return;
                 }
-                Some(parent) => match c.codebase.get_class_like(parent.as_bytes()) {
-                    Some(k) => Holder::Class(k, false),
-                    None => Holder::Done,
-                },
+                Some(k) => Holder::Class(k, false),
             }
         }
         Expression::Identifier(id) => {
@@ -694,12 +692,13 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess, write: bool) {
     let Holder::Class(class, is_static) = holder else {
         return;
     };
-    if !write && c.property_access.assigned.contains(&key(p.span())) {
-        return;
-    }
     // PHPStan 2.2.7 reports `isset(self::$x)` and a read after `self::$x = ...` alike (oracle-checked), so neither
     // the allowed-undefined contexts nor assignments exempt a static fetch
-    if !has_static_property(c, class, property) {
+    let declared = c
+        .codebase
+        .get_declaring_property(class.name.as_bytes(), property)
+        .filter(|_| has_static_property(c, class, property));
+    let Some(declared) = declared else {
         let resolve = |id: &Identifier| c.resolved(id);
         if static_key(p, &resolve).is_some_and(|g| c.guards.contains(&g)) {
             return;
@@ -754,12 +753,6 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess, write: bool) {
             format!("Access to an undefined static property {described}::${name}."),
             None,
         );
-        return;
-    }
-    let Some(declared) = c
-        .codebase
-        .get_declaring_property(class.name.as_bytes(), property)
-    else {
         return;
     };
     let visibility = declared.read_visibility;

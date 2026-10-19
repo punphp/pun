@@ -322,6 +322,83 @@
    "identifier": "property.notFound",
    "message": "Access to an undefined property Props\\WithTrait::$viaTrait.",
    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "cover.php",
+   "line": 14,
+   "identifier": "property.private",
+   "message": "Access to private property $secret of parent class Cover\\ParentPrivate.",
+   "tip": null
+  },
+  {
+   "file": "cover.php",
+   "line": 19,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Cover\\ChildPrivate::$missing.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "cover.php",
+   "line": 30,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Cover\\ChildPrivate::$other.",
+   "tip": null
+  },
+  {
+   "file": "cover.php",
+   "line": 43,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Cover\\Suit::$nope.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "cover.php",
+   "line": 51,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Cover\\Frozen::$nope.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "cover.php",
+   "line": 68,
+   "identifier": "class.notFound",
+   "message": "Class Cover\\Orphan extends unknown class Missing\\Base.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "cover.php",
+   "line": 72,
+   "identifier": "class.noParent",
+   "message": "Cover\\Orphan::read() accesses parent::$nope but Cover\\Orphan does not extend any class.",
+   "tip": null
+  },
+  {
+   "file": "cover.php",
+   "line": 80,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Cover\\Closed::$nope.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "cover.php (in context of class Cover\\UsesShared)",
+   "line": 59,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Cover\\ParentPrivate::$nope.",
+   "tip": null
+  },
+  {
+   "file": "cover.php (in context of class Cover\\UsesShared)",
+   "line": 59,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Cover\\UsesShared::$nope.",
+   "tip": null
+  },
+  {
+   "file": "cover.php (in context of class Cover\\UsesShared)",
+   "line": 59,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property static(Cover\\UsesShared)::$nope.",
+   "tip": null
   }
  ]
 }

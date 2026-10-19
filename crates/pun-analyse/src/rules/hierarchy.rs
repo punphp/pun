@@ -272,12 +272,9 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     }
 }
 
-/// MissingMethodImplementationRule and MissingMagicSerializationMethodsRule (InClassNode) on the class or enum
-/// `name` declared at `at`.
-pub fn in_class(c: &mut Checker, at: Span, name: &str) {
-    let Some(k) = c.codebase.get_class_like(name.as_bytes()) else {
-        return;
-    };
+/// MissingMethodImplementationRule and MissingMagicSerializationMethodsRule (InClassNode) on the class or enum `k`
+/// declared at `at`.
+pub fn in_class(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     // getNativeReflection() throws IdentifierNotFound on a missing ancestor; an ancestor of the wrong kind (a class
     // implementing an enum) is a broken hierarchy PHP refuses to load, which PHPStan reports elsewhere
     let wrong_kind = |n: &mago_word::Word, kind: SymbolKind| {
@@ -486,12 +483,13 @@ fn names_callable(hint: &Hint) -> bool {
 
 /// MethodVisibilityInInterfaceRule: a private or protected method declared in an interface.
 pub fn interface_method_visibility<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>) {
-    let Some(decl) = c.decls.last() else {
+    let Some(decl) = c
+        .decls
+        .last()
+        .filter(|d| d.kind == SymbolKind::Interface && c.trait_context.is_none())
+    else {
         return;
     };
-    if decl.kind != SymbolKind::Interface || c.trait_context.is_some() {
-        return;
-    }
     let non_public = m
         .modifiers
         .iter()
@@ -508,12 +506,9 @@ pub fn interface_method_visibility<'arena>(c: &mut Checker<'_, 'arena>, m: &Meth
     );
 }
 
-/// AllowedSubTypesRule on the class-like `name` declared at `at`: each direct parent (interfaces, then the parent
+/// AllowedSubTypesRule on the class-like `k` declared at `at`: each direct parent (interfaces, then the parent
 /// class) that lists its allowed subtypes must list this one.
-pub fn allowed_subtypes(c: &mut Checker, at: Span, name: &str) {
-    let Some(k) = c.codebase.get_class_like(name.as_bytes()) else {
-        return;
-    };
+pub fn allowed_subtypes(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
     // getImmediateInterfaces() holds interfaces only (an enum named in `implements` is reported elsewhere)
     let parents: Vec<&ClassLikeMetadata> = k
         .direct_parent_interfaces
@@ -541,7 +536,6 @@ pub fn allowed_subtypes(c: &mut Checker, at: Span, name: &str) {
     let kind = match k.kind {
         SymbolKind::Interface => "interface",
         SymbolKind::Enum => "enum",
-        SymbolKind::Trait => "trait",
         _ => "class",
     };
     for parent in parents {

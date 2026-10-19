@@ -83,3 +83,16 @@ class Plain extends SealedSelf {}
 
 $anonymous = new class extends Sealed {};
 $pair = [new class extends Sealed {}, new class extends Sealed {}];
+
+/** @phpstan-sealed int|SealedScalarChild */
+class SealedScalar
+{
+}
+
+class SealedScalarChild extends SealedScalar
+{
+}
+
+class SealedScalarOther extends SealedScalar
+{
+}

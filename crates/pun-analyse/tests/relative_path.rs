@@ -58,6 +58,13 @@ fn relative_paths_match_phpstan() {
         ),
         ("/", &["/p/q/r.php"], "/p/q/r.php", "r.php"),
         ("/", &["/p/q/r.php"], "/p/s.php", "/p/s.php"),
+        (
+            "a/b",
+            &["a/b/src", "a/b/tests"],
+            "a/b/src/X.php",
+            "src/X.php",
+        ),
+        ("a/b", &["a/b/src", "a/b/tests"], "a/c/Z.php", "../c/Z.php"),
         ("/a/b", &["/a/b"], "/a/b/x.php", "x.php"),
         ("/a/b", &["/a/b"], "/a/bc/x.php", "c/x.php"),
         ("/a/b", &[], "/a/b/x.php", "x.php"),

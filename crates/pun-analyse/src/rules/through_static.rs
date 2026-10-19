@@ -38,13 +38,12 @@ pub fn property(c: &mut Checker, p: &StaticPropertyAccess) {
     let Some(k) = static_class(c, p.class) else {
         return;
     };
-    let Some(declaring) = c
-        .codebase
-        .get_declaring_property_class(k.name.as_bytes(), v.name)
-    else {
-        return;
-    };
-    let Some(property) = c.codebase.get_declaring_property(k.name.as_bytes(), v.name) else {
+    // the declaring class names the property, so both are there or neither is
+    let (Some(declaring), Some(property)) = (
+        c.codebase
+            .get_declaring_property_class(k.name.as_bytes(), v.name),
+        c.codebase.get_declaring_property(k.name.as_bytes(), v.name),
+    ) else {
         return;
     };
     let declaring_class = c.codebase.get_class_like(declaring.as_bytes());
@@ -97,14 +96,8 @@ pub fn constant(c: &mut Checker, a: &ClassConstantAccess) {
     let Some(k) = static_class(c, a.class) else {
         return;
     };
-    // the class's own constants and its traits' (a parent's private constant is not the class's)
-    let constant = k.constants.get(&word(id.value)).or_else(|| {
-        let t = k.trait_constant_ids.get(&word(id.value))?;
-        c.codebase
-            .get_class_like(t.as_bytes())?
-            .constants
-            .get(&word(id.value))
-    });
+    // the class's own constants, its traits' among them (a parent's private constant is not the class's)
+    let constant = k.constants.get(&word(id.value));
     if !constant.is_some_and(|x| x.visibility.is_private()) {
         return;
     }

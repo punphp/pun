@@ -49,3 +49,40 @@ class Implementer implements SecretContract
     {
     }
 }
+
+class Plain
+{
+    public static function make(): void
+    {
+    }
+
+    /** @internal */
+    public function count(): int
+    {
+        return 0;
+    }
+}
+
+/** @internal */
+trait SecretTrait
+{
+    public static function fromTrait(): void
+    {
+    }
+}
+
+/** @internal */
+enum SecretEnum
+{
+    case A;
+
+    public function label(): string
+    {
+        return 'a';
+    }
+}
+
+class UsesTrait
+{
+    use SecretTrait;
+}

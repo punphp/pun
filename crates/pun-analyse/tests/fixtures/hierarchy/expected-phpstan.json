@@ -86,6 +86,13 @@
    "tip": null
   },
   {
+   "file": "a.php",
+   "line": 96,
+   "identifier": "class.disallowedSubtype",
+   "message": "Type Hier\\SealedScalarOther is not allowed to be a subtype of Hier\\SealedScalar.",
+   "tip": null
+  },
+  {
    "file": "a.php (in context of class Hier\\C1)",
    "line": 8,
    "identifier": "trait.duplicateConstant",

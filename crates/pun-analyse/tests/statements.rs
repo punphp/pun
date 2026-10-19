@@ -153,6 +153,12 @@ fn property_access() {
     check_in("properties", "phpstan");
 }
 
+/// Before PHP 8.2 every class allows dynamic properties, so `isset()` on a final class's missing one is allowed.
+#[test]
+fn property_access_php_8_1() {
+    check_in("properties", "phpstan-81");
+}
+
 /// AllowedSubTypesRule (`@phpstan-sealed`, `@psalm-inheritors`), MethodVisibilityInInterfaceRule and
 /// DuplicateTraitDeclarationRule (reported in each using class's context). The anonymous class's hashed name is the
 /// oracle's from this crate's directory, the working directory of `cargo test`.

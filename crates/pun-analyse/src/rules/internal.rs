@@ -100,13 +100,12 @@ pub fn typed_expressions(names: Option<&Names>, program: &Program) -> Vec<Span> 
 
 /// The classes of an expression's object types (`getObjectClassNames()`), as Mago infers them.
 fn object_classes<'a>(c: &Checker<'a, '_>, e: &Expression) -> Vec<&'a ClassLikeMetadata> {
-    let Some(t) = c.type_of(e) else {
-        return Vec::new();
-    };
-    t.types
-        .iter()
+    c.type_of(e)
+        .into_iter()
+        .flat_map(|t| t.types.iter())
         .filter_map(|a| match a {
             TAtomic::Object(TObject::Named(o)) => c.codebase.get_class_like(o.name.as_bytes()),
+            TAtomic::Object(TObject::Enum(o)) => c.codebase.get_class_like(o.name.as_bytes()),
             _ => None,
         })
         .collect()
