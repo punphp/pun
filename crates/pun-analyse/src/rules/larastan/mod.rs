@@ -10,6 +10,7 @@ mod config;
 mod console;
 mod dispatch;
 mod octane;
+mod relations;
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -47,6 +48,8 @@ pub const IDENTIFIERS: &[&str] = &[
     "larastan.console.undefinedOption",
     "larastan.configCollection",
     "larastan.unnecessaryEnumerableToArrayCall",
+    "larastan.relationExistence",
+    "larastan.noUnnecessaryCollectionCall",
 ];
 
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
@@ -73,6 +76,10 @@ pub struct Larastan {
     pub check_model_appends: bool,
     /// The analysed models' database properties, by lowercase class name (filled by [`Larastan::load`]).
     pub(crate) database_properties: HashMap<String, HashSet<String>>,
+    /// `noUnnecessaryCollectionCall` (default true), with `noUnnecessaryCollectionCallOnly` and
+    /// `noUnnecessaryCollectionCallExcept`: the lowercase method names it checks.
+    pub no_unnecessary_collection_call: bool,
+    pub no_unnecessary_collection_call_methods: Vec<String>,
     /// `noUnnecessaryEnumerableToArrayCalls` (default false).
     pub no_unnecessary_enumerable_to_array_calls: bool,
     /// `checkConfigTypes` (default false).
@@ -99,6 +106,8 @@ impl Larastan {
             commands: Vec::new(),
             check_config_types: false,
             no_unnecessary_enumerable_to_array_calls: false,
+            no_unnecessary_collection_call: true,
+            no_unnecessary_collection_call_methods: collections::should_handle(&[], &[]),
             configs: Default::default(),
         }
     }
@@ -109,7 +118,7 @@ impl Larastan {
         project: &crate::Project,
         codebase: &mago_codex::metadata::CodebaseMetadata,
     ) {
-        if self.check_model_appends {
+        if self.check_model_appends || self.no_unnecessary_collection_call {
             let app = crate::Laravel {
                 root: &self.root,
                 parse_casts_method: false,
@@ -158,6 +167,23 @@ impl Larastan {
         larastan.check_config_types = flag("checkConfigTypes", false);
         larastan.no_unnecessary_enumerable_to_array_calls =
             flag("noUnnecessaryEnumerableToArrayCalls", false);
+        larastan.no_unnecessary_collection_call = flag("noUnnecessaryCollectionCall", true);
+        let names = |k: &str| -> Vec<String> {
+            params
+                .get_str(k)
+                .and_then(Value::as_array)
+                .map(|a| {
+                    a.values()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
+        larastan.no_unnecessary_collection_call_methods = collections::should_handle(
+            &names("noUnnecessaryCollectionCallOnly"),
+            &names("noUnnecessaryCollectionCallExcept"),
+        );
         Some(larastan)
     }
 }
@@ -167,6 +193,22 @@ impl Larastan {
 #[derive(Default)]
 pub(crate) struct State {
     request: Vec<bool>,
+}
+
+/// `ModelPropertyExtension::hasProperty()`: a database column of the model that no accessor or `@property` tag hides.
+fn has_database_property(c: &Checker, model: &str, column: &str) -> bool {
+    let Some(larastan) = c.larastan else {
+        return false;
+    };
+    !crate::laravel::has_accessor(c.codebase, model, column)
+        && larastan
+            .database_properties
+            .get(&model.to_ascii_lowercase())
+            .is_some_and(|p| p.contains(column))
+        && !c
+            .codebase
+            .get_class_like(model.as_bytes())
+            .is_some_and(|k| appends::property_tag(k, column))
 }
 
 /// `ObjectType($parent)->isSuperTypeOf(ObjectType($class))->yes()`, for lowercase `parent`.
@@ -285,6 +327,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         if self.larastan.check_config_types {
             self.spans.extend(config::typed(self.names, call));
         }
+        if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
+            self.spans.push(arg.span());
+            if !matches!(call.class, Expression::Identifier(_)) {
+                self.spans.push(call.class.span());
+            }
+        }
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && dispatch::conditional(m.value)
             && let Some(first) = call.argument_list.arguments.first()
@@ -309,6 +357,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
             && collections::to_array(call).is_some()
         {
             self.spans.push(call.object.span());
+        }
+        if let Some(arg) = relations::relation_call(&call.method, &call.argument_list) {
+            self.spans.extend([arg.span(), call.object.span()]);
+        }
+        if self.larastan.no_unnecessary_collection_call {
+            self.spans.extend(collections::unnecessary_typed(call));
         }
         if let Some((_, arg)) = console::input_call(call) {
             self.spans.extend([call.object.span(), arg.span()]);

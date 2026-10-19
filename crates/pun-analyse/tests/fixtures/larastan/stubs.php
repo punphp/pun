@@ -149,6 +149,11 @@ namespace Illuminate\Support {
         {
         }
 
+        /** @return static */
+        public function map(callable $callback)
+        {
+        }
+
         public function getIterator(): \ArrayIterator
         {
         }
@@ -188,6 +193,51 @@ namespace Illuminate\Database\Eloquent {
 
     abstract class Model implements \Illuminate\Contracts\Support\Arrayable
     {
+        /** @return \Illuminate\Database\Eloquent\Collection<int, static> */
+        public static function all($columns = ['*'])
+        {
+        }
+
+        /** @return \Illuminate\Database\Eloquent\Builder<static> */
+        public static function query()
+        {
+        }
+
+        /**
+         * @param  array|string  $relations
+         * @return \Illuminate\Database\Eloquent\Builder<static>
+         */
+        public static function with($relations)
+        {
+        }
+
+        /**
+         * @template TRelatedModel of Model
+         * @param  class-string<TRelatedModel>  $related
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany<TRelatedModel, $this>
+         */
+        public function hasMany($related)
+        {
+        }
+
+        /**
+         * @template TRelatedModel of Model
+         * @param  class-string<TRelatedModel>  $related
+         * @return \Illuminate\Database\Eloquent\Relations\HasOne<TRelatedModel, $this>
+         */
+        public function hasOne($related)
+        {
+        }
+
+        /**
+         * @template TRelatedModel of Model
+         * @param  class-string<TRelatedModel>  $related
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<TRelatedModel, $this>
+         */
+        public function belongsTo($related)
+        {
+        }
+
         public function toArray()
         {
         }
@@ -201,12 +251,197 @@ namespace Illuminate\Database\Eloquent {
         }
     }
 
+    /**
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     */
     class Builder
     {
         public function where($column, $operator = null, $value = null, $boolean = 'and')
         {
             return $this;
         }
+
+        /** @return \Illuminate\Database\Eloquent\Collection<int, TModel> */
+        public function get($columns = ['*'])
+        {
+        }
+
+        /** @return \Illuminate\Support\Collection<array-key, mixed> */
+        public function pluck($column, $key = null)
+        {
+        }
+
+        /** @return $this */
+        public function has($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function doesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orDoesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function whereHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function withWhereHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orWhereHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function whereDoesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orWhereDoesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function whereRelation($relation)
+        {
+        }
+
+        /** @return $this */
+        public function with($relation)
+        {
+        }
+    }
+}
+
+namespace Illuminate\Database\Eloquent\Relations {
+    /**
+     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
+     * @template TResult
+     * @mixin \Illuminate\Database\Eloquent\Builder<TRelatedModel>
+     */
+    abstract class Relation
+    {
+        /** @return \Illuminate\Database\Eloquent\Collection<int, TRelatedModel> */
+        public function get($columns = ['*'])
+        {
+        }
+
+        /** @return $this */
+        public function has($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function doesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orDoesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function whereHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function withWhereHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orWhereHas($relation)
+        {
+        }
+
+        /** @return $this */
+        public function whereDoesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function orWhereDoesntHave($relation)
+        {
+        }
+
+        /** @return $this */
+        public function whereRelation($relation)
+        {
+        }
+
+        /** @return $this */
+        public function with($relation)
+        {
+        }
+    }
+
+    /**
+     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
+     * @extends Relation<TRelatedModel, TDeclaringModel, \Illuminate\Database\Eloquent\Collection<int, TRelatedModel>>
+     */
+    class HasMany extends Relation
+    {
+    }
+
+    /**
+     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
+     * @extends Relation<TRelatedModel, TDeclaringModel, ?TRelatedModel>
+     */
+    class HasOne extends Relation
+    {
+    }
+
+    /**
+     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
+     * @extends Relation<TRelatedModel, TDeclaringModel, ?TRelatedModel>
+     */
+    class BelongsTo extends Relation
+    {
+    }
+
+    /**
+     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
+     * @extends Relation<TRelatedModel, TDeclaringModel, \Illuminate\Database\Eloquent\Collection<int, TRelatedModel>>
+     */
+    class BelongsToMany extends Relation
+    {
+    }
+
+    /**
+     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+     * @template TIntermediateModel of \Illuminate\Database\Eloquent\Model
+     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
+     * @extends Relation<TRelatedModel, TIntermediateModel, \Illuminate\Database\Eloquent\Collection<int, TRelatedModel>>
+     */
+    class HasManyThrough extends Relation
+    {
     }
 }
 
@@ -270,99 +505,65 @@ namespace Illuminate\Foundation\Events {
 }
 
 namespace App {
+    use Illuminate\Database\Eloquent\Relations\BelongsTo;
+    use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+    use Illuminate\Database\Eloquent\Relations\HasMany;
+    use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+
+    // the relations of Larastan's test application's models
     class User extends \Illuminate\Database\Eloquent\Model
     {
-        public function group()
+        /** @phpstan-return BelongsTo<Group, $this> */
+        public function group(): BelongsTo
+        {
+        }
+
+        /** @phpstan-return HasMany<Account, $this> */
+        public function accounts(): HasMany
+        {
+        }
+
+        /** @return HasManyThrough<Transaction, Account, $this> */
+        public function transactions(): HasManyThrough
         {
         }
     }
 
     class Group extends \Illuminate\Database\Eloquent\Model
     {
-    }
-}
-
-namespace Symfony\Component\Console\Command {
-    class Command
-    {
-        protected function configure()
+        /** @phpstan-return HasMany<Account, $this> */
+        public function accounts(): HasMany
         {
         }
 
-        public function addArgument(string $name, ?int $mode = null, string $description = '', mixed $default = null): static
-        {
-        }
-
-        public function addOption(string $name, string|array|null $shortcut = null, ?int $mode = null, string $description = '', mixed $default = null): static
-        {
-        }
-    }
-}
-
-namespace Symfony\Component\Console\Attribute {
-    #[\Attribute(\Attribute::TARGET_CLASS)]
-    class AsCommand
-    {
-        public function __construct(public string $name, public ?string $description = null, array $aliases = [], bool $hidden = false)
-        {
-        }
-    }
-}
-
-namespace Symfony\Component\Console\Input {
-    class InputArgument
-    {
-        public const REQUIRED = 1;
-        public const OPTIONAL = 2;
-        public const IS_ARRAY = 4;
-
-        public function __construct(string $name, ?int $mode = null, string $description = '', mixed $default = null)
+        /** @phpstan-return HasMany<User, $this> */
+        public function users(): HasMany
         {
         }
     }
 
-    class InputOption
+    class Account extends \Illuminate\Database\Eloquent\Model
     {
-        public const VALUE_NONE = 1;
-        public const VALUE_REQUIRED = 2;
-        public const VALUE_OPTIONAL = 4;
-        public const VALUE_IS_ARRAY = 8;
+        /** @return HasMany<Transaction, $this> */
+        public function transactions(): HasMany
+        {
+        }
 
-        public function __construct(string $name, string|array|null $shortcut = null, ?int $mode = null, string $description = '', mixed $default = null)
+        /** @phpstan-return BelongsTo<Group, $this> */
+        public function group(): BelongsTo
         {
         }
     }
-}
 
-namespace Illuminate\Contracts\Console {
-    interface Isolatable
+    class Transaction extends \Illuminate\Database\Eloquent\Model
     {
     }
-}
 
-namespace Illuminate\Console {
-    class Command extends \Symfony\Component\Console\Command\Command
+    class Post extends \Illuminate\Database\Eloquent\Model
     {
-        protected $signature;
-        protected $name;
-        protected $aliases;
-
-        public function argument($key = null)
+        /** @return BelongsToMany<User, $this> */
+        public function users(): BelongsToMany
         {
-        }
-
-        public function option($key = null)
-        {
-        }
-
-        protected function getArguments()
-        {
-            return [];
-        }
-
-        protected function getOptions()
-        {
-            return [];
         }
     }
 }
@@ -376,6 +577,16 @@ namespace {
     function value($value, ...$args)
     {
         return $value instanceof Closure ? $value(...$args) : $value;
+    }
+
+    /**
+     * @template TKey of array-key
+     * @template TValue
+     * @param  array<TKey, TValue>  $value
+     * @return \Illuminate\Support\Collection<TKey, TValue>
+     */
+    function collect($value = [])
+    {
     }
 
     function env($key, $default = null)

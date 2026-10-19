@@ -1,0 +1,107 @@
+{
+    "how": "PHPStan 2.2.7 + Larastan 3.10.0 at level 0 on these files copied to app/PunCollections of a pinkary checkout (its users migration)",
+    "errors": [
+        {
+            "file": "Calls.php",
+            "line": 14,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'count' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 15,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'pluck' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 18,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'first' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 20,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'count' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 21,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'isEmpty' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 22,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'contains' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 24,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'contains' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 26,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'where' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 32,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'take' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 33,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'count' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 34,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'Count' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 35,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'modelKeys' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 36,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'firstWhere' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 37,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'avg' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 38,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'sum' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 39,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'containsStrict' on Laravel collection, but could have been retrieved as a query."
+        },
+        {
+            "file": "Calls.php",
+            "line": 40,
+            "identifier": "larastan.noUnnecessaryCollectionCall",
+            "message": "Called 'containsStrict' on Laravel collection, but could have been retrieved as a query."
+        }
+    ]
+}

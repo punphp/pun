@@ -31,6 +31,8 @@ const PORTED: &[&str] = &[
     "larastan.console.undefinedOption",
     "larastan.configCollection",
     "larastan.unnecessaryEnumerableToArrayCall",
+    "larastan.relationExistence",
+    "larastan.noUnnecessaryCollectionCall",
 ];
 
 /// Whether the test compares an error: one of a ported rule, or the dispatch rule's argument count (core
@@ -319,5 +321,58 @@ fn larastan_config_collection() {
             .unwrap()
             .iter()
             .all(|e| e.identifier != "larastan.configCollection")
+    );
+}
+
+/// RelationExistenceRule on the models and calls of tests/fixtures/larastan/data/Relations.
+#[test]
+fn larastan_relation_existence() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    oracle_case(
+        &root.join("data/Relations"),
+        Larastan::new(&root.join("application")),
+        "larastan.relationExistence",
+    );
+}
+
+/// NoUnnecessaryCollectionCallRule on tests/fixtures/larastan/data/Collections, whose model reads the `users` table.
+#[test]
+fn larastan_unnecessary_collection_calls() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
+    let dir = root.join("data/Collections");
+    let larastan = Larastan::new(&root.join("application"));
+    oracle_case(
+        &dir,
+        larastan.clone(),
+        "larastan.noUnnecessaryCollectionCall",
+    );
+    // noUnnecessaryCollectionCallOnly and noUnnecessaryCollectionCallExcept
+    let config = pun_phpstan::neon::decode(
+        "parameters:\n\tnoModelMake: true\n\tnoUnnecessaryCollectionCallOnly: [Count, take]\n\tnoUnnecessaryCollectionCallExcept: [take]\n",
+    )
+    .unwrap();
+    let params = config.as_array().unwrap().get_str("parameters").unwrap();
+    let mut only =
+        Larastan::from_params(&root.join("application"), params.as_array().unwrap()).unwrap();
+    let mut project = Project::new(
+        vec![dir.join("Calls.php"), dir.join("Writer.php")],
+        scanned(&root),
+    );
+    project.larastan = Some(only.clone());
+    let lines: BTreeSet<u32> = run(&project)
+        .unwrap()
+        .into_iter()
+        .filter(|e| e.identifier == "larastan.noUnnecessaryCollectionCall")
+        .map(|e| e.line)
+        .collect();
+    assert_eq!(lines, BTreeSet::from([14, 20, 33, 34]));
+    // off
+    only.no_unnecessary_collection_call = false;
+    project.larastan = Some(only);
+    assert!(
+        run(&project)
+            .unwrap()
+            .iter()
+            .all(|e| e.identifier != "larastan.noUnnecessaryCollectionCall")
     );
 }
