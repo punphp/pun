@@ -107,7 +107,12 @@ pub fn method<'a>(
     let codebase = c.codebase;
     let lower = word(name.to_ascii_lowercase());
     let mut current = Some(class);
-    while let Some(k) = current {
+    // a cyclic hierarchy is PHPStan's error elsewhere
+    let mut depth = 0;
+    while let Some(k) = current
+        && depth <= 64
+    {
+        depth += 1;
         if let Some(m) = declared(c, k, &lower) {
             return Some(m);
         }

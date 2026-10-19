@@ -24,6 +24,9 @@ use serde_json::Value;
 
 use super::declarations::{doc_tags, has_tag, is_abstract, is_private};
 use super::declared::{self, default_is_null, original_name};
+
+/// How many ancestors the walks up a class hierarchy visit: a circular one (which PHP refuses) ends there.
+pub(super) const ANCESTRY: usize = 64;
 use super::Checker;
 
 const TENTATIVE_TIP: &str = "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error.";
@@ -325,6 +328,14 @@ impl<'a> Checker<'a, '_> {
 
     /// BetterReflection's `ReflectionMethod::getPrototype()` of method `lower` implemented in `implementing`.
     fn br_prototype(&self, implementing: Class<'a>, lower: &str) -> Option<Found<'a>> {
+        self.br_prototype_at(implementing, lower, 0)
+    }
+
+    /// [`Self::br_prototype()`] `depth` ancestors up: a circular hierarchy (which PHP refuses) ends there.
+    fn br_prototype_at(&self, implementing: Class<'a>, lower: &str, depth: usize) -> Option<Found<'a>> {
+        if depth > ANCESTRY {
+            return None;
+        }
         let k = match implementing {
             Class::Builtin(b) => {
                 let p = self.reflected(b.methods.get(lower)?.prototype.as_deref()?)?;
@@ -346,7 +357,7 @@ impl<'a> Checker<'a, '_> {
         } else if self.found_visibility(parent).is_private() {
             return None;
         } else {
-            self.br_prototype(implementing_of(parent), lower).unwrap_or(parent)
+            self.br_prototype_at(implementing_of(parent), lower, depth + 1).unwrap_or(parent)
         };
         (lower != "__construct" || self.found_abstract(prototype)).then_some(prototype)
     }
@@ -558,7 +569,11 @@ impl<'a> Checker<'a, '_> {
     fn traits(&self, k: &'a ClassLikeMetadata) -> Vec<&'a ClassLikeMetadata> {
         let mut out = Vec::new();
         let mut current = Some(k);
-        while let Some(k) = current {
+        let mut depth = 0;
+        while let Some(k) = current
+            && depth <= ANCESTRY
+        {
+            depth += 1;
             let mut stack: Vec<&ClassLikeMetadata> = Vec::new();
             let direct = |k: &ClassLikeMetadata| {
                 let mut names: Vec<_> = k.used_traits.iter().collect();
@@ -585,7 +600,12 @@ impl<'a> Checker<'a, '_> {
     pub(super) fn all_interfaces(&self, class: Class<'a>) -> Vec<Class<'a>> {
         let mut out = Vec::new();
         let mut pending = vec![class];
-        while let Some(c) = pending.pop() {
+        // a circular hierarchy (which PHP refuses) ends after ANCESTRY classes
+        let mut steps = 0;
+        while let Some(c) = pending.pop()
+            && steps <= ANCESTRY * ANCESTRY
+        {
+            steps += 1;
             for i in self.immediate_interfaces(c) {
                 pending.push(i);
                 out.push(i);
@@ -1017,10 +1037,15 @@ fn consistent_constructor<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'
     }
     // ConsistentConstructorHelper::findConsistentConstructor()
     let mut current = c.parent_class(Class::User(k));
+    let mut depth = 0;
     let constructor = loop {
         let Some(Class::User(p)) = current else {
             return Vec::new();
         };
+        depth += 1;
+        if depth > ANCESTRY {
+            return Vec::new();
+        }
         let tags = c.class_tags(p);
         if has_tag(
             &tags,

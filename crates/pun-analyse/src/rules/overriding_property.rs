@@ -20,7 +20,7 @@ use pun_phpstan::types::{Level, Type, is_super_type_of};
 
 use super::declarations::{doc_tags, has_tag, is_abstract, is_private};
 use super::declared;
-use super::overriding::Class;
+use super::overriding::{ANCESTRY, Class};
 use super::properties::{PropertyNode, is_virtual};
 use super::Checker;
 
@@ -115,7 +115,11 @@ impl<'a> Checker<'a, '_> {
 
     /// BetterReflection's `getHooks()` of the property `name` declared in `class`: its own, else its parent class's.
     fn property_hooks(&self, class: &ClassLikeMetadata, own: (bool, bool), name: &[u8]) -> (bool, bool) {
-        if own.0 && own.1 {
+        self.property_hooks_at(class, own, name, 0)
+    }
+
+    fn property_hooks_at(&self, class: &ClassLikeMetadata, own: (bool, bool), name: &[u8], depth: usize) -> (bool, bool) {
+        if (own.0 && own.1) || depth > ANCESTRY {
             return own;
         }
         let parent = class
@@ -124,7 +128,7 @@ impl<'a> Checker<'a, '_> {
             .and_then(|p| self.declared_property(p, name));
         match parent {
             Some((d, _, p)) => {
-                let inherited = self.property_hooks(d, hook_names(p), name);
+                let inherited = self.property_hooks_at(d, hook_names(p), name, depth + 1);
                 (own.0 || inherited.0, own.1 || inherited.1)
             }
             None => own,
@@ -145,12 +149,17 @@ impl<'a> Checker<'a, '_> {
 
     /// BetterReflection's `isVirtual()`: virtual hooks, and a virtual parent property if there is one.
     pub(super) fn property_virtual(&self, class: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8]) -> bool {
+        self.property_virtual_at(class, p, name, 0)
+    }
+
+    fn property_virtual_at(&self, class: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8], depth: usize) -> bool {
         p.flags.is_virtual_property()
-            && class
-                .direct_parent_class
-                .and_then(|parent| self.codebase.get_class_like(parent.as_bytes()))
-                .and_then(|parent| self.declared_property(parent, name))
-                .is_none_or(|(d, _, p)| self.property_virtual(d, p, name))
+            && (depth > ANCESTRY
+                || class
+                    .direct_parent_class
+                    .and_then(|parent| self.codebase.get_class_like(parent.as_bytes()))
+                    .and_then(|parent| self.declared_property(parent, name))
+                    .is_none_or(|(d, _, p)| self.property_virtual_at(d, p, name, depth + 1)))
     }
 
     /// `getNativeProperty($name)` of `class` as class `k` reaches it.
