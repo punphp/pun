@@ -25,6 +25,7 @@ use mago_codex::populator::populate_codebase;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileType};
 use mago_names::ResolvedNames;
@@ -304,8 +305,36 @@ impl Facts {
         }))
         .ok()
         .and_then(Result::ok);
-        // `get_class()` of a value PHPStan cannot tell is an object may be `false` (`toGetClassResultType`)
         if let Some(artifacts) = &artifacts {
+            // a member of a class the codebase lacks (vendor/ is not scanned; Rector's PHPStan reads it): Mago types
+            // it from the rest of the object's union (`?Unknown` gives `null`), PHPStan from the class
+            let unknown = |t: &TUnion| {
+                t.types.iter().any(|t| match t {
+                    // a class name Mago could not resolve
+                    TAtomic::Reference(_) => true,
+                    TAtomic::Object(TObject::Named(c)) => {
+                        self.codebase.get_class_like(c.name.as_bytes()).is_none()
+                    }
+                    _ => false,
+                })
+            };
+            any_node(Node::Program(program), &mut |n| {
+                let (object, span) = match n {
+                    Node::PropertyAccess(a) => (a.object, a.span()),
+                    Node::NullSafePropertyAccess(a) => (a.object, a.span()),
+                    Node::MethodCall(c) => (c.object, c.span()),
+                    Node::NullSafeMethodCall(c) => (c.object, c.span()),
+                    _ => return,
+                };
+                let o = object.span();
+                if (artifacts.expression_types)
+                    .get(&(o.start.offset, o.end.offset))
+                    .is_some_and(|t| unknown(t))
+                {
+                    untyped.insert((span.start.offset, span.end.offset));
+                }
+            });
+            // `get_class()` of a value PHPStan cannot tell is an object may be `false` (`toGetClassResultType`)
             for (call, argument) in get_class {
                 let key = (argument.start.offset, argument.end.offset);
                 if artifacts
@@ -369,8 +398,13 @@ fn from_variable(expr: &Expression<'_>) -> bool {
 
 /// Call `f` on `node` and every node below it.
 fn any_node<'a>(node: Node<'a, 'a>, f: &mut impl FnMut(Node<'a, 'a>)) {
-    f(node);
-    node.visit_children(|child| any_node(child, f));
+    // parents first, in source order, on an explicit stack: a recursive walk of a whole file is as deep as its tree
+    let (mut stack, mut children) = (vec![node], Vec::new());
+    while let Some(node) = stack.pop() {
+        f(node);
+        node.visit_children(|child| children.push(child));
+        stack.extend(children.drain(..).rev());
+    }
 }
 
 /// `code` with the text of each docblock blanked out (`/** ... */` becomes `/*  ...  */` with spaces, lines kept),
