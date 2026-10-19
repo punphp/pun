@@ -1,0 +1,75 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "calls.php",
+   "line": 11,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method CoverageCalls\\Tagged::untagged().",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 22,
+   "identifier": "classConstant.notFound",
+   "message": "Access to undefined constant APCIterator::NOPE.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 41,
+   "identifier": "arguments.count",
+   "message": "Function CoverageCalls\\two invoked with 1 parameter, 2 required.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 48,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $a (int) in call to class@anonymous/calls.php:48 constructor.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 48,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $c in call to class@anonymous/calls.php:48 constructor.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 66,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "properties.php",
+   "line": 16,
+   "identifier": "property.private",
+   "message": "Access to private property $hidden of parent class CoverageProperties\\Base.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 21,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property CoverageProperties\\Child::$missing.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "properties.php",
+   "line": 22,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property CoverageProperties\\Child::$nested.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "scope.php",
+   "line": 77,
+   "identifier": "class.notFound",
+   "message": "Access to constant KEY on an unknown class Nope\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

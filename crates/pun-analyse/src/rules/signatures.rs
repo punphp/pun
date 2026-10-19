@@ -1004,9 +1004,10 @@ pub fn property<'arena>(
 
 /// ExistingClassesInPropertyHookTypehintsRule: FunctionDefinitionCheck on each hook of property `name`.
 pub fn hooks<'arena>(c: &mut Checker<'_, 'arena>, name: &[u8], list: &PropertyHookList<'arena>) {
-    let Some(class) = c.class_scope() else {
-        return;
-    };
+    // properties are walked inside their class-like (trait bodies only in a class's context)
+    let class = c
+        .class_scope()
+        .expect("a property hook is walked inside its class-like");
     let display = c.display(class);
     let property = String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
     for hook in list.hooks.iter() {

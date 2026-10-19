@@ -220,10 +220,11 @@ fn declared<'a>(
     // a trait's methods are declared by the class using it, for PHPStan; of two traits with the method, the one
     // `insteadof` keeps (the method PHP's reflection declares)
     let declaring = codebase.get_declaring_method(k.name.as_bytes(), lower.as_bytes());
-    traits().find_map(|t| match declared(c, t, lower)? {
-        Method::User { f, .. } => declaring
-            .is_none_or(|d| d.span == f.span)
-            .then_some(Method::User { declaring: k, f }),
-        builtin => Some(builtin),
+    // (PHP has no built-in traits)
+    traits().find_map(|t| match declared(c, t, lower) {
+        Some(Method::User { f, .. }) if declaring.is_none_or(|d| d.span == f.span) => {
+            Some(Method::User { declaring: k, f })
+        }
+        _ => None,
     })
 }

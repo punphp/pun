@@ -28,20 +28,19 @@ impl Checker<'_, '_> {
         if let Some(display) = self.anonymous.get(name) {
             return display.clone();
         }
+        // one declared in another file (an inferred `new class`)
         if name.starts_with(b"{anonymous-class:")
-            && let Some(file) = self
+            && let Some(display) = self
                 .files
                 .get(&k.span.file_id)
                 .and_then(|p| self.sources.get(p))
+                .and_then(|file| {
+                    let arena = LocalArena::new();
+                    let (program, names) = parse(&arena, file);
+                    anonymous::names(file, program, &names, self.relative_path).remove(name)
+                })
         {
-            // one declared in another file (an inferred `new class`)
-            let arena = LocalArena::new();
-            let (program, names) = parse(&arena, file);
-            if let Some(display) =
-                anonymous::names(file, program, &names, self.relative_path).remove(name)
-            {
-                return display;
-            }
+            return display;
         }
         String::from_utf8_lossy(name).into_owned()
     }

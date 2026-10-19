@@ -595,15 +595,14 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
     let property = v.name;
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
     let at = p.property.span();
-    let in_class = !c.classes.is_empty();
-    let holder = match unparenthesized(p.class) {
-        e @ (Expression::Self_(_) | Expression::Static(_)) => {
+    let holder = match (unparenthesized(p.class), c.class_scope()) {
+        (e @ (Expression::Self_(_) | Expression::Static(_)), scope) => {
             let written = if matches!(e, Expression::Self_(_)) {
                 "self"
             } else {
                 "static"
             };
-            if !in_class {
+            let Some(k) = scope else {
                 c.report(
                     at,
                     &format!("outOfClass.{written}"),
@@ -614,14 +613,11 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                     None,
                 );
                 return;
-            }
-            match c.class_scope() {
-                Some(k) => Holder::Class(k, written == "static"),
-                None => Holder::Done,
-            }
+            };
+            Holder::Class(k, written == "static")
         }
-        e @ Expression::Parent(_) => {
-            if !in_class {
+        (e @ Expression::Parent(_), scope) => {
+            let Some(scope) = scope else {
                 c.report(
                     at,
                     "outOfClass.parent",
@@ -631,9 +627,6 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                     ),
                     None,
                 );
-                return;
-            }
-            let Some(scope) = c.class_scope() else {
                 return;
             };
             // an unknown parent is no parent (`getParentClass()`)
@@ -653,7 +646,7 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                 Some(k) => Holder::Class(k, false),
             }
         }
-        Expression::Identifier(id) => {
+        (Expression::Identifier(id), _) => {
             let class = c.resolved(id);
             match c.class_like(&class) {
                 super::reflection::Lookup::NotFound => {
