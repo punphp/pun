@@ -1,0 +1,52 @@
+[
+    [
+        "int",
+        "int|null",
+        "int"
+    ],
+    [
+        "int|null",
+        "int|null",
+        "int"
+    ],
+    [
+        "null",
+        "null",
+        "*NEVER*"
+    ],
+    [
+        "__benevolent<int|null>",
+        "(int|null)",
+        "int"
+    ],
+    [
+        "__benevolent<int|string|null>",
+        "(int|string|null)",
+        "(int|string)"
+    ],
+    [
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "never",
+        "never",
+        "never"
+    ],
+    [
+        "void",
+        "void|null",
+        "void"
+    ],
+    [
+        "int|string",
+        "int|string|null",
+        "int|string"
+    ],
+    [
+        "__template<T, 'function probe()', mixed>",
+        "T (function probe(), parameter)",
+        "T (function probe(), parameter)"
+    ]
+]

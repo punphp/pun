@@ -185,6 +185,9 @@ const PROBE_GAPS: &[&str] = &[
     "(T is int ? string : bool)&int",
     // its iterable value is `static`, which symbols.json has as the bare class
     "SimpleXMLElement<int, string, bool>",
+    // call-site variance (`GenericObjectType`'s variances) is parsed but not kept
+    "ArrayIterator<int, covariant string>",
+    "ArrayIterator<contravariant int, string>",
 ];
 
 #[test]

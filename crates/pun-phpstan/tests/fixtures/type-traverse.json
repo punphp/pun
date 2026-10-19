@@ -1,0 +1,30 @@
+[
+    [
+        "array{a: int, b?: list<int>}",
+        "array{a: string, b?: *NEVER*}"
+    ],
+    [
+        "array{int, ...<int, int>}",
+        "array{string, ...<int, string>}"
+    ],
+    [
+        "list<int>|int",
+        "string"
+    ],
+    [
+        "Coll<int, string>",
+        "PunProbe\\Coll<string, string>"
+    ],
+    [
+        "class-string<Coll<int, int>>",
+        "class-string<PunProbe\\Coll<string, string>>"
+    ],
+    [
+        "(__template<T, 'function probe()', mixed> is int ? int : string)",
+        "(T (function probe(), parameter) is string ? string : string)"
+    ],
+    [
+        "static<int>",
+        "static(PunProbe\\Child<string>)"
+    ]
+]

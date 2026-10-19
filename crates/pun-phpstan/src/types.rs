@@ -445,6 +445,10 @@ impl Type {
         self.query_c(&|t| match t {
             Type::Accessory(Accessory::List) => Tri::Yes,
             Type::ConstArray(a) => a.is_list,
+            // `ArrayType::isList()`: no when no key can be a non-negative int
+            Type::Array(key, _) if is_super_type_of(&Type::int_range(Some(0), None), key).no() => {
+                Tri::No
+            }
             Type::Array(..) | Type::Accessory(Accessory::NonEmptyArray) => Tri::Maybe,
             _ => Tri::No,
         })
@@ -922,12 +926,11 @@ impl Type {
                 otherwise: f(&c.otherwise),
                 negated: c.negated,
             })),
-            // `ConstantArrayType::traverse()`: the keys and values (and the unsealed `...<K, V>`)
+            // `ConstantArrayType::traverse()`: the values and the unsealed `...<K, V>`'s value, not the keys
             Type::ConstArray(a) => {
                 let mut a = a.clone();
-                a.keys = a.keys.iter().map(f).collect();
                 a.values = a.values.iter().map(f).collect();
-                a.unsealed = a.unsealed.map(|(k, v)| (f(&k), f(&v)));
+                a.unsealed = a.unsealed.map(|(k, v)| (k, f(&v)));
                 Type::ConstArray(a)
             }
             Type::ObjectShape(props) => Type::ObjectShape(
@@ -3466,22 +3469,13 @@ impl Type {
         matches!(self, Type::Mixed { explicit: false })
     }
 
-    /// `TypeCombinator::containsNull()`
-    pub fn contains_null(&self) -> bool {
-        match self {
-            Type::Union(types) | Type::Benevolent(types) => {
-                types.iter().any(|t| matches!(t, Type::Null))
-            }
-            t => matches!(t, Type::Null),
-        }
-    }
-
-    /// `TypeCombinator::addNull()`
+    /// `TypeCombinator::addNull()`: unchanged when it may already be null
     pub fn add_null(self) -> Type {
-        if self.contains_null() {
-            return self;
+        if is_super_type_of(&Type::Null, &self).no() {
+            union(vec![self, Type::Null])
+        } else {
+            self
         }
-        union(vec![self, Type::Null])
     }
 
     /// `TypeCombinator::removeNull()`
@@ -3553,7 +3547,13 @@ pub fn decide_type(ty: Type, phpdoc: Option<Type>) -> Type {
             doc = Type::Union(
                 members
                     .iter()
-                    .map(|m| mixed_key_array(m).unwrap_or_else(|| m.clone()))
+                    // (a member takes its iterable key type, `array-key`, not its key type)
+                    .map(|m| match mixed_key_array(m) {
+                        Some(Type::Iterable(_, item)) => {
+                            Type::Iterable(Box::new(m.iterable_key_type()), item)
+                        }
+                        _ => m.clone(),
+                    })
                     .collect(),
             );
         } else if let Some(iterable) = mixed_key_array(&doc) {
@@ -3577,7 +3577,8 @@ pub fn decide_type(ty: Type, phpdoc: Option<Type>) -> Type {
                 union(std::iter::once(result).chain(add).collect())
             }
         }
-        t if t.contains_null() => result.add_null(),
+        // `TypeCombinator::containsNull()` of a type that is not a union
+        Type::Null => result.add_null(),
         _ => result,
     }
 }

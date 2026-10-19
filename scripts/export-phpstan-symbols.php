@@ -509,6 +509,11 @@ if (($argv[1] ?? '') === 'probes') {
         'callable(): DateTime::A* |int', '"\\e"', '"\\$"', '"\\u{}"', '"\\q"', 'EmptyIterator<int, string, bool>'] as $s) {
         $probes[] = [null, $s];
     }
+    foreach (['decimal-int-string', 'non-decimal-int-string', 'ArrayIterator<int, covariant string>', 'ArrayIterator<contravariant int, string>'] as $s) {
+        $probes[] = [null, $s];
+    }
+    $probes[] = ['ArrayIterator', 'parent'];
+    $probes[] = ['RecursiveArrayIterator', 'parent'];
     $probes[] = ['Nope', 'static'];
     $probes[] = ['Nope', '$this'];
     $probes[] = ['DatePeriod', '$this'];
@@ -527,7 +532,9 @@ if (($argv[1] ?? '') === 'probes') {
             'Iterator<int, string>', 'Traversable<int, string>', 'SplObjectStorage<*, *>', 'SplObjectStorage<Countable, int>', 'Generator<int, string>', 'Iterator',
             'IteratorAggregate<int, string>', 'ArrayObject<int, string>', 'WeakMap<Countable, int>', '1|2|3', 'int<1, 3>', '(1|2)', 'int<1, 2>'], null],
         [['(int is int ? 1 : 2)', '(int is not int ? 1 : 2)', '1', '2', 'SplObjectStorage<Countable>', 'SplObjectStorage<Countable, int>',
-            'ArrayIterator<array-key, int>', 'ArrayIterator<int, int>', 'ArrayAccess<int>', 'ArrayAccess<int, string>'], null]] as [$set, $ctx]) {
+            'ArrayIterator<array-key, int>', 'ArrayIterator<int, int>', 'ArrayAccess<int>', 'ArrayAccess<int, string>'], null],
+        [['decimal-int-string', 'non-decimal-int-string', "'12'", "'012'", "''", 'numeric-string', 'lowercase-string', 'uppercase-string',
+            'non-empty-string', 'string', 'int', 'callable-string', 'decimal-int-string&non-falsy-string'], null]] as [$set, $ctx]) {
         $scope = $ctx === 'templates' ? new NameScope(null, [], null, null, $templates) : new NameScope(null, [], $ctx);
         foreach ($set as $a) {
             foreach ($set as $b) {
@@ -537,6 +544,72 @@ if (($argv[1] ?? '') === 'probes') {
         }
     }
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-super.json', "[\n".implode(",\n", $rows)."\n]\n");
+    // TypehintHelper::decideType(native, phpdoc): [native, phpdoc or null, described]
+    $decide = [];
+    $plain = new NameScope(null, []);
+    $withTemplates = new NameScope(null, [], null, null, $templates);
+    foreach ([['mixed', null], ['int', null], ['mixed', 'int'], ['int', 'positive-int'], ['?int', 'positive-int'], ['int', 'string'],
+        ['?int', 'string|null'], ['int', 'int|null'], ['?int', 'int|null'], ['mixed', 'void'], ['void', 'never'], ['mixed', 'never'], ['int', 'never'],
+        ['array', 'array<int, string>'], ['array', 'iterable<string>'], ['iterable', 'array<string>'], ['?array', 'list<int>|null'],
+        ['int|string', 'int'], ['__benevolent<int|string>', 'int'], ['mixed', 'T'], ['int', 'U'], ['?Countable', 'V'], ['?int', 'T'],
+        ['array', 'T'], ['int|null', 'int'], ['string', "'a'|'b'"], ['?string', "'a'|null"], ['Traversable', 'iterable<int>'],
+        ['iterable', 'Traversable<int>'], ['object', 'Countable'], ['Countable', 'stdClass'], [null, 'void'], [null, 'int'], [null, null], ['null', 'int'], ['null', 'null'],
+        ['iterable', 'array<string>|Countable'], ['?iterable', 'array<int>|null']] as [$native, $phpdoc]) {
+        // no native type: an implicit mixed
+        $nativeType = $native === null ? new PHPStan\Type\MixedType() : $resolver->resolve($native, $plain);
+        $phpdocType = $phpdoc === null ? null : $resolver->resolve($phpdoc, $withTemplates);
+        $decide[] = [$native === null ? null : $pun($native), $phpdoc === null ? null : $pun($phpdoc), PHPStan\Type\TypehintHelper::decideType($nativeType, $phpdocType)->describe(VerbosityLevel::precise())];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-decide.json', json_encode($decide, $flags | JSON_PRETTY_PRINT)."\n");
+    // type strings in a project namespace and class (tests/fixtures/scope-classes.php): [class or null, type, described]
+    require $root.'/crates/pun-phpstan/tests/fixtures/scope-classes.php';
+    $scoped = [];
+    foreach (['PunProbe\\Child', 'PunProbe\\Coll', 'PunProbe\\Missing', null] as $class) {
+        $scope = new NameScope('PunProbe', [], $class);
+        foreach (['static', 'static<string>', 'self', 'parent', 'Coll', 'Coll<int, string>', 'Child<string>', 'SORT_REGULAR',
+            'int-mask-of<SORT_REGULAR|SORT_NUMERIC>', '\\SORT_NUMERIC', 'self::A', 'self::*', 'Child::C', 'Coll::*', 'class-string<static>',
+            'Nope::A', 'Coll::NOPE'] as $s) {
+            $scoped[] = [$class, $s, $resolver->resolve($s, $scope)->describe(VerbosityLevel::precise())];
+        }
+    }
+    $scope = new NameScope('PunProbe', [], 'PunProbe\\Child', null, $templates);
+    foreach (['T', 'list<U>', 'Coll<T, V>'] as $s) {
+        $scoped[] = ['templates', $s, $resolver->resolve($s, $scope)->describe(VerbosityLevel::precise())];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-scope.json', json_encode($scoped, $flags | JSON_PRETTY_PRINT)."\n");
+    // isSuperTypeOf() between the project classes: [a, b, result]
+    $scope = new NameScope('PunProbe', []);
+    $projectSuper = [];
+    foreach ([['Coll<int, string>', 'Child<string>'], ['Coll<int, string>', 'Child<int>'], ['Coll', 'Child<string>'], ['Child<string>', 'Coll<int, string>'],
+        ['Coll<string, string>', 'Child<string>'], ['Child', 'Child<int>'], ['Coll<int, string>', 'Plain'], ['Coll', 'Plain']] as [$a, $b]) {
+        $projectSuper[] = [$a, $b, $resolver->resolve($a, $scope)->isSuperTypeOf($resolver->resolve($b, $scope))->result->describe()];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-project-super.json', json_encode($projectSuper, $flags | JSON_PRETTY_PRINT)."\n");
+    // getIterableKeyType() / getIterableValueType() and getAncestorWithClassName(): [type, key, value, Coll ancestor]
+    $project = [];
+    foreach (['Child<string>', 'Nope<int>', 'Coll<int, string>'] as $t) {
+        $type = $resolver->resolve($t, $scope);
+        $ancestor = $type->getAncestorWithClassName('PunProbe\\Coll');
+        $project[] = [$t, $type->getIterableKeyType()->describe(VerbosityLevel::precise()), $type->getIterableValueType()->describe(VerbosityLevel::precise()), $ancestor?->describe(VerbosityLevel::precise())];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-project.json', json_encode($project, $flags | JSON_PRETTY_PRINT)."\n");
+    // TypeTraverser::map() replacing int with string: [type, mapped]
+    $traversed = [];
+    foreach (['array{a: int, b?: list<int>}', 'array{int, ...<int, int>}', 'list<int>|int', 'Coll<int, string>', 'class-string<Coll<int, int>>', '(T is int ? int : string)', 'static<int>'] as $t) {
+        $type = $resolver->resolve($t, new NameScope('PunProbe', [], 'PunProbe\\Child', null, $templates));
+        $mapped = PHPStan\Type\TypeTraverser::map($type, function (PHPStan\Type\Type $t, callable $traverse) {
+            return $t instanceof PHPStan\Type\IntegerType ? new PHPStan\Type\StringType() : $traverse($t);
+        });
+        $traversed[] = [$pun($t), $mapped->describe(VerbosityLevel::precise())];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-traverse.json', json_encode($traversed, $flags | JSON_PRETTY_PRINT)."\n");
+    // TypeCombinator::addNull() and removeNull(): [type, added, removed]
+    $nulls = [];
+    foreach (['int', 'int|null', 'null', '__benevolent<int|null>', '__benevolent<int|string|null>', 'mixed', 'never', 'void', 'int|string', 'T'] as $t) {
+        $type = $resolver->resolve($t, $withTemplates);
+        $nulls[] = [$pun($t), PHPStan\Type\TypeCombinator::addNull($type)->describe(VerbosityLevel::precise()), PHPStan\Type\TypeCombinator::removeNull($type)->describe(VerbosityLevel::precise())];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-null.json', json_encode($nulls, $flags | JSON_PRETTY_PRINT)."\n");
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-probes.json', json_encode(describe_all(container(80400)->getByType(TypeStringResolver::class), $probes), $flags | JSON_PRETTY_PRINT)."\n");
     echo count($probes), " probes, ", count($rows), " isSuperTypeOf pairs\n";
     exit;

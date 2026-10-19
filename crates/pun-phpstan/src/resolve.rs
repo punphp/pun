@@ -35,9 +35,7 @@ pub trait Scope {
         None
     }
     /// The parent class of [`Scope::class()`], for `parent`.
-    fn parent(&self) -> Option<String> {
-        None
-    }
+    fn parent(&self) -> Option<String>;
     /// `resolveStringName()`: a written class name to its full name.
     fn resolve_name(&self, name: &str) -> String {
         name.trim_start_matches('\\').to_string()
@@ -50,10 +48,6 @@ pub trait Scope {
     fn template(&self, _name: &str) -> Option<Type> {
         None
     }
-    /// `TypeAliasResolver::resolveTypeAlias()`: a local or imported type alias.
-    fn alias(&self, _name: &str) -> Option<Type> {
-        None
-    }
 }
 
 /// A scope with only a class (built-in signatures).
@@ -62,6 +56,16 @@ struct ClassOnly<'a>(Option<&'a str>);
 impl Scope for ClassOnly<'_> {
     fn class(&self) -> Option<&str> {
         self.0
+    }
+    fn parent(&self) -> Option<String> {
+        // the direct parent is the ancestor class with the most ancestors of its own
+        let class = symbols::lookup(self.0?)?;
+        class
+            .ancestors
+            .iter()
+            .filter_map(|a| symbols::lookup(a).filter(|c| !c.is_interface))
+            .max_by_key(|c| c.ancestors.len())
+            .map(|c| c.name.clone())
     }
 }
 
@@ -391,8 +395,9 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             "parent" => {
                 return match scope.parent() {
                     Some(parent) => Type::Object(parent, vec![]),
-                    // NonexistentParentClassType
-                    None => Type::Error,
+                    // NonexistentParentClassType, described as `parent`
+                    // ponytail: it is an object of a class that does not exist; add its own type if a rule asks more
+                    None => Type::Object("parent".to_string(), vec![]),
                 };
             }
             "static" => {
@@ -403,9 +408,6 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             }
             _ => {}
         }
-    }
-    if let Some(alias) = scope.alias(name) {
-        return alias;
     }
     if let Some(template) = scope.template(name) {
         return template;
@@ -512,7 +514,8 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
         "class-string" | "interface-string" => match types.as_slice() {
             // (a `TemplateMixedType` is a `MixedType`)
             [g] if g.is_object_yes()
-                || matches!(g, Type::Mixed { .. })
+                // (an `ErrorType` is a `MixedType`)
+                || matches!(g, Type::Mixed { .. } | Type::Error)
                 || matches!(g, Type::Template(t) if matches!(t.bound, Type::Mixed { .. })) =>
             {
                 Type::ClassString(Some(Box::new(g.clone())))

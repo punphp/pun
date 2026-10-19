@@ -60597,6 +60597,69 @@
         ]
     ],
     [
+        null,
+        "decimal-int-string",
+        "decimal-int-string",
+        "decimal-int-string",
+        "string",
+        null,
+        null
+    ],
+    [
+        null,
+        "non-decimal-int-string",
+        "non-decimal-int-string",
+        "non-decimal-int-string",
+        "string",
+        null,
+        null
+    ],
+    [
+        null,
+        "ArrayIterator<int, covariant string>",
+        "ArrayIterator<int, covariant string>",
+        "ArrayIterator<int, covariant string>",
+        "ArrayIterator<int, covariant string>",
+        null,
+        [
+            "int",
+            "string"
+        ]
+    ],
+    [
+        null,
+        "ArrayIterator<contravariant int, string>",
+        "ArrayIterator<contravariant int, string>",
+        "ArrayIterator<contravariant int, string>",
+        "ArrayIterator<contravariant int, string>",
+        null,
+        [
+            "(int|string)",
+            "string"
+        ]
+    ],
+    [
+        "ArrayIterator",
+        "parent",
+        "parent",
+        "parent",
+        "parent",
+        null,
+        null
+    ],
+    [
+        "RecursiveArrayIterator",
+        "parent",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator",
+        null,
+        [
+            "(int|string)",
+            "mixed"
+        ]
+    ],
+    [
         "Nope",
         "static",
         "*ERROR*",

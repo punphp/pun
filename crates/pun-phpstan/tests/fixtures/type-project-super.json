@@ -1,0 +1,42 @@
+[
+    [
+        "Coll<int, string>",
+        "Child<string>",
+        "Yes"
+    ],
+    [
+        "Coll<int, string>",
+        "Child<int>",
+        "No"
+    ],
+    [
+        "Coll",
+        "Child<string>",
+        "Yes"
+    ],
+    [
+        "Child<string>",
+        "Coll<int, string>",
+        "Maybe"
+    ],
+    [
+        "Coll<string, string>",
+        "Child<string>",
+        "No"
+    ],
+    [
+        "Child",
+        "Child<int>",
+        "Yes"
+    ],
+    [
+        "Coll<int, string>",
+        "Plain",
+        "Yes"
+    ],
+    [
+        "Coll",
+        "Plain",
+        "Yes"
+    ]
+]
