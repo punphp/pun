@@ -702,21 +702,18 @@ pub fn replace_run(source: &str, list: &List<'_>, first: usize, last: usize, new
 /// `File::containsHTML()`, which keeps Rector's `HTMLAverseRectorInterface` rules off a file: an `InlineHTML`
 /// statement anywhere in it (the newline php-parser's `?>` takes is not one). `node` is the visited node.
 pub fn contains_html(node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> bool {
-    fn walk(node: Node<'_, '_>, found: &mut bool) {
-        if *found {
-            return;
-        }
+    // An explicit stack, not recursion: a debug build's `visit_children` frame is large enough that a recursive walk
+    // of a whole file overflows a 2 MB worker stack on pinkary.
+    let mut stack = vec![ancestors.first().copied().unwrap_or(node)];
+    while let Some(node) = stack.pop() {
         if let Node::Statement(Statement::Inline(inline)) = node
             && !(matches!(inline.value, b"\n" | b"\r\n") && inline.span.start.offset > 0)
         {
-            *found = true;
-            return;
+            return true;
         }
-        node.visit_children(|child| walk(child, found));
+        node.visit_children(|child| stack.push(child));
     }
-    let mut found = false;
-    walk(ancestors.first().copied().unwrap_or(node), &mut found);
-    found
+    false
 }
 
 /// The number of line breaks in `source[from..to]`.
