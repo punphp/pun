@@ -1328,6 +1328,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         properties::property(self, p);
         missing_types::property(self, p);
+        larastan::property(self, p);
         for v in p.variables() {
             hierarchy::callable_property(self, v.span(), v.name, p.hint());
         }

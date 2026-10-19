@@ -1,7 +1,8 @@
 //! Larastan 3.10.0's own rule tests, run through PHPStan 2.2.7 with Larastan by
 //! scripts/export-larastan-fixtures.php: every case's errors with an identifier of a ported Larastan rule must be
 //! exactly PHPStan's. Pun knows Laravel through tests/fixtures/larastan/stubs.php. Cases that still differ are
-//! listed in tests/fixtures/larastan/gaps.txt, and the list must be exact (a fixed case has to leave it).
+//! listed in tests/fixtures/larastan/gaps.txt, and the list must be exact (a fixed case has to leave it). The app root
+//! is tests/fixtures/larastan/application, with the migrations of Larastan's test application.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -23,7 +24,16 @@ const PORTED: &[&str] = &[
     "larastan.noPublicModelScopeMethod",
     "larastan.noPublicModelAccessorMethod",
     "larastan.octaneCompatibility",
+    "rules.modelAppends",
 ];
+
+/// Laravel's stubs, and the migrations' Schema facade (autoloadable in Larastan's test application).
+fn scanned(root: &Path) -> Vec<PathBuf> {
+    vec![
+        root.join("stubs.php"),
+        root.join("application/database/migrations/Schema.php"),
+    ]
+}
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
     for e in std::fs::read_dir(dir).unwrap().flatten() {
@@ -50,7 +60,7 @@ fn larastan_rule_fixtures() {
         .map(str::to_string)
         .collect();
     let prefix = format!("{}/", data.display());
-    let mut larastan = Larastan::new(&root);
+    let mut larastan = Larastan::new(&root.join("application"));
     // what export-larastan-fixtures.php switches on, and NoEnvCallsOutsideOfConfigRuleTest's directories
     larastan.config_directories = ["Rules/data/config", "Rules/data/module/*/config"]
         .iter()
@@ -87,7 +97,7 @@ fn larastan_rule_fixtures() {
                 .iter()
                 .map(|p| data.join(p.as_str().unwrap()))
                 .collect();
-            let mut project = Project::new(analysed, vec![root.join("stubs.php")]);
+            let mut project = Project::new(analysed, scanned(&root));
             project.larastan = Some(larastan.clone());
             let got: BTreeSet<Key> = run(&project)
                 .unwrap()
@@ -166,16 +176,21 @@ fn larastan_switches_gate_the_rules() {
             .map(|p| data.join(p.as_str().unwrap()))
             .collect();
         let got = |larastan: Option<Larastan>| {
-            let mut project = Project::new(files.clone(), vec![root.join("stubs.php")]);
+            let mut project = Project::new(files.clone(), scanned(&root));
             project.larastan = larastan;
             run(&project)
                 .unwrap()
                 .into_iter()
-                .filter(|e| e.identifier.starts_with("larastan."))
+                .filter(|e| PORTED.contains(&e.identifier.as_str()))
                 .map(|e| (e.line, e.identifier))
                 .collect::<BTreeSet<_>>()
         };
-        assert_eq!(got(Some(Larastan::new(&root))), want, "{}", case["method"]);
+        assert_eq!(
+            got(Some(Larastan::new(&root.join("application")))),
+            want,
+            "{}",
+            case["method"]
+        );
         assert!(got(None).is_empty(), "{}", case["method"]);
     }
 }

@@ -1,0 +1,34 @@
+{
+    "test": "Rules/ModelAppendsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Rules/data/ModelAppends.php"
+            ],
+            "errors": [
+                {
+                    "file": "Rules/data/ModelAppends.php",
+                    "line": 15,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'non_existent' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/ModelAppends.php",
+                    "line": 16,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'email' is not a computed property, remove from $appends.",
+                    "tip": null
+                },
+                {
+                    "file": "Rules/data/ModelAppends.php",
+                    "line": 17,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'name' is not a computed property, remove from $appends.",
+                    "tip": null
+                }
+            ]
+        }
+    ]
+}

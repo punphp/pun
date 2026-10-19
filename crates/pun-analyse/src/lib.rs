@@ -56,7 +56,7 @@ pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
             )
         })
         .collect();
-    let settings = rules::Checks::of(project);
+    let settings = rules::Checks::of(project, &codebase);
     let errors: Vec<_> = project
         .analysed
         .par_iter()

@@ -13,7 +13,8 @@ declare(strict_types=1);
  * <larastan> is a checkout of larastan/larastan v3.10.0 with `composer install` done (LARASTAN_DIR, default
  * target-bench/larastan, then ~/Projects/pun-wf/scratch/larastan). Writes
  * crates/pun-analyse/tests/fixtures/larastan/<Dir>/<TestClass>.json and copies the PHP files used into
- * crates/pun-analyse/tests/fixtures/larastan/data/ (same paths as under <larastan>/tests).
+ * crates/pun-analyse/tests/fixtures/larastan/data/ (same paths as under <larastan>/tests), and the test application's
+ * migrations into crates/pun-analyse/tests/fixtures/larastan/application/.
  *
  *   php scripts/export-larastan-fixtures.php [TestClassShortName...]
  */
@@ -49,6 +50,8 @@ const OPT_IN = ['checkOctaneCompatibility', 'noUnnecessaryEnumerableToArrayCalls
 // what a test's getRule() or setUp() configures beyond the defaults, as parameters (relative to <larastan>/tests/Rules)
 const PARAMETERS = [
     'NoEnvCallsOutsideOfConfigRuleTest' => ['configDirectories' => ['data/config', 'data/module/*/config']],
+    // the Testbench application's migrations, which the test boots with and the command line does not
+    'ModelAppendsRuleTest' => ['databaseMigrationsPath' => ['../application/database/migrations']],
 ];
 
 $only = array_slice($argv, 1);
@@ -78,9 +81,10 @@ $copy = function (string $file) use ($tests, $data, &$copied): ?string {
 };
 
 // one PHPStan run over files under <larastan>/tests: its errors, sorted, or null when it crashed
-$run = function (array $configs, array $params, array $files) use ($larastan, $tests, $work): ?array {
+$run = function (array $configs, array $params, array $files, array $bootstrap = []) use ($larastan, $tests, $work): ?array {
     $neon = "includes:\n".implode('', array_map(fn ($c) => "\t- '$c'\n", $configs));
     $neon .= "parameters:\n\tlevel: 0\n\ttmpDir: $work/cache\n\tparallel:\n\t\tmaximumNumberOfProcesses: 1\n";
+    $neon .= $bootstrap === [] ? '' : "\tbootstrapFiles:\n".implode('', array_map(fn ($f) => "\t\t- '$tests/$f'\n", $bootstrap));
     foreach (OPT_IN as $switch) {
         $neon .= "\t$switch: true\n";
     }
@@ -104,6 +108,12 @@ $run = function (array $configs, array $params, array $files) use ($larastan, $t
 
     return $errors;
 };
+
+// the test application's migrations, for the model rules (Pun's tests use application/ as the Laravel root)
+foreach (glob($tests.'/application/database/migrations/*.php') as $migration) {
+    @mkdir($out.'/application/database/migrations', 0777, true);
+    copy($migration, $out.'/application/database/migrations/'.basename($migration));
+}
 
 $runs = 0;
 foreach ($testFiles as $test) {
@@ -147,7 +157,8 @@ foreach ($testFiles as $test) {
     fwrite(STDERR, sprintf("%s: %d cases\n", $name, count($result['cases'])));
 }
 // Pun's own cases for the branches Larastan's tests miss: each data/Pun/*.php is one case, analysed from a copy
-// under <larastan>/tests/Pun (so it boots the same application)
+// under <larastan>/tests/Pun (so it boots the same application) and loaded as a bootstrap file (so its classes exist
+// at run time, as an app's autoloaded classes do: Larastan instantiates models)
 if ($only === [] || in_array('Pun', $only, true)) {
     @mkdir($tests.'/Pun');
     $result = ['test' => 'Pun/Cases', 'cases' => []];
@@ -157,7 +168,7 @@ if ($only === [] || in_array('Pun', $only, true)) {
         $rel = 'Pun/'.basename($file);
         copy($file, $tests.'/'.$rel);
         $runs++;
-        $errors = $run([$tests.'/Rules/phpstan-rules.neon'], [], [$rel]);
+        $errors = $run([$tests.'/Rules/phpstan-rules.neon'], [], [$rel], [$rel]);
         if ($errors === null) {
             fwrite(STDERR, "$rel: phpstan crashed\n");
             continue;

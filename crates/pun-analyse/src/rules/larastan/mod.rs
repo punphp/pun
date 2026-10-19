@@ -2,11 +2,13 @@
 //! extension.neon. Each rule is registered by extension.neon whatever the level; the opt-in ones only when their
 //! parameter is on. See [`Larastan`].
 
+mod appends;
 mod calls;
 mod classes;
 mod octane;
 
-use std::path::Path;
+use std::collections::{HashMap, HashSet};
+use std::path::{Path, PathBuf};
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::ttype::atomic::TAtomic;
@@ -19,6 +21,7 @@ use pun_phpstan::{Array, Value};
 
 use super::Checker;
 
+pub(crate) use appends::property;
 pub(crate) use calls::{function_call, method_call, static_method_call};
 pub(crate) use classes::{class, method};
 
@@ -33,6 +36,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "larastan.noPublicModelScopeMethod",
     "larastan.noPublicModelAccessorMethod",
     "larastan.octaneCompatibility",
+    "rules.modelAppends",
 ];
 
 const MODEL: &[u8] = b"illuminate\\database\\eloquent\\model";
@@ -41,6 +45,8 @@ const REQUEST: &[u8] = b"illuminate\\http\\request";
 /// Larastan's switches (extension.neon's parameters), with the Laravel app's config directory.
 #[derive(Clone, Debug)]
 pub struct Larastan {
+    /// The Laravel app (whose migrations are `database/migrations`).
+    pub root: PathBuf,
     /// `configDirectories` as absolute globs, or the app's `config_path()`.
     pub config_directories: Vec<String>,
     /// `noEnvCallsOutsideOfConfig` (default true).
@@ -53,18 +59,40 @@ pub struct Larastan {
     pub check_model_method_visibility: bool,
     /// `checkAuthCallsWhenInRequestScope` (default false).
     pub check_auth_calls_when_in_request_scope: bool,
+    /// `checkModelAppends` (default true).
+    pub check_model_appends: bool,
+    /// The analysed models' database properties, by lowercase class name (filled by [`Larastan::load`]).
+    pub(crate) database_properties: HashMap<String, HashSet<String>>,
 }
 
 impl Larastan {
     /// Larastan's defaults for the app at `root` (whose `config_path()` is `root/config`).
     pub fn new(root: &Path) -> Larastan {
         Larastan {
+            root: root.to_path_buf(),
             config_directories: vec![root.join("config").to_string_lossy().into_owned()],
             no_env_calls_outside_of_config: true,
             no_model_make: true,
             check_octane_compatibility: false,
             check_model_method_visibility: false,
             check_auth_calls_when_in_request_scope: false,
+            check_model_appends: true,
+            database_properties: HashMap::new(),
+        }
+    }
+
+    /// What the rules read of the analysed models and the migrations.
+    pub(crate) fn load(
+        &mut self,
+        project: &crate::Project,
+        codebase: &mago_codex::metadata::CodebaseMetadata,
+    ) {
+        if self.check_model_appends {
+            let app = crate::Laravel {
+                root: &self.root,
+                parse_casts_method: false,
+            };
+            self.database_properties = crate::laravel::database_properties(app, project, codebase);
         }
     }
 
@@ -96,6 +124,7 @@ impl Larastan {
         larastan.check_model_method_visibility = flag("checkModelMethodVisibility", false);
         larastan.check_auth_calls_when_in_request_scope =
             flag("checkAuthCallsWhenInRequestScope", false);
+        larastan.check_model_appends = flag("checkModelAppends", true);
         Some(larastan)
     }
 }

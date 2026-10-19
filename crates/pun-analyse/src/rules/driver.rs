@@ -43,7 +43,11 @@ pub(crate) struct Checks {
 }
 
 impl Checks {
-    pub(crate) fn of(project: &Project) -> Checks {
+    pub(crate) fn of(project: &Project, codebase: &CodebaseMetadata) -> Checks {
+        let mut larastan = project.larastan.clone();
+        if let Some(l) = &mut larastan {
+            l.load(project, codebase);
+        }
         Checks {
             check_class_case_sensitivity: project.check_class_case_sensitivity,
             level: project.level,
@@ -52,7 +56,7 @@ impl Checks {
             report_ignores_without_comments: project.report_ignores_without_comments,
             report_unmatched_ignores: project.report_unmatched_ignores,
             relative_path: project.relative_path.clone(),
-            larastan: project.larastan.clone(),
+            larastan,
         }
     }
 }

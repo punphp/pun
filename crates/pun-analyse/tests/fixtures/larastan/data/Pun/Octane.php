@@ -18,7 +18,7 @@ class Service
 
 class Provider extends ServiceProvider
 {
-    public function register($m, $mixed, Application|Service $either)
+    public function register($m = null, $mixed = null, Application|Service|null $either = null)
     {
         $this->app->singleton('a', (function () {
             return $this->app;

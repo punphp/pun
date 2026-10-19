@@ -68,6 +68,10 @@ namespace Illuminate\Support\Facades {
     {
     }
 
+    class Schema extends Facade
+    {
+    }
+
     class Auth extends Facade
     {
     }

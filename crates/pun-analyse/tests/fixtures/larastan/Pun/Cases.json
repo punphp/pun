@@ -2,6 +2,77 @@
     "test": "Pun/Cases",
     "cases": [
         {
+            "method": "Appends",
+            "files": [
+                "Pun/Appends.php"
+            ],
+            "errors": [
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 14,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' is not a computed property, remove from $appends.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 15,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'tagged' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 16,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'title' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 19,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'interpolated' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 44,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 44,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'missing' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 49,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 56,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'id' does not exist in model.",
+                    "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 56,
+                    "identifier": "rules.modelAppends",
+                    "message": "Property 'uuid' is not a computed property, remove from $appends.",
+                    "tip": null
+                }
+            ]
+        },
+        {
             "method": "Calls",
             "files": [
                 "Pun/Calls.php"
@@ -212,27 +283,6 @@
                 "Pun/Octane.php"
             ],
             "errors": [
-                {
-                    "file": "Pun/Octane.php",
-                    "line": 21,
-                    "identifier": "parameter.notOptional",
-                    "message": "Parameter #1 $m of method Pun\\Octane\\Provider::register() is not optional.",
-                    "tip": null
-                },
-                {
-                    "file": "Pun/Octane.php",
-                    "line": 21,
-                    "identifier": "parameter.notOptional",
-                    "message": "Parameter #2 $mixed of method Pun\\Octane\\Provider::register() is not optional.",
-                    "tip": null
-                },
-                {
-                    "file": "Pun/Octane.php",
-                    "line": 21,
-                    "identifier": "parameter.notOptional",
-                    "message": "Parameter #3 $either of method Pun\\Octane\\Provider::register() is not optional.",
-                    "tip": null
-                },
                 {
                     "file": "Pun/Octane.php",
                     "line": 24,
