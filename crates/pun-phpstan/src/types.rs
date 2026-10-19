@@ -110,7 +110,9 @@ pub enum Accessory {
     LowercaseString,
     UppercaseString,
     /// `AccessoryDecimalIntegerStringType`, `inverse` is `non-decimal-int-string`
-    DecimalIntString { inverse: bool },
+    DecimalIntString {
+        inverse: bool,
+    },
     List,
     NonEmptyArray,
 }
@@ -520,7 +522,8 @@ impl Type {
 
     fn is_numeric_string(&self) -> Tri {
         self.query(&|t| match t {
-            Type::Accessory(Accessory::NumericString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
+            Type::Accessory(Accessory::NumericString)
+            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
             Type::ConstString(s) => Tri::from(crate::value::numeric(s).is_some()),
             Type::ClassString(_) => Tri::No,
             Type::String
@@ -565,7 +568,8 @@ impl Type {
 
     fn is_lowercase_string(&self) -> Tri {
         self.query_c(&|t| match t {
-            Type::Accessory(Accessory::LowercaseString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
+            Type::Accessory(Accessory::LowercaseString)
+            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
             Type::ConstString(s) => Tri::from(s.to_ascii_lowercase() == *s),
             Type::String
             | Type::StringAcceptingStringable
@@ -578,7 +582,8 @@ impl Type {
 
     fn is_uppercase_string(&self) -> Tri {
         self.query_c(&|t| match t {
-            Type::Accessory(Accessory::UppercaseString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
+            Type::Accessory(Accessory::UppercaseString)
+            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
             Type::ConstString(s) => Tri::from(s.to_ascii_uppercase() == *s),
             Type::String
             | Type::StringAcceptingStringable
@@ -592,7 +597,8 @@ impl Type {
     pub fn is_callable(&self) -> Tri {
         self.query(&|t| match t {
             Type::Callable(_) | Type::Closure(_) => Tri::Yes,
-            Type::Accessory(Accessory::NumericString) | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::No,
+            Type::Accessory(Accessory::NumericString)
+            | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::No,
             Type::String
             | Type::StringAcceptingStringable
             | Type::StringNotAcceptingStringable
@@ -745,7 +751,9 @@ impl Type {
                     format!("{name}<{}>", args.join(", "))
                 }
             }
-            Type::Static(class, args) => format!("static({})", static_of(class, args).describe(level)),
+            Type::Static(class, args) => {
+                format!("static({})", static_of(class, args).describe(level))
+            }
             Type::This(class) => format!("$this({})", static_object(class).describe(level)),
             Type::EnumCase(class, case) => format!("{class}::{case}"),
             Type::Wildcard => "*".to_string(),
@@ -2059,13 +2067,13 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 T::ObjectWithoutClass => Tri::Maybe,
                 T::Object(c, _) => {
                     let r = is_super_type_of(&object, b);
-                if r.yes() && symbols::lookup(c).is_some_and(|c| c.is_final) {
-                    r
-                } else {
-                    r.and(Tri::Maybe)
+                    if r.yes() && symbols::lookup(c).is_some_and(|c| c.is_final) {
+                        r
+                    } else {
+                        r.and(Tri::Maybe)
+                    }
                 }
-            }
-            _ => Tri::No,
+                _ => Tri::No,
             }
         }
         T::Array(_, item) => match b {
@@ -2520,9 +2528,7 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         Accessory::LiteralString => b.is_literal_string(),
                         Accessory::LowercaseString => b.is_lowercase_string(),
                         Accessory::UppercaseString => b.is_uppercase_string(),
-                        Accessory::DecimalIntString { inverse } => {
-                            decimal_int_super(*inverse, b)
-                        }
+                        Accessory::DecimalIntString { inverse } => decimal_int_super(*inverse, b),
                         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
                         Accessory::List => b.is_list(),
                     };
