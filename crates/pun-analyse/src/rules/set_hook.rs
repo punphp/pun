@@ -16,9 +16,7 @@ pub fn hooks<'arena>(
     hint: Option<&Hint<'arena>>,
     list: &PropertyHookList<'arena>,
 ) {
-    let Some(k) = c.class_scope() else {
-        return;
-    };
+    let k = c.class_scope().expect("a property is walked inside its class-like");
     let class = c.display(k);
     let property = String::from_utf8_lossy(&name[1..]).into_owned();
     for hook in list.hooks.iter().filter(|h| h.name.value == b"set") {

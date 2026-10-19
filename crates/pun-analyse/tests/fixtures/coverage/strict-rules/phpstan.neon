@@ -1,0 +1,12 @@
+includes:
+    - conf/rules.neon
+parameters:
+    level: 0
+    phpVersion: 80500
+    paths: [.]
+    strictRules:
+        allRules: false
+        closureUsesThis: true
+        requireParentConstructorCall: true
+        matchingInheritedMethodNames: true
+        dynamicCallOnStaticMethod: true

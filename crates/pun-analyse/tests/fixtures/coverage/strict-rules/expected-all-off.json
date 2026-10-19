@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "closure.php",
+   "line": 37,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "closure.php",
+   "line": 60,
+   "identifier": "void.pure",
+   "message": "Function StrictClosure\\outside() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "closure.php",
+   "line": 62,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $undefined",
+   "tip": null
+  },
+  {
+   "file": "construct-global.php",
+   "line": 97,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  },
+  {
+   "file": "construct-global.php",
+   "line": 99,
+   "identifier": "method.staticCall",
+   "message": "Static call to instance method StrictFromOldStyle::__construct().",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 160,
+   "identifier": "method.abstractOverridingNonAbstract",
+   "message": "Cannot make non-abstract method StrictConstruct\\Base::__construct() abstract in class StrictConstruct\\AbstractChild.",
+   "tip": null
+  },
+  {
+   "file": "construct.php",
+   "line": 196,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method StrictConstruct\\Base::other().",
+   "tip": null
+  },
+  {
+   "file": "dynamic.php",
+   "line": 90,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  }
+ ]
+}

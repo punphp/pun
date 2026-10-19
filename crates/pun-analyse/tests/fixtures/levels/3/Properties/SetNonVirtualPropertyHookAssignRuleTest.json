@@ -1,0 +1,36 @@
+{
+    "test": "Properties/SetNonVirtualPropertyHookAssignRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/set-non-virtual-property-hook-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/set-non-virtual-property-hook-assign.php",
+                    "line": 24,
+                    "identifier": "propertySetHook.noAssign",
+                    "message": "Set hook for non-virtual property SetNonVirtualPropertyHookAssign\\Foo::$k does not assign value to it.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/set-non-virtual-property-hook-assign.php",
+                    "line": 34,
+                    "identifier": "propertySetHook.noAssign",
+                    "message": "Set hook for non-virtual property SetNonVirtualPropertyHookAssign\\Foo::$k2 does not always assign value to it.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/set-non-virtual-property-hook-assign.php",
+                    "line": 69,
+                    "identifier": "propertyGetHook.noRead",
+                    "message": "Get hook for non-virtual property SetNonVirtualPropertyHookAssign\\Foo::$k5 does not read its value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

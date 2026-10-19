@@ -141,7 +141,7 @@ fn named<'arena>(
 ) {
     match c.class_like(name) {
         Lookup::Found(class) => {
-            class_names::check(c, &[pair], true);
+            class_names::check_at(c, &[pair], Some(&class_names::Location::Instantiation), true);
             check_class(
                 c,
                 new.span(),
