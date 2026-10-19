@@ -78,7 +78,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   prints `\ufffd`, so the fix also needs that abort; gitlab, checkstyle and agent have no diff. The path half can't be
   reproduced on macOS (APFS refuses non-UTF-8 names). Deferred: `run.rs`, `report.rs`, `fix_report.rs` and
   `console.rs` are claimed by the platform/format track; the console part can reuse item 12's `format_bytes`. Fixed in 4812102: diffs keep their bytes to the output (`console::carry`/`raw`), txt, junit and xml match Pint on a Latin-1 file and json -v aborts with its JsonException box (`latin1_diffs_like_pint`).
-- [ ] 12. `crates/pun-format/src/php_parser.rs:333-338`, `lib.rs:389-393` (`LintError.message: String`) and
+- [x] 12. `crates/pun-format/src/php_parser.rs:333-338`, `lib.rs:389-393` (`LintError.message: String`) and
   `fixer_annotation.rs:99-106` build parse-error and annotation messages with `from_utf8_lossy`, so a token cut at
   byte 30 inside `é`, or any Latin-1 byte, prints `�` where PHP prints the raw bytes. Keep messages as `Vec<u8>`
   until pun-cli writes them. Not checked against Pint. Spans crates. Reproduced at 88d4cfe against Pint: its `--format=*`
@@ -86,7 +86,9 @@ items marked "not checked against Pint" still need one oracle run before the fix
   output and `--format=agent` do not keep them). The annotation messages are never lossy: the pattern's values are
   ASCII, or whole UTF-8 characters under `/u`. Deferred: the fix (`LintError.message: Vec<u8>`, and pun-cli's
   `report.rs`/`run.rs`/`console.rs` writing those two lines through a byte `console::format_bytes`) touches pun-cli
-  files another track is reworking; the validated patch is `pun-wf/scratch/audit-format-item12.patch`.
+  files another track is reworking; the validated patch is `pun-wf/scratch/audit-format-item12.patch`. Fixed on
+  wt-salvage-format: `LintError.message: Vec<u8>`, carried through pun-cli with `console::carry`; the ERROR and `-q`
+  lines write the bytes, the other outputs show U+FFFD (`error_messages_keep_the_source_bytes_like_pint`).
 - [x] 13. `crates/pun-fixers/src/analyzers/utils.rs:8-15` (`camel_case_to_underscore(&str)`), called with
   `from_utf8_lossy` from `php_unit_method_casing.rs:108`, writes U+FFFD into a renamed test method where upstream
   keeps PHP's byte semantics (`mb_strtolower` gives `?`). Take `&[u8]` and port the substitution into `php_compat`.

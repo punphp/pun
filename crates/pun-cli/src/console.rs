@@ -38,6 +38,18 @@ pub(crate) fn raw(text: &str) -> Vec<u8> {
     out
 }
 
+/// `text` with each carried byte as U+FFFD, for output that doesn't keep the bytes.
+pub(crate) fn lossy(text: &str) -> String {
+    String::from_utf8_lossy(&raw(text)).into_owned()
+}
+
+/// `eprintln!` for text that may carry raw bytes.
+pub(crate) fn eprintln_raw(text: &str) -> std::io::Result<()> {
+    let mut e = std::io::stderr().lock();
+    std::io::Write::write_all(&mut e, &raw(text))?;
+    std::io::Write::write_all(&mut e, b"\n")
+}
+
 /// `print!` for text that may carry raw bytes.
 pub(crate) fn print_raw(text: &str) -> std::io::Result<()> {
     std::io::Write::write_all(&mut std::io::stdout().lock(), &raw(text))

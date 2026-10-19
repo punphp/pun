@@ -225,7 +225,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/space-around-construct" = { fix = "safe", presets = ["laravel", "psr12"], ported = true, status = "decided", summary = "Ensures a single space after language constructs." }
 "strings/complex-variable" = { fix = "safe", ported = true, status = "decided", summary = "Converts explicit variables in double-quoted strings and heredoc syntax from simple to complex format (`${` to `{$`)." }
 "strings/explicit-variable" = { fix = "safe", ported = true, status = "decided", summary = "Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax." }
-"strings/heredoc-closing-marker" = { fix = "safe", ported = false, status = "decided", summary = "Unify `heredoc` or `nowdoc` closing marker." }
+"strings/heredoc-closing-marker" = { fix = "safe", ported = true, status = "decided", summary = "Unify `heredoc` or `nowdoc` closing marker." }
 "strings/heredoc-indentation" = { fix = "safe", ported = true, status = "decided", summary = "Heredoc/nowdoc content must be properly indented." }
 "strings/heredoc-to-nowdoc" = { fix = "safe", presets = ["laravel"], ported = true, status = "decided", summary = "Convert `heredoc` to `nowdoc` where possible." }
 "strings/implicit-backslashes" = { fix = "safe", ported = true, status = "decided", summary = "Handles implicit backslashes in strings and heredocs. Depending on the chosen strategy, it can escape implicit backslashes to ease the understanding of which are special chars interpreted by PHP and which not (`escape`), or it can remove these additional backslashes if you find them superfluous (`unescape`). You can also leave them as-is using `ignore` strategy." }
