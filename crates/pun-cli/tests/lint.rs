@@ -378,3 +378,44 @@ fn token_rules_beside_native_ones() {
     assert_eq!(agent(&d, &["lint"]).2, Some(0));
     assert_eq!(agent(&d, &["lint", "--deny-warnings"]).2, Some(1));
 }
+
+/// `--dirty` picks the git-changed files (untracked ones included), narrowed to what `pun lint` checks: the Blade
+/// template is changed but never linted.
+#[test]
+fn dirty_narrows_to_the_lint_files() {
+    let eval = "<?php\n\neval('1;');\n";
+    let d = project(
+        "lint",
+        "dirty",
+        &[("pun.toml", TOML), ("a.php", eval), ("b.php", eval)],
+    );
+    let git = |args: &[&str]| {
+        let ok = Command::new("git")
+            .args([
+                "-c",
+                "user.name=t",
+                "-c",
+                "user.email=t@t",
+                "-c",
+                "commit.gpgsign=false",
+            ])
+            .args(args)
+            .current_dir(&d)
+            .output()
+            .unwrap()
+            .status
+            .success();
+        assert!(ok, "git {args:?}");
+    };
+    git(&["init", "-q"]);
+    git(&["add", "."]);
+    git(&["commit", "-qm", "init"]);
+    std::fs::write(d.join("b.php"), format!("{eval}\n")).unwrap();
+    std::fs::write(d.join("v.blade.php"), "<?php eval('1;'); ?>\n").unwrap();
+    let (lines, _, code) = agent(&d, &["lint", "--dirty"]);
+    assert_eq!(
+        lines,
+        ["b.php:3:1 lint/security/no-eval Unsafe use of `eval` construct."]
+    );
+    assert_eq!(code, Some(1));
+}

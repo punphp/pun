@@ -426,11 +426,10 @@ fn read_in_parallel<T: Send>(
         for _ in 0..READERS.min(files.len()) {
             let (tx, next) = (tx.clone(), &next);
             s.spawn(move || {
-                while let Some(path) = files.get(next.fetch_add(1, Ordering::Relaxed)) {
-                    if tx.send((path, std::fs::read(path))).is_err() {
-                        break;
-                    }
-                }
+                // Stops early only when the receiver is gone (the processing panicked).
+                while let Some(path) = files.get(next.fetch_add(1, Ordering::Relaxed))
+                    && tx.send((path, std::fs::read(path))).is_ok()
+                {}
             });
         }
         drop(tx);
