@@ -488,6 +488,7 @@ fn analyse() {
             ignore: vec![],
             switches: vec![],
             ecosystems: vec![],
+            larastan: false,
             rules: a.rules.clone(),
         }
     );
@@ -1544,4 +1545,130 @@ fn php_version_id() {
         "8.5"
     );
     assert_eq!(crate::FormatPreset::Psr12.to_string(), "psr12");
+}
+
+/// `[analyse]` as PHPStan parameters. Levels and gates are rules/mapping.toml's `[upstream.phpstan-classes]` rows
+/// (ConstantRule is level 1; AssignToByRefExprFromForeachRule, level 1, runs with bleedingEdge's
+/// `assignToByRefForeachExpr`); `additional-constructors` is `additionalConstructors` (`[phpstan-parameters]`).
+/// Paths are absolute as PHPStan's NeonAdapter makes a config's paths, `*` patterns excepted.
+#[test]
+fn analyse_parameters() {
+    use pun_phpstan::Value as V;
+    let groups: std::collections::BTreeSet<&str> = (rules().iter())
+        .filter_map(|(id, _)| id.strip_prefix("analyse/")?.split('/').next())
+        .collect();
+    let mut toml = String::from(
+        "[analyse]\nstubs = [\"stubs/a.stub\"]\n\n[[analyse.ignore]]\nrule = \"undefined/constant\"\npaths = [\"app/A.php\"]\ncount = 2\n\n[[analyse.ignore]]\nidentifier = \"x.y\"\nmessage = \"#m#\"\n",
+    );
+    toml.push_str("\n[[analyse.ignore]]\nraw-message = \"r\"\npaths = [\"*/B.php\", \"app/../C.php\"]\n\n[analyse.rules]\n");
+    for g in &groups {
+        toml.push_str(&format!("{g} = \"off\"\n"));
+    }
+    toml.push_str("\"undefined/constant\" = \"on\"\n\"types/by-ref-foreach-on-expression\" = \"on\"\n\"classes/uninitialized-property\" = { additional-constructors = [\"A::init\"] }\n\"undefined/property\" = { check-dynamic-properties = true }\n");
+    let d = dir(&[("pun.toml", &toml)]);
+    let a = load(&d, &Options::default()).unwrap().analyse;
+    assert_eq!(a.level(), 1);
+    let p = a.parameters(&d);
+    let get = |k: &str| p.get_str(k).cloned();
+    assert_eq!(get("level"), Some(V::Int(1)));
+    assert_eq!(get("checkClassCaseSensitivity"), Some(V::Bool(false)));
+    let root = d.display().to_string();
+    let list =
+        |items: &[&str]| V::Array(pun_phpstan::Array::list(items.iter().map(|s| V::str(*s))));
+    assert_eq!(
+        get("stubFiles"),
+        Some(list(&[&format!("{root}/stubs/a.stub")]))
+    );
+    assert_eq!(get("additionalConstructors"), Some(list(&["A::init"])));
+    assert_eq!(get("checkDynamicProperties"), Some(V::Bool(true)));
+    let toggles = get("featureToggles").unwrap();
+    let toggle = |k: &str| toggles.as_array().unwrap().get_str(k).cloned();
+    assert_eq!(toggle("assignToByRefForeachExpr"), Some(V::Bool(true)));
+    assert_eq!(toggle("unusedLabel"), Some(V::Bool(false)));
+    // Larastan's switches only with Larastan.
+    assert_eq!(get("noModelMake"), None);
+    fn show(v: &V) -> String {
+        match v {
+            V::Array(a) => format!("[{}]", a.values().map(show).collect::<Vec<_>>().join(", ")),
+            V::Int(i) => i.to_string(),
+            v => v.as_str().unwrap().to_string(),
+        }
+    }
+    let ignores: Vec<String> = (get("ignoreErrors").unwrap().as_array().unwrap().values())
+        .map(|e| {
+            let e = e.as_array().unwrap();
+            let keys: Vec<String> = e
+                .iter()
+                .map(|(k, v)| format!("{}={}", k.as_string(), show(v)))
+                .collect();
+            keys.join(" ")
+        })
+        .collect();
+    assert_eq!(
+        ignores,
+        [
+            format!("rule=analyse/undefined/constant path={root}/app/A.php count=2"),
+            "message=#m# identifier=x.y".to_string(),
+            format!("rawMessage=r paths=[*/B.php, {root}/C.php]"),
+        ]
+    );
+
+    // The type switches stand for levels 8 and 10; level 2 turns checkClassCaseSensitivity on.
+    let level = |preset: &str| {
+        let d = dir(&[("pun.toml", &format!("[analyse]\npreset = \"{preset}\"\n"))]);
+        load(&d, &Options::default()).unwrap().analyse.level()
+    };
+    assert_eq!((level("strict"), level("max")), (8, 10));
+    let d = dir(&[("pun.toml", "[analyse]\npreset = \"essential\"\n")]);
+    let p = load(&d, &Options::default())
+        .unwrap()
+        .analyse
+        .parameters(&d);
+    assert_eq!(p.get_str("checkClassCaseSensitivity"), Some(&V::Bool(true)));
+}
+
+/// Larastan 3 requires `illuminate/*` `^11.44.2 || ^12.4.1 || ^13` (its composer.json); with it, its gated rules'
+/// switches are parameters (`noModelMake` marks Larastan's extension.neon as included).
+#[test]
+fn larastan_follows_the_locked_laravel() {
+    use crate::composer::Version;
+    let v = |major, minor, patch| {
+        Some(Version {
+            major,
+            minor,
+            patch,
+        })
+    };
+    let supports = crate::phpstan_parameters::larastan_supports;
+    let yes = [
+        v(11, 44, 2),
+        v(11, 45, 0),
+        v(12, 4, 1),
+        v(12, 5, 0),
+        v(13, 0, 0),
+        None,
+    ];
+    let no = [
+        v(10, 48, 0),
+        v(11, 44, 1),
+        v(11, 9, 2),
+        v(12, 4, 0),
+        v(12, 3, 9),
+        v(14, 0, 0),
+    ];
+    assert!(yes.iter().all(|v| supports(*v)) && !no.iter().any(|v| supports(*v)));
+    let lock = |version: &str| {
+        let lock =
+            format!(r#"{{"packages":[{{"name":"laravel/framework","version":"{version}"}}]}}"#);
+        let d = dir(&[("pun.toml", "[analyse]\n"), ("composer.lock", &lock)]);
+        let a = load(&d, &Options::default()).unwrap().analyse;
+        (a.larastan, a.parameters(&d).get_str("noModelMake").cloned())
+    };
+    assert_eq!(lock("v11.9.2"), (false, None));
+    assert_eq!(
+        lock("v12.10.0"),
+        (true, Some(pun_phpstan::Value::Bool(true)))
+    );
+    let d = dir(&[("pun.toml", "[analyse]\n")]);
+    assert!(!load(&d, &Options::default()).unwrap().analyse.larastan);
 }

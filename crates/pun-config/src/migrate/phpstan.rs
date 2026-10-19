@@ -21,6 +21,8 @@ use std::path::Path;
 pub struct Phpstan {
     /// PHPStan's level, 0 to 10 (`max` is 10).
     pub level: u8,
+    /// Neither a level nor `customRulesetUsed`: PHPStan stops with "No rules detected", so every analyse rule is off.
+    pub no_rules: bool,
     /// `paths` and `excludePaths`, relative to the project.
     pub paths: Vec<String>,
     pub exclude: Vec<String>,
@@ -154,6 +156,7 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
         Some("max") => 10,
         l => l.and_then(|l| l.parse().ok()).unwrap_or(0),
     };
+    out.no_rules = matches!(p.get_str("customRulesetUsed"), None | Some(Value::Null));
     out.paths = strings(p.get_str("paths"))
         .iter()
         .map(|s| relative(root, s))
@@ -567,6 +570,17 @@ pub fn compose(root: &Path, parts: &mut Parts, phpstan: &Phpstan) -> Result<Anal
         options: 0,
         unsupported: vec![],
     };
+    if phpstan.no_rules {
+        let analyse: BTreeSet<&str> = (rules().iter())
+            .filter_map(|(id, _)| id.strip_prefix("analyse/")?.split('/').next())
+            .collect();
+        for group in analyse {
+            parts.analyse_rules.push((group.into(), "\"off\"".into()));
+            done.off += 1;
+        }
+        parts.analyse_ignores = phpstan.ignores.join("\n");
+        return Ok(done);
+    }
     // Larastan's rules are the `laravel` group: off as a group when the config doesn't include Larastan.
     let larastan = phpstan.extensions.contains("larastan/larastan");
     let laravel = cfg.analyse.ecosystems.contains(&crate::Ecosystem::Laravel);

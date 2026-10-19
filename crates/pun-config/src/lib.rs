@@ -10,6 +10,7 @@ mod identifiers;
 mod mapping;
 pub mod migrate;
 pub mod options;
+mod phpstan_parameters;
 mod schema;
 
 pub use explain::{MAPPING_URL, explain};
