@@ -25,6 +25,10 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: lint
+      - name: rule mapping and generated docs
+        run: |
+          python3 scripts/check-rule-mapping.py
+          python3 scripts/gen-rule-docs.py --check
       - name: rustfmt
         run: cargo fmt --all --check
       # ponytail: clippy reports but doesn't gate yet; add `-- -D warnings` once the cleanup pass lands.

@@ -1,6 +1,6 @@
 # Plan: rule docs and migration mapping pages
 
-Status: design settled with Pushpak (2026-10-19), see §7. Nothing built yet. Modelled on the rule docs of Rector, PHPStan,
+Status: design settled with Pushpak (2026-10-19), see §7. Build progress is in §8. Modelled on the rule docs of Rector, PHPStan,
 PHP-CS-Fixer, Mago, Larastan, Ruff, oxlint, Biome, ESLint and typescript-eslint (research notes and screenshots are in
 the project files under docs-design/research/).
 
@@ -87,3 +87,16 @@ identifiers (`%s.alwaysFalse`) expanded.
 3. ~~Where examples and prose live?~~ **Decided 2026-10-19: in mapping.toml**, as fields on each rule (why, examples).
 4. ~~Mapping pages layout?~~ **Decided 2026-10-19: one page per tool** under `/docs/migrate/from/`, plus a short overview page.
 5. ~~Filters at launch?~~ **Decided 2026-10-19: yes**, one table of every rule with search across upstream names and URL-kept filter chips.
+
+## 8. Build
+
+| Step | Status | Verification |
+| --- | --- | --- |
+| 1. Generator and folder metadata | built | `python3 scripts/gen-rule-docs.py --check`; checked beside the mapping in CI |
+| 2. Rule page and content schema | todo | Ordered sections, options, links and Planned state |
+| 3. Groups, presets and sets | todo | Exact configs, off rules and PHPStan level additions |
+| 4. Migration mapping | todo | All six tools, concrete PHPStan identifiers |
+| 5. Rules directory | todo | Search and URL-kept filters |
+| 6. CLI links | todo | Explain and terminal hyperlinks target rule pages |
+
+The content gaps in §6 remain separate work in PLAN.md §3, not placeholder prose to invent during generation.

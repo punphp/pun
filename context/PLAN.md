@@ -351,6 +351,15 @@ three commands one after the other.
 Docs pages for every command and rule, `pun explain`, the generated "Coming from" pages (plan/docs.md), AGENTS.md updated for the new
 output, name checks, signing and publishing (Pushpak: after Step 4).
 
+| Work | Status |
+| --- | --- |
+| docs 2: rule pages and mapping content schema | todo |
+| docs 3: group, preset and set pages | todo |
+| docs 4: migration mapping pages | todo |
+| docs 5: searchable rules directory with URL filters | todo |
+| docs 6: CLI rule-page links | todo |
+| docs content: 378 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
+
 ### Foundations, alongside every step (plan/foundations.md)
 
 | Work | Status |
