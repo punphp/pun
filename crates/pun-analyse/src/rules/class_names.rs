@@ -176,17 +176,12 @@ impl Location {
     /// `createIdentifier()`.
     fn identifier(&self, second: &str) -> String {
         let ucfirst = || format!("{}{}", second[..1].to_ascii_uppercase(), &second[1..]);
-        match self {
-            Location::Extends { subject, .. } if subject.starts_with("Interface") => {
-                format!("interface.extends{}", ucfirst())
-            }
-            Location::Extends { .. } => format!("class.extends{}", ucfirst()),
-            Location::Implements { subject, .. } if subject.starts_with("Enum") => {
-                format!("enum.implements{}", ucfirst())
-            }
-            Location::Implements { .. } => format!("class.implements{}", ucfirst()),
-            _ => format!("{}.{second}", self.value()),
-        }
+        let second = match self {
+            Location::Extends { .. } => format!("extends{}", ucfirst()),
+            Location::Implements { .. } => format!("implements{}", ucfirst()),
+            _ => second.to_string(),
+        };
+        format!("{}.{second}", self.value())
     }
 
     /// The location's value (the identifier's first part).
@@ -197,6 +192,8 @@ impl Location {
             Location::Attribute => "attribute",
             Location::Catch => "catch",
             Location::ClassConstantAccess(_) => "classConstant",
+            Location::Extends { subject, .. } if subject.starts_with("Interface") => "interface",
+            Location::Implements { subject, .. } if subject.starts_with("Enum") => "enum",
             Location::Extends { .. } | Location::Implements { .. } => "class",
             Location::Instanceof => "instanceof",
             Location::PropertyType { .. } => "property",

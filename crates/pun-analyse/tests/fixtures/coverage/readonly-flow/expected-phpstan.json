@@ -308,6 +308,13 @@
    "identifier": "property.uninitializedReadonly",
    "message": "Access to an uninitialized readonly property ReadonlyFlow\\UsesReadsEarly::$early.",
    "tip": null
+  },
+  {
+   "file": "flow2.php",
+   "line": 12,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property ReadonlyFlow2\\ParenthesizedByRef::$list is already assigned.",
+   "tip": null
   }
  ]
 }

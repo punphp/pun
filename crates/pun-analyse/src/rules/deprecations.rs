@@ -102,28 +102,25 @@ impl Checker<'_, '_> {
         }
         let name = f.original_name.as_bytes();
         let get = |n: &mago_word::Word| self.codebase.get_class_like(n.as_bytes());
+        // an ancestor's method: a user one's merged PHPDoc, a built-in's deprecation
+        let inherited = |m: Method| match m {
+            Method::User { declaring, f } => self.resolved_method(declaring, f, depth + 1),
+            Method::Builtin { f, .. } => Some(Resolved { deprecated: f.deprecated.then_some(None), not_deprecated: false }),
+        };
         let parent = declaring.direct_parent_class.as_ref().and_then(get).and_then(|p| {
             let m = super::members::method(self, p, name)?;
-            match m {
-                Method::User { declaring, f } => (f.method_metadata.as_ref()?.visibility != Visibility::Private)
-                    .then(|| self.resolved_method(declaring, f, depth + 1))
-                    .flatten(),
-                Method::Builtin { f, .. } => (!name.eq_ignore_ascii_case(b"__construct")).then(|| Resolved {
-                    deprecated: f.deprecated.then_some(None),
-                    not_deprecated: false,
-                }),
-            }
+            let visible = match &m {
+                Method::User { f, .. } => f.method_metadata.as_ref()?.visibility != Visibility::Private,
+                Method::Builtin { .. } => !name.eq_ignore_ascii_case(b"__construct"),
+            };
+            visible.then(|| inherited(m)).flatten()
         });
         let interfaces = || {
-            declaring.direct_parent_interfaces.iter().filter_map(get).find_map(|i| {
-                match super::members::method(self, i, name)? {
-                    Method::User { declaring, f } => self.resolved_method(declaring, f, depth + 1),
-                    Method::Builtin { f, .. } => Some(Resolved {
-                        deprecated: f.deprecated.then_some(None),
-                        not_deprecated: false,
-                    }),
-                }
-            })
+            declaring
+                .direct_parent_interfaces
+                .iter()
+                .filter_map(get)
+                .find_map(|i| inherited(super::members::method(self, i, name)?))
         };
         let traits = || {
             declaring.used_traits.iter().filter_map(get).find_map(|t| {
@@ -301,15 +298,10 @@ pub(super) fn method(c: &Checker, m: &Method, declaring: Option<&ClassLikeMetada
 }
 
 fn builtin_description(b: &pun_phpstan::symbols::Class) -> &'static str {
-    if b.is_interface {
-        "Interface"
-    } else if b.is_trait {
-        "Trait"
-    } else if b.is_enum {
-        "Enum"
-    } else {
-        "Class"
-    }
+    [(b.is_interface, "Interface"), (b.is_trait, "Trait"), (b.is_enum, "Enum")]
+        .into_iter()
+        .find_map(|(is, description)| is.then_some(description))
+        .unwrap_or("Class")
 }
 
 /// RestrictedDeprecatedPropertyUsageExtension: property `$name` that `declaring` declares (`owner` standing in for
@@ -425,10 +417,10 @@ pub(super) fn constant_fetch(c: &mut Checker, at: Span, id: &Identifier) {
     .filter(|(k, _)| k.flags.is_user_defined());
     let message = if let Some((k, name)) = user {
         // a `const` statement's PHPDoc (a define()d constant has none)
-        let Some(contents) = c.file_contents(k.span.file_id) else {
-            return;
-        };
-        if !super::overriding_property::declaration_starts(k.span.file_id, &contents).contains_key(&k.span.start.offset) {
+        let statement = c.file_contents(k.span.file_id).is_some_and(|contents| {
+            super::overriding_property::declaration_starts(k.span.file_id, &contents).contains_key(&k.span.start.offset)
+        });
+        if !statement {
             return;
         }
         let Some(Some(d)) = c.constant_doc(k.span).map(|r| r.deprecated) else {
@@ -438,12 +430,7 @@ pub(super) fn constant_fetch(c: &mut Checker, at: Span, id: &Identifier) {
         let name = String::from_utf8_lossy(name).into_owned();
         php_sprintf(d.as_deref().unwrap_or("Use of constant %s is deprecated."), &name)
     } else {
-        let written = String::from_utf8_lossy(match id {
-            Identifier::Local(l) => l.value,
-            Identifier::Qualified(q) => q.value,
-            Identifier::FullyQualified(f) => &f.value[1..],
-        })
-        .into_owned();
+        let written = String::from_utf8_lossy(id.value().strip_prefix(b"\\").unwrap_or(id.value())).into_owned();
         let Some((name, _, d)) = BUILTIN_CONSTANTS
             .iter()
             .find(|(n, since, _)| written.eq_ignore_ascii_case(n) && c.php_version >= *since)
@@ -501,10 +488,7 @@ pub(super) fn ini_option(c: &mut Checker, call: &FunctionCall) {
         return;
     };
     // ponytail: a literal string only, where PHPStan takes any constant string type of the argument
-    let Expression::Literal(Literal::String(s)) = first.value() else {
-        return;
-    };
-    let Some(value) = s.value else {
+    let Expression::Literal(Literal::String(LiteralString { value: Some(value), .. })) = first.value() else {
         return;
     };
     let value = String::from_utf8_lossy(value);

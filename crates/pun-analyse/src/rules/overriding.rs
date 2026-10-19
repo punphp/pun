@@ -59,7 +59,7 @@ struct NativeMethod {
 
 pub(super) struct NativeClass {
     pub(super) name: String,
-    parent: Option<String>,
+    pub(super) parent: Option<String>,
     interfaces: Vec<String>,
     methods: HashMap<String, NativeMethod>,
     /// The non-private properties it declares, by name.
@@ -162,7 +162,7 @@ fn native_class(v: &Value) -> NativeClass {
 }
 
 /// The built-in classes at the project's PHP version, by lowercase name.
-fn natives(php_version: u32) -> &'static HashMap<String, NativeClass> {
+pub(super) fn natives(php_version: u32) -> &'static HashMap<String, NativeClass> {
     static PHP84: OnceLock<HashMap<String, NativeClass>> = OnceLock::new();
     static PHP85: OnceLock<HashMap<String, NativeClass>> = OnceLock::new();
     let php84 = php_version < 80500;
@@ -862,9 +862,7 @@ fn attribute(c: &Checker, m: &Method, name: &str) -> bool {
 
 /// OverridingMethodRule and ConsistentConstructorRule on method `m` (named `name` in the class).
 pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
-    let Some(k) = c.class_scope() else {
-        return;
-    };
+    let k = c.class_scope().expect("a method is walked inside its class-like");
     let messages = declared::with_classes(c, || {
         let mut out = overriding_method(c, m, name, k);
         out.extend(consistent_constructor(c, m, name, k));
@@ -1047,32 +1045,14 @@ fn consistent_constructor<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'
             return Vec::new();
         }
         let tags = c.class_tags(p);
+        // Mago gives a class with the tag a constructor when it declares none (DummyConstructorReflection's: public,
+        // without parameters)
         if has_tag(
             &tags,
             &["@consistent-constructor", "@phpstan-consistent-constructor", "@psalm-consistent-constructor"],
-        ) {
-            break c.native_method(Class::User(p), "__construct").map_or_else(
-                // DummyConstructorReflection
-                || {
-                    (
-                        Facts {
-                            name: "__construct".to_string(),
-                            visibility: Visibility::Public,
-                            is_static: false,
-                            is_abstract: false,
-                            final_by_keyword: false,
-                            is_final: false,
-                            builtin: false,
-                            variants: 1,
-                            params: Vec::new(),
-                            ret: Type::Void,
-                            will_change: false,
-                        },
-                        c.ancestor_display(k, &c.display(p)),
-                    )
-                },
-                |f| (c.facts(f, k), c.declaring_display(k, f)),
-            );
+        ) && let Some(f) = c.native_method(Class::User(p), "__construct")
+        {
+            break (c.facts(f, k), c.declaring_display(k, f));
         }
         current = c.parent_class(Class::User(p));
     };

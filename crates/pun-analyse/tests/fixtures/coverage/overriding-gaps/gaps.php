@@ -193,3 +193,62 @@ function makes(): object
 {
 	return new static();
 }
+
+trait CtorTrait
+{
+	public function __construct()
+	{
+	}
+}
+
+class CtorParent
+{
+	use CtorTrait;
+}
+
+class CtorChild extends CtorParent
+{
+	public function __construct()
+	{
+	}
+}
+
+class FinalCtorParent
+{
+	/** @final */
+	public function __construct()
+	{
+	}
+}
+
+class FinalCtorChild extends FinalCtorParent
+{
+	public function __construct()
+	{
+	}
+}
+
+class Grand
+{
+}
+
+class ParentTyped extends Grand
+{
+	public function p(): parent
+	{
+		return new Grand();
+	}
+}
+
+class ChildTyped extends ParentTyped
+{
+	public function p(): parent
+	{
+		return new ParentTyped();
+	}
+}
+
+class WithUnknownProperty extends \ErrorException
+{
+	public $foo;
+}

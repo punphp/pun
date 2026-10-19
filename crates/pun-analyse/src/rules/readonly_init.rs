@@ -637,10 +637,7 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
     }
 
     fn assignment(&mut self, a: &Assignment, s: &mut State) -> Flow {
-        let mut target = a.lhs;
-        while let Expression::Parenthesized(p) = target {
-            target = p.expression;
-        }
+        let target = a.lhs;
         if let Some(property) = this_property(target) {
             let assign = matches!(a.operator, AssignmentOperator::Assign(_));
             let coalesce = matches!(a.operator, AssignmentOperator::Coalesce(_));
@@ -1052,9 +1049,6 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
             let Some(hint) = &p.hint else {
                 continue;
             };
-            if p.modifiers.iter().any(|m| matches!(m, Modifier::Static(_) | Modifier::Abstract(_))) {
-                continue;
-            }
             nodes.push(PropertyNode {
                 name: text(&p.variable.name[1..]),
                 line: i64::from(file.line_number(p.span().start.offset)) + 1,
@@ -1085,7 +1079,6 @@ pub fn class<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeMetadata, members
 fn offsets(c: &Checker, source: &Source, hint: &Hint) -> (bool, bool) {
     match hint {
         Hint::Nullable(n) => offsets(c, source, n.hint),
-        Hint::Parenthesized(p) => offsets(c, source, p.hint),
         Hint::Identifier(id) => {
             let Some(name) = source.names.resolve(&id.span()) else { return (true, false) };
             (true, c.codebase.is_instance_of(name, b"ArrayAccess"))

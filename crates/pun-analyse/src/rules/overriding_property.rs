@@ -193,10 +193,8 @@ impl<'a> Checker<'a, '_> {
                         native: p.native.clone(),
                     });
                 }
-                match self.parent_class(Class::Builtin(b))? {
-                    Class::Builtin(parent) => b = parent,
-                    Class::User(_) => return None,
-                }
+                // a built-in class's parent is built in
+                b = super::overriding::natives(self.php_version).get(&b.parent.as_deref()?.to_ascii_lowercase())?;
             },
             Class::User(u) => {
                 let dollar = format!("${name}");
@@ -264,12 +262,8 @@ fn hook_names(p: &PropertyMetadata) -> (bool, bool) {
 
 /// OverridingPropertyRule on a ClassPropertyNode, `is_readonly` being its `isReadOnly()`.
 pub fn check(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
-    let Some(k) = c.class_scope() else {
-        return;
-    };
-    if k.kind == SymbolKind::Trait {
-        return;
-    }
+    // a trait's property is walked only in a using class's context, where the scope is that class
+    let k = c.class_scope().expect("a property is walked inside its class");
     let errors = declared::with_classes(c, || errors(c, node, is_readonly, k));
     for (identifier, message, ignorable) in errors {
         if ignorable {

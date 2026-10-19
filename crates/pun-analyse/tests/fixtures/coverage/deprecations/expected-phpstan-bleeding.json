@@ -709,6 +709,132 @@
    "tip": null
   },
   {
+   "file": "pun-extra2.php",
+   "line": 11,
+   "identifier": "attribute.deprecated",
+   "message": "Attribute class PunDeprecations2\\OldAttribute is deprecated: Use the new attribute.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 11,
+   "identifier": "attribute.deprecatedClass",
+   "message": "Attribute references deprecated class PunDeprecations2\\OldAttribute:\nUse the new attribute.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 79,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $gone of function PunDeprecations2\\uses() has typehint with deprecated class PunDeprecations2\\GoneParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 84,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method isArray() of class ReflectionParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 85,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method isArray() of class PunDeprecations2\\MyParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 86,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method isArray() of class ReflectionParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 87,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant Old of enum PunDeprecations2\\Status:\nUse New.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 88,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant X of class PunDeprecations2\\ConstChild.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 90,
+   "identifier": "class.toStringDeprecated",
+   "message": "Casting class PunDeprecations2\\Stringy to string is deprecated.:\nCast something else.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 91,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property PunDeprecations2\\Gone::$missing.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 91,
+   "identifier": "staticProperty.deprecatedClass",
+   "message": "Access to static property on deprecated class PunDeprecations2\\Gone.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 92,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method PunDeprecations2\\Gone::missing().",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 92,
+   "identifier": "staticMethod.deprecatedClass",
+   "message": "Call to static method on deprecated class PunDeprecations2\\Gone.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 94,
+   "identifier": "arguments.count",
+   "message": "Function ini_get invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 96,
+   "identifier": "function.deprecated",
+   "message": "Call to deprecated function utf8_encode().",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 98,
+   "identifier": "traitUse.deprecatedTrait",
+   "message": "Usage of deprecated trait PunDeprecations2\\GoneTrait.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra3.php",
+   "line": 31,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $st of class PunDeprecations3\\HasOld.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra3.php",
+   "line": 43,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property PunDeprecations3\\HasOld::$inst.",
+   "tip": null
+  },
+  {
    "file": "typehint-anonymous-function-deprecated-class.php",
    "line": 6,
    "identifier": "parameter.deprecatedClass",
