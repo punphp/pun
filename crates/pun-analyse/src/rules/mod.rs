@@ -648,6 +648,19 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         self.codebase.get_class_like(name.as_bytes())
     }
 
+    /// The class-like a member is walked in and its display name (trait bodies are walked only in a class's context).
+    fn member_scope(&self) -> (&'a ClassLikeMetadata, String) {
+        let class = self
+            .class_scope()
+            .expect("a member is walked inside its class-like");
+        let display = self
+            .decls
+            .last()
+            .and_then(|d| d.display.clone())
+            .expect("a class-like's declaration has its display name");
+        (class, display)
+    }
+
     /// In an anonymous class's body (not in a trait it uses).
     fn in_anonymous_class(&self) -> bool {
         self.trait_context.is_none()

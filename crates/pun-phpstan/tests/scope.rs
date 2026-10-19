@@ -118,6 +118,21 @@ fn class(name: &str) -> Option<Arc<Class>> {
             &[],
             HashMap::new(),
         ))),
+        "PunProbe\\Defaults" => Some(Arc::new(class(
+            name,
+            &[],
+            vec![
+                template("A"),
+                template("B"),
+                Template {
+                    default: Some("int".to_string()),
+                    ..template("C")
+                },
+                template("D"),
+            ],
+            &[],
+            HashMap::new(),
+        ))),
         _ => None,
     }
 }

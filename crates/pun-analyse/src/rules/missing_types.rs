@@ -130,6 +130,8 @@ fn generic_walk(ty: &Type, iterables: bool, out: &RefCell<Vec<(String, String)>>
                 || (!iterables && ITERABLE_GENERIC.contains(&c.name.as_str()))
                 || SKIP_GENERIC.contains(&c.name.as_str())
                 || c.is_trait
+                // an enum's `@template` is ignored (enum.generic; oracle-checked)
+                || c.is_enum
                 || c.templates.is_empty()
             {
                 return;
@@ -148,15 +150,7 @@ fn generic_walk(ty: &Type, iterables: bool, out: &RefCell<Vec<(String, String)>>
             if required != total {
                 list.push_str(&format!(" ({required}-{total} required)"));
             }
-            let kind = if c.is_interface {
-                "interface"
-            } else if c.is_trait {
-                "trait"
-            } else if c.is_enum {
-                "enum"
-            } else {
-                "class"
-            };
+            let kind = if c.is_interface { "interface" } else { "class" };
             out.borrow_mut().push((format!("{kind} {}", c.name), list));
             return;
         }
@@ -301,12 +295,7 @@ pub fn method(c: &mut Checker, m: &Method) {
     if c.level < 6 {
         return;
     }
-    let (Some(context), Some(display)) = (
-        c.class_scope(),
-        c.decls.last().and_then(|d| d.display.clone()),
-    ) else {
-        return;
-    };
+    let (context, display) = c.member_scope();
     let Some(declaring) = declaring(c, m.span()) else {
         return;
     };
@@ -371,12 +360,7 @@ pub fn property(c: &mut Checker, p: &Property) {
     if c.level < 6 {
         return;
     }
-    let (Some(context), Some(display)) = (
-        c.class_scope(),
-        c.decls.last().and_then(|d| d.display.clone()),
-    ) else {
-        return;
-    };
+    let (context, display) = c.member_scope();
     let iterables = c.generic_iterable_classes;
     let hint = p.hint();
     for v in p.variables() {
@@ -410,12 +394,7 @@ pub fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
     if c.level < 6 {
         return;
     }
-    let (Some(context), Some(display)) = (
-        c.class_scope(),
-        c.decls.last().and_then(|d| d.display.clone()),
-    ) else {
-        return;
-    };
+    let (context, display) = c.member_scope();
     let iterables = c.generic_iterable_classes;
     for item in k.items.iter() {
         let name = item.name.value;
@@ -455,9 +434,10 @@ fn class_level(
     if c.level < 6 {
         return;
     }
-    let Some(k) = c.codebase.get_class_like(name.as_bytes()) else {
-        return;
-    };
+    let k = c
+        .codebase
+        .get_class_like(name.as_bytes())
+        .expect("a declared class-like is in the codebase");
     let display = declared::original_name(k);
     let iterables = c.generic_iterable_classes;
     let doc =

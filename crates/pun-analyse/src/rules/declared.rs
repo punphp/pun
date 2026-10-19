@@ -279,8 +279,6 @@ struct Resolved {
     closure_this: HashMap<String, Type>,
     /// `@phpstan-self-out`
     self_out: Option<Type>,
-    /// whether it is a PHPDoc at all (`getResolvedPhpDoc() !== null`)
-    exists: bool,
 }
 
 /// The own PHPDoc of method `m` declared in `class`, `self` being `context`.
@@ -316,7 +314,6 @@ fn resolved_own(
         outs: Doc::named_types(&doc.outs, &scope),
         closure_this: Doc::named_types(&doc.closure_this, &scope),
         self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-        exists: true,
     })
 }
 
@@ -368,7 +365,6 @@ fn builtin_method_doc(
             })
             .collect(),
         ret: doc.ret.as_deref().map(resolve),
-        exists: true,
         ..Resolved::default()
     })
 }
@@ -397,10 +393,8 @@ fn inherit(
         {
             return None;
         }
+        // (a PHPDoc at all: `getResolvedPhpDoc() !== null`)
         let parent_doc = method_doc(c, declaring.0, &lower, depth + 1)?;
-        if !parent_doc.exists {
-            return None;
-        }
         Some(merge(
             current.clone(),
             parent_doc,
@@ -475,7 +469,6 @@ fn merge(
     constructor: bool,
 ) -> Resolved {
     let mut out = current.unwrap_or_default();
-    out.exists = true;
     // a constructor's parameters map by name (`resolveMethodPhpDocFromParentClass()`)
     let parent_names: Vec<String> = if constructor {
         positional.to_vec()
@@ -551,7 +544,6 @@ pub fn method(
             outs: Doc::named_types(&doc.outs, &scope),
             closure_this: Doc::named_types(&doc.closure_this, &scope),
             self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-            exists: true,
         }
     });
     let positional: Vec<String> = m
@@ -593,7 +585,6 @@ pub fn function(c: &Checker, f: &Function) -> Signature {
                 outs: Doc::named_types(&doc.outs, &scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
                 self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-                exists: true,
             }
         })
         .unwrap_or_default();
@@ -737,8 +728,11 @@ pub fn property(
     let native = hint.map(|h| native(c, h, Some(context)));
     let mut phpdoc = doc_before(&c.file.contents, at.start.offset as usize).and_then(|doc| {
         let doc = Doc::parse(doc);
-        // (a trait's templates are not in scope: PHPStan reports nothing for a `@var` of one)
-        let scope = scope_at(c, at, Some(context));
+        // in a trait, its templates as the class's `@use` tag gives them (else their bounds)
+        let mut scope = scope_at(c, at, Some(context));
+        if let Some(t) = c.in_trait().and_then(|t| c.codebase.get_class_like(t.as_bytes())) {
+            scope.templates.extend(trait_templates(c, t, context));
+        }
         doc.var_types(&scope)
             .into_iter()
             .find(|(n, _)| n.is_empty() || n.as_bytes() == name)
@@ -798,10 +792,21 @@ fn inherited_property_doc(
                 .get(&text(name))
                 .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
         }
-        let Some(span) = p.span else {
-            continue;
-        };
-        let own = doc_at(c, span).and_then(|(doc, _)| {
+        // Mago gives a plain property only its name's span: its declaration starts at the modifiers and type before it
+        // ponytail: not past an attribute, nor to the first item of `public $a, $b`
+        let span = p.span.or_else(|| {
+            let mut span = p.name_span?;
+            let contents = file_contents(c, span.file_id)?;
+            let before = contents[..span.start.offset as usize]
+                .iter()
+                .rev()
+                .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
+                .count();
+            span.start.offset -= before as u32;
+            Some(span)
+        });
+        let own = span.and_then(|span| {
+            let (doc, _) = doc_at(c, span)?;
             let doc = Doc::parse(&doc);
             let scope = scope_at(c, span, Some(declaring));
             doc.var_types(&scope)

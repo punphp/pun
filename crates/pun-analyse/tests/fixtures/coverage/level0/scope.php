@@ -23,6 +23,9 @@ class Guarded
         if (method_exists(static::class, 'e')) {
             static::e();
         }
+        if (method_exists(self::class, 'f')) {
+            self::f();
+        }
     }
 }
 

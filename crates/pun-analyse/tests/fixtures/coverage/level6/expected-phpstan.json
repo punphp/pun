@@ -1,0 +1,607 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "inherit.php",
+   "line": 17,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Box::put() has parameter $callback with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 17,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Box::put() has parameter $out with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 32,
+   "identifier": "method.unused",
+   "message": "Method CoverageInherit\\Parent_::hidden() is unused.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 36,
+   "identifier": "missingType.return",
+   "message": "Method CoverageInherit\\Parent_::__call() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 36,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Parent_::__call() has parameter $args with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 36,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Parent_::__call() has parameter $name with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 46,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Child::put() has parameter $callback with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 46,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Child::put() has parameter $out with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 46,
+   "identifier": "selfOut.type",
+   "message": "Self-out type static(CoverageInherit\\Box<T (class CoverageInherit\\Box, argument)>) of method CoverageInherit\\Child::put is not subtype of CoverageInherit\\Child.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 56,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Child::hidden() has parameter $hidden with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 60,
+   "identifier": "missingType.return",
+   "message": "Method CoverageInherit\\Child::magic() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 60,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageInherit\\Child::magic() has parameter $x with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 110,
+   "identifier": "missingType.generics",
+   "message": "Class CoverageInherit\\Holder2 uses generic trait CoverageInherit\\Holds but does not specify its types: T",
+   "tip": null
+  },
+  {
+   "file": "inherit.php",
+   "line": 129,
+   "identifier": "missingType.iterableValue",
+   "message": "Function CoverageInherit\\keys() return type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "inherit.php (in context of class CoverageInherit\\Holder)",
+   "line": 90,
+   "identifier": "missingType.iterableValue",
+   "message": "Property CoverageInherit\\Holder::$held type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "inherit.php (in context of class CoverageInherit\\Holder)",
+   "line": 96,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageInherit\\Holder::hold() has parameter $value with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "inherit.php (in context of class CoverageInherit\\Holder)",
+   "line": 96,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageInherit\\Holder::hold() return type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 8,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageMembers\\MagicParent has PHPDoc tag @method for method magic() parameter #1 $a with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 8,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageMembers\\MagicParent has PHPDoc tag @method for method magic() return type with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 14,
+   "identifier": "missingType.return",
+   "message": "Method CoverageMembers\\MagicChild::magic() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 14,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageMembers\\MagicChild::magic() has parameter $a with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 47,
+   "identifier": "missingType.iterableValue",
+   "message": "Property CoverageMembers\\PropParent::$loose type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 53,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageMembers\\PropParent::$secret is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "members.php",
+   "line": 64,
+   "identifier": "missingType.iterableValue",
+   "message": "Property CoverageMembers\\PropChild::$loose type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 68,
+   "identifier": "missingType.property",
+   "message": "Property CoverageMembers\\PropChild::$secret has no type specified.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 70,
+   "identifier": "missingType.property",
+   "message": "Property CoverageMembers\\PropChild::$fresh has no type specified.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 84,
+   "identifier": "missingType.iterableValue",
+   "message": "Constant CoverageMembers\\ConstParent::LOOSE type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 87,
+   "identifier": "classConstant.unused",
+   "message": "Constant CoverageMembers\\ConstParent::SECRET is unused.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+  },
+  {
+   "file": "members.php",
+   "line": 93,
+   "identifier": "missingType.iterableValue",
+   "message": "Constant CoverageMembers\\ConstInterface::FROM_INTERFACE type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 100,
+   "identifier": "missingType.iterableValue",
+   "message": "Constant CoverageMembers\\ConstChild::LOOSE type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 104,
+   "identifier": "missingType.iterableValue",
+   "message": "Constant CoverageMembers\\ConstChild::FROM_INTERFACE type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "members.php",
+   "line": 135,
+   "identifier": "missingType.generics",
+   "message": "Class CoverageMembers\\LeafWithout extends generic class CoverageMembers\\GenericMiddle but does not specify its types: U",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 139,
+   "identifier": "class.notFound",
+   "message": "Class CoverageMembers\\OnUnknown extends unknown class CoverageMembers\\UnknownParent.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "members.php",
+   "line": 141,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageMembers\\OnUnknown::f() has parameter $a with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 29,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageNatives\\Natives::keywords() has parameter $a with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 29,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageNatives\\Natives::keywords() has parameter $e with no value type specified in iterable type iterable.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 49,
+   "identifier": "missingType.iterableValue",
+   "message": "Function CoverageNatives\\free() return type has no value type specified in iterable type iterable.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 49,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of function CoverageNatives\\free() has invalid type self.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 49,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $c of function CoverageNatives\\free() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 69,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageNatives\\Magic::__isset() has parameter $name with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 74,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageNatives\\Magic::__unset() has parameter $name with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 91,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageNatives\\Magic::__set_state() has parameter $state with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 99,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageNatives\\Promoted::__construct() has parameter $nullable with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 99,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageNatives\\Promoted::__construct() has parameter $plain with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 99,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageNatives\\Promoted::__construct() has parameter $upper with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 111,
+   "identifier": "class.notFound",
+   "message": "Function CoverageNatives\\selfish() has invalid return type self.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 113,
+   "identifier": "return.type",
+   "message": "Function CoverageNatives\\selfish() should return self but returns stdClass.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 116,
+   "identifier": "class.notFound",
+   "message": "Function CoverageNatives\\staticky() has invalid return type static.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 118,
+   "identifier": "return.type",
+   "message": "Function CoverageNatives\\staticky() should return static but returns stdClass.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 121,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #3 $c (array) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "natives.php",
+   "line": 121,
+   "identifier": "missingType.iterableValue",
+   "message": "Function CoverageNatives\\nested() has parameter $b with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "natives.php",
+   "line": 121,
+   "identifier": "missingType.iterableValue",
+   "message": "Function CoverageNatives\\nested() has parameter $c with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 21,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @method has invalid value (bad(): Unexpected token \"\\n * \", expected variable at offset 414 on line 10",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 22,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @method has invalid value (): Unexpected token \"\\n * \", expected type at offset 425 on line 11",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTags\\Tagged has PHPDoc tag @method for method make() parameter #1 $ref with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTags\\Tagged has PHPDoc tag @method for method make() parameter #3 $n with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTags\\Tagged has PHPDoc tag @method for method make() return type with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTags\\Tagged has PHPDoc tag @method for method plain() parameter #1 $a with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTags\\Tagged has PHPDoc tag @method for method plain() return type with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTags\\Tagged has PHPDoc tag @property for property $both with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTags\\Tagged has PHPDoc tag @property-write for property $write with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.generics",
+   "message": "PHPDoc tag @method for method CoverageTags\\Tagged::templated() parameter #2 $g contains generic class CoverageTags\\Generic but does not specify its types: T",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.generics",
+   "message": "PHPDoc tag @mixin contains generic class CoverageTags\\Generic but does not specify its types: T",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.generics",
+   "message": "PHPDoc tag @mixin contains generic interface ArrayAccess but does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "mixin.nonObject",
+   "message": "PHPDoc tag @mixin contains non-object type array.",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 31,
+   "identifier": "missingType.generics",
+   "message": "PHPDoc tag @property-read for property CoverageTags\\Tagged::$read contains generic class CoverageTags\\Generic but does not specify its types: T",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 40,
+   "identifier": "missingType.iterableValue",
+   "message": "Interface CoverageTags\\TaggedInterface has PHPDoc tag @method for method own() return type with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 40,
+   "identifier": "missingType.iterableValue",
+   "message": "Interface CoverageTags\\TaggedInterface has PHPDoc tag @mixin with no value type specified in iterable type Traversable.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 40,
+   "identifier": "missingType.iterableValue",
+   "message": "Interface CoverageTags\\TaggedInterface has PHPDoc tag @property for property $prop with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 47,
+   "identifier": "missingType.iterableValue",
+   "message": "Trait CoverageTags\\TaggedTrait has PHPDoc tag @method for method own() return type with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 47,
+   "identifier": "trait.unused",
+   "message": "Trait CoverageTags\\TaggedTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "tags.php",
+   "line": 54,
+   "identifier": "missingType.iterableValue",
+   "message": "Enum CoverageTags\\TaggedEnum has PHPDoc tag @method for method own() return type with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "tags.php",
+   "line": 65,
+   "identifier": "missingType.generics",
+   "message": "Class CoverageTags\\RawIter extends generic class ArrayIterator but does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "tags.php",
+   "line": 65,
+   "identifier": "missingType.generics",
+   "message": "Class CoverageTags\\RawIter implements generic interface IteratorAggregate but does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class CoverageTraits\\UsesOuter)",
+   "line": 8,
+   "identifier": "missingType.iterableValue",
+   "message": "Property CoverageTraits\\UsesOuter::$innerProp type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "traits.php (in context of class CoverageTraits\\UsesOuter)",
+   "line": 11,
+   "identifier": "missingType.iterableValue",
+   "message": "Constant CoverageTraits\\UsesOuter::INNER type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "traits.php (in context of class CoverageTraits\\UsesOuter)",
+   "line": 13,
+   "identifier": "missingType.return",
+   "message": "Method CoverageTraits\\UsesOuter::inner() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "traits.php (in context of class CoverageTraits\\UsesOuter)",
+   "line": 13,
+   "identifier": "missingType.parameter",
+   "message": "Method CoverageTraits\\UsesOuter::inner() has parameter $a with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 8,
+   "identifier": "enum.generic",
+   "message": "Enum CoverageTypes\\GenericEnum has PHPDoc @template tag but enums cannot be generic.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 15,
+   "identifier": "trait.unused",
+   "message": "Trait CoverageTypes\\GenericTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "types.php",
+   "line": 38,
+   "identifier": "missingType.generics",
+   "message": "Class CoverageTypes\\ExtendsSomeDefaults extends generic class CoverageTypes\\SomeDefaults but does not specify its types: A, B (1-2 required)",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 49,
+   "identifier": "conditionalType.alwaysFalse",
+   "message": "Condition \"non-empty-list&callable(): mixed is int\" in conditional return type is always false.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 49,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageTypes\\Types::f() return type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "types.php",
+   "line": 57,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageTypes\\Types::shapes() return type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "types.php",
+   "line": 57,
+   "identifier": "missingType.iterableValue",
+   "message": "Method CoverageTypes\\Types::shapes() return type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "types.php",
+   "line": 69,
+   "identifier": "missingType.iterableValue",
+   "message": "Class CoverageTypes\\Split has PHPDoc tag @property for property $split with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  }
+ ]
+}

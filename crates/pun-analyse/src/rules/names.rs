@@ -298,6 +298,9 @@ fn hint_classes<'arena>(
 ) {
     match hint {
         Hint::Identifier(id) => out.push((c.resolved(id), id.span())),
+        // outside a class `self` and `static` are classes of that name (ParserNodeTypeToPHPStanType)
+        Hint::Self_(k) if c.class_scope().is_none() => out.push(("self".to_string(), k.span())),
+        Hint::Static(k) if c.class_scope().is_none() => out.push(("static".to_string(), k.span())),
         Hint::Parenthesized(p) => hint_classes(c, p.hint, out),
         Hint::Nullable(n) => hint_classes(c, n.hint, out),
         Hint::Union(u) => {
@@ -401,7 +404,11 @@ fn typehint_pairs(c: &Checker, names: &[(String, Span)], at: Span, at_is_name: b
     names
         .iter()
         .map(|(class, span)| {
-            let original = class_names::original_case(c, *span);
+            // (`self` and `static` outside a class are keywords, not names)
+            let original = match class.as_str() {
+                "self" | "static" => class.clone(),
+                _ => class_names::original_case(c, *span),
+            };
             if original != *class {
                 Pair::name(original, *span)
             } else if at_is_name {

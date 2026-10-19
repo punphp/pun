@@ -66,7 +66,7 @@
   },
   {
    "file": "scope.php",
-   "line": 77,
+   "line": 80,
    "identifier": "class.notFound",
    "message": "Access to constant KEY on an unknown class Nope\\Missing.",
    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
