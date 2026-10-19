@@ -386,7 +386,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-null-default-named-argument" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove named null argument, where null is already a default param value" }
 "dead-code/no-null-tag-value" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @var/@param/@return null docblock" }
 "dead-code/no-overwritten-assignment" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove an assignment that the next statement overwrites without reading it." }
-"dead-code/no-parent-call-without-parent" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused parent call with no parent class" }
+"dead-code/no-parent-call-without-parent" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parent call with no parent class" }
 "dead-code/no-redundant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Merge an if into the if before it when both check the same condition." }
 "dead-code/no-redundant-default-argument" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove arguments that equal the parameter default value." }
 "dead-code/no-redundant-foreach-guard" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused if check to non-empty array before foreach of the array" }

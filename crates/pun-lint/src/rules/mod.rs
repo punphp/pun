@@ -72,6 +72,7 @@ mod no_null_tag_value;
 mod no_out_of_range_chr;
 mod no_overwritten_assignment;
 mod no_parameter_shadowing;
+mod no_parent_call_without_parent;
 mod no_protected_constant_in_final;
 mod no_protected_method_in_final;
 mod no_protected_property_in_final;
@@ -240,6 +241,7 @@ pub use no_null_tag_value::NoNullTagValue;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_parameter_shadowing::NoParameterShadowing;
+pub use no_parent_call_without_parent::NoParentCallWithoutParent;
 pub use no_protected_constant_in_final::NoProtectedConstantInFinal;
 pub use no_protected_method_in_final::NoProtectedMethodInFinal;
 pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
@@ -508,5 +510,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoNullTagValue),
         Box::new(RequireStrictFunctionCall),
         Box::new(PreferCatchNameFromType),
+        Box::new(NoParentCallWithoutParent),
     ]
 }
