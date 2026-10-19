@@ -82,8 +82,8 @@ fn bool_value(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
     }
 }
 
-/// The declared type of the parameter `name` of the enclosing function, when the function never writes it (so the
-/// variable keeps its native type), and it is not by reference.
+/// The declared type of the parameter `name` of the enclosing function, when nothing writes it before the code (so
+/// the variable keeps its native type, as in PHPStan's scope there), and it is not by reference.
 pub(crate) fn parameter_hint<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     name: &[u8],
@@ -95,7 +95,9 @@ pub(crate) fn parameter_hint<'ast, 'arena>(
     param.hint.as_ref()
 }
 
-/// The unwritten, non-reference parameter `name` of the function around the code.
+/// The non-reference parameter `name` of the function around the code, when nothing writes it before the code: no
+/// write starts before the end of the code's parent, and when the code is in a loop, no write anywhere in the
+/// function (the loop can carry a later write back).
 fn parameter<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     name: &[u8],
@@ -103,12 +105,13 @@ fn parameter<'ast, 'arena>(
     if in_trait(ancestors) {
         return None;
     }
-    let body = ancestors.iter().rev().find(|n| {
+    let at = ancestors.iter().rposition(|n| {
         matches!(
             n,
             Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_)
         )
     })?;
+    let body = &ancestors[at];
     let params = match body {
         Node::Function(f) => &f.parameter_list,
         Node::Method(m) => &m.parameter_list,
@@ -120,8 +123,17 @@ fn parameter<'ast, 'arena>(
     if param.ampersand.is_some() {
         return None;
     }
-    let written = written(*body, name);
-    if written {
+    let in_loop = ancestors[at..].iter().any(|n| {
+        matches!(
+            n,
+            Node::For(_) | Node::Foreach(_) | Node::While(_) | Node::DoWhile(_)
+        )
+    });
+    let until = match in_loop {
+        true => usize::MAX,
+        false => ancestors.last().map_or(usize::MAX, |n| node_span(n).end),
+    };
+    if written(*body, name, until) {
         return None;
     }
     Some(param)
@@ -447,7 +459,7 @@ fn breaks_with(a: &Assignment<'_>, method: Option<Node<'_, '_>>, name: &[u8]) ->
                 let Node::Method(method) = m else {
                     return false;
                 };
-                !written(m, v.name)
+                !written(m, v.name, usize::MAX)
                     && method.parameter_list.parameters.iter().any(|p| {
                         p.variable.name == v.name
                             && p.ampersand.is_none()
@@ -470,22 +482,26 @@ fn breaks_with(a: &Assignment<'_>, method: Option<Node<'_, '_>>, name: &[u8]) ->
 
 /// Whether the function `body` writes the variable `name`: assigns it, takes a reference to it, or binds it in a
 /// `foreach`, `global`, `static` or `list()`.
-fn written(body: Node<'_, '_>, name: &[u8]) -> bool {
-    super::side_effect::any_node(body, &|n| match n {
-        Node::Assignment(a) => {
-            matches!(unparenthesize(a.lhs), Expression::Variable(Variable::Direct(l)) if l.name == name)
-        }
-        Node::UnaryPrefix(u) => {
-            matches!(u.operator, UnaryPrefixOperator::Reference(_))
-                && matches!(u.operand, Expression::Variable(Variable::Direct(d)) if d.name == name)
-        }
-        Node::Foreach(_) | Node::Global(_) | Node::Static(_) | Node::List(_) => {
-            super::side_effect::any_node(
-                n,
-                &|m| matches!(m, Node::DirectVariable(d) if d.name == name),
-            )
-        }
-        _ => false,
+/// Whether a write of `name` in `body` starts before `until`.
+fn written(body: Node<'_, '_>, name: &[u8], until: usize) -> bool {
+    super::side_effect::any_node(body, &|n| {
+        node_span(&n).start < until
+            && match n {
+                Node::Assignment(a) => {
+                    matches!(unparenthesize(a.lhs), Expression::Variable(Variable::Direct(l)) if l.name == name)
+                }
+                Node::UnaryPrefix(u) => {
+                    matches!(u.operator, UnaryPrefixOperator::Reference(_))
+                        && matches!(u.operand, Expression::Variable(Variable::Direct(d)) if d.name == name)
+                }
+                Node::Foreach(_) | Node::Global(_) | Node::Static(_) | Node::List(_) => {
+                    super::side_effect::any_node(
+                        n,
+                        &|m| matches!(m, Node::DirectVariable(d) if d.name == name),
+                    )
+                }
+                _ => false,
+            }
     })
 }
 
