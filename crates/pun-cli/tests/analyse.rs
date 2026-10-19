@@ -329,15 +329,17 @@ fn table_and_teamcity_match_phpstan() {
     std::fs::write(outside.join("o.php"), "<?php\nnope2();\n").unwrap();
     let outside = outside.display();
     let long = "<?php\nthis_is_an_extremely_long_function_name_to_wrap();\n";
-    let cases: [(&str, &[(&str, &str)], &str); 4] = [
+    let cases: [(&str, &[(&str, &str)], &str, &str); 5] = [
         (
             "escapes",
             &[("src/it's [a|b]/x.php", "<?php\nnope();\n")],
+            "",
             "src",
         ),
         (
             "file",
             &[("src/a.php", long), ("src/b.php", "<?php\nnope();\n")],
+            "",
             "src/a.php",
         ),
         (
@@ -346,16 +348,28 @@ fn table_and_teamcity_match_phpstan() {
                 ("src/a.php", "<?php\nnope();\n"),
                 ("lib/b.php", "<?php\nnope3();\n"),
             ],
+            "",
             &format!("src\", \"lib\", \"{outside}"),
         ),
         (
             "outside-first",
             &[("src/a.php", "<?php\nnope();\n")],
+            "",
             &format!("{outside}\", \"src"),
         ),
+        // A path through `..` (PHPStan normalises it) to wide characters (mb_strwidth 2: U+20000, U+30000).
+        (
+            "parent",
+            &[
+                ("proj/src/a.php", "<?php\nnope();\n"),
+                ("x/o.php", "<?php\n\u{20000}();\n\u{30000}();\n"),
+            ],
+            "proj",
+            "../x\", \"src",
+        ),
     ];
-    for (name, files, paths) in cases {
-        let d = project("analyse", name, files);
+    for (name, files, cwd, paths) in cases {
+        let d = project("analyse", name, files).join(cwd);
         let list: Vec<&str> = paths.split("\", \"").collect();
         let neon: String = list.iter().map(|p| format!("        - {p}\n")).collect();
         std::fs::write(

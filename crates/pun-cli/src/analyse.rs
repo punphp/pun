@@ -14,6 +14,7 @@ use anyhow::Result;
 use clap::Args;
 use pun_config::rule_of_identifier;
 use pun_config::{Config, Options};
+use pun_phpstan::php::normalize_path;
 use pun_problem::ignore::Ignores;
 use pun_problem::{Level, LineIndex, Problem, Span};
 use pun_workspace::{Command, Exclusions};
@@ -166,7 +167,8 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
         .filter_map(|e| {
             let rule = rule_of_identifier(&e.identifier)?;
             on.contains(rule).then(|| {
-                let file = PathBuf::from(&e.file);
+                // PHPStan reports, sorts and relativises normalised paths (a configured `../x` included).
+                let file = PathBuf::from(normalize_path(&e.file));
                 Finding {
                     rel: relative(&cfg.root, &file),
                     file,
@@ -189,7 +191,9 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
         false => paths.to_vec(),
         true => cfg.analyse.paths.iter().map(PathBuf::from).collect(),
     };
-    let mut paths: Vec<PathBuf> = configured.iter().map(|p| cfg.root.join(p)).collect();
+    let mut paths: Vec<PathBuf> = (configured.iter())
+        .map(|p| PathBuf::from(normalize_path(&cfg.root.join(p).to_string_lossy())))
+        .collect();
     if paths.is_empty() {
         paths.push(cfg.root.clone());
     }
