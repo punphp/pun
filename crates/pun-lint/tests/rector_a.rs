@@ -360,9 +360,11 @@ fn is_a_with_string_with_third_argument() {
 #[test]
 fn unnecessary_ternary_expression() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on a trait, where
-    // PHPStan knows no type, and on a variadic `bool` parameter, which is an array.
+    // PHPStan knows no type, on a variadic `bool` parameter, which is an array, and the parentheses php-parser leaves
+    // out around an assignment, arrow function, `print` or `include` under the new cast.
     let linter = only(rules::NoBoolTernary, 80400);
     run(&linter, "UnnecessaryTernaryExpressionRector/Fixture");
+    run(&linter, "UnnecessaryTernaryExpressionRector/Oracle");
     run(&linter, "UnnecessaryTernaryExpressionRector/Pun");
 }
 
@@ -398,6 +400,7 @@ fn simplify_bool_identical_true() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on `@call()`.
     let linter = only(rules::NoBooleanLiteralCompare, 80400);
     run(&linter, "SimplifyBoolIdenticalTrueRector/Fixture");
+    run(&linter, "SimplifyBoolIdenticalTrueRector/Oracle");
     run(&linter, "SimplifyBoolIdenticalTrueRector/Pun");
 }
 

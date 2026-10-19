@@ -27,16 +27,14 @@ pub fn unpacked(arg: &Argument<'_>) -> bool {
 }
 
 /// The edit php-parser's printer makes when it removes the argument at `index`: the argument and the separator before
-/// it, or, for the first of several, the argument and the text up to the next one.
+/// it, or, for the first, the argument and the text up to the next one (the callers never remove a sole argument).
 pub fn remove_argument(list: &ArgumentList<'_>, index: usize) -> Edit {
     let items = list.arguments.as_slice();
     let span = node_span(&items[index]);
     if index > 0 {
         Edit::new(Span::new(node_span(&items[index - 1]).end, span.end), "")
-    } else if let Some(next) = items.get(1) {
-        Edit::new(Span::new(span.start, node_span(next).start), "")
     } else {
-        Edit::new(span, "")
+        Edit::new(Span::new(span.start, node_span(&items[1]).start), "")
     }
 }
 
@@ -289,8 +287,9 @@ pub enum Constant {
     Null,
 }
 
-/// `ValueResolver::getValue` where the syntax decides it: a literal, `-`/`+` on a number, a constant PHPStan knows the
-/// value of (`PHP_INT_MAX` and the like), or a variable whose one value (see [`known`]) is one of those.
+/// `ValueResolver::getValue` where the syntax decides it: a literal, `-`/`+` on a number, `~` on a number or string, a
+/// constant PHPStan knows the value of (`PHP_INT_MAX` and the like; not the `PHP_FLOAT_*` ones, which it types
+/// `float`), or a variable whose one value (see [`known`]) is one of those.
 pub fn constant(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) -> Option<Constant> {
     let expr = match known(ancestors, expr, at)? {
         Known::Value(v) => v,
@@ -325,16 +324,20 @@ pub fn constant(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) ->
                 _ => None,
             }
         }
+        Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::BitwiseNot(_)) => {
+            match constant(ancestors, u.operand, at)? {
+                Constant::Int(v) => Some(Constant::Int(!v)),
+                Constant::Float(v) => Some(Constant::Int(!(v as i64))),
+                Constant::String(s) => Some(Constant::String(s.iter().map(|b| !b).collect())),
+                _ => None,
+            }
+        }
         Expression::ConstantAccess(c) => {
             let name = String::from_utf8_lossy(c.name.value());
             match name.trim_start_matches('\\') {
                 "PHP_INT_MAX" => Some(Constant::Int(i64::MAX)),
                 "PHP_INT_MIN" => Some(Constant::Int(i64::MIN)),
                 "PHP_INT_SIZE" => Some(Constant::Int(8)),
-                "PHP_FLOAT_EPSILON" => Some(Constant::Float(f64::EPSILON)),
-                "PHP_FLOAT_MAX" => Some(Constant::Float(f64::MAX)),
-                "PHP_FLOAT_MIN" => Some(Constant::Float(f64::MIN_POSITIVE)),
-                "PHP_FLOAT_DIG" => Some(Constant::Int(15)),
                 _ => None,
             }
         }
