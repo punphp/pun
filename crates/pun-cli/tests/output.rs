@@ -717,13 +717,25 @@ fn latin1_diffs_like_pint() {
             migrate(&cx.dir);
             run(&[&PUN[..], args].concat(), &cx.dir, PLAIN)
         } else {
-            run(&[&[php.as_str(), "-d", "zend.assertions=-1", oracle][..], args].concat(), &cx.dir, PLAIN)
+            run(
+                &[
+                    &[php.as_str(), "-d", "zend.assertions=-1", oracle][..],
+                    args,
+                ]
+                .concat(),
+                &cx.dir,
+                PLAIN,
+            )
         }
     };
     for f in ["--format=txt", "--format=junit", "--format=xml"] {
         let args = ["--test", "-v", f, "a.php"];
         let (want, got) = (side(false, &args), side(true, &args));
-        assert!(want.stdout.contains("+$a = ['caf\\xe9'];"), "{f}: {}", want.stdout);
+        assert!(
+            want.stdout.contains("+$a = ['caf\\xe9'];"),
+            "{f}: {}",
+            want.stdout
+        );
         assert_eq!(got, want, "{f}");
     }
     let args = ["--test", "-v", "--format=json", "a.php"];
@@ -731,7 +743,11 @@ fn latin1_diffs_like_pint() {
     assert_eq!((want.code, got.code), (Some(1), Some(2)));
     want.code = Some(2);
     want.stdout = normalise_trace(&want.stdout, &cx.oracle);
-    assert!(want.stdout.contains("[JsonException (5)]"), "{}", want.stdout);
+    assert!(
+        want.stdout.contains("[JsonException (5)]"),
+        "{}",
+        want.stdout
+    );
     assert_eq!(got, want);
 }
 
