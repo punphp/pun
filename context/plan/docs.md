@@ -5,7 +5,7 @@ PHP-CS-Fixer, Mago, Larastan, Ruff, oxlint, Biome, ESLint and typescript-eslint 
 the project files under docs-design/research/).
 
 All pages are generated from [`crates/pun-config/rules/mapping.toml`](../../crates/pun-config/rules/mapping.toml): 1,249 Pun rules (168 format, 703 lint,
-378 analyse; 545 ported today) and 2,564 upstream entries, each pointing at a Pun rule or carrying a drop or
+378 analyse; 545 ported today) and 3,047 upstream entries, each pointing at a Pun rule or carrying a drop or
 unsupported reason. The prose and examples are new fields in mapping.toml too (§7.3).
 
 ## 1. Pages and URLs
@@ -93,7 +93,7 @@ identifiers (`%s.alwaysFalse`) expanded.
 | Step | Status | Verification |
 | --- | --- | --- |
 | 1. Generator and folder metadata | built | `python3 scripts/gen-rule-docs.py --check`; checked beside the mapping in CI |
-| 2. Rule page and content schema | todo | Ordered sections, options, links and Planned state |
+| 2. Rule page and content schema | built | `python3 scripts/test-rule-docs.py`: ordered sections, content fields, defaults, reverse links and Planned state |
 | 3. Groups, presets and sets | todo | Exact configs, off rules and PHPStan level additions |
 | 4. Migration mapping | todo | All six tools, concrete PHPStan identifiers |
 | 5. Rules directory | todo | Search and URL-kept filters |

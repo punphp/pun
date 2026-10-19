@@ -115,6 +115,23 @@ def check(data):
                 err(f"{rid}: the name repeats its group")
             if r.get("status") != "decided":
                 err(f"{rid}: status is {r.get('status')!r}")
+            for field in ("summary", "why"):
+                if field in r and (not isinstance(r[field], str) or not r[field].strip()):
+                    err(f"{rid}: {field} must be a non-empty string")
+            if "examples" in r:
+                examples = r["examples"]
+                if not isinstance(examples, list) or not examples:
+                    err(f"{rid}: examples must be a non-empty array of tables")
+                else:
+                    for example in examples:
+                        if not isinstance(example, dict):
+                            err(f"{rid}: each example must be a table")
+                            continue
+                        fields = set(example) - {"title"}
+                        if fields not in ({"before", "after"}, {"code", "message"}):
+                            err(f"{rid}: example needs before/after or code/message, with optional title")
+                        if any(not isinstance(v, str) or not v.strip() for v in example.values()):
+                            err(f"{rid}: example fields must be non-empty strings")
             # `later = true`: after 1.0 (PLAN.md §2); only a lint rule that is not ported yet can wait.
             if "later" in r and (c != "lint" or r["later"] is not True or r.get("ported")):
                 err(f"{rid}: `later = true` is only for lint rules that are not ported")
@@ -386,6 +403,14 @@ def selftest():
 
     fine(add("lint", "refactor/rename-x"))
     fine(add("lint", "php-8.4/prefer-x", sets=["dead-code"]))
+    fine(add("lint", "dead-code/no-y", why="Remove it.", examples=[{"before": "x();", "after": "y();"}]))
+    fine(add("analyse", "undefined/y", examples=[{"code": "x();", "message": "Unknown function x."}]))
+    bad(add("lint", "dead-code/no-y", why=3), "why must be a non-empty string")
+    bad(add("lint", "dead-code/no-y", summary=""), "summary must be a non-empty string")
+    bad(add("lint", "dead-code/no-y", examples="x"), "examples must be a non-empty array")
+    bad(add("lint", "dead-code/no-y", examples=["x"]), "each example must be a table")
+    bad(add("lint", "dead-code/no-y", examples=[{"before": "x"}]), "example needs before/after")
+    bad(add("lint", "dead-code/no-y", examples=[{"code": "x", "message": 0}]), "example fields must be non-empty")
     bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(status="tentative"), "tentative")
     bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(later=True, ported=True), "only for lint rules that are not ported")
     bad(lambda d: d["rules"]["analyse"]["undefined/x"].update(later=True), "only for lint rules that are not ported")

@@ -19,6 +19,10 @@
 #   gated_by  php-version / laravel-version: only runs when [php] version / the locked Laravel version allows
 #   ported    implemented in Pun today
 #   status    decided
+#   summary   one-line description (plain text with inline Markdown code)
+#   why       explanation (plain text with inline Markdown code); optional until written
+#   examples  array of tables: { before = "PHP", after = "PHP" } for edits, or
+#             { code = "PHP", message = "exact Pun diagnostic" } for reports; optional title on either form
 #   merged    every upstream source of a rule built by merging several rules ("tool:id")
 #   pun_only  the rule has no upstream source (Pun's own rule)
 # [options."<rule ID>"]  every option of a format rule under its Pun name, with its PHP-CS-Fixer name and type
