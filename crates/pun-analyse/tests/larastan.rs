@@ -303,6 +303,30 @@ fn larastan_console_commands() {
         Larastan::new(&root.join("application")),
         "larastan.console.",
     );
+    // the definition sources' edge cases; commands with a definition Pun cannot read are left out
+    oracle_case(
+        &root.join("data/ConsoleEdge"),
+        Larastan::new(&root.join("application")),
+        "larastan.console.",
+    );
+    // an empty option name or shortcut (InputOption) or command name (Command) throws in Symfony (the app does not boot): Pun registers no
+    // command for them, so their `option('nope')` is not reported
+    let dir = root.join("data/ConsoleBroken");
+    let mut project = Project::new(
+        vec![
+            dir.join("DashShortcutCommand.php"),
+            dir.join("EmptyOptionCommand.php"),
+            dir.join("NamelessCommand.php"),
+        ],
+        scanned(&root),
+    );
+    project.larastan = Some(Larastan::new(&root.join("application")));
+    assert!(
+        run(&project)
+            .unwrap()
+            .iter()
+            .all(|e| !e.identifier.starts_with("larastan.console."))
+    );
 }
 
 /// ConfigCollectionRule on tests/fixtures/larastan/data/Config, whose config/ is the app's config directory.
@@ -315,6 +339,12 @@ fn larastan_config_collection() {
     // configured directories without config files fall back to config_path()
     larastan.config_directories = vec![dir.join("missing").to_string_lossy().into_owned()];
     oracle_case(&dir, larastan.clone(), "larastan.configCollection");
+    // configDirectories, with config files Larastan cannot type
+    let extra = dir.with_file_name("ConfigExtra");
+    let mut configured = Larastan::new(&dir);
+    configured.check_config_types = true;
+    configured.config_directories = vec![extra.join("config").to_string_lossy().into_owned()];
+    oracle_case(&extra, configured, "larastan.configCollection");
     // off by default
     let mut project = Project::new(vec![dir.join("ConfigCases.php")], Vec::new());
     project.larastan = Some(Larastan::new(&dir));
@@ -337,17 +367,15 @@ fn larastan_relation_existence() {
     );
 }
 
-/// NoUnnecessaryCollectionCallRule on tests/fixtures/larastan/data/Collections, whose model reads the `users` table.
+/// NoUnnecessaryCollectionCallRule and NoUnnecessaryEnumerableToArrayCallsRule on tests/fixtures/larastan/data/Collections,
+/// whose model reads the `users` table.
 #[test]
 fn larastan_unnecessary_collection_calls() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
     let dir = root.join("data/Collections");
-    let larastan = Larastan::new(&root.join("application"));
-    oracle_case(
-        &dir,
-        larastan.clone(),
-        "larastan.noUnnecessaryCollectionCall",
-    );
+    let mut larastan = Larastan::new(&root.join("application"));
+    larastan.no_unnecessary_enumerable_to_array_calls = true;
+    oracle_case(&dir, larastan.clone(), "larastan.");
     // noUnnecessaryCollectionCallOnly and noUnnecessaryCollectionCallExcept
     let config = pun_phpstan::neon::decode(
         "parameters:\n\tnoModelMake: true\n\tnoUnnecessaryCollectionCallOnly: [Count, take]\n\tnoUnnecessaryCollectionCallExcept: [take]\n",
@@ -389,6 +417,12 @@ fn larastan_views_and_translations() {
     larastan.check_unused_views = true;
     larastan.check_missing_translations = true;
     oracle_case(&dir, larastan.clone(), "larastan.");
+    // views that do not parse, vendor and error views, and lang/ with other files and PHP arrays of every shape
+    let edge = root.join("data/ViewsEdge");
+    let mut views = Larastan::new(&edge);
+    views.check_unused_views = true;
+    views.check_missing_translations = true;
+    oracle_case(&edge, views, "larastan.");
     // configured directories replace the finder's paths and lang_path(); names relative to them that the finder
     // does not find (`mailable.view` below `emails`) are no views
     larastan.view_directories = vec![dir.join("resources/views/emails")];

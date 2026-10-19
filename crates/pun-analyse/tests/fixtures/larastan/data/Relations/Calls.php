@@ -3,6 +3,7 @@
 namespace App\PunRelations;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class Calls
 {
@@ -59,5 +60,19 @@ class Calls
         $model::with('foo');
         Book::query()->whereHas('chapters.foo');
         Book::query()->with('author.books.foo');
+    }
+
+    /**
+     * @param  Builder<Author|Book>  $two
+     */
+    public function edge(BaseModel $base, Author|Book $either, Builder $two, \Illuminate\Database\Query\Builder $query, Model $model): void
+    {
+        $base->with('books.foo');
+        Author::with('magic');
+        NotAModel::with('foo');
+        $either->with('foo');
+        $two->with('foo');
+        $query->has('foo');
+        $model->with('foo');
     }
 }

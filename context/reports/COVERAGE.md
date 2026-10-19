@@ -4,7 +4,7 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 3551 | 3551 | 100.00% | ok |
-| punphp-analyse | 15323 | 15323 | 100.00% | ok |
+| punphp-analyse | 16913 | 16913 | 100.00% | ok |
 | punphp-config | 609 | 609 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
@@ -30,6 +30,7 @@ Uncovered lines:
 - `crates/pun-fixers/src/fixers/pint_laravel_blade/php_block_formatting.rs:221` formatDirectiveArg's fallback when the formatted host has no balanced `(...)`: the argument was cut out of the template by the same matchParen, so it is balanced, and the formatter either returns the host unchanged (a CompileError) or keeps it balanced (no fixer adds quotes or comments).
 - `crates/pun-cli/src/run.rs:248` the `Status::Lint` arm (the fixers produced code that no longer parses, PHP-CS-Fixer's TYPE_LINT): Pun's fixers port the pinned PHP-CS-Fixer's, and no known input makes them emit a parse error (the trailing-comma and first-class-callable cases tried against Pint are guarded upstream). pun-format's own tests reach `after_fix` with a test fixer.
 - `crates/pun-cli/src/migrate.rs:283` the `preset <name>` source of an unsupported rule when there is no pint.json: every rule of the presets `--preset` takes (laravel, psr12, empty) has a native fixer, so `unsupported` is empty there unless a `PUN_FIXERS_ONLY` build left the preset's fixers out.
+- `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/infer.rs:134` the `catch_unwind` fallback that drops a file's inferred types when Mago's analyser panics: as for mago.rs:74 below.
 - `crates/pun-analyse/src/mago.rs:74` the `catch_unwind` fallback that skips a file when Mago's analyser panics: tests/fixtures/mago/debug-panic.php (`int&mixed`) was written to trip Mago's debug assertion (`TUnion::from_vec()` with an empty Vec), but the analyser no longer reaches it and no known input panics it now, and the guard stays so a future panic costs one file, not the run.

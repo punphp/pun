@@ -52,32 +52,25 @@ enum CalledOn {
 }
 
 pub(super) fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena>) {
-    let Some(arg) = relation_call(&call.method, &call.argument_list) else {
-        return;
-    };
-    let Some(on) = c.type_of(call.object).cloned() else {
-        return;
-    };
-    check(c, call, arg, CalledOn::Type(on));
+    let on = c.type_of(call.object).cloned().map(CalledOn::Type);
+    if let Some((arg, on)) = relation_call(&call.method, &call.argument_list).zip(on) {
+        check(c, call, arg, on);
+    }
 }
 
 pub(super) fn static_method_call<'arena>(
     c: &mut Checker<'_, 'arena>,
     call: &StaticMethodCall<'arena>,
 ) {
-    let Some(arg) = relation_call(&call.method, &call.argument_list) else {
-        return;
-    };
     let on = match call.class {
-        Expression::Identifier(id) => {
-            CalledOn::Class(String::from_utf8_lossy(c.names.get(&id.span())).into_owned())
-        }
-        e => match c.type_of(e) {
-            Some(t) => CalledOn::Type(t.clone()),
-            None => return,
-        },
+        Expression::Identifier(id) => Some(CalledOn::Class(
+            String::from_utf8_lossy(c.names.get(&id.span())).into_owned(),
+        )),
+        e => c.type_of(e).cloned().map(CalledOn::Type),
     };
-    check(c, call, arg, on);
+    if let Some((arg, on)) = relation_call(&call.method, &call.argument_list).zip(on) {
+        check(c, call, arg, on);
+    }
 }
 
 /// The relation names in the argument: a constant array's string keys and values, else its constant strings.
@@ -140,11 +133,9 @@ fn check<'arena>(
     arg: &Expression<'arena>,
     on: CalledOn,
 ) {
-    let Some(arg) = c.type_of(arg).cloned() else {
-        return;
-    };
+    let names = c.type_of(arg).map(relations).unwrap_or_default();
     let mut errors = Vec::new();
-    for relation in relations(&arg) {
+    for relation in names {
         let name = relation.split(':').next().unwrap_or_default();
         if !name.contains('.') {
             errors.extend(missing(c, &on, name));
@@ -183,10 +174,12 @@ fn missing(c: &Checker, on: &CalledOn, name: &str) -> Option<String> {
 
 /// The return type of the model's method `name` when it is a relation.
 fn relation_type(c: &Checker, k: &ClassLikeMetadata, name: &str) -> Option<TUnion> {
-    let members::Method::User { f, .. } = members::method(c, k, name.as_bytes())? else {
-        return None;
+    // a model's methods are the user's (PHP's own classes declare none of them)
+    let f = match members::method(c, k, name.as_bytes())? {
+        members::Method::User { f, .. } => Some(f),
+        members::Method::Builtin { .. } => None,
     };
-    let ty = &f.return_type_metadata.as_ref()?.type_union;
+    let ty = &f?.return_type_metadata.as_ref()?.type_union;
     is_object_of(c, ty, RELATION).then(|| ty.clone())
 }
 
@@ -211,16 +204,12 @@ fn model<'a>(c: &Checker<'a, '_>, on: &CalledOn) -> Option<&'a ClassLikeMetadata
             };
             match n.type_parameters.as_deref() {
                 Some([first, ..]) => {
+                    // removeNull() and getObjectClassReflections()
                     let names: Vec<_> = first
                         .types
                         .iter()
-                        .filter(|t| !matches!(t, TAtomic::Null))
-                        .filter_map(|t| match t {
-                            TAtomic::Object(TObject::Named(m)) => {
-                                Some(m.name.as_str_lossy().into_owned())
-                            }
-                            _ => None,
-                        })
+                        .filter_map(TAtomic::get_object_or_enum_name)
+                        .map(|n| n.as_str_lossy().into_owned())
                         .collect();
                     match names.as_slice() {
                         [one] => one.clone(),

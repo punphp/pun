@@ -19,6 +19,7 @@ use std::path::{Path, PathBuf};
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -221,18 +222,17 @@ pub(crate) struct State {
 
 /// `ModelPropertyExtension::hasProperty()`: a database column of the model that no accessor or `@property` tag hides.
 fn has_database_property(c: &Checker, model: &str, column: &str) -> bool {
-    let Some(larastan) = c.larastan else {
-        return false;
-    };
-    !crate::laravel::has_accessor(c.codebase, model, column)
-        && larastan
-            .database_properties
-            .get(&model.to_ascii_lowercase())
-            .is_some_and(|p| p.contains(column))
-        && !c
-            .codebase
-            .get_class_like(model.as_bytes())
-            .is_some_and(|k| appends::property_tag(k, column))
+    c.larastan.is_some_and(|larastan| {
+        !crate::laravel::has_accessor(c.codebase, model, column)
+            && larastan
+                .database_properties
+                .get(&model.to_ascii_lowercase())
+                .is_some_and(|p| p.contains(column))
+            && !c
+                .codebase
+                .get_class_like(model.as_bytes())
+                .is_some_and(|k| appends::property_tag(k, column))
+    })
 }
 
 /// `ObjectType($parent)->isSuperTypeOf(ObjectType($class))->yes()`, for lowercase `parent`.
@@ -249,10 +249,15 @@ fn class_is(c: &Checker, k: &ClassLikeMetadata, parent: &[u8]) -> bool {
 
 /// The names of the objects a type is (`getObjectClassNames()`), `None` when one of its parts is no named object.
 fn object_names(ty: &TUnion) -> Option<Vec<&[u8]>> {
+    named_objects(ty).map(|objects| objects.iter().map(|n| n.name.as_bytes()).collect())
+}
+
+/// The type's parts when every one is a named object.
+fn named_objects(ty: &TUnion) -> Option<Vec<&TNamedObject>> {
     ty.types
         .iter()
         .map(|t| match t {
-            TAtomic::Object(TObject::Named(n)) => Some(n.name.as_bytes()),
+            TAtomic::Object(TObject::Named(n)) => Some(n),
             _ => None,
         })
         .collect()
@@ -388,7 +393,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_, 'arena> {
         if self.larastan.no_unnecessary_collection_call {
             self.spans.extend(collections::unnecessary_typed(call));
         }
-        if collectors::typed_method_call(self.larastan, call) {
+        if collectors::typed_method_call(self.larastan, call).is_some() {
             self.spans.push(call.object.span());
         }
         if let Some((_, arg)) = console::input_call(call) {

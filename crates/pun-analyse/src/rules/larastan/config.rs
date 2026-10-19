@@ -47,7 +47,7 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall
     if let Some(default) = args.get(1) {
         let default = c
             .type_of(default.value())
-            .map_or(IsArray::Maybe, union_is_array);
+            .map_or(IsArray::Maybe, |t| union_is_array(t, true));
         match types.first_mut() {
             Some(t) => *t = default,
             None => types.push(default),
