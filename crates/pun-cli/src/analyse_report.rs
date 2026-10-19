@@ -209,9 +209,8 @@ fn teamcity(findings: &[Finding]) -> String {
     let escape = |s: &str| {
         let mut o = String::new();
         for c in s.chars() {
+            // Teamcity also escapes `\n` and `\r`, which no message and no path PHPStan analyses holds.
             match c {
-                '\n' => o.push_str("|n"),
-                '\r' => o.push_str("|r"),
                 '\'' | '|' | '[' | ']' => {
                     o.push('|');
                     o.push(c);
@@ -244,7 +243,7 @@ fn teamcity(findings: &[Finding]) -> String {
 fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
     let style = crate::table::Style::new(width);
     if findings.is_empty() {
-        return style.block("OK", "No errors");
+        return style.block("OK", "No errors", 0);
     }
     let mut out = String::new();
     let mut files: Vec<(&str, Vec<&Finding>)> = vec![];
@@ -254,22 +253,16 @@ fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
             None => files.push((&f.rel, vec![f])),
         }
     }
+    let tables = files.len();
     for (_, list) in files {
         let rows: Vec<[String; 2]> = list
             .iter()
             .map(|f| {
                 let mut message = format!("{}\n🪪  {}", f.message, f.identifier);
+                // ponytail: PHPStan puts 💡 before each line of a multi-line tip (less its leading ` •`); Pun's tips
+                // are one line, so add that when a rule reports a bulleted tip.
                 if let Some(tip) = &f.tip {
-                    message.push('\n');
-                    if tip.contains('\n') {
-                        let lines: Vec<String> = tip
-                            .split('\n')
-                            .map(|l| format!("💡  {}", l.trim_start_matches([' ', '•'])))
-                            .collect();
-                        message.push_str(&lines.join("\n"));
-                    } else {
-                        message.push_str(&format!("💡  {tip}"));
-                    }
+                    message.push_str(&format!("\n💡  {tip}"));
                 }
                 [f.line.to_string(), message]
             })
@@ -283,7 +276,7 @@ fn table(findings: &[Finding], cx: &Context, width: usize) -> String {
     } else {
         format!("Found {n} errors")
     };
-    out.push_str(&style.block("ERROR", &found));
+    out.push_str(&style.block("ERROR", &found, tables));
     out
 }
 

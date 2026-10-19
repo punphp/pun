@@ -96,13 +96,17 @@ impl Style {
             .map(|r| width(&r[0]))
             .fold(header[0].len(), usize::max);
         let max = terminal.saturating_sub(first + 5);
-        let mut lines: Vec<[String; 2]> = vec![[header[0].into(), header[1].into()]];
+        let wrapped = |a: &str, b: &str| -> Vec<[String; 2]> {
+            let lines = b.split('\n').flat_map(|l| wrap(l, max));
+            (lines.enumerate())
+                .map(|(i, line)| [if i == 0 { a } else { "" }.to_string(), line])
+                .collect()
+        };
+        // The header wraps like a row.
+        let mut lines = wrapped(header[0], header[1]);
         let separator = lines.len();
         for [a, b] in rows {
-            let wrapped: Vec<String> = b.split('\n').flat_map(|l| wrap(l, max)).collect();
-            for (i, line) in wrapped.into_iter().enumerate() {
-                lines.push([if i == 0 { a.clone() } else { String::new() }, line]);
-            }
+            lines.extend(wrapped(a, b));
         }
         let widths = [0, 1].map(|c| {
             let w = lines.iter().map(|l| width(&l[c])).max().unwrap_or(0);
@@ -129,10 +133,13 @@ impl Style {
         out
     }
 
-    /// SymfonyStyle::block with a type and padding, undecorated: a blank line before it (one more after a table,
-    /// which ends with one), ` [TYPE] message` padded to the line length, then a blank line.
-    pub(crate) fn block(&self, kind: &str, message: &str) -> String {
+    /// SymfonyStyle::block with a type and padding, undecorated, after `tables` tables: autoPrependBlock's blank
+    /// lines (two less the newlines among the last two characters SymfonyStyle buffered, and the tables bypass that
+    /// buffer, so it holds only the newline after each table), ` [TYPE] message` padded to the line length, then a
+    /// blank line.
+    pub(crate) fn block(&self, kind: &str, message: &str, tables: usize) -> String {
         let line = format!(" [{kind}] {message}");
-        format!("\n{}\n\n", pad(&line, self.line_length()))
+        let before = if tables >= 2 { "" } else { "\n" };
+        format!("{before}{}\n\n", pad(&line, self.line_length()))
     }
 }

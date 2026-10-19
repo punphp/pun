@@ -265,3 +265,84 @@ fn run_errors_exit_2() {
         assert_eq!((out.as_str(), code), ("", Some(2)));
     }
 }
+
+/// `table` and `teamcity` against PHPStan beyond [`formats_match_phpstan`]'s sample: Teamcity's escapes (in a path),
+/// one error, several tables, a 40-column terminal that wraps and cuts a long message, and the fuzzy relative path
+/// of an analysed file path and of paths outside the project.
+#[test]
+fn table_and_teamcity_match_phpstan() {
+    let Some(phar) = phpstan() else { return };
+    let phar = phar.to_str().unwrap();
+    // Outside the project and outside its top-level directory (the temp dir), so they share no directory.
+    let outside = Path::new(env!("CARGO_TARGET_TMPDIR"))
+        .join(format!("analyse-outside-{}", std::process::id()));
+    std::fs::create_dir_all(&outside).unwrap();
+    std::fs::write(outside.join("o.php"), "<?php\nnope2();\n").unwrap();
+    let outside = outside.display();
+    let long = "<?php\nthis_is_an_extremely_long_function_name_to_wrap();\n";
+    let cases: [(&str, &[(&str, &str)], &str); 4] = [
+        (
+            "escapes",
+            &[("src/it's [a|b]/x.php", "<?php\nnope();\n")],
+            "src",
+        ),
+        (
+            "file",
+            &[("src/a.php", long), ("src/b.php", "<?php\nnope();\n")],
+            "src/a.php",
+        ),
+        (
+            "outside",
+            &[
+                ("src/a.php", "<?php\nnope();\n"),
+                ("lib/b.php", "<?php\nnope3();\n"),
+            ],
+            &format!("src\", \"lib\", \"{outside}"),
+        ),
+        (
+            "outside-first",
+            &[("src/a.php", "<?php\nnope();\n")],
+            &format!("{outside}\", \"src"),
+        ),
+    ];
+    for (name, files, paths) in cases {
+        let d = project("analyse", name, files);
+        let list: Vec<&str> = paths.split("\", \"").collect();
+        let neon: String = list.iter().map(|p| format!("        - {p}\n")).collect();
+        std::fs::write(
+            d.join("phpstan.neon"),
+            format!("parameters:\n    level: 0\n    paths:\n{neon}"),
+        )
+        .unwrap();
+        std::fs::write(
+            d.join("pun.toml"),
+            format!("[analyse]\npaths = [\"{paths}\"]\n"),
+        )
+        .unwrap();
+        for f in ["table", "teamcity"] {
+            for columns in ["80", "40"] {
+                let format = format!("--error-format={f}");
+                let with = |program: &[&str]| {
+                    let out = clean_env(&mut Command::new(program[0]), &["PATH", "HOME"])
+                        .current_dir(&d)
+                        .env("COLUMNS", columns)
+                        .env("PUN_AGENT", "0")
+                        .args(&program[1..])
+                        .arg(&format)
+                        .output()
+                        .unwrap();
+                    (String::from_utf8(out.stdout).unwrap(), out.status.code())
+                };
+                let want = with(&[
+                    "php",
+                    phar,
+                    "analyse",
+                    "--no-progress",
+                    "-c",
+                    "phpstan.neon",
+                ]);
+                assert_eq!(with(&[PUN, "analyse"]), want, "{name} {f} {columns}");
+            }
+        }
+    }
+}
