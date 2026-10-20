@@ -49,6 +49,8 @@ pub struct Project {
     pub bleeding_edge: bool,
     /// `featureToggles.unusedLabel` (on with bleedingEdge).
     pub unused_label: bool,
+    /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
+    pub check_uninitialized_properties: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
     pub deprecation_rules: bool,
     /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
@@ -201,6 +203,7 @@ impl Project {
             only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
+            check_uninitialized_properties: flag("checkUninitializedProperties"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
             precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
@@ -234,6 +237,7 @@ impl Project {
             only_files: true,
             bleeding_edge: false,
             unused_label: false,
+            check_uninitialized_properties: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
             precise_unused_parameter_line: false,

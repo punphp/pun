@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "uses.php",
+   "line": 7,
+   "identifier": "constant.notFound",
+   "message": "Used constant ImportDefs\\MISSING not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 10,
+   "identifier": "constant.notFound",
+   "message": "Used constant php_version not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 11,
+   "identifier": "constant.notFound",
+   "message": "Used constant E_NOPE not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 13,
+   "identifier": "function.notFound",
+   "message": "Used function ImportDefs\\nope not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 14,
+   "identifier": "constant.notFound",
+   "message": "Used constant ImportDefs\\GONE not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 14,
+   "identifier": "function.notFound",
+   "message": "Used function ImportDefs\\gone not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 15,
+   "identifier": "constant.notFound",
+   "message": "Used constant ImportDefs\\ABSENT not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php",
+   "line": 16,
+   "identifier": "function.notFound",
+   "message": "Used function ImportDefs\\absent not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

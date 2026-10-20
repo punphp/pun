@@ -1,0 +1,8 @@
+parameters:
+    level: 2
+    phpVersion: 80500
+    paths: [.]
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # the RequireExtends/ImplementsDefinition rules' unknown classes (PHPDoc rules)
+        - identifier: class.notFound

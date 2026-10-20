@@ -183,7 +183,7 @@ pub(crate) fn statement(c: &mut Checker, s: &ExpressionStatement) {
         let mut selected = 0;
         let mut max_parameters = 0;
         for (i, method) in methods.iter().enumerate() {
-            for variant in method.variants() {
+            for variant in method.variants().all {
                 if variant.optional.len() > max_parameters {
                     max_parameters = variant.optional.len();
                     selected = i;

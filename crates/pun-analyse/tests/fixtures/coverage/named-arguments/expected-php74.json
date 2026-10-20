@@ -1,0 +1,12 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "php74/old.php",
+   "line": 20,
+   "identifier": "argument.namedNotSupported",
+   "message": "Named arguments are supported only on PHP 8.0 and later.",
+   "tip": null
+  }
+ ]
+}

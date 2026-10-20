@@ -1,0 +1,264 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "bug-7219.php",
+   "line": 8,
+   "identifier": "property.uninitialized",
+   "message": "Class Bug7219\\Foo has an uninitialized property $id. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "bug-7219.php",
+   "line": 15,
+   "identifier": "property.uninitialized",
+   "message": "Class Bug7219\\Foo has an uninitialized property $email. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "bug-9619.php",
+   "line": 15,
+   "identifier": "property.uninitialized",
+   "message": "Class Bug9619\\AdminPresenter has an uninitialized property $user. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "bug-9619.php",
+   "line": 45,
+   "identifier": "property.uninitialized",
+   "message": "Class Bug9619\\AdminPresenter3 has an uninitialized property $user. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "bug-9831.php",
+   "line": 12,
+   "identifier": "property.uninitialized",
+   "message": "Access to an uninitialized property Bug9831\\Foo::$bar.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 16,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property RedeclareReadonlyProperty\\B1::$myProp is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 50,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property RedeclareReadonlyProperty\\B5::$myProp is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 70,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property RedeclareReadonlyProperty\\B7::$myProp is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 78,
+   "identifier": "arguments.count",
+   "message": "Class class@anonymous/redeclare-readonly-property.php:78 constructor invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 121,
+   "identifier": "assign.readOnlyProperty",
+   "message": "Readonly property RedeclareReadonlyProperty\\A@anonymous/redeclare-readonly-property.php:117::$myProp is already assigned.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 178,
+   "identifier": "method.staticCall",
+   "message": "Static call to instance method RedeclareReadonlyProperty\\A::__construct().",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 190,
+   "identifier": "method.staticCall",
+   "message": "Static call to instance method RedeclareReadonlyProperty\\A::__construct().",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 195,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class RedeclareReadonlyProperty\\B16 has an uninitialized readonly property $myProp. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 218,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class RedeclareReadonlyProperty\\C17 has an uninitialized readonly property $aProp. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 233,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class RedeclareReadonlyProperty\\B18 has an uninitialized readonly property $aProp. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 249,
+   "identifier": "property.uninitialized",
+   "message": "Class RedeclareReadonlyProperty\\B19 has an uninitialized property $prop2. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "redeclare-readonly-property.php",
+   "line": 260,
+   "identifier": "property.uninitialized",
+   "message": "Access to an uninitialized property RedeclareReadonlyProperty\\B19::$prop2.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly-phpdoc.php",
+   "line": 9,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class UninitializedPropertyReadonlyPhpDoc\\Foo has an uninitialized @readonly property $bar. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly-phpdoc.php",
+   "line": 26,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Access to an uninitialized @readonly property UninitializedPropertyReadonlyPhpDoc\\Bar::$bar.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly-phpdoc.php",
+   "line": 36,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class UninitializedPropertyReadonlyPhpDoc\\Immutable has an uninitialized @readonly property $bar. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly-phpdoc.php",
+   "line": 49,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class UninitializedPropertyReadonlyPhpDoc\\A has an uninitialized @readonly property $a. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly-phpdoc.php",
+   "line": 56,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class UninitializedPropertyReadonlyPhpDoc\\B has an uninitialized @readonly property $b. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly-phpdoc.php",
+   "line": 63,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class UninitializedPropertyReadonlyPhpDoc\\C has an uninitialized @readonly property $c. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly.php",
+   "line": 8,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class UninitializedPropertyReadonly\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property-readonly.php",
+   "line": 24,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Access to an uninitialized readonly property UninitializedPropertyReadonly\\Bar::$bar.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 10,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\Foo has an uninitialized property $bar. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 12,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\Foo has an uninitialized property $baz. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 33,
+   "identifier": "property.uninitialized",
+   "message": "Access to an uninitialized property UninitializedProperty\\Bar::$foo.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 59,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\Lorem has an uninitialized property $baz. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 108,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\MyTestCase has an uninitialized property $foo. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 120,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\TestExtension has an uninitialized property $inited. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 122,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\TestExtension has an uninitialized property $uninited. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 157,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\FooTraitClass has an uninitialized property $bar. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 159,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\FooTraitClass has an uninitialized property $baz. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 286,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\SometimesInitializedInPrivateSetter has an uninitialized property $foo. Give it default value or assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 303,
+   "identifier": "property.uninitialized",
+   "message": "Access to an uninitialized property UninitializedProperty\\SometimesInitializedInPrivateSetter::$foo.",
+   "tip": null
+  },
+  {
+   "file": "uninitialized-property.php",
+   "line": 372,
+   "identifier": "property.uninitialized",
+   "message": "Class UninitializedProperty\\EarlyReturn has an uninitialized property $foo. Give it default value or assign it in the constructor.",
+   "tip": null
+  }
+ ]
+}
