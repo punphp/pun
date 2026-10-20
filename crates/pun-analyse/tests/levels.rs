@@ -314,6 +314,7 @@ const PORTED: &[&str] = &[
     "match.alwaysFalse",
     "match.alwaysTrue",
     "match.unhandled",
+    "instanceof.invalidExprType",
     "constant.notFound",
     "class.missingExtends",
     "class.missingImplements",

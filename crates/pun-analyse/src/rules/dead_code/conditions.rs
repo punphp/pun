@@ -709,10 +709,24 @@ fn compare(c: &mut Checker, b: &Binary) {
     let Some((identifier, sigil, kind)) = comparison(&b.operator) else {
         return;
     };
+    if kind == "Instanceof" && !matches!(b.rhs, Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) {
+        // ImpossibleInstanceOfRule: a class expression that is neither a string nor an object
+        let allowed = Type::Union(vec![Type::String, Type::ObjectWithoutClass]);
+        let found = c.find_type_to_check(b.rhs, &|t| !is_super_type_of(&allowed, t).yes());
+        if found.ty.is_some_and(|t| !is_super_type_of(&allowed, &t).yes())
+            && let (Some(left), Some(class)) = (c.phpstan_type(b.lhs), c.phpstan_type(b.rhs))
+        {
+            let (l, r) = super::super::declared::with_classes(c, || (left.describe(Level::TypeOnly), class.describe(Level::TypeOnly)));
+            let line = c.line_of(b.span());
+            c.report_at_line(line, "instanceof.invalidExprType", format!("Instanceof between {l} and {r} results in an error."), None);
+            return;
+        }
+    }
     let value = c.exact(b.span());
     let right = match (kind, b.rhs) {
         // ImpossibleInstanceOfRule: a class name, as ObjectType
         ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![])),
+        ("Instanceof", Expression::Self_(_) | Expression::Static(_)) => c.class_scope().map(|k| Type::Object(c.display(k), vec![])),
         _ => c.phpstan_type(b.rhs),
     };
     let (Some(value), Some(left), Some(right)) = (value, c.phpstan_type(b.lhs), right) else {
@@ -853,6 +867,9 @@ pub(in super::super) fn function_check(c: &mut Checker, call: &FunctionCall) {
     } else {
         let asserted = match function_of(c, call.function) {
             Some(noop::Function::User(f)) => c.asserted(f, &call.argument_list),
+            Some(noop::Function::Builtin(b)) if let Some(value) = c.special(&b.name.to_ascii_lowercase(), &call.argument_list) => {
+                return impossible_check(c, call.span(), value, "function", subject, &call.argument_list);
+            }
             _ => None,
         };
         c.exact(call.span()).or(asserted)
@@ -947,6 +964,11 @@ fn has_yield(statements: &[Statement]) -> bool {
     finder.0
 }
 
+/// A void call's value is null.
+fn void_null(t: Type) -> Type {
+    if t == Type::Void { Type::Null } else { t }
+}
+
 /// A type of one value: what a match arm condition removes from the subject.
 fn single(t: &Type) -> bool {
     matches!(
@@ -1037,6 +1059,208 @@ impl Checker<'_, '_> {
     }
 }
 
+/// `getFiniteTypes()`: the values a type has, none when it has infinitely many.
+fn finite(c: &Checker, t: &Type) -> Vec<Type> {
+    match c.expand_enums(t.clone()) {
+        Type::Union(ts) => {
+            let all: Vec<Vec<Type>> = ts.iter().map(|t| finite(c, t)).collect();
+            if all.iter().any(Vec::is_empty) { Vec::new() } else { all.concat() }
+        }
+        Type::Bool => vec![Type::ConstBool(true), Type::ConstBool(false)],
+        t if single(&t) || matches!(t, Type::ConstFloat(_)) => vec![t],
+        _ => Vec::new(),
+    }
+}
+
+/// `getConstantStrings()`
+fn constant_strings(t: &Type) -> Vec<String> {
+    match t {
+        Type::ConstString(s) => vec![s.clone()],
+        Type::Union(ts) => ts.iter().map(constant_strings).try_fold(Vec::new(), |mut all, s| {
+            (!s.is_empty()).then(|| {
+                all.extend(s);
+                all
+            })
+        }).unwrap_or_default(),
+        _ => Vec::new(),
+    }
+}
+
+/// `isConstantArray()` is not no: a constant array is among the type's arrays.
+fn has_constant_array(t: &Type) -> bool {
+    match t {
+        Type::Union(ts) | Type::Intersection(ts) => ts.iter().any(has_constant_array),
+        t => matches!(t, Type::ConstArray(_)),
+    }
+}
+
+/// `TrinaryLogic::extremeIdentity()`: yes or no when all agree, else maybe.
+fn extreme(results: impl IntoIterator<Item = Tri>) -> Tri {
+    results.into_iter().reduce(|a, b| if a == b { a } else { Tri::Maybe }).unwrap_or(Tri::Maybe)
+}
+
+/// The constant result: true for yes, false for no.
+fn decided(t: Tri) -> Option<bool> {
+    (!t.maybe()).then(|| t.yes())
+}
+
+impl Checker<'_, '_> {
+    /// ImpossibleCheckTypeHelper's own answers for in_array(), method_exists(), property_exists() and the
+    /// class_exists() family, with what their TypeSpecifying extensions narrow; `None` for the other functions.
+    fn special(&self, name: &str, args: &ArgumentList) -> Option<Option<bool>> {
+        let arg = |i: usize| args.arguments.get(i).and_then(|a| self.phpstan_type(a.value()));
+        Some(match name {
+            "in_array" => (|| self.in_array(arg(0)?, arg(1)?, arg(2)))(),
+            "method_exists" => (|| self.method_exists(arg(0)?, arg(1)?))(),
+            "property_exists" => (|| self.property_exists(arg(0)?, arg(1)?))(),
+            // the always true result is suppressed: autoloading can fail
+            "class_exists" | "interface_exists" | "trait_exists" | "enum_exists" => {
+                let strings = arg(0).map(|t| constant_strings(&t)).unwrap_or_default();
+                let wrong_kind = |s: &String| {
+                    self.codebase.get_class_like(s.trim_start_matches('\\').as_bytes()).is_some_and(|k| match name {
+                        "class_exists" => matches!(k.kind, SymbolKind::Interface | SymbolKind::Trait),
+                        "interface_exists" => k.kind != SymbolKind::Interface,
+                        "trait_exists" => k.kind != SymbolKind::Trait,
+                        _ => k.kind != SymbolKind::Enum,
+                    })
+                };
+                (!strings.is_empty() && strings.iter().all(wrong_kind)).then_some(false)
+            }
+            _ => return None,
+        })
+    }
+
+    fn in_array(&self, needle: Type, haystack: Type, strict: Option<Type>) -> Option<bool> {
+        if !haystack.is_array().yes() {
+            return None;
+        }
+        let value = haystack.iterable_value_type();
+        let is_enum = |t: &Type| {
+            let values = finite(self, t);
+            !values.is_empty() && values.iter().all(|t| matches!(t, Type::EnumCase(..)))
+        };
+        if strict != Some(Type::ConstBool(true)) && !is_enum(&needle) && !is_enum(&value) {
+            return None;
+        }
+        let needles = finite(self, &needle);
+        let values = finite(self, &value);
+        let needle_super = is_super_type_of(&needle, &value);
+        if !has_constant_array(&haystack) {
+            if haystack.is_iterable_at_least_once().yes() {
+                return (needles.len() == 1 && values.len() == 1).then(|| decided(needle_super)).flatten();
+            }
+            if !needle_super.no() {
+                // the array might be empty
+                return None;
+            }
+        }
+        if !matches!(&haystack, Type::ConstArray(a) if a.values.is_empty()) {
+            let arrays = match &haystack {
+                Type::Union(ts) => ts.clone(),
+                t => vec![t.clone()],
+            };
+            (arrays.len() != 1 || !matches!(value, Type::Never(_))).then_some(())?;
+            if !needle_super.no() {
+                if needles.is_empty() {
+                    return None;
+                }
+                for array in &arrays {
+                    // a general array cannot guarantee any specific value is present
+                    let Type::ConstArray(a) = array else { return None };
+                    let guaranteed: Vec<Type> = a
+                        .values
+                        .iter()
+                        .enumerate()
+                        .filter(|(i, _)| !a.optional.contains(i))
+                        .filter_map(|(_, v)| <[Type; 1]>::try_from(finite(self, v)).ok())
+                        .map(|[v]| v)
+                        .collect();
+                    if !needles.iter().all(|n| guaranteed.iter().any(|g| is_super_type_of(g, n).yes())) {
+                        return None;
+                    }
+                }
+            }
+            // (a needle that is a supertype of the values has finite types, so the values have them too)
+        }
+        // the narrowed needle and the non-empty haystack
+        decided(is_super_type_of(&value, &needle).and(haystack.is_iterable_at_least_once()))
+    }
+
+    /// `ObjectType::hasMethod()`, with whether the class declares the method natively.
+    fn object_has_method(&self, class: &str, method: &str) -> (Tri, bool) {
+        let Some(k) = self.codebase.get_class_like(class.as_bytes()) else {
+            return (Tri::Maybe, false);
+        };
+        if members::method(self, k, method.as_bytes()).is_some() {
+            (Tri::Yes, true)
+        } else if members::annotation_method(self, k, method.as_bytes()).is_some() {
+            (Tri::Yes, false)
+        } else {
+            (if k.flags.is_final() || k.kind == SymbolKind::Enum { Tri::No } else { Tri::Maybe }, false)
+        }
+    }
+
+    fn method_exists(&self, object: Type, method: Type) -> Option<bool> {
+        if let Type::ConstString(class) = &object
+            && self.codebase.get_class_like(class.as_bytes()).is_none()
+        {
+            return Some(false);
+        }
+        let Type::ConstString(method) = method else { return None };
+        let object = match object {
+            Type::ConstString(class) => Type::Object(class, Vec::new()),
+            t => t,
+        };
+        // ponytail: a generic class-string's object (`class-string<T>&literal-string`) is not decided, Mago's
+        // class-string types lose it
+        let found: Vec<_> =
+            object.object_class_names().iter().map(|class| self.object_has_method(class, &method)).collect();
+        match extreme(found.iter().map(|f| f.0)) {
+            Tri::Yes => found.iter().all(|f| f.1).then_some(true),
+            Tri::No => Some(false),
+            Tri::Maybe => None,
+        }
+    }
+
+    /// PropertyExistsTypeSpecifyingExtension: the object narrowed to `object&hasProperty(name)`; a property that
+    /// isn't native (an object shape's, an `@property` tag's) narrows the call instead.
+    fn property_exists(&self, object: Type, property: Type) -> Option<bool> {
+        let Type::ConstString(property) = property else { return None };
+        if property.is_empty() {
+            return None;
+        }
+        let objects = match &object {
+            Type::Union(ts) => ts.clone(),
+            t => vec![t.clone()],
+        };
+        let dollar = format!("${property}");
+        let mut found = Vec::new();
+        for object in &objects {
+            found.push(match object {
+                Type::ObjectShape(properties) => {
+                    if properties.iter().any(|(name, _, _)| *name == property) {
+                        return None;
+                    }
+                    Tri::No
+                }
+                Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
+                    let Some(k) = self.codebase.get_class_like(class.as_bytes()) else { return None };
+                    if self.declared_property(k, dollar.as_bytes()).is_some() {
+                        Tri::Yes
+                    } else if k.magic_property_ids.contains_key(&mago_word::word(dollar.as_bytes())) {
+                        return None;
+                    } else {
+                        let open = self.allows_dynamic_properties(k) || !(k.flags.is_final() || k.kind == SymbolKind::Enum);
+                        if open { Tri::Maybe } else { Tri::No }
+                    }
+                }
+                _ => return None,
+            });
+        }
+        decided(extreme(found))
+    }
+}
+
 /// MatchExpressionRule: arms always true or false against the subject narrowed by the arms above, and the values no
 /// arm handles.
 pub(in super::super) fn match_expression(c: &mut Checker, m: &Match) {
@@ -1044,7 +1268,7 @@ pub(in super::super) fn match_expression(c: &mut Checker, m: &Match) {
         return;
     }
     // ponytail: subjects of the types `remove()` handles; arrays, class strings, templates... wait for TypeCombinator
-    let Some(mut remaining) = c.phpstan_type(m.expression).filter(|t| c.subtractable(t)) else {
+    let Some(mut remaining) = c.phpstan_type(m.expression).map(void_null).filter(|t| c.subtractable(t)) else {
         return;
     };
     // an enum of one case is that case
@@ -1064,7 +1288,7 @@ pub(in super::super) fn match_expression(c: &mut Checker, m: &Match) {
             continue;
         };
         for cond in arm.conditions.iter() {
-            let Some(value) = c.phpstan_type(cond) else {
+            let Some(value) = c.phpstan_type(cond).map(void_null) else {
                 continue;
             };
             let subject = remaining.clone();
