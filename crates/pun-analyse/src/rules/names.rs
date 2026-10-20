@@ -631,19 +631,26 @@ pub fn property_type<'arena>(
     hint: Option<&Hint<'arena>>,
     names: &[&[u8]],
 ) {
-    let Some(hint) = hint else {
-        return;
-    };
     // properties are walked inside their class-like (trait bodies only in a class's context)
     let class = c
         .class_scope()
         .expect("a property is walked inside its class-like");
     let display = c.display(class);
-    let mut classes = Vec::new();
-    hint_classes(c, hint, &mut classes);
+    let mut native = Vec::new();
+    if let Some(hint) = hint {
+        hint_classes(c, hint, &mut native);
+    }
     for name in names {
         let property =
             String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
+        // and from level 2 (`checkThisOnly` off) the classes of its PHPDoc type
+        // ponytail: a promoted property's type from the constructor's `@param` is not read
+        let mut classes = native.clone();
+        if c.level >= 2 {
+            let phpdoc = super::declared::with_classes(c, || super::declared::property(c, None, at, &name[1..], class));
+            let referenced = super::generics::referenced_classes(&phpdoc).into_iter().filter(|n| !n.contains('-'));
+            classes.extend(referenced.map(|n| (n, at)));
+        }
         for (referenced, _) in &classes {
             match known(c, referenced) {
                 None => c.report(

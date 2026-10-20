@@ -1513,6 +1513,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             signatures::property(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
             if let Some(hooks) = &p.hooks {
                 signatures::hooks(self, p.variable.name, hooks);
+                signatures::hook_phpdoc_classes(self, p.variable.name, hooks, p.span());
                 types::get_hooks(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 types::hook_returns(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 set_hook::hooks(self, p.variable.name, p.hint.as_ref(), hooks);
@@ -2026,6 +2027,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         signatures::property(self, p.span(), p.hint(), &names);
         if let Property::Hooked(h) = p {
             signatures::hooks(self, h.item.variable().name, &h.hook_list);
+            signatures::hook_phpdoc_classes(self, h.item.variable().name, &h.hook_list, p.span());
             set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
             types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);

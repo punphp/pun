@@ -379,6 +379,10 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "Function ",
     "Method ",
     "Anonymous function has invalid return type",
+    // ExistingClassesInPropertiesRule's and the property hooks' (PHPDoc types from level 2)
+    "Property ",
+    "Get hook for property ",
+    "Set hook for property ",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).
