@@ -20,6 +20,8 @@ pub enum Guard {
     Function(String),
     /// `defined('Foo::BAR')`: the class part lowercase, as `foo::BAR`.
     ClassConstant(String),
+    /// `defined('FOO')`: the global constant `FOO` (its fully qualified name).
+    Constant(String),
     /// `method_exists(Foo::class, 'bar')`, lowercase `foo::bar` (`static`/`self` for those `::class`).
     Method(String),
     /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
@@ -291,13 +293,12 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
             Some(Guard::Class(value))
         }
         "function_exists" => Some(Guard::Function(value)),
-        "defined" => {
-            let (class, constant) = value.split_once("::")?;
-            Some(Guard::ClassConstant(format!(
-                "{}::{constant}",
-                class.to_ascii_lowercase()
-            )))
-        }
+        // a `define()` statement defines the constant for the rest of the scope
+        "define" => Some(Guard::Constant(value)),
+        "defined" => Some(match value.split_once("::") {
+            Some((class, constant)) => Guard::ClassConstant(format!("{}::{constant}", class.to_ascii_lowercase())),
+            None => Guard::Constant(value),
+        }),
         _ => None,
     }
 }
@@ -367,6 +368,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     {
         let mut guards = Vec::new();
         for s in statements {
+            if let Statement::Expression(e) = s
+                && let Expression::Call(Call::Function(call)) = e.expression
+            {
+                guards.extend(self.define_guard(call));
+            }
             if let Statement::If(i) = s
                 && let IfBody::Statement(b) = &i.body
                 && b.else_if_clauses.is_empty()
@@ -382,6 +388,18 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
         }
         guards
+    }
+
+    /// A `define('NAME', ...)` call's constant.
+    pub(super) fn define_guard(&self, call: &FunctionCall<'arena>) -> Option<Guard> {
+        let Expression::Identifier(id) = call.function else {
+            return None;
+        };
+        let name = id.value().rsplit(|b| *b == b'\\').next().expect("a name");
+        if !name.eq_ignore_ascii_case(b"define") {
+            return None;
+        }
+        exists_call(call, &|id| self.resolved(id))
     }
 
     pub(super) fn truthy(&self, e: &Expression<'arena>) -> Vec<Guard> {

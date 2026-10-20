@@ -1,6 +1,7 @@
 //! RestrictedFunctionUsageRule and RestrictedFunctionCallableUsageRule with RestrictedInternalFunctionUsageExtension
 //! (config.level0.neon, under `featureToggles.internalTag`): a call to, or first-class callable of, an `@internal`
-//! function from outside the root namespace that declares it.
+//! function from outside the root namespace that declares it; and with phpstan-deprecation-rules'
+//! RestrictedDeprecatedFunctionUsageExtension, of a deprecated function.
 
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
@@ -34,27 +35,40 @@ pub(super) fn callable<'arena>(
     }
 }
 
-/// RestrictedInternalFunctionUsageExtension::isRestrictedFunctionUsage().
+/// The RestrictedFunctionUsageExtension services: RestrictedInternalFunctionUsageExtension, then
+/// RestrictedDeprecatedFunctionUsageExtension.
 fn check<'arena>(c: &mut Checker<'_, 'arena>, id: &Identifier<'arena>, at: impl HasSpan) {
-    if !c.internal_tag {
+    if !c.internal_tag && !c.deprecations {
         return;
     }
+    let at = at.span();
     let resolved = function_checks::function_name(c.names, c.codebase, id);
-    let Some(function) = c.codebase.get_function(resolved.as_bytes()) else {
-        return;
+    // a built-in's deprecation is PHPStan's (its signature map), not the stub's PHPDoc
+    let user = c.codebase.get_function(resolved.as_bytes()).filter(|f| f.flags.is_user_defined());
+    let (name, internal, deprecation) = match user {
+        Some(function) => (
+            String::from_utf8_lossy(function.original_name.as_bytes()).into_owned(),
+            function.flags.is_internal(),
+            if c.deprecations { c.function_deprecation(function) } else { None },
+        ),
+        None => match c.builtins.functions.get(&resolved) {
+            Some(f) => (f.name.clone(), false, f.deprecated.then_some(None)),
+            None => return,
+        },
     };
-    if !function.flags.is_internal() {
-        return;
+    if c.internal_tag
+        && internal
+        && internal::should_be_reported(c, &name)
+    {
+        let message = match internal::root_namespace(&name) {
+            Some(root) => {
+                format!("Call to internal function {name}() from outside its root namespace {root}.")
+            }
+            None => format!("Call to internal function {name}()."),
+        };
+        c.report(at, "function.internal", message, None);
     }
-    let name = String::from_utf8_lossy(function.original_name.as_bytes()).into_owned();
-    if !internal::should_be_reported(c, &name) {
-        return;
+    if let Some((message, identifier)) = super::deprecations::function(c, &name, deprecation) {
+        c.report(at, &identifier, message, None);
     }
-    let message = match internal::root_namespace(&name) {
-        Some(root) => {
-            format!("Call to internal function {name}() from outside its root namespace {root}.")
-        }
-        None => format!("Call to internal function {name}()."),
-    };
-    c.report(at, "function.internal", message, None);
 }

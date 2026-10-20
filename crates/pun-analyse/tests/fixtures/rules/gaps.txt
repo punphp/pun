@@ -41,3 +41,11 @@ Classes/ExistingClassInClassExtendsRuleTest::testEnums
 # return.missing: a PHPStan API interface method's inherited `@return list<CallableParametersAcceptor>` resolves against
 # data/phpstan-api.php without its namespace's `use` imports (declared.rs scope of the API stub)
 Api/ApiClassImplementsRuleTest::testRuleOutOfPhpStan
+# FILTER_THROW_ON_FAILURE (PHP 8.5) is missing from Mago's prelude, so a variable holding it has no constant value
+Functions/FilterVarRuleTest::testRule
+# argument.missing on built-ins called with named arguments: PHPStan's named-argument variant selection (and
+# combined parameter types) differ from Pun's for DatePeriod's constructor and implode()/join()
+Classes/InstantiationRuleTest::testBug7048
+Functions/CallToFunctionParametersRuleTest::testImplodeNamedParameters
+# argument.namedNotSupported in a `PHP_VERSION_ID < 80000` branch needs the scope's narrowed PHP version
+Methods/CallMethodsRuleTest::testDisallowNamedArgumentsInPhpVersionScope

@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "src/labels.php",
+   "line": 5,
+   "identifier": "void.pure",
+   "message": "Function Level4Unused\\labels() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "src/labels.php",
+   "line": 8,
+   "identifier": "label.unused",
+   "message": "Label 'unused' is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/labels.php",
+   "line": 13,
+   "identifier": "label.unused",
+   "message": "Label 'inner' is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/labels.php",
+   "line": 17,
+   "identifier": "label.unused",
+   "message": "Label 'outer' is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/labels.php",
+   "line": 21,
+   "identifier": "label.unused",
+   "message": "Label 'top' is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/traits.php",
+   "line": 14,
+   "identifier": "trait.unused",
+   "message": "Trait Level4Unused\\NeverUsed is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 19,
+   "identifier": "trait.unused",
+   "message": "Trait Level4Unused\\OnlyByUnused is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 28,
+   "identifier": "trait.unused",
+   "message": "Trait Level4Unused\\WithAttribute is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  }
+ ]
+}

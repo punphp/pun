@@ -1,0 +1,152 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "calls.php",
+   "line": 41,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $nope in call to CoverageNamedArguments\\Attr constructor.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 42,
+   "identifier": "attribute.nonRepeatable",
+   "message": "Attribute class CoverageNamedArguments\\Attr is not repeatable but is already present above the function.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 42,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $value (int) in call to CoverageNamedArguments\\Attr constructor.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 46,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $a (int) in call to function CoverageNamedArguments\\fixed.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 47,
+   "identifier": "argument.duplicate",
+   "message": "Argument for parameter $a has already been passed.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 48,
+   "identifier": "argument.positionalAfterNamed",
+   "message": "Named argument cannot be followed by a positional argument.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 50,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $a (int) in call to function CoverageNamedArguments\\fixed.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 52,
+   "identifier": "argument.unpackAfterNamed",
+   "message": "Named argument cannot be followed by an unpacked (...) argument.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 53,
+   "identifier": "argument.nonUnpackAfterUnpacked",
+   "message": "Unpacked argument (...) cannot be followed by a non-unpacked argument.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 55,
+   "identifier": "argument.nonUnpackAfterUnpacked",
+   "message": "Unpacked argument (...) cannot be followed by a non-unpacked argument.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 58,
+   "identifier": "argument.duplicate",
+   "message": "Named parameter $extra overwrites previous argument.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 59,
+   "identifier": "argument.nonUnpackAfterUnpacked",
+   "message": "Unpacked argument (...) cannot be followed by a non-unpacked argument.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 61,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $x in call to function CoverageNamedArguments\\implicit.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 62,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $a in call to function array_merge.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 64,
+   "identifier": "arguments.count",
+   "message": "Function array_udiff invoked with 1 parameter, 3-5 required.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 65,
+   "identifier": "arguments.count",
+   "message": "Function ibase_wait_event invoked with 0 parameters, at least 1 required.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 66,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $x (int) in call to CoverageNamedArguments\\Target constructor.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 67,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $y (int) in call to CoverageNamedArguments\\Target constructor.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 67,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $z in call to CoverageNamedArguments\\Target constructor.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 74,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $a (int) in call to static method CoverageNamedArguments\\Target::make().",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 74,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $b in call to static method CoverageNamedArguments\\Target::make().",
+   "tip": null
+  }
+ ]
+}

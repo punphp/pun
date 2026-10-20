@@ -1,0 +1,129 @@
+{
+    "test": "DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "DeadCode/data/call-to-function-without-impure-points.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points.php",
+                    "line": 19,
+                    "identifier": "impureFunction.pure",
+                    "message": "Function CallToFunctionWithoutImpurePoints\\impureFunc() is marked as impure but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points.php",
+                    "line": 29,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToFunctionWithoutImpurePoints\\myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points.php",
+                    "line": 31,
+                    "identifier": "arguments.count",
+                    "message": "Function CallToFunctionWithoutImpurePoints\\funcWithRef invoked with 0 parameters, 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTransitive",
+            "files": [
+                "DeadCode/data/call-to-function-without-impure-points-transitive.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-transitive.php",
+                    "line": 32,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToFunctionWithoutImpurePointsTransitive\\pureBase() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-transitive.php",
+                    "line": 33,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToFunctionWithoutImpurePointsTransitive\\pureTransitive() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-transitive.php",
+                    "line": 34,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToFunctionWithoutImpurePointsTransitive\\pureTransitive2() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testThrows",
+            "files": [
+                "DeadCode/data/call-to-function-without-impure-points-throws.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-throws.php",
+                    "line": 17,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-throws.php",
+                    "line": 29,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToFunctionWithoutImpurePointsThrows\\noThrowsFunc() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "DeadCode/data/call-to-function-without-impure-points-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-pipe.php",
+                    "line": 9,
+                    "identifier": "arguments.count",
+                    "message": "Function CallToFunctionWithoutImpurePointsPipe\\myFunc invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-pipe.php",
+                    "line": 9,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToFunctionWithoutImpurePointsPipe\\myFunc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-pipe.php",
+                    "line": 10,
+                    "identifier": "arguments.count",
+                    "message": "Function CallToFunctionWithoutImpurePointsPipe\\myFunc invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/call-to-function-without-impure-points-pipe.php",
+                    "line": 10,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function CallToFunctionWithoutImpurePointsPipe\\myFunc() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

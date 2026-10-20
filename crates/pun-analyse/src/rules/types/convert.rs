@@ -53,7 +53,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     /// A class name as its reflection names it (the declaration's case, an anonymous class's display name).
-    pub(super) fn class_name(&self, name: &[u8]) -> String {
+    pub(super) fn reflected_name(&self, name: &[u8]) -> String {
         match self.codebase.get_class_like(name) {
             Some(k) if k.name.as_bytes().starts_with(b"{anonymous-class:") => self.display(k),
             Some(k) => text(k.original_name.as_bytes()),
@@ -94,7 +94,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TAtomic::Reference(TReference::Symbol {
                 name, parameters, ..
             }) => Type::Object(
-                self.class_name(name.as_bytes()),
+                self.reflected_name(name.as_bytes()),
                 parameters
                     .iter()
                     .flatten()
@@ -127,7 +127,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     /// `TemplateTypeScope::describe()`.
     fn template_scope(&self, parent: &GenericParent) -> String {
         match parent {
-            GenericParent::ClassLike(name) => format!("class {}", self.class_name(name.as_bytes())),
+            GenericParent::ClassLike(name) => format!("class {}", self.reflected_name(name.as_bytes())),
             // (Mago names a function's templates by an empty class and the function's lowercase name)
             GenericParent::FunctionLike((class, function)) if class.is_empty() => {
                 let name = self.codebase.get_function(function.as_bytes()).map_or(function.as_bytes(), |f| f.original_name.as_bytes());
@@ -138,7 +138,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .codebase
                     .get_method(class.as_bytes(), method.as_bytes())
                     .map_or(method.as_bytes(), |m| m.original_name.as_bytes());
-                format!("method {}::{}()", self.class_name(class.as_bytes()), text(name))
+                format!("method {}::{}()", self.reflected_name(class.as_bytes()), text(name))
             }
         }
     }
@@ -190,7 +190,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 }
             }
             TScalar::ClassLikeString(c) => match c {
-                TClassLikeString::Literal { value } => Type::ConstString(self.class_name(value.as_bytes())),
+                TClassLikeString::Literal { value } => Type::ConstString(self.reflected_name(value.as_bytes())),
                 TClassLikeString::OfType { constraint, .. } => {
                     Type::ClassString(Some(Box::new(self.atom(constraint))))
                 }
@@ -222,7 +222,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         match o {
             TObject::Any => Type::ObjectWithoutClass,
             TObject::Named(n) => {
-                let mut name = self.class_name(n.name.as_bytes());
+                let mut name = self.reflected_name(n.name.as_bytes());
                 // a trait's `$this` / `static` is the class the trait is analysed in
                 if (n.is_this || n.is_static)
                     && self
@@ -231,7 +231,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                         .is_some_and(|k| k.kind == mago_codex::symbol::SymbolKind::Trait)
                     && let Some(k) = self.class_scope()
                 {
-                    name = self.class_name(k.name.as_bytes());
+                    name = self.reflected_name(k.name.as_bytes());
                 }
                 let args: Vec<Type> = n
                     .type_parameters
@@ -249,8 +249,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 self.with_intersections(t, n.intersection_types.as_deref().map(Vec::as_slice))
             }
             TObject::Enum(e) => match &e.case {
-                Some(case) => Type::EnumCase(self.class_name(e.name.as_bytes()), text(case.as_bytes())),
-                None => Type::Object(self.class_name(e.name.as_bytes()), vec![]),
+                Some(case) => Type::EnumCase(self.reflected_name(e.name.as_bytes()), text(case.as_bytes())),
+                None => Type::Object(self.reflected_name(e.name.as_bytes()), vec![]),
             },
             TObject::WithProperties(p) => Type::ObjectShape(
                 p.known_properties

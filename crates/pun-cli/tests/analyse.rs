@@ -470,3 +470,79 @@ fn check_reports_analyse_findings() {
         "{out}"
     );
 }
+
+/// `[[analyse.ignore]]` against PHPStan's `ignoreErrors` in every format: a message pattern that matches, an
+/// identifier with a `count` it misses (`ignore.count` at the first match), a pattern nothing matches in a file
+/// (`ignore.unmatched`, no line, not ignorable) and a raw message with several paths nothing matches (a
+/// not-file-specific error). The baseline leaves out the errors about ignores, as PHPStan's does.
+#[test]
+fn ignores_match_phpstan() {
+    let neon = "parameters:\n    level: 0\n    paths:\n        - src\n    ignoreErrors:\n        - message: '#^Function undefined_fn not found\\.$#'\n          path: src/a.php\n        - identifier: method.notFound\n          path: src/a.php\n          count: 2\n        - message: '#^Never$#'\n          path: src/a.php\n        - rawMessage: 'Nope'\n          paths: [src/*, lib/*]\n";
+    let toml = "[analyse]\npaths = [\"src\"]\npreset = \"basic\"\n\n[[analyse.ignore]]\nmessage = '#^Function undefined_fn not found\\.$#'\npaths = [\"src/a.php\"]\n\n[[analyse.ignore]]\nidentifier = \"method.notFound\"\npaths = [\"src/a.php\"]\ncount = 2\n\n[[analyse.ignore]]\nmessage = \"#^Never$#\"\npaths = [\"src/a.php\"]\n\n[[analyse.ignore]]\nraw-message = \"Nope\"\npaths = [\"src/*\", \"lib/*\"]\n";
+    let d = project(
+        "analyse",
+        "ignores",
+        &[
+            ("phpstan.neon", neon),
+            ("pun.toml", toml),
+            ("src/a.php", ERRORS),
+        ],
+    );
+    // Human, agent and baseline output need no oracle.
+    let (out, _, code) = pun(&d, &["--color=never"], &[]);
+    assert_eq!(code, Some(1));
+    let general = format!(
+        "Ignored error \"Nope\" in paths: {0}/src/*, {0}/lib/* was not matched in reported errors.",
+        d.display()
+    );
+    assert!(out.contains(&format!("x {general}\n")), "{out}");
+    assert!(out.contains("4 errors"), "{out}");
+    let (out, _, _) = pun(&d, &[], &[("PUN_AGENT", "1")]);
+    assert!(
+        out.contains(&format!("unmatched-ignore {general}")),
+        "{out}"
+    );
+    let (out, _, code) = pun(&d, &["--generate-baseline", "--color=never"], &[]);
+    assert!(out.contains("Baseline generated with 1 error in"), "{out}");
+    assert_eq!(code, Some(0));
+    std::fs::remove_file(d.join("pun-baseline.toml")).unwrap();
+    let Some(phar) = phpstan() else { return };
+    let phar = phar.to_str().unwrap();
+    for f in FORMATS {
+        let format = format!("--error-format={f}");
+        let phpstan = [
+            "php",
+            phar,
+            "analyse",
+            "--no-progress",
+            "-c",
+            "phpstan.neon",
+        ];
+        let mut want = run(&d, &phpstan, &[&format, "-v"]);
+        // teamcity names the config file
+        want.0 = want.0.replace("file='phpstan.neon'", "file='pun.toml'");
+        let got = run(&d, &[PUN, "analyse"], &[&format, "-v"]);
+        assert_eq!(got, want, "{f}");
+    }
+}
+
+/// No analyse rule on: PHPStan stops with "No rules detected" (no level, CommandHelper); Pun stops the same, with
+/// its run-error exit code.
+#[test]
+fn no_rules_detected() {
+    let d = sample("no-rules", ERRORS);
+    // rules/mapping.toml's analyse groups
+    let groups = "arrays attributes casing casts classes comments control-flow dead-code debug deprecated functions imports laravel operators phpdoc statements strings types undefined";
+    let off: String = groups
+        .split(' ')
+        .map(|g| format!("{g} = \"off\"\n"))
+        .collect();
+    std::fs::write(
+        d.join("pun.toml"),
+        format!("[analyse]\npaths = [\"src\"]\n\n[analyse.rules]\n{off}"),
+    )
+    .unwrap();
+    let (out, err, code) = pun(&d, &["--color=never"], &[]);
+    assert_eq!((out.as_str(), code), ("", Some(2)));
+    assert!(err.starts_with("x No rules detected\n"), "{err}");
+}

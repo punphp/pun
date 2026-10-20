@@ -713,9 +713,12 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                     Holder::Done
                 }
                 super::reflection::Lookup::Found(k) => {
-                    super::class_names::check(
+                    let member = super::internal::static_property_member(c, k, name.as_bytes());
+                    let location = super::class_names::Location::StaticPropertyAccess(member);
+                    super::class_names::check_at(
                         c,
                         &[super::class_names::Pair::name(class, id.span())],
+                        Some(&location),
                         true,
                     );
                     Holder::Class(k, false)

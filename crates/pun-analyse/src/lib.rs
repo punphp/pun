@@ -18,7 +18,7 @@ use rayon::prelude::*;
 pub use codebase::CouldNotReadFile;
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
-pub use project::Project;
+pub use project::{Project, Reported, StrictRules};
 pub use relative_path::RelativePath;
 pub use rules::Larastan;
 
@@ -26,7 +26,8 @@ pub use rules::Larastan;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Error {
     pub file: String,
-    pub line: u32,
+    /// PHPStan's `-1` for a node without a position (a synthetic `break`).
+    pub line: i64,
     pub identifier: String,
     pub message: String,
     pub tip: Option<String>,
@@ -50,6 +51,19 @@ pub fn analyse(project_root: &Path, config: &Resolved) -> Result<Vec<Error>, Cou
 /// `@phpstan-ignore*` comments and `ignoreErrors` ignore, as `phpstan analyse` reports it. A file that exists but
 /// can't be read stops the run, as it stops PHPStan's.
 pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
+    Ok(analyse_project(project)?.errors)
+}
+
+/// What [`analyse_project`] reports.
+pub struct Analysis {
+    /// The file-specific errors, sorted.
+    pub errors: Vec<Error>,
+    /// PHPStan's not-file-specific errors: `ignoreErrors` entries without a file path nothing matched.
+    pub general: Vec<String>,
+}
+
+/// [`run`], with PHPStan's not-file-specific errors.
+pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> {
     let (codebase, sources) = codebase::build_with_sources(project)?;
     let files: std::collections::HashMap<_, _> = project
         .analysed
@@ -68,11 +82,13 @@ pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
         .analysed
         .par_iter()
         .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
+        .chain(rules::unused_traits(project, &codebase, &sources))
         .collect();
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();
-    let errors = rules::larastan_finish(project.larastan.as_ref(), errors);
+    let mut errors = rules::larastan_finish(project.larastan.as_ref(), errors);
+    settings.keep_reported(&mut errors);
     let processed = project
         .ignore_errors
         .process(errors, false, &analysed, false);
@@ -81,14 +97,17 @@ pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
         .into_iter()
         .map(|e| Error {
             file: e.file,
-            line: e.line.map_or(0, |l| l as u32),
+            line: e.line.unwrap_or(0),
             identifier: e.identifier.unwrap_or_default(),
             message: e.message,
             tip: e.tip,
         })
         .collect();
     errors.sort();
-    Ok(errors)
+    Ok(Analysis {
+        errors,
+        general: processed.string_errors,
+    })
 }
 
 fn display(p: &Path) -> String {

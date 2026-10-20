@@ -242,3 +242,82 @@ fn local_ignores_processor() {
         assert_eq!(got, want, "{}", case["code"]);
     }
 }
+
+/// Pun's `rule` key (`[[analyse.ignore]] rule`, derived by hand from rules.md §4): an entry ignores the errors whose
+/// identifier is its rule's, is reported unmatched under the rule's name as an identifier-only entry is, and entries
+/// with the same path and rule add up their counts as PHPStan's do.
+#[test]
+fn rule_entries() {
+    fn rule_of(id: &str) -> Option<&'static str> {
+        match id {
+            "a.one" | "a.two" => Some("analyse/x/a"),
+            _ => None,
+        }
+    }
+    let file = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/ignore.rs");
+    let entry = |pairs: &[(&str, Value)]| {
+        let mut e = Array::new();
+        for (k, v) in pairs {
+            e.set(Key::from(*k), v.clone());
+        }
+        Value::Array(e)
+    };
+    let rule = |r: &str| ("rule", Value::str(r));
+    let at = ("path", Value::str(file));
+    let entries = Array::list([
+        entry(&[rule("analyse/x/a"), at.clone()]),
+        entry(&[rule("analyse/x/a"), at.clone()]),
+        entry(&[rule("analyse/x/b")]),
+    ]);
+    let ignored = IgnoredErrors::new(&entries, true).with_rules(rule_of);
+    let e = |id: &str| Error {
+        identifier: Some(id.into()),
+        ..Error::new("m", file, Some(1))
+    };
+    let p = ignored.process(vec![e("a.one"), e("a.two"), e("b.one")], false, &[], false);
+    let left: Vec<_> = p
+        .errors
+        .iter()
+        .map(|e| e.identifier.clone().unwrap())
+        .collect();
+    assert_eq!(left, ["b.one"]);
+    assert_eq!(
+        p.string_errors,
+        ["Ignored error pattern analyse/x/b was not matched in reported errors."]
+    );
+    // Without the rule mapping nothing matches.
+    let p = IgnoredErrors::new(&entries, true).process(vec![e("a.one")], false, &[], false);
+    assert_eq!(p.errors.len(), 1);
+}
+
+/// `ignoreErrors` built outside a neon file goes through PHPStan's checks, with its messages
+/// (ContainerFactory::validateParameters, ValidateIgnoredErrorsExtension); a `rule` names what to ignore.
+#[test]
+fn validate_ignore_errors() {
+    use pun_phpstan::config::validate_ignore_errors;
+    let params = |entry: &[(&str, Value)]| {
+        let mut e = Array::new();
+        for (k, v) in entry {
+            e.set(Key::from(*k), v.clone());
+        }
+        let mut p = Array::new();
+        p.set(
+            Key::from("ignoreErrors"),
+            Value::Array(Array::list([Value::Array(e)])),
+        );
+        p
+    };
+    assert_eq!(
+        validate_ignore_errors(&params(&[("rule", Value::str("analyse/x/a"))])),
+        Ok(())
+    );
+    assert_eq!(
+        validate_ignore_errors(&params(&[
+            ("rule", Value::str("analyse/x/a")),
+            ("count", Value::Int(2))
+        ])),
+        Err("Invalid configuration:\nAn ignoreErrors entry with count field must also contain path field.".into())
+    );
+    let e = validate_ignore_errors(&params(&[("message", Value::str("#(#"))])).unwrap_err();
+    assert!(e.starts_with("Invalid entry in ignoreErrors:\n"), "{e}");
+}

@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "stubbed/a.php",
+   "line": 3,
+   "identifier": "function.notFound",
+   "message": "Function stubbed_fn not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "stubbed/a.php",
+   "line": 4,
+   "identifier": "class.notFound",
+   "message": "Instantiated class StubbedClass not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "stubbed/a.php",
+   "line": 11,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method StubSub::notInStub().",
+   "tip": null
+  }
+ ]
+}

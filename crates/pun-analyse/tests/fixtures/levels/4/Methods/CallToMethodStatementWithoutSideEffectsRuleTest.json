@@ -1,0 +1,309 @@
+{
+    "test": "Methods/CallToMethodStatementWithoutSideEffectsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/method-call-statement-no-side-effects.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects.php",
+                    "line": 15,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects.php",
+                    "line": 15,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects.php",
+                    "line": 21,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method Exception::getCode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects.php",
+                    "line": 63,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bar::doPure() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects.php",
+                    "line": 64,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bar::doPureWithThrowsVoid() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullsafe",
+            "files": [
+                "Methods/data/nullsafe-method-call-statement-no-side-effects.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/nullsafe-method-call-statement-no-side-effects.php",
+                    "line": 10,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method Exception::getMessage() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4232",
+            "files": [
+                "Methods/data/bug-4232.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPhpDoc",
+            "files": [
+                "Methods/data/method-call-statement-no-side-effects-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 54,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bzz::regular() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 55,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bzz::pure1() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 56,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bzz::pure2() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 57,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bzz::pure3() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 58,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bzz::pure4() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-statement-no-side-effects-phpdoc.php",
+                    "line": 59,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallStatementNoSideEffects\\Bzz::pure5() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4455",
+            "files": [
+                "Methods/data/bug-4455.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11503",
+            "files": [
+                "Methods/data/bug-11503.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 9,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::sub() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 10,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::add() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 10,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::add() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 11,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 11,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 12,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::setDate() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 12,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::setDate() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 13,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::setISODate() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 13,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::setISODate() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 14,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::setTime() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 14,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::setTime() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 15,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::setTimestamp() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 15,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::setTimestamp() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 17,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::setTimezone() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11503.php",
+                    "line": 17,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::setTimezone() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12224",
+            "files": [
+                "Methods/data/bug-12224.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallables",
+            "files": [
+                "Methods/data/first-class-callable-method-without-side-effect.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/first-class-callable-method-without-side-effect.php",
+                    "line": 12,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method FirstClassCallableMethodWithoutSideEffect\\Foo::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/first-class-callable-method-without-side-effect.php",
+                    "line": 36,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method FirstClassCallableMethodWithoutSideEffect\\Bar::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/first-class-callable-method-without-side-effect.php",
+                    "line": 39,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method FirstClassCallableMethodWithoutSideEffect\\Bar::doBar() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "Methods/data/method-call-without-side-effect-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-call-without-side-effect-pipe.php",
+                    "line": 33,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method MethodCallWithoutSideEffectPipe\\Foo::doPure() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -136,17 +136,17 @@ pub(super) fn late(c: &Checker, t: &Type, class: Option<&ClassLikeMetadata>, php
         Type::Conditional(cd) => union(vec![go(&cd.then), go(&cd.otherwise)]),
         Type::Template(tt) if !own(&tt.scope) => go(&tt.bound),
         Type::Intersection(ts) => intersect(ts.iter().map(go).collect()),
-        Type::Object(name, args) => Type::Object(c.class_name(name.as_bytes()), args.iter().map(go).collect()),
+        Type::Object(name, args) => Type::Object(c.reflected_name(name.as_bytes()), args.iter().map(go).collect()),
         Type::Static(_, args) if phpdoc && let Some(k) = class => {
             let args = args.iter().map(go).collect();
-            let name = c.class_name(k.name.as_bytes());
+            let name = c.reflected_name(k.name.as_bytes());
             if k.flags.is_final() || k.kind == SymbolKind::Enum {
                 Type::Object(name, args)
             } else {
                 Type::Static(name, args)
             }
         }
-        Type::Static(name, args) => Type::Static(c.class_name(name.as_bytes()), args.iter().map(go).collect()),
+        Type::Static(name, args) => Type::Static(c.reflected_name(name.as_bytes()), args.iter().map(go).collect()),
         t => t.traverse(&go),
     }
 }

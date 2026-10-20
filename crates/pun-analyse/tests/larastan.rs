@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 use pun_analyse::{Larastan, Project, run};
 use serde_json::Value;
 
-type Key = (String, u32, String, String, Option<String>);
+type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the ported Larastan rules.
 const PORTED: &[&str] = &[
@@ -107,7 +107,7 @@ fn larastan_rule_fixtures() {
                 .map(|e| {
                     (
                         e["file"].as_str().unwrap().to_string(),
-                        e["line"].as_u64().unwrap() as u32,
+                        e["line"].as_i64().unwrap(),
                         e["identifier"].as_str().unwrap().to_string(),
                         e["message"].as_str().unwrap().to_string(),
                         e["tip"].as_str().map(str::to_string),
@@ -188,13 +188,13 @@ fn larastan_switches_gate_the_rules() {
         "larastan.octaneCompatibility",
     ];
     for case in test["cases"].as_array().unwrap() {
-        let want: BTreeSet<(u32, String)> = case["errors"]
+        let want: BTreeSet<(i64, String)> = case["errors"]
             .as_array()
             .unwrap()
             .iter()
             .filter_map(|e| {
                 Some((
-                    e["line"].as_u64()? as u32,
+                    e["line"].as_i64()?,
                     e["identifier"].as_str()?.to_string(),
                 ))
             })
@@ -255,14 +255,14 @@ fn oracle_case(dir: &Path, larastan: Larastan, prefix: &str) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/larastan");
     let expected: Value =
         serde_json::from_str(&std::fs::read_to_string(dir.join("expected.json")).unwrap()).unwrap();
-    let want: BTreeSet<(String, u32, String, String)> = expected["errors"]
+    let want: BTreeSet<(String, i64, String, String)> = expected["errors"]
         .as_array()
         .unwrap()
         .iter()
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),
-                e["line"].as_u64().unwrap() as u32,
+                e["line"].as_i64().unwrap(),
                 e["identifier"].as_str().unwrap().to_string(),
                 e["message"].as_str().unwrap().to_string(),
             )
@@ -389,7 +389,7 @@ fn larastan_unnecessary_collection_calls() {
         scanned(&root),
     );
     project.larastan = Some(only.clone());
-    let lines: BTreeSet<u32> = run(&project)
+    let lines: BTreeSet<i64> = run(&project)
         .unwrap()
         .into_iter()
         .filter(|e| e.identifier == "larastan.noUnnecessaryCollectionCall")

@@ -102,11 +102,11 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
-        let acceptor = params::select(variants, counts.positional, counts.unpack);
+        let acceptor = params::select(variants, &counts);
         params::check(
             c,
             &acceptor,
-            counts,
+            &counts,
             id,
             params::Call {
                 kind: params::CallKind::Function,
@@ -217,8 +217,8 @@ fn arguments<'arena>(
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), counts.positional, counts.unpack),
-        counts,
+        &params::select(method.variants(), &counts),
+        &counts,
         name,
         params::Call {
             kind: params::CallKind::Method,
@@ -312,7 +312,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         if !known && members::method(c, class, b"__callStatic").is_some() {
             return;
         }
-        class_names::check(c, pair.as_slice(), true);
+        // ponytail: an `@method` tag's AnnotationMethodReflection is not the location's method
+        class_names::check_at(c, pair.as_slice(), Some(&class_names::Location::StaticMethodCall(None)), true);
         if known {
             return;
         }
@@ -324,7 +325,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         );
         return;
     };
-    class_names::check(c, pair.as_slice(), true);
+    let location = class_names::Location::StaticMethodCall(Some(super::internal::method_member(c, &method)));
+    class_names::check_at(c, pair.as_slice(), Some(&location), true);
     let declaring = method.declaring_display(c);
     let declared = method.name();
     let is_static = method.is_static();
@@ -389,8 +391,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), counts.positional, counts.unpack),
-        counts,
+        &params::select(method.variants(), &counts),
+        &counts,
         name,
         params::Call {
             kind: params::CallKind::StaticMethod,

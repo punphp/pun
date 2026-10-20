@@ -1,0 +1,922 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "access-deprecated-property.php",
+   "line": 10,
+   "identifier": "property.deprecated",
+   "message": "Access to deprecated property $deprecatedFoo of class AccessDeprecatedProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-property.php",
+   "line": 11,
+   "identifier": "property.deprecated",
+   "message": "Access to deprecated property $deprecatedFoo of class AccessDeprecatedProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-property.php",
+   "line": 16,
+   "identifier": "property.deprecated",
+   "message": "Access to deprecated property $deprecatedFooFromTrait of class AccessDeprecatedProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-property.php",
+   "line": 17,
+   "identifier": "property.deprecated",
+   "message": "Access to deprecated property $deprecatedFooFromTrait of class AccessDeprecatedProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-property.php",
+   "line": 19,
+   "identifier": "property.deprecated",
+   "message": "Access to deprecated property $deprecatedWithDescription of class AccessDeprecatedProperty\\Foo:\nUse something else instead.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 8,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedFoo of class AccessDeprecatedStaticProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 9,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedFoo of class AccessDeprecatedStaticProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 22,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedFooFromTrait of class AccessDeprecatedStaticProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 23,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedFooFromTrait of class AccessDeprecatedStaticProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 33,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedWithDescription of class AccessDeprecatedStaticProperty\\Foo:\nThis is probably a singleton.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 117,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedFoo of class AccessDeprecatedStaticProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 118,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedOtherFoo of class AccessDeprecatedStaticProperty\\Child.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 119,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedFoo of class AccessDeprecatedStaticProperty\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "access-deprecated-static-property.php",
+   "line": 120,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $deprecatedOtherFoo of class AccessDeprecatedStaticProperty\\Child.",
+   "tip": null
+  },
+  {
+   "file": "bug-162.php",
+   "line": 7,
+   "identifier": "constant.deprecated",
+   "message": "Use of constant E_STRICT is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "bug-162.php",
+   "line": 18,
+   "identifier": "constant.deprecated",
+   "message": "Use of constant E_STRICT is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-function.php",
+   "line": 8,
+   "identifier": "function.deprecated",
+   "message": "Call to deprecated function CheckDeprecatedFunctionCall\\deprecated_foo().",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-function.php",
+   "line": 9,
+   "identifier": "function.deprecated",
+   "message": "Call to deprecated function CheckDeprecatedFunctionCall\\deprecated_foo().",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-function.php",
+   "line": 10,
+   "identifier": "function.deprecated",
+   "message": "Call to deprecated function CheckDeprecatedFunctionCall\\deprecated_with_description():\nGlobal function? Seriously?",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-method.php",
+   "line": 7,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-method.php",
+   "line": 10,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedMethodCall\\Bar.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-method.php",
+   "line": 11,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method deprecatedFoo2() of class CheckDeprecatedMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-method.php",
+   "line": 14,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method deprecatedFooFromTrait() of class CheckDeprecatedMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-method.php",
+   "line": 15,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method deprecatedWithDescription() of class CheckDeprecatedMethodCall\\Foo:\nCall a different method instead.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-method.php",
+   "line": 64,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method prophesize() of class CheckDeprecatedMethodCall\\UsingDeprecatedMethodFromTrait:\nUse TraitReplacingDeprecatedMethod::prophesize()",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 6,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedStaticMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 8,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedStaticMethodCall\\Bar.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 9,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo2() of class CheckDeprecatedStaticMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 11,
+   "identifier": "staticMethod.deprecatedClass",
+   "message": "Call to static method foo() on deprecated class CheckDeprecatedStaticMethodCall\\DeprecatedBar.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 12,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedStaticMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 13,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo2() of class CheckDeprecatedStaticMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 15,
+   "identifier": "staticMethod.deprecatedClass",
+   "message": "Call to static method foo() on deprecated class CheckDeprecatedStaticMethodCall\\DeprecatedBaz:\nDo not touch this at all.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 16,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedWithDescription() of class CheckDeprecatedStaticMethodCall\\Foo:\nThis is probably a singleton.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 33,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedStaticMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 74,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedStaticMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 75,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedOtherFoo() of class CheckDeprecatedStaticMethodCall\\Child.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 76,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedStaticMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 77,
+   "identifier": "staticMethod.deprecated",
+   "message": "Call to deprecated method deprecatedOtherFoo() of class CheckDeprecatedStaticMethodCall\\Child.",
+   "tip": null
+  },
+  {
+   "file": "call-to-deprecated-static-method.php",
+   "line": 81,
+   "identifier": "staticMethod.deprecatedClass",
+   "message": "Call to method doDeprecatedBar() of deprecated class CheckDeprecatedStaticMethodCall\\DeprecatedBar.",
+   "tip": null
+  },
+  {
+   "file": "custom-deprecation-scope.php",
+   "line": 13,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "custom-deprecation-scope.php",
+   "line": 23,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method deprecatedFoo() of class CheckDeprecatedMethodCall\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "fetching-class-const-of-deprecated-class.php",
+   "line": 6,
+   "identifier": "classConstant.deprecatedClass",
+   "message": "Access to constant on deprecated class FetchingClassConstOfDeprecatedClass\\DeprecatedFoo.",
+   "tip": null
+  },
+  {
+   "file": "fetching-class-const-of-deprecated-class.php",
+   "line": 9,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant DEPRECATED_FOO of class FetchingClassConstOfDeprecatedClass\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "fetching-class-const-of-deprecated-class.php",
+   "line": 11,
+   "identifier": "classConstant.deprecatedClass",
+   "message": "Access to constant on deprecated class FetchingClassConstOfDeprecatedClass\\DeprecatedFoo.",
+   "tip": null
+  },
+  {
+   "file": "fetching-class-const-of-deprecated-class.php",
+   "line": 12,
+   "identifier": "classConstant.deprecatedClass",
+   "message": "Access to constant on deprecated class FetchingClassConstOfDeprecatedClass\\DeprecatedFoo.",
+   "tip": null
+  },
+  {
+   "file": "fetching-class-const-of-deprecated-class.php",
+   "line": 13,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant DEPRECATED_WITH_DESCRIPTION of class FetchingClassConstOfDeprecatedClass\\Foo:\nUse different constant.",
+   "tip": null
+  },
+  {
+   "file": "fetching-class-const-of-deprecated-class.php",
+   "line": 14,
+   "identifier": "classConstant.deprecatedClass",
+   "message": "Fetching class constant FOO of deprecated class FetchingClassConstOfDeprecatedClass\\DeprecatedBar:\nDeprecated for some reason.",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-anonymous-classes.php",
+   "line": 9,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Anonymous class implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedFooable.",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-anonymous-classes.php",
+   "line": 13,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Anonymous class implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedFooable.",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-anonymous-classes.php",
+   "line": 13,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Anonymous class implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedFooable2.",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-anonymous-classes.php",
+   "line": 17,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Anonymous class implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedWithDescription:\nBetter interface imminent?",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-classes.php",
+   "line": 10,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Class ImplementationOfDeprecatedInterface\\Foo2 implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedFooable.",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-classes.php",
+   "line": 15,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Class ImplementationOfDeprecatedInterface\\Foo3 implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedFooable.",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-classes.php",
+   "line": 15,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Class ImplementationOfDeprecatedInterface\\Foo3 implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedFooable2.",
+   "tip": null
+  },
+  {
+   "file": "implementation-of-deprecated-interface-in-classes.php",
+   "line": 20,
+   "identifier": "class.implementsDeprecatedInterface",
+   "message": "Class ImplementationOfDeprecatedInterface\\Foo4 implements deprecated interface ImplementationOfDeprecatedInterface\\DeprecatedWithDescription:\nBetter interface imminent?",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-class-in-anonymous-classes.php",
+   "line": 9,
+   "identifier": "class.extendsDeprecatedClass",
+   "message": "Anonymous class extends deprecated class InheritanceOfDeprecatedClass\\DeprecatedFoo.",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-class-in-anonymous-classes.php",
+   "line": 13,
+   "identifier": "class.extendsDeprecatedClass",
+   "message": "Anonymous class extends deprecated class InheritanceOfDeprecatedClass\\DeprecatedWithDescription:\nInheritance is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-class-in-classes.php",
+   "line": 10,
+   "identifier": "class.extendsDeprecatedClass",
+   "message": "Class InheritanceOfDeprecatedClass\\Bar2 extends deprecated class InheritanceOfDeprecatedClass\\DeprecatedFoo.",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-class-in-classes.php",
+   "line": 15,
+   "identifier": "class.extendsDeprecatedClass",
+   "message": "Class InheritanceOfDeprecatedClass\\Bar3 extends deprecated class InheritanceOfDeprecatedClass\\DeprecatedWithDescription:\nInheritance is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-interface.php",
+   "line": 10,
+   "identifier": "interface.extendsDeprecatedInterface",
+   "message": "Interface InheritanceOfDeprecatedInterface\\Foo2 extends deprecated interface InheritanceOfDeprecatedInterface\\DeprecatedFooable.",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-interface.php",
+   "line": 15,
+   "identifier": "interface.extendsDeprecatedInterface",
+   "message": "Interface InheritanceOfDeprecatedInterface\\Foo3 extends deprecated interface InheritanceOfDeprecatedInterface\\DeprecatedFooable.",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-interface.php",
+   "line": 15,
+   "identifier": "interface.extendsDeprecatedInterface",
+   "message": "Interface InheritanceOfDeprecatedInterface\\Foo3 extends deprecated interface InheritanceOfDeprecatedInterface\\DeprecatedFooable2.",
+   "tip": null
+  },
+  {
+   "file": "inheritance-of-deprecated-interface.php",
+   "line": 20,
+   "identifier": "interface.extendsDeprecatedInterface",
+   "message": "Interface InheritanceOfDeprecatedInterface\\Foo4 extends deprecated interface InheritanceOfDeprecatedInterface\\DeprecatedWithDescription:\nImplement something else.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-of-deprecated-class.php",
+   "line": 6,
+   "identifier": "new.deprecatedClass",
+   "message": "Instantiation of deprecated class InstantiationOfDeprecatedClass\\DeprecatedFoo.",
+   "tip": null
+  },
+  {
+   "file": "instantiation-of-deprecated-class.php",
+   "line": 7,
+   "identifier": "new.deprecatedClass",
+   "message": "Instantiation of deprecated class InstantiationOfDeprecatedClass\\DeprecatedWithDescription:\nDo not instantiate.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 137,
+   "identifier": "traitUse.deprecatedTrait",
+   "message": "Usage of deprecated trait PunDeprecations\\GoneTrait in class PunDeprecations\\UsesGoneTrait.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 163,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $gone of function PunDeprecations\\uses() has typehint with deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 163,
+   "identifier": "return.deprecatedClass",
+   "message": "Return type of function PunDeprecations\\uses() has typehint with deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 165,
+   "identifier": "constant.deprecated",
+   "message": "PunDeprecations\\FORMATTED is old",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 165,
+   "identifier": "constant.deprecated",
+   "message": "Use NEW_ONE.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 165,
+   "identifier": "constant.deprecated",
+   "message": "Use of constant E_STRICT is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 165,
+   "identifier": "constant.deprecated",
+   "message": "Use of constant E_STRICT is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 165,
+   "identifier": "constant.deprecated",
+   "message": "Use of constant FILTER_SANITIZE_STRING is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 166,
+   "identifier": "function.deprecated",
+   "message": "Call to deprecated function PunDeprecations\\multi():\nfirst line\n  second line\n\nafter a blank line",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 167,
+   "identifier": "function.deprecated",
+   "message": "Call to deprecated function PunDeprecations\\both().",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 169,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method fromInterface() of class PunDeprecations\\Child:\nUse other().",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 170,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method fromTrait() of class PunDeprecations\\Child:\nFrom the trait.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 171,
+   "identifier": "property.deprecated",
+   "message": "Access to deprecated property $old of class PunDeprecations\\Child.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 172,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant INHERITED of class PunDeprecations\\Base:\nParent constant.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 173,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant FROM_INTERFACE of interface PunDeprecations\\Contract:\nInterface constant.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 174,
+   "identifier": "class.toStringDeprecated",
+   "message": "Casting class PunDeprecations\\Child to string is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 175,
+   "identifier": "class.toStringDeprecated",
+   "message": "Casting class PunDeprecations\\Base to string is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 176,
+   "identifier": "property.deprecatedClass",
+   "message": "Access to property $prop of deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 177,
+   "identifier": "staticProperty.deprecatedClass",
+   "message": "Access to static property $static of deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 178,
+   "identifier": "classConstant.deprecatedClass",
+   "message": "Fetching class constant C of deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 179,
+   "identifier": "staticMethod.deprecatedClass",
+   "message": "Call to method make() of deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 180,
+   "identifier": "method.deprecatedClass",
+   "message": "Call to method run() of deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 181,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $staticOld of class PunDeprecations\\Base.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 183,
+   "identifier": "new.deprecatedClass",
+   "message": "Instantiation of deprecated class PunDeprecations\\Gone:\nThe whole class.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 189,
+   "identifier": "return.missing",
+   "message": "Anonymous function should return PunDeprecations\\GoneInterface but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 189,
+   "identifier": "attribute.deprecated",
+   "message": "Attribute class PunDeprecations\\GoneAttribute is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 189,
+   "identifier": "parameter.deprecatedEnum",
+   "message": "Parameter $e of anonymous function has typehint with deprecated enum PunDeprecations\\GoneEnum.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra.php",
+   "line": 189,
+   "identifier": "return.deprecatedInterface",
+   "message": "Return type of anonymous function has typehint with deprecated interface PunDeprecations\\GoneInterface.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 11,
+   "identifier": "attribute.deprecated",
+   "message": "Attribute class PunDeprecations2\\OldAttribute is deprecated: Use the new attribute.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 79,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $gone of function PunDeprecations2\\uses() has typehint with deprecated class PunDeprecations2\\GoneParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 84,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method isArray() of class ReflectionParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 85,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method isArray() of class PunDeprecations2\\MyParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 86,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method isArray() of class ReflectionParameter.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 87,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant Old of enum PunDeprecations2\\Status:\nUse New.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 88,
+   "identifier": "classConstant.deprecated",
+   "message": "Fetching deprecated class constant X of class PunDeprecations2\\ConstChild.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 90,
+   "identifier": "class.toStringDeprecated",
+   "message": "Casting class PunDeprecations2\\Stringy to string is deprecated.:\nCast something else.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 91,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property PunDeprecations2\\Gone::$missing.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 91,
+   "identifier": "staticProperty.deprecatedClass",
+   "message": "Access to static property on deprecated class PunDeprecations2\\Gone.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 92,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method PunDeprecations2\\Gone::missing().",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 92,
+   "identifier": "staticMethod.deprecatedClass",
+   "message": "Call to static method on deprecated class PunDeprecations2\\Gone.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 94,
+   "identifier": "arguments.count",
+   "message": "Function ini_get invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 96,
+   "identifier": "function.deprecated",
+   "message": "Call to deprecated function utf8_encode().",
+   "tip": null
+  },
+  {
+   "file": "pun-extra2.php",
+   "line": 98,
+   "identifier": "traitUse.deprecatedTrait",
+   "message": "Usage of deprecated trait PunDeprecations2\\GoneTrait.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra3.php",
+   "line": 31,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $st of class PunDeprecations3\\HasOld.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra3.php",
+   "line": 43,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property PunDeprecations3\\HasOld::$inst.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra4.php",
+   "line": 9,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method kill() of class mysqli.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra4.php",
+   "line": 10,
+   "identifier": "method.deprecated",
+   "message": "Call to deprecated method kill() of class mysqli.",
+   "tip": null
+  },
+  {
+   "file": "pun-extra4.php",
+   "line": 21,
+   "identifier": "staticProperty.deprecated",
+   "message": "Access to deprecated static property $old of class DeprecationsExtra4\\HasStatic.",
+   "tip": null
+  },
+  {
+   "file": "typehint-anonymous-function-deprecated-class.php",
+   "line": 6,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $property of anonymous function has typehint with deprecated class TypeHintDeprecatedInClosureSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "typehint-anonymous-function-deprecated-class.php",
+   "line": 7,
+   "identifier": "parameter.deprecatedInterface",
+   "message": "Parameter $property2 of anonymous function has typehint with deprecated interface TypeHintDeprecatedInClosureSignature\\DeprecatedInterface.",
+   "tip": null
+  },
+  {
+   "file": "typehint-anonymous-function-deprecated-class.php",
+   "line": 9,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $property4 of anonymous function has typehint with deprecated class TypeHintDeprecatedInClosureSignature\\VerboseDeprecatedProperty:\nI'll be back",
+   "tip": null
+  },
+  {
+   "file": "typehint-anonymous-function-deprecated-class.php",
+   "line": 11,
+   "identifier": "return.deprecatedClass",
+   "message": "Return type of anonymous function has typehint with deprecated class TypeHintDeprecatedInClosureSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "typehint-class-method-deprecated-class.php",
+   "line": 14,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $property of method TypeHintDeprecatedInClassMethodSignature\\Foo::setProperties() has typehint with deprecated class TypeHintDeprecatedInClassMethodSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "typehint-class-method-deprecated-class.php",
+   "line": 15,
+   "identifier": "parameter.deprecatedInterface",
+   "message": "Parameter $property2 of method TypeHintDeprecatedInClassMethodSignature\\Foo::setProperties() has typehint with deprecated interface TypeHintDeprecatedInClassMethodSignature\\DeprecatedInterface.",
+   "tip": null
+  },
+  {
+   "file": "typehint-class-method-deprecated-class.php",
+   "line": 17,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $property4 of method TypeHintDeprecatedInClassMethodSignature\\Foo::setProperties() has typehint with deprecated class TypeHintDeprecatedInClassMethodSignature\\VerboseDeprecatedProperty:\nI'll be back",
+   "tip": null
+  },
+  {
+   "file": "typehint-class-method-deprecated-class.php",
+   "line": 20,
+   "identifier": "return.deprecatedClass",
+   "message": "Return type of method TypeHintDeprecatedInClassMethodSignature\\Foo::setProperties() has typehint with deprecated class TypeHintDeprecatedInClassMethodSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "typehint-class-method-deprecated-class.php",
+   "line": 71,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $property of method __construct() in anonymous class has typehint with deprecated class TypeHintDeprecatedInClassMethodSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "typehint-class-method-deprecated-class.php",
+   "line": 76,
+   "identifier": "return.deprecatedClass",
+   "message": "Return type of method getProperty() in anonymous class has typehint with deprecated class TypeHintDeprecatedInClassMethodSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "typehint-function-deprecated-class.php",
+   "line": 9,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $property of function TypeHintDeprecatedInFunctionSignature\\setProperties() has typehint with deprecated class TypeHintDeprecatedInFunctionSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "typehint-function-deprecated-class.php",
+   "line": 10,
+   "identifier": "parameter.deprecatedInterface",
+   "message": "Parameter $property2 of function TypeHintDeprecatedInFunctionSignature\\setProperties() has typehint with deprecated interface TypeHintDeprecatedInFunctionSignature\\DeprecatedInterface.",
+   "tip": null
+  },
+  {
+   "file": "typehint-function-deprecated-class.php",
+   "line": 12,
+   "identifier": "parameter.deprecatedClass",
+   "message": "Parameter $property4 of function TypeHintDeprecatedInFunctionSignature\\setProperties() has typehint with deprecated class TypeHintDeprecatedInFunctionSignature\\VerboseDeprecatedProperty:\nI'll be back",
+   "tip": null
+  },
+  {
+   "file": "typehint-function-deprecated-class.php",
+   "line": 15,
+   "identifier": "return.deprecatedClass",
+   "message": "Return type of function TypeHintDeprecatedInFunctionSignature\\setProperties() has typehint with deprecated class TypeHintDeprecatedInFunctionSignature\\DeprecatedProperty.",
+   "tip": null
+  },
+  {
+   "file": "usage-of-deprecated-cast.php",
+   "line": 17,
+   "identifier": "class.toStringDeprecated",
+   "message": "Casting class UsageOfDeprecatedCast\\Foo to string is deprecated.",
+   "tip": null
+  },
+  {
+   "file": "usage-of-deprecated-trait.php",
+   "line": 9,
+   "identifier": "traitUse.deprecatedTrait",
+   "message": "Usage of deprecated trait UsageOfDeprecatedTrait\\DeprecatedFooTrait in class UsageOfDeprecatedTrait\\Foo.",
+   "tip": null
+  },
+  {
+   "file": "usage-of-deprecated-trait.php",
+   "line": 17,
+   "identifier": "traitUse.deprecatedTrait",
+   "message": "Usage of deprecated trait UsageOfDeprecatedTrait\\DeprecatedFooTrait in class UsageOfDeprecatedTrait\\Foo2.",
+   "tip": null
+  },
+  {
+   "file": "usage-of-deprecated-trait.php",
+   "line": 24,
+   "identifier": "traitUse.deprecatedTrait",
+   "message": "Usage of deprecated trait UsageOfDeprecatedTrait\\DeprecatedTraitWithDescription in class UsageOfDeprecatedTrait\\Foo3:\nDo not use traits.",
+   "tip": null
+  }
+ ]
+}

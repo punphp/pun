@@ -40,10 +40,59 @@ pub struct Project {
     pub internal_tag: bool,
     /// `featureToggles.newStaticInAbstractClassStaticMethod` (on with bleedingEdge).
     pub new_static_in_abstract_class_static_method: bool,
+    /// `featureToggles.reportPreciseLineForUnusedFunctionParameter` (on with bleedingEdge): unused closure uses and
+    /// constructor parameters are reported on their own line, not the function's.
+    pub precise_unused_parameter_line: bool,
+    /// Every analysed path is a file (FileFinderResult's `isOnlyFiles()`).
+    pub only_files: bool,
+    /// `featureToggles.bleedingEdge`.
+    pub bleeding_edge: bool,
+    /// `featureToggles.unusedLabel` (on with bleedingEdge).
+    pub unused_label: bool,
+    /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
+    pub check_uninitialized_properties: bool,
+    /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
+    pub deprecation_rules: bool,
+    /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
+    pub strict_rules: StrictRules,
     /// How anonymous class names print their file: relative to the working directory and the analysed paths.
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
     pub larastan: Option<crate::Larastan>,
+    /// `stubFiles`: scanned as Mago patches, whose declarations override the symbols they name.
+    pub stubs: Vec<PathBuf>,
+    /// Which identifiers the run reports, `None` for all: the others are dropped before any ignore sees them, as
+    /// PHPStan never reports the errors of a rule it doesn't run.
+    pub reported: Option<Reported>,
+}
+
+/// [`Project::reported`].
+pub type Reported = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;
+
+/// phpstan-strict-rules' `strictRules.*` switches of the ported rules.
+#[derive(Clone, Copy, Default)]
+pub struct StrictRules {
+    /// `closureUsesThis`: ClosureUsesThisRule.
+    pub closure_uses_this: bool,
+    /// `requireParentConstructorCall`: RequireParentConstructCallRule.
+    pub require_parent_constructor_call: bool,
+    /// `matchingInheritedMethodNames`: WrongCaseOfInheritedMethodRule.
+    pub matching_inherited_method_names: bool,
+    /// `dynamicCallOnStaticMethod`: DynamicCallOnStaticMethodsRule and DynamicCallOnStaticMethodsCallableRule.
+    pub dynamic_call_on_static_method: bool,
+}
+
+impl StrictRules {
+    fn from_params(params: &Array) -> StrictRules {
+        let strict = params.get_str("strictRules").and_then(Value::as_array);
+        let on = |k: &str| strict.and_then(|s| s.get_str(k)) == Some(&Value::Bool(true));
+        StrictRules {
+            closure_uses_this: on("closureUsesThis"),
+            require_parent_constructor_call: on("requireParentConstructorCall"),
+            matching_inherited_method_names: on("matchingInheritedMethodNames"),
+            dynamic_call_on_static_method: on("dynamicCallOnStaticMethod"),
+        }
+    }
 }
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
@@ -119,6 +168,13 @@ impl Project {
             })
             .unwrap_or(RUNTIME_PHP_VERSION);
         let flag = |k: &str| params.get_str(k) == Some(&Value::Bool(true));
+        let toggle = |k: &str| {
+            params
+                .get_str("featureToggles")
+                .and_then(Value::as_array)
+                .and_then(|t| t.get_str(k))
+                == Some(&Value::Bool(true))
+        };
         let report_unmatched_ignores = flag("reportUnmatchedIgnoredErrors");
         let empty = Array::new();
         let ignore_errors = params
@@ -141,23 +197,23 @@ impl Project {
             // config.neon's false, which config.level2.neon turns on
             check_class_case_sensitivity: flag("checkClassCaseSensitivity"),
             level,
-            check_generic_iterable_classes: params
-                .get_str("featureToggles")
-                .and_then(Value::as_array)
-                .and_then(|t| t.get_str("checkGenericIterableClasses"))
-                == Some(&Value::Bool(true)),
-            internal_tag: params
-                .get_str("featureToggles")
-                .and_then(Value::as_array)
-                .and_then(|t| t.get_str("internalTag"))
-                == Some(&Value::Bool(true)),
-            new_static_in_abstract_class_static_method: params
-                .get_str("featureToggles")
-                .and_then(Value::as_array)
-                .and_then(|t| t.get_str("newStaticInAbstractClassStaticMethod"))
-                == Some(&Value::Bool(true)),
+            check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
+            internal_tag: toggle("internalTag"),
+            new_static_in_abstract_class_static_method: toggle("newStaticInAbstractClassStaticMethod"),
+            only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
+            bleeding_edge: toggle("bleedingEdge"),
+            unused_label: toggle("unusedLabel"),
+            check_uninitialized_properties: flag("checkUninitializedProperties"),
+            deprecation_rules: flag("deprecationRulesInstalled"),
+            strict_rules: StrictRules::from_params(params),
+            precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
+            stubs: strings(params, "stubFiles")
+                .into_iter()
+                .map(PathBuf::from)
+                .collect(),
+            reported: None,
         }
     }
 
@@ -178,7 +234,16 @@ impl Project {
             check_generic_iterable_classes: false,
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,
+            only_files: true,
+            bleeding_edge: false,
+            unused_label: false,
+            check_uninitialized_properties: false,
+            deprecation_rules: false,
+            strict_rules: StrictRules::default(),
+            precise_unused_parameter_line: false,
             larastan: None,
+            stubs: Vec::new(),
+            reported: None,
         }
     }
 }

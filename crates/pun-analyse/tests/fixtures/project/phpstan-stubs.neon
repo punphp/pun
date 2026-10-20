@@ -1,0 +1,5 @@
+parameters:
+    level: 0
+    paths: [stubbed]
+    scanFiles: [stubbed-lib/StubReal.php]
+    stubFiles: [stubs/patch.stub]

@@ -770,6 +770,13 @@ fn validate_php_version(params: &Array) -> Result<(), String> {
     Ok(())
 }
 
+/// The checks PHPStan's config resolution runs on `ignoreErrors` (with `reportUnmatchedIgnoredErrors`), in its order and
+/// with its messages, for an `ignoreErrors` built outside a neon file (pun.toml's `[[analyse.ignore]]`).
+pub fn validate_ignore_errors(params: &Array) -> Result<(), String> {
+    validate_ignored_errors(params)?;
+    validate_ignore_error_entries(params).map_err(|e| format!("Invalid configuration:\n{e}"))
+}
+
 /// `ContainerFactory::validateParameters()`'s `ignoreErrors` entry rules.
 fn validate_ignore_error_entries(params: &Array) -> Result<(), String> {
     let ignore = ignore_errors(params);
@@ -783,10 +790,11 @@ fn validate_ignore_error_entries(params: &Array) -> Result<(), String> {
         "path",
         "paths",
     ];
+    // Pun's `rule` (never in a neon file, whose schema rejects the key) names what to ignore too.
     for entry in ignore.values() {
         let Value::Array(e) = entry else { continue };
         let has = |k: &str| e.contains(&Key::from(k));
-        if !at_least.iter().any(|k| has(k)) {
+        if !at_least.iter().any(|k| has(k)) && !has("rule") {
             return Err(format!(
                 "An ignoreErrors entry must contain at least one of the following fields: {}.",
                 at_least.join(", ")
