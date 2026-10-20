@@ -265,9 +265,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug5986
 5 Functions/CallToFunctionParametersRuleTest::testBug7823
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOpt
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptInvalidShare
-5 Functions/CallToFunctionParametersRuleTest::testGenericFunction
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 5 Functions/CallToFunctionParametersRuleTest::testProcOpen
 5 Functions/CallUserFuncRuleTest::testRule
