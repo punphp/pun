@@ -7,6 +7,12 @@
 
 use std::collections::{HashMap, HashSet};
 
+use mago_codex::assertion::Assertion;
+use mago_codex::metadata::function_like::FunctionLikeMetadata;
+use mago_codex::ttype::comparator::ComparisonResult;
+use mago_codex::ttype::comparator::union_comparator;
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
@@ -21,43 +27,38 @@ use super::noop::{self, asserts, function_of};
 
 const REMOVE_TIP: &str = "Remove remaining cases below this one and this error will disappear too.";
 
-/// Built-in functions with a type-specifying extension or an assert tag in PHPStan's stubs (besides `is_*()`).
+/// The functions with a TypeSpecifier extension or a `($value is T ? true : false)` stub return. The stubs with
+/// `@phpstan-assert-if-true =T` (is_resource(), ctype_alpha(), file functions...) set the call as the root
+/// expression, so ImpossibleCheckTypeHelper never decides them.
 const TYPE_CHECKS: &[&str] = &[
+    "array_is_list",
     "array_key_exists",
     "assert",
-    "chdir",
-    "chroot",
-    "ctype_alnum",
-    "ctype_alpha",
-    "ctype_cntrl",
+    "class_exists",
     "ctype_digit",
-    "ctype_graph",
-    "ctype_lower",
-    "ctype_print",
-    "ctype_punct",
-    "ctype_space",
-    "ctype_upper",
-    "ctype_xdigit",
-    "define",
-    "dir",
-    "file",
-    "file_get_contents",
-    "file_put_contents",
-    "fileatime",
-    "filectime",
-    "filegroup",
-    "fileinode",
-    "filemtime",
-    "fileowner",
-    "fileperms",
-    "filesize",
-    "filetype",
+    "enum_exists",
     "fnmatch",
-    "fopen",
-    "json_validate",
+    "in_array",
+    "interface_exists",
+    "is_a",
+    "is_array",
+    "is_bool",
+    "is_callable",
+    "is_countable",
+    "is_double",
+    "is_float",
+    "is_int",
+    "is_integer",
+    "is_iterable",
+    "is_long",
+    "is_null",
+    "is_numeric",
+    "is_object",
+    "is_real",
+    "is_scalar",
+    "is_string",
+    "is_subclass_of",
     "key_exists",
-    "linkinfo",
-    "lstat",
     "mb_stripos",
     "mb_strlen",
     "mb_strpos",
@@ -65,18 +66,10 @@ const TYPE_CHECKS: &[&str] = &[
     "mb_strrpos",
     "mb_strstr",
     "method_exists",
-    "mkdir",
-    "opendir",
     "preg_match",
     "preg_match_all",
     "property_exists",
-    "readfile",
-    "readlink",
-    "realpath",
-    "rmdir",
-    "scandir",
     "settype",
-    "stat",
     "str_contains",
     "str_ends_with",
     "str_starts_with",
@@ -86,8 +79,7 @@ const TYPE_CHECKS: &[&str] = &[
     "strripos",
     "strrpos",
     "strstr",
-    "touch",
-    "unlink",
+    "trait_exists",
 ];
 
 const NEVER: &[&str] = &[
@@ -289,6 +281,9 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
                 self.spans.extend([b.lhs.span(), b.rhs.span(), b.span()]);
             }
         }
+        fn walk_in_argument_list(&mut self, a: &'ast ArgumentList<'arena>, _: &mut ()) {
+            self.spans.extend(a.arguments.iter().map(|a| a.value().span()));
+        }
         fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
             if matches!(u.operator, UnaryPrefixOperator::Not(_)) {
                 self.spans.push(u.operand.span());
@@ -343,14 +338,7 @@ impl Checker<'_, '_> {
         if skipped(unparen(e)) {
             return None;
         }
-        let t = self
-            .type_of(e)
-            .filter(|t| !t.types.is_empty() && !t.is_never())?;
-        if t.is_always_truthy() {
-            Some(true)
-        } else {
-            t.is_always_falsy().then_some(false)
-        }
+        self.truthiness(e)
     }
 
     /// The rules run at level 4, and not in a trait (ConstantConditionInTraitRule isn't ported).
@@ -361,19 +349,98 @@ impl Checker<'_, '_> {
     /// The error goes through FunctionCallConstantConditionRule's collector: a call an ImpossibleCheckType rule owns.
     fn deferred(&self, e: &Expression) -> bool {
         match unparen(e) {
-            Expression::Call(Call::Function(f)) => {
-                function_of(self, f.function).is_some_and(|function| match function {
-                    noop::Function::User(f) => asserts(f),
-                    noop::Function::Builtin(b) => {
-                        let name = b.name.to_ascii_lowercase();
-                        name.starts_with("is_") || TYPE_CHECKS.contains(&name.as_str())
-                    }
-                })
-            }
+            Expression::Call(Call::Function(f)) => self.owned_function(f),
             Expression::Call(Call::Method(m)) => self.asserting(m.object, &m.method),
             Expression::Call(Call::StaticMethod(m)) => self.asserting(m.class, &m.method),
             _ => false,
         }
+    }
+
+    fn owned_function(&self, f: &FunctionCall) -> bool {
+        function_of(self, f.function).is_some_and(|function| match function {
+            noop::Function::User(f) => asserts(f),
+            noop::Function::Builtin(b) => {
+                let name = b.name.to_ascii_lowercase();
+                TYPE_CHECKS.contains(&name.as_str())
+            }
+        })
+    }
+
+    /// A type that is exactly `true` or `false`.
+    fn exact(&self, span: Span) -> Option<bool> {
+        self.types.get(&span).and_then(|t| {
+            if t.is_true() {
+                Some(true)
+            } else {
+                t.is_false().then_some(false)
+            }
+        })
+    }
+
+    /// `toBoolean()` as a constant: the expression is always truthy or always falsy.
+    fn truthiness(&self, e: &Expression) -> Option<bool> {
+        let t = self
+            .type_of(e)
+            .filter(|t| !t.types.is_empty() && !t.is_never())?;
+        if t.is_always_truthy() {
+            Some(true)
+        } else {
+            t.is_always_falsy().then_some(false)
+        }
+    }
+
+    /// The sure types against the arguments: true when every argument already is the type, false when one can't be.
+    /// determineContext() asks a void function for its `@phpstan-assert` tags, anything else in a truthy context
+    /// for its `@phpstan-assert-if-true` tags. An unresolved template makes the call the root expression.
+    fn asserted(&self, f: &FunctionLikeMetadata, args: &ArgumentList) -> Option<bool> {
+        let void = f.return_type_metadata.as_ref().is_some_and(|r| r.type_union.is_void());
+        let assertions = if void { &f.assertions } else { &f.if_true_assertions };
+        if !void && f.assertions_inferred
+            || assertions.is_empty()
+            || assertions.values().flatten().any(|a| {
+                matches!(a, Assertion::IsType(TAtomic::GenericParameter(_)) | Assertion::IsNotType(TAtomic::GenericParameter(_)))
+            })
+        {
+            return None;
+        }
+        let mut all = Some(true);
+        for (name, assertions) in assertions {
+            let i = f.parameters.iter().position(|p| p.get_name().0 == *name)?;
+            let arg = args.arguments.iter().enumerate().find_map(|(j, a)| match a {
+                Argument::Positional(a) if j == i => Some(a.value),
+                Argument::Named(a) if name.as_bytes()[1..] == *a.name.value => Some(a.value),
+                _ => None,
+            })?;
+            let given = self.type_of(arg)?;
+            for assertion in assertions {
+                let (Assertion::IsType(a) | Assertion::IsNotType(a)) = assertion else {
+                    return None;
+                };
+                let wanted = TUnion::from_atomic(a.clone());
+                let is = if union_comparator::is_contained_by(
+                    self.codebase,
+                    given,
+                    &wanted,
+                    false,
+                    false,
+                    false,
+                    &mut ComparisonResult::new(),
+                ) {
+                    Some(true)
+                } else if union_comparator::can_expression_types_be_identical(self.codebase, given, &wanted, false, false) {
+                    None
+                } else {
+                    Some(false)
+                };
+                let is = is.map(|b| b == matches!(assertion, Assertion::IsType(_)));
+                all = match (all, is) {
+                    (Some(false), _) | (_, Some(false)) => Some(false),
+                    (Some(true), Some(true)) => Some(true),
+                    _ => None,
+                };
+            }
+        }
+        all
     }
 
     fn asserting(&self, on: &Expression, method: &ClassLikeMemberSelector) -> bool {
@@ -568,13 +635,7 @@ fn compare(c: &mut Checker, b: &Binary) {
     let Some((identifier, sigil, kind)) = comparison(&b.operator) else {
         return;
     };
-    let value = c.types.get(&b.span()).and_then(|t| {
-        if t.is_true() {
-            Some(true)
-        } else {
-            t.is_false().then_some(false)
-        }
-    });
+    let value = c.exact(b.span());
     let right = match (kind, b.rhs) {
         // ImpossibleInstanceOfRule: a class name, as ObjectType
         ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![])),
@@ -695,6 +756,96 @@ pub(in super::super) fn binary(c: &mut Checker, b: &Binary) {
         b,
         &format!("{identifier}.always{suffix}"),
         format!("Result of {sigil} is always {text}."),
+        tip,
+    );
+}
+
+/// ImpossibleCheckType{Function,Method,StaticMethod}CallRule: a type-checking call (one FunctionCallConstantCondition-
+/// Rule leaves to these rules) whose result is constant.
+pub(in super::super) fn function_check(c: &mut Checker, call: &FunctionCall) {
+    if !c.conditions_checked() || !c.owned_function(call) {
+        return;
+    }
+    let name = noop::source(c, call.function.span());
+    let subject = format!("function {}", name.trim_start_matches('\\'));
+    // ImpossibleCheckTypeHelper: assert() is decided by its argument
+    let value = if name.trim_start_matches('\\').eq_ignore_ascii_case("assert") {
+        call.argument_list.arguments.first().and_then(|a| c.truthiness(a.value()))
+    } else {
+        let asserted = match function_of(c, call.function) {
+            Some(noop::Function::User(f)) => c.asserted(f, &call.argument_list),
+            _ => None,
+        };
+        c.exact(call.span()).or(asserted)
+    };
+    impossible_check(c, call.span(), value, "function", subject, &call.argument_list);
+}
+
+pub(in super::super) fn method_check(c: &mut Checker, call: &MethodCall) {
+    method_report(c, call.span(), call.object, &call.method, "method", "method", &call.argument_list);
+}
+
+pub(in super::super) fn static_method_check(c: &mut Checker, call: &StaticMethodCall) {
+    method_report(c, call.span(), call.class, &call.method, "staticMethod", "static method", &call.argument_list);
+}
+
+fn method_report(
+    c: &mut Checker,
+    span: Span,
+    on: &Expression,
+    method: &ClassLikeMemberSelector,
+    identifier: &str,
+    what: &str,
+    args: &ArgumentList,
+) {
+    if !c.conditions_checked() {
+        return;
+    }
+    let (subject, asserted) = match c.method_target(on, method) {
+        Some(m @ members::Method::User { f, .. }) if asserts(f) => (
+            format!("{what} {}::{}", m.declaring_display(c), m.name()),
+            c.asserted(f, args),
+        ),
+        _ => return,
+    };
+    let value = c.exact(span).or(asserted);
+    impossible_check(c, span, value, identifier, subject, args);
+}
+
+fn impossible_check(
+    c: &mut Checker,
+    span: Span,
+    value: Option<bool>,
+    identifier: &str,
+    subject: String,
+    args: &ArgumentList,
+) {
+    let Some(value) = value else {
+        return;
+    };
+    let last = c.last_condition(span);
+    if value && last == Some(true) {
+        return;
+    }
+    let types: Option<Vec<_>> = args.arguments.iter().map(|a| c.phpstan_type(a.value())).collect();
+    let Some(types) = types else { return };
+    let mut described: Vec<String> =
+        super::super::declared::with_classes(c, || types.iter().map(|t| t.describe(Level::Value)).collect());
+    // getArgumentsDescription(): nothing without arguments
+    let with = match described.len() {
+        0..=2 => described.first().map(|_| format!(" with {}", described.join(" and "))).unwrap_or_default(),
+        _ => {
+            let last = described.pop().unwrap_or_default();
+            format!(" with arguments {} and {last}", described.join(", "))
+        }
+    };
+    let (text, suffix) = if value { ("true", "alreadyNarrowedType") } else { ("false", "impossibleType") };
+    let tip = (value && last == Some(false)).then_some(REMOVE_TIP);
+    let line = c.line_of(span);
+    c.report_at_line(
+        line,
+        &format!("{identifier}.{suffix}"),
+        format!("Call to {subject}(){with} will always evaluate to {text}."),
         tip,
     );
 }

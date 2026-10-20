@@ -652,6 +652,12 @@ pub const IDENTIFIERS: &[&str] = &[
     "smallerOrEqual.alwaysFalse",
     "instanceof.alwaysTrue",
     "instanceof.alwaysFalse",
+    "function.alreadyNarrowedType",
+    "function.impossibleType",
+    "method.alreadyNarrowedType",
+    "method.impossibleType",
+    "staticMethod.alreadyNarrowedType",
+    "staticMethod.impossibleType",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -1806,6 +1812,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        dead_code::function_check(self, call);
         larastan::function_call(self, call);
         types::function_call(self, call);
         function_checks::function_call(self, call);
@@ -1840,6 +1847,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         strict::dynamic_call(self, call.span(), call.object, &call.method);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        dead_code::method_check(self, call);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
         larastan::method_call(self, call);
@@ -1888,6 +1896,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         internal::static_method_callable(self, m);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        dead_code::static_method_check(self, call);
         through_static::method(self, call);
         internal::static_method_call(self, call);
         larastan::static_method_call(self, call);

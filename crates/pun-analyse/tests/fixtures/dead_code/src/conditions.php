@@ -208,13 +208,6 @@ class Checks
 		}
 	}
 
-	public function strictInArray(): void
-	{
-		if (in_array(1, [1], true)) {
-			echo 1;
-		}
-	}
-
 	public function looseInArray(): void
 	{
 		if (in_array(1, [1])) {
