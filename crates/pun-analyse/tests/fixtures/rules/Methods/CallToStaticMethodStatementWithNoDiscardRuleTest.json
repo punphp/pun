@@ -17,44 +17,54 @@
                 },
                 {
                     "file": "Methods/data/static-method-call-statement-result-discarded.php",
-                    "line": 27,
+                    "line": 25,
                     "identifier": "staticMethod.resultDiscarded",
                     "message": "Call to static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::differentCase() on a separate line discards return value.",
                     "tip": null
-                },
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRulePhp85",
+            "files": [
+                "Methods/data/static-method-call-statement-result-discarded-php85.php"
+            ],
+            "scan": [],
+            "errors": [
                 {
-                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
-                    "line": 41,
+                    "file": "Methods/data/static-method-call-statement-result-discarded-php85.php",
+                    "line": 23,
                     "identifier": "staticMethod.inVoidCast",
-                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscardedPhp85\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
                     "tip": null
                 },
                 {
-                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
-                    "line": 43,
+                    "file": "Methods/data/static-method-call-statement-result-discarded-php85.php",
+                    "line": 25,
                     "identifier": "staticMethod.resultDiscarded",
-                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscardedPhp85\\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.",
                     "tip": null
                 },
                 {
-                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
-                    "line": 46,
+                    "file": "Methods/data/static-method-call-statement-result-discarded-php85.php",
+                    "line": 28,
                     "identifier": "staticMethod.inVoidCast",
-                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscardedPhp85\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
                     "tip": null
                 },
                 {
-                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
-                    "line": 48,
+                    "file": "Methods/data/static-method-call-statement-result-discarded-php85.php",
+                    "line": 30,
                     "identifier": "staticMethod.resultDiscarded",
-                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscardedPhp85\\ClassWithStaticSideEffects::staticMethod() on a separate line discards return value.",
                     "tip": null
                 },
                 {
-                    "file": "Methods/data/static-method-call-statement-result-discarded.php",
-                    "line": 51,
+                    "file": "Methods/data/static-method-call-statement-result-discarded-php85.php",
+                    "line": 33,
                     "identifier": "staticMethod.inVoidCast",
-                    "message": "Call to static method StaticMethodCallStatementResultDiscarded\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
+                    "message": "Call to static method StaticMethodCallStatementResultDiscardedPhp85\\Foo::canDiscard() in (void) cast but method allows discarding return value.",
                     "tip": null
                 }
             ],

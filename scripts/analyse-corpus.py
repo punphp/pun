@@ -121,6 +121,9 @@ FIXTURE = os.path.join(ROOT, 'crates/pun-analyse/tests/fixtures/project')
 
 def fixture():
     for neon in sorted(f for f in os.listdir(FIXTURE) if f.startswith('phpstan') and f.endswith('.neon')):
+        # phpstan-nolevel.neon has no expected file: PHPStan stops with "No rules detected" without a level
+        if not os.path.exists(os.path.join(FIXTURE, 'expected-' + neon[:-5] + '.json')):
+            continue
         tmp = os.path.join(WORK, 'tmp', 'fixture-project')
         shutil.rmtree(tmp, ignore_errors=True)
         os.makedirs(tmp)

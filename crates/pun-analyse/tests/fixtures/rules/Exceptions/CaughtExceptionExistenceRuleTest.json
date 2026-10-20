@@ -129,6 +129,24 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug12827#0",
+            "files": [
+                "Exceptions/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#1",
+            "files": [
+                "Exceptions/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

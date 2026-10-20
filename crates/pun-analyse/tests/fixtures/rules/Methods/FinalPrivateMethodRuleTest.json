@@ -2,6 +2,40 @@
     "test": "Methods/FinalPrivateMethodRuleTest",
     "cases": [
         {
+            "method": "testRule#0",
+            "files": [
+                "Methods/data/final-private-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/final-private-method.php",
+                    "line": 8,
+                    "identifier": "method.finalPrivate",
+                    "message": "Private method FinalPrivateMethod\\Foo::foo() cannot be final as it is never overridden by other classes.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Methods/data/final-private-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/final-private-method.php",
+                    "line": 8,
+                    "identifier": "method.finalPrivate",
+                    "message": "Private method FinalPrivateMethod\\Foo::foo() cannot be final as it is never overridden by other classes.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testRulePhpVersions",
             "files": [
                 "Methods/data/final-private-method-phpversions.php"

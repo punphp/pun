@@ -6,6 +6,7 @@
             "files": [
                 "Rules/data/no-auth-helper-in-request-scope-rule.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/data/no-auth-helper-in-request-scope-rule.php",
@@ -35,8 +36,7 @@
                     "message": "Do not use auth()->check() in a class that has access to the request. Use $this->user() !== null instead.",
                     "tip": null
                 }
-            ],
-            "general": []
+            ]
         }
     ]
 }

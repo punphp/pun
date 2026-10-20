@@ -545,6 +545,15 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testDynamicNameYield",
+            "files": [
+                "Missing/data/dynamic-name-yield.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

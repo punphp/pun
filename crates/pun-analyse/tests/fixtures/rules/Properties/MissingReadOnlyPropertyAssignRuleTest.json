@@ -498,6 +498,13 @@
                     "identifier": "assign.readOnlyProperty",
                     "message": "Readonly property Bug13856\\ReadonlyArray::$numbers is already assigned.",
                     "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-13856.php",
+                    "line": 73,
+                    "identifier": "unset.offset",
+                    "message": "Cannot unset offset 'a' on ArrayObject<*NEVER*, *NEVER*>.",
+                    "tip": null
                 }
             ],
             "general": []

@@ -25,8 +25,7 @@ Methods/MethodCallableRuleTest::testRule
 Methods/StaticMethodCallableRuleTest::testRule
 Properties/AccessPropertiesRuleTest::testRequireExtends
 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
-Variables/DefinedVariableRuleTest::testDefinedVariables
-# PHPStan 2.2.7 at level 0 aborts this file with an internal error (MissingReturnRule, ShouldNotHappenException on a
+# PHPStan 2.3.1 at level 0 aborts this file with an internal error (MissingReturnRule, ShouldNotHappenException on a
 # declare inside a method body), so it reports none of the file's errors; Pun reports the two declares as the
 # RuleTestCase expects
 Keywords/DeclareStrictTypesRuleTest::testNested
@@ -42,10 +41,39 @@ Classes/ExistingClassInClassExtendsRuleTest::testEnums
 # data/phpstan-api.php without its namespace's `use` imports (declared.rs scope of the API stub)
 Api/ApiClassImplementsRuleTest::testRuleOutOfPhpStan
 # FILTER_THROW_ON_FAILURE (PHP 8.5) is missing from Mago's prelude, so a variable holding it has no constant value
+# (PHPStan 2.3's FilterVarRule also checks filter_input(), filter_var_array() and filter_input_array())
 Functions/FilterVarRuleTest::testRule
+Functions/FilterVarRuleTest::testFilterFunctions
 # argument.missing on built-ins called with named arguments: PHPStan's named-argument variant selection (and
 # combined parameter types) differ from Pun's for DatePeriod's constructor and implode()/join()
 Classes/InstantiationRuleTest::testBug7048
 Functions/CallToFunctionParametersRuleTest::testImplodeNamedParameters
 # argument.namedNotSupported in a `PHP_VERSION_ID < 80000` branch needs the scope's narrowed PHP version
 Methods/CallMethodsRuleTest::testDisallowNamedArgumentsInPhpVersionScope
+# PHPStan 2.3 narrows the scope's PHP version by `PHP_VERSION_ID` conditions (`$scope->getPhpVersion()`), which
+# version-gated rules read; Pun checks against the one configured version
+Cast/DeprecatedCastRuleTest::testConditionallyExecutedCode
+Cast/UnsetCastRuleTest::testPhpVersionNarrowedScope
+Cast/VoidCastRuleTest::testConditionallyExecutedCode
+Classes/InvalidPromotedPropertiesRuleTest::testConditionallyDeclaredClass
+Classes/ReadOnlyClassRuleTest::testConditionallyDeclaredClass
+Constants/DynamicClassConstantFetchRuleTest::testConditionallyExecutedCode
+Constants/FinalConstantRuleTest::testConditionallyDeclaredClass
+Exceptions/ThrowExpressionRuleTest::testConditionallyExecutedCode
+Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testNeverPhpVersionNarrowedScope
+Functions/ExistingClassesInTypehintsRuleTest::testConditionallyDeclaredFunction
+Functions/FunctionCallableRuleTest::testConditionallyExecutedCode
+Methods/MethodCallableRuleTest::testConditionallyExecutedCode
+Methods/StaticMethodCallableRuleTest::testConditionallyExecutedCode
+Properties/PropertiesInInterfaceRuleTest::testPhpVersionNarrowedScope
+Properties/PropertyInClassRuleTest::testPhpVersionNarrowedScope
+Traits/ConstantsInTraitsRuleTest::testPhpVersionNarrowedScope
+# PHPStan 2.3 replaced PrintfHelper with PrintfFormatParser (`%5%`, `%ls`, `%*2$d` and positional width/precision
+# arguments, sscanf() counted by PHP itself); not ported
+Functions/PrintfParametersRuleTest::testFormatParser
+# PHPStan 2.3's template types in return.missing descriptions: an array shape with a template key of a non-key bound
+# is no shape, a template key prints as `T|TKey of (int|string)`, and an inherited template argument resolves to its
+# bound (`RecursiveIterator<mixed, mixed>`)
+Methods/CallMethodsRuleTest::testArrayShapeTemplateKey
+Methods/CallMethodsRuleTest::testGenericsEmptyArray
+Methods/OverridingMethodRuleTest::testBug9615

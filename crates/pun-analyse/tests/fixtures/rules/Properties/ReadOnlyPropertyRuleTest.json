@@ -2,7 +2,7 @@
     "test": "Properties/ReadOnlyPropertyRuleTest",
     "cases": [
         {
-            "method": "testRule#0",
+            "method": "testRule",
             "files": [
                 "Properties/data/read-only-property.php"
             ],
@@ -40,45 +40,7 @@
             "general": []
         },
         {
-            "method": "testRule#1",
-            "files": [
-                "Properties/data/read-only-property.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Properties/data/read-only-property.php",
-                    "line": 8,
-                    "identifier": "property.uninitializedReadonly",
-                    "message": "Class ReadOnlyProperty\\Foo has an uninitialized readonly property $foo. Assign it in the constructor.",
-                    "tip": null
-                },
-                {
-                    "file": "Properties/data/read-only-property.php",
-                    "line": 9,
-                    "identifier": "property.readOnlyNoNativeType",
-                    "message": "Readonly property must have a native type.",
-                    "tip": null
-                },
-                {
-                    "file": "Properties/data/read-only-property.php",
-                    "line": 10,
-                    "identifier": "property.readOnlyDefaultValue",
-                    "message": "Readonly property cannot have a default value.",
-                    "tip": null
-                },
-                {
-                    "file": "Properties/data/read-only-property.php",
-                    "line": 23,
-                    "identifier": "property.readOnlyStatic",
-                    "message": "Readonly property cannot be static.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testRuleReadonlyClass#0",
+            "method": "testRuleReadonlyClass",
             "files": [
                 "Properties/data/read-only-property-readonly-class.php"
             ],
@@ -116,38 +78,38 @@
             "general": []
         },
         {
-            "method": "testRuleReadonlyClass#1",
+            "method": "testConditionallyDeclaredClass",
             "files": [
-                "Properties/data/read-only-property-readonly-class.php"
+                "Properties/data/read-only-property-php-versions.php"
             ],
             "scan": [],
             "errors": [
                 {
-                    "file": "Properties/data/read-only-property-readonly-class.php",
-                    "line": 8,
-                    "identifier": "property.uninitializedReadonly",
-                    "message": "Class ReadOnlyPropertyReadonlyClass\\Foo has an uninitialized readonly property $foo. Assign it in the constructor.",
-                    "tip": null
-                },
-                {
-                    "file": "Properties/data/read-only-property-readonly-class.php",
+                    "file": "Properties/data/read-only-property-php-versions.php",
                     "line": 9,
-                    "identifier": "property.readOnlyNoNativeType",
-                    "message": "Readonly property must have a native type.",
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyPhpVersions\\SupportedInBranch has an uninitialized readonly property $foo. Assign it in the constructor.",
                     "tip": null
                 },
                 {
-                    "file": "Properties/data/read-only-property-readonly-class.php",
-                    "line": 10,
-                    "identifier": "property.readOnlyDefaultValue",
-                    "message": "Readonly property cannot have a default value.",
+                    "file": "Properties/data/read-only-property-php-versions.php",
+                    "line": 18,
+                    "identifier": "property.readOnlyNotSupported",
+                    "message": "Readonly properties are supported only on PHP 8.1 and later.",
                     "tip": null
                 },
                 {
-                    "file": "Properties/data/read-only-property-readonly-class.php",
-                    "line": 23,
-                    "identifier": "property.readOnlyStatic",
-                    "message": "Readonly property cannot be static.",
+                    "file": "Properties/data/read-only-property-php-versions.php",
+                    "line": 18,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyPhpVersions\\UnsupportedInBranch has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/read-only-property-php-versions.php",
+                    "line": 26,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyPhpVersions\\AlwaysUnsupported has an uninitialized readonly property $foo. Assign it in the constructor.",
                     "tip": null
                 }
             ],

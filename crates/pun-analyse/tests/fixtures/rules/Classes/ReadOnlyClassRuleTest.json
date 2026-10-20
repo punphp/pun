@@ -9,6 +9,30 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testConditionallyDeclaredClass",
+            "files": [
+                "Classes/data/readonly-class-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/readonly-class-php-versions.php",
+                    "line": 12,
+                    "identifier": "classConstant.nativeTypeNotSupported",
+                    "message": "Readonly classes are supported only on PHP 8.2 and later.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/readonly-class-php-versions.php",
+                    "line": 29,
+                    "identifier": "classConstant.nativeTypeNotSupported",
+                    "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

@@ -24,9 +24,23 @@
                 },
                 {
                     "file": "Operators/data/backtick.php",
+                    "line": 5,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $a",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/backtick.php",
                     "line": 6,
                     "identifier": "backtick.deprecated",
                     "message": "Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/backtick.php",
+                    "line": 6,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $a",
                     "tip": null
                 }
             ],

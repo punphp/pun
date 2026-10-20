@@ -1,4 +1,25 @@
 {
     "test": "Exceptions/NoncapturingCatchRuleTest",
-    "cases": []
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Exceptions/data/noncapturing-catch.php",
+                "Exceptions/data/bug-8663.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Exceptions/data/noncapturing-catch.php",
+                "Exceptions/data/bug-8663.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
 }
