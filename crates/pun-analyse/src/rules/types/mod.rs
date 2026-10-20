@@ -54,7 +54,7 @@ pub(super) use yields::program as yields_outside;
 pub(super) use property_default::property as property_default;
 pub(super) use constant_value::class_constant;
 pub(super) use offsets::assignment as offset_assignment;
-pub(super) use binary_op::{assignment as assign_operation, binary as binary_operation};
+pub(super) use binary_op::{assignment as assign_operation, binary as binary_operation, pipe as pipe_operation};
 pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).

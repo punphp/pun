@@ -797,14 +797,13 @@
 9 Methods/CallMethodsRuleTest::testBug3534
 9 Methods/CallStaticMethodsRuleTest::testBug9732
 9 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
-# an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value, a pipe `|>` into a string)
+# an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value)
 2 Operators/InvalidBinaryOperationRuleTest::testRule
 2 Operators/InvalidBinaryOperationRuleTest::testBug5309
 2 Operators/InvalidBinaryOperationRuleTest::testBenevolentUnion
 2 Operators/InvalidBinaryOperationRuleTest::testBug1452
 2 PhpDoc/WrongVariableNameInVarTagRuleTest::testAssignOperator
 3 Arrays/OffsetAccessAssignOpRuleTest::testRuleWithNullsafeVariant
-4 DeadCode/NoopRuleTest::testPipeOperator
 # an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook

@@ -1882,6 +1882,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         calls::pipe(self, p);
         function_checks::pipe(self, p);
         restricted_functions::pipe(self, p);
+        types::pipe_operation(self, p);
     }
     fn walk_in_function_partial_application(
         &mut self,
