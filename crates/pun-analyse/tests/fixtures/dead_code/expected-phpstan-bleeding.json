@@ -1932,6 +1932,13 @@
    "identifier": "trait.unused",
    "message": "Trait DeadCodeFixture\\Outer is used zero times and is not analysed.",
    "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 602,
+   "identifier": "smaller.alwaysTrue",
+   "message": "Comparison operation \"<\" between 0 and 1 is always true.",
+   "tip": null
   }
  ]
 }

@@ -24,4 +24,12 @@ parameters:
 		newOnNonObject: true
 		unnecessaryNullCoalesce: true
 		finiteTypesInHaystack: true
+		switchConditionAlwaysFalse: true
+		checkImportedClassNameCase: true
+		sortWithoutEffect: true
+		unresolvedTemplateArguments: true
+		closureSignaturesFromUsages: true
+		staticVariablesFromUsages: true
+		unusedVariable: true
+		unusedParameters: true
 

@@ -389,6 +389,59 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug11935",
+            "files": [
+                "Functions/data/bug-11935.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15251.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug15251\\A::sfoo() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureSignatureFromUsages",
+            "files": [
+                "Functions/data/closure-signature-from-usages.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15285",
+            "files": [
+                "Functions/data/bug-15285.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11935WithCheckExplicitMixed",
+            "files": [
+                "Functions/data/bug-11935.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

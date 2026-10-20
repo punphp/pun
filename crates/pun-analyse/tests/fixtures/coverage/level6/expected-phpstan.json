@@ -689,13 +689,6 @@
   },
   {
    "file": "types.php",
-   "line": 60,
-   "identifier": "missingType.iterableValue",
-   "message": "Method CoverageTypes\\Types::shapes() return type has no value type specified in iterable type array.",
-   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
-  },
-  {
-   "file": "types.php",
    "line": 72,
    "identifier": "missingType.iterableValue",
    "message": "Class CoverageTypes\\Split has PHPDoc tag @property for property $split with no value type specified in iterable type array.",

@@ -218,16 +218,7 @@
             "general": []
         },
         {
-            "method": "testClassConstantOnExpression#0",
-            "files": [
-                "Classes/data/class-constant-on-expr.php"
-            ],
-            "scan": [],
-            "errors": [],
-            "general": []
-        },
-        {
-            "method": "testClassConstantOnExpression#1",
+            "method": "testClassConstantOnExpression",
             "files": [
                 "Classes/data/class-constant-on-expr.php"
             ],
@@ -793,6 +784,51 @@
             "method": "testStringableDynamicAccess",
             "files": [
                 "Classes/data/dynamic-constant-stringable-access.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#0",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#1",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827Enum#0",
+            "files": [
+                "Classes/data/bug-12827-enum.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827Enum#1",
+            "files": [
+                "Classes/data/bug-12827-enum.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConditionallyExecutedClassConstantOnExpression",
+            "files": [
+                "Classes/data/class-constant-on-expr-php-versions.php"
             ],
             "scan": [],
             "errors": [],

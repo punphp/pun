@@ -104,7 +104,9 @@ fn named_call<'arena>(
     if let Some((display, variants)) = found {
         let written = c.written(id.span()).trim_start_matches('\\').to_ascii_lowercase();
         let variants = super::selector::select_from_args(c, &written, &counts, variants);
-        let acceptor = params::select(c, variants, &counts);
+        let all = variants.all.clone();
+        let selected = params::select(c, variants, &counts);
+        let acceptor = params::closest_variant(&all, &counts, &selected).unwrap_or(selected);
         params::check(
             c,
             &acceptor,

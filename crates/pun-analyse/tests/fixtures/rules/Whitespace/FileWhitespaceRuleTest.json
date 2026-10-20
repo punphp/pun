@@ -1,0 +1,74 @@
+{
+    "test": "Whitespace/FileWhitespaceRuleTest",
+    "cases": [
+        {
+            "method": "testBom",
+            "files": [
+                "Whitespace/data/bom.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Whitespace/data/bom.php",
+                    "line": 1,
+                    "identifier": "whitespace.bom",
+                    "message": "File begins with UTF-8 BOM character. This may cause problems when running the code in the web browser.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCorrectFile",
+            "files": [
+                "Whitespace/data/correct.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTrailingWhitespaceWithoutNamespace",
+            "files": [
+                "Whitespace/data/trailing.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Whitespace/data/trailing.php",
+                    "line": 6,
+                    "identifier": "whitespace.fileEnd",
+                    "message": "File ends with a trailing whitespace. This may cause problems when running the code in the web browser. Remove the closing ?> mark or remove the whitespace.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTrailingWhitespace",
+            "files": [
+                "Whitespace/data/trailing-namespace.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Whitespace/data/trailing-namespace.php",
+                    "line": 8,
+                    "identifier": "whitespace.fileEnd",
+                    "message": "File ends with a trailing whitespace. This may cause problems when running the code in the web browser. Remove the closing ?> mark or remove the whitespace.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testHtmlAfterClose",
+            "files": [
+                "Whitespace/data/html-after-close.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

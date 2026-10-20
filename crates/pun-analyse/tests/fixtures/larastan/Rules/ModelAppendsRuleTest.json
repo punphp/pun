@@ -6,6 +6,7 @@
             "files": [
                 "Rules/data/ModelAppends.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/data/ModelAppends.php",

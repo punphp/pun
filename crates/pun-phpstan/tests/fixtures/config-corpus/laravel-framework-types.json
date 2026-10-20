@@ -32,7 +32,9 @@
                 "implicitThrows": true,
                 "reportUncheckedExceptionDeadCatch": true,
                 "uncheckedExceptionRegexes": [],
-                "uncheckedExceptionClasses": [],
+                "uncheckedExceptionClasses": [
+                    "Error"
+                ],
                 "checkedExceptionRegexes": [],
                 "checkedExceptionClasses": [],
                 "check": {
@@ -47,7 +49,12 @@
                 "checkNonStringableDynamicAccess": false,
                 "checkParameterCastableToNumberFunctions": false,
                 "skipCheckGenericClasses": [
-                    "DOMNamedNodeMap"
+                    "DOMNamedNodeMap",
+                    "ParentIterator",
+                    "RecursiveCachingIterator",
+                    "RecursiveFilterIterator",
+                    "RecursiveRegexIterator",
+                    "ReflectionObject"
                 ],
                 "stricterFunctionMap": false,
                 "reportPreciseLineForUnusedFunctionParameter": false,
@@ -68,7 +75,15 @@
                 "unusedLabel": false,
                 "newOnNonObject": false,
                 "unnecessaryNullCoalesce": false,
-                "finiteTypesInHaystack": false
+                "finiteTypesInHaystack": false,
+                "switchConditionAlwaysFalse": false,
+                "checkImportedClassNameCase": false,
+                "sortWithoutEffect": false,
+                "unresolvedTemplateArguments": false,
+                "closureSignaturesFromUsages": false,
+                "staticVariablesFromUsages": false,
+                "unusedVariable": false,
+                "unusedParameters": false
             },
             "fileExtensions": [
                 "php"
@@ -123,7 +138,7 @@
                 "processTimeout": {
                     "@float": "600.0"
                 },
-                "maximumNumberOfProcesses": 8,
+                "maximumNumberOfProcesses": "auto",
                 "minimumNumberOfJobsPerProcess": 2,
                 "buffer": 134217728,
                 "loadLimit": {
@@ -174,10 +189,11 @@
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionMethod.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionParameter.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionProperty.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionType.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/iterable.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ArrayObject.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/WeakReference.stub",
-                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ext-ds.stub",
+                "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/SensitiveParameterValue.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ImagickPixel.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/PDOStatement.stub",
                 "phar://{repo}/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/date.stub",
@@ -302,6 +318,10 @@
                 [
                     "parameters",
                     "memoryLimitFile"
+                ],
+                [
+                    "parameters",
+                    "tmpDir"
                 ],
                 [
                     "parameters",

@@ -466,7 +466,7 @@ fn lint_overrides() {
     assert!(c.lint.rules.is_empty());
 }
 
-/// Rule counts counted in [rules.analyse] of rules/mapping.toml: basic 155, essential 104, recommended 80, strict
+/// Rule counts counted in [rules.analyse] of rules/mapping.toml: basic 155, essential 106, recommended 85, strict
 /// 35, max 4; 18 of them Laravel's (0, 4, 9, 4, 1).
 #[test]
 fn analyse() {
@@ -492,7 +492,7 @@ fn analyse() {
             rules: a.rules.clone(),
         }
     );
-    assert_eq!(a.rules.len(), 155 + 104 + 80 - 13);
+    assert_eq!(a.rules.len(), 155 + 106 + 85 - 13);
     assert!(has(&a, "analyse/undefined/method") && !has(&a, "analyse/types/missing-return-type"));
     let preset = |p: &str, lock: bool| {
         let toml = format!("[analyse]\npreset = \"{p}\"\n");
@@ -504,16 +504,16 @@ fn analyse() {
         (a.rules.len(), a.switches)
     };
     assert_eq!(preset("basic", false), (155, vec![]));
-    assert_eq!(preset("essential", true), (155 + 104, vec![]));
-    assert_eq!(preset("recommended", true), (155 + 104 + 80, vec![]));
+    assert_eq!(preset("essential", true), (155 + 106, vec![]));
+    assert_eq!(preset("recommended", true), (155 + 106 + 85, vec![]));
     assert_eq!(
         preset("strict", true),
-        (155 + 104 + 80 + 35, vec!["union-types", "nullables"])
+        (155 + 106 + 85 + 35, vec!["union-types", "nullables"])
     );
     assert_eq!(
         preset("max", false),
         (
-            378 - 18,
+            385 - 18,
             vec![
                 "union-types",
                 "nullables",
@@ -571,7 +571,7 @@ laravel = "on"
     ]);
     assert_eq!(
         (a.rules.len(), a.ecosystems.len()),
-        (155 + 104 + 80 - 13, 0)
+        (155 + 106 + 85 - 13, 0)
     );
 }
 #[test]
@@ -801,6 +801,7 @@ group     undefined: References to something declared nowhere
 preset    basic
 fix       none
 upstream  CallMethodsRule (phpstan-classes)
+          method.nameNotString (phpstan)
           method.notFound (phpstan)
           checkThisOnly (phpstan-parameters)
           reportMagicMethods (phpstan-parameters)

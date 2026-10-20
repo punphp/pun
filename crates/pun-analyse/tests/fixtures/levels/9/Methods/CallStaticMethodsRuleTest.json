@@ -2600,6 +2600,15 @@
             "general": []
         },
         {
+            "method": "testDynamicStaticMethodName",
+            "files": [
+                "Methods/data/dynamic-static-method-name.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug13267",
             "files": [
                 "Methods/data/bug-13267.php"
@@ -2883,6 +2892,65 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15168",
+            "files": [
+                "Methods/data/bug-15168.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15168.php",
+                    "line": 60,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug15168StaticMethods\\Arrays::removeNull() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-15168.php",
+                    "line": 61,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug15168StaticMethods\\Arrays::removeNull() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12827",
+            "files": [
+                "Methods/data/bug-12827-static-call.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10698",
+            "files": [
+                "Methods/data/bug-10698.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15251.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug15251\\A::sfoo() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

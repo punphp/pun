@@ -690,6 +690,184 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug13114",
+            "files": [
+                "Functions/data/bug-13114-return.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-13114-return.php",
+                    "line": 14,
+                    "identifier": "return.type",
+                    "message": "Function Bug13114Return\\returnsCallableArray() should return non-empty-list<mixed>&callable(): mixed but returns array{Bug13114Return\\C, 'h'}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10419",
+            "files": [
+                "Functions/data/bug-10419.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-10419.php",
+                    "line": 26,
+                    "identifier": "return.type",
+                    "message": "Function Bug10419\\fail() should return Bug10419\\Foo<array<string, array{boolKey: bool, naturalKey: int<0, max>}>> but returns Bug10419\\Foo<non-empty-array<non-falsy-string, array{boolKey: false, naturalKey: 0}>>.",
+                    "tip": "Template type T on class Bug10419\\Foo is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10290",
+            "files": [
+                "Functions/data/bug-10290.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-10290.php",
+                    "line": 23,
+                    "identifier": "class.readOnly",
+                    "message": "Readonly class Bug10290\\Ok extends non-readonly class Bug10290\\Result.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10290.php",
+                    "line": 28,
+                    "identifier": "class.readOnly",
+                    "message": "Readonly class Bug10290\\Err extends non-readonly class Bug10290\\Result.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10290.php",
+                    "line": 42,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: non-empty-array<mixed, mixed>&hasOffsetValue('has_error', mixed~(0|0.0|''|'0'|array{}|false|null))",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10290.php",
+                    "line": 43,
+                    "identifier": "return.type",
+                    "message": "Function Bug10290\\f() should return Bug10290\\Err<array<mixed>>|Bug10290\\Ok<non-empty-string> but returns Bug10290\\Err<non-empty-array<mixed, mixed>>.",
+                    "tip": "Type #1 from the union: Template type E on class Bug10290\\Err is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Functions/data/bug-10290.php",
+                    "line": 48,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array<mixed>",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10290.php",
+                    "line": 52,
+                    "identifier": "return.type",
+                    "message": "Function Bug10290\\f() should return Bug10290\\Err<array<mixed>>|Bug10290\\Ok<non-empty-string> but returns Bug10290\\Ok<non-falsy-string>.",
+                    "tip": "Type #2 from the union: Template type T on class Bug10290\\Ok is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Functions/data/bug-10290.php",
+                    "line": 61,
+                    "identifier": "return.type",
+                    "message": "Function Bug10290\\g() should return Bug10290\\Err<string>|Bug10290\\Ok<true> but returns Bug10290\\Ok<bool>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5741",
+            "files": [
+                "Functions/data/bug-5741.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-5741.php",
+                    "line": 30,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array{1, 2}",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-5741.php",
+                    "line": 31,
+                    "identifier": "return.type",
+                    "message": "Function Bug5741\\one() should return Bug5741\\Result<array<int>> but returns Bug5741\\Result<array{int, int}>.",
+                    "tip": "Template type T on class Bug5741\\Result is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Functions/data/bug-5741.php",
+                    "line": 41,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug5741\\Result<array>::$value (array{}) does not accept array{1}.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-5741.php",
+                    "line": 42,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug5741\\Result<array>::$value (array{}) does not accept array{2}.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-5741.php",
+                    "line": 44,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array{1, 2}",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-5741.php",
+                    "line": 45,
+                    "identifier": "return.type",
+                    "message": "Function Bug5741\\two() should return Bug5741\\Result<array<int>> but returns Bug5741\\Result<array{}>.",
+                    "tip": "Template type T on class Bug5741\\Result is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Functions/data/bug-5741.php",
+                    "line": 55,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array{1, 2}",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8031",
+            "files": [
+                "Functions/data/bug-8031.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-8031.php",
+                    "line": 24,
+                    "identifier": "return.type",
+                    "message": "Function Bug8031\\test() should return Bug8031\\Collection<'one'|'two', int> but returns Bug8031\\Collection<string, int>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15245",
+            "files": [
+                "Functions/data/bug-15245.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

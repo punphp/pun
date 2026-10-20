@@ -22,11 +22,10 @@ Run `pun migrate --from phpstan`. PHPStan config includes are resolved before mi
 | `@phpstan-ignore method.notFound` | `@pun-ignore analyse/undefined/method` |
 | Baselines | Not copied. Run `pun analyse --generate-baseline`. |
 | Custom extensions, bleeding edge | Reported and skipped |
-| No `level` | Every analyse group `"off"`: `pun analyse` stops with "No rules detected", as PHPStan does |
 
 The table maps PHPStan identifiers. Exact identifiers take precedence over patterns.
 
-`pun analyse` applies the migrated stubs, ignore tables and rule options. See [configuration](/docs/commands/analyse#configuration).
+The analysis CLI does not yet apply migrated stubs, ignore tables, rule options, or preset type switches. See [analysis limitations](/docs/commands/analyse#configuration).
 
 ## Rule mapping
 
@@ -40,7 +39,7 @@ The table maps PHPStan identifiers. Exact identifiers take precedence over patte
 
 ### phpstan.org playground only
 
-[`phpstanPlayground.arrayDimFetchCast`](https://phpstan.org/error-identifiers/phpstanPlayground.arrayDimFetchCast), [`phpstanPlayground.arrayKeyCast`](https://phpstan.org/error-identifiers/phpstanPlayground.arrayKeyCast), [`phpstanPlayground.configParameter`](https://phpstan.org/error-identifiers/phpstanPlayground.configParameter), [`phpstanPlayground.never`](https://phpstan.org/error-identifiers/phpstanPlayground.never), [`phpstanPlayground.noPhp`](https://phpstan.org/error-identifiers/phpstanPlayground.noPhp), [`phpstanPlayground.phpDoc`](https://phpstan.org/error-identifiers/phpstanPlayground.phpDoc), [`phpstanPlayground.staticWithoutType`](https://phpstan.org/error-identifiers/phpstanPlayground.staticWithoutType), [`phpstanPlayground.traitUnused`](https://phpstan.org/error-identifiers/phpstanPlayground.traitUnused).
+[`phpstanPlayground.arrayDimFetchCast`](https://phpstan.org/error-identifiers/phpstanPlayground.arrayDimFetchCast), [`phpstanPlayground.arrayKeyCast`](https://phpstan.org/error-identifiers/phpstanPlayground.arrayKeyCast), [`phpstanPlayground.configParameter`](https://phpstan.org/error-identifiers/phpstanPlayground.configParameter), [`phpstanPlayground.never`](https://phpstan.org/error-identifiers/phpstanPlayground.never), [`phpstanPlayground.noPhp`](https://phpstan.org/error-identifiers/phpstanPlayground.noPhp), [`phpstanPlayground.phpDoc`](https://phpstan.org/error-identifiers/phpstanPlayground.phpDoc), [`phpstanPlayground.traitUnused`](https://phpstan.org/error-identifiers/phpstanPlayground.traitUnused).
 
 
 ## Pun-only rules

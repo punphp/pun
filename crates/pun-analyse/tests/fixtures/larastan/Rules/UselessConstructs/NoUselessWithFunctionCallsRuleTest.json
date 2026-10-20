@@ -6,14 +6,15 @@
             "files": [
                 "Rules/UselessConstructs/data/CorrectWithFunctionCall.php"
             ],
-            "errors": [],
-            "general": []
+            "scanned": [],
+            "errors": []
         },
         {
             "method": "testUselessWithCalls",
             "files": [
                 "Rules/UselessConstructs/data/UselessWithFunctionCall.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/UselessConstructs/data/UselessWithFunctionCall.php",
@@ -29,8 +30,7 @@
                     "message": "Calling the helper function 'with()' without a callable as the second argument simply returns the value without doing anything",
                     "tip": null
                 }
-            ],
-            "general": []
+            ]
         }
     ]
 }

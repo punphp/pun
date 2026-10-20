@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * parametersSchema validation as PHPStan 2.2.7 does it (ContainerFactory::validateParameters(), called through
+ * parametersSchema validation as PHPStan 2.3.1 does it (ContainerFactory::validateParameters(), called through
  * reflection on NeonAdapter-loaded NEON), for schemas and values beyond PHPStan's own parametersSchema. Writes
  * crates/pun-phpstan/tests/fixtures/schema.json: {neon, messages} (ValidationException::getMessages()) or
  * {neon, exception} (anything else the schema building throws).
@@ -117,7 +117,7 @@ foreach ($cases as $case) {
         try {
             $validate->invoke($factory, ($data['parameters'] ?? []) + ['__validate' => true], $data['parametersSchema']);
             $r['messages'] = [];
-        } catch (_PHPStan_88a9c7bcc\Nette\Schema\ValidationException $e) {
+        } catch (_PHPStan_cb3b7e994\Nette\Schema\ValidationException $e) {
             $r['messages'] = $e->getMessages();
         } catch (Throwable $e) {
             $r['exception'] = $e->getMessage();

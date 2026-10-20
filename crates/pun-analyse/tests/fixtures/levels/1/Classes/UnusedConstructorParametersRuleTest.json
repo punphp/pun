@@ -130,6 +130,64 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testResolvedDynamicUsages",
+            "files": [
+                "Classes/data/unused-constructor-parameters-resolved-dynamic.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/unused-constructor-parameters-resolved-dynamic.php",
+                    "line": 8,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParametersResolvedDynamic\\VariableVariable has an unused parameter $other.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/unused-constructor-parameters-resolved-dynamic.php",
+                    "line": 43,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParametersResolvedDynamic\\OverwrittenParameter has an unused parameter $x.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testValueFlow",
+            "files": [
+                "Classes/data/unused-constructor-parameters-value-flow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/unused-constructor-parameters-value-flow.php",
+                    "line": 10,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParametersValueFlow\\Foo has an unused parameter $overwritten.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testValueFlowWithoutBleedingEdge",
+            "files": [
+                "Classes/data/unused-constructor-parameters-value-flow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/unused-constructor-parameters-value-flow.php",
+                    "line": 10,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnusedConstructorParametersValueFlow\\Foo has an unused parameter $overwritten.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

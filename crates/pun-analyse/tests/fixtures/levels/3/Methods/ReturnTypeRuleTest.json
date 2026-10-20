@@ -2856,6 +2856,175 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testBug12704",
+            "files": [
+                "Methods/data/bug-12704.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12576",
+            "files": [
+                "Methods/data/bug-12576.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12576.php",
+                    "line": 21,
+                    "identifier": "return.type",
+                    "message": "Method Bug12576\\Collection::values() should return static(Bug12576\\Collection<int<0, max>, TValue>) but returns static(Bug12576\\Collection<int, TValue>).",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14647",
+            "files": [
+                "Methods/data/bug-14647.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14647.php",
+                    "line": 45,
+                    "identifier": "return.type",
+                    "message": "Method Bug14647\\Value::childCollect() should return Bug14647\\Collection<Bug14647\\Value> but returns Bug14647\\Collection<static(Bug14647\\Value)>.",
+                    "tip": "Template type TValue on class Bug14647\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12601",
+            "files": [
+                "Methods/data/bug-12601.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12490",
+            "files": [
+                "Methods/data/bug-12490.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12490.php",
+                    "line": 76,
+                    "identifier": "return.type",
+                    "message": "Method Bug12490\\Foo::uri() should return Bug12490\\Attribute<string, never> but returns Bug12490\\Attribute<non-falsy-string, never>.",
+                    "tip": "Template type TGet on class Bug12490\\Attribute is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Methods/data/bug-12490.php",
+                    "line": 82,
+                    "identifier": "return.type",
+                    "message": "Method Bug12490\\Foo::uri2() should return Bug12490\\Attribute<string, never> but returns Bug12490\\Attribute<lowercase-string&non-falsy-string, never>.",
+                    "tip": "Template type TGet on class Bug12490\\Attribute is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12420",
+            "files": [
+                "Methods/data/bug-12420.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12420.php",
+                    "line": 66,
+                    "identifier": "return.type",
+                    "message": "Method Bug12420\\Test::testFailingArray() should return array<'bar'|'foo'> but returns array{'foo', 'bar', 'wrong'}.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-12420.php",
+                    "line": 80,
+                    "identifier": "return.type",
+                    "message": "Method Bug12420\\Test::testCollection() should return Bug12420\\Collection<'bar'|'foo'> but returns Bug12420\\Collection<string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11835",
+            "files": [
+                "Methods/data/bug-11835.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-11835.php",
+                    "line": 39,
+                    "identifier": "return.type",
+                    "message": "Method Bug11835\\ProjectionCumulativeHeadersResolver::resolve() should return Bug11835\\Collection<int, string> but returns Bug11835\\Collection<int, lowercase-string&non-falsy-string>.",
+                    "tip": "Template type TValue on class Bug11835\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11435",
+            "files": [
+                "Methods/data/bug-11435.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10289",
+            "files": [
+                "Methods/data/bug-10289.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-10289.php",
+                    "line": 19,
+                    "identifier": "return.type",
+                    "message": "Method Bug10289\\X::getIterator() should return ArrayIterator<non-empty-string, non-empty-string> but returns ArrayIterator<string, non-empty-string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12984",
+            "files": [
+                "Methods/data/bug-12984.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13325",
+            "files": [
+                "Methods/data/bug-13325.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-13325.php",
+                    "line": 16,
+                    "identifier": "return.type",
+                    "message": "Method Bug13325\\Foo::__invoke() should return RegexIterator<mixed, mixed, Traversable<mixed, mixed>> but returns RegexIterator<mixed, mixed, Traversable<TKey, TValue>>.",
+                    "tip": "Template type TIterator on class RegexIterator is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
         }
     ]
 }

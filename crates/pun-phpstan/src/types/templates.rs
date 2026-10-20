@@ -12,6 +12,8 @@ type Key = (String, String);
 pub struct TemplateMap {
     types: Vec<(Key, Type)>,
     lower: Vec<(Key, Type)>,
+    /// the templates whose `*ERROR*` is an `AbsorbedTemplateArgumentType`: any type inferred elsewhere wins over it
+    absorbed: Vec<Key>,
 }
 
 fn key(t: &Template) -> Key {
@@ -38,19 +40,38 @@ fn narrowed(a: Type, b: Type) -> Option<Type> {
 
 impl TemplateMap {
     fn of(t: &Template, ty: Type) -> TemplateMap {
-        TemplateMap { types: vec![(key(t), ty)], lower: vec![] }
+        TemplateMap { types: vec![(key(t), ty)], ..Default::default() }
     }
 
-    pub fn union(mut self, o: TemplateMap) -> TemplateMap {
-        merge(&mut self.types, o.types, |a, b| Some(union(vec![a, b])));
+    /// `union()` and `benevolentUnion()`, an absorbed template giving way to the other side (`combine()`)
+    fn combined(mut self, o: TemplateMap, f: fn(Vec<Type>) -> Type) -> TemplateMap {
+        for (k, t) in o.types {
+            let theirs = o.absorbed.contains(&k);
+            match self.types.iter_mut().find(|(m, _)| *m == k) {
+                Some((_, old)) if self.absorbed.contains(&k) => {
+                    *old = t;
+                    self.absorbed.retain(|a| *a != k || theirs);
+                }
+                Some(_) if theirs => {}
+                Some((_, old)) => *old = f(vec![old.clone(), t]),
+                None => {
+                    if theirs {
+                        self.absorbed.push(k.clone());
+                    }
+                    self.types.push((k, t));
+                }
+            }
+        }
         merge(&mut self.lower, o.lower, narrowed);
         self
     }
 
-    fn benevolent_union(mut self, o: TemplateMap) -> TemplateMap {
-        merge(&mut self.types, o.types, |a, b| Some(to_benevolent(union(vec![a, b]))));
-        merge(&mut self.lower, o.lower, narrowed);
-        self
+    pub fn union(self, o: TemplateMap) -> TemplateMap {
+        self.combined(o, union)
+    }
+
+    fn benevolent_union(self, o: TemplateMap) -> TemplateMap {
+        self.combined(o, |ts| to_benevolent(union(ts)))
     }
 
     fn intersect(mut self, o: TemplateMap) -> TemplateMap {
@@ -63,7 +84,7 @@ impl TemplateMap {
     fn lower_bound(self) -> TemplateMap {
         let mut lower = self.types;
         merge(&mut lower, self.lower, narrowed);
-        TemplateMap { types: vec![], lower }
+        TemplateMap { lower, ..Default::default() }
     }
 
     /// `getTypes()`: each template's type, its lower bound when only that is known.
@@ -147,9 +168,11 @@ fn template(t: &Template, received: &Type) -> TemplateMap {
     }
 }
 
-/// UnionType::inferTemplateTypes()
+/// UnionType::inferTemplateTypes(): a received type a member definitely accepts is absorbed by it, telling
+/// nothing about the others (`T|null` receiving `null` leaves `T` absorbed); only the rest is inferred against the
+/// members that are not naked templates, or against all of them when that infers nothing.
 fn in_union(ts: &[Type], received: &Type) -> TemplateMap {
-    let received = match received {
+    let mut received = match received {
         // `toArrayOrTraversable()`
         Type::Iterable(k, v) => union(vec![
             Type::array((**k).clone(), (**v).clone()),
@@ -157,37 +180,52 @@ fn in_union(ts: &[Type], received: &Type) -> TemplateMap {
         ]),
         r => r.clone(),
     };
-    let mut map = TemplateMap::default();
-    let (mine, received) = match bounded(&received) {
-        Type::Union(rs) | Type::Benevolent(rs) => {
-            let mut mine = Vec::new();
-            let mut remaining = Vec::new();
-            'received: for r in rs {
-                for t in ts {
-                    if is_super_type_of(t, r).yes() {
-                        map = map.union(infer_template_types(t, r));
-                        continue 'received;
-                    }
-                    mine.push(t.clone());
-                }
-                remaining.push(r.clone());
-            }
-            if remaining.is_empty() {
-                return map;
-            }
-            (mine, union(remaining))
-        }
-        r => (ts.to_vec(), r.clone()),
+    let rs = match bounded(&received) {
+        Type::Union(rs) | Type::Benevolent(rs) => rs.clone(),
+        r => vec![r.clone()],
     };
-    for t in &mine {
-        if !matches!(t, Type::Template(_)) && !matches!(t, Type::ClassString(Some(c)) if matches!(**c, Type::Template(_))) {
-            map = map.union(infer_template_types(t, &received));
+    let mut map = TemplateMap::default();
+    let mut remaining = Vec::new();
+    'received: for r in &rs {
+        if !r.is_never() {
+            for t in ts {
+                if is_super_type_of(t, r).yes() {
+                    map = map.union(infer_template_types(t, r));
+                    continue 'received;
+                }
+            }
         }
+        remaining.push(r.clone());
+    }
+    if remaining.is_empty() {
+        // `getAbsorbedTemplateTypes()`
+        for t in ts.iter().filter_map(naked) {
+            if map.get(t).is_none() {
+                map.types.push((key(t), Type::Error));
+                map.absorbed.push(key(t));
+            }
+        }
+        return map;
+    }
+    if remaining.len() != rs.len() {
+        received = union(remaining);
+    }
+    for t in ts.iter().filter(|t| naked(t).is_none()) {
+        map = map.union(infer_template_types(t, &received));
     }
     if !map.types().is_empty() {
         return map;
     }
-    mine.iter().fold(map, |map, t| map.union(infer_template_types(t, &received)))
+    ts.iter().fold(map, |map, t| map.union(infer_template_types(t, &received)))
+}
+
+/// `getNakedTemplateType()`
+fn naked(t: &Type) -> Option<&Template> {
+    match t {
+        Type::Template(t) => Some(t),
+        Type::ClassString(Some(c)) if let Type::Template(t) = &**c => Some(t),
+        _ => None,
+    }
 }
 
 /// The inference of the generic types other than templates and unions, from a received type that is not a union.
@@ -208,7 +246,7 @@ fn generic(pattern: &Type, received: &Type) -> TemplateMap {
             r if r.is_array().yes() => pair(&pattern.iterable_key_type(), &pattern.iterable_value_type()),
             _ => TemplateMap::default(),
         },
-        Type::Iterable(k, v) if received.is_iterable().yes() => pair(k, v),
+        Type::Iterable(k, v) if received.is_iterable().yes() && !received.is_never() => pair(k, v),
         Type::Callable(Some(s)) if received.is_callable().yes() => {
             callable_signatures(received).iter().fold(TemplateMap::default(), |map, theirs| map.union(on_signature(s, theirs)))
         }

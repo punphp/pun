@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Built-in function signatures exactly as PHPStan 2.2.7 reflects them, from the phar's own container
+ * Built-in function signatures exactly as PHPStan 2.3.1 reflects them, from the phar's own container
  * (ReflectionProvider -> NativeFunctionReflectionProvider: functionMap + PHP-version deltas, merged with
  * php-8-stubs, overlaid with stubs/*.stub PHPDocs, functionMetadata.php). Default config (no bleedingEdge,
  * so stricterFunctionMap is off).
@@ -168,7 +168,7 @@ function dump(int $phpVersion, array &$typeStrings): array
             $typeStrings[$i === 0 && preg_match('/\\b(static|self|parent)\\b|\\$this/i', $s) ? $class : ''][$s] = true;
         }
     }
-    $stubs = _PHPStan_88a9c7bcc\JetBrains\PHPStormStub\PhpStormStubsMap::class;
+    $stubs = _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap::class;
     $name = fn (string $n) => new PhpParser\Node\Name($n);
 
     $names = array_keys((new PHPStan\Php8StubsMap($phpVersion))->functions);
@@ -328,7 +328,7 @@ const PROBES = [
     'array{a: int, a: string}', 'array{a: int, a?: string}', 'array{a?: int, a?: string}', 'array{int, a: string, int}',
     'object{a: int, b?: string}', "object{'a': int}", 'array{}', 'list{}', 'array{0?: int}', 'array{a?: int}',
     'array{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}', 'array{1, 2, 3, 4, 5, 6, 7, 8, 9}',
-    'array{a: int, ...<1|2, string>}', 'array{a: int, ...<\'a\'|\'b\', string>}', 'array{"x": int}', 'array{1.5: int}', 'array{_a1: int, a-b: int, \\a: int, 1a: int}',
+    'array{a: int, ...<1|2, string>}', 'array{a: int, ...<stdClass, string>}', 'array{a: int, ...<\'a\'|\'b\', string>}', 'array{"x": int}', 'array{1.5: int}', 'array{_a1: int, a-b: int, \\a: int, 1a: int}',
     'int|string[]', 'Traversable|string[]', 'array|int[]', 'iterable|int[]', 'list<int>|string[]', 'array{a: int}|int[]',
     'ArrayIterator<int>|int[]', 'Countable|int[]', '(int|string)[]', 'int[]|string[]', '?int', 'int|null|false', '1|2|3', '1.5|2.0|1',
     "'a'|'b'|string", 'true|false', 'true|bool', 'int<1, 3>|int<2, 5>', 'int<1, 3>|int<5, 7>', 'int<1, 3>|int<4, 7>', 'int<1, 3>|4',
@@ -531,11 +531,13 @@ if (($argv[1] ?? '') === 'infer') {
     $patterns = ['T', 'U', 'V', 'array<T>', 'array<U, T>', 'list<T>', 'iterable<U, T>', 'T|null', 'T|int', 'T|array<T>', 'array<T>|T',
         'array{a: T, b?: U}', 'callable(T): U', 'Closure(T): U', 'callable(T, U): void', 'class-string<T>', 'class-string<V>', 'ArrayIterator<U, T>',
         'Traversable<U, T>', 'V&Traversable<U, T>', 'object{a: T, b?: U}', '__benevolent<T|int>', 'array<T>|iterable<T>', 'int', 'U|string',
-        'callable(T, T): void', 'callable(T, int): void', 'ArrayIterator<U, covariant T>', 'class-string<ArrayIterator<U, T>>'];
+        'callable(T, T): void', 'callable(T, int): void', 'ArrayIterator<U, covariant T>', 'class-string<ArrayIterator<U, T>>',
+        'class-string<V>|int', 'array{T|null, T}', 'array{T, T|null}'];
     $received = ['int', '1', "'a'", 'int|string', "1|'a'", 'null', 'int|null', 'float|null', 'array<int, string>', 'list<int>', "array{a: 1, b: 'x'}", 'array{a: 1}',
         'iterable<int, string>', 'ArrayIterator<int, string>', 'ArrayIterator', 'Generator<int, string>', 'Closure(int): string', 'callable(string): int',
         "'strlen'", 'callable', "'ArrayIterator'", 'class-string<Countable>', 'class-string', 'Countable', 'stdClass', 'mixed', 'never', 'object{a: int}',
-        'T', 'U', 'array<int|string>|null', 'int|array<int>', '__benevolent<int|string>', 'Countable&Traversable<int, string>', 'float|array<float>', 'object|null'];
+        'T', 'U', 'array<int|string>|null', 'int|array<int>', '__benevolent<int|string>', 'Countable&Traversable<int, string>', 'float|array<float>', 'object|null',
+        'array{null, int}', 'array{int, null}'];
     $rows = [];
     foreach ($patterns as $a) {
         $at = $resolver->resolve($a, $scope);
@@ -567,7 +569,8 @@ if (($argv[1] ?? '') === 'reasons') {
         "array{a: 'x'}", 'array{a: int, b: string}|null', 'array{0: string}', 'array<int, string>', 'iterable<int>', 'ArrayIterator<int, string>',
         'ArrayIterator<int, int|string>', 'ArrayIterator<int, 1>', 'ArrayIterator', 'Countable&Traversable<int>', 'array{array<int>}', 'array{0: int}|null',
         'T', 'U', 'int|array<int>', 'string|list<int>', 'Closure(int): string|null', 'mixed', '(T is int ? list<int> : int)', 'list<int>|list<string>',
-        'callable(int|string): void', 'Closure(string $a): void', 'array{a: int}', 'Traversable<int, string>', '(callable(): mixed)|Closure(): void'];
+        'callable(int|string): void', 'Closure(string $a): void', 'array{a: int}', 'Traversable<int, string>', '(callable(): mixed)|Closure(): void',
+        'array{a: int}|array{a: int, b: int}', 'array{}', 'ArrayIterator<int, int|string>|ArrayIterator<int, float|int>'];
     $rows = [];
     foreach ($atoms as $a) {
         $at = $resolver->resolve($a, $scope);
@@ -826,7 +829,7 @@ $reflected = array_replace_recursive($reflected, $reflected85);
 $delta = [];
 foreach ($v84 as $kind => $symbols) {
     foreach ($symbols + $v85[$kind] as $name => $_) {
-        if (($symbols[$name] ?? null) !== ($v85[$kind][$name] ?? null)) {
+        if (json_encode($symbols[$name] ?? null) !== json_encode($v85[$kind][$name] ?? null)) { // objects ({} docs) never compare identical
             $delta[$kind][$name] = $v85[$kind][$name] ?? null;
         }
     }

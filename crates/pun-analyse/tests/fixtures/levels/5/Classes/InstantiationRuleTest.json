@@ -2,6 +2,89 @@
     "test": "Classes/InstantiationRuleTest",
     "cases": [
         {
+            "method": "testTemplateArgumentArrow",
+            "files": [
+                "Classes/data/template-argument-arrow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/template-argument-arrow.php",
+                    "line": 22,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class TemplateArgumentArrow\\ArrayCollection has an unused parameter $values.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/template-argument-arrow.php",
+                    "line": 31,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class TemplateArgumentArrow\\ReadOnlyCollection has an unused parameter $collection.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTemplateArgumentNestedCollection",
+            "files": [
+                "Classes/data/template-argument-nested-collection.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/template-argument-nested-collection.php",
+                    "line": 14,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class TemplateArgumentNestedCollection\\Collection has an unused parameter $items.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/template-argument-nested-collection.php",
+                    "line": 33,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class TemplateArgumentNestedCollection\\WrittenEvent has an unused parameter $id.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/template-argument-nested-collection.php",
+                    "line": 44,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class TemplateArgumentNestedCollection\\ContainerEvent has an unused parameter $events.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/template-argument-nested-collection.php",
+                    "line": 52,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new TemplateArgumentNestedCollection\\ContainerEvent() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/template-argument-nested-collection.php",
+                    "line": 57,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new TemplateArgumentNestedCollection\\ContainerEvent() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/template-argument-nested-collection.php",
+                    "line": 62,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $events of class TemplateArgumentNestedCollection\\ContainerEvent constructor expects TemplateArgumentNestedCollection\\EventCollection<TemplateArgumentNestedCollection\\WrittenEvent<ID of array<string, string>|string = string>>, TemplateArgumentNestedCollection\\EventCollection<TemplateArgumentNestedCollection\\Event> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/template-argument-nested-collection.php",
+                    "line": 62,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new TemplateArgumentNestedCollection\\ContainerEvent() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testInstantiation",
             "files": [
                 "Classes/data/instantiation.php"
@@ -327,7 +410,7 @@
                     "file": "Classes/data/instantiation.php",
                     "line": 137,
                     "identifier": "arguments.count",
-                    "message": "Class class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Classes/data/instantiation.php:137 constructor invoked with 3 parameters, 1 required.",
+                    "message": "Class class@anonymous/instantiation.php:137 constructor invoked with 3 parameters, 1 required.",
                     "tip": null
                 },
                 {
@@ -893,6 +976,13 @@
             ],
             "scan": [],
             "errors": [
+                {
+                    "file": "Classes/data/bug-6370.php",
+                    "line": 10,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug6370\\A has an unused parameter $something.",
+                    "tip": null
+                },
                 {
                     "file": "Classes/data/bug-6370.php",
                     "line": 45,
@@ -1470,6 +1560,71 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15047",
+            "files": [
+                "Classes/data/bug-15047.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#0",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#1",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4548",
+            "files": [
+                "Classes/data/bug-4548.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-4548.php",
+                    "line": 8,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug4548\\Enum::$value is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Classes/data/bug-4548.php",
+                    "line": 25,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new Bug4548\\Enum() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-4548.php",
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $value of class Bug4548\\Suit constructor expects 1|2|3|4, 5 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-4548.php",
+                    "line": 26,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new Bug4548\\Enum() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

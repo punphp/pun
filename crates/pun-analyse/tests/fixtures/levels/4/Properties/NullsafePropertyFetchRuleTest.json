@@ -304,6 +304,15 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug15016",
+            "files": [
+                "Properties/data/bug-15016.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

@@ -4,7 +4,7 @@
 //! one problem a line. For a Mago rule the inputs are the rule's own test cases and examples (mago-linter 1.57.0,
 //! rule/<category>/<rule>.rs) plus hand-written ones, and the lines are `line:column: message` as
 //! `mago --php-version 8.4 lint --only <code> --reporting-format emacs` prints them. For a PHPStan rule the lines are
-//! `line: message` as PHPStan 2.2.7 with phpstan-strict-rules 2.0.12 (level 0, only that strict rule on) reports
+//! `line: message` as PHPStan 2.3.1 with phpstan-strict-rules 2.0.12 (level 0, only that strict rule on) reports
 //! them with `--error-format=json`, filtered to the rule's identifier.
 //!
 //! tests/lint_b_report_fix/<group>/<name>/*.php.inc is an input and, after `-----`, what

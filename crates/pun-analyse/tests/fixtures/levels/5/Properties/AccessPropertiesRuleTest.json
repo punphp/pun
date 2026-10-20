@@ -698,7 +698,7 @@
                     "file": "Properties/data/access-properties.php",
                     "line": 302,
                     "identifier": "property.notFound",
-                    "message": "Access to an undefined property class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Properties/data/access-properties.php:297::$barProperty.",
+                    "message": "Access to an undefined property class@anonymous/access-properties.php:297::$barProperty.",
                     "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
                 },
                 {
@@ -1464,7 +1464,7 @@
                     "file": "Properties/data/access-properties.php",
                     "line": 302,
                     "identifier": "property.notFound",
-                    "message": "Access to an undefined property class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Properties/data/access-properties.php:297::$barProperty.",
+                    "message": "Access to an undefined property class@anonymous/access-properties.php:297::$barProperty.",
                     "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
                 },
                 {
@@ -2254,7 +2254,7 @@
                     "file": "Properties/data/access-properties.php",
                     "line": 302,
                     "identifier": "property.notFound",
-                    "message": "Access to an undefined property class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Properties/data/access-properties.php:297::$barProperty.",
+                    "message": "Access to an undefined property class@anonymous/access-properties.php:297::$barProperty.",
                     "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
                 },
                 {

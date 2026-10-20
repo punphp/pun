@@ -69,6 +69,13 @@
                     "identifier": "rules.modelAppends",
                     "message": "Property 'uuid' is not a computed property, remove from $appends.",
                     "tip": null
+                },
+                {
+                    "file": "Pun/Appends.php",
+                    "line": 68,
+                    "identifier": "property.hooksNotSupported",
+                    "message": "Property hooks are supported only on PHP 8.4 and later.",
+                    "tip": null
                 }
             ]
         },

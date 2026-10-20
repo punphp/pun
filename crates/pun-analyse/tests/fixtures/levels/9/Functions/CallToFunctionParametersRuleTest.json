@@ -2,6 +2,60 @@
     "test": "Functions/CallToFunctionParametersRuleTest",
     "cases": [
         {
+            "method": "testJointTemplateInferenceNamedArguments",
+            "files": [
+                "Functions/data/joint-inference-named.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class JointInference\\Box not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class JointInference\\Box not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 15,
+                    "identifier": "function.notFound",
+                    "message": "Function both not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 16,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type JointInference\\Box<1|2>, actual: JointInference\\Box",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 17,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type JointInference\\Box<1|2>, actual: JointInference\\Box",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTemplateArgumentReduceIterator",
+            "files": [
+                "Functions/data/template-argument-reduce-iterator.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testCallToFunctionWithoutParameters",
             "files": [
                 "Functions/data/existing-function.php"
@@ -101,23 +155,9 @@
                 },
                 {
                     "file": "Functions/data/call-to-function-with-optional-parameters.php",
-                    "line": 11,
-                    "identifier": "function.resultUnused",
-                    "message": "Call to function get_class() on a separate line has no effect.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/call-to-function-with-optional-parameters.php",
                     "line": 12,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $object of function get_class expects object, null given.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/call-to-function-with-optional-parameters.php",
-                    "line": 12,
-                    "identifier": "function.resultUnused",
-                    "message": "Call to function get_class() on a separate line has no effect.",
                     "tip": null
                 },
                 {
@@ -132,13 +172,6 @@
                     "line": 16,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $object of function get_class expects object, object|null given.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/call-to-function-with-optional-parameters.php",
-                    "line": 16,
-                    "identifier": "function.resultUnused",
-                    "message": "Call to function get_class() on a separate line has no effect.",
                     "tip": null
                 }
             ],
@@ -994,13 +1027,6 @@
                 },
                 {
                     "file": "Functions/data/unpack-operator.php",
-                    "line": 16,
-                    "identifier": "function.resultUnused",
-                    "message": "Call to function sprintf() on a separate line has no effect.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/unpack-operator.php",
                     "line": 17,
                     "identifier": "function.resultUnused",
                     "message": "Call to function sprintf() on a separate line has no effect.",
@@ -1030,20 +1056,6 @@
                 {
                     "file": "Functions/data/unpack-operator.php",
                     "line": 19,
-                    "identifier": "function.resultUnused",
-                    "message": "Call to function sprintf() on a separate line has no effect.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/unpack-operator.php",
-                    "line": 20,
-                    "identifier": "function.resultUnused",
-                    "message": "Call to function sprintf() on a separate line has no effect.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/unpack-operator.php",
-                    "line": 21,
                     "identifier": "function.resultUnused",
                     "message": "Call to function sprintf() on a separate line has no effect.",
                     "tip": null
@@ -2040,6 +2052,127 @@
             "general": []
         },
         {
+            "method": "testClosureSignatureFromUsages",
+            "files": [
+                "Functions/data/closure-signature-from-usages.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 23,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$invoked(1)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 31,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$escaped(1)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 54,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function ClosureSignatureFromUsagesRule\\takesConvertor() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 57,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $a of closure expects string, mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 58,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$outer('x', 1.0)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 68,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$c('x')\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 69,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$c(...$args)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 73,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$d(...[5])\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-signature-from-usages.php",
+                    "line": 74,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$d(...['a' => 'y'])\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureByRefUsesAtInvocation",
+            "files": [
+                "Functions/data/closure-byref-uses-at-invocation.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-byref-uses-at-invocation.php",
+                    "line": 14,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $string of function strlen expects string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-byref-uses-at-invocation.php",
+                    "line": 14,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function strlen() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-byref-uses-at-invocation.php",
+                    "line": 24,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function strlen() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureSignatureFromUsagesOfGenericObject",
+            "files": [
+                "Functions/data/closure-signature-from-usages-generics.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-signature-from-usages-generics.php",
+                    "line": 27,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_map() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testExplode",
             "files": [
                 "Functions/data/explode-80.php"
@@ -2779,6 +2912,13 @@
                     "identifier": "argument.type",
                     "message": "Parameter #2 $callback of function array_find expects callable(mixed, int|string): bool, Closure(string, int): array{} given.",
                     "tip": "Type string of parameter #1 $value of passed callable needs to be same or wider than parameter type mixed of accepting callable."
+                },
+                {
+                    "file": "Functions/data/array_find.php",
+                    "line": 55,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_find() on a separate line has no effect.",
+                    "tip": null
                 }
             ],
             "general": []
@@ -4479,14 +4619,14 @@
                     "file": "Functions/data/call-to-function-named-params-multivariant.php",
                     "line": 35,
                     "identifier": "return.unusedType",
-                    "message": "Method SessionHandlerInterface@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/call-to-function-named-params-multivariant.php:24::gc() never returns false so it can be removed from the return type.",
+                    "message": "Method SessionHandlerInterface@anonymous/call-to-function-named-params-multivariant.php:24::gc() never returns false so it can be removed from the return type.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/call-to-function-named-params-multivariant.php",
                     "line": 47,
                     "identifier": "return.type",
-                    "message": "Method SessionHandlerInterface@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/call-to-function-named-params-multivariant.php:24::read() should return string|false but returns true.",
+                    "message": "Method SessionHandlerInterface@anonymous/call-to-function-named-params-multivariant.php:24::read() should return string|false but returns true.",
                     "tip": null
                 }
             ],
@@ -6405,28 +6545,28 @@
                     "file": "Functions/data/bug-6560.php",
                     "line": 88,
                     "identifier": "cast.int",
-                    "message": "Cannot cast Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560.php:13 to int.",
+                    "message": "Cannot cast Stringable@anonymous/bug-6560.php:13 to int.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/bug-6560.php",
                     "line": 89,
                     "identifier": "argument.type",
-                    "message": "Parameter #1 $value of function intval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560.php:13 given.",
+                    "message": "Parameter #1 $value of function intval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/bug-6560.php:13 given.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/bug-6560.php",
                     "line": 91,
                     "identifier": "cast.double",
-                    "message": "Cannot cast Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560.php:13 to float.",
+                    "message": "Cannot cast Stringable@anonymous/bug-6560.php:13 to float.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/bug-6560.php",
                     "line": 92,
                     "identifier": "argument.type",
-                    "message": "Parameter #1 $value of function floatval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560.php:13 given.",
+                    "message": "Parameter #1 $value of function floatval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/bug-6560.php:13 given.",
                     "tip": null
                 },
                 {
@@ -6541,28 +6681,28 @@
                     "file": "Functions/data/bug-6560-strict.php",
                     "line": 88,
                     "identifier": "cast.int",
-                    "message": "Cannot cast Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560-strict.php:13 to int.",
+                    "message": "Cannot cast Stringable@anonymous/bug-6560-strict.php:13 to int.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/bug-6560-strict.php",
                     "line": 89,
                     "identifier": "argument.type",
-                    "message": "Parameter #1 $value of function intval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560-strict.php:13 given.",
+                    "message": "Parameter #1 $value of function intval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/bug-6560-strict.php:13 given.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/bug-6560-strict.php",
                     "line": 91,
                     "identifier": "cast.double",
-                    "message": "Cannot cast Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560-strict.php:13 to float.",
+                    "message": "Cannot cast Stringable@anonymous/bug-6560-strict.php:13 to float.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/bug-6560-strict.php",
                     "line": 92,
                     "identifier": "argument.type",
-                    "message": "Parameter #1 $value of function floatval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-6560-strict.php:13 given.",
+                    "message": "Parameter #1 $value of function floatval expects array|bool|float|GMP|int|resource|SimpleXMLElement|string|null, Stringable@anonymous/bug-6560-strict.php:13 given.",
                     "tip": null
                 },
                 {
@@ -7399,20 +7539,13 @@
                 {
                     "file": "Functions/data/constant-parameter-check.php",
                     "line": 113,
-                    "identifier": "function.resultUnused",
-                    "message": "Call to function preg_replace_callback() on a separate line has no effect.",
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $callback of function preg_replace_callback expects callable(array<string>): string, Closure(mixed): array{non-falsy-string, int<-1, max>} given.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/constant-parameter-check.php",
                     "line": 113,
-                    "identifier": "return.type",
-                    "message": "Anonymous function should return string but returns array<int, int<-1, max>|string>.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/constant-parameter-check.php",
-                    "line": 116,
                     "identifier": "function.resultUnused",
                     "message": "Call to function preg_replace_callback() on a separate line has no effect.",
                     "tip": null
@@ -7420,8 +7553,15 @@
                 {
                     "file": "Functions/data/constant-parameter-check.php",
                     "line": 116,
-                    "identifier": "return.type",
-                    "message": "Anonymous function should return string but returns array<int, int<-1, max>|string|null>.",
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $callback of function preg_replace_callback expects callable(array<string>): string, Closure(mixed): array{non-falsy-string|null, int<-1, max>} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/constant-parameter-check.php",
+                    "line": 116,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_replace_callback() on a separate line has no effect.",
                     "tip": null
                 },
                 {
@@ -7461,6 +7601,86 @@
             "general": []
         },
         {
+            "method": "testBug15306",
+            "files": [
+                "Functions/data/bug-15306.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 5,
+                    "identifier": "argument.exclusiveConstants",
+                    "message": "Constants JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE cannot be combined for parameter #4 $flags of function json_decode.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 9,
+                    "identifier": "argument.exclusiveConstants",
+                    "message": "Constants JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE cannot be combined for parameter #2 $flags of function json_encode.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 10,
+                    "identifier": "argument.exclusiveConstants",
+                    "message": "Constants JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_THROW_ON_ERROR cannot be combined for parameter #2 $flags of function json_encode.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 14,
+                    "identifier": "argument.exclusiveConstants",
+                    "message": "Constants FILTER_REQUIRE_SCALAR, FILTER_REQUIRE_ARRAY cannot be combined for parameter #3 $options of function filter_var.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 14,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function filter_var() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 15,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function filter_var() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 16,
+                    "identifier": "argument.exclusiveConstants",
+                    "message": "Constants FILTER_REQUIRE_SCALAR, FILTER_REQUIRE_ARRAY cannot be combined for parameter #4 $options of function filter_input.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 16,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function filter_input() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 17,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function filter_input() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15306.php",
+                    "line": 19,
+                    "identifier": "argument.exclusiveConstants",
+                    "message": "Constants LOG_NDELAY, LOG_ODELAY cannot be combined for parameter #2 $flags of function openlog.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug4608",
             "files": [
                 "Functions/data/bug-4608-call-user-func.php"
@@ -7471,7 +7691,7 @@
                     "file": "Functions/data/bug-4608-call-user-func.php",
                     "line": 11,
                     "identifier": "argument.type",
-                    "message": "Parameter #1 $callback of function call_user_func expects callable(): mixed, array{class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Functions/data/bug-4608-call-user-func.php:5, 'abc'|'not_abc'} given.",
+                    "message": "Parameter #1 $callback of function call_user_func expects callable(): mixed, array{class@anonymous/bug-4608-call-user-func.php:5, 'abc'|'not_abc'} given.",
                     "tip": null
                 }
             ],
@@ -7562,6 +7782,15 @@
             "general": []
         },
         {
+            "method": "testBug13334",
+            "files": [
+                "Functions/data/bug-13334.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug11894",
             "files": [
                 "Functions/data/bug-11894.php"
@@ -7582,6 +7811,608 @@
                     "line": 10,
                     "identifier": "isset.offset",
                     "message": "Offset 'short' on array{long: string, details: string} in isset() does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13114#0",
+            "files": [
+                "Functions/data/bug-13114.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 37,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\foo expects list{class-string|object, string}&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 42,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\bar expects non-empty-list<mixed>&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 47,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 48,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, array{1, 2} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 49,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, 42 given.",
+                    "tip": "• 42 is not a list.\n• 42 is empty."
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 52,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableString expects callable-string, 'nonexistentFunction' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 53,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableString expects callable-string, 42 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 55,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableObject expects callable-object, Bug13114\\C given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 57,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableObject expects callable-object, 42 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 67,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of function Bug13114\\takesInt expects int, callable&list<mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 77,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of function Bug13114\\takesInt expects int, callable&list<mixed> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13114#1",
+            "files": [
+                "Functions/data/bug-13114.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 37,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\foo expects list{class-string|object, string}&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 42,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\bar expects non-empty-list<mixed>&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 47,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 48,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, array{1, 2} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 49,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, 42 given.",
+                    "tip": "• 42 is not a list.\n• 42 is empty."
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 52,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableString expects callable-string, 'nonexistentFunction' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 53,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableString expects callable-string, 42 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 55,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableObject expects callable-object, Bug13114\\C given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 57,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableObject expects callable-object, 42 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 67,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of function Bug13114\\takesInt expects int, callable&list<mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 77,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of function Bug13114\\takesInt expects int, callable&list<mixed> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13114#2",
+            "files": [
+                "Functions/data/bug-13114.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 37,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\foo expects list{class-string|object, string}&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 42,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\bar expects non-empty-list<mixed>&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 47,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, array{Bug13114\\C, 'h'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 48,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, array{1, 2} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 49,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\baz expects non-empty-list&callable(): mixed, 42 given.",
+                    "tip": "• 42 is not a list.\n• 42 is empty."
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 52,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableString expects callable-string, 'nonexistentFunction' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 53,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableString expects callable-string, 42 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 55,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableObject expects callable-object, Bug13114\\C given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 57,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of function Bug13114\\callableObject expects callable-object, 42 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 67,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of function Bug13114\\takesInt expects int, callable&list<mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13114.php",
+                    "line": 77,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of function Bug13114\\takesInt expects int, callable&list<mixed> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15167",
+            "files": [
+                "Functions/data/bug-15167.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15168",
+            "files": [
+                "Functions/data/bug-15168.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 10,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug15168Functions\\Coll has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 23,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\withNull() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 33,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\withFalse() should return T but returns T|false.",
+                    "tip": "Type false is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 43,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\withIntAndFloat() should return T but returns float|int|T.",
+                    "tip": "• Type int is not always the same as T. It breaks the contract for some argument types, typically subtypes.\n• Type float is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 73,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\fromShape() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 83,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug15168Functions\\Coll<T|null>::$t.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 93,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\fromCallable() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 103,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\variadic() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 118,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withNull() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 119,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withFalse() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 120,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withIntAndFloat() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 121,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withIntAndFloat() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 122,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromList() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 123,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromIterable() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 124,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromShape() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 125,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromColl() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 127,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\variadic() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 145,
+                    "identifier": "return.missing",
+                    "message": "Method Bug15168Functions\\Sink::read() should return U but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 157,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method Bug15168Functions\\Sink<T>::take() expects Bug15168Functions\\Coll<T>, Bug15168Functions\\Coll<mixed> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6732",
+            "files": [
+                "Functions/data/bug-6732.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-6732.php",
+                    "line": 10,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug6732Functions\\Collection has an unused parameter $items.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9377",
+            "files": [
+                "Functions/data/bug-9377.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-9377.php",
+                    "line": 21,
+                    "identifier": "return.type",
+                    "message": "Function Bug9377\\bar() should return Bug9377\\HelloWorld<array{id: int|null}> but returns Bug9377\\HelloWorld<mixed>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11041",
+            "files": [
+                "Functions/data/bug-11041.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11041.php",
+                    "line": 29,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Possibly invalid array key type TKey of mixed.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1946",
+            "files": [
+                "Functions/data/bug-1946.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-1946.php",
+                    "line": 19,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $string of function strlen expects string, null given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11919",
+            "files": [
+                "Functions/data/bug-11919.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArgumentsCountAcceptedByNoVariant",
+            "files": [
+                "Functions/data/arguments-count-accepted-by-no-variant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arguments-count-accepted-by-no-variant.php",
+                    "line": 12,
+                    "identifier": "arguments.count",
+                    "message": "Function mt_rand invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arguments-count-accepted-by-no-variant.php",
+                    "line": 15,
+                    "identifier": "arguments.count",
+                    "message": "Function rand invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arguments-count-accepted-by-no-variant.php",
+                    "line": 16,
+                    "identifier": "arguments.count",
+                    "message": "Function mt_rand invoked with 3 parameters, 0-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arguments-count-accepted-by-no-variant.php",
+                    "line": 20,
+                    "identifier": "arguments.count",
+                    "message": "Function stream_context_set_option invoked with 3 parameters, 4 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLevenshteinArgumentsCount",
+            "files": [
+                "Functions/data/levenshtein-arguments-count.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRoundModePhp84",
+            "files": [
+                "Functions/data/round-mode-php84.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/round-mode-php84.php",
+                    "line": 11,
+                    "identifier": "argument.type",
+                    "message": "Parameter #3 $mode of function round expects int<1, 8>|RoundingMode, 9 given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/round-mode-php84.php",
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter #3 $mode of function round expects int<1, 8>|RoundingMode, 0 given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOversizedArrayUnionWithEmptyArray",
+            "files": [
+                "Functions/data/oversized-array-union-with-empty-array.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/oversized-array-union-with-empty-array.php",
+                    "line": 285,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function OversizedArrayUnionWithEmptyArrayRule\\same() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/oversized-array-union-with-empty-array.php",
+                    "line": 286,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $a of function OversizedArrayUnionWithEmptyArrayRule\\nonEmpty expects non-empty-array<string, string>, array{}|(non-empty-array<literal-string&non-falsy-string, literal-string&non-falsy-string>) given.",
+                    "tip": "array{}|(non-empty-array<literal-string&non-falsy-string, literal-string&non-falsy-string>) might be empty."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11510",
+            "files": [
+                "Functions/data/bug-11510.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11510.php",
+                    "line": 20,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $classConfig of function Bug11510\\foo expects 'test', 'hello' given.",
                     "tip": null
                 }
             ],

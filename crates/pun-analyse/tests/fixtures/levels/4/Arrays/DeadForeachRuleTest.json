@@ -118,6 +118,30 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug15147",
+            "files": [
+                "Arrays/data/bug-15147.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-15147.php",
+                    "line": 30,
+                    "identifier": "foreach.emptyArray",
+                    "message": "Empty array passed to foreach.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-15147.php",
+                    "line": 31,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_array() with *NEVER* will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

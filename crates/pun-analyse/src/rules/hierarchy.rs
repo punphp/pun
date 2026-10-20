@@ -325,14 +325,16 @@ pub fn in_class(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
             members::Method::User { declaring, f } => {
                 c.method_abstract(declaring, f) && !inherited_satisfies(c, declaring, f, lower_name)
             }
-            // isProvidedByBuiltinAncestor() is not needed: Mago's stubs give a built-in parent the interface's
-            // methods as concrete ones (IntlBreakIterator::getIterator(), SimpleXMLElement's RecursiveIterator)
+            // isProvidedByBuiltinAncestor(): a non-abstract built-in parent implementing the interface provides its
+            // methods at runtime (SplFixedArray's stub `implements Iterator`, whose methods PHP 8 dropped)
             members::Method::Builtin { declaring, .. } => {
-                declaring.is_interface
+                (declaring.is_interface
                     || c.codebase
                         .get_method(declaring.name.as_bytes(), lower_name)
                         .and_then(|f| f.method_metadata.as_ref())
-                        .is_some_and(|m| m.is_abstract)
+                        .is_some_and(|m| m.is_abstract))
+                    && !(declaring.is_interface
+                        && provided_by_builtin_ancestor(c, k, &declaring.name))
             }
         };
         if !is_abstract || (m.declared_in_interface() && trait_implements(c, k, lower_name, 0)) {
@@ -577,4 +579,18 @@ fn allowed_sub_types(c: &Checker, k: &ClassLikeMetadata) -> Option<Vec<pun_phpst
         types.push(Type::Object(super::declared::original_name(k), Vec::new()));
     }
     Some(types)
+}
+
+/// `MissingMethodImplementationRule::isProvidedByBuiltinAncestor()`
+fn provided_by_builtin_ancestor(c: &Checker, k: &ClassLikeMetadata, interface: &str) -> bool {
+    k.all_parent_classes
+        .iter()
+        .filter_map(|p| c.codebase.get_class_like(p.as_bytes()))
+        .any(|p| {
+            p.flags.is_built_in()
+                && !p.flags.is_abstract()
+                && p.all_parent_interfaces
+                    .iter()
+                    .any(|i| i.as_bytes().eq_ignore_ascii_case(interface.as_bytes()))
+        })
 }

@@ -274,13 +274,6 @@
     ],
     [
         null,
-        "1|2|3|4",
-        "1|2|3|4",
-        "1|2|3|4",
-        "int"
-    ],
-    [
-        null,
         "?Collator",
         "Collator|null",
         "Collator|null",
@@ -502,6 +495,13 @@
         "array{host?: string, port?: int, connectTimeout?: float, auth?: array{0: string|false|null, 1?: string}, ssl?: array<string, mixed>, backoff?: array<string, mixed>}|null",
         "array{host?: string, port?: int, connectTimeout?: float, auth?: array{0: string|false|null, 1?: string}, ssl?: array<string, mixed>, backoff?: array<string, mixed>}|null",
         "array<string, array<int|string, mixed>|float|int|string>|null"
+    ],
+    [
+        null,
+        "?array{type:int,message:string,file:string,line:int,trace?:list<array{function:string,line?:int,file?:string,class?:class-string,type?:'::'|'->',args?:list<mixed>,object?:object}>}",
+        "array{type: int, message: string, file: string, line: int, trace?: list<array{function: string, line?: int, file?: string, class?: class-string, type?: '->'|'::', args?: list<mixed>, object?: object}>}|null",
+        "array{type: int, message: string, file: string, line: int, trace?: list<array{function: string, line?: int, file?: string, class?: class-string, type?: '->'|'::', args?: list<mixed>, object?: object}>}|null",
+        "array<string, int|list<array<string, int|list<mixed>|object|string>>|string>|null"
     ],
     [
         null,
@@ -957,13 +957,6 @@
         "EvChild",
         "EvChild",
         "EvChild"
-    ],
-    [
-        null,
-        "EvEmbed",
-        "EvEmbed",
-        "EvEmbed",
-        "EvEmbed"
     ],
     [
         null,
@@ -3018,10 +3011,45 @@
     ],
     [
         null,
+        "__benevolent<RedisCluster|array|false>",
+        "(array|RedisCluster|false)",
+        "(array|RedisCluster|false)",
+        "(array|RedisCluster|false)"
+    ],
+    [
+        null,
         "__benevolent<RedisCluster|bool>",
         "(bool|RedisCluster)",
         "(bool|RedisCluster)",
         "(bool|RedisCluster)"
+    ],
+    [
+        null,
+        "__benevolent<RedisCluster|float|false>",
+        "(float|RedisCluster|false)",
+        "(float|RedisCluster|false)",
+        "(float|RedisCluster|false)"
+    ],
+    [
+        null,
+        "__benevolent<RedisCluster|int|false>",
+        "(int|RedisCluster|false)",
+        "(int|RedisCluster|false)",
+        "(int|RedisCluster|false)"
+    ],
+    [
+        null,
+        "__benevolent<RedisCluster|string|bool>",
+        "(bool|RedisCluster|string)",
+        "(bool|RedisCluster|string)",
+        "(bool|RedisCluster|string)"
+    ],
+    [
+        null,
+        "__benevolent<RedisCluster|string|false>",
+        "(RedisCluster|string|false)",
+        "(RedisCluster|string|false)",
+        "(RedisCluster|string|false)"
     ],
     [
         null,
@@ -3347,10 +3375,24 @@
     ],
     [
         null,
+        "__benevolent<array|bool>",
+        "(array|bool)",
+        "(array|bool)",
+        "(array|bool)"
+    ],
+    [
+        null,
         "__benevolent<array|false>",
         "(array|false)",
         "(array|false)",
         "(array|false)"
+    ],
+    [
+        null,
+        "__benevolent<array|string|bool>",
+        "(array|bool|string)",
+        "(array|bool|string)",
+        "(array|bool|string)"
     ],
     [
         null,
@@ -3400,6 +3442,13 @@
         "(resource|false)",
         "(resource|false)",
         "(resource|false)"
+    ],
+    [
+        null,
+        "__benevolent<string|bool>",
+        "(bool|string)",
+        "(bool|string)",
+        "(bool|string)"
     ],
     [
         null,
@@ -3463,13 +3512,6 @@
         "array<int, resource>",
         "array<int, resource>",
         "array<int, resource>"
-    ],
-    [
-        null,
-        "array<int, string>",
-        "array<int, string>",
-        "array<int, string>",
-        "array<int, string>"
     ],
     [
         null,
@@ -3750,6 +3792,13 @@
         "array{0: int<0, max>, 1: int<0, max>, 2: int, 3: string, mime: string, channels?: int, bits?: int}|false",
         "array{0: int<0, max>, 1: int<0, max>, 2: int, 3: string, mime: string, channels?: int, bits?: int}|false",
         "array<int|string, int|string>|false"
+    ],
+    [
+        null,
+        "array{algo: string|null, algoName: string, options: array<string, mixed>}",
+        "array{algo: string|null, algoName: string, options: array<string, mixed>}",
+        "array{algo: string|null, algoName: string, options: array<string, mixed>}",
+        "array<string, array<string, mixed>|string|null>"
     ],
     [
         null,
@@ -4135,13 +4184,6 @@
         "array|string",
         "array|string",
         "array|string"
-    ],
-    [
-        null,
-        "array|void",
-        "array|void",
-        "array|void",
-        "array|void"
     ],
     [
         null,
@@ -4670,13 +4712,6 @@
     ],
     [
         null,
-        "float|string",
-        "float|string",
-        "float|string",
-        "float|string"
-    ],
-    [
-        null,
         "function_name",
         "function_name",
         "function_name",
@@ -4954,6 +4989,13 @@
         "int<1, 65535>",
         "int<1, 65535>",
         "int<1, 65535>"
+    ],
+    [
+        null,
+        "int<1, 8>|RoundingMode",
+        "int<1, 8>|RoundingMode",
+        "int<1, 8>|RoundingMode",
+        "int<1, 8>|RoundingMode"
     ],
     [
         null,
@@ -5664,13 +5706,6 @@
     ],
     [
         null,
-        "non-empty-array<int|string>",
-        "non-empty-array<int|string>",
-        "non-empty-array<int|string>",
-        "array<int|string>"
-    ],
-    [
-        null,
         "non-empty-array<string,mixed>|false",
         "non-empty-array<string, mixed>|false",
         "non-empty-array<string, mixed>|false",
@@ -5682,6 +5717,13 @@
         "non-empty-list<string|null>",
         "non-empty-list<string|null>",
         "list<string|null>"
+    ],
+    [
+        null,
+        "non-empty-list<int|string>",
+        "non-empty-list<int|string>",
+        "non-empty-list<int|string>",
+        "list<int|string>"
     ],
     [
         null,
@@ -5836,13 +5878,6 @@
         "DateTimeZone|IntlTimeZone|string|null",
         "DateTimeZone|IntlTimeZone|string|null",
         "DateTimeZone|IntlTimeZone|string|null"
-    ],
-    [
-        null,
-        "null|string|false",
-        "string|false|null",
-        "string|false|null",
-        "string|false|null"
     ],
     [
         null,

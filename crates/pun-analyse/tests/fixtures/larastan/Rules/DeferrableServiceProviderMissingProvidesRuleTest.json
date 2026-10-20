@@ -6,22 +6,23 @@
             "files": [
                 "Rules/data/CorrectDeferrableProvider.php"
             ],
-            "errors": [],
-            "general": []
+            "scanned": [],
+            "errors": []
         },
         {
             "method": "testNoFalsePositivesIndirectExistingMethod",
             "files": [
                 "Rules/data/CorrectDeferrableProviderIndirect.php"
             ],
-            "errors": [],
-            "general": []
+            "scanned": [],
+            "errors": []
         },
         {
             "method": "testIncorrectDeferrableServiceProvider",
             "files": [
                 "Rules/data/IncorrectDeferrableProvider.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/data/IncorrectDeferrableProvider.php",
@@ -30,8 +31,7 @@
                     "message": "ServiceProviders that implement the \"DeferrableProvider\" interface should implement the \"provides\" method that returns an array of strings or class-strings",
                     "tip": null
                 }
-            ],
-            "general": []
+            ]
         }
     ]
 }

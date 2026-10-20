@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Larastan 3.10.0's own rule tests as oracle fixtures for `pun analyse` (context/plan/analyse.md §8).
  *
  * For every RuleTestCase under <larastan>/tests/Rules, each test method's `analyse([...files], ...)` call becomes
- * one case (collected by export-rule-fixtures.php --collect). Its files go through the real PHPStan 2.2.7 with
+ * one case (collected by export-rule-fixtures.php --collect). Its files go through the real PHPStan 2.3.1 with
  * Larastan, at level 0, from inside the Larastan checkout (so Larastan boots its Testbench application), with the
  * test's own config files and every opt-in Larastan rule switched on. Every error it reports is recorded.
  *

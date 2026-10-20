@@ -1,4 +1,4 @@
-//! Which reported errors PHPStan 2.2.7 drops: `ignoreErrors` (`IgnoredErrorHelper` / `IgnoredErrorHelperResult`, with
+//! Which reported errors PHPStan 2.3.1 drops: `ignoreErrors` (`IgnoredErrorHelper` / `IgnoredErrorHelperResult`, with
 //! `count`, `reportUnmatched` and the unmatched-pattern errors) and the `@phpstan-ignore*` comments
 //! (`LocalIgnoresProcessor`, `reportIgnoresWithoutComments`, the unmatched-line errors). Comment parsing is in
 //! `comments`. Everything is a pure function of the errors and the resolved config, except that `path` entries are

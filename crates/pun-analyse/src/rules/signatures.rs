@@ -424,8 +424,11 @@ fn reference(node: &Node, doc: &Doc, seen: &mut HashSet<String>) {
             items, unsealed, ..
         } => {
             items.iter().for_each(|i| go(&i.value));
-            // the unsealed key type is not traversed (an array key type is normalised first)
-            if let Some((_, value)) = unsealed {
+            // PHPStan 2.3 traverses the unsealed key type too
+            if let Some((key, value)) = unsealed {
+                if let Some(key) = key {
+                    go(key);
+                }
                 go(value);
             }
         }
@@ -721,8 +724,11 @@ pub fn check<'arena>(
     let pure_intersections = c.php_version >= 80100;
     for p in &params {
         let name = String::from_utf8_lossy(p.variable.name).into_owned();
+        // PHPStan 2.3 reads a function's or method's parameter with a `null` default as nullable, and `never|null` is
+        // `null` (oracle-checked; not for a closure's or a promoted property's)
         if let Some(hint) = &p.hint
             && pure_intersections
+            && (anonymous || p.is_promoted_property() || !null_default(p))
             && unresolvable(c, hint)
         {
             let line = if anonymous { hint.span() } else { p.span() };

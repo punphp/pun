@@ -734,6 +734,80 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testDeferredErrorsAreNotCollapsedAcrossFiles",
+            "files": [
+                "Comparison/data/call-condition-cross-file-a.php",
+                "Comparison/data/call-condition-cross-file-b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/call-condition-cross-file-a.php",
+                    "line": 18,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/call-condition-cross-file-b.php",
+                    "line": 18,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMarkerFromAnotherFileDoesNotSuppress",
+            "files": [
+                "Comparison/data/call-condition-cross-file-marker-a.php",
+                "Comparison/data/call-condition-cross-file-marker-b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/call-condition-cross-file-marker-a.php",
+                    "line": 7,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/call-condition-cross-file-marker-b.php",
+                    "line": 7,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15170",
+            "files": [
+                "Comparison/data/bug-15170.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-15170.php",
+                    "line": 121,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug15170\\D::$process (resource|null) is never assigned resource so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-15170.php",
+                    "line": 133,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe method call on non-nullable type Bug15170\\D. Use -> instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

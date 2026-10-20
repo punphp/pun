@@ -245,38 +245,7 @@
             "general": []
         },
         {
-            "method": "testNativeUnionTypes#0",
-            "files": [
-                "Functions/data/native-union-types.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Functions/data/native-union-types.php",
-                    "line": 10,
-                    "identifier": "return.missing",
-                    "message": "Function NativeUnionTypesSupport\\bar() should return bool|int but return statement is missing.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/native-union-types.php",
-                    "line": 15,
-                    "identifier": "return.missing",
-                    "message": "Anonymous function should return bool|int but return statement is missing.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/native-union-types.php",
-                    "line": 19,
-                    "identifier": "return.missing",
-                    "message": "Anonymous function should return bool|int but return statement is missing.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testNativeUnionTypes#1",
+            "method": "testNativeUnionTypes",
             "files": [
                 "Functions/data/native-union-types.php"
             ],

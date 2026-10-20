@@ -206,20 +206,6 @@
   },
   {
    "file": "keys.php",
-   "line": 41,
-   "identifier": "array.duplicateKey",
-   "message": "Array has 2 duplicate keys with value 6 (6, 6).",
-   "tip": null
-  },
-  {
-   "file": "keys.php",
-   "line": 43,
-   "identifier": "array.duplicateKey",
-   "message": "Array has 2 duplicate keys with value 0 (0, 0).",
-   "tip": null
-  },
-  {
-   "file": "keys.php",
    "line": 44,
    "identifier": "array.duplicateKey",
    "message": "Array has 2 duplicate keys with value 'a\\'b' ('a\\'b', \"a'b\").",

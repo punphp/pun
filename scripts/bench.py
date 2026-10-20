@@ -178,11 +178,11 @@ MODES = {
     "analyse": (["phpstan-cold", "phpstan-warm", "pun", "mago"], ANALYSE),
     "lint": (["rector-ported", "rector-full", "pun", "mago"], LINT),
 }
-# The corpus larastan commit needs PHPStan 2.3; the oracle pins PHPStan 2.2.7 and Larastan v3.10.0, so analyse that tag.
+# The corpus larastan commit needs PHPStan 2.3; the oracle pins PHPStan 2.3.1 and Larastan v3.10.0, so analyse that tag.
 TAGS = {"larastan": ("https://github.com/larastan/larastan.git", "v3.10.0")}
 # Packages without a composer.lock that require packages which require themselves: their own version.
 ROOT_VERSION = {"pest": "5.99.0", "laravel-framework": "13.99.0"}
-# Packages replaced by copies of the oracle's, so every project runs PHPStan 2.2.7 from its own vendor/ (Larastan stays
+# Packages replaced by copies of the oracle's, so every project runs PHPStan 2.3.1 from its own vendor/ (Larastan stays
 # the project's). Copies, not symlinks: PHPStan loads the vendor/autoload.php next to its real path.
 PINNED = ["phpstan/phpstan", "phpstan/phpstan-deprecation-rules"]
 # PHPStan 2.2 switches to its agent output format when it sees one of these (src/Internal/AgentDetector.php).

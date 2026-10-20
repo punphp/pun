@@ -187,6 +187,7 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 - [`analyse/functions/invalid-callable-call`](/docs/rules/analyse/functions/invalid-callable-call)
 - [`analyse/functions/invalid-pure`](/docs/rules/analyse/functions/invalid-pure)
 - [`analyse/functions/invalid-pure-method`](/docs/rules/analyse/functions/invalid-pure-method)
+- [`analyse/functions/invalid-pure-property-hook`](/docs/rules/analyse/functions/invalid-pure-property-hook)
 - [`analyse/phpdoc/constant-type-mismatch`](/docs/rules/analyse/phpdoc/constant-type-mismatch)
 - [`analyse/phpdoc/hook-type-mismatch`](/docs/rules/analyse/phpdoc/hook-type-mismatch)
 - [`analyse/phpdoc/invalid`](/docs/rules/analyse/phpdoc/invalid)
@@ -273,6 +274,7 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 - [`analyse/types/readonly-property-by-ref`](/docs/rules/analyse/types/readonly-property-by-ref)
 - [`analyse/types/readonly-property-write`](/docs/rules/analyse/types/readonly-property-write)
 - [`analyse/types/return`](/docs/rules/analyse/types/return)
+- [`analyse/types/return-by-ref-finally`](/docs/rules/analyse/types/return-by-ref-finally)
 - [`analyse/types/throw-non-throwable`](/docs/rules/analyse/types/throw-non-throwable)
 - [`analyse/types/throws-void-function`](/docs/rules/analyse/types/throws-void-function)
 - [`analyse/types/throws-void-hook`](/docs/rules/analyse/types/throws-void-hook)
@@ -306,10 +308,13 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 - [`analyse/dead-code/pure-new-result-unused`](/docs/rules/analyse/dead-code/pure-new-result-unused)
 - [`analyse/dead-code/pure-static-method-result-unused`](/docs/rules/analyse/dead-code/pure-static-method-result-unused)
 - [`analyse/dead-code/strict-comparison-always-constant`](/docs/rules/analyse/dead-code/strict-comparison-always-constant)
+- [`analyse/dead-code/switch-always-constant`](/docs/rules/analyse/dead-code/switch-always-constant)
 - [`analyse/dead-code/ternary-always-constant`](/docs/rules/analyse/dead-code/ternary-always-constant)
 - [`analyse/dead-code/unreachable-code`](/docs/rules/analyse/dead-code/unreachable-code)
+- [`analyse/dead-code/unused-function-parameter`](/docs/rules/analyse/dead-code/unused-function-parameter)
 - [`analyse/dead-code/unused-function-result`](/docs/rules/analyse/dead-code/unused-function-result)
 - [`analyse/dead-code/unused-label`](/docs/rules/analyse/dead-code/unused-label)
+- [`analyse/dead-code/unused-method-parameter`](/docs/rules/analyse/dead-code/unused-method-parameter)
 - [`analyse/dead-code/unused-method-result`](/docs/rules/analyse/dead-code/unused-method-result)
 - [`analyse/dead-code/unused-new-result`](/docs/rules/analyse/dead-code/unused-new-result)
 - [`analyse/dead-code/unused-private-constant`](/docs/rules/analyse/dead-code/unused-private-constant)
@@ -318,6 +323,7 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 - [`analyse/dead-code/unused-result`](/docs/rules/analyse/dead-code/unused-result)
 - [`analyse/dead-code/unused-static-method-result`](/docs/rules/analyse/dead-code/unused-static-method-result)
 - [`analyse/dead-code/unused-trait`](/docs/rules/analyse/dead-code/unused-trait)
+- [`analyse/dead-code/unused-variable`](/docs/rules/analyse/dead-code/unused-variable)
 - [`analyse/dead-code/useless-return-value`](/docs/rules/analyse/dead-code/useless-return-value)
 - [`analyse/dead-code/while-always-false`](/docs/rules/analyse/dead-code/while-always-false)
 - [`analyse/dead-code/while-always-true`](/docs/rules/analyse/dead-code/while-always-true)
@@ -339,6 +345,7 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 
 #### Level 5
 
+- [`analyse/dead-code/sort-without-effect`](/docs/rules/analyse/dead-code/sort-without-effect)
 - [`analyse/strings/invalid-date-interval`](/docs/rules/analyse/strings/invalid-date-interval)
 - [`analyse/strings/invalid-date-time`](/docs/rules/analyse/strings/invalid-date-time)
 - [`analyse/types/argument-not-numeric`](/docs/rules/analyse/types/argument-not-numeric)
@@ -352,7 +359,7 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 - [`analyse/types/sort-non-stringable`](/docs/rules/analyse/types/sort-non-stringable)
 - [`analyse/types/useless-array-filter`](/docs/rules/analyse/types/useless-array-filter)
 
-## Enabled rules (339)
+## Enabled rules (346)
 
 | Rule | Configuration applied | Status |
 | --- | --- | --- |
@@ -374,7 +381,7 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/attributes/invalid-property-attribute`](/docs/rules/analyse/attributes/invalid-property-attribute) | `true` | Planned |
 | [`analyse/attributes/invalid-trait-attribute`](/docs/rules/analyse/attributes/invalid-trait-attribute) | `true` | Planned |
 | [`analyse/attributes/trait-as-attribute`](/docs/rules/analyse/attributes/trait-as-attribute) | `true` | Ported |
-| [`analyse/casing/inherited-method-case`](/docs/rules/analyse/casing/inherited-method-case) | `true` | Planned |
+| [`analyse/casing/inherited-method-case`](/docs/rules/analyse/casing/inherited-method-case) | `true` | Ported |
 | [`analyse/casts/unset-not-supported`](/docs/rules/analyse/casts/unset-not-supported) | `true` | Ported |
 | [`analyse/casts/useless`](/docs/rules/analyse/casts/useless) | `true` | Planned |
 | [`analyse/classes/abstract-method-in-concrete-class`](/docs/rules/analyse/classes/abstract-method-in-concrete-class) | `true` | Ported |
@@ -391,22 +398,22 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/classes/final-constant-not-supported`](/docs/rules/analyse/classes/final-constant-not-supported) | `true` | Ported |
 | [`analyse/classes/final-private-constant`](/docs/rules/analyse/classes/final-private-constant) | `true` | Ported |
 | [`analyse/classes/final-private-method`](/docs/rules/analyse/classes/final-private-method) | `true` | Ported |
-| [`analyse/classes/get-hook-without-read`](/docs/rules/analyse/classes/get-hook-without-read) | `true` | Planned |
+| [`analyse/classes/get-hook-without-read`](/docs/rules/analyse/classes/get-hook-without-read) | `true` | Ported |
 | [`analyse/classes/inaccessible-class-constant`](/docs/rules/analyse/classes/inaccessible-class-constant) | `true` | Ported |
 | [`analyse/classes/inaccessible-method`](/docs/rules/analyse/classes/inaccessible-method) | `true` | Ported |
 | [`analyse/classes/inaccessible-property`](/docs/rules/analyse/classes/inaccessible-property) | `true` | Ported |
 | [`analyse/classes/incompatible-constant-override`](/docs/rules/analyse/classes/incompatible-constant-override) | `true` | Planned |
-| [`analyse/classes/incompatible-override`](/docs/rules/analyse/classes/incompatible-override) | `true` | Planned |
-| [`analyse/classes/incompatible-property-override`](/docs/rules/analyse/classes/incompatible-property-override) | `true` | Planned |
-| [`analyse/classes/inconsistent-constructor`](/docs/rules/analyse/classes/inconsistent-constructor) | `true` | Planned |
-| [`analyse/classes/internal-constant-access`](/docs/rules/analyse/classes/internal-constant-access) | `true` | Planned |
+| [`analyse/classes/incompatible-override`](/docs/rules/analyse/classes/incompatible-override) | `true` | Ported |
+| [`analyse/classes/incompatible-property-override`](/docs/rules/analyse/classes/incompatible-property-override) | `true` | Ported |
+| [`analyse/classes/inconsistent-constructor`](/docs/rules/analyse/classes/inconsistent-constructor) | `true` | Ported |
+| [`analyse/classes/internal-constant-access`](/docs/rules/analyse/classes/internal-constant-access) | `true` | Ported |
 | [`analyse/classes/internal-method-call`](/docs/rules/analyse/classes/internal-method-call) | `true` | Ported |
-| [`analyse/classes/internal-method-callable`](/docs/rules/analyse/classes/internal-method-callable) | `true` | Planned |
-| [`analyse/classes/internal-property-access`](/docs/rules/analyse/classes/internal-property-access) | `true` | Planned |
+| [`analyse/classes/internal-method-callable`](/docs/rules/analyse/classes/internal-method-callable) | `true` | Ported |
+| [`analyse/classes/internal-property-access`](/docs/rules/analyse/classes/internal-property-access) | `true` | Ported |
 | [`analyse/classes/internal-static-method-call`](/docs/rules/analyse/classes/internal-static-method-call) | `true` | Ported |
-| [`analyse/classes/internal-static-method-callable`](/docs/rules/analyse/classes/internal-static-method-callable) | `true` | Planned |
-| [`analyse/classes/internal-static-property-access`](/docs/rules/analyse/classes/internal-static-property-access) | `true` | Planned |
-| [`analyse/classes/invalid-dynamic-constant-fetch`](/docs/rules/analyse/classes/invalid-dynamic-constant-fetch) | `true` | Planned |
+| [`analyse/classes/internal-static-method-callable`](/docs/rules/analyse/classes/internal-static-method-callable) | `true` | Ported |
+| [`analyse/classes/internal-static-property-access`](/docs/rules/analyse/classes/internal-static-property-access) | `true` | Ported |
+| [`analyse/classes/invalid-dynamic-constant-fetch`](/docs/rules/analyse/classes/invalid-dynamic-constant-fetch) | `true` | Ported |
 | [`analyse/classes/invalid-enum`](/docs/rules/analyse/classes/invalid-enum) | `true` | Ported |
 | [`analyse/classes/invalid-enum-implements`](/docs/rules/analyse/classes/invalid-enum-implements) | `true` | Ported |
 | [`analyse/classes/invalid-extends`](/docs/rules/analyse/classes/invalid-extends) | `true` | Ported |
@@ -418,72 +425,77 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/classes/invalid-phpdoc-readonly`](/docs/rules/analyse/classes/invalid-phpdoc-readonly) | `true` | Ported |
 | [`analyse/classes/invalid-promoted-property`](/docs/rules/analyse/classes/invalid-promoted-property) | `true` | Ported |
 | [`analyse/classes/invalid-property-declaration`](/docs/rules/analyse/classes/invalid-property-declaration) | `true` | Ported |
-| [`analyse/classes/invalid-property-hook`](/docs/rules/analyse/classes/invalid-property-hook) | `true` | Planned |
+| [`analyse/classes/invalid-property-hook`](/docs/rules/analyse/classes/invalid-property-hook) | `true` | Ported |
 | [`analyse/classes/invalid-readonly-property`](/docs/rules/analyse/classes/invalid-readonly-property) | `true` | Ported |
 | [`analyse/classes/invalid-static-method-callable`](/docs/rules/analyse/classes/invalid-static-method-callable) | `true` | Planned |
 | [`analyse/classes/missing-method-implementation`](/docs/rules/analyse/classes/missing-method-implementation) | `true` | Ported |
-| [`analyse/classes/missing-required-interface`](/docs/rules/analyse/classes/missing-required-interface) | `true` | Planned |
-| [`analyse/classes/missing-required-parent`](/docs/rules/analyse/classes/missing-required-parent) | `true` | Planned |
+| [`analyse/classes/missing-required-interface`](/docs/rules/analyse/classes/missing-required-interface) | `true` | Ported |
+| [`analyse/classes/missing-required-parent`](/docs/rules/analyse/classes/missing-required-parent) | `true` | Ported |
 | [`analyse/classes/missing-serialize-methods`](/docs/rules/analyse/classes/missing-serialize-methods) | `true` | Ported |
 | [`analyse/classes/new-as-callable`](/docs/rules/analyse/classes/new-as-callable) | `true` | Ported |
-| [`analyse/classes/new-static-in-abstract`](/docs/rules/analyse/classes/new-static-in-abstract) | `true` | Planned |
+| [`analyse/classes/new-static-in-abstract`](/docs/rules/analyse/classes/new-static-in-abstract) | `true` | Ported |
 | [`analyse/classes/non-public-interface-method`](/docs/rules/analyse/classes/non-public-interface-method) | `true` | Ported |
 | [`analyse/classes/private-consistent-constructor`](/docs/rules/analyse/classes/private-consistent-constructor) | `true` | Ported |
-| [`analyse/classes/read-write-only-property`](/docs/rules/analyse/classes/read-write-only-property) | `true` | Planned |
+| [`analyse/classes/read-write-only-property`](/docs/rules/analyse/classes/read-write-only-property) | `true` | Ported |
 | [`analyse/classes/readonly-class-not-supported`](/docs/rules/analyse/classes/readonly-class-not-supported) | `true` | Ported |
-| [`analyse/classes/set-hook-without-assign`](/docs/rules/analyse/classes/set-hook-without-assign) | `true` | Planned |
+| [`analyse/classes/set-hook-without-assign`](/docs/rules/analyse/classes/set-hook-without-assign) | `true` | Ported |
 | [`analyse/classes/typed-constant-not-supported`](/docs/rules/analyse/classes/typed-constant-not-supported) | `true` | Ported |
-| [`analyse/classes/uninitialized-phpdoc-readonly`](/docs/rules/analyse/classes/uninitialized-phpdoc-readonly) | `true` | Planned |
-| [`analyse/classes/uninitialized-property`](/docs/rules/analyse/classes/uninitialized-property) | `true` | Planned |
-| [`analyse/classes/uninitialized-readonly`](/docs/rules/analyse/classes/uninitialized-readonly) | `true` | Planned |
+| [`analyse/classes/uninitialized-phpdoc-readonly`](/docs/rules/analyse/classes/uninitialized-phpdoc-readonly) | `true` | Ported |
+| [`analyse/classes/uninitialized-property`](/docs/rules/analyse/classes/uninitialized-property) | `true` | Ported |
+| [`analyse/classes/uninitialized-readonly`](/docs/rules/analyse/classes/uninitialized-readonly) | `true` | Ported |
 | [`analyse/classes/unsafe-new-static`](/docs/rules/analyse/classes/unsafe-new-static) | `true` | Ported |
 | [`analyse/comments/invalid-ignore`](/docs/rules/analyse/comments/invalid-ignore) | `true` | Ported |
 | [`analyse/control-flow/break-outside-loop`](/docs/rules/analyse/control-flow/break-outside-loop) | `true` | Ported |
-| [`analyse/control-flow/unhandled-match`](/docs/rules/analyse/control-flow/unhandled-match) | `true` | Planned |
-| [`analyse/dead-code/boolean-and-always-constant`](/docs/rules/analyse/dead-code/boolean-and-always-constant) | `true` | Planned |
-| [`analyse/dead-code/boolean-not-always-constant`](/docs/rules/analyse/dead-code/boolean-not-always-constant) | `true` | Planned |
-| [`analyse/dead-code/boolean-or-always-constant`](/docs/rules/analyse/dead-code/boolean-or-always-constant) | `true` | Planned |
-| [`analyse/dead-code/call-condition-always-constant`](/docs/rules/analyse/dead-code/call-condition-always-constant) | `true` | Planned |
+| [`analyse/control-flow/unhandled-match`](/docs/rules/analyse/control-flow/unhandled-match) | `true` | Ported |
+| [`analyse/dead-code/boolean-and-always-constant`](/docs/rules/analyse/dead-code/boolean-and-always-constant) | `true` | Ported |
+| [`analyse/dead-code/boolean-not-always-constant`](/docs/rules/analyse/dead-code/boolean-not-always-constant) | `true` | Ported |
+| [`analyse/dead-code/boolean-or-always-constant`](/docs/rules/analyse/dead-code/boolean-or-always-constant) | `true` | Ported |
+| [`analyse/dead-code/call-condition-always-constant`](/docs/rules/analyse/dead-code/call-condition-always-constant) | `true` | Ported |
 | [`analyse/dead-code/discarded-function-result`](/docs/rules/analyse/dead-code/discarded-function-result) | `true` | Planned |
 | [`analyse/dead-code/discarded-method-result`](/docs/rules/analyse/dead-code/discarded-method-result) | `true` | Ported |
 | [`analyse/dead-code/discarded-static-method-result`](/docs/rules/analyse/dead-code/discarded-static-method-result) | `true` | Ported |
-| [`analyse/dead-code/do-while-always-constant`](/docs/rules/analyse/dead-code/do-while-always-constant) | `true` | Planned |
-| [`analyse/dead-code/elseif-always-constant`](/docs/rules/analyse/dead-code/elseif-always-constant) | `true` | Planned |
-| [`analyse/dead-code/finally-overrides-exit`](/docs/rules/analyse/dead-code/finally-overrides-exit) | `true` | Planned |
-| [`analyse/dead-code/if-always-constant`](/docs/rules/analyse/dead-code/if-always-constant) | `true` | Planned |
+| [`analyse/dead-code/do-while-always-constant`](/docs/rules/analyse/dead-code/do-while-always-constant) | `true` | Ported |
+| [`analyse/dead-code/elseif-always-constant`](/docs/rules/analyse/dead-code/elseif-always-constant) | `true` | Ported |
+| [`analyse/dead-code/finally-overrides-exit`](/docs/rules/analyse/dead-code/finally-overrides-exit) | `true` | Ported |
+| [`analyse/dead-code/if-always-constant`](/docs/rules/analyse/dead-code/if-always-constant) | `true` | Ported |
 | [`analyse/dead-code/impossible-in-array`](/docs/rules/analyse/dead-code/impossible-in-array) | `true` | Planned |
-| [`analyse/dead-code/impossible-instanceof`](/docs/rules/analyse/dead-code/impossible-instanceof) | `true` | Planned |
-| [`analyse/dead-code/impossible-method-type-check`](/docs/rules/analyse/dead-code/impossible-method-type-check) | `true` | Planned |
-| [`analyse/dead-code/impossible-static-type-check`](/docs/rules/analyse/dead-code/impossible-static-type-check) | `true` | Planned |
-| [`analyse/dead-code/impossible-type-check`](/docs/rules/analyse/dead-code/impossible-type-check) | `true` | Planned |
-| [`analyse/dead-code/loose-comparison-always-constant`](/docs/rules/analyse/dead-code/loose-comparison-always-constant) | `true` | Planned |
-| [`analyse/dead-code/number-comparison-always-constant`](/docs/rules/analyse/dead-code/number-comparison-always-constant) | `true` | Planned |
-| [`analyse/dead-code/pure-function-result-unused`](/docs/rules/analyse/dead-code/pure-function-result-unused) | `true` | Planned |
-| [`analyse/dead-code/pure-method-result-unused`](/docs/rules/analyse/dead-code/pure-method-result-unused) | `true` | Planned |
-| [`analyse/dead-code/pure-new-result-unused`](/docs/rules/analyse/dead-code/pure-new-result-unused) | `true` | Planned |
-| [`analyse/dead-code/pure-static-method-result-unused`](/docs/rules/analyse/dead-code/pure-static-method-result-unused) | `true` | Planned |
+| [`analyse/dead-code/impossible-instanceof`](/docs/rules/analyse/dead-code/impossible-instanceof) | `true` | Ported |
+| [`analyse/dead-code/impossible-method-type-check`](/docs/rules/analyse/dead-code/impossible-method-type-check) | `true` | Ported |
+| [`analyse/dead-code/impossible-static-type-check`](/docs/rules/analyse/dead-code/impossible-static-type-check) | `true` | Ported |
+| [`analyse/dead-code/impossible-type-check`](/docs/rules/analyse/dead-code/impossible-type-check) | `true` | Ported |
+| [`analyse/dead-code/loose-comparison-always-constant`](/docs/rules/analyse/dead-code/loose-comparison-always-constant) | `true` | Ported |
+| [`analyse/dead-code/number-comparison-always-constant`](/docs/rules/analyse/dead-code/number-comparison-always-constant) | `true` | Ported |
+| [`analyse/dead-code/pure-function-result-unused`](/docs/rules/analyse/dead-code/pure-function-result-unused) | `true` | Ported |
+| [`analyse/dead-code/pure-method-result-unused`](/docs/rules/analyse/dead-code/pure-method-result-unused) | `true` | Ported |
+| [`analyse/dead-code/pure-new-result-unused`](/docs/rules/analyse/dead-code/pure-new-result-unused) | `true` | Ported |
+| [`analyse/dead-code/pure-static-method-result-unused`](/docs/rules/analyse/dead-code/pure-static-method-result-unused) | `true` | Ported |
 | [`analyse/dead-code/redundant-null-coalesce`](/docs/rules/analyse/dead-code/redundant-null-coalesce) | `true` | Planned |
-| [`analyse/dead-code/strict-comparison-always-constant`](/docs/rules/analyse/dead-code/strict-comparison-always-constant) | `true` | Planned |
-| [`analyse/dead-code/ternary-always-constant`](/docs/rules/analyse/dead-code/ternary-always-constant) | `true` | Planned |
+| [`analyse/dead-code/sort-without-effect`](/docs/rules/analyse/dead-code/sort-without-effect) | `true` | Planned |
+| [`analyse/dead-code/strict-comparison-always-constant`](/docs/rules/analyse/dead-code/strict-comparison-always-constant) | `true` | Ported |
+| [`analyse/dead-code/switch-always-constant`](/docs/rules/analyse/dead-code/switch-always-constant) | `true` | Planned |
+| [`analyse/dead-code/ternary-always-constant`](/docs/rules/analyse/dead-code/ternary-always-constant) | `true` | Ported |
 | [`analyse/dead-code/trait-condition-always-constant`](/docs/rules/analyse/dead-code/trait-condition-always-constant) | `true` | Ported |
-| [`analyse/dead-code/unreachable-code`](/docs/rules/analyse/dead-code/unreachable-code) | `true` | Planned |
+| [`analyse/dead-code/unreachable-code`](/docs/rules/analyse/dead-code/unreachable-code) | `true` | Ported |
 | [`analyse/dead-code/unused-argument`](/docs/rules/analyse/dead-code/unused-argument) | `true` | Ported |
-| [`analyse/dead-code/unused-closure-use`](/docs/rules/analyse/dead-code/unused-closure-use) | `true` | Planned |
-| [`analyse/dead-code/unused-constructor-parameter`](/docs/rules/analyse/dead-code/unused-constructor-parameter) | `true` | Planned |
+| [`analyse/dead-code/unused-closure-use`](/docs/rules/analyse/dead-code/unused-closure-use) | `true` | Ported |
+| [`analyse/dead-code/unused-constructor-parameter`](/docs/rules/analyse/dead-code/unused-constructor-parameter) | `true` | Ported |
+| [`analyse/dead-code/unused-function-parameter`](/docs/rules/analyse/dead-code/unused-function-parameter) | `true` | Planned |
 | [`analyse/dead-code/unused-function-result`](/docs/rules/analyse/dead-code/unused-function-result) | `true` | Planned |
-| [`analyse/dead-code/unused-label`](/docs/rules/analyse/dead-code/unused-label) | `true` | Planned |
+| [`analyse/dead-code/unused-label`](/docs/rules/analyse/dead-code/unused-label) | `true` | Ported |
+| [`analyse/dead-code/unused-method-parameter`](/docs/rules/analyse/dead-code/unused-method-parameter) | `true` | Planned |
 | [`analyse/dead-code/unused-method-result`](/docs/rules/analyse/dead-code/unused-method-result) | `true` | Planned |
 | [`analyse/dead-code/unused-new-result`](/docs/rules/analyse/dead-code/unused-new-result) | `true` | Planned |
-| [`analyse/dead-code/unused-private-constant`](/docs/rules/analyse/dead-code/unused-private-constant) | `true` | Planned |
-| [`analyse/dead-code/unused-private-method`](/docs/rules/analyse/dead-code/unused-private-method) | `true` | Planned |
-| [`analyse/dead-code/unused-private-property`](/docs/rules/analyse/dead-code/unused-private-property) | `true` | Planned |
-| [`analyse/dead-code/unused-result`](/docs/rules/analyse/dead-code/unused-result) | `true` | Planned |
+| [`analyse/dead-code/unused-private-constant`](/docs/rules/analyse/dead-code/unused-private-constant) | `true` | Ported |
+| [`analyse/dead-code/unused-private-method`](/docs/rules/analyse/dead-code/unused-private-method) | `true` | Ported |
+| [`analyse/dead-code/unused-private-property`](/docs/rules/analyse/dead-code/unused-private-property) | `true` | Ported |
+| [`analyse/dead-code/unused-result`](/docs/rules/analyse/dead-code/unused-result) | `true` | Ported |
 | [`analyse/dead-code/unused-static-method-result`](/docs/rules/analyse/dead-code/unused-static-method-result) | `true` | Planned |
-| [`analyse/dead-code/unused-trait`](/docs/rules/analyse/dead-code/unused-trait) | `true` | Planned |
+| [`analyse/dead-code/unused-trait`](/docs/rules/analyse/dead-code/unused-trait) | `true` | Ported |
+| [`analyse/dead-code/unused-variable`](/docs/rules/analyse/dead-code/unused-variable) | `true` | Planned |
 | [`analyse/dead-code/useless-return-value`](/docs/rules/analyse/dead-code/useless-return-value) | `true` | Ported |
-| [`analyse/dead-code/while-always-false`](/docs/rules/analyse/dead-code/while-always-false) | `true` | Planned |
-| [`analyse/dead-code/while-always-true`](/docs/rules/analyse/dead-code/while-always-true) | `true` | Planned |
-| [`analyse/dead-code/xor-always-constant`](/docs/rules/analyse/dead-code/xor-always-constant) | `true` | Planned |
+| [`analyse/dead-code/while-always-false`](/docs/rules/analyse/dead-code/while-always-false) | `true` | Ported |
+| [`analyse/dead-code/while-always-true`](/docs/rules/analyse/dead-code/while-always-true) | `true` | Ported |
+| [`analyse/dead-code/xor-always-constant`](/docs/rules/analyse/dead-code/xor-always-constant) | `true` | Ported |
 | [`analyse/debug/assert-type`](/docs/rules/analyse/debug/assert-type) | `true` | Planned |
 | [`analyse/debug/dump-native-type`](/docs/rules/analyse/debug/dump-native-type) | `true` | Planned |
 | [`analyse/debug/dump-phpdoc-type`](/docs/rules/analyse/debug/dump-phpdoc-type) | `true` | Planned |
@@ -491,25 +503,26 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/debug/dump-type`](/docs/rules/analyse/debug/dump-type) | `true` | Planned |
 | [`analyse/deprecated/backtick`](/docs/rules/analyse/deprecated/backtick) | `true` | Ported |
 | [`analyse/deprecated/cast`](/docs/rules/analyse/deprecated/cast) | `true` | Ported |
-| [`analyse/deprecated/class`](/docs/rules/analyse/deprecated/class) | `true` | Planned |
-| [`analyse/deprecated/class-constant`](/docs/rules/analyse/deprecated/class-constant) | `true` | Planned |
-| [`analyse/deprecated/constant`](/docs/rules/analyse/deprecated/constant) | `true` | Planned |
-| [`analyse/deprecated/function`](/docs/rules/analyse/deprecated/function) | `true` | Planned |
-| [`analyse/deprecated/ini-option`](/docs/rules/analyse/deprecated/ini-option) | `true` | Planned |
-| [`analyse/deprecated/method`](/docs/rules/analyse/deprecated/method) | `true` | Planned |
-| [`analyse/deprecated/property`](/docs/rules/analyse/deprecated/property) | `true` | Planned |
-| [`analyse/deprecated/to-string`](/docs/rules/analyse/deprecated/to-string) | `true` | Planned |
-| [`analyse/functions/closure-uses-this`](/docs/rules/analyse/functions/closure-uses-this) | `true` | Planned |
-| [`analyse/functions/conflicting-filter-var-flags`](/docs/rules/analyse/functions/conflicting-filter-var-flags) | `true` | Planned |
+| [`analyse/deprecated/class`](/docs/rules/analyse/deprecated/class) | `true` | Ported |
+| [`analyse/deprecated/class-constant`](/docs/rules/analyse/deprecated/class-constant) | `true` | Ported |
+| [`analyse/deprecated/constant`](/docs/rules/analyse/deprecated/constant) | `true` | Ported |
+| [`analyse/deprecated/function`](/docs/rules/analyse/deprecated/function) | `true` | Ported |
+| [`analyse/deprecated/ini-option`](/docs/rules/analyse/deprecated/ini-option) | `true` | Ported |
+| [`analyse/deprecated/method`](/docs/rules/analyse/deprecated/method) | `true` | Ported |
+| [`analyse/deprecated/property`](/docs/rules/analyse/deprecated/property) | `true` | Ported |
+| [`analyse/deprecated/to-string`](/docs/rules/analyse/deprecated/to-string) | `true` | Ported |
+| [`analyse/functions/closure-uses-this`](/docs/rules/analyse/functions/closure-uses-this) | `true` | Ported |
+| [`analyse/functions/conflicting-filter-var-flags`](/docs/rules/analyse/functions/conflicting-filter-var-flags) | `true` | Ported |
 | [`analyse/functions/duplicate-parameter`](/docs/rules/analyse/functions/duplicate-parameter) | `true` | Ported |
-| [`analyse/functions/internal-function-call`](/docs/rules/analyse/functions/internal-function-call) | `true` | Planned |
-| [`analyse/functions/internal-function-callable`](/docs/rules/analyse/functions/internal-function-callable) | `true` | Planned |
-| [`analyse/functions/invalid-callable-call`](/docs/rules/analyse/functions/invalid-callable-call) | `true` | Planned |
+| [`analyse/functions/internal-function-call`](/docs/rules/analyse/functions/internal-function-call) | `true` | Ported |
+| [`analyse/functions/internal-function-callable`](/docs/rules/analyse/functions/internal-function-callable) | `true` | Ported |
+| [`analyse/functions/invalid-callable-call`](/docs/rules/analyse/functions/invalid-callable-call) | `true` | Ported |
 | [`analyse/functions/invalid-closure-use`](/docs/rules/analyse/functions/invalid-closure-use) | `true` | Ported |
 | [`analyse/functions/invalid-first-class-callable`](/docs/rules/analyse/functions/invalid-first-class-callable) | `true` | Planned |
 | [`analyse/functions/invalid-parameter-name`](/docs/rules/analyse/functions/invalid-parameter-name) | `true` | Ported |
 | [`analyse/functions/invalid-pure`](/docs/rules/analyse/functions/invalid-pure) | `true` | Planned |
 | [`analyse/functions/invalid-pure-method`](/docs/rules/analyse/functions/invalid-pure-method) | `true` | Planned |
+| [`analyse/functions/invalid-pure-property-hook`](/docs/rules/analyse/functions/invalid-pure-property-hook) | `true` | Planned |
 | [`analyse/functions/invalid-vprintf-arguments`](/docs/rules/analyse/functions/invalid-vprintf-arguments) | `true` | Ported |
 | [`analyse/functions/printf-placeholder-count`](/docs/rules/analyse/functions/printf-placeholder-count) | `true` | Ported |
 | [`analyse/functions/unanalysed-inner-function`](/docs/rules/analyse/functions/unanalysed-inner-function) | `true` | Ported |
@@ -528,37 +541,37 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/laravel/unused-view`](/docs/rules/analyse/laravel/unused-view) | `true` | Planned |
 | [`analyse/laravel/useless-value-call`](/docs/rules/analyse/laravel/useless-value-call) | `true` | Planned |
 | [`analyse/laravel/useless-with-call`](/docs/rules/analyse/laravel/useless-with-call) | `true` | Planned |
-| [`analyse/phpdoc/constant-type-mismatch`](/docs/rules/analyse/phpdoc/constant-type-mismatch) | `true` | Planned |
-| [`analyse/phpdoc/hook-type-mismatch`](/docs/rules/analyse/phpdoc/hook-type-mismatch) | `true` | Planned |
-| [`analyse/phpdoc/invalid`](/docs/rules/analyse/phpdoc/invalid) | `true` | Planned |
-| [`analyse/phpdoc/invalid-assert-tag`](/docs/rules/analyse/phpdoc/invalid-assert-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-conditional-return`](/docs/rules/analyse/phpdoc/invalid-conditional-return) | `true` | Planned |
-| [`analyse/phpdoc/invalid-method-assert-tag`](/docs/rules/analyse/phpdoc/invalid-method-assert-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-method-conditional-return`](/docs/rules/analyse/phpdoc/invalid-method-conditional-return) | `true` | Planned |
-| [`analyse/phpdoc/invalid-method-tag`](/docs/rules/analyse/phpdoc/invalid-method-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-mixin-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-param-callable-tag`](/docs/rules/analyse/phpdoc/invalid-param-callable-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-phpstan-tag`](/docs/rules/analyse/phpdoc/invalid-phpstan-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-property-tag`](/docs/rules/analyse/phpdoc/invalid-property-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-require-tag`](/docs/rules/analyse/phpdoc/invalid-require-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-sealed-tag`](/docs/rules/analyse/phpdoc/invalid-sealed-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-trait-method-tag`](/docs/rules/analyse/phpdoc/invalid-trait-method-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-trait-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-trait-mixin-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-trait-property-tag`](/docs/rules/analyse/phpdoc/invalid-trait-property-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-trait-require-extends`](/docs/rules/analyse/phpdoc/invalid-trait-require-extends) | `true` | Planned |
-| [`analyse/phpdoc/invalid-trait-require-implements`](/docs/rules/analyse/phpdoc/invalid-trait-require-implements) | `true` | Planned |
+| [`analyse/phpdoc/constant-type-mismatch`](/docs/rules/analyse/phpdoc/constant-type-mismatch) | `true` | Ported |
+| [`analyse/phpdoc/hook-type-mismatch`](/docs/rules/analyse/phpdoc/hook-type-mismatch) | `true` | Ported |
+| [`analyse/phpdoc/invalid`](/docs/rules/analyse/phpdoc/invalid) | `true` | Ported |
+| [`analyse/phpdoc/invalid-assert-tag`](/docs/rules/analyse/phpdoc/invalid-assert-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-conditional-return`](/docs/rules/analyse/phpdoc/invalid-conditional-return) | `true` | Ported |
+| [`analyse/phpdoc/invalid-method-assert-tag`](/docs/rules/analyse/phpdoc/invalid-method-assert-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-method-conditional-return`](/docs/rules/analyse/phpdoc/invalid-method-conditional-return) | `true` | Ported |
+| [`analyse/phpdoc/invalid-method-tag`](/docs/rules/analyse/phpdoc/invalid-method-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-mixin-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-param-callable-tag`](/docs/rules/analyse/phpdoc/invalid-param-callable-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-phpstan-tag`](/docs/rules/analyse/phpdoc/invalid-phpstan-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-property-tag`](/docs/rules/analyse/phpdoc/invalid-property-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-require-tag`](/docs/rules/analyse/phpdoc/invalid-require-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-sealed-tag`](/docs/rules/analyse/phpdoc/invalid-sealed-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-trait-method-tag`](/docs/rules/analyse/phpdoc/invalid-trait-method-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-trait-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-trait-mixin-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-trait-property-tag`](/docs/rules/analyse/phpdoc/invalid-trait-property-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-trait-require-extends`](/docs/rules/analyse/phpdoc/invalid-trait-require-extends) | `true` | Ported |
+| [`analyse/phpdoc/invalid-trait-require-implements`](/docs/rules/analyse/phpdoc/invalid-trait-require-implements) | `true` | Ported |
 | [`analyse/phpdoc/invalid-trait-type-alias`](/docs/rules/analyse/phpdoc/invalid-trait-type-alias) | `true` | Ported |
-| [`analyse/phpdoc/invalid-trait-use-method-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-method-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-trait-use-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-mixin-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-trait-use-property-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-property-tag) | `true` | Planned |
+| [`analyse/phpdoc/invalid-trait-use-method-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-method-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-trait-use-mixin-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-mixin-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-trait-use-property-tag`](/docs/rules/analyse/phpdoc/invalid-trait-use-property-tag) | `true` | Ported |
 | [`analyse/phpdoc/invalid-trait-use-type-alias`](/docs/rules/analyse/phpdoc/invalid-trait-use-type-alias) | `true` | Ported |
 | [`analyse/phpdoc/invalid-type-alias`](/docs/rules/analyse/phpdoc/invalid-type-alias) | `true` | Ported |
-| [`analyse/phpdoc/invalid-var-tag`](/docs/rules/analyse/phpdoc/invalid-var-tag) | `true` | Planned |
-| [`analyse/phpdoc/invalid-var-tag-type`](/docs/rules/analyse/phpdoc/invalid-var-tag-type) | `true` | Planned |
-| [`analyse/phpdoc/misplaced-require-implements`](/docs/rules/analyse/phpdoc/misplaced-require-implements) | `true` | Planned |
-| [`analyse/phpdoc/property-type-mismatch`](/docs/rules/analyse/phpdoc/property-type-mismatch) | `true` | Planned |
+| [`analyse/phpdoc/invalid-var-tag`](/docs/rules/analyse/phpdoc/invalid-var-tag) | `true` | Ported |
+| [`analyse/phpdoc/invalid-var-tag-type`](/docs/rules/analyse/phpdoc/invalid-var-tag-type) | `true` | Ported |
+| [`analyse/phpdoc/misplaced-require-implements`](/docs/rules/analyse/phpdoc/misplaced-require-implements) | `true` | Ported |
+| [`analyse/phpdoc/property-type-mismatch`](/docs/rules/analyse/phpdoc/property-type-mismatch) | `true` | Ported |
 | [`analyse/phpdoc/sealed-on-trait`](/docs/rules/analyse/phpdoc/sealed-on-trait) | `true` | Ported |
-| [`analyse/phpdoc/type-mismatch`](/docs/rules/analyse/phpdoc/type-mismatch) | `true` | Planned |
+| [`analyse/phpdoc/type-mismatch`](/docs/rules/analyse/phpdoc/type-mismatch) | `true` | Ported |
 | [`analyse/phpdoc/var-tag-type-mismatch`](/docs/rules/analyse/phpdoc/var-tag-type-mismatch) | `true` | Planned |
 | [`analyse/statements/invalid-declare-strict-types`](/docs/rules/analyse/statements/invalid-declare-strict-types) | `true` | Ported |
 | [`analyse/statements/invalid-empty`](/docs/rules/analyse/statements/invalid-empty) | `true` | Planned |
@@ -568,40 +581,40 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/statements/throw-expression-not-supported`](/docs/rules/analyse/statements/throw-expression-not-supported) | `true` | Ported |
 | [`analyse/strings/invalid-date-interval`](/docs/rules/analyse/strings/invalid-date-interval) | `true` | Planned |
 | [`analyse/strings/invalid-date-time`](/docs/rules/analyse/strings/invalid-date-time) | `true` | Planned |
-| [`analyse/types/argument`](/docs/rules/analyse/types/argument) | `true` | Planned |
+| [`analyse/types/argument`](/docs/rules/analyse/types/argument) | `true` | Ported |
 | [`analyse/types/argument-not-numeric`](/docs/rules/analyse/types/argument-not-numeric) | `true` | Planned |
-| [`analyse/types/argument-not-stringable`](/docs/rules/analyse/types/argument-not-stringable) | `true` | Planned |
+| [`analyse/types/argument-not-stringable`](/docs/rules/analyse/types/argument-not-stringable) | `true` | Ported |
 | [`analyse/types/arrow-function-nullsafe-by-ref`](/docs/rules/analyse/types/arrow-function-nullsafe-by-ref) | `true` | Ported |
-| [`analyse/types/arrow-function-param-default`](/docs/rules/analyse/types/arrow-function-param-default) | `true` | Planned |
-| [`analyse/types/arrow-function-return`](/docs/rules/analyse/types/arrow-function-return) | `true` | Planned |
+| [`analyse/types/arrow-function-param-default`](/docs/rules/analyse/types/arrow-function-param-default) | `true` | Ported |
+| [`analyse/types/arrow-function-return`](/docs/rules/analyse/types/arrow-function-return) | `true` | Ported |
 | [`analyse/types/assign-to-this`](/docs/rules/analyse/types/assign-to-this) | `true` | Ported |
 | [`analyse/types/by-ref-foreach-on-expression`](/docs/rules/analyse/types/by-ref-foreach-on-expression) | `true` | Planned |
-| [`analyse/types/call-user-func-argument`](/docs/rules/analyse/types/call-user-func-argument) | `true` | Planned |
+| [`analyse/types/call-user-func-argument`](/docs/rules/analyse/types/call-user-func-argument) | `true` | Ported |
 | [`analyse/types/catch-non-throwable`](/docs/rules/analyse/types/catch-non-throwable) | `true` | Ported |
-| [`analyse/types/class-constant-value`](/docs/rules/analyse/types/class-constant-value) | `true` | Planned |
-| [`analyse/types/clone-non-object`](/docs/rules/analyse/types/clone-non-object) | `true` | Planned |
-| [`analyse/types/closure-param-default`](/docs/rules/analyse/types/closure-param-default) | `true` | Planned |
-| [`analyse/types/closure-return`](/docs/rules/analyse/types/closure-return) | `true` | Planned |
+| [`analyse/types/class-constant-value`](/docs/rules/analyse/types/class-constant-value) | `true` | Ported |
+| [`analyse/types/clone-non-object`](/docs/rules/analyse/types/clone-non-object) | `true` | Ported |
+| [`analyse/types/closure-param-default`](/docs/rules/analyse/types/closure-param-default) | `true` | Ported |
+| [`analyse/types/closure-return`](/docs/rules/analyse/types/closure-return) | `true` | Ported |
 | [`analyse/types/constant-value`](/docs/rules/analyse/types/constant-value) | `true` | Planned |
 | [`analyse/types/dead-catch`](/docs/rules/analyse/types/dead-catch) | `true` | Planned |
 | [`analyse/types/define-value`](/docs/rules/analyse/types/define-value) | `true` | Planned |
-| [`analyse/types/echo-non-string`](/docs/rules/analyse/types/echo-non-string) | `true` | Planned |
+| [`analyse/types/echo-non-string`](/docs/rules/analyse/types/echo-non-string) | `true` | Ported |
 | [`analyse/types/enum-template-not-allowed`](/docs/rules/analyse/types/enum-template-not-allowed) | `true` | Ported |
-| [`analyse/types/foreach-non-iterable`](/docs/rules/analyse/types/foreach-non-iterable) | `true` | Planned |
-| [`analyse/types/foreach-on-empty-array`](/docs/rules/analyse/types/foreach-on-empty-array) | `true` | Planned |
-| [`analyse/types/function-return`](/docs/rules/analyse/types/function-return) | `true` | Planned |
+| [`analyse/types/foreach-non-iterable`](/docs/rules/analyse/types/foreach-non-iterable) | `true` | Ported |
+| [`analyse/types/foreach-on-empty-array`](/docs/rules/analyse/types/foreach-on-empty-array) | `true` | Ported |
+| [`analyse/types/function-return`](/docs/rules/analyse/types/function-return) | `true` | Ported |
 | [`analyse/types/function-variance`](/docs/rules/analyse/types/function-variance) | `true` | Planned |
-| [`analyse/types/generator`](/docs/rules/analyse/types/generator) | `true` | Planned |
-| [`analyse/types/implode-non-string`](/docs/rules/analyse/types/implode-non-string) | `true` | Planned |
-| [`analyse/types/interpolated-non-string`](/docs/rules/analyse/types/interpolated-non-string) | `true` | Planned |
+| [`analyse/types/generator`](/docs/rules/analyse/types/generator) | `true` | Ported |
+| [`analyse/types/implode-non-string`](/docs/rules/analyse/types/implode-non-string) | `true` | Ported |
+| [`analyse/types/interpolated-non-string`](/docs/rules/analyse/types/interpolated-non-string) | `true` | Ported |
 | [`analyse/types/invalid-arrow-function-signature`](/docs/rules/analyse/types/invalid-arrow-function-signature) | `true` | Ported |
 | [`analyse/types/invalid-assignment-target`](/docs/rules/analyse/types/invalid-assignment-target) | `true` | Ported |
-| [`analyse/types/invalid-binary-operation`](/docs/rules/analyse/types/invalid-binary-operation) | `true` | Planned |
-| [`analyse/types/invalid-cast`](/docs/rules/analyse/types/invalid-cast) | `true` | Planned |
+| [`analyse/types/invalid-binary-operation`](/docs/rules/analyse/types/invalid-binary-operation) | `true` | Ported |
+| [`analyse/types/invalid-cast`](/docs/rules/analyse/types/invalid-cast) | `true` | Ported |
 | [`analyse/types/invalid-class-generics`](/docs/rules/analyse/types/invalid-class-generics) | `true` | Ported |
 | [`analyse/types/invalid-class-template`](/docs/rules/analyse/types/invalid-class-template) | `true` | Ported |
 | [`analyse/types/invalid-closure-signature`](/docs/rules/analyse/types/invalid-closure-signature) | `true` | Ported |
-| [`analyse/types/invalid-comparison`](/docs/rules/analyse/types/invalid-comparison) | `true` | Planned |
+| [`analyse/types/invalid-comparison`](/docs/rules/analyse/types/invalid-comparison) | `true` | Ported |
 | [`analyse/types/invalid-enum-generics`](/docs/rules/analyse/types/invalid-enum-generics) | `true` | Ported |
 | [`analyse/types/invalid-function-signature`](/docs/rules/analyse/types/invalid-function-signature) | `true` | Ported |
 | [`analyse/types/invalid-function-template`](/docs/rules/analyse/types/invalid-function-template) | `true` | Ported |
@@ -612,50 +625,51 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/types/invalid-method-signature`](/docs/rules/analyse/types/invalid-method-signature) | `true` | Ported |
 | [`analyse/types/invalid-method-tag-template`](/docs/rules/analyse/types/invalid-method-tag-template) | `true` | Ported |
 | [`analyse/types/invalid-method-template`](/docs/rules/analyse/types/invalid-method-template) | `true` | Ported |
-| [`analyse/types/invalid-offset`](/docs/rules/analyse/types/invalid-offset) | `true` | Planned |
+| [`analyse/types/invalid-offset`](/docs/rules/analyse/types/invalid-offset) | `true` | Ported |
 | [`analyse/types/invalid-pipe`](/docs/rules/analyse/types/invalid-pipe) | `true` | Planned |
 | [`analyse/types/invalid-property-assignment`](/docs/rules/analyse/types/invalid-property-assignment) | `true` | Ported |
 | [`analyse/types/invalid-property-type`](/docs/rules/analyse/types/invalid-property-type) | `true` | Ported |
-| [`analyse/types/invalid-regex`](/docs/rules/analyse/types/invalid-regex) | `true` | Planned |
+| [`analyse/types/invalid-regex`](/docs/rules/analyse/types/invalid-regex) | `true` | Ported |
 | [`analyse/types/invalid-self-out-tag`](/docs/rules/analyse/types/invalid-self-out-tag) | `true` | Planned |
 | [`analyse/types/invalid-throws-tag`](/docs/rules/analyse/types/invalid-throws-tag) | `true` | Planned |
 | [`analyse/types/invalid-trait-method-tag-template`](/docs/rules/analyse/types/invalid-trait-method-tag-template) | `true` | Ported |
 | [`analyse/types/invalid-trait-template`](/docs/rules/analyse/types/invalid-trait-template) | `true` | Ported |
 | [`analyse/types/invalid-trait-use-generics`](/docs/rules/analyse/types/invalid-trait-use-generics) | `true` | Ported |
-| [`analyse/types/invalid-unary-operand`](/docs/rules/analyse/types/invalid-unary-operand) | `true` | Planned |
+| [`analyse/types/invalid-unary-operand`](/docs/rules/analyse/types/invalid-unary-operand) | `true` | Ported |
 | [`analyse/types/invalid-union-type`](/docs/rules/analyse/types/invalid-union-type) | `true` | Ported |
 | [`analyse/types/invalid-unset`](/docs/rules/analyse/types/invalid-unset) | `true` | Planned |
 | [`analyse/types/invalid-void-cast`](/docs/rules/analyse/types/invalid-void-cast) | `true` | Ported |
-| [`analyse/types/method-param-default`](/docs/rules/analyse/types/method-param-default) | `true` | Planned |
+| [`analyse/types/method-param-default`](/docs/rules/analyse/types/method-param-default) | `true` | Ported |
 | [`analyse/types/method-variance`](/docs/rules/analyse/types/method-variance) | `true` | Planned |
-| [`analyse/types/missing-preg-quote-delimiter`](/docs/rules/analyse/types/missing-preg-quote-delimiter) | `true` | Planned |
-| [`analyse/types/missing-return`](/docs/rules/analyse/types/missing-return) | `true` | Planned |
+| [`analyse/types/missing-preg-quote-delimiter`](/docs/rules/analyse/types/missing-preg-quote-delimiter) | `true` | Ported |
+| [`analyse/types/missing-return`](/docs/rules/analyse/types/missing-return) | `true` | Ported |
 | [`analyse/types/nullsafe-by-ref-return`](/docs/rules/analyse/types/nullsafe-by-ref-return) | `true` | Ported |
-| [`analyse/types/offset-assign`](/docs/rules/analyse/types/offset-assign) | `true` | Planned |
-| [`analyse/types/offset-assign-op`](/docs/rules/analyse/types/offset-assign-op) | `true` | Planned |
-| [`analyse/types/offset-assign-value`](/docs/rules/analyse/types/offset-assign-value) | `true` | Planned |
-| [`analyse/types/param-default`](/docs/rules/analyse/types/param-default) | `true` | Planned |
+| [`analyse/types/offset-assign`](/docs/rules/analyse/types/offset-assign) | `true` | Ported |
+| [`analyse/types/offset-assign-op`](/docs/rules/analyse/types/offset-assign-op) | `true` | Ported |
+| [`analyse/types/offset-assign-value`](/docs/rules/analyse/types/offset-assign-value) | `true` | Ported |
+| [`analyse/types/param-default`](/docs/rules/analyse/types/param-default) | `true` | Ported |
 | [`analyse/types/param-out`](/docs/rules/analyse/types/param-out) | `true` | Planned |
 | [`analyse/types/param-out-at-end`](/docs/rules/analyse/types/param-out-at-end) | `true` | Planned |
-| [`analyse/types/phpdoc-readonly-by-ref`](/docs/rules/analyse/types/phpdoc-readonly-by-ref) | `true` | Planned |
-| [`analyse/types/phpdoc-readonly-property-write`](/docs/rules/analyse/types/phpdoc-readonly-property-write) | `true` | Planned |
-| [`analyse/types/print-non-string`](/docs/rules/analyse/types/print-non-string) | `true` | Planned |
+| [`analyse/types/phpdoc-readonly-by-ref`](/docs/rules/analyse/types/phpdoc-readonly-by-ref) | `true` | Ported |
+| [`analyse/types/phpdoc-readonly-property-write`](/docs/rules/analyse/types/phpdoc-readonly-property-write) | `true` | Ported |
+| [`analyse/types/print-non-string`](/docs/rules/analyse/types/print-non-string) | `true` | Ported |
 | [`analyse/types/printf-argument`](/docs/rules/analyse/types/printf-argument) | `true` | Planned |
-| [`analyse/types/property-assign`](/docs/rules/analyse/types/property-assign) | `true` | Planned |
-| [`analyse/types/property-default`](/docs/rules/analyse/types/property-default) | `true` | Planned |
+| [`analyse/types/property-assign`](/docs/rules/analyse/types/property-assign) | `true` | Ported |
+| [`analyse/types/property-default`](/docs/rules/analyse/types/property-default) | `true` | Ported |
 | [`analyse/types/property-variance`](/docs/rules/analyse/types/property-variance) | `true` | Planned |
-| [`analyse/types/random-int-range`](/docs/rules/analyse/types/random-int-range) | `true` | Planned |
-| [`analyse/types/readonly-property-by-ref`](/docs/rules/analyse/types/readonly-property-by-ref) | `true` | Planned |
-| [`analyse/types/readonly-property-write`](/docs/rules/analyse/types/readonly-property-write) | `true` | Planned |
-| [`analyse/types/redundant-array-values`](/docs/rules/analyse/types/redundant-array-values) | `true` | Planned |
+| [`analyse/types/random-int-range`](/docs/rules/analyse/types/random-int-range) | `true` | Ported |
+| [`analyse/types/readonly-property-by-ref`](/docs/rules/analyse/types/readonly-property-by-ref) | `true` | Ported |
+| [`analyse/types/readonly-property-write`](/docs/rules/analyse/types/readonly-property-write) | `true` | Ported |
+| [`analyse/types/redundant-array-values`](/docs/rules/analyse/types/redundant-array-values) | `true` | Ported |
 | [`analyse/types/redundant-nullsafe`](/docs/rules/analyse/types/redundant-nullsafe) | `true` | Planned |
 | [`analyse/types/redundant-nullsafe-method-call`](/docs/rules/analyse/types/redundant-nullsafe-method-call) | `true` | Planned |
 | [`analyse/types/renamed-parameter-in-subtype`](/docs/rules/analyse/types/renamed-parameter-in-subtype) | `true` | Planned |
-| [`analyse/types/return`](/docs/rules/analyse/types/return) | `true` | Planned |
-| [`analyse/types/sort-non-stringable`](/docs/rules/analyse/types/sort-non-stringable) | `true` | Planned |
+| [`analyse/types/return`](/docs/rules/analyse/types/return) | `true` | Ported |
+| [`analyse/types/return-by-ref-finally`](/docs/rules/analyse/types/return-by-ref-finally) | `true` | Planned |
+| [`analyse/types/sort-non-stringable`](/docs/rules/analyse/types/sort-non-stringable) | `true` | Ported |
 | [`analyse/types/this-in-global`](/docs/rules/analyse/types/this-in-global) | `true` | Ported |
 | [`analyse/types/this-in-static`](/docs/rules/analyse/types/this-in-static) | `true` | Ported |
-| [`analyse/types/throw-non-throwable`](/docs/rules/analyse/types/throw-non-throwable) | `true` | Planned |
+| [`analyse/types/throw-non-throwable`](/docs/rules/analyse/types/throw-non-throwable) | `true` | Ported |
 | [`analyse/types/throws-not-covariant`](/docs/rules/analyse/types/throws-not-covariant) | `true` | Planned |
 | [`analyse/types/throws-void-function`](/docs/rules/analyse/types/throws-void-function) | `true` | Planned |
 | [`analyse/types/throws-void-hook`](/docs/rules/analyse/types/throws-void-hook) | `true` | Planned |
@@ -667,31 +681,31 @@ This preset covers PHPStan levels 4–5 and includes every lower preset (levels 
 | [`analyse/types/too-wide-method-param-out`](/docs/rules/analyse/types/too-wide-method-param-out) | `true` | Planned |
 | [`analyse/types/too-wide-method-return`](/docs/rules/analyse/types/too-wide-method-return) | `true` | Planned |
 | [`analyse/types/too-wide-property`](/docs/rules/analyse/types/too-wide-property) | `true` | Planned |
-| [`analyse/types/unpack-non-iterable`](/docs/rules/analyse/types/unpack-non-iterable) | `true` | Planned |
-| [`analyse/types/unpack-string-key`](/docs/rules/analyse/types/unpack-string-key) | `true` | Planned |
+| [`analyse/types/unpack-non-iterable`](/docs/rules/analyse/types/unpack-non-iterable) | `true` | Ported |
+| [`analyse/types/unpack-string-key`](/docs/rules/analyse/types/unpack-string-key) | `true` | Ported |
 | [`analyse/types/unused-hook-throws-type`](/docs/rules/analyse/types/unused-hook-throws-type) | `true` | Planned |
 | [`analyse/types/unused-method-throws-type`](/docs/rules/analyse/types/unused-method-throws-type) | `true` | Planned |
 | [`analyse/types/unused-throws-type`](/docs/rules/analyse/types/unused-throws-type) | `true` | Planned |
-| [`analyse/types/useless-array-filter`](/docs/rules/analyse/types/useless-array-filter) | `true` | Planned |
-| [`analyse/types/void-match-used`](/docs/rules/analyse/types/void-match-used) | `true` | Planned |
-| [`analyse/types/write-to-readonly-property`](/docs/rules/analyse/types/write-to-readonly-property) | `true` | Planned |
-| [`analyse/types/yield-from-non-iterable`](/docs/rules/analyse/types/yield-from-non-iterable) | `true` | Planned |
-| [`analyse/types/yield-outside-function`](/docs/rules/analyse/types/yield-outside-function) | `true` | Planned |
+| [`analyse/types/useless-array-filter`](/docs/rules/analyse/types/useless-array-filter) | `true` | Ported |
+| [`analyse/types/void-match-used`](/docs/rules/analyse/types/void-match-used) | `true` | Ported |
+| [`analyse/types/write-to-readonly-property`](/docs/rules/analyse/types/write-to-readonly-property) | `true` | Ported |
+| [`analyse/types/yield-from-non-iterable`](/docs/rules/analyse/types/yield-from-non-iterable) | `true` | Ported |
+| [`analyse/types/yield-outside-function`](/docs/rules/analyse/types/yield-outside-function) | `true` | Ported |
 | [`analyse/undefined/assigned-property`](/docs/rules/analyse/undefined/assigned-property) | `true` | Ported |
 | [`analyse/undefined/assigned-static-property`](/docs/rules/analyse/undefined/assigned-static-property) | `true` | Ported |
 | [`analyse/undefined/class-constant`](/docs/rules/analyse/undefined/class-constant) | `true` | Planned |
 | [`analyse/undefined/compact-variable`](/docs/rules/analyse/undefined/compact-variable) | `true` | Planned |
-| [`analyse/undefined/constant`](/docs/rules/analyse/undefined/constant) | `true` | Planned |
-| [`analyse/undefined/function`](/docs/rules/analyse/undefined/function) | `true` | Planned |
+| [`analyse/undefined/constant`](/docs/rules/analyse/undefined/constant) | `true` | Ported |
+| [`analyse/undefined/function`](/docs/rules/analyse/undefined/function) | `true` | Ported |
 | [`analyse/undefined/goto-label`](/docs/rules/analyse/undefined/goto-label) | `true` | Ported |
-| [`analyse/undefined/group-import`](/docs/rules/analyse/undefined/group-import) | `true` | Planned |
-| [`analyse/undefined/import`](/docs/rules/analyse/undefined/import) | `true` | Planned |
+| [`analyse/undefined/group-import`](/docs/rules/analyse/undefined/group-import) | `true` | Ported |
+| [`analyse/undefined/import`](/docs/rules/analyse/undefined/import) | `true` | Ported |
 | [`analyse/undefined/include-file`](/docs/rules/analyse/undefined/include-file) | `true` | Planned |
 | [`analyse/undefined/instanceof-class`](/docs/rules/analyse/undefined/instanceof-class) | `true` | Ported |
-| [`analyse/undefined/method`](/docs/rules/analyse/undefined/method) | `true` | Planned |
+| [`analyse/undefined/method`](/docs/rules/analyse/undefined/method) | `true` | Ported |
 | [`analyse/undefined/offset`](/docs/rules/analyse/undefined/offset) | `true` | Planned |
 | [`analyse/undefined/property`](/docs/rules/analyse/undefined/property) | `true` | Ported |
-| [`analyse/undefined/static-method`](/docs/rules/analyse/undefined/static-method) | `true` | Planned |
+| [`analyse/undefined/static-method`](/docs/rules/analyse/undefined/static-method) | `true` | Ported |
 | [`analyse/undefined/static-property`](/docs/rules/analyse/undefined/static-property) | `true` | Ported |
 | [`analyse/undefined/trait`](/docs/rules/analyse/undefined/trait) | `true` | Ported |
 | [`analyse/undefined/variable`](/docs/rules/analyse/undefined/variable) | `true` | Planned |

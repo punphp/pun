@@ -2,6 +2,24 @@
     "test": "Classes/InstantiationRuleTest",
     "cases": [
         {
+            "method": "testTemplateArgumentArrow",
+            "files": [
+                "Classes/data/template-argument-arrow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTemplateArgumentNestedCollection",
+            "files": [
+                "Classes/data/template-argument-nested-collection.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testInstantiation",
             "files": [
                 "Classes/data/instantiation.php"
@@ -887,6 +905,42 @@
             "method": "testInstantiationWithNonObjectType",
             "files": [
                 "Classes/data/instantiation-non-object.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15047",
+            "files": [
+                "Classes/data/bug-15047.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#0",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#1",
+            "files": [
+                "Classes/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4548",
+            "files": [
+                "Classes/data/bug-4548.php"
             ],
             "scan": [],
             "errors": [],

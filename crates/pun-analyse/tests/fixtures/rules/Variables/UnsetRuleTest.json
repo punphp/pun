@@ -310,6 +310,15 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testNullCoalesceAssignRightSideScope",
+            "files": [
+                "Variables/data/null-coalesce-assign-right-side-scope.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }
