@@ -247,6 +247,41 @@
    "tip": null
   },
   {
+   "file": "src/condition-traits.php",
+   "line": 17,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php",
+   "line": 20,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php",
+   "line": 23,
+   "identifier": "greater.alwaysTrue",
+   "message": "Comparison operation \">\" between 1 and 0 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php (in context of class DeadCode\\ConditionTraits\\IntChecker)",
+   "line": 83,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\ConditionTraits\\IntChecker::isNumber() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php (in context of class DeadCode\\ConditionTraits\\StringChecker)",
+   "line": 83,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\ConditionTraits\\StringChecker::isNumber() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
    "file": "src/conditions.php",
    "line": 42,
    "identifier": "if.alwaysTrue",
@@ -678,6 +713,62 @@
    "line": 552,
    "identifier": "while.alwaysTrue",
    "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 13,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: DeadCode\\Matches\\Suit::Clubs",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 26,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining values: DeadCode\\Matches\\Suit::Clubs|DeadCode\\Matches\\Suit::Spades",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 34,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining values: int<min, 0>|int<3, max>",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 40,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between false and false is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 43,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: false",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 71,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between $this(DeadCode\\Matches\\Pair)&DeadCode\\Matches\\Pair::Two and DeadCode\\Matches\\Pair::Two is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 85,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between DeadCode\\Matches\\Single::Only and DeadCode\\Matches\\Single::Only is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 115,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: string",
    "tip": null
   },
   {

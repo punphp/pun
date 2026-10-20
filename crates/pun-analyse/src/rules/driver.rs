@@ -139,21 +139,20 @@ fn checker<'a, 'arena>(
     typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
+    let mut types = infer(arena, file, program, names, codebase, php_version, project.level, typed);
+    if project.level >= 4 {
+        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version);
+        types.extend(subjects);
+        for span in unknown {
+            types.remove(&span);
+        }
+    }
     Checker {
         anonymous: anonymous::names(file, program, names, &project.relative_path),
         property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
-        types: infer(
-            arena,
-            file,
-            program,
-            names,
-            codebase,
-            php_version,
-            project.level,
-            typed,
-        ),
+        types,
         names,
         codebase,
         classes: Vec::new(),

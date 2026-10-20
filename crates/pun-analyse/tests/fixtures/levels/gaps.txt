@@ -567,7 +567,7 @@
 4 Properties/NullsafePropertyFetchRuleTest::testRule
 # class.notFound: Mago reads `callable-array` as a class name
 6 Methods/MissingMethodParameterTypehintRuleTest::testBug14549
-# an-dead: ConstantConditionInTraitRule (the trait collector) is unported: nothing reports a constant condition in a trait
+# an-dead: ConstantConditionInTraitRule: Mago types a trait's `$this` as the trait, so a condition on the using class (its methods' return types) is not constant in any context
 4 Comparison/BooleanAndConstantConditionRuleTest::testInTrait
 4 Comparison/BooleanNotConstantConditionRuleTest::testInTrait
 4 Comparison/BooleanOrConstantConditionRuleTest::testInTrait
@@ -808,3 +808,16 @@
 # an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook
+# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
+# an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
+# an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
+# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
+# an-dead: MatchExpressionRule: Mago's types differ (rand() and <=> are int, in_array() and gettype() narrowing), the subject `$this` of a trait, TypeCombinator::remove() for class strings and templates, an unnarrowed enum subject described after removing a case
+4 Comparison/MatchExpressionRuleTest::testEnums
+4 Comparison/MatchExpressionRuleTest::testBug7176
+4 Comparison/MatchExpressionRuleTest::testBug6064
+4 Comparison/MatchExpressionRuleTest::testBug8614
+4 Comparison/MatchExpressionRuleTest::testBug9436
+4 Comparison/MatchExpressionRuleTest::testBug12998
+4 Comparison/MatchExpressionRuleTest::testBug12790
+4 Comparison/MatchExpressionRuleTest::testInTrait

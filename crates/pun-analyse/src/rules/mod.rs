@@ -84,6 +84,7 @@ use statements::{Frame, FrameKind};
 pub(crate) use doc::{doc_before, tags as doc_tags};
 pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
+pub(crate) use dead_code::conditions_in_traits;
 pub(crate) use larastan::finish as larastan_finish;
 pub(crate) use reflection::builtins;
 pub(crate) use unused_trait::unused_traits;
@@ -660,6 +661,9 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.impossibleType",
     "staticMethod.alreadyNarrowedType",
     "staticMethod.impossibleType",
+    "match.alwaysFalse",
+    "match.alwaysTrue",
+    "match.unhandled",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -1751,6 +1755,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_match(&mut self, m: &'ast Match<'arena>, c: &mut ()) {
         types::void_match(self, m);
+        dead_code::match_expression(self, m);
         self.walk_expression(m.expression, c);
         let on_true = matches!(m.expression, Expression::Literal(Literal::True(_)));
         for arm in m.arms.iter() {
