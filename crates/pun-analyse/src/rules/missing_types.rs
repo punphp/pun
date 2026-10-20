@@ -173,6 +173,42 @@ fn generic_walk(ty: &Type, iterables: bool, out: &RefCell<Vec<(String, String)>>
     });
 }
 
+/// MissingTypehintCheck's switches: `checkGenericIterableClasses` and `checkMissingCallableSignature`.
+#[derive(Clone, Copy)]
+struct Opts {
+    iterables: bool,
+    callables: bool,
+}
+
+impl Opts {
+    fn of(c: &Checker) -> Opts {
+        Opts { iterables: c.generic_iterable_classes, callables: c.missing_callable_signature }
+    }
+}
+
+/// `getCallablesWithMissingSignature()`: each `callable` or `Closure` without a signature (described), when
+/// `checkMissingCallableSignature` is on.
+pub fn callables_without_signature(ty: &Type, on: bool) -> Vec<String> {
+    fn walk(ty: &Type, out: &RefCell<Vec<String>>) {
+        // (a template's bound is not traversed)
+        if matches!(ty, Type::Template(_)) {
+            return;
+        }
+        if matches!(ty, Type::Callable(None)) || matches!(ty, Type::Object(class, _) if class == "Closure") {
+            out.borrow_mut().push(ty.describe(Level::TypeOnly));
+        }
+        ty.traverse(&|inner| {
+            walk(inner, out);
+            inner.clone()
+        });
+    }
+    let out = RefCell::new(Vec::new());
+    if on {
+        walk(ty, &out);
+    }
+    out.into_inner()
+}
+
 /// What one check found: (identifier, message, tip).
 type Found = Vec<(&'static str, String, Option<&'static str>)>;
 
@@ -187,7 +223,7 @@ struct Messages<'s> {
 }
 
 /// The checks of one type (the type model must know the project's classes).
-fn check(ty: &Type, m: Messages, iterables: bool, out: &mut Found) {
+fn check(ty: &Type, m: Messages, opts: Opts, out: &mut Found) {
     if ty.is_implicit_mixed() {
         out.push((m.missing.0, m.missing.1, None));
         return;
@@ -205,7 +241,7 @@ fn check(ty: &Type, m: Messages, iterables: bool, out: &mut Found) {
         };
         out.push(("missingType.iterableValue", message, Some(TIP)));
     }
-    for (name, list) in generics_without_args(ty, iterables) {
+    for (name, list) in generics_without_args(ty, opts.iterables) {
         let message = match m.parameter {
             Some(p) => format!(
                 "{} has {p} with generic {name} but does not specify its types: {list}",
@@ -219,6 +255,25 @@ fn check(ty: &Type, m: Messages, iterables: bool, out: &mut Found) {
         };
         out.push(("missingType.generics", message, None));
     }
+    for callable in callables_without_signature(ty, opts.callables) {
+        let message = match m.parameter {
+            Some(p) => format!("{} has {p} with no signature specified for {callable}.", m.subject),
+            None => format!("{}{} has no signature specified for {callable}.", m.subject, m.owner),
+        };
+        out.push(("missingType.callable", message, None));
+    }
+}
+
+/// The `checkMissingTypehints` checks of a type `{subject} has {parameter} with ...`: LocalTypeAliasesCheck's
+/// (`Class Foo has type alias X`) and SetPropertyHookParameterRule's (`... has parameter $v`), from level 6.
+pub(super) fn parameter(c: &Checker, ty: &Type, subject: &str, parameter: &str) -> Found {
+    let mut out = Vec::new();
+    if c.level >= 6 {
+        let m = Messages { subject, parameter: Some(parameter), owner: "", missing: ("", String::new()) };
+        check(ty, m, Opts::of(c), &mut out);
+    }
+    out.retain(|(id, _, _)| !id.is_empty());
+    out
 }
 
 /// The checks of a function-like's parameters and (unless `skip_return`) return type.
@@ -226,7 +281,7 @@ fn signature(
     subject: &str,
     sig: &declared::Signature,
     skip_return: bool,
-    iterables: bool,
+    iterables: Opts,
 ) -> Found {
     let mut out = Vec::new();
     for (param, ty, param_out, closure_this) in &sig.params {
@@ -321,7 +376,7 @@ pub fn method(c: &mut Checker, m: &Method) {
     // a trait's constructor has no return type to check (`originalTraitMethodName`)
     let skip_return = declaring.kind == mago_codex::symbol::SymbolKind::Trait
         && m.name.value.eq_ignore_ascii_case(b"__construct");
-    let iterables = c.generic_iterable_classes;
+    let iterables = Opts::of(c);
     let found = declared::with_classes(c, || {
         let sig = declared::method(c, m, declaring, context);
         signature(&subject, &sig, skip_return, iterables)
@@ -357,7 +412,7 @@ pub fn function(c: &mut Checker, f: &Function) {
     }
     let name = String::from_utf8_lossy(c.names.get(&f.name.span())).into_owned();
     let subject = format!("Function {name}()");
-    let iterables = c.generic_iterable_classes;
+    let iterables = Opts::of(c);
     let found = declared::with_classes(c, || {
         let sig = declared::function(c, f);
         signature(&subject, &sig, false, iterables)
@@ -371,7 +426,7 @@ pub fn property(c: &mut Checker, p: &Property) {
         return;
     }
     let (context, display) = c.member_scope();
-    let iterables = c.generic_iterable_classes;
+    let iterables = Opts::of(c);
     let hint = p.hint();
     for v in p.variables() {
         let name = &v.name[1..];
@@ -405,7 +460,7 @@ pub fn class_constant(c: &mut Checker, k: &ClassLikeConstant) {
         return;
     }
     let (context, display) = c.member_scope();
-    let iterables = c.generic_iterable_classes;
+    let iterables = Opts::of(c);
     for item in k.items.iter() {
         let name = item.name.value;
         let subject = format!("Constant {display}::{}", String::from_utf8_lossy(name));
@@ -449,19 +504,24 @@ fn class_level(
         .get_class_like(name.as_bytes())
         .expect("a declared class-like is in the codebase");
     let display = declared::original_name(k);
-    let iterables = c.generic_iterable_classes;
+    let iterables = Opts::of(c);
     let doc =
         super::doc::doc_before(&c.file.contents, span.start.offset as usize).map(<[u8]>::to_vec);
     let found = declared::with_classes(c, || {
         let mut out: Found = Vec::new();
         let generics_of = |ty: &Type, out: &mut Found, text: &dyn Fn(&str, &str) -> String| {
-            for (inner, list) in generics_without_args(ty, iterables) {
+            for (inner, list) in generics_without_args(ty, iterables.iterables) {
                 out.push(("missingType.generics", text(&inner, &list), None));
             }
         };
         let iterables_of = |ty: &Type, out: &mut Found, text: &dyn Fn(&str) -> String| {
             for iterable in iterables_without_value(ty) {
                 out.push(("missingType.iterableValue", text(&iterable), Some(TIP)));
+            }
+        };
+        let callables_of = |ty: &Type, out: &mut Found, text: &dyn Fn(&str) -> String| {
+            for callable in callables_without_signature(ty, iterables.callables) {
+                out.push(("missingType.callable", text(&callable), None));
             }
         };
         let mut described: Vec<String> = Vec::new();
@@ -480,6 +540,12 @@ fn class_level(
                     iterables_of(ty, out, &|iterable| {
                         format!(
                             "{kind} {display} has PHPDoc tag @method for method {}() {what} with no value type specified in {iterable}.",
+                            m.name
+                        )
+                    });
+                    callables_of(ty, out, &|callable| {
+                        format!(
+                            "{kind} {display} has PHPDoc tag @method for method {}() {what} with no signature specified for {callable}.",
                             m.name
                         )
                     });
@@ -522,6 +588,11 @@ fn class_level(
                             "{kind} {display} has PHPDoc tag {tag} for property ${pname} with no value type specified in {iterable}."
                         )
                     });
+                    callables_of(ty, &mut out, &|callable| {
+                        format!(
+                            "{kind} {display} has PHPDoc tag {tag} for property ${pname} with no signature specified for {callable}."
+                        )
+                    });
                 }
             }
             for node in &parsed.mixins {
@@ -545,6 +616,9 @@ fn class_level(
                     format!(
                         "PHPDoc tag @mixin contains generic {inner} but does not specify its types: {list}"
                     )
+                });
+                callables_of(&ty, &mut out, &|callable| {
+                    format!("{kind} {display} has PHPDoc tag @mixin with no signature specified for {callable}.")
                 });
             }
             for node in &parsed.ancestors {

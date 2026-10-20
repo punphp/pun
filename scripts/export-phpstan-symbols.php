@@ -519,6 +519,92 @@ if (($argv[1] ?? '') === 'accepts') {
     exit;
 }
 
+// php scripts/export-phpstan-symbols.php infer: tests/fixtures/type-infer.json, each pattern against each received type as
+// [pattern, received, inferTemplateTypes() as {template: precise description}, the pattern resolved as a resolved
+// function variant's parameter (TemplateTypeHelper::resolveTemplateTypes() over the inferred map, an uninferred
+// template by its default or bound)]
+if (($argv[1] ?? '') === 'infer') {
+    $resolver = container(80400)->getByType(TypeStringResolver::class);
+    $templates = probe_templates($resolver);
+    $pun = fn (string $s) => preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s);
+    $scope = new NameScope(null, [], null, null, $templates);
+    $patterns = ['T', 'U', 'V', 'array<T>', 'array<U, T>', 'list<T>', 'iterable<U, T>', 'T|null', 'T|int', 'T|array<T>', 'array<T>|T',
+        'array{a: T, b?: U}', 'callable(T): U', 'Closure(T): U', 'callable(T, U): void', 'class-string<T>', 'class-string<V>', 'ArrayIterator<U, T>',
+        'Traversable<U, T>', 'V&Traversable<U, T>', 'object{a: T, b?: U}', '__benevolent<T|int>', 'array<T>|iterable<T>', 'int', 'U|string',
+        'callable(T, T): void', 'callable(T, int): void', 'ArrayIterator<U, covariant T>', 'class-string<ArrayIterator<U, T>>',
+        'class-string<V>|int', 'array{T|null, T}', 'array{T, T|null}'];
+    $received = ['int', '1', "'a'", 'int|string', "1|'a'", 'null', 'int|null', 'float|null', 'array<int, string>', 'list<int>', "array{a: 1, b: 'x'}", 'array{a: 1}',
+        'iterable<int, string>', 'ArrayIterator<int, string>', 'ArrayIterator', 'Generator<int, string>', 'Closure(int): string', 'callable(string): int',
+        "'strlen'", 'callable', "'ArrayIterator'", 'class-string<Countable>', 'class-string', 'Countable', 'stdClass', 'mixed', 'never', 'object{a: int}',
+        'T', 'U', 'array<int|string>|null', 'int|array<int>', '__benevolent<int|string>', 'Countable&Traversable<int, string>', 'float|array<float>', 'object|null',
+        'array{null, int}', 'array{int, null}'];
+    $rows = [];
+    foreach ($patterns as $a) {
+        $at = $resolver->resolve($a, $scope);
+        foreach ($received as $b) {
+            $bt = $resolver->resolve($b, $scope);
+            $map = $at->inferTemplateTypes($bt);
+            $inferred = array_map(fn (Type $t) => $t->describe(VerbosityLevel::precise()), $map->getTypes());
+            ksort($inferred);
+            $standins = new PHPStan\Type\Generic\TemplateTypeMap(array_merge($templates->map(fn () => new PHPStan\Type\ErrorType())->getTypes(), $map->getTypes()));
+            $resolved = PHPStan\Type\Generic\TemplateTypeHelper::resolveTemplateTypes($at, $standins, PHPStan\Type\Generic\TemplateTypeVarianceMap::createEmpty(), PHPStan\Type\Generic\TemplateTypeVariance::createContravariant());
+            $rows[] = json_encode([$pun($a), $pun($b), (object) $inferred, $resolved->describe(VerbosityLevel::precise())], $flags);
+        }
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-infer.json', "[\n".implode(",\n", $rows)."\n]\n");
+    echo count($rows), " infer pairs\n";
+    exit;
+}
+
+// php scripts/export-phpstan-symbols.php reasons: tests/fixtures/type-reasons.json, every ordered pair of these atoms as
+// [a, b, accepts(b, strict)->reasons] (the tips of the argument and return type errors)
+if (($argv[1] ?? '') === 'reasons') {
+    $resolver = container(80400)->getByType(TypeStringResolver::class);
+    $scope = new NameScope(null, [], null, null, probe_templates($resolver));
+    $pun = fn (string $s) => preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s);
+    $atoms = ['int', 'string', "'a'", 'int|string', 'int|null', '(callable(): mixed)|null', 'callable(int): void', 'callable(int=): void',
+        'callable(int, string): int', 'callable(string): int', 'Closure(int): void', 'Closure(string, int=): int', 'Closure(int ...$a): void',
+        'Closure(int $a): string', 'Closure(int $a, string $b): void', 'Closure(1|2 $a): void', 'callable', 'list<int>', 'non-empty-array<int>',
+        'non-empty-list<int>', 'array<int>', 'array<string>', 'array{a: int, b: string}', 'array{a: int, b?: string}', "array{a: 1, b: 'x'}",
+        "array{a: 'x'}", 'array{a: int, b: string}|null', 'array{0: string}', 'array<int, string>', 'iterable<int>', 'ArrayIterator<int, string>',
+        'ArrayIterator<int, int|string>', 'ArrayIterator<int, 1>', 'ArrayIterator', 'Countable&Traversable<int>', 'array{array<int>}', 'array{0: int}|null',
+        'T', 'U', 'int|array<int>', 'string|list<int>', 'Closure(int): string|null', 'mixed', '(T is int ? list<int> : int)', 'list<int>|list<string>',
+        'callable(int|string): void', 'Closure(string $a): void', 'array{a: int}', 'Traversable<int, string>', '(callable(): mixed)|Closure(): void',
+        'array{a: int}|array{a: int, b: int}', 'array{}', 'ArrayIterator<int, int|string>|ArrayIterator<int, float|int>'];
+    $rows = [];
+    foreach ($atoms as $a) {
+        $at = $resolver->resolve($a, $scope);
+        foreach ($atoms as $b) {
+            $bt = $resolver->resolve($b, $scope);
+            $rows[] = json_encode([$pun($a), $pun($b), $at->accepts($bt, true)->reasons], $flags);
+        }
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-reasons.json', "[\n".implode(",\n", $rows)."\n]\n");
+    echo count($rows), " reasons pairs\n";
+    exit;
+}
+
+if (($argv[1] ?? '') === 'curl') {
+    // ParametersAcceptorSelector::getCurlOptValueType() of each CURLOPT_* value: curl_setopt()'s value type
+    $method = new ReflectionMethod(PHPStan\Reflection\ParametersAcceptorSelector::class, 'getCurlOptValueType');
+    // per the PHP version from which they hold (CurlHandle from 8.0, CurlSharePersistentHandle from 8.5)
+    $versions = [];
+    foreach ([70400, 80000, 80500] as $version) {
+        container($version);
+        $types = [];
+        foreach (get_defined_constants(true)['curl'] as $name => $value) {
+            if (str_starts_with($name, 'CURLOPT_') && is_int($value) && ($type = $method->invoke(null, $value)) !== null) {
+                $types[$value] = $type->describe(VerbosityLevel::precise());
+            }
+        }
+        ksort($types);
+        $versions[$version] = (object) $types;
+    }
+    file_put_contents($root.'/crates/pun-analyse/src/rules/curl-options.json', json_encode($versions, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
+    echo count($types), " curl options\n";
+    exit;
+}
+
 if (($argv[1] ?? '') === 'probes') {
     $probes = array_map(fn ($s) => [null, $s], PROBES);
     foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'ArrayIterator::STD*LIST', 'ArrayIterator::*_PROP_*', 'ArrayIterator::*X*Y', 'ArrayIterator::S*P*T', 'ArrayIterator::*P*O*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {

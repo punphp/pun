@@ -111,7 +111,7 @@ pub(in super::super) fn array(c: &mut Checker, elements: &[ArrayElement]) {
             let message = format!("Only iterables can be unpacked, {described} given.");
             c.report(v, "arrayUnpacking.nonIterable", message, None);
         }
-        if c.php_version >= 80100 {
+        if c.surely_at_least(80100) {
             continue;
         }
         // ArrayUnpackingRule: before PHP 8.1, only int keys

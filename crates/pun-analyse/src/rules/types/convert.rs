@@ -51,7 +51,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 .parameters
                 .iter()
                 .map(|p| Param {
-                    name: String::new(),
+                    name: p.get_name().map(|n| String::from_utf8_lossy(&n.0.as_bytes()[1..]).into_owned()).unwrap_or_default(),
                     ty: p.get_type_signature().map_or_else(mixed, |t| self.to_phpstan(t)),
                     optional: p.has_default(),
                     by_ref: p.is_by_reference(),

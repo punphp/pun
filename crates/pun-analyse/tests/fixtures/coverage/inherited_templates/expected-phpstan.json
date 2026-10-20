@@ -1,0 +1,40 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "inherited_templates.php",
+   "line": 23,
+   "identifier": "property.defaultValue",
+   "message": "Property CovInheritedTemplates\\IntBox::$value (int) does not accept default value of type string.",
+   "tip": null
+  },
+  {
+   "file": "inherited_templates.php",
+   "line": 27,
+   "identifier": "return.type",
+   "message": "Method CovInheritedTemplates\\IntBox::get() should return int but returns string.",
+   "tip": null
+  },
+  {
+   "file": "inherited_templates.php",
+   "line": 42,
+   "identifier": "return.type",
+   "message": "Method CovInheritedTemplates\\Untagged::read() should return string but returns int.",
+   "tip": null
+  },
+  {
+   "file": "inherited_templates.php",
+   "line": 50,
+   "identifier": "return.type",
+   "message": "Method CovInheritedTemplates\\Grand::get() should return int but returns float.",
+   "tip": null
+  },
+  {
+   "file": "inherited_templates.php",
+   "line": 62,
+   "identifier": "return.type",
+   "message": "Method CovInheritedTemplates\\ListBox::get() should return array<int, U> but returns null.",
+   "tip": null
+  }
+ ]
+}

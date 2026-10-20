@@ -13,6 +13,8 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "property.unusedType",
+    "return.unusedType",
     "binaryOp.invalid",
     "assignOp.invalid",
     "offsetAssign.dimType",
@@ -208,6 +210,8 @@ const PORTED: &[&str] = &[
     "generics.variance",
     "function.variance",
     "method.variance",
+    "parameter.trait",
+    "return.trait",
     "property.unresolvableType",
     "property.phpDocType",
     "classConstant.unresolvableType",
@@ -331,6 +335,7 @@ const PORTED: &[&str] = &[
     "callable.void",
     "argument.byRef",
     "argument.unpackNonIterable",
+    "argument.templateType",
     "method.nonObject",
     "method.notFound",
     "staticMethod.nonObject",
@@ -382,6 +387,10 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "Function ",
     "Method ",
     "Anonymous function has invalid return type",
+    // ExistingClassesInPropertiesRule's and the property hooks' (PHPDoc types from level 2)
+    "Property ",
+    "Get hook for property ",
+    "Set hook for property ",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).

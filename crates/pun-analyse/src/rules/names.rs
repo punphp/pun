@@ -338,20 +338,6 @@ pub fn typehints<'arena>(
     let parameter_message = format!("of {}", kind.named());
     let return_message = format!("{} has invalid return type", kind.subject());
     let anonymous = matches!(kind, FunctionKind::Anonymous);
-    let class = c
-        .class_scope()
-        .filter(|k| !k.name.as_bytes().starts_with(b"{anonymous-class:"))
-        .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned());
-    let function = || match kind {
-        FunctionKind::Anonymous => Some(Function::Anonymous),
-        FunctionKind::Function(name) => Some(Function::Named(name.to_string())),
-        FunctionKind::Method(_, method) => Some(Function::Method {
-            name: method.to_string(),
-            class: class.clone(),
-        }),
-        // ponytail: a hook's PhpMethodFromParserNodeReflection location is not built
-        FunctionKind::Hook(..) => None,
-    };
     for p in parameters.parameters.iter() {
         let Some(hint) = &p.hint else {
             continue;
@@ -382,7 +368,7 @@ pub fn typehints<'arena>(
             anonymous && matches!(hint, Hint::Identifier(_)),
         );
         let case = c.case_sensitivity;
-        let location = function().map(|function| Location::ParameterType {
+        let location = location_function(c, kind).map(|function| Location::ParameterType {
             parameter: name[1..].to_string(),
             function,
         });
@@ -413,8 +399,25 @@ pub fn typehints<'arena>(
         matches!(r.hint, Hint::Identifier(_)),
     );
     let case = c.case_sensitivity;
-    let location = function().map(Location::ReturnType);
+    let location = location_function(c, kind).map(Location::ReturnType);
     class_names::check_at(c, &pairs, location.as_ref(), case);
+}
+
+/// The function-like a ClassNameUsageLocation names.
+pub(super) fn location_function(c: &Checker, kind: FunctionKind) -> Option<Function> {
+    match kind {
+        FunctionKind::Anonymous => Some(Function::Anonymous),
+        FunctionKind::Function(name) => Some(Function::Named(name.to_string())),
+        FunctionKind::Method(_, method) => Some(Function::Method {
+            name: method.to_string(),
+            class: c
+                .class_scope()
+                .filter(|k| !k.name.as_bytes().starts_with(b"{anonymous-class:"))
+                .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned()),
+        }),
+        // ponytail: a hook's PhpMethodFromParserNodeReflection location is not built
+        FunctionKind::Hook(..) => None,
+    }
 }
 
 /// FunctionDefinitionCheck's ClassNameNodePairs for a type's classes: a name written in another case than it
@@ -628,19 +631,26 @@ pub fn property_type<'arena>(
     hint: Option<&Hint<'arena>>,
     names: &[&[u8]],
 ) {
-    let Some(hint) = hint else {
-        return;
-    };
     // properties are walked inside their class-like (trait bodies only in a class's context)
     let class = c
         .class_scope()
         .expect("a property is walked inside its class-like");
     let display = c.display(class);
-    let mut classes = Vec::new();
-    hint_classes(c, hint, &mut classes);
+    let mut native = Vec::new();
+    if let Some(hint) = hint {
+        hint_classes(c, hint, &mut native);
+    }
     for name in names {
         let property =
             String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
+        // and from level 2 (`checkThisOnly` off) the classes of its PHPDoc type
+        // ponytail: a promoted property's type from the constructor's `@param` is not read
+        let mut classes = native.clone();
+        if c.level >= 2 {
+            let phpdoc = super::declared::with_classes(c, || super::declared::property(c, None, at, &name[1..], class));
+            let referenced = super::generics::referenced_classes(&phpdoc).into_iter().filter(|n| !n.contains('-'));
+            classes.extend(referenced.map(|n| (n, at)));
+        }
         for (referenced, _) in &classes {
             match known(c, referenced) {
                 None => c.report(

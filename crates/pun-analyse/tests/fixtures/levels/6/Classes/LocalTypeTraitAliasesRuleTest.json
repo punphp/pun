@@ -1,0 +1,143 @@
+{
+    "test": "Classes/LocalTypeTraitAliasesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/local-type-trait-aliases.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAlias1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAlias2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias RecursiveTypeAlias.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.duplicate",
+                    "message": "Type alias ExistingClassAlias already exists as a class in scope of LocalTypeTraitAliases\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.invalidName",
+                    "message": "Type alias has an invalid name: int.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Cannot import type alias ImportedAliasFromNonClass: class LocalTypeTraitAliases\\int does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Cannot import type alias ImportedAliasFromUnknownClass: class LocalTypeTraitAliases\\UnknownClass does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAliasImport2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.duplicate",
+                    "message": "Type alias ExistingClassAlias already exists as a class in scope of LocalTypeTraitAliases\\Baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.duplicate",
+                    "message": "Type alias OverwrittenTypeAlias overwrites an imported type alias of the same name.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.invalidName",
+                    "message": "Imported type alias ExportedTypeAlias has an invalid name: int.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.notFound",
+                    "message": "Cannot import type alias ImportedUnknownAlias: type alias does not exist in LocalTypeTraitAliases\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 47,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAliasImport1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 55,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for trait LocalTypeTraitAliases\\Generic cannot have existing type alias T as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 62,
+                    "identifier": "typeAlias.invalidType",
+                    "message": "Invalid type definition detected in type alias InvalidTypeAlias.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 69,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Trait LocalTypeTraitAliases\\MissingType has type alias NoIterablueValue with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Classes/data/local-type-trait-aliases.php",
+                    "line": 81,
+                    "identifier": "missingType.generics",
+                    "message": "Class LocalTypeTraitAliases\\Usages uses generic trait LocalTypeTraitAliases\\Generic but does not specify its types: T",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11591",
+            "files": [
+                "Classes/data/bug-11591.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -310,7 +310,7 @@ pub fn trait_declaration<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>)
 /// TraitAttributesRule (InTraitNode: the trait analysed in a using class's context).
 pub fn trait_in_context<'arena>(c: &mut Checker<'_, 'arena>, t: &Trait<'arena>) {
     let lists = t.attribute_lists.as_slice();
-    if c.php_version < 80500 && has_native(c, lists, "Deprecated") {
+    if !c.surely_at_least(80500) && has_native(c, lists, "Deprecated") {
         c.report_non_ignorable(
             t,
             "trait.deprecatedAttribute",
@@ -339,7 +339,7 @@ pub fn property<'arena>(
     lists: &[AttributeList<'arena>],
     promoted: bool,
 ) {
-    if c.php_version < 80500 && has_native(c, lists, "Override") {
+    if !c.surely_at_least(80500) && has_native(c, lists, "Override") {
         c.report_non_ignorable(
             at,
             "property.overrideAttribute",
@@ -389,7 +389,7 @@ pub fn constant<'arena>(c: &mut Checker<'_, 'arena>, k: &Constant<'arena>) {
     let Some(first) = k.attribute_lists.first() else {
         return;
     };
-    if c.php_version < 80500 {
+    if !c.surely_at_least(80500) {
         c.report_non_ignorable(
             first.span().join(k.span()),
             "constant.attributesNotSupported",

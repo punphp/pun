@@ -954,7 +954,7 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
         }
         let mut variance = Vec::new();
         let context = sprintf(&m.variance, &[ty.describe(Level::TypeOnly)]);
-        super::variance::check(super::variance::Variance::Static, ty, &context, None, &mut variance);
+        super::variance::check(super::variance::Variance::Static, ty, &context, &mut variance);
         variance.into_iter().for_each(|v| out.push("generics.variance", v));
         for arg in args.iter().filter(|a| matches!(a, Type::Projection(..) | Type::Wildcard)) {
             let message = format!(

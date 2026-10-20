@@ -102,6 +102,8 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
+        let written = c.written(id.span()).trim_start_matches('\\').to_ascii_lowercase();
+        let variants = super::selector::select_from_args(c, &written, &counts, variants);
         let all = variants.all.clone();
         let selected = params::select(c, variants, &counts);
         let acceptor = params::closest_variant(&all, &counts, &selected).unwrap_or(selected);
@@ -402,9 +404,20 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let display_kind = if is_static { "Static method" } else { "Method" };
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
+    let mut variants = method.variants();
+    // ClosureBindArgVisitor: `Closure::bind($var, ...)`
+    if let Expression::Identifier(id) = call.class
+        && c.written(id.span()).trim_start_matches('\\').eq_ignore_ascii_case("closure")
+        && name.value.eq_ignore_ascii_case(b"bind")
+        && call.argument_list.arguments.len() > 1
+        && let Some(Expression::Variable(Variable::Direct(v))) = call.argument_list.arguments.first().map(|a| a.value())
+    {
+        let var = String::from_utf8_lossy(&v.name[1..]);
+        variants = super::selector::closure_bind(c, &var, call.span().start.offset, 1, variants);
+    }
     params::check(
         c,
-        &params::select(c, method.variants(), &counts),
+        &params::select(c, variants, &counts),
         &counts,
         name,
         params::Call {

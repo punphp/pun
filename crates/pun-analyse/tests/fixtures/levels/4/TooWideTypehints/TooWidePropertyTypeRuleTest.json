@@ -1,0 +1,237 @@
+{
+    "test": "TooWideTypehints/TooWidePropertyTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "TooWideTypehints/data/too-wide-property-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 9,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Foo::$foo is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 9,
+                    "identifier": "property.unusedType",
+                    "message": "Property TooWidePropertyType\\Foo::$foo (int|string) is never assigned string so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 12,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Foo::$bar is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 15,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Foo::$barr is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 15,
+                    "identifier": "property.unusedType",
+                    "message": "Property TooWidePropertyType\\Foo::$barr (int|null) is never assigned null so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 18,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Foo::$barrr is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 20,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Foo::$baz is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 20,
+                    "identifier": "property.unusedType",
+                    "message": "Property TooWidePropertyType\\Foo::$baz (int|null) is never assigned null so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 41,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Bar::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 43,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Bar::$b is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 45,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Bar::$c is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 45,
+                    "identifier": "property.unusedType",
+                    "message": "Property TooWidePropertyType\\Bar::$c (int|null) is never assigned int so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 47,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Bar::$d is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 47,
+                    "identifier": "property.unusedType",
+                    "message": "Property TooWidePropertyType\\Bar::$d (int|null) is never assigned null so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 60,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Baz::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 76,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\Lorem::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 93,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property TooWidePropertyType\\InvalidPhpDoc::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "TooWideTypehints/data/too-wide-property-type.php",
+                    "line": 93,
+                    "identifier": "property.phpDocType",
+                    "message": "PHPDoc tag @var for property TooWidePropertyType\\InvalidPhpDoc::$a with type int|string is not subtype of native type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11667",
+            "files": [
+                "TooWideTypehints/data/bug-11667.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13384",
+            "files": [
+                "TooWideTypehints/data/bug-13384.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13384Phpdoc",
+            "files": [
+                "TooWideTypehints/data/bug-13384-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13384b",
+            "files": [
+                "TooWideTypehints/data/bug-13384b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-13384b.php",
+                    "line": 23,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13384bOff",
+            "files": [
+                "TooWideTypehints/data/bug-13384b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-13384b.php",
+                    "line": 23,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBugPR4318",
+            "files": [
+                "TooWideTypehints/data/bug-pr-4318.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNestedTooWideType",
+            "files": [
+                "TooWideTypehints/data/nested-too-wide-property-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/nested-too-wide-property-type.php",
+                    "line": 9,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property NestedTooWidePropertyType\\Foo::$a is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13624",
+            "files": [
+                "TooWideTypehints/data/bug-13624.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

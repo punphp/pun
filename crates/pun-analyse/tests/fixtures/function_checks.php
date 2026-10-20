@@ -97,6 +97,9 @@ function unreachable(): void
     \vsprintf('%s', []);
 }
 
+printf("%'", 1);
+printf('%.99999999999d', 1);
+
 namespace PunShadowFunction;
 
 function sprintf(...$args): string { return ''; }

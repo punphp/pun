@@ -21,6 +21,29 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
     // Mago types an int mixed after an invalid `$i += 'x'`, so NullCoalesceRule cannot tell it is not nullable
     ("types", "offsets.php", 216, "nullCoalesce.variable"),
+    // nullsafe.neverNull (NullCoalesceRule) on `?->` property fetches with a dynamic name is not reported yet
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 13, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 14, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 15, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 16, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 17, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 19, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 20, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 21, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 22, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 23, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 24, "nullsafe.neverNull"),
+    // a native `mixed` parameter is explicit mixed, which level 9 checks; Mago's mixed does not tell it apart
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameType"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
@@ -84,6 +107,9 @@ fn coverage_fixtures() {
         .map(|e| e.path())
         .collect();
     cases.sort();
+    // PUN_COVERAGE_FILTER=types runs only the cases whose directory name contains it
+    let filter = std::env::var("PUN_COVERAGE_FILTER").unwrap_or_default();
+    cases.retain(|d| d.file_name().unwrap().to_string_lossy().contains(&filter));
     let mut failures = Vec::new();
     for dir in cases {
         let mut neons: Vec<String> = std::fs::read_dir(&dir)

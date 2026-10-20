@@ -53,8 +53,14 @@ pub struct Project {
     pub switch_condition: bool,
     /// `featureToggles.sortWithoutEffect` (on with bleedingEdge): SortWithoutEffectRule.
     pub sort_without_effect: bool,
+    /// `featureToggles.checkNonStringableDynamicAccess` (on with bleedingEdge): the `*.nameNotString` checks.
+    pub check_non_stringable_dynamic_access: bool,
+    /// `featureToggles.reportMethodPurityOverride` (on with bleedingEdge): MethodSignatureRule's purity checks.
+    pub report_method_purity_override: bool,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
     pub check_uninitialized_properties: bool,
+    /// `checkMissingCallableSignature`: MissingTypehintCheck's `missingType.callable` (off by default).
+    pub check_missing_callable_signature: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
     pub deprecation_rules: bool,
     /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
@@ -217,7 +223,10 @@ impl Project {
             unused_label: toggle("unusedLabel"),
             switch_condition: toggle("switchConditionAlwaysFalse"),
             sort_without_effect: toggle("sortWithoutEffect"),
+            check_non_stringable_dynamic_access: toggle("checkNonStringableDynamicAccess"),
+            report_method_purity_override: toggle("reportMethodPurityOverride"),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
+            check_missing_callable_signature: flag("checkMissingCallableSignature"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
             precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
@@ -262,7 +271,10 @@ impl Project {
             unused_label: false,
             switch_condition: false,
             sort_without_effect: false,
+            check_non_stringable_dynamic_access: false,
+            report_method_purity_override: false,
             check_uninitialized_properties: false,
+            check_missing_callable_signature: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
             precise_unused_parameter_line: false,

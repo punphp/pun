@@ -442,12 +442,50 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     /// A function or method body: a fresh scope (the constructor's remembered guards in a method).
-    pub(super) fn enter_function(&mut self, guards: Vec<Guard>) {
+    pub(super) fn enter_function(&mut self, mut guards: Vec<Guard>) {
+        // the narrowed `PHP_VERSION_ID` carries into a function or class declared in the branch
+        guards.extend(self.guards.iter().filter(|g| matches!(g, Guard::PhpVersion(..))).cloned());
         self.saved.push(Saved {
             guards: std::mem::replace(&mut self.guards, guards),
             marks: std::mem::take(&mut self.marks),
             vars: std::mem::take(&mut self.vars),
         });
+    }
+
+    /// `MutatingScope::getPhpVersion()`: the range a `PHP_VERSION_ID` guard leaves (bounds inclusive), `None` for
+    /// the configured version when none narrows it below ConstantResolver::PHP_MIN_ANALYZABLE_VERSION_ID or bounds it.
+    fn php_versions(&self) -> Option<(i64, Option<i64>)> {
+        const MIN: i64 = 50207;
+        match version_range(&self.guards) {
+            Some((lo, hi)) if lo.is_some_and(|l| l > MIN) || hi.is_some() => Some((lo.unwrap_or(MIN).max(MIN), hi)),
+            _ => None,
+        }
+    }
+
+    /// `$scope->getPhpVersion()->...->yes()` for a feature of PHP `version` and later (an empty range is never, which
+    /// every version range contains).
+    pub(super) fn surely_at_least(&self, version: i64) -> bool {
+        match self.php_versions() {
+            Some((lo, hi)) => lo >= version || hi.is_some_and(|h| h < lo),
+            None => i64::from(self.php_version) >= version,
+        }
+    }
+
+    /// `$scope->getPhpVersion()->...->yes()` for a feature PHP `version` removed.
+    pub(super) fn surely_below(&self, version: i64) -> bool {
+        match self.php_versions() {
+            Some((lo, hi)) => hi.is_some_and(|h| h < version || h < lo),
+            None => i64::from(self.php_version) < version,
+        }
+    }
+
+    /// `$scope->getPhpVersion()->...()->no()` for a feature of PHP `version` and later: false only when every
+    /// version the narrowed `PHP_VERSION_ID` allows is older.
+    pub(super) fn may_be_at_least(&self, version: i64) -> bool {
+        match self.php_versions() {
+            Some((lo, hi)) => hi.is_none_or(|h| h >= version || h < lo),
+            None => i64::from(self.php_version) >= version,
+        }
     }
 
     pub(super) fn leave_function(&mut self) {

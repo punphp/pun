@@ -1309,13 +1309,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/throws-void-function" = { preset = "essential", status = "decided" }
 "types/throws-void-hook" = { preset = "essential", status = "decided" }
 "types/throws-void-method" = { preset = "essential", status = "decided" }
-"types/too-wide-arrow-function-return" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-return-type"], status = "decided" }
-"types/too-wide-closure-return" = { preset = "recommended", status = "decided" }
+"types/too-wide-arrow-function-return" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-unused-return-type"], status = "decided" }
+"types/too-wide-closure-return" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-function-param-out" = { preset = "recommended", status = "decided" }
-"types/too-wide-function-return" = { preset = "recommended", status = "decided" }
+"types/too-wide-function-return" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-method-param-out" = { preset = "recommended", status = "decided" }
-"types/too-wide-method-return" = { preset = "recommended", status = "decided" }
-"types/too-wide-property" = { preset = "recommended", status = "decided" }
+"types/too-wide-method-return" = { preset = "recommended", ported = true, status = "decided" }
+"types/too-wide-property" = { preset = "recommended", ported = true, status = "decided" }
 "types/unpack-non-iterable" = { preset = "essential", ported = true, status = "decided" }
 "types/unpack-string-key" = { preset = "essential", ported = true, status = "decided" }
 "types/unused-hook-throws-type" = { preset = "recommended", status = "decided" }

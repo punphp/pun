@@ -67,7 +67,19 @@ pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> N
                 .templates
                 .insert(t.name.clone(), Type::Template(Box::new(t)));
         }
-        scope.templates.extend(super::type_aliases::class_aliases(c, k));
+        // a trait's PHPDoc in a using class's context has the trait's aliases
+        let owner = c
+            .in_trait()
+            .and_then(|t| c.codebase.get_class_like(t.as_bytes()))
+            .filter(|t| {
+                t.span.file_id == span.file_id
+                    && t.span.start.offset <= span.start.offset
+                    && span.end.offset <= t.span.end.offset
+            });
+        scope.templates.extend(match owner {
+            Some(t) => super::type_aliases::class_aliases(c, t, Some(k)),
+            None => super::type_aliases::class_aliases(c, k, None),
+        });
     }
     scope
 }
@@ -267,22 +279,7 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
 /// `getType()` of each parameter of a function-like from the codex (a callee in any file): its native type decided
 /// with its PHPDoc type (a method's inherited one too), `declaring` being the class-like declaring a method.
 pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Vec<Type> {
-    let doc = match declaring {
-        Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),
-        None => doc_at(c, f.span).map(|(doc, _)| {
-            let doc = Doc::parse(&doc);
-            let mut scope = scope_at(c, f.span, None);
-            let name = text(f.original_name.as_bytes());
-            for t in templates(&doc, &scope, &format!("function {name}()")) {
-                scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
-            }
-            Resolved {
-                params: doc.param_types(&scope).into_iter().map(|(k, (t, _))| (k, t)).collect(),
-                ..Resolved::default()
-            }
-        }),
-    }
-    .unwrap_or_default();
+    let doc = codex_doc(c, f, declaring);
     f.parameters
         .iter()
         .map(|p| {
@@ -313,6 +310,37 @@ pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&Cl
             }
         })
         .collect()
+}
+
+/// The `@param-closure-this` types of a function-like from the codex by parameter name (a method's inherited ones too).
+pub fn codex_closure_this(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> HashMap<String, Type> {
+    codex_doc(c, f, declaring).closure_this
+}
+
+/// The PHPDoc return type of a function-like from the codex (a method's inherited one too).
+pub fn codex_return(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Option<Type> {
+    codex_doc(c, f, declaring).ret
+}
+
+fn codex_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Resolved {
+    match declaring {
+        Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),
+        None => doc_at(c, f.span).map(|(doc, _)| {
+            let doc = Doc::parse(&doc);
+            let mut scope = scope_at(c, f.span, None);
+            let name = text(f.original_name.as_bytes());
+            for t in templates(&doc, &scope, &format!("function {name}()")) {
+                scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
+            }
+            Resolved {
+                params: doc.param_types(&scope).into_iter().map(|(k, (t, _))| (k, t)).collect(),
+                ret: doc.return_type(&scope),
+                closure_this: Doc::named_types(&doc.closure_this, &scope),
+                ..Resolved::default()
+            }
+        }),
+    }
+    .unwrap_or_default()
 }
 
 /// `TypehintHelper::decideTypeFromReflection()` of a native type declaration Mago's codex holds (the `TUnion` its
@@ -401,6 +429,49 @@ struct Resolved {
     self_out: Option<Type>,
     /// the asserted parameters (without `$`)
     asserts: Vec<String>,
+    /// `isPure()`: `@pure` (and its aliases) or `@impure`
+    pure: Option<bool>,
+    /// `@pure-unless-callable-is-impure` and `@pure-unless-parameter-passed` parameters
+    pure_unless_callable: Vec<String>,
+    pure_unless_passed: Vec<String>,
+}
+
+/// The parameters (without `$`) the tags `names` name.
+fn tagged_params(raw: &[u8], names: &[&str]) -> Vec<String> {
+    let raw = String::from_utf8_lossy(raw);
+    raw.lines()
+        .filter_map(|l| {
+            let mut words = l.trim_start().trim_start_matches('*').split_whitespace();
+            names.contains(&words.next()?).then(|| words.next()?.strip_prefix('$').map(str::to_string)).flatten()
+        })
+        .collect()
+}
+
+/// `isPure()` of method `name` declared in user class `class` (PhpClassReflectionExtension and PhpDocsResolver): its
+/// resolved PHPDoc's `@pure`/`@impure`, else the class's `@phpstan-all-methods-pure` (not on a method returning
+/// `void`) or `@phpstan-all-methods-impure`; with whether `getPureUnlessCallableIsImpureParameters()` and
+/// `getPureUnlessParameterPassedParameters()` are not empty.
+pub(super) fn method_purity(c: &Checker, class: &ClassLikeMetadata, name: &[u8]) -> (Option<bool>, bool, bool) {
+    let lower = name.to_ascii_lowercase();
+    let doc = method_doc(c, class, &lower, 0).unwrap_or_default();
+    let mut pure = doc.pure;
+    if pure.is_none() {
+        let tags = doc_at(c, class.span).map(|(raw, _)| super::declarations::doc_tags(&raw)).unwrap_or_default();
+        let void = |t: Option<&Type>| t.is_some_and(|t| t.is_void().yes());
+        let native = c
+            .codebase
+            .get_method(class.name.as_bytes(), &lower)
+            .and_then(|m| m.return_type_declaration_metadata.as_ref())
+            .is_some_and(|t| t.type_union.is_void());
+        if tags.iter().any(|t| t == "@phpstan-all-methods-pure") {
+            if lower == b"__construct" || (!void(doc.ret.as_ref()) && !native) {
+                pure = Some(true);
+            }
+        } else if tags.iter().any(|t| t == "@phpstan-all-methods-impure") {
+            pure = Some(false);
+        }
+    }
+    (pure, !doc.pure_unless_callable.is_empty(), !doc.pure_unless_passed.is_empty())
 }
 
 /// The own PHPDoc of method `m` declared in `class`, `self` being `context`.
@@ -437,6 +508,18 @@ fn resolved_own(
         closure_this: Doc::named_types(&doc.closure_this, &scope),
         self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
         asserts: super::assert_tags::parameters(&raw),
+        pure: {
+            let tags = super::declarations::doc_tags(&raw);
+            if super::declarations::has_tag(&tags, &["@pure", "@phan-pure", "@phan-side-effect-free", "@psalm-pure", "@phpstan-pure"]) {
+                Some(true)
+            } else if super::declarations::has_tag(&tags, &["@impure", "@phpstan-impure"]) {
+                Some(false)
+            } else {
+                None
+            }
+        },
+        pure_unless_callable: tagged_params(&raw, &["@pure-unless-callable-is-impure", "@phpstan-pure-unless-callable-is-impure"]),
+        pure_unless_passed: tagged_params(&raw, &["@pure-unless-parameter-passed", "@phpstan-pure-unless-parameter-passed"]),
     })
 }
 
@@ -518,6 +601,16 @@ fn inherit(
         }
         // (a PHPDoc at all: `getResolvedPhpDoc() !== null`)
         let parent_doc = method_doc(c, declaring.0, &lower, depth + 1)?;
+        let parent_doc = {
+            let map = |t: Type| ancestor_types(class, declaring.0, &t);
+            Resolved {
+                params: parent_doc.params.into_iter().map(|(k, t)| (k, map(t))).collect(),
+                ret: parent_doc.ret.map(map),
+                outs: parent_doc.outs.into_iter().map(|(k, t)| (k, map(t))).collect(),
+                closure_this: parent_doc.closure_this.into_iter().map(|(k, t)| (k, map(t))).collect(),
+                ..parent_doc
+            }
+        };
         Some(merge(
             current.clone(),
             parent_doc,
@@ -591,6 +684,32 @@ fn declaring_method<'c>(
 
 /// `ResolvedPhpDocBlock::merge()` of the parameter and return tags: the parent's tags fill what `current` lacks,
 /// with the parent's parameter names mapped to the child's by position.
+/// `resolveTemplateTypeInTag()`: an inherited PHPDoc type `t` of ancestor `declaring`, with its templates as
+/// `class`'s `@extends`/`@implements` tags (or their defaults) give them.
+fn ancestor_types(class: &ClassLikeMetadata, declaring: &ClassLikeMetadata, t: &Type) -> Type {
+    let (Some(k), Some(d)) = (symbols::lookup(&original_name(class)), symbols::lookup(&original_name(declaring))) else {
+        return t.clone();
+    };
+    let Some(args) = k.generics.get(&d.name) else {
+        return t.clone();
+    };
+    let args: Vec<Type> = args.iter().map(|s| pun_phpstan::resolve::resolve_str(s, Some(&k.name))).collect();
+    let scope = format!("class {}", d.name);
+    fn map(t: &Type, scope: &str, d: &symbols::Class, args: &[Type]) -> Type {
+        match t {
+            Type::Template(tpl) if tpl.scope == scope => d
+                .templates
+                .iter()
+                .position(|x| x.name == tpl.name)
+                .and_then(|i| args.get(i))
+                .cloned()
+                .unwrap_or_else(|| t.clone()),
+            _ => t.traverse(&|i| map(i, scope, d, args)),
+        }
+    }
+    map(t, &scope, &d, &args)
+}
+
 fn merge(
     current: Option<Resolved>,
     parent: Resolved,
@@ -637,6 +756,20 @@ fn merge(
     for (name, ty) in parent.closure_this {
         out.closure_this.entry(rename(name)).or_insert_with(|| types(ty));
     }
+    // `mergePureTags()`, `mergeParamsPureUnless*()`
+    out.pure = out.pure.or(parent.pure);
+    for name in parent.pure_unless_callable {
+        let name = rename(name);
+        if !out.pure_unless_callable.contains(&name) {
+            out.pure_unless_callable.push(name);
+        }
+    }
+    for name in parent.pure_unless_passed {
+        let name = rename(name);
+        if !out.pure_unless_passed.contains(&name) {
+            out.pure_unless_passed.push(name);
+        }
+    }
     out
 }
 
@@ -677,6 +810,9 @@ pub fn method_scope(
                 .insert(t.name.clone(), Type::Template(Box::new(t)));
         }
     }
+    if k.name.as_bytes().starts_with(b"{anonymous-class:") {
+        enclosing_templates(c, m.span(), &mut scope);
+    }
     let method = text(m.name.value);
     for t in templates(
         doc,
@@ -688,6 +824,34 @@ pub fn method_scope(
             .insert(t.name.clone(), Type::Template(Box::new(t)));
     }
     scope
+}
+
+/// FileTypeMapper's template map stack: an anonymous class's members see the templates of the function or method
+/// it is declared in (the innermost walked one around `at`).
+fn enclosing_templates(c: &Checker, at: Span, scope: &mut NameScope) {
+    let Some(i) = c
+        .var_tag_functions
+        .iter()
+        .rposition(|f| f.start.offset < at.start.offset && at.end.offset <= f.end.offset)
+    else {
+        return;
+    };
+    let (span, function) = (c.var_tag_functions[i], &c.functions[i]);
+    let Some(doc) = doc_before(&c.file.contents, span.start.offset as usize) else {
+        return;
+    };
+    let described = match function.kind {
+        super::FunctionScopeKind::Method { .. } => {
+            // (the class around the anonymous one)
+            let class = c.classes.iter().rev().nth(1).and_then(|k| k.name.as_deref()).unwrap_or_default();
+            let class = c.codebase.get_class_like(class.as_bytes()).map_or_else(|| class.to_string(), original_name);
+            format!("method {class}::{}()", function.name)
+        }
+        super::FunctionScopeKind::Function => format!("function {}()", function.name),
+    };
+    for t in templates(&Doc::parse(doc), scope, &described) {
+        scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
+    }
 }
 
 /// The `NameScope` of function `f`'s own PHPDoc `doc`, with its templates.
@@ -772,6 +936,7 @@ fn method_resolved(c: &Checker, m: &Method, k: &ClassLikeMetadata, context: &Cla
             closure_this: Doc::named_types(&doc.closure_this, &scope),
             self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
             asserts: super::assert_tags::parameters(raw),
+            ..Resolved::default()
         }
     });
     let positional: Vec<String> = m
@@ -811,7 +976,7 @@ fn function_resolved(c: &Checker, f: &Function) -> Resolved {
                 outs: Doc::named_types(&doc.outs, &scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
                 self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-                asserts: Vec::new(),
+                ..Resolved::default()
             }
         })
         .unwrap_or_default()
@@ -1020,7 +1185,9 @@ fn inherited_property_doc(
                 .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
         }
         let own = own_property_doc(c, declaring, p, name);
-        return own.or_else(|| inherited_property_doc(c, declaring, name, depth + 1));
+        return own
+            .or_else(|| inherited_property_doc(c, declaring, name, depth + 1))
+            .map(|t| ancestor_types(class, declaring, &t));
     }
     None
 }

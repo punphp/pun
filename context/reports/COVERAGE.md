@@ -10,15 +10,14 @@
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 18425 | 18425 | 100.00% | ok |
-| punphp-phpstan | 7192 | 7163 | 99.60% | ok |
+| punphp-phpstan | 9011 | 9011 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
 
 Uncovered lines:
 
-- `crates/pun-analyse/src/rules/dead_code/conditions.rs` 99.92% (1 lines): 1436
-- `crates/pun-phpstan/src/types.rs` 98.83% (29 lines): 2321, 2927-2929, 2940, 2973-2976, 3023, 3026, 3031, 3097, 3131, 3137, 3277, 3303, 3314, 3333, 3358-3367
+- none
 <!-- coverage:end -->
 
 ## Exclusions

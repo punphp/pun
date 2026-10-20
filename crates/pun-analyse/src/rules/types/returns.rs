@@ -14,12 +14,12 @@ pub const IDENTIFIERS: &[&str] = &["return.type", "return.empty", "return.void"]
 
 /// A body's own `return` statements (not those of nested functions and classes) and whether it yields.
 #[derive(Default)]
-struct Returns<'ast, 'arena> {
-    returns: Vec<&'ast Return<'arena>>,
+pub(super) struct Returns<'ast, 'arena> {
+    pub(super) returns: Vec<&'ast Return<'arena>>,
     yields: Vec<&'ast Yield<'arena>>,
     /// The expressions that are statements.
     statements: Vec<Span>,
-    generator: bool,
+    pub(super) generator: bool,
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Returns<'ast, 'arena> {
@@ -43,7 +43,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Returns<'ast, 'arena> {
     fn walk_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {}
 }
 
-fn returns<'ast, 'arena>(b: &'ast Block<'arena>) -> Returns<'ast, 'arena> {
+pub(super) fn returns<'ast, 'arena>(b: &'ast Block<'arena>) -> Returns<'ast, 'arena> {
     let mut r = Returns::default();
     for s in b.statements.iter() {
         r.walk_statement(s, &mut ());

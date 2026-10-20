@@ -573,7 +573,7 @@ pub fn check<'a>(
             c.report_non_ignorable(arg.span, "argument.unpackAfterNamed", message, None);
         }
         // PHP 8.1 allows a named argument after an unpacked one
-        if has_unpacked && arg.unpack.is_none() && (arg.name.is_none() || c.php_version < 80100) {
+        if has_unpacked && arg.unpack.is_none() && (arg.name.is_none() || !c.surely_at_least(80100)) {
             let message = "Unpacked argument (...) cannot be followed by a non-unpacked argument.".to_string();
             c.report_non_ignorable(arg.span, "argument.nonUnpackAfterUnpacked", message, None);
         }
@@ -601,7 +601,7 @@ pub fn check<'a>(
             }
         }
     }
-    if has_named && c.php_version < 80000 && call.kind != CallKind::Attribute {
+    if has_named && !c.surely_at_least(80000) && call.kind != CallKind::Attribute {
         let message = "Named arguments are supported only on PHP 8.0 and later.".to_string();
         c.report_non_ignorable(at, "argument.namedNotSupported", message, None);
     }
@@ -645,7 +645,7 @@ pub fn check<'a>(
     }
     let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
     if c.level >= 5 {
-        super::types::arguments(c, acceptor, &arguments, &parameters, &call);
+        super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call);
     }
 }
 

@@ -53,7 +53,7 @@ pub(super) fn typed_expressions<'arena>(
                 "printf" | "sprintf" => &[0],
                 "sscanf" | "fscanf" => &[1],
                 "vprintf" | "vsprintf" => &[0, 1],
-                "filter_var" => &[2],
+                "filter_var" | "filter_input" | "filter_var_array" | "filter_input_array" => &[0, 1, 2, 3],
                 _ => &[],
             };
             self.spans.extend(
@@ -101,14 +101,18 @@ pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
                 );
             }
         }
-        "filter_var" => filter_var(c, call),
+        "filter_var" => filter_var(c, call, 2, false),
+        "filter_input" => filter_var(c, call, 3, false),
+        "filter_var_array" | "filter_input_array" => filter_var(c, call, 1, true),
         _ => {}
     }
 }
 
-/// FilterVarRule: flags that hold both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE (PHP 8.5's).
-fn filter_var(c: &mut Checker, call: &FunctionCall) {
-    let Some(flags) = call.argument_list.arguments.get(2) else {
+/// FilterVarRule: flags that hold both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE (PHP 8.5's), in the $options
+/// argument at `position` (FilterFunctionFlagsHelper::getFlagsTypes()); the array variants take a filter specification
+/// per input key, and an integer there is the filter id, without flags.
+fn filter_var(c: &mut Checker, call: &FunctionCall, position: usize, per_key: bool) {
+    let Some(options) = super::types::regex::argument(call, position, "options") else {
         return;
     };
     if c.php_version < 80500 {
@@ -118,23 +122,30 @@ fn filter_var(c: &mut Checker, call: &FunctionCall) {
         c.builtins.constants.get(name).and_then(|v| v.parse::<i64>().ok()).expect("a PHP 8.5 filter constant")
     };
     let (null, throw) = (constant("FILTER_NULL_ON_FAILURE"), constant("FILTER_THROW_ON_FAILURE"));
-    // hasFlag(): yes when every constant value has the flag, maybe without constant values
-    let Some(values) = flag_values(c, flags.value()) else {
-        return;
+    let flags: Vec<&Expression> = match options {
+        Expression::Array(Array { elements, .. }) if per_key => elements.iter().filter_map(ArrayElement::get_value).collect(),
+        _ if per_key && c.type_of(options).is_some_and(|t| !t.types.iter().any(|t| matches!(t, TAtomic::Array(_) | TAtomic::Mixed(_)))) => vec![],
+        _ => vec![options],
     };
-    if values.iter().all(|v| v & null == null && v & throw == throw) {
-        c.report(
-            call,
-            "filterVar.nullOnFailureAndThrowOnFailure",
-            "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.".to_string(),
-            None,
-        );
+    for flags in flags {
+        // hasFlag(): yes when every constant value has the flag, maybe without constant values
+        if let Some(values) = flag_values(c, flags)
+            && values.iter().all(|v| v & null == null && v & throw == throw)
+        {
+            c.report(
+                call,
+                "filterVar.nullOnFailureAndThrowOnFailure",
+                "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.".to_string(),
+                None,
+            );
+            return;
+        }
     }
 }
 
 /// The constant integer values of `getFlagsValue()` of a flags argument: Mago's inferred integers, else (for the
-/// constants Mago's prelude lacks, like PHP 8.5's FILTER_THROW_ON_FAILURE) the literals, built-in constants and `|`
-/// written, or an array's `flags` item (0 without one).
+/// constants Mago's prelude lacks) the built-in constants and `|` written, or an array's `flags` item (0 without
+/// one).
 fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
     let inferred = c.type_of(e).and_then(|t| {
         t.types
@@ -149,8 +160,6 @@ fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
         return inferred;
     }
     match e {
-        Expression::Parenthesized(p) => flag_values(c, p.expression),
-        Expression::Literal(Literal::Integer(i)) => Some(vec![i64::try_from(i.value?).ok()?]),
         Expression::ConstantAccess(a) => {
             let name = String::from_utf8_lossy(a.name.value()).trim_start_matches('\\').to_string();
             Some(vec![c.builtins.constants.get(&name)?.parse().ok()?])
@@ -242,7 +251,7 @@ fn check_printf(c: &mut Checker, at: impl HasSpan, format: &Expression, name: &s
             if scanf {
                 printf_helper::scanf_count(format)
             } else {
-                printf_helper::printf_count(format, c.php_version)
+                printf_helper::printf_count(format, c.surely_at_least(80000))
             }
         })
         .collect();
@@ -312,7 +321,7 @@ fn vprintf(
         return;
     };
     let counts: Option<Vec<_>> = strings(ty)
-        .map(|format| printf_helper::printf_count(format, c.php_version))
+        .map(|format| printf_helper::printf_count(format, c.surely_at_least(80000)))
         .collect();
     let Some(counts) = counts else {
         invalid_placeholder(c, at, name);

@@ -701,7 +701,7 @@ pub fn check<'arena>(
     let of = kind.named();
     let subject = kind.subject();
     let params: Vec<&FunctionLikeParameter> = parameters.parameters.iter().collect();
-    if c.php_version < 80000 {
+    if !c.surely_at_least(80000) {
         // (a hook's message starts lowercase, but PHPStan's parser rejects hooks before PHP 8.4)
         let message = format!(
             "{subject} uses native union types but they're supported only on PHP 8.0 and later."
@@ -845,25 +845,93 @@ pub fn phpdoc_classes(
     return_type: Option<&FunctionLikeReturnTypeHint>,
     types: &super::declared::PhpDocTypes,
 ) {
+    let params = parameters
+        .parameters
+        .iter()
+        .map(|p| (String::from_utf8_lossy(&p.variable.name[1..]).into_owned(), p.span()))
+        .collect();
+    phpdoc_classes_at(c, kind, params, return_type.map_or(at, |r| r.hint.span()), types);
+}
+
+/// [`phpdoc_classes()`] of parameters (name without `$`, node) and a return type at `ret_at`.
+fn phpdoc_classes_at(
+    c: &mut Checker,
+    kind: FunctionKind,
+    params: Vec<(String, Span)>,
+    ret_at: Span,
+    types: &super::declared::PhpDocTypes,
+) {
     let (of, subject) = (kind.named(), kind.subject());
-    let report = |c: &mut Checker, at: Span, types: &[Type], trait_id: &str, message: &dyn Fn(&str) -> String| {
+    // then ClassCaseSensitivityCheck on the same classes, at the parameter or the return type
+    let report = |c: &mut Checker,
+                  at: Span,
+                  types: &[Type],
+                  trait_id: &str,
+                  message: &dyn Fn(&str) -> String,
+                  location: Option<super::class_names::Location>| {
         // (no class name has a `-`: a keyword type the resolver leaves, such as an unresolved `value-of`)
-        for class in types.iter().flat_map(super::generics::referenced_classes).filter(|n| !n.contains('-')) {
-            let identifier = match known(c, &class) {
+        let classes: Vec<String> =
+            types.iter().flat_map(super::generics::referenced_classes).filter(|n| !n.contains('-')).collect();
+        for class in &classes {
+            let identifier = match known(c, class) {
                 None => "class.notFound",
                 Some(Known::User(k)) if k.kind == mago_codex::symbol::SymbolKind::Trait => trait_id,
                 Some(_) => continue,
             };
-            c.report(at, identifier, message(&class), None);
+            c.report(at, identifier, message(class), None);
         }
+        let pairs: Vec<Pair> = classes.into_iter().map(|class| Pair::node(class, at)).collect();
+        let case = c.case_sensitivity;
+        class_names::check_at(c, &pairs, location.as_ref(), case);
     };
-    for p in parameters.parameters.iter() {
-        let name = String::from_utf8_lossy(&p.variable.name[1..]).into_owned();
+    for (name, at) in params {
         let types = types.params.get(&name).map_or(&[][..], Vec::as_slice);
-        report(c, p.span(), types, "parameter.trait", &|class| format!("Parameter ${name} of {of} has invalid type {class}."));
+        let location = super::names::location_function(c, kind).map(|function| super::class_names::Location::ParameterType {
+            parameter: name.clone(),
+            function,
+        });
+        report(c, at, types, "parameter.trait", &|class| format!("Parameter ${name} of {of} has invalid type {class}."), location);
     }
-    let at = return_type.map_or(at, |r| r.hint.span());
-    report(c, at, types.ret.as_slice(), "return.trait", &|class| format!("{subject} has invalid return type {class}."));
+    let location = super::names::location_function(c, kind).map(super::class_names::Location::ReturnType);
+    report(c, ret_at, types.ret.as_slice(), "return.trait", &|class| format!("{subject} has invalid return type {class}."), location);
+}
+
+/// [`phpdoc_classes()`] of property `name`'s hooks (ExistingClassesInPropertyHookTypehintsRule): a get hook returns
+/// the property's PHPDoc type, a set hook's parameter has its own `@param` type, else the property's. `decl` is
+/// where the property's PHPDoc is read from.
+pub fn hook_phpdoc_classes(c: &mut Checker, name: &[u8], list: &PropertyHookList, decl: Span) {
+    if c.level < 2 {
+        return;
+    }
+    let (context, display) = c.member_scope();
+    let property = String::from_utf8_lossy(&name[1..]).into_owned();
+    let var = super::declared::with_classes(c, || super::declared::property(c, None, decl, &name[1..], context));
+    for hook in list.hooks.iter() {
+        let hook_name = String::from_utf8_lossy(hook.name.value).to_ascii_lowercase();
+        let kind = FunctionKind::Hook(&display, &property, &hook_name);
+        let mut types = super::declared::PhpDocTypes { params: HashMap::new(), ret: None };
+        let params = if hook_name == "set" {
+            let (param, at) = hook
+                .parameter_list
+                .as_ref()
+                .and_then(|l| l.parameters.first())
+                .map_or(("value".to_string(), hook.span()), |p| {
+                    (String::from_utf8_lossy(&p.variable.name[1..]).into_owned(), p.span())
+                });
+            let own = doc_before(&c.file.contents, hook.span().start.offset as usize).and_then(|doc| {
+                let scope = super::declared::scope_at(c, hook.span(), Some(context));
+                super::declared::with_classes(c, || {
+                    super::doc::Doc::parse(doc).param_types(&scope).remove(&param).map(|(t, _)| t)
+                })
+            });
+            types.params.insert(param.clone(), vec![own.unwrap_or_else(|| var.clone())]);
+            vec![(param, at)]
+        } else {
+            types.ret = Some(var.clone());
+            Vec::new()
+        };
+        phpdoc_classes_at(c, kind, params, hook.span(), &types);
+    }
 }
 
 /// checkClassMethod()'s `@phpstan-self-out` classes.
@@ -1004,7 +1072,7 @@ fn required_after_optional(c: &mut Checker, params: &[&FunctionLikeParameter]) {
 
 /// ExistingClassesInArrowFunctionTypehintsRule: a `never` return type before PHP 8.2.
 pub fn arrow_never(c: &mut Checker, f: &ArrowFunction) {
-    if c.php_version < 80200
+    if !c.surely_at_least(80200)
         && matches!(
             f.return_type_hint.as_ref().map(|r| &r.hint),
             Some(Hint::Never(_))

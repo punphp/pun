@@ -166,7 +166,7 @@ fn concat(c: &Checker, e: &Expression) -> Vec<Vec<u8>> {
 
 /// `ArgumentsNormalizer::reorderFuncArguments()`'s argument for parameter `index` named `parameter`.
 // ponytail: positional or named, not unpacked arguments
-fn argument<'a, 'arena>(call: &'a FunctionCall<'arena>, index: usize, parameter: &str) -> Option<&'a Expression<'arena>> {
+pub(in crate::rules) fn argument<'a, 'arena>(call: &'a FunctionCall<'arena>, index: usize, parameter: &str) -> Option<&'a Expression<'arena>> {
     let args = &call.argument_list.arguments;
     args.iter()
         .find(|a| matches!(a, Argument::Named(n) if n.name.value == parameter.as_bytes()))

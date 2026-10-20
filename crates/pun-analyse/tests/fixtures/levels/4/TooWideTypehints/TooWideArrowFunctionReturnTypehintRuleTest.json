@@ -1,0 +1,71 @@
+{
+    "test": "TooWideTypehints/TooWideArrowFunctionReturnTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "TooWideTypehints/data/tooWideArrowFunctionReturnType.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 10,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"fn(): \\Generator => yield 1\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 12,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"fn(): ?string => null\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"fn(): ?string => 'foo'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 14,
+                    "identifier": "return.unusedType",
+                    "message": "Anonymous function never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 16,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"fn(): ?string => $nullableString\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 22,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 23,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between int and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideArrowFunctionReturnType.php",
+                    "line": 23,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_reduce() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

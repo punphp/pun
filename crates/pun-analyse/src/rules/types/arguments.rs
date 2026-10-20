@@ -2,15 +2,21 @@
 //! each argument's type against its parameter's (`argument.type`), by-reference parameters given no variable
 //! (`argument.byRef`) and unpacked non-iterables (`argument.unpackNonIterable`).
 
+use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_span::Span;
 use pun_phpstan::symbols::ByRef;
-use pun_phpstan::types::{Type, mixed, recommended_level};
+use pun_phpstan::types::{
+    Conditional, NeverKind, Subject, Template, TemplateMap, Type, infer_template_types, mixed, recommended_level,
+    resolve_template_types, union,
+};
 
-use super::super::params::{Acceptor, ArgKind, Call, Entry, ParamType};
+use super::super::params::{Acceptor, ArgKind, Call, CallKind, Entry, ParamType};
 use super::super::{Checker, declared};
 use super::returns::strict_types;
 
-pub const IDENTIFIERS: &[&str] = &["argument.type", "argument.byRef", "argument.unpackNonIterable"];
+pub const IDENTIFIERS: &[&str] =
+    &["argument.type", "argument.byRef", "argument.unpackNonIterable", "argument.templateType"];
 
 /// `describeParameter()`: `Parameter #1 $a`, `Parameter $a` (named), `Named argument b for variadic parameter ...$a`.
 fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize, &str>>) -> String {
@@ -31,20 +37,27 @@ pub(in super::super) fn declared_type(c: &Checker, acceptor: &Acceptor, p: usize
         ParamType::Builtin(s) => Some(pun_phpstan::resolve::resolve_str(s, acceptor.class.as_deref())),
         ParamType::Typed(t) => Some(t.clone()),
         ParamType::User => {
-            let (class, name) = acceptor.callee.as_ref()?;
-            let (f, declaring) = match class {
-                Some(k) => (c.codebase.get_method(k.as_bytes(), name.as_bytes())?, c.codebase.get_class_like(k.as_bytes())),
-                None => (c.codebase.get_function(name.as_bytes())?, None),
-            };
+            let (f, declaring) = callee(c, acceptor)?;
             // ponytail: computed per argument, not cached per callee
             declared::codex_params(c, f, declaring).into_iter().nth(p)
         }
     }
 }
 
+/// A user callee's codex entry and the class-like declaring it (a method's).
+fn callee<'c>(c: &'c Checker, acceptor: &Acceptor) -> Option<(&'c FunctionLikeMetadata, Option<&'c ClassLikeMetadata>)> {
+    match acceptor.callee.as_ref()? {
+        (Some(k), name) => {
+            Some((c.codebase.get_method(k.as_bytes(), name.as_bytes())?, c.codebase.get_class_like(k.as_bytes())))
+        }
+        (None, name) => Some((c.codebase.get_function(name.as_bytes())?, None)),
+    }
+}
+
 /// A type only the call resolves: a template type (ResolvedFunctionVariant), `static`/`$this` or a conditional type.
 pub(in super::super) fn is_late(t: &Type) -> bool {
-    let late = std::cell::Cell::new(matches!(t, Type::Template(_) | Type::Static(..) | Type::This(_) | Type::Conditional(_)));
+    let late =
+        std::cell::Cell::new(matches!(t, Type::Template(_) | Type::Static(..) | Type::This(_) | Type::Conditional(_)));
     t.traverse(&|i| {
         if matches!(i, Type::Template(_) | Type::Static(..) | Type::This(_) | Type::Conditional(_)) {
             late.set(true);
@@ -55,9 +68,151 @@ pub(in super::super) fn is_late(t: &Type) -> bool {
 }
 
 /// The parameter's type for the check, `None` when it is not checked.
-// ponytail: types resolved per call in PHPStan (see [`is_late()`]) are skipped
-fn parameter_type(c: &Checker, acceptor: &Acceptor, p: usize) -> Option<Type> {
-    declared_type(c, acceptor, p).filter(|t| !is_late(t) && *t != mixed())
+// ponytail: the types resolved per call in PHPStan (see [`is_late()`]) other than the callee's own templates are skipped
+fn parameter_type(resolved: &[Option<Type>], p: usize) -> Option<Type> {
+    resolved[p].clone().filter(|t| !is_late(t) && *t != mixed())
+}
+
+/// `GenericParametersAcceptorResolver::resolve()`: the declared parameter types, the callee's templates in them, the
+/// type passed to each parameter and the templates inferred from those.
+// ponytail: no default values or unpassed variadics take part, nor callables' type predicates
+struct Inference {
+    declared: Vec<Option<Type>>,
+    templates: Vec<Template>,
+    passed: Vec<Option<Type>>,
+    map: TemplateMap,
+}
+
+fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<usize>]) -> Inference {
+    let declared: Vec<Option<Type>> = (0..acceptor.names.len()).map(|p| declared_type(c, acceptor, p)).collect();
+    let templates = std::cell::RefCell::new(Vec::new());
+    fn collect(t: &Type, out: &std::cell::RefCell<Vec<Template>>) {
+        if let Type::Template(tt) = t
+            && is_callees(tt)
+            && !out.borrow().contains(&**tt)
+        {
+            out.borrow_mut().push((**tt).clone());
+        }
+        t.traverse(&|i| {
+            collect(i, out);
+            i.clone()
+        });
+    }
+    declared.iter().flatten().for_each(|t| collect(t, &templates));
+    let templates = templates.into_inner();
+    let mut passed: Vec<Option<Type>> = vec![None; declared.len()];
+    for (e, p) in args.iter().zip(parameters) {
+        if let Some(p) = *p
+            && let Some(t) = c.type_at(e.value)
+        {
+            let t = if e.unpack { t.iterable_value_type() } else { t };
+            passed[p] = Some(passed[p].take().map_or(t.clone(), |o| union(vec![o, t])));
+        }
+    }
+    // an unpassed parameter takes its default value, a variadic one an explicit `never`
+    let callee = callee(c, acceptor);
+    for (p, passed) in passed.iter_mut().enumerate().filter(|(_, t)| t.is_none()) {
+        let default = callee.and_then(|(f, _)| f.parameters.get(p)?.default_type.as_ref());
+        *passed = match default {
+            Some(d) => Some(c.to_phpstan(&d.type_union)),
+            None if acceptor.variadics[p] => Some(Type::Never(NeverKind::Explicit)),
+            None => None,
+        };
+    }
+    let map = if templates.is_empty() {
+        TemplateMap::default()
+    } else {
+        let map = declared.iter().zip(&passed).fold(TemplateMap::default(), |map, (d, a)| match (d, a) {
+            (Some(d), Some(a)) => map.union(declared::with_classes(c, || infer_template_types(d, a))),
+            _ => map,
+        });
+        // a return type conditional on a passed parameter infers from its target too
+        match callee.and_then(|(f, declaring)| declared::codex_return(c, f, declaring)) {
+            Some(Type::Conditional(cond))
+                if !cond.negated
+                    && let Subject::Parameter(name) = &cond.subject
+                    && let Some(Some(a)) = acceptor.names.iter().position(|n| name[1..] == **n).map(|i| &passed[i]) =>
+            {
+                map.union(declared::with_classes(c, || infer_template_types(&cond.target, a)))
+            }
+            _ => map,
+        }
+    };
+    let map = map.with_errors(&templates.iter().collect::<Vec<_>>());
+    Inference { declared, templates, passed, map }
+}
+
+/// A template of the called function-like itself (its class's templates stay unresolved).
+fn is_callees(t: &Template) -> bool {
+    t.scope.starts_with("function ") || t.scope.starts_with("method ")
+}
+
+/// The parameters' types with the callee's templates resolved (an uninferred one by its default or bound).
+fn resolved_types(inference: &Inference) -> Vec<Option<Type>> {
+    let Inference { declared, templates, map, .. } = inference;
+    if templates.is_empty() {
+        return declared.clone();
+    }
+    declared.iter().map(|d| d.as_ref().map(|d| resolve_template_types(d, map))).collect()
+}
+
+/// The `argument.templateType` errors of `checkMissingTypehints` (level 6): a template the call leaves unresolved
+/// (not absorbed by a union member) that both a parameter and the return type use.
+fn unresolvable_templates(c: &Checker, acceptor: &Acceptor, inference: &Inference) -> Vec<String> {
+    let Inference { templates, passed, map, .. } = inference;
+    let Some(ret) = callee(c, acceptor).and_then(|(f, declaring)| declared::codex_return(c, f, declaring)) else {
+        return vec![];
+    };
+    let resolved_to = |t: &Template| {
+        map.types().into_iter().find(|(n, s, _)| *n == t.name && *s == t.scope).map(|(_, _, t)| t.clone())
+    };
+    // `getReturnTypeWithUnresolvableTemplateTypes()`: the resolved templates replaced, the parameters' conditional
+    // types made conditional on the arguments
+    fn resolve(t: &Type, f: &dyn Fn(&Type) -> Option<Type>) -> Type {
+        f(t).unwrap_or_else(|| t.clone()).traverse(&|i| resolve(i, f))
+    }
+    let names = &acceptor.names;
+    let ret = declared::with_classes(c, || {
+        let ret = resolve(&ret, &|t| match t {
+            Type::Template(tt) if is_callees(tt) => resolved_to(tt).filter(|r| *r != Type::Error),
+            _ => None,
+        });
+        resolve(&ret, &|t| match t {
+            Type::Conditional(cond) if let Subject::Parameter(p) = &cond.subject => {
+                let subject = passed[names.iter().position(|n| p[1..] == **n)?].clone()?;
+                Some(Type::Conditional(Box::new(Conditional { subject: Subject::Type(subject), ..(**cond).clone() })))
+            }
+            _ => None,
+        })
+    });
+    let in_return = std::cell::RefCell::new(Vec::new());
+    fn collect(t: &Type, out: &std::cell::RefCell<Vec<String>>) {
+        let mut t = t.clone();
+        while let Type::Conditional(cond) = &t
+            && cond.is_resolvable()
+        {
+            t = cond.resolve();
+        }
+        if let Type::Template(tt) = &t
+            && tt.default.is_none()
+        {
+            out.borrow_mut().push(tt.name.clone());
+            return;
+        }
+        t.traverse(&|i| {
+            collect(i, out);
+            i.clone()
+        });
+    }
+    declared::with_classes(c, || collect(&ret, &in_return));
+    let in_return = in_return.into_inner();
+    templates
+        .iter()
+        .filter(|t| t.default.is_none() && in_return.contains(&t.name))
+        // (an implicit `never` is resolved, so it is in no return type)
+        .filter(|t| resolved_to(t) == Some(Type::Error) && !map.is_absorbed(&t.name, &t.scope))
+        .map(|t| t.name.clone())
+        .collect()
 }
 
 /// `$methodReflection->returnsByReference()->yes()` of method `name` of class `class`.
@@ -74,11 +229,20 @@ impl Checker<'_, '_> {
 }
 
 /// The rest of `check()` after `processArguments()`, `parameters` being each argument's parameter.
-pub(in super::super) fn arguments(c: &mut Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<usize>], call: &Call) {
+pub(in super::super) fn arguments(
+    c: &mut Checker,
+    acceptor: &Acceptor,
+    args: &[Entry],
+    parameters: &[Option<usize>],
+    at: Span,
+    call: &Call,
+) {
     // `%s of function foo expects ...`: the subject with a lowercase first letter
     let of = call.subject[..1].to_ascii_lowercase() + &call.subject[1..];
     let strict = strict_types(c);
     let levels = c.levels();
+    let inference = infer(c, acceptor, args, parameters);
+    let resolved = resolved_types(&inference);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
         if e.unpack {
             let ty = c.type_at(e.value);
@@ -98,22 +262,23 @@ pub(in super::super) fn arguments(c: &mut Checker, acceptor: &Acceptor, args: &[
         let value = c.type_at(e.value).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a built-in's by-reference parameter that creates the variable takes anything
         if (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
-            && let (Some(param), Some(value)) = (parameter_type(c, acceptor, p), value)
+            && let (Some(param), Some(value)) = (parameter_type(&resolved, p), value)
         {
             let strict = strict && (!acceptor.builtin || !param.is_callable().yes());
             let message = declared::with_classes(c, || {
                 (!levels.accepts(&param, &value, strict)).then(|| {
                     let level = recommended_level(&param, Some(&value));
-                    format!(
+                    let message = format!(
                         "{} of {of} expects {}, {} given.",
                         describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))),
                         param.describe(level),
                         value.describe(level)
-                    )
+                    );
+                    (message, levels.accepts_tip(&param, &value, strict))
                 })
             });
-            if let Some(message) = message {
-                c.report(e.span, "argument.type", message, None);
+            if let Some((message, tip)) = message {
+                c.report(e.span, "argument.type", message, tip.as_deref());
             }
         }
         if by_ref == ByRef::No {
@@ -122,7 +287,9 @@ pub(in super::super) fn arguments(c: &mut Checker, acceptor: &Acceptor, args: &[
         let fine = match e.kind {
             ArgKind::Nullsafe | ArgKind::Other => false,
             ArgKind::Writable | ArgKind::OtherCall => true,
-            ArgKind::Function(id) => c.codebase.get_function(c.names.get(id)).is_some_and(|f| f.flags.is_by_reference()),
+            ArgKind::Function(id) => {
+                c.codebase.get_function(c.names.get(id)).is_some_and(|f| f.flags.is_by_reference())
+            }
             // callReturnsByReference(): a method PHPStan does not find returns no reference
             ArgKind::MethodCall(object, Some(name)) => {
                 let class = if c.written(*object) == "$this" {
@@ -146,14 +313,29 @@ pub(in super::super) fn arguments(c: &mut Checker, acceptor: &Acceptor, args: &[
         }
         let parameter = describe(acceptor, p, e.name.is_none().then_some(Ok(i)));
         let message = match call.kind {
-            super::super::params::CallKind::New => {
+            CallKind::New => {
                 format!(" {parameter} of {of} is passed by reference, so it expects variables only")
             }
-            super::super::params::CallKind::Attribute => {
+            CallKind::Attribute => {
                 format!("{parameter} of {of} is passed by reference, so it expects variables only")
             }
-            _ => format!("{parameter} of {of} is passed by reference, so it expects variables only."),
+            _ => {
+                format!("{parameter} of {of} is passed by reference, so it expects variables only.")
+            }
         };
         c.report(e.span, "argument.byRef", message, None);
+    }
+    if c.level >= 6 {
+        let site = match call.kind {
+            CallKind::New | CallKind::Attribute => {
+                format!("instantiation of {}", of.trim_end_matches(" constructor"))
+            }
+            _ => format!("call to {of}"),
+        };
+        for name in unresolvable_templates(c, acceptor, &inference) {
+            let message = format!("Unable to resolve the template type {name} in {site}");
+            let tip = "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type";
+            c.report(at, "argument.templateType", message, Some(tip));
+        }
     }
 }
