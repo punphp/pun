@@ -124,6 +124,7 @@ fn value_type(c: &Checker, t: &TUnion) -> Type {
                                 .return_type
                                 .as_deref()
                                 .map_or_else(mixed, |t| value_type(c, t)),
+                            templates: vec![],
                         });
                         if sig.is_closure {
                             Type::Closure(signature)

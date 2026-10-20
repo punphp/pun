@@ -626,13 +626,32 @@ if (($argv[1] ?? '') === 'probes') {
         $scope = new NameScope('PunProbe', [], $class);
         foreach (['static', 'static<string>', 'self', 'parent', 'Coll', 'Coll<int, string>', 'Child<string>', 'SORT_REGULAR',
             'int-mask-of<SORT_REGULAR|SORT_NUMERIC>', '\\SORT_NUMERIC', 'self::A', 'self::*', 'Child::C', 'Coll::*', 'class-string<static>',
-            'Nope::A', 'Coll::NOPE', 'Defaults<string>', 'Defaults<string, string, string, string>'] as $s) {
+            'Nope::A', 'Coll::NOPE', 'Defaults<string>', 'Defaults<string, string, string, string>', 'value-of<Backed>',
+            'value-of<One>', 'value-of<Suit>', 'value-of<Backed::A>', 'key-of<Backed>', 'key-of<array<int, string>>',
+            'value-of<list<string>>', 'value-of<int>', 'value-of<int, int>', 'pure-callable(): void',
+            'callable<X of self>(X, parent, SORT_REGULAR): static'] as $s) {
             $scoped[] = [$class, $s, $resolver->resolve($s, $scope)->describe(VerbosityLevel::precise())];
         }
     }
     $scope = new NameScope('PunProbe', [], 'PunProbe\\Child', null, $templates);
-    foreach (['T', 'list<U>', 'Coll<T, V>'] as $s) {
+    foreach (['T', 'list<U>', 'Coll<T, V>', 'V<int>', 'U<int>', 'value-of<T>', 'callable<X>(X, T): U',
+        'callable<X of Coll = Child<int>, Y>(X): Y'] as $s) {
         $scoped[] = ['templates', $s, $resolver->resolve($s, $scope)->describe(VerbosityLevel::precise())];
+    }
+    // a KeyOfType / ValueOfType of a template resolved late (`resolve()`), over templates E of BackedEnum, F of
+    // PunProbe\Backed and G of array<int, string>
+    $lateScope = PHPStan\Type\Generic\TemplateTypeScope::createWithFunction('probe');
+    $late = [];
+    foreach (['E' => 'BackedEnum', 'F' => 'PunProbe\\Backed', 'G' => 'array<int, string>'] as $name => $bound) {
+        $late[$name] = PHPStan\Type\Generic\TemplateTypeFactory::create($lateScope, $name, $resolver->resolve($bound, new NameScope(null, [])), PHPStan\Type\Generic\TemplateTypeVariance::createInvariant());
+    }
+    $scope = new NameScope('PunProbe', [], null, null, new PHPStan\Type\Generic\TemplateTypeMap($late));
+    foreach (['value-of<E>', 'key-of<E>', 'value-of<F>', 'key-of<G>', 'value-of<G>'] as $s) {
+        $t = $resolver->resolve($s, $scope);
+        if ($t instanceof PHPStan\Type\LateResolvableType) {
+            $t = $t->resolve();
+        }
+        $scoped[] = ['late', $s, $t->describe(VerbosityLevel::precise())];
     }
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-scope.json', json_encode($scoped, $flags | JSON_PRETTY_PRINT)."\n");
     // isSuperTypeOf() between the project classes: [a, b, result]

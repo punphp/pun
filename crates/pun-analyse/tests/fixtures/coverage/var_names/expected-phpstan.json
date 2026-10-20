@@ -1,0 +1,376 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "vars.php",
+   "line": 12,
+   "identifier": "varTag.misplaced",
+   "message": "PHPDoc tag @var above an interface has no effect.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 17,
+   "identifier": "varTag.misplaced",
+   "message": "PHPDoc tag @var above an enum has no effect.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 20,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 28,
+   "identifier": "varTag.misplaced",
+   "message": "PHPDoc tag @var above a function has no effect.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 35,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 38,
+   "identifier": "varTag.misplaced",
+   "message": "PHPDoc tag @var above a method has no effect.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 44,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $later in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 49,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type string is not subtype of native type array<mixed>.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 52,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type VarNames\\Holder is not subtype of native type $this(VarNames\\Holder).",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 58,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $this in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 67,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var above foreach loop does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 71,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var above foreach loop does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 75,
+   "identifier": "varTag.differentVariable",
+   "message": "Variable $nothing in PHPDoc tag @var does not match any variable in the foreach loop: $list, $key, $first, $second",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 79,
+   "identifier": "varTag.differentVariable",
+   "message": "Variable $x in PHPDoc tag @var does not match any variable in the foreach loop: $value",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 84,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type int is not subtype of native type *NEVER*.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 104,
+   "identifier": "varTag.multipleTags",
+   "message": "Multiple PHPDoc @var tags above single variable assignment are not supported.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 107,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var above assignment does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 110,
+   "identifier": "varTag.differentVariable",
+   "message": "Variable $other in PHPDoc tag @var does not match assigned variable $d.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 116,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $another in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 116,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $other in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 122,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var above assignment does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 131,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var above multiple static variables does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 134,
+   "identifier": "varTag.differentVariable",
+   "message": "Variable $four in PHPDoc tag @var does not match any static variable: $five",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 140,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var above multiple global variables does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 143,
+   "identifier": "varTag.differentVariable",
+   "message": "Variable $g4 in PHPDoc tag @var does not match any global variable: $g5",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 152,
+   "identifier": "varTag.differentVariable",
+   "message": "Variable $k4 in PHPDoc tag @var does not match assigned variable $k3.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 155,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type int is not subtype of native type Throwable.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 170,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 176,
+   "identifier": "varTag.noVariable",
+   "message": "PHPDoc tag @var does not specify variable name.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 182,
+   "identifier": "function.notFound",
+   "message": "Function unknown_function not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "vars.php",
+   "line": 182,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $unknownArg",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 183,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method call() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 183,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $methodArg",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 185,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $k",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 186,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $j",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 191,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $byRef.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 191,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $byValue",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 196,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $outer in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 213,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type int is not subtype of native type Exception.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 213,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type int is not subtype of native type array{}|array{non-empty-string}.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 213,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type int is not subtype of native type null.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 213,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $arrowOnly in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 213,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $methodArg in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 213,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $unknownArg in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 215,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $end in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 225,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $before in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 235,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 247,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $x in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 247,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $y in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 252,
+   "identifier": "varTag.misplaced",
+   "message": "PHPDoc tag @var above a class has no effect.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 259,
+   "identifier": "varTag.misplaced",
+   "message": "PHPDoc tag @var above a method has no effect.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 264,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $value in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "vars.php",
+   "line": 282,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $anything in PHPDoc tag @var does not exist.",
+   "tip": null
+  }
+ ]
+}

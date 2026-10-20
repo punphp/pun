@@ -13,7 +13,7 @@ pub const IDENTIFIERS: &[&str] = &["varTag.unresolvableType", "varTag.trait"];
 
 /// The `NameScope` FileTypeMapper resolves a statement's doc in: the class's, with the templates of the function
 /// or method the statement is in.
-fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
+pub(super) fn scope(c: &Checker, at: Span) -> super::doc::NameScope {
     let k = c.class_scope();
     let mut scope = declared::scope_at(c, at, k);
     let (Some(function), Some(span)) = (c.functions.last(), c.var_tag_functions.last()) else {

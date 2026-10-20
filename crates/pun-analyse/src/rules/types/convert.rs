@@ -59,6 +59,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 })
                 .collect(),
             ret: s.return_type.as_deref().map_or_else(mixed, |t| self.to_phpstan(t)),
+            templates: vec![],
         })
     }
 

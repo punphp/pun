@@ -226,6 +226,8 @@ pub enum Node {
     },
     Callable {
         ident: String,
+        /// `callable<T>(T): T`'s templates
+        templates: Vec<TemplateTag>,
         params: Vec<CallableParam>,
         ret: Box<Node>,
     },
@@ -779,8 +781,9 @@ fn try_parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> Option<No
 }
 
 fn parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> R<Node> {
+    let mut tags = Vec::new();
     if templates {
-        // `parseCallableTemplates()`; ponytail: the templates are dropped
+        // `parseCallableTemplates()`
         t.consume(Tok::OpenAngle)?;
         let mut first = true;
         while first || t.try_consume(Tok::Comma) {
@@ -789,7 +792,7 @@ fn parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> R<Node> {
                 break;
             }
             first = false;
-            parse_template(t, false)?;
+            tags.push(parse_template(t, false)?);
             t.skip_nl();
         }
         t.consume(Tok::CloseAngle)?;
@@ -814,6 +817,7 @@ fn parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> R<Node> {
     let ret = parse_callable_return(t)?;
     Ok(Node::Callable {
         ident: ident.to_string(),
+        templates: tags,
         params,
         ret: Box::new(ret),
     })

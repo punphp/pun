@@ -92,6 +92,39 @@ pub trait Scope {
     }
 }
 
+/// A callable's scope: its own templates over the scope around it (`withTemplateTypeMap()`).
+struct WithTemplates<'a> {
+    outer: &'a dyn Scope,
+    templates: &'a [Template],
+}
+
+impl Scope for WithTemplates<'_> {
+    fn class(&self) -> Option<&str> {
+        self.outer.class()
+    }
+    fn parent(&self) -> Option<String> {
+        self.outer.parent()
+    }
+    fn resolve_name(&self, name: &str) -> String {
+        self.outer.resolve_name(name)
+    }
+    fn constant_names(&self, name: &str) -> Vec<String> {
+        self.outer.constant_names(name)
+    }
+    fn template(&self, name: &str) -> Option<Type> {
+        match self.templates.iter().find(|t| t.name == name) {
+            Some(t) => Some(Type::Template(Box::new(t.clone()))),
+            None => self.outer.template(name),
+        }
+    }
+    fn has_use_alias(&self, name: &str) -> bool {
+        self.outer.has_use_alias(name)
+    }
+    fn in_namespace(&self) -> bool {
+        self.outer.in_namespace()
+    }
+}
+
 /// A scope with only a class (built-in signatures).
 struct ClassOnly<'a>(Option<&'a str>);
 
@@ -203,7 +236,27 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
         })),
         Node::Array(item) => Type::array(mixed(), r(item)),
         Node::Generic { base, args } => generic(base, args, scope),
-        Node::Callable { ident, params, ret } => {
+        Node::Callable {
+            ident,
+            templates,
+            params,
+            ret,
+        } => {
+            let templates: Vec<Template> = templates
+                .iter()
+                .map(|t| Template {
+                    name: t.name.clone(),
+                    scope: "anonymous function".into(),
+                    bound: t.bound.as_ref().map_or_else(mixed, |b| r(b)),
+                    default: t.default.as_ref().map(|d| r(d)),
+                    argument: false,
+                })
+                .collect();
+            let inner = WithTemplates {
+                outer: scope,
+                templates: &templates,
+            };
+            let r = |n: &Node| resolve_in(n, &inner);
             let main = identifier(ident, scope);
             let params: Vec<Param> = params
                 .iter()
@@ -217,10 +270,13 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 .collect();
             // ponytail: a conditional return on the callable's own parameter is a type assertion in PHPStan
             // (`callable(mixed $x): ($x is int ? true : false)`); kept as a plain conditional return here.
-            let sig = Box::new(Signature {
-                params,
-                ret: r(ret),
-            });
+            let ret = r(ret);
+            // ponytail: a pure or static callable keeps no purity or staticness (described as a plain one)
+            let pure = ["pure-callable", "pure-closure", "static-pure-closure"].contains(&ident.to_ascii_lowercase().as_str());
+            if pure && ret == Type::Void {
+                return Type::Error;
+            }
+            let sig = Box::new(Signature { params, ret, templates });
             match main {
                 Type::Callable(_) => Type::Callable(Some(sig)),
                 Type::Object(c, args) if args.is_empty() && c == "Closure" => Type::Closure(sig),
@@ -439,7 +495,8 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "array" | "associative-array" => return Type::array(mixed(), mixed()),
         "non-empty-array" => return accessory(Type::array(mixed(), mixed()), &[A::NonEmptyArray]),
         "iterable" => return Type::Iterable(Box::new(mixed()), Box::new(mixed())),
-        "callable" => return Type::Callable(None),
+        "callable" | "pure-callable" => return Type::Callable(None),
+        "pure-closure" | "static-closure" | "static-pure-closure" => return Type::Object("Closure".into(), vec![]),
         "resource" | "open-resource" | "closed-resource" => return Type::Resource,
         "mixed" => return explicit_mixed(),
         "void" => return Type::Void,
@@ -631,8 +688,51 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             [t] => to_benevolent(t.clone()),
             _ => Type::Error,
         },
+        "key-of" | "value-of" => match types.as_slice() {
+            // ponytail: a KeyOfType/ValueOfType of a template (resolved late) is not modelled; kept as a
+            // `key-of` / `value-of` class the checks skip
+            [t] if crate::types::contains_template(t) => Type::Object(lower.clone(), types),
+            [t] => key_or_value_of(t, lower == "value-of"),
+            _ => Type::Error,
+        },
         _ => generic_object(base, types, scope),
     }
+}
+
+/// `KeyOfType::getResult()` / `ValueOfType::getResult()`: an enum's case values, else the iterable key or value type.
+pub fn key_or_value_of(t: &Type, value: bool) -> Type {
+    if let Type::Template(tt) = t {
+        // (a template's enum cases are its bound's; one bounded by a backed-enum interface has none)
+        let backed = |c: &symbols::Class| {
+            !c.is_enum && (c.name.eq_ignore_ascii_case("BackedEnum") || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case("BackedEnum")))
+        };
+        if value && matches!(&tt.bound, Type::Object(n, _) if symbols::lookup(n).is_some_and(|c| backed(&c))) {
+            return Type::Union(vec![Type::Int, Type::String]);
+        }
+        return key_or_value_of(&tt.bound, value);
+    }
+    let cases = match t {
+        Type::Object(class, _) => symbols::lookup(class)
+            .filter(|c| c.is_enum)
+            .map(|c| (c.case_values.clone(), c.name.clone())),
+        Type::EnumCase(class, case) => symbols::lookup(class).map(|c| {
+            let values = c.case_values.iter().filter(|(n, _)| n == case).cloned().collect();
+            (values, c.name.clone())
+        }),
+        _ => None,
+    };
+    if value && let Some((values, class)) = cases {
+        let mut types: Vec<Type> = values.iter().map(|(_, v)| resolve_str(v, Some(&class))).collect();
+        return match types.len() {
+            0 => Type::Never(NeverKind::Implicit),
+            1 => types.pop().expect("one"),
+            _ => Type::Union(types),
+        };
+    }
+    if t.is_iterable().no() {
+        return Type::Error;
+    }
+    if value { t.iterable_value_type() } else { t.iterable_key_type() }
 }
 
 impl Type {
@@ -661,6 +761,11 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
     let main = identifier(base, scope);
     let class_name = match &main {
         Type::Object(name, _) => name.clone(),
+        // a template's `getObjectClassNames()`: its object bound's class (`T<U>` is `Bound<U>`)
+        Type::Template(t) => match &t.bound {
+            Type::Object(name, _) => name.clone(),
+            _ => return Type::Error,
+        },
         _ => return Type::Error,
     };
     let Some(reflection) = symbols::lookup(&class_name) else {

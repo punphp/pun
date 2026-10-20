@@ -60,6 +60,7 @@ mod operators;
 mod conditional_return;
 mod assert_tags;
 mod phpdoc_types;
+mod var_names;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -102,6 +103,7 @@ pub fn reports(identifier: &str) -> bool {
         || conditional_return::IDENTIFIERS.contains(&identifier)
         || assert_tags::IDENTIFIERS.contains(&identifier)
         || phpdoc_types::IDENTIFIERS.contains(&identifier)
+        || var_names::IDENTIFIERS.contains(&identifier)
 }
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -1115,6 +1117,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class.members.as_slice(),
         );
         self.push_frame(FrameKind::Class);
+        var_names::misplaced(self, class.span(), "a class");
         let decl = self.decl_of(
             class.span(),
             Some(class.name.span),
@@ -1170,6 +1173,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         self.enter_class(Some(self.resolved_span(i.name.span)), i.members.as_slice());
         self.push_frame(FrameKind::Class);
+        var_names::misplaced(self, i.span(), "an interface");
         let decl = self.decl_of(
             i.span(),
             Some(i.name.span),
@@ -1220,6 +1224,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         self.enter_class(Some(self.resolved_span(e.name.span)), e.members.as_slice());
         self.push_frame(FrameKind::Class);
+        var_names::misplaced(self, e.span(), "an enum");
         let decl = self.decl_of(e.span(), Some(e.name.span), SymbolKind::Enum, &[], None);
         self.decls.push(decl);
         enums::sanity(self, e);
@@ -1404,6 +1409,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         generics::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
         self.push_frame(FrameKind::Named);
+        self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, var_names::params(&f.parameter_list), &f.body));
+        var_names::misplaced(self, f.span(), "a function");
         let name = self.resolved_span(f.name.span);
         names::typehints(
             self,
@@ -1479,6 +1486,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         larastan::method(self, m);
         self.larastan_enter_function(&m.parameter_list);
         self.push_frame(FrameKind::Named);
+        if let MethodBody::Concrete(body) = &m.body {
+            self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, var_names::params(&m.parameter_list), body));
+        }
+        var_names::misplaced(self, m.span(), "a method");
         for p in m
             .parameter_list
             .parameters
@@ -1989,7 +2000,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             for hook in h.hook_list.hooks.iter() {
-                phpdoc_types::hook(self, hook, p.hint());
+                phpdoc_types::hook(self, hook, h.item.variable().name, p.hint());
             }
         }
         properties::property(self, p);
@@ -2055,6 +2066,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.syntax.parents.push(syntax::Parent::Closure);
         self.syntax.by_ref.push(f.ampersand.is_some());
         self.push_frame(FrameKind::Anonymous);
+        self.frames.last_mut().expect("pushed").defined =
+            Some(var_names::defined(
+                self,
+                var_names::params(&f.parameter_list)
+                    .chain(f.use_clause.iter().flat_map(|u| u.variables.iter()).map(|u| u.variable.name)),
+                &f.body,
+            ));
         if self.rebound.contains(&f.span()) {
             self.classes.push(ClassScope {
                 name: None,
@@ -2196,6 +2214,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         syntax::function_like_types(self, h.parameter_list.as_ref(), None);
         self.syntax.by_ref.push(h.ampersand.is_some());
         self.push_frame(FrameKind::Named);
+        if let PropertyHookBody::Concrete(PropertyHookConcreteBody::Block(body)) = &h.body {
+            let names: Vec<&[u8]> = match &h.parameter_list {
+                Some(list) => var_names::params(list).collect(),
+                None if h.name.value == b"set" => vec![b"$value"],
+                None => Vec::new(),
+            };
+            self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, names, body));
+        }
     }
     fn walk_out_property_hook(&mut self, _: &'ast PropertyHook<'arena>, _: &mut ()) {
         self.leave_this();

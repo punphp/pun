@@ -149,6 +149,8 @@ pub struct Param {
 pub struct Signature {
     pub params: Vec<Param>,
     pub ret: Type,
+    /// a generic callable's own templates (`callable<T>(T): T`)
+    pub templates: Vec<Template>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -835,6 +837,7 @@ impl Type {
                         sig.as_deref().unwrap_or(&Signature {
                             params: vec![],
                             ret: mixed(),
+                            templates: vec![],
                         }),
                     )
                 },
@@ -930,6 +933,7 @@ impl Type {
                 })
                 .collect(),
             ret: f(&s.ret),
+            templates: s.templates.clone(),
         };
         match self {
             Type::Array(k, v) => Type::array(f(k), f(v)),
@@ -1494,7 +1498,21 @@ fn print_callable(ident: &str, sig: &Signature) -> String {
     } else {
         ret
     };
-    format!("{ident}({}): {ret}", params.join(", "))
+    format!("{ident}{}({}): {ret}", print_templates(sig), params.join(", "))
+}
+
+/// A callable's `<T of Bound = Default, ...>` (its TemplateTagValueNodes, the bound always printed).
+fn print_templates(sig: &Signature) -> String {
+    if sig.templates.is_empty() {
+        return String::new();
+    }
+    let tags: Vec<String> = sig
+        .templates
+        .iter()
+        // (a TemplateTagValueNode of the bound only)
+        .map(|t| format!("{} of {}", t.name, to_phpdoc(&t.bound)))
+        .collect();
+    format!("<{}>", tags.join(", "))
 }
 
 /// `Printer::print($type->toPhpDocNode())`
@@ -1595,7 +1613,7 @@ fn print_callable_named(ident: &str, sig: &Signature) -> String {
         | Type::Closure(_)) => format!("({})", to_phpdoc(r)),
         r => to_phpdoc(r),
     };
-    format!("{ident}({}): {ret}", params.join(", "))
+    format!("{ident}{}({}): {ret}", print_templates(sig), params.join(", "))
 }
 
 impl ConstArray {
@@ -2251,7 +2269,7 @@ impl Conditional {
     }
 }
 
-fn contains_template(t: &Type) -> bool {
+pub(crate) fn contains_template(t: &Type) -> bool {
     let found = std::cell::Cell::new(matches!(t, Type::Template(_)));
     t.traverse(&|x| {
         found.set(found.get() || contains_template(x));
@@ -2303,6 +2321,7 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
                     })
                     .collect(),
                 ret: crate::resolve::resolve_str(&v.ret, None),
+                templates: vec![],
             })
             .collect()
     };
@@ -2325,6 +2344,7 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
         variants.push(Signature {
             params: vec![],
             ret: mixed(),
+            templates: vec![],
         });
     }
     variants
