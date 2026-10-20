@@ -146,3 +146,19 @@ class Exists
 		class_exists('DeadCode\SpecialChecks\Missing');
 	}
 }
+
+class Child extends Open
+{
+	public function doFoo(bool $flag, \DeadCode\SpecialChecks\Unknown $unknown, int $int): void
+	{
+		if ($this instanceof self) {
+		}
+		if ($this instanceof static) {
+		}
+		if ($unknown instanceof $int) {
+		}
+		class_exists($flag ? SomeInterface::class : SomeTrait::class);
+		class_exists($flag ? SomeInterface::class : $int);
+		method_exists($unknown, 'native');
+	}
+}

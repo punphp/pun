@@ -420,7 +420,7 @@ impl Type {
         })
     }
 
-    pub fn is_constant_array(&self) -> Tri {
+    fn is_constant_array(&self) -> Tri {
         if self.is_callable_array() {
             return Tri::Yes;
         }

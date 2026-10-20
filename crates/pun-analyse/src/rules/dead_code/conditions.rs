@@ -727,11 +727,6 @@ fn compare(c: &mut Checker, b: &Binary) {
         // ImpossibleInstanceOfRule: a class name, as ObjectType
         ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![])),
         ("Instanceof", Expression::Self_(_) | Expression::Static(_)) => c.class_scope().map(|k| Type::Object(c.display(k), vec![])),
-        ("Instanceof", Expression::Parent(_)) => c
-            .class_scope()
-            .and_then(|k| k.direct_parent_class)
-            .and_then(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())).found())
-            .map(|k| Type::Object(c.display(k), vec![])),
         _ => c.phpstan_type(b.rhs),
     };
     let (Some(value), Some(left), Some(right)) = (value, c.phpstan_type(b.lhs), right) else {
@@ -1091,6 +1086,14 @@ fn constant_strings(t: &Type) -> Vec<String> {
     }
 }
 
+/// `isConstantArray()` is not no: a constant array is among the type's arrays.
+fn has_constant_array(t: &Type) -> bool {
+    match t {
+        Type::Union(ts) | Type::Intersection(ts) => ts.iter().any(has_constant_array),
+        t => matches!(t, Type::ConstArray(_)),
+    }
+}
+
 /// `TrinaryLogic::extremeIdentity()`: yes or no when all agree, else maybe.
 fn extreme(results: impl IntoIterator<Item = Tri>) -> Tri {
     results.into_iter().reduce(|a, b| if a == b { a } else { Tri::Maybe }).unwrap_or(Tri::Maybe)
@@ -1142,7 +1145,7 @@ impl Checker<'_, '_> {
         let needles = finite(self, &needle);
         let values = finite(self, &value);
         let needle_super = is_super_type_of(&needle, &value);
-        if haystack.is_constant_array().no() {
+        if !has_constant_array(&haystack) {
             if haystack.is_iterable_at_least_once().yes() {
                 return (needles.len() == 1 && values.len() == 1).then(|| decided(needle_super)).flatten();
             }
@@ -1156,9 +1159,7 @@ impl Checker<'_, '_> {
                 Type::Union(ts) => ts.clone(),
                 t => vec![t.clone()],
             };
-            if arrays.len() == 1 && matches!(value, Type::Never(_)) {
-                return None;
-            }
+            (arrays.len() != 1 || !matches!(value, Type::Never(_))).then_some(())?;
             if !needle_super.no() {
                 if needles.is_empty() {
                     return None;
@@ -1210,29 +1211,14 @@ impl Checker<'_, '_> {
             Type::ConstString(class) => Type::Object(class, Vec::new()),
             t => t,
         };
-        let classes = object.object_class_names();
-        if !classes.is_empty() {
-            let found: Vec<_> = classes.iter().map(|class| self.object_has_method(class, &method)).collect();
-            match extreme(found.iter().map(|f| f.0)) {
-                Tri::Yes => return found.iter().all(|f| f.1).then_some(true),
-                Tri::No => return Some(false),
-                Tri::Maybe => {}
-            }
-        }
-        // a generic class-string's object
-        let generic = match &object {
-            Type::Intersection(ts) => ts.iter().find_map(|t| match t {
-                Type::ClassString(Some(inner)) => Some(&**inner),
-                _ => None,
-            }),
-            Type::ClassString(Some(inner)) => Some(&**inner),
-            _ => None,
-        };
-        let Some(Type::Object(class, _)) = generic else { return None };
-        match self.object_has_method(class, &method) {
-            (Tri::Yes, native) => native.then_some(true),
-            (Tri::No, _) => Some(false),
-            _ => None,
+        // ponytail: a generic class-string's object (`class-string<T>&literal-string`) is not decided, Mago's
+        // class-string types lose it
+        let found: Vec<_> =
+            object.object_class_names().iter().map(|class| self.object_has_method(class, &method)).collect();
+        match extreme(found.iter().map(|f| f.0)) {
+            Tri::Yes => found.iter().all(|f| f.1).then_some(true),
+            Tri::No => Some(false),
+            Tri::Maybe => None,
         }
     }
 
