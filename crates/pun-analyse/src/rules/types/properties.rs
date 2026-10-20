@@ -463,3 +463,19 @@ fn writes(c: &mut Checker, e: &Expression, offsets_only: bool) {
         }
     }
 }
+
+/// The properties a write target writes (`findPropertyReflectionsFromNode()`), each with its declaring class, its
+/// name (without `$`), whether the target is the property itself (not an offset of it or a list element) and whether
+/// it writes an offset of the property, `None` for one not found.
+pub(super) fn written<'a>(
+    c: &Checker<'a, '_>,
+    target: &Expression,
+) -> Vec<Option<(&'a ClassLikeMetadata, String, bool, bool)>> {
+    let mut out = Vec::new();
+    targets(target, false, &mut out);
+    let direct = fetch(target).is_some();
+    let dynamic = matches!(unparen(target), Expression::Access(Access::Property(_) | Access::StaticProperty(_))) && !direct;
+    let found = out.iter().map(|(f, offset)| declared::with_classes(c, || find(c, f)).map(|p| (p.declaring, p.name, direct && !offset, *offset)));
+    // a dynamic name finds no property
+    found.chain(dynamic.then_some(None)).collect()
+}
