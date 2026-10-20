@@ -485,7 +485,9 @@ if (($argv[1] ?? '') === 'accepts') {
         'class-string<stdClass>', "'Countable'", "'Nope'", '__stringAndStringable', '__stringNotStringable', 'DateTimeInterface', 'DateTime|DateTimeImmutable',
         'Throwable', 'Error|Exception', 'array<int>', 'callable&array', '(T&Countable)', 'array{a: lowercase-string, b: int}', "1|array{}",
         'array{ArrayIterator<int, string>, ArrayIterator<int, int>}', 'array{a?: int}', 'array<int, int>',
-        "'strlen'", "'ArrayIterator::count'", "'ArrayIterator::nope'", "'Closure::nope'", "'Nope::nope'", "''", "'1a::b'"];
+        "'strlen'", "'ArrayIterator::count'", "'ArrayIterator::nope'", "'Closure::nope'", "'Nope::nope'", "''", "'1a::b'",
+        "array{'ArrayIterator', 'count'}", "array{'ArrayIterator', 'nope'}", "array{'Closure', 'nope'}", "array{'Closure', 'bind'|'nope'}",
+        "array{'Nope', 'x'}", "array{0: 'ArrayIterator', 1?: 'count'}", "array{'ArrayIterator', string}", "array{ArrayIterator, 'count'}", "array{1, 'count'}"];
     $sets = [[$atoms, 'ArrayIterator'], [['static', '$this', 'ArrayIterator', 'ArrayIterator<int, string>', 'Iterator', 'object', 'stdClass', 'Nope', 'Countable'], 'ArrayIterator'],
         [['static', '$this', 'Nope'], 'Nope']];
     $rows = [];

@@ -829,6 +829,53 @@ fn templates(
     }
 }
 
+/// FunctionDefinitionCheck's classes of the PHPDoc parameter and return types once `checkThisOnly` is off (level 2;
+/// the native ones are names.rs's).
+pub fn phpdoc_classes(
+    c: &mut Checker,
+    kind: FunctionKind,
+    at: Span,
+    parameters: &FunctionLikeParameterList,
+    return_type: Option<&FunctionLikeReturnTypeHint>,
+    types: &super::declared::PhpDocTypes,
+) {
+    let (of, subject) = (kind.named(), kind.subject());
+    // then ClassCaseSensitivityCheck on the same classes, at the parameter or the return type
+    let report = |c: &mut Checker,
+                  at: Span,
+                  types: &[Type],
+                  trait_id: &str,
+                  message: &dyn Fn(&str) -> String,
+                  location: Option<super::class_names::Location>| {
+        // (no class name has a `-`: a keyword type the resolver leaves, such as an unresolved `value-of`)
+        let classes: Vec<String> =
+            types.iter().flat_map(super::generics::referenced_classes).filter(|n| !n.contains('-')).collect();
+        for class in &classes {
+            let identifier = match known(c, class) {
+                None => "class.notFound",
+                Some(Known::User(k)) if k.kind == mago_codex::symbol::SymbolKind::Trait => trait_id,
+                Some(_) => continue,
+            };
+            c.report(at, identifier, message(class), None);
+        }
+        let pairs: Vec<Pair> = classes.into_iter().map(|class| Pair::node(class, at)).collect();
+        let case = c.case_sensitivity;
+        class_names::check_at(c, &pairs, location.as_ref(), case);
+    };
+    for p in parameters.parameters.iter() {
+        let name = String::from_utf8_lossy(&p.variable.name[1..]).into_owned();
+        let types = types.params.get(&name).map_or(&[][..], Vec::as_slice);
+        let location = super::names::location_function(c, kind).map(|function| super::class_names::Location::ParameterType {
+            parameter: name.clone(),
+            function,
+        });
+        report(c, p.span(), types, "parameter.trait", &|class| format!("Parameter ${name} of {of} has invalid type {class}."), location);
+    }
+    let at = return_type.map_or(at, |r| r.hint.span());
+    let location = super::names::location_function(c, kind).map(super::class_names::Location::ReturnType);
+    report(c, at, types.ret.as_slice(), "return.trait", &|class| format!("{subject} has invalid return type {class}."), location);
+}
+
 /// checkClassMethod()'s `@phpstan-self-out` classes.
 fn self_out(c: &mut Checker, at: Span, subject: &str, doc: &Doc) {
     let Some(node) = &doc.self_out else {

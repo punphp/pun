@@ -318,8 +318,6 @@
 # an-types2: Mago's inferred types differ (narrowing, list vs array, benevolent superglobal keys, enum cases, built-in
 # stubs such as PDO::prepare(), no types after an undefined member), accepts reasons, NewIsAlwaysFinal object types,
 # explicit vs implicit mixed, mixins, `$this` narrowed by instanceof
-2 Methods/CallToMethodStatementWithNoDiscardRuleTest::testRule
-2 Methods/CallToStaticMethodStatementWithNoDiscardRuleTest::testRule
 2 Operators/InvalidComparisonOperationRuleTest::testBug9386
 2 PhpDoc/WrongVariableNameInVarTagRuleTest::testRule
 4 DeadCode/NoopRuleTest::testBug11001
@@ -360,16 +358,13 @@
 5 Functions/RandomIntParametersRuleTest::testFile
 5 Methods/CallMethodsRuleTest::testAcceptThrowable
 5 Methods/CallMethodsRuleTest::testBug11463
-5 Methods/CallMethodsRuleTest::testBug11978
 5 Methods/CallMethodsRuleTest::testBug13171
 5 Methods/CallMethodsRuleTest::testBug13993
 5 Methods/CallMethodsRuleTest::testBug14732
 5 Methods/CallMethodsRuleTest::testBug1661
-5 Methods/CallMethodsRuleTest::testBug3481
 5 Methods/CallMethodsRuleTest::testBug3555
 5 Methods/CallMethodsRuleTest::testBug4552
 5 Methods/CallMethodsRuleTest::testBug5372
-5 Methods/CallMethodsRuleTest::testBug5642
 5 Methods/CallMethodsRuleTest::testBug6371
 5 Methods/CallMethodsRuleTest::testBug6464
 5 Methods/CallMethodsRuleTest::testBug9487
@@ -463,7 +458,6 @@
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
 9 Methods/CallMethodsRuleTest::testBug10719
 9 Methods/CallMethodsRuleTest::testBug11463
-9 Methods/CallMethodsRuleTest::testBug11978
 9 Methods/CallMethodsRuleTest::testBug12880
 9 Methods/CallMethodsRuleTest::testBug13171
 9 Methods/CallMethodsRuleTest::testBug13272
@@ -483,7 +477,6 @@
 9 Methods/CallMethodsRuleTest::testBug4552
 9 Methods/CallMethodsRuleTest::testBug5372
 9 Methods/CallMethodsRuleTest::testBug5623
-9 Methods/CallMethodsRuleTest::testBug5642
 9 Methods/CallMethodsRuleTest::testBug5868
 9 Methods/CallMethodsRuleTest::testBug6371
 9 Methods/CallMethodsRuleTest::testBug6464
@@ -720,9 +713,8 @@
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 # an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
 # an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
-# an-dead: ImpossibleCheckType{Function,Method,StaticMethod}CallRule: ImpossibleCheckTypeHelper's in_array/method_exists/property_exists/class_exists special cases and type-specifying extensions are not ported (the value comes from Mago's return type or a void function's @phpstan-assert); the treatPhpDocTypesAsCertain tip needs native types; the trait collector; Mago's types differ (superglobal keys, narrowing after method_exists())
+# an-dead: ImpossibleCheckType{Function,Method,StaticMethod}CallRule: type-specifying extensions are not ported beyond in_array/method_exists/property_exists/class_exists (a `new` object's exact class aside) (the value comes from Mago's return type or a void function's @phpstan-assert); the treatPhpDocTypesAsCertain tip needs native types; the trait collector; Mago's types differ (superglobal keys, narrowing after method_exists())
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleCheckTypeFunctionCall
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testStructExists
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testDoNotReportTypesFromPhpDocs
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testReportTypesFromPhpDocs
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testArrayIsList
@@ -784,6 +776,16 @@
 9 Methods/CallMethodsRuleTest::testBug3534
 9 Methods/CallStaticMethodsRuleTest::testBug9732
 9 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
+# an-types2: CallCallablesRule: `new Foo()` is an exact (final) object type in PHPStan, a union of constant-array
+# callables is not split into its arrays, pipe calls by expression are not checked, and Pun reports bug-3616's constant PHPDoc
+2 Functions/CallCallablesRuleTest::testBug3616
+2 Functions/CallCallablesRuleTest::testRule
+# an-types2: Pun finds array<NonexistentClass, AnotherNonexistentClass> unresolvable (parameter.unresolvableType)
+2 Methods/ExistingClassesInTypehintsRuleTest::testExistingClassInTypehint
+# an-types2: PHPDoc classes (FunctionDefinitionCheck, level 2): imported type aliases that import each other, and an anonymous
+# class's use of its enclosing method's template are not resolved; Closure::bind() returns ?Closure (no dynamic return type extension)
+3 Methods/ReturnTypeRuleTest::testBug6353
+9 Methods/CallMethodsRuleTest::testBug4865
 # an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value)
 2 Operators/InvalidBinaryOperationRuleTest::testRule
 2 Operators/InvalidBinaryOperationRuleTest::testBug5309
@@ -819,6 +821,23 @@
 9 Functions/CallToFunctionParametersRuleTest::testPipeOperator
 9 Methods/CallMethodsRuleTest::testPipeOperator
 9 Methods/CallStaticMethodsRuleTest::testPipeOperator
-# an-dead: match.alwaysTrue in the level-5/9 CallMethodsRule export (match arms on a void call's result), missing after the match batch merged with the level-5 work
-5 Methods/CallMethodsRuleTest::testMatchExpressionVoidIsUsed
-9 Methods/CallMethodsRuleTest::testMatchExpressionVoidIsUsed
+# an-dead: ImpossibleInstanceOfRule: the treatPhpDocTypesAsCertain and possibly impure tips need native types; Mago's types differ (`instanceof self` narrows to `$this`, narrowing in loops and after early returns, a `new` object's exact class, the trait's `$this`)
+4 Classes/ImpossibleInstanceOfRuleTest::testInstanceof
+4 Classes/ImpossibleInstanceOfRuleTest::testDoNotReportTypesFromPhpDocs
+4 Classes/ImpossibleInstanceOfRuleTest::testReportTypesFromPhpDocs
+4 Classes/ImpossibleInstanceOfRuleTest::testBug5333
+4 Classes/ImpossibleInstanceOfRuleTest::testIfBranchesDoNotReportPhpDoc
+4 Classes/ImpossibleInstanceOfRuleTest::testIfBranchesReportPhpDoc
+4 Classes/ImpossibleInstanceOfRuleTest::testTernaryElseDoNotReportPhpDoc
+4 Classes/ImpossibleInstanceOfRuleTest::testTernaryElseReportPhpDoc
+4 Classes/ImpossibleInstanceOfRuleTest::testBug4689
+4 Classes/ImpossibleInstanceOfRuleTest::testReportAlwaysTrueInLastCondition#0
+4 Classes/ImpossibleInstanceOfRuleTest::testReportAlwaysTrueInLastCondition#1
+4 Classes/ImpossibleInstanceOfRuleTest::testBug3632
+4 Classes/ImpossibleInstanceOfRuleTest::testBug10353
+4 Classes/ImpossibleInstanceOfRuleTest::testBug12267
+4 Classes/ImpossibleInstanceOfRuleTest::testNewIsAlwaysFinalClass
+4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#0
+4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#1
+4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
+4 Classes/ImpossibleInstanceOfRuleTest::testInTrait

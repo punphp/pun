@@ -1,0 +1,620 @@
+{
+    "test": "Functions/ExistingClassesInArrowFunctionTypehintsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/arrow-function-typehints.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arrow-function-typehints.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type ArrowFunctionExistingClassesInTypehints\\Baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-typehints.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ArrowFunctionExistingClassesInTypehints\\Baz not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/arrow-function-typehints.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of anonymous function has invalid type ArrowFunctionExistingClassesInTypehints\\Bar.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeUnionTypes#0",
+            "files": [
+                "Functions/data/native-union-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Function NativeUnionTypesSupport\\bar() should return bool|int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return bool|int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 19,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return bool|int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeUnionTypes#1",
+            "files": [
+                "Functions/data/native-union-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Function NativeUnionTypesSupport\\bar() should return bool|int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return bool|int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 19,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return bool|int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#0",
+            "files": [
+                "Functions/data/required-parameter-after-optional-arrow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 7,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 9,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 11,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 15,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 19,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 23,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#1",
+            "files": [
+                "Functions/data/required-parameter-after-optional-arrow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 7,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 9,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 11,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 15,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 19,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 23,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#2",
+            "files": [
+                "Functions/data/required-parameter-after-optional-arrow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 7,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 9,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 11,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 15,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 19,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 23,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#3",
+            "files": [
+                "Functions/data/required-parameter-after-optional-arrow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 7,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 9,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 11,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 15,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 19,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 23,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-arrow.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#0",
+            "files": [
+                "Functions/data/arrow-function-intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 27,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 27,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 29,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 29,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#1",
+            "files": [
+                "Functions/data/arrow-function-intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 27,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 27,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 29,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-intersection-types.php",
+                    "line": 29,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNever",
+            "files": [
+                "Functions/data/arrow-function-never.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5206",
+            "files": [
+                "Functions/data/bug-5206.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNoDiscardVoid",
+            "files": [
+                "Functions/data/arrow-function-typehints-nodiscard.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arrow-function-typehints-nodiscard.php",
+                    "line": 10,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void anonymous function.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arrow-function-typehints-nodiscard.php",
+                    "line": 15,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on never anonymous function.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

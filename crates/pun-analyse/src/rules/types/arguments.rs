@@ -29,6 +29,7 @@ fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize
 pub(in super::super) fn declared_type(c: &Checker, acceptor: &Acceptor, p: usize) -> Option<Type> {
     match &acceptor.param_types[p] {
         ParamType::Builtin(s) => Some(pun_phpstan::resolve::resolve_str(s, acceptor.class.as_deref())),
+        ParamType::Typed(t) => Some(t.clone()),
         ParamType::User => {
             let (class, name) = acceptor.callee.as_ref()?;
             let (f, declaring) = match class {
