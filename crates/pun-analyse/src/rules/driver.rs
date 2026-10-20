@@ -199,6 +199,7 @@ fn checker<'a, 'arena>(
         internal_tag: project.internal_tag,
         precise_unused_parameter_line: project.precise_unused_parameter_line,
         unreachable: HashSet::new(),
+        conditions: Default::default(),
         internal_members: project.internal_members,
         deprecations: project.deprecations,
         bleeding_edge: project.bleeding_edge,

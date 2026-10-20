@@ -1,0 +1,144 @@
+{
+    "test": "Comparison/LogicalXorConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/logical-xor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 14,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 14,
+                    "identifier": "logicalXor.leftAlwaysTrue",
+                    "message": "Left side of xor is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 14,
+                    "identifier": "logicalXor.rightAlwaysFalse",
+                    "message": "Right side of xor is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 17,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 17,
+                    "identifier": "logicalXor.leftAlwaysFalse",
+                    "message": "Left side of xor is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 17,
+                    "identifier": "logicalXor.rightAlwaysTrue",
+                    "message": "Right side of xor is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 20,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 20,
+                    "identifier": "logicalXor.leftAlwaysTrue",
+                    "message": "Left side of xor is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 20,
+                    "identifier": "logicalXor.rightAlwaysTrue",
+                    "message": "Right side of xor is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 24,
+                    "identifier": "logicalXor.leftAlwaysTrue",
+                    "message": "Left side of xor is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 24,
+                    "identifier": "logicalXor.resultUnused",
+                    "message": "Unused result of \"xor\" operator.",
+                    "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+                },
+                {
+                    "file": "Comparison/data/logical-xor.php",
+                    "line": 24,
+                    "identifier": "logicalXor.rightAlwaysFalse",
+                    "message": "Right side of xor is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/logical-xor-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/logical-xor-in-trait.php",
+                    "line": 19,
+                    "identifier": "logicalXor.leftAlwaysFalse",
+                    "message": "Left side of xor is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor-in-trait.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method LogicalXorInTrait\\Foo::doBar() should return null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor-in-trait.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method LogicalXorInTrait\\Foo::doBar2() should return null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor-in-trait.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method LogicalXorInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/logical-xor-in-trait.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method LogicalXorInTrait\\FooAnother::doBar2() should return null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

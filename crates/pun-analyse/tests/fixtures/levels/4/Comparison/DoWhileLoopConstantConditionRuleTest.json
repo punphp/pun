@@ -1,0 +1,147 @@
+{
+    "test": "Comparison/DoWhileLoopConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testBug6189",
+            "files": [
+                "Comparison/data/bug-6189.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6189.php",
+                    "line": 33,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6189.php",
+                    "line": 44,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/do-while-loop.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 12,
+                    "identifier": "doWhile.alwaysTrue",
+                    "message": "Do-while loop condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 37,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 46,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 64,
+                    "identifier": "doWhile.alwaysTrue",
+                    "message": "Do-while loop condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 73,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 105,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 115,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 138,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-loop.php",
+                    "line": 152,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/do-while-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/do-while-in-trait.php",
+                    "line": 19,
+                    "identifier": "doWhile.alwaysFalse",
+                    "message": "Do-while loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-in-trait.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method DoWhileInTrait\\Foo::doBar() should return null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-in-trait.php",
+                    "line": 34,
+                    "identifier": "return.missing",
+                    "message": "Method DoWhileInTrait\\Foo::doBar2() should return null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-in-trait.php",
+                    "line": 46,
+                    "identifier": "return.missing",
+                    "message": "Method DoWhileInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/do-while-in-trait.php",
+                    "line": 51,
+                    "identifier": "return.missing",
+                    "message": "Method DoWhileInTrait\\FooAnother::doBar2() should return null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

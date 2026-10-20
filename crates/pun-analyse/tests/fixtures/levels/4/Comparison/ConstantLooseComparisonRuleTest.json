@@ -1,0 +1,471 @@
+{
+    "test": "Comparison/ConstantLooseComparisonRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/loose-comparison.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/loose-comparison.php",
+                    "line": 16,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between 0 and '0' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/loose-comparison.php",
+                    "line": 20,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between 0 and '1' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/loose-comparison.php",
+                    "line": 27,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between 0 and '1' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/loose-comparison.php",
+                    "line": 33,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between 0 and '1' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/loose-comparison.php",
+                    "line": 35,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between 0 and '0' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/loose-comparison.php",
+                    "line": 48,
+                    "identifier": "notEqual.alwaysFalse",
+                    "message": "Loose comparison using != between 3 and 3 will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8485",
+            "files": [
+                "Comparison/data/bug-8485.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 15,
+                    "identifier": "void.pure",
+                    "message": "Function Bug8485\\shouldError() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 19,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\E::c and Bug8485\\E::c will always evaluate to true.",
+                    "tip": "Use match expression instead. PHPStan will report unhandled enum cases."
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 21,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between Bug8485\\E::c and Bug8485\\E::c will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 24,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 26,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 29,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 31,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 35,
+                    "identifier": "void.pure",
+                    "message": "Function Bug8485\\allGood() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 36,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F and Bug8485\\E will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 38,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F and Bug8485\\E will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 41,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 43,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 67,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\FooEnum::C and Bug8485\\FooEnum::C will always evaluate to true.",
+                    "tip": "• Remove remaining cases below this one and this error will disappear too.\n• Use match expression instead. PHPStan will report unhandled enum cases."
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 74,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\FooEnum::C and Bug8485\\FooEnum::C will always evaluate to true.",
+                    "tip": "• Remove remaining cases below this one and this error will disappear too.\n• Use match expression instead. PHPStan will report unhandled enum cases."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#0",
+            "files": [
+                "Comparison/data/loose-comparison-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/loose-comparison-report-always-true-last-condition.php",
+                    "line": 21,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between 1 and 1 will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#1",
+            "files": [
+                "Comparison/data/loose-comparison-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/loose-comparison-report-always-true-last-condition.php",
+                    "line": 21,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between 1 and 1 will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertain#0",
+            "files": [
+                "Comparison/data/loose-comparison-treat-phpdoc-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/loose-comparison-treat-phpdoc-types.php",
+                    "line": 14,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between 3 and 3 will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertain#1",
+            "files": [
+                "Comparison/data/loose-comparison-treat-phpdoc-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/loose-comparison-treat-phpdoc-types.php",
+                    "line": 14,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between 3 and 3 will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11694",
+            "files": [
+                "Comparison/data/bug-11694.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 17,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between 3 and int<10, 20> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 18,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between int<10, 20> and 3 will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 23,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between 23 and int<10, 20> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 24,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between int<10, 20> and 23 will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 26,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between null and int<10, 20> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 27,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between int<10, 20> and null will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 29,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between '13foo' and int<10, 20> will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 30,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between int<10, 20> and '13foo' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 32,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between ' 3' and int<10, 20> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 33,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between int<10, 20> and ' 3' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 38,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between ' 23' and int<10, 20> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 39,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between int<10, 20> and ' 23' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 41,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between true and int<10, 20> will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 42,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between int<10, 20> and true will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 44,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between false and int<10, 20> will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11694.php",
+                    "line": 45,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between int<10, 20> and false will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8800",
+            "files": [
+                "Comparison/data/bug-8800.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8800.php",
+                    "line": 9,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between 0|1|false and 2 will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13098",
+            "files": [
+                "Comparison/data/bug-13098.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/loose-comparison-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/loose-comparison-in-trait.php",
+                    "line": 19,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between 1 and null will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/loose-comparison-in-trait.php",
+                    "line": 32,
+                    "identifier": "return.missing",
+                    "message": "Method LooseComparisonInTrait\\Foo::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/loose-comparison-in-trait.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method LooseComparisonInTrait\\Foo::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/loose-comparison-in-trait.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method LooseComparisonInTrait\\FooAnother::doBar() should return int|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/loose-comparison-in-trait.php",
+                    "line": 56,
+                    "identifier": "return.missing",
+                    "message": "Method LooseComparisonInTrait\\FooAnother::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14606",
+            "files": [
+                "Comparison/data/bug-14606.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-14606.php",
+                    "line": 19,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between non-falsy-string and false will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-14606.php",
+                    "line": 24,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between non-falsy-string and null will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-14606.php",
+                    "line": 29,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between non-falsy-string and '' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-14606.php",
+                    "line": 34,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between non-falsy-string and array{} will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-14606.php",
+                    "line": 42,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between non-falsy-string and false|null will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

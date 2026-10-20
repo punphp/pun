@@ -8,11 +8,11 @@ use super::super::Checker;
 use super::no_discard::unparen;
 
 #[derive(Default)]
-struct Result {
+pub(super) struct Result {
     always: bool,
     /// `None`: a synthetic `break`/`continue` (getExitPointsForOuterLoop()), without a position.
-    exits: Vec<(Option<Span>, &'static str)>,
-    jumps: Vec<(Option<Span>, &'static str, u64)>,
+    pub(super) exits: Vec<(Option<Span>, &'static str)>,
+    pub(super) jumps: Vec<(Option<Span>, &'static str, u64)>,
 }
 
 /// PHPStan only builds FinallyExitPointsNode for an always-terminating finally block.
@@ -124,7 +124,7 @@ pub(super) fn always_terminates(c: &Checker, s: &Statement) -> bool {
     statement(c, s).always
 }
 
-fn statements(c: &Checker, items: &[Statement]) -> Result {
+pub(super) fn statements(c: &Checker, items: &[Statement]) -> Result {
     let mut result = Result::default();
     for item in items {
         let next = statement(c, item);

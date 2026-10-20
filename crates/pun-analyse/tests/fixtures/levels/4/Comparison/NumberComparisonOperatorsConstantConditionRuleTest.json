@@ -1,0 +1,634 @@
+{
+    "test": "Comparison/NumberComparisonOperatorsConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testBug8277",
+            "files": [
+                "Comparison/data/bug-8277.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/number-comparison-operators.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/number-comparison-operators.php",
+                    "line": 7,
+                    "identifier": "smallerOrEqual.alwaysFalse",
+                    "message": "Comparison operation \"<=\" between int<6, max> and 2 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/number-comparison-operators.php",
+                    "line": 13,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between int<2, 4> and 8 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/number-comparison-operators.php",
+                    "line": 21,
+                    "identifier": "smaller.alwaysTrue",
+                    "message": "Comparison operation \"<\" between int<min, 1> and 5 is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2648",
+            "files": [
+                "Comparison/data/bug-2648-rule.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2648Namespace",
+            "files": [
+                "Comparison/data/bug-2648-namespace-rule.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5161",
+            "files": [
+                "Comparison/data/bug-5161.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3310",
+            "files": [
+                "Comparison/data/bug-3310.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-3310.php",
+                    "line": 5,
+                    "identifier": "void.pure",
+                    "message": "Function Bug3310\\explain() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3264",
+            "files": [
+                "Comparison/data/bug-3264.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5656",
+            "files": [
+                "Comparison/data/bug-5656.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3867",
+            "files": [
+                "Comparison/data/bug-3867.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-3867.php",
+                    "line": 17,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Bug3867\\Demo::methodOne().",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-3867.php",
+                    "line": 17,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Bug3867\\Demo::methodTwo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntegerRangeGeneralization",
+            "files": [
+                "Comparison/data/integer-range-generalization.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3153",
+            "files": [
+                "Comparison/data/bug-3153.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5707",
+            "files": [
+                "Comparison/data/bug-5707.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5969",
+            "files": [
+                "Comparison/data/bug-5969.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5295",
+            "files": [
+                "Comparison/data/bug-5295.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7052",
+            "files": [
+                "Comparison/data/bug-7052.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 16,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\Bug7052\\Foo::A > \\Bug7052\\Foo::B\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 16,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between Bug7052\\Foo::A and Bug7052\\Foo::B is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 17,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\Bug7052\\Foo::A < \\Bug7052\\Foo::B\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 17,
+                    "identifier": "smaller.alwaysFalse",
+                    "message": "Comparison operation \"<\" between Bug7052\\Foo::A and Bug7052\\Foo::B is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 18,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\Bug7052\\Foo::A >= \\Bug7052\\Foo::B\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 18,
+                    "identifier": "greaterOrEqual.alwaysFalse",
+                    "message": "Comparison operation \">=\" between Bug7052\\Foo::A and Bug7052\\Foo::B is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 19,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\Bug7052\\Foo::A <= \\Bug7052\\Foo::B\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7052.php",
+                    "line": 19,
+                    "identifier": "smallerOrEqual.alwaysFalse",
+                    "message": "Comparison operation \"<=\" between Bug7052\\Foo::A and Bug7052\\Foo::B is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7044",
+            "files": [
+                "Comparison/data/bug-7044.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7044.php",
+                    "line": 15,
+                    "identifier": "smaller.alwaysFalse",
+                    "message": "Comparison operation \"<\" between 0 and 0 is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3277",
+            "files": [
+                "Comparison/data/bug-3277.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-3277.php",
+                    "line": 6,
+                    "identifier": "smaller.alwaysFalse",
+                    "message": "Comparison operation \"<\" between 5 and 4 is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6013",
+            "files": [
+                "Comparison/data/bug-6013.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2851",
+            "files": [
+                "Comparison/data/bug-2851.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8643",
+            "files": [
+                "Comparison/data/bug-8643.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertain#0",
+            "files": [
+                "Comparison/data/number-comparison-treat.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/number-comparison-treat.php",
+                    "line": 11,
+                    "identifier": "greaterOrEqual.alwaysTrue",
+                    "message": "Comparison operation \">=\" between int<1, max> and 0 is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/number-comparison-treat.php",
+                    "line": 18,
+                    "identifier": "smaller.alwaysFalse",
+                    "message": "Comparison operation \"<\" between int<1, max> and 0 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertain#1",
+            "files": [
+                "Comparison/data/number-comparison-treat.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/number-comparison-treat.php",
+                    "line": 11,
+                    "identifier": "greaterOrEqual.alwaysTrue",
+                    "message": "Comparison operation \">=\" between int<1, max> and 0 is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/number-comparison-treat.php",
+                    "line": 18,
+                    "identifier": "smaller.alwaysFalse",
+                    "message": "Comparison operation \"<\" between int<1, max> and 0 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6776",
+            "files": [
+                "Comparison/data/bug-6776.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6776.php",
+                    "line": 12,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-6776.php",
+                    "line": 12,
+                    "identifier": "smaller.alwaysFalse",
+                    "message": "Comparison operation \"<\" between int<1, max> and 1 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7075",
+            "files": [
+                "Comparison/data/bug-7075.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7075.php",
+                    "line": 7,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between int<0, 100> and 100 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-7075.php",
+                    "line": 14,
+                    "identifier": "void.pure",
+                    "message": "Function Bug7075\\foo2() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7075.php",
+                    "line": 15,
+                    "identifier": "smaller.alwaysFalse",
+                    "message": "Comparison operation \"<\" between int<1, max> and 1 is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8938",
+            "files": [
+                "Comparison/data/bug-8938.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5005",
+            "files": [
+                "Comparison/data/bug-5005.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5005.php",
+                    "line": 9,
+                    "identifier": "method.unused",
+                    "message": "Method Bug5005\\HelloWorld::forceImageRatio() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6467",
+            "files": [
+                "Comparison/data/bug-6467.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11484",
+            "files": [
+                "Comparison/data/bug-11484.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6642",
+            "files": [
+                "Comparison/data/bug-6642.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6642.php",
+                    "line": 7,
+                    "identifier": "smaller.alwaysTrue",
+                    "message": "Comparison operation \"<\" between 0|1|2 and 3 is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6642.php",
+                    "line": 8,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9850",
+            "files": [
+                "Comparison/data/bug-9850.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9180",
+            "files": [
+                "Comparison/data/bug-9180.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12716",
+            "files": [
+                "Comparison/data/bug-12716.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3387",
+            "files": [
+                "Comparison/data/bug-3387.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-3387.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug3387\\RuntimeException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-3387.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug3387\\RuntimeException.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-3387.php",
+                    "line": 20,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug3387\\RuntimeException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-3387.php",
+                    "line": 20,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug3387\\RuntimeException.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-3387.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug3387\\RuntimeException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-3387.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug3387\\RuntimeException.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13984",
+            "files": [
+                "Comparison/data/bug-13984.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13874",
+            "files": [
+                "Comparison/data/bug-13874.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/number-comparison-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/number-comparison-in-trait.php",
+                    "line": 19,
+                    "identifier": "greater.alwaysTrue",
+                    "message": "Comparison operation \">\" between 1 and 0 is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/number-comparison-in-trait.php",
+                    "line": 32,
+                    "identifier": "return.missing",
+                    "message": "Method NumberComparisonInTrait\\Foo::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/number-comparison-in-trait.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method NumberComparisonInTrait\\Foo::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/number-comparison-in-trait.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method NumberComparisonInTrait\\FooAnother::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/number-comparison-in-trait.php",
+                    "line": 56,
+                    "identifier": "return.missing",
+                    "message": "Method NumberComparisonInTrait\\FooAnother::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11146",
+            "files": [
+                "Comparison/data/bug-11146.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12167",
+            "files": [
+                "Comparison/data/bug-12167.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}
