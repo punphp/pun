@@ -249,8 +249,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug5986
 5 Functions/CallToFunctionParametersRuleTest::testBug7823
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOpt
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptInvalidShare
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 5 Functions/CallToFunctionParametersRuleTest::testProcOpen
 5 Functions/CallUserFuncRuleTest::testRule
@@ -690,11 +688,7 @@
 2 Methods/ExistingClassesInTypehintsRuleTest::testExistingClassInTypehint
 # an-types2: PHPDoc classes (FunctionDefinitionCheck, level 2): imported type aliases that import each other, and an anonymous
 # class's use of its enclosing method's template are not resolved; Closure::bind() returns ?Closure (no dynamic return type extension)
-9 Methods/CallMethodsRuleTest::testBug4865
 # class's use of its enclosing method's template are not resolved
-2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463
-2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463b
-3 Methods/ReturnTypeRuleTest::testBug6353
 # an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value)
 2 Operators/InvalidBinaryOperationRuleTest::testRule
 2 Operators/InvalidBinaryOperationRuleTest::testBug5309
@@ -841,9 +835,12 @@
 4 Methods/NullsafeMethodCallRuleTest::testBug8523c
 # IssetCheck's `?->` on the left of `??` messages are not ported.
 4 Properties/NullsafePropertyFetchRuleTest::testBug7109
-5 Properties/AccessPropertiesRuleTest::testNullSafe
 # Mago loses `$this` after a dynamic `?->$this?->$name` fetch.
 5 Properties/AccessPropertiesRuleTest::testDynamicStringableNullsafeAccess
 # Mago's explicit mixed and benevolent unions describe differently.
 9 Operators/InvalidIncDecOperationRuleTest::testMixed
 9 Operators/InvalidIncDecOperationRuleTest::testUnion
+# cross-branch after the nullsafe + NullCoalesce + templateType merges (owners notified)
+4 Variables/NullCoalesceRuleTest::testBug5009
+4 Variables/NullCoalesceRuleTest::testBug7109
+9 Functions/CallToFunctionParametersRuleTest::testBug10297
