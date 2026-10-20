@@ -897,3 +897,13 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#1
 4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
 4 Classes/ImpossibleInstanceOfRuleTest::testInTrait
+# an-dead: NullCoalesceRule: Mago orders a shape's keys, keeps no assigned offset as its own expression, narrows offsets differently (after `?? null` comparisons, `non-empty-array` after a write), and loses a property's type on the right side of `??=`
+1 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
+1 Variables/NullCoalesceRuleTest::testCoalesceRule
+4 Variables/NullCoalesceRuleTest::testBug13488
+4 Variables/NullCoalesceRuleTest::testBug13488Loose
+4 Variables/NullCoalesceRuleTest::testBug15046
+4 Variables/NullCoalesceRuleTest::testBug7190
+4 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
+4 Variables/NullCoalesceRuleTest::testCoalesceRule
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope

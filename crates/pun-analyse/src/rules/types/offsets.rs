@@ -86,7 +86,7 @@ fn class_accessible(t: &Type) -> Tri {
 }
 
 /// `isOffsetAccessible()`.
-fn accessible(t: &Type) -> Tri {
+pub(in super::super) fn accessible(t: &Type) -> Tri {
     match t {
         Type::Union(ts) | Type::Benevolent(ts) => {
             let all: Vec<Tri> = ts.iter().map(accessible).collect();

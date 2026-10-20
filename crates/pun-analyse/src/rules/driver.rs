@@ -139,7 +139,7 @@ fn checker<'a, 'arena>(
     typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
-    let mut types = infer(arena, file, program, names, codebase, php_version, project.level, typed);
+    let (mut types, defined) = infer(arena, file, program, names, codebase, php_version, project.level, typed);
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version);
         types.extend(subjects);
@@ -153,6 +153,7 @@ fn checker<'a, 'arena>(
         relative_path: &project.relative_path,
         file,
         types,
+        defined,
         names,
         codebase,
         classes: Vec::new(),

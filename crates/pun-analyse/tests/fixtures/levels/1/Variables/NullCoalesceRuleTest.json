@@ -1,0 +1,725 @@
+{
+    "test": "Variables/NullCoalesceRuleTest",
+    "cases": [
+        {
+            "method": "testCoalesceRule",
+            "files": [
+                "Variables/data/null-coalesce.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 51,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 73,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'dim-null-not-set' on array{dim: 1, dim-null: 1|null, dim-null-offset: array{a: true|null}, dim-empty: array{}} on left side of ?? does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 83,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Empty regular expression in pattern: ",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 115,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ?? always exists and is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 141,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $foo on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 143,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $bar on left side of ?? is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCoalesceAssignRule",
+            "files": [
+                "Variables/data/null-coalesce-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ??= always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 51,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ??= is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 73,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'dim-null-not-set' on array{dim: 1, dim-null: 0|1, dim-null-offset: array{a: true|null}, dim-empty: array{}} on left side of ??= does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 115,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ??= always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullsafe",
+            "files": [
+                "Variables/data/null-coalesce-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testVariableCertaintyInNullCoalesce",
+            "files": [
+                "Variables/data/variable-certainty-null.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/variable-certainty-null.php",
+                    "line": 6,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null.php",
+                    "line": 8,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null.php",
+                    "line": 13,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ?? always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testVariableCertaintyInNullCoalesceAssign",
+            "files": [
+                "Variables/data/variable-certainty-null-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/variable-certainty-null-assign.php",
+                    "line": 6,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ??= always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null-assign.php",
+                    "line": 8,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ??= is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null-assign.php",
+                    "line": 13,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ??= always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullCoalesceInGlobalScope",
+            "files": [
+                "Variables/data/null-coalesce-global-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-global-scope.php",
+                    "line": 6,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $bar on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5009",
+            "files": [
+                "Variables/data/bug-5009.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNullableArrayReceiver",
+            "files": [
+                "Variables/data/null-coalesce-nullable-array-receiver.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5933",
+            "files": [
+                "Variables/data/bug-5933.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13623",
+            "files": [
+                "Variables/data/bug-13623.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7109",
+            "files": [
+                "Properties/data/bug-7109.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7190",
+            "files": [
+                "Properties/data/bug-7190.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7318",
+            "files": [
+                "Properties/data/bug-7318.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7968",
+            "files": [
+                "Variables/data/bug-7968.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8084",
+            "files": [
+                "Variables/data/bug-8084.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10577",
+            "files": [
+                "Variables/data/bug-10577.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11708",
+            "files": [
+                "Variables/data/bug-11708.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13488",
+            "files": [
+                "Variables/data/bug-13488.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13488Loose",
+            "files": [
+                "Variables/data/bug-13488-loose.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10610",
+            "files": [
+                "Variables/data/bug-10610.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugDoctrine",
+            "files": [
+                "Variables/data/bug-doctrine.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12553",
+            "files": [
+                "Variables/data/bug-12553.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugMultiDimLoop",
+            "files": [
+                "Variables/data/bug-nullCoalesceMultiDimLoop.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIssetAfterRememberedConstructor",
+            "files": [
+                "Variables/data/isset-after-remembered-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 34,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 93,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$false in empty() is always falsy and initialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 95,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPr4372",
+            "files": [
+                "Variables/data/pr-4372-null-coalesce.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11488",
+            "files": [
+                "Variables/data/bug-11488.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13921",
+            "files": [
+                "Variables/data/bug-13921.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4846",
+            "files": [
+                "Variables/data/bug-4846.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14458",
+            "files": [
+                "Variables/data/bug-14458.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14555",
+            "files": [
+                "Variables/data/bug-14555.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14459",
+            "files": [
+                "Variables/data/bug-14459.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14459Hooked",
+            "files": [
+                "Variables/data/bug-14459-hooked.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4337",
+            "files": [
+                "Variables/data/bug-4337.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15134",
+            "files": [
+                "Variables/data/bug-15134.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnnecessaryNullCoalesceSideEffects",
+            "files": [
+                "Variables/data/unnecessary-null-coalesce-side-effects.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/unnecessary-null-coalesce-side-effects.php",
+                    "line": 95,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $x might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12179",
+            "files": [
+                "Variables/data/bug-12179.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9966",
+            "files": [
+                "Variables/data/bug-9966.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14393",
+            "files": [
+                "Variables/data/bug-14393.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 164,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefinedVar on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 165,
+                    "identifier": "isset.variable",
+                    "message": "Variable $undefinedVar in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 166,
+                    "identifier": "empty.variable",
+                    "message": "Variable $undefinedVar in empty() is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15021",
+            "files": [
+                "Variables/data/bug-15021.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNullCoalesceAssignRightSideScope",
+            "files": [
+                "Variables/data/null-coalesce-assign-right-side-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ??= is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15056",
+            "files": [
+                "Variables/data/bug-15056.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPropertyInitializationCustomSerialization",
+            "files": [
+                "Variables/data/property-initialization-custom-serialization.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 20,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 21,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 23,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 42,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 44,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __serialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __unserialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 238,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\PromotedNoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 271,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\CoalesceAssignNoSerialization::$string on left side of ??= is not nullable nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15046",
+            "files": [
+                "Variables/data/bug-15046.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-15046.php",
+                    "line": 140,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property Bug15046\\BothBranches::$answer on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Variables/data/isset-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 119,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $s on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 120,
+                    "identifier": "isset.variable",
+                    "message": "Variable $s in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 121,
+                    "identifier": "empty.variable",
+                    "message": "Variable $s in empty() always exists and is not falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12780",
+            "files": [
+                "Variables/data/bug-12780.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testReadonlyPropertyOnNullableReceiver",
+            "files": [
+                "Variables/data/null-coalesce-readonly-property-nullable-receiver.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

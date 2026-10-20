@@ -43,6 +43,7 @@ pub(super) use inc_dec::{postfix, prefix};
 pub(super) use missing_return::{closure, function, get_hooks, method};
 pub(super) use read_only_write::assignment;
 pub(super) use access::{property_fetch, static_property_fetch};
+pub(super) use offsets::accessible as offset_accessible;
 pub(super) use receivers::{method_call, static_call};
 pub(super) use regex::function_call;
 pub(super) use callables::{call as callable_call, call_user_func, pipe as callable_pipe};

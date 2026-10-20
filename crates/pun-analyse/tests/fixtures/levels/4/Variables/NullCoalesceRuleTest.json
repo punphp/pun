@@ -1,0 +1,1503 @@
+{
+    "test": "Variables/NullCoalesceRuleTest",
+    "cases": [
+        {
+            "method": "testCoalesceRule",
+            "files": [
+                "Variables/data/null-coalesce.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 32,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceRule\\FooCoalesce::$string (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 45,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'string' on array{1, 2, 3} on left side of ?? does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 49,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'string' on array{array{1}, array{2}, array{3}} on left side of ?? does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 51,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 67,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'dim' on array{dim: 1, dim-null: 1|null, dim-null-offset: array{a: true|null}, dim-empty: array{}} on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 73,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'dim-null-not-set' on array{dim: 1, dim-null: 1|null, dim-null-offset: array{a: true|null}, dim-empty: array{}} on left side of ?? does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 79,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'b' on array{} on left side of ?? does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 81,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 83,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Empty regular expression in pattern: ",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 89,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceRule\\FooCoalesce::$string (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 91,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceRule\\FooCoalesce::$alwaysNull (null) on left side of ?? is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 93,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceRule\\FooCoalesce::$string (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 99,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property CoalesceRule\\FooCoalesce::$staticString (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 101,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property CoalesceRule\\FooCoalesce::$staticAlwaysNull (null) on left side of ?? is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 115,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ?? always exists and is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 120,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceRule\\FooCoalesce::$string (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 122,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceRule\\FooCoalesce::$alwaysNull (null) on left side of ?? is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 124,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"new \\CoalesceRule\\FooCoalesce() ?? 'foo'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 124,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 125,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"null ?? 'foo'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 125,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 130,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property CoalesceRule\\FooCoalesce::$staticAlwaysNull (null) on left side of ?? is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 131,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property CoalesceRule\\FooCoalesce::$staticString (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 141,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $foo on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce.php",
+                    "line": 143,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $bar on left side of ?? is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCoalesceAssignRule",
+            "files": [
+                "Variables/data/null-coalesce-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 32,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceAssignRule\\FooCoalesce::$string (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ??= always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 45,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'string' on array{1, 2, 3} on left side of ??= does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 49,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'string' on array{array{1}, array{2}, array{3}} on left side of ??= does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 51,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ??= is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 67,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'dim' on array{dim: 1, dim-null: 1|null, dim-null-offset: array{a: true|null}, dim-empty: array{}} on left side of ??= always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 73,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'dim-null-not-set' on array{dim: 1, dim-null: 0|1, dim-null-offset: array{a: true|null}, dim-empty: array{}} on left side of ??= does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 79,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'b' on array{} on left side of ??= does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 89,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceAssignRule\\FooCoalesce::$string (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 91,
+                    "identifier": "assign.propertyType",
+                    "message": "Property CoalesceAssignRule\\FooCoalesce::$alwaysNull (null) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 91,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceAssignRule\\FooCoalesce::$alwaysNull (null) on left side of ??= is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 93,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property CoalesceAssignRule\\FooCoalesce::$string (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 99,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property CoalesceAssignRule\\FooCoalesce::$staticString (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 101,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property CoalesceAssignRule\\FooCoalesce::$staticAlwaysNull (null) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 101,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property CoalesceAssignRule\\FooCoalesce::$staticAlwaysNull (null) on left side of ??= is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign.php",
+                    "line": 115,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ??= always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullsafe",
+            "files": [
+                "Variables/data/null-coalesce-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-nullsafe.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$mixed?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-nullsafe.php",
+                    "line": 15,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$nonNullable?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-nullsafe.php",
+                    "line": 15,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type Exception. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-nullsafe.php",
+                    "line": 15,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Exception::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Variables/data/null-coalesce-nullsafe.php",
+                    "line": 16,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$nullable?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-nullsafe.php",
+                    "line": 16,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Exception::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testVariableCertaintyInNullCoalesce",
+            "files": [
+                "Variables/data/variable-certainty-null.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/variable-certainty-null.php",
+                    "line": 6,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null.php",
+                    "line": 8,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null.php",
+                    "line": 13,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ?? always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testVariableCertaintyInNullCoalesceAssign",
+            "files": [
+                "Variables/data/variable-certainty-null-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/variable-certainty-null-assign.php",
+                    "line": 6,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $scalar on left side of ??= always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null-assign.php",
+                    "line": 8,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $doesNotExist on left side of ??= is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-certainty-null-assign.php",
+                    "line": 13,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $a on left side of ??= always exists and is always null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullCoalesceInGlobalScope",
+            "files": [
+                "Variables/data/null-coalesce-global-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-global-scope.php",
+                    "line": 6,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $bar on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5009",
+            "files": [
+                "Variables/data/bug-5009.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNullableArrayReceiver",
+            "files": [
+                "Variables/data/null-coalesce-nullable-array-receiver.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5933",
+            "files": [
+                "Variables/data/bug-5933.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13623",
+            "files": [
+                "Variables/data/bug-13623.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7109",
+            "files": [
+                "Properties/data/bug-7109.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 17,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 18,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 19,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 28,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 29,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 30,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 40,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 41,
+                    "identifier": "isset.expr",
+                    "message": "Expression in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 42,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 54,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->notFalsy\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 59,
+                    "identifier": "empty.expr",
+                    "message": "Expression in empty() is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 66,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 67,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 68,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 73,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this?->aaa ?? 'edge'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 73,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 74,
+                    "identifier": "isset.expr",
+                    "message": "Expression in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 74,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 75,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->(Expression)\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 75,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7190",
+            "files": [
+                "Properties/data/bug-7190.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7190.php",
+                    "line": 20,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset int on non-empty-array<int, int> on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7318",
+            "files": [
+                "Properties/data/bug-7318.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7318.php",
+                    "line": 24,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'unique' on array{unique: bool} on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7318.php",
+                    "line": 27,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'unique' on array{unique: bool} in isset() always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7968",
+            "files": [
+                "Variables/data/bug-7968.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8084",
+            "files": [
+                "Variables/data/bug-8084.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10577",
+            "files": [
+                "Variables/data/bug-10577.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11708",
+            "files": [
+                "Variables/data/bug-11708.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13488",
+            "files": [
+                "Variables/data/bug-13488.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13488Loose",
+            "files": [
+                "Variables/data/bug-13488-loose.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-13488-loose.php",
+                    "line": 32,
+                    "identifier": "isset.offset",
+                    "message": "Offset non-empty-string on array<string, bool> in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-13488-loose.php",
+                    "line": 33,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset non-empty-string on array<string, bool> on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-13488-loose.php",
+                    "line": 48,
+                    "identifier": "isset.offset",
+                    "message": "Offset non-empty-string on array<string, bool> in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-13488-loose.php",
+                    "line": 49,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset non-empty-string on array<string, bool> on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10610",
+            "files": [
+                "Variables/data/bug-10610.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugDoctrine",
+            "files": [
+                "Variables/data/bug-doctrine.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-doctrine.php",
+                    "line": 13,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$b[$a] ?? 2\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12553",
+            "files": [
+                "Variables/data/bug-12553.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugMultiDimLoop",
+            "files": [
+                "Variables/data/bug-nullCoalesceMultiDimLoop.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIssetAfterRememberedConstructor",
+            "files": [
+                "Variables/data/isset-after-remembered-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 34,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\User::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 93,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$false in empty() is always falsy and initialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-after-remembered-constructor.php",
+                    "line": 95,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property IssetOrCoalesceOnNonNullableInitializedProperty\\MoreEmptyCases::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPr4372",
+            "files": [
+                "Variables/data/pr-4372-null-coalesce.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11488",
+            "files": [
+                "Variables/data/bug-11488.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13921",
+            "files": [
+                "Variables/data/bug-13921.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-13921.php",
+                    "line": 19,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 0 on non-empty-list<array<string|null>> on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4846",
+            "files": [
+                "Variables/data/bug-4846.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-4846.php",
+                    "line": 13,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug4846\\Foo::$alwaysString (string) on left side of ?? is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14458",
+            "files": [
+                "Variables/data/bug-14458.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14555",
+            "files": [
+                "Variables/data/bug-14555.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14555.php",
+                    "line": 43,
+                    "identifier": "assign.propertyProtectedSet",
+                    "message": "Assign to protected(set) property Bug14555\\ValueObject::$value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14459",
+            "files": [
+                "Variables/data/bug-14459.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14459.php",
+                    "line": 34,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14459\\Dto::$policyholderId (stdClass) on left side of ?? is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14459Hooked",
+            "files": [
+                "Variables/data/bug-14459-hooked.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14459-hooked.php",
+                    "line": 21,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14459Hooked\\DtoHooked::$policyholderId (stdClass) on left side of ?? is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4337",
+            "files": [
+                "Variables/data/bug-4337.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-4337.php",
+                    "line": 72,
+                    "identifier": "void.pure",
+                    "message": "Function Bug4337\\assignCoalesceAlwaysSet() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15134",
+            "files": [
+                "Variables/data/bug-15134.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnnecessaryNullCoalesceSideEffects",
+            "files": [
+                "Variables/data/unnecessary-null-coalesce-side-effects.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/unnecessary-null-coalesce-side-effects.php",
+                    "line": 95,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $x might not be defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12179",
+            "files": [
+                "Variables/data/bug-12179.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9966",
+            "files": [
+                "Variables/data/bug-9966.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-9966.php",
+                    "line": 9,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'key1' on array{key1: string, key2: string|null, key3?: string, key4?: string|null} on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14393",
+            "files": [
+                "Variables/data/bug-14393.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 11,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 12,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 36,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 37,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 80,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 81,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClass::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 92,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 93,
+                    "identifier": "isset.property",
+                    "message": "Property Bug14393\\MyClassPhpDoc::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 120,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 121,
+                    "identifier": "isset.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 150,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 151,
+                    "identifier": "isset.property",
+                    "message": "Static property Bug14393\\MyClassStatic::$i (int) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 164,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefinedVar on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 165,
+                    "identifier": "isset.variable",
+                    "message": "Variable $undefinedVar in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14393.php",
+                    "line": 166,
+                    "identifier": "empty.variable",
+                    "message": "Variable $undefinedVar in empty() is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15021",
+            "files": [
+                "Variables/data/bug-15021.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-15021.php",
+                    "line": 6,
+                    "identifier": "void.pure",
+                    "message": "Function Bug15021\\foo() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullCoalesceAssignRightSideScope",
+            "files": [
+                "Variables/data/null-coalesce-assign-right-side-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 19,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property NullCoalesceAssignRightSideScope\\Foo::$nonNullable (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 19,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property NullCoalesceAssignRightSideScope\\Foo::$nonNullable (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 24,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property NullCoalesceAssignRightSideScope\\Foo::$staticNonNullable (string) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 24,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Static property NullCoalesceAssignRightSideScope\\Foo::$staticNonNullable (string) on left side of ??= is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 33,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\nestedOffset() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 39,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\nonConstantArray() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 44,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\undefinedVariable() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ?? is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 46,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $undefined on left side of ??= is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 52,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<string, string> does not accept string|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 58,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<string, string> does not accept string|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 70,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<string, string> does not accept string|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 74,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\issetOnRightSide() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 80,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\emptyOnRightSide() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 86,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\unsetTargetBeforeAssignOp() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 89,
+                    "identifier": "nullCoalesce.offset",
+                    "message": "Offset 'foo' on array{bar?: string} on left side of ??= does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 93,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\emptyTargetBeforeAssignOp() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/null-coalesce-assign-right-side-scope.php",
+                    "line": 109,
+                    "identifier": "void.pure",
+                    "message": "Function NullCoalesceAssignRightSideScope\\assignOpInsideUnsetOffset() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15056",
+            "files": [
+                "Variables/data/bug-15056.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPropertyInitializationCustomSerialization",
+            "files": [
+                "Variables/data/property-initialization-custom-serialization.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 20,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 21,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 23,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\NoSerialization::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 41,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 42,
+                    "identifier": "isset.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$string in isset() is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 44,
+                    "identifier": "empty.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\OnlyWakeup::$true in empty() is not falsy nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __serialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 200,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class PropertyInitializationCustomSerialization\\OldSchoolSerializable implements the Serializable interface, but does not implement __unserialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 238,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\PromotedNoSerialization::$string on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/property-initialization-custom-serialization.php",
+                    "line": 271,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property PropertyInitializationCustomSerialization\\CoalesceAssignNoSerialization::$string on left side of ??= is not nullable nor uninitialized.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15046",
+            "files": [
+                "Variables/data/bug-15046.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-15046.php",
+                    "line": 140,
+                    "identifier": "nullCoalesce.initializedProperty",
+                    "message": "Property Bug15046\\BothBranches::$answer on left side of ?? is not nullable nor uninitialized.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-15046.php",
+                    "line": 157,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug15046\\ConditionMetAgain::$answer (int) on left side of ?? is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Variables/data/isset-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 119,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $s on left side of ?? always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 120,
+                    "identifier": "isset.variable",
+                    "message": "Variable $s in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php",
+                    "line": 121,
+                    "identifier": "empty.variable",
+                    "message": "Variable $s in empty() always exists and is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)",
+                    "line": 82,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)",
+                    "line": 83,
+                    "identifier": "isset.property",
+                    "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)",
+                    "line": 84,
+                    "identifier": "empty.property",
+                    "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)",
+                    "line": 82,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)",
+                    "line": 83,
+                    "identifier": "isset.property",
+                    "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)",
+                    "line": 84,
+                    "identifier": "empty.property",
+                    "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12780",
+            "files": [
+                "Variables/data/bug-12780.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testReadonlyPropertyOnNullableReceiver",
+            "files": [
+                "Variables/data/null-coalesce-readonly-property-nullable-receiver.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/null-coalesce-readonly-property-nullable-receiver.php",
+                    "line": 57,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property NullCoalesceReadonlyPropertyNullableReceiver\\PluginMapping::$snippetName (string) on left side of ?? is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

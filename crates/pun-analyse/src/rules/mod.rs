@@ -668,6 +668,13 @@ pub const IDENTIFIERS: &[&str] = &[
     "match.alwaysTrue",
     "match.unhandled",
     "instanceof.invalidExprType",
+    "nullCoalesce.variable",
+    "nullCoalesce.offset",
+    "nullCoalesce.property",
+    "nullCoalesce.expr",
+    "nullsafe.neverNull",
+    "nullCoalesce.unnecessary",
+    "nullCoalesce.initializedProperty",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -732,6 +739,8 @@ pub struct Checker<'a, 'arena> {
     relative_path: &'a crate::relative_path::RelativePath,
     /// Mago's inferred types of the expressions rules ask about (see [`typed_expressions()`]).
     types: HashMap<Span, TUnion>,
+    /// `$scope->hasVariableType()` where the wanted direct variables are read (see [`infer::analyse()`]).
+    defined: HashMap<Span, pun_phpstan::types::Tri>,
     names: &'a ResolvedNames<'arena>,
     codebase: &'a CodebaseMetadata,
     classes: Vec<ClassScope>,
@@ -1761,6 +1770,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::binary(self, b);
         types::binary_operation(self, b);
         dead_code::binary(self, b);
+        if b.operator.is_null_coalesce() {
+            dead_code::null_coalesce(self, b.lhs, b.rhs, "??");
+        }
         operators::binary(self, b);
         if matches!(b.operator, BinaryOperator::Instanceof(_)) {
             names::instanceof(self, b.lhs, b.rhs);
@@ -1804,6 +1816,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+        if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
+            dead_code::null_coalesce(self, a.lhs, a.rhs, "??=");
+        }
         property_access::assign(self, a);
         assign::assignment(self, a);
         assign::property_assign_ref(self, a);
