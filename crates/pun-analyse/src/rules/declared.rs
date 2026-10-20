@@ -401,6 +401,49 @@ struct Resolved {
     self_out: Option<Type>,
     /// the asserted parameters (without `$`)
     asserts: Vec<String>,
+    /// `isPure()`: `@pure` (and its aliases) or `@impure`
+    pure: Option<bool>,
+    /// `@pure-unless-callable-is-impure` and `@pure-unless-parameter-passed` parameters
+    pure_unless_callable: Vec<String>,
+    pure_unless_passed: Vec<String>,
+}
+
+/// The parameters (without `$`) the tags `names` name.
+fn tagged_params(raw: &[u8], names: &[&str]) -> Vec<String> {
+    let raw = String::from_utf8_lossy(raw);
+    raw.lines()
+        .filter_map(|l| {
+            let mut words = l.trim_start().trim_start_matches('*').split_whitespace();
+            names.contains(&words.next()?).then(|| words.next()?.strip_prefix('$').map(str::to_string)).flatten()
+        })
+        .collect()
+}
+
+/// `isPure()` of method `name` declared in user class `class` (PhpClassReflectionExtension and PhpDocsResolver): its
+/// resolved PHPDoc's `@pure`/`@impure`, else the class's `@phpstan-all-methods-pure` (not on a method returning
+/// `void`) or `@phpstan-all-methods-impure`; with whether `getPureUnlessCallableIsImpureParameters()` and
+/// `getPureUnlessParameterPassedParameters()` are not empty.
+pub(super) fn method_purity(c: &Checker, class: &ClassLikeMetadata, name: &[u8]) -> (Option<bool>, bool, bool) {
+    let lower = name.to_ascii_lowercase();
+    let doc = method_doc(c, class, &lower, 0).unwrap_or_default();
+    let mut pure = doc.pure;
+    if pure.is_none() {
+        let tags = doc_at(c, class.span).map(|(raw, _)| super::declarations::doc_tags(&raw)).unwrap_or_default();
+        let void = |t: Option<&Type>| t.is_some_and(|t| t.is_void().yes());
+        let native = c
+            .codebase
+            .get_method(class.name.as_bytes(), &lower)
+            .and_then(|m| m.return_type_declaration_metadata.as_ref())
+            .is_some_and(|t| t.type_union.is_void());
+        if tags.iter().any(|t| t == "@phpstan-all-methods-pure") {
+            if lower == b"__construct" || (!void(doc.ret.as_ref()) && !native) {
+                pure = Some(true);
+            }
+        } else if tags.iter().any(|t| t == "@phpstan-all-methods-impure") {
+            pure = Some(false);
+        }
+    }
+    (pure, !doc.pure_unless_callable.is_empty(), !doc.pure_unless_passed.is_empty())
 }
 
 /// The own PHPDoc of method `m` declared in `class`, `self` being `context`.
@@ -437,6 +480,18 @@ fn resolved_own(
         closure_this: Doc::named_types(&doc.closure_this, &scope),
         self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
         asserts: super::assert_tags::parameters(&raw),
+        pure: {
+            let tags = super::declarations::doc_tags(&raw);
+            if super::declarations::has_tag(&tags, &["@pure", "@phan-pure", "@phan-side-effect-free", "@psalm-pure", "@phpstan-pure"]) {
+                Some(true)
+            } else if super::declarations::has_tag(&tags, &["@impure", "@phpstan-impure"]) {
+                Some(false)
+            } else {
+                None
+            }
+        },
+        pure_unless_callable: tagged_params(&raw, &["@pure-unless-callable-is-impure", "@phpstan-pure-unless-callable-is-impure"]),
+        pure_unless_passed: tagged_params(&raw, &["@pure-unless-parameter-passed", "@phpstan-pure-unless-parameter-passed"]),
     })
 }
 
@@ -637,6 +692,20 @@ fn merge(
     for (name, ty) in parent.closure_this {
         out.closure_this.entry(rename(name)).or_insert_with(|| types(ty));
     }
+    // `mergePureTags()`, `mergeParamsPureUnless*()`
+    out.pure = out.pure.or(parent.pure);
+    for name in parent.pure_unless_callable {
+        let name = rename(name);
+        if !out.pure_unless_callable.contains(&name) {
+            out.pure_unless_callable.push(name);
+        }
+    }
+    for name in parent.pure_unless_passed {
+        let name = rename(name);
+        if !out.pure_unless_passed.contains(&name) {
+            out.pure_unless_passed.push(name);
+        }
+    }
     out
 }
 
@@ -772,6 +841,7 @@ fn method_resolved(c: &Checker, m: &Method, k: &ClassLikeMetadata, context: &Cla
             closure_this: Doc::named_types(&doc.closure_this, &scope),
             self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
             asserts: super::assert_tags::parameters(raw),
+            ..Resolved::default()
         }
     });
     let positional: Vec<String> = m
@@ -811,7 +881,7 @@ fn function_resolved(c: &Checker, f: &Function) -> Resolved {
                 outs: Doc::named_types(&doc.outs, &scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
                 self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
-                asserts: Vec::new(),
+                ..Resolved::default()
             }
         })
         .unwrap_or_default()

@@ -51,6 +51,8 @@ pub struct Project {
     pub unused_label: bool,
     /// `featureToggles.checkNonStringableDynamicAccess` (on with bleedingEdge): the `*.nameNotString` checks.
     pub check_non_stringable_dynamic_access: bool,
+    /// `featureToggles.reportMethodPurityOverride` (on with bleedingEdge): MethodSignatureRule's purity checks.
+    pub report_method_purity_override: bool,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
     pub check_uninitialized_properties: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
@@ -214,6 +216,7 @@ impl Project {
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
             check_non_stringable_dynamic_access: toggle("checkNonStringableDynamicAccess"),
+            report_method_purity_override: toggle("reportMethodPurityOverride"),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
@@ -258,6 +261,7 @@ impl Project {
             bleeding_edge: false,
             unused_label: false,
             check_non_stringable_dynamic_access: false,
+            report_method_purity_override: false,
             check_uninitialized_properties: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),

@@ -861,6 +861,11 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     let k = c.class_scope().expect("a method is walked inside its class-like");
     let messages = declared::with_classes(c, || {
         let mut out = overriding_method(c, m, name, k);
+        // OverridingMethodRule::addErrors(): MethodSignatureRule (checkPhpDocMethodSignatures, level 3) when the
+        // rule itself found nothing
+        if out.is_empty() && c.level >= 3 && c.method_purity_override {
+            out = purity_override(c, m, name, k);
+        }
         out.extend(consistent_constructor(c, m, name, k));
         out
     });
@@ -1025,6 +1030,64 @@ fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Cla
         ));
     }
     out
+}
+
+/// MethodSignatureRule's purity checks (`featureToggles.reportMethodPurityOverride`) against
+/// ParentMethodHelper::collectParentMethods(): the parent class's method, every interface's, and the abstract
+/// methods the class's traits (and theirs, and its parents') declare. ponytail: the rule's return and parameter type
+/// checks are not ported, and a built-in parent's purity (the signature map's `hasSideEffects`) is not consulted.
+fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
+    let lower = name.to_ascii_lowercase();
+    // ponytail: `reportStaticMethodSignatures` stays at its default, off
+    let is_static = m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_)));
+    if lower == "__construct" || is_static || m.modifiers.iter().any(is_private) {
+        return Vec::new();
+    }
+    if declared::method_purity(c, k, lower.as_bytes()).0 != Some(false) {
+        return Vec::new();
+    }
+    let mut parents: Vec<Found> = Vec::new();
+    if let Some(parent) = c.parent_class(Class::User(k))
+        && let Some(found) = c.native_method(parent, &lower)
+        && c.found_visibility(found) != Visibility::Private
+    {
+        parents.push(found);
+    }
+    parents.extend(c.all_interfaces(Class::User(k)).into_iter().filter_map(|i| c.native_method(i, &lower)));
+    for t in c.traits(k) {
+        if let Some(f) = c.codebase.get_method(t.name.as_bytes(), lower.as_bytes())
+            && f.method_metadata.as_ref().is_some_and(|mm| mm.is_abstract)
+        {
+            parents.push(Found::User { declaring: t, implementing: Class::User(t), f });
+        }
+    }
+    let class = c.display(k);
+    parents
+        .into_iter()
+        .filter_map(|found| {
+            let Found::User { declaring, .. } = found else {
+                return None;
+            };
+            let (pure, unless_callable, unless_passed) = declared::method_purity(c, declaring, lower.as_bytes());
+            let parent = format!("{}::{}()", c.declaring_display(k, found), c.facts(found, k).name);
+            let (id, message) = if pure == Some(true) {
+                ("method.impure", format!("Impure method {class}::{name}() overrides pure method {parent}."))
+            } else if unless_callable {
+                (
+                    "method.impureOverridePureUnlessCallable",
+                    format!("Impure method {class}::{name}() overrides method {parent} marked @pure-unless-callable-is-impure."),
+                )
+            } else if unless_passed {
+                (
+                    "method.impureOverridePureUnlessParameterPassed",
+                    format!("Impure method {class}::{name}() overrides method {parent} marked @pure-unless-parameter-passed."),
+                )
+            } else {
+                return None;
+            };
+            Some((id, message, None, true))
+        })
+        .collect()
 }
 
 /// ConsistentConstructorRule.

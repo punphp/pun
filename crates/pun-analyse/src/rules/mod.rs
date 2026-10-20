@@ -411,6 +411,9 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.tentativeReturnType",
     "method.childReturnType",
     "method.childParameterType",
+    "method.impure",
+    "method.impureOverridePureUnlessCallable",
+    "method.impureOverridePureUnlessParameterPassed",
     "parameter.missing",
     "parameter.byRef",
     "parameter.notByRef",
@@ -819,6 +822,8 @@ pub struct Checker<'a, 'arena> {
     unused_label: bool,
     /// NonStringableDynamicAccessCheck: `featureToggles.checkNonStringableDynamicAccess`.
     non_stringable_names: bool,
+    /// MethodSignatureRule's purity checks: `featureToggles.reportMethodPurityOverride`.
+    method_purity_override: bool,
     /// UninitializedPropertyRule: `checkUninitializedProperties`.
     uninitialized_properties: bool,
     /// The phpstan-strict-rules switches.

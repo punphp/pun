@@ -62,6 +62,8 @@ pub(crate) struct Checks {
     unused_label: bool,
     /// [`Project::check_non_stringable_dynamic_access`].
     non_stringable_names: bool,
+    /// [`Project::report_method_purity_override`].
+    method_purity_override: bool,
     /// [`Project::check_uninitialized_properties`].
     uninitialized_properties: bool,
     /// [`Project::strict_rules`].
@@ -105,6 +107,7 @@ impl Checks {
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
             non_stringable_names: project.check_non_stringable_dynamic_access,
+            method_purity_override: project.report_method_purity_override,
             uninitialized_properties: project.check_uninitialized_properties,
             strict: project.strict_rules,
         }
@@ -208,6 +211,7 @@ fn checker<'a, 'arena>(
         bleeding_edge: project.bleeding_edge,
         unused_label: project.unused_label,
         non_stringable_names: project.non_stringable_names,
+        method_purity_override: project.method_purity_override,
         uninitialized_properties: project.uninitialized_properties,
         strict: project.strict,
         closure_bind: 0,
