@@ -1,0 +1,929 @@
+{
+    "test": "Comparison/BooleanOrConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/boolean-or.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 15,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 19,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 24,
+                    "identifier": "booleanOr.leftAlwaysFalse",
+                    "message": "Left side of || is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 27,
+                    "identifier": "booleanOr.rightAlwaysFalse",
+                    "message": "Right side of || is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 30,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 30,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 0 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 33,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 33,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 36,
+                    "identifier": "booleanOr.rightAlwaysFalse",
+                    "message": "Right side of || is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 39,
+                    "identifier": "booleanOr.rightAlwaysFalse",
+                    "message": "Right side of || is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionBooleanOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionBooleanOr\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionBooleanOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionBooleanOr\\Lorem.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionBooleanOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionBooleanOr\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionBooleanOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionBooleanOr\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 50,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 50,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionBooleanOr\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 50,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionBooleanOr\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 50,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionBooleanOr\\Bar and ConstantConditionBooleanOr\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 54,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 54,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionBooleanOr\\Ipsum not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 54,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionBooleanOr\\Lorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionBooleanOr\\Ipsum will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionBooleanOr\\Ipsum&ConstantConditionBooleanOr\\Lorem and ConstantConditionBooleanOr\\Lorem will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 61,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 61,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between '\\\\' and '\\\\' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 65,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 65,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between '\\\\' and '\\\\' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 77,
+                    "identifier": "booleanOr.leftAlwaysFalse",
+                    "message": "Left side of || is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 79,
+                    "identifier": "booleanOr.rightAlwaysFalse",
+                    "message": "Right side of || is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 83,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 85,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 101,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-or.php",
+                    "line": 110,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleLogicalOr",
+            "files": [
+                "Comparison/data/boolean-logical-or.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 15,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 15,
+                    "identifier": "logicalOr.leftAlwaysTrue",
+                    "message": "Left side of or is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 19,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 19,
+                    "identifier": "logicalOr.rightAlwaysTrue",
+                    "message": "Right side of or is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 24,
+                    "identifier": "logicalOr.leftAlwaysFalse",
+                    "message": "Left side of or is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 27,
+                    "identifier": "logicalOr.rightAlwaysFalse",
+                    "message": "Right side of or is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 30,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 0 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 30,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 30,
+                    "identifier": "logicalOr.rightAlwaysTrue",
+                    "message": "Right side of or is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 33,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 33,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 33,
+                    "identifier": "logicalOr.alwaysTrue",
+                    "message": "Result of or is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 36,
+                    "identifier": "logicalOr.rightAlwaysFalse",
+                    "message": "Right side of or is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 39,
+                    "identifier": "logicalOr.rightAlwaysFalse",
+                    "message": "Right side of or is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionLogicalOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionLogicalOr\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionLogicalOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionLogicalOr\\Lorem.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionLogicalOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionLogicalOr\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionLogicalOr\\BooleanOr::checkUnionAndIntersection() has invalid type ConstantConditionLogicalOr\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 50,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionLogicalOr\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 50,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionLogicalOr\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 50,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 50,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionLogicalOr\\Bar and ConstantConditionLogicalOr\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 50,
+                    "identifier": "logicalOr.alwaysTrue",
+                    "message": "Result of or is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 54,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionLogicalOr\\Ipsum not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 54,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionLogicalOr\\Lorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 54,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionLogicalOr\\Ipsum will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionLogicalOr\\Ipsum&ConstantConditionLogicalOr\\Lorem and ConstantConditionLogicalOr\\Lorem will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 54,
+                    "identifier": "logicalOr.alwaysTrue",
+                    "message": "Result of or is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 61,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between '\\\\' and '\\\\' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 61,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 61,
+                    "identifier": "logicalOr.alwaysTrue",
+                    "message": "Result of or is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 65,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between '\\\\' and '\\\\' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 65,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 65,
+                    "identifier": "logicalOr.alwaysTrue",
+                    "message": "Result of or is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 77,
+                    "identifier": "logicalOr.leftAlwaysFalse",
+                    "message": "Left side of or is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 79,
+                    "identifier": "logicalOr.rightAlwaysFalse",
+                    "message": "Right side of or is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 83,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 83,
+                    "identifier": "logicalOr.leftAlwaysTrue",
+                    "message": "Left side of or is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 85,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-or.php",
+                    "line": 85,
+                    "identifier": "logicalOr.rightAlwaysTrue",
+                    "message": "Right side of or is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/boolean-or-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 12,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type string is incompatible with native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeInterface and DateTimeInterface will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 24,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 27,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 30,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 33,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDoc",
+            "files": [
+                "Comparison/data/boolean-or-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 12,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type string is incompatible with native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeInterface and DateTimeInterface will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 24,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 27,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 30,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-not-phpdoc.php",
+                    "line": 33,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertainRegression#0",
+            "files": [
+                "Comparison/data/boolean-or-treat-phpdoc-types-regression.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertainRegression#1",
+            "files": [
+                "Comparison/data/boolean-or-treat-phpdoc-types-regression.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6258",
+            "files": [
+                "Comparison/data/bug-6258.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2741",
+            "files": [
+                "Comparison/data/bug-2741-or.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-2741-or.php",
+                    "line": 21,
+                    "identifier": "booleanOr.rightAlwaysFalse",
+                    "message": "Right side of || is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7881",
+            "files": [
+                "Comparison/data/bug-7881.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#0",
+            "files": [
+                "Comparison/data/boolean-or-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 50,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 69,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#1",
+            "files": [
+                "Comparison/data/boolean-or-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 50,
+                    "identifier": "booleanOr.rightAlwaysTrue",
+                    "message": "Right side of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 69,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-or-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6551",
+            "files": [
+                "Comparison/data/bug-6551.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6551.php",
+                    "line": 49,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6551.php",
+                    "line": 49,
+                    "identifier": "empty.variable",
+                    "message": "Variable $match in empty() always exists and is always falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6551.php",
+                    "line": 61,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6551.php",
+                    "line": 61,
+                    "identifier": "empty.variable",
+                    "message": "Variable $match in empty() always exists and is always falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4004",
+            "files": [
+                "Comparison/data/bug-4004.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10305",
+            "files": [
+                "Comparison/data/bug-10305.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-10305.php",
+                    "line": 10,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-10305.php",
+                    "line": 10,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between null and null will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/boolean-or-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-or-in-trait.php",
+                    "line": 19,
+                    "identifier": "booleanOr.leftAlwaysTrue",
+                    "message": "Left side of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-in-trait.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanOrInTrait\\Foo::doBar() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-in-trait.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanOrInTrait\\Foo::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-in-trait.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanOrInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-or-in-trait.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanOrInTrait\\FooAnother::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14473",
+            "files": [
+                "Comparison/data/bug-14473.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

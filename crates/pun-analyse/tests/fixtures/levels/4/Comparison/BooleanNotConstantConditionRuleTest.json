@@ -1,0 +1,498 @@
+{
+    "test": "Comparison/BooleanNotConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/boolean-not.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 13,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 18,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionBooleanNot\\BooleanNot::elseifs() has invalid type ConstantConditionBooleanNot\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionBooleanNot\\BooleanNot::elseifs() has invalid type ConstantConditionBooleanNot\\Lorem.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionBooleanNot\\BooleanNot::elseifs() has invalid type ConstantConditionBooleanNot\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionBooleanNot\\BooleanNot::elseifs() has invalid type ConstantConditionBooleanNot\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 33,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 40,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 40,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 46,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 50,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not.php",
+                    "line": 67,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/boolean-not-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-not-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDoc",
+            "files": [
+                "Comparison/data/boolean-not-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-not-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertainRegression#0",
+            "files": [
+                "DeadCode/data/bug-without-issue-1.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-without-issue-1.php",
+                    "line": 39,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertainRegression#1",
+            "files": [
+                "DeadCode/data/bug-without-issue-1.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-without-issue-1.php",
+                    "line": 39,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6473",
+            "files": [
+                "Comparison/data/bug-6473.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5317",
+            "files": [
+                "Comparison/data/bug-5317.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5317.php",
+                    "line": 18,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8797",
+            "files": [
+                "Comparison/data/bug-8797.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13797",
+            "files": [
+                "Comparison/data/bug-13797.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7937",
+            "files": [
+                "Comparison/data/bug-7937.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7937.php",
+                    "line": 19,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: int",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7937.php",
+                    "line": 22,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: int",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11903",
+            "files": [
+                "Comparison/data/bug-11903.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11903.php",
+                    "line": 13,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11903.php",
+                    "line": 17,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11903.php",
+                    "line": 21,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11903.php",
+                    "line": 21,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11903.php",
+                    "line": 25,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#0",
+            "files": [
+                "Comparison/data/boolean-not-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-not-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-not-report-always-true-last-condition.php",
+                    "line": 40,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-report-always-true-last-condition.php",
+                    "line": 50,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#1",
+            "files": [
+                "Comparison/data/boolean-not-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-not-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-not-report-always-true-last-condition.php",
+                    "line": 40,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-report-always-true-last-condition.php",
+                    "line": 50,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5984",
+            "files": [
+                "Comparison/data/bug-5984.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12267",
+            "files": [
+                "Comparison/data/bug-12267.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-12267.php (in context of class Bug12267\\Class1)",
+                    "line": 19,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6702",
+            "files": [
+                "Comparison/data/bug-6702.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/boolean-not-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-not-in-trait.php",
+                    "line": 19,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-in-trait.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanNotInTrait\\Foo::doBar() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-in-trait.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanNotInTrait\\Foo::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-in-trait.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanNotInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-not-in-trait.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanNotInTrait\\FooAnother::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12852",
+            "files": [
+                "Comparison/data/bug-12852.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-12852.php",
+                    "line": 5,
+                    "identifier": "void.pure",
+                    "message": "Function Bug12852\\test() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-12852.php",
+                    "line": 10,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14469",
+            "files": [
+                "Comparison/data/bug-14469.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-14469.php",
+                    "line": 22,
+                    "identifier": "void.pure",
+                    "message": "Function Bug14469\\testIfConstantCondition() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-14469.php",
+                    "line": 38,
+                    "identifier": "void.pure",
+                    "message": "Function Bug14469\\testFalseyBranch() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-14469.php",
+                    "line": 54,
+                    "identifier": "void.pure",
+                    "message": "Function Bug14469\\testWithElse() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-14469.php",
+                    "line": 72,
+                    "identifier": "void.pure",
+                    "message": "Function Bug14469\\testMultipleElseif() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

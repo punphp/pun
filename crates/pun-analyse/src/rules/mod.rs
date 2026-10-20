@@ -553,6 +553,46 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.resultUnused",
     "staticMethod.resultUnused",
     "new.resultUnused",
+    "if.alwaysTrue",
+    "if.alwaysFalse",
+    "elseif.alwaysTrue",
+    "elseif.alwaysFalse",
+    "ternary.alwaysTrue",
+    "ternary.alwaysFalse",
+    "doWhile.alwaysTrue",
+    "doWhile.alwaysFalse",
+    "booleanNot.alwaysTrue",
+    "booleanNot.alwaysFalse",
+    "while.alwaysTrue",
+    "while.alwaysFalse",
+    "booleanAnd.alwaysTrue",
+    "booleanAnd.alwaysFalse",
+    "booleanAnd.leftAlwaysTrue",
+    "booleanAnd.leftAlwaysFalse",
+    "booleanAnd.rightAlwaysTrue",
+    "booleanAnd.rightAlwaysFalse",
+    "booleanOr.alwaysTrue",
+    "booleanOr.alwaysFalse",
+    "booleanOr.leftAlwaysTrue",
+    "booleanOr.leftAlwaysFalse",
+    "booleanOr.rightAlwaysTrue",
+    "booleanOr.rightAlwaysFalse",
+    "logicalAnd.alwaysTrue",
+    "logicalAnd.alwaysFalse",
+    "logicalAnd.leftAlwaysTrue",
+    "logicalAnd.leftAlwaysFalse",
+    "logicalAnd.rightAlwaysTrue",
+    "logicalAnd.rightAlwaysFalse",
+    "logicalOr.alwaysTrue",
+    "logicalOr.alwaysFalse",
+    "logicalOr.leftAlwaysTrue",
+    "logicalOr.leftAlwaysFalse",
+    "logicalOr.rightAlwaysTrue",
+    "logicalOr.rightAlwaysFalse",
+    "logicalXor.leftAlwaysTrue",
+    "logicalXor.leftAlwaysFalse",
+    "logicalXor.rightAlwaysTrue",
+    "logicalXor.rightAlwaysFalse",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -692,6 +732,8 @@ pub struct Checker<'a, 'arena> {
     precise_unused_parameter_line: bool,
     /// The statements UnreachableStatementRule reports.
     unreachable: HashSet<Span>,
+    /// LastConditionVisitor's attributes and more the constant condition rules read.
+    conditions: dead_code::ConditionFacts,
     /// [`driver::Checks`]'s level-2 RestrictedInternalMethodUsageExtension and RestrictedInternalPropertyUsageExtension.
     internal_members: bool,
     /// [`driver::Checks`]'s phpstan-deprecation-rules switch and `featureToggles.bleedingEdge`.
@@ -1485,6 +1527,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_if(&mut self, r#if: &'ast If<'arena>, c: &mut ()) {
+        dead_code::if_statement(self, r#if);
         self.walk_expression(r#if.condition, c);
         // (condition, statements) per branch; `None` is the `else`
         let mut branches: Vec<(Option<&Expression<'arena>>, Vec<&Statement<'arena>>)> = Vec::new();
@@ -1544,6 +1587,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_conditional(&mut self, cond: &'ast Conditional<'arena>, c: &mut ()) {
+        dead_code::ternary(self, cond);
         self.walk_expression(cond.condition, c);
         if let Some(then) = cond.then {
             let t = self.truthy(cond.condition);
@@ -1554,6 +1598,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_binary(&mut self, b: &'ast Binary<'arena>, c: &mut ()) {
+        dead_code::binary(self, b);
         if matches!(b.operator, BinaryOperator::Instanceof(_)) {
             names::instanceof(self, b.lhs, b.rhs);
         }
@@ -1952,6 +1997,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
         syntax::used_names(self, program);
         self.unreachable = dead_code::unreachable_statements(self, program);
+        self.conditions = dead_code::condition_facts(self, program);
         self.push_frame(FrameKind::Top);
     }
     fn walk_out_program(&mut self, _: &'ast Program<'arena>, _: &mut ()) {
@@ -2025,6 +2071,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         statements::magic_constant(self, m);
     }
     fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+        dead_code::boolean_not(self, u);
         statements::cast(self, u);
         internal::string_cast(self, u);
         if matches!(
@@ -2057,6 +2104,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.syntax.parents.pop();
     }
     fn walk_while(&mut self, w: &'ast While<'arena>, c: &mut ()) {
+        dead_code::while_loop(self, w);
         self.syntax.parents.push(syntax::Parent::Loop);
         self.walk_expression(w.condition, c);
         // the body starts where the condition held
@@ -2068,7 +2116,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.walk_branch(guards, &statements);
         self.syntax.parents.pop();
     }
-    fn walk_in_do_while(&mut self, _: &'ast DoWhile<'arena>, _: &mut ()) {
+    fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, _: &mut ()) {
+        dead_code::do_while(self, d);
         self.syntax.parents.push(syntax::Parent::Loop);
     }
     fn walk_out_do_while(&mut self, _: &'ast DoWhile<'arena>, _: &mut ()) {

@@ -142,6 +142,342 @@
    "tip": null
   },
   {
+   "file": "src/conditions.php",
+   "line": 42,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 49,
+   "identifier": "if.alwaysFalse",
+   "message": "If condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 58,
+   "identifier": "elseif.alwaysTrue",
+   "message": "Elseif condition is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 89,
+   "identifier": "elseif.alwaysFalse",
+   "message": "Elseif condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 98,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 107,
+   "identifier": "booleanNot.alwaysTrue",
+   "message": "Negated boolean expression is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 127,
+   "identifier": "booleanOr.rightAlwaysTrue",
+   "message": "Right side of || is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 147,
+   "identifier": "logicalXor.rightAlwaysTrue",
+   "message": "Right side of xor is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 167,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 167,
+   "identifier": "booleanAnd.rightAlwaysTrue",
+   "message": "Right side of && is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 185,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 188,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 191,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 194,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method Conditions\\Checks::isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 197,
+   "identifier": "staticMethod.alreadyNarrowedType",
+   "message": "Call to static method Conditions\\Checks::isIntStatic() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 200,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 203,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 213,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function in_array() with arguments 1, array{1} and true will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 288,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 289,
+   "identifier": "booleanAnd.rightAlwaysTrue",
+   "message": "Right side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 290,
+   "identifier": "booleanAnd.rightAlwaysFalse",
+   "message": "Right side of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 291,
+   "identifier": "booleanOr.rightAlwaysTrue",
+   "message": "Right side of || is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 292,
+   "identifier": "booleanOr.rightAlwaysFalse",
+   "message": "Right side of || is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 293,
+   "identifier": "logicalAnd.leftAlwaysTrue",
+   "message": "Left side of and is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 294,
+   "identifier": "logicalOr.rightAlwaysTrue",
+   "message": "Right side of or is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 295,
+   "identifier": "logicalXor.leftAlwaysTrue",
+   "message": "Left side of xor is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 296,
+   "identifier": "logicalXor.rightAlwaysFalse",
+   "message": "Right side of xor is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 297,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 298,
+   "identifier": "booleanNot.alwaysTrue",
+   "message": "Negated boolean expression is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 300,
+   "identifier": "ternary.alwaysTrue",
+   "message": "Ternary operator condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 301,
+   "identifier": "ternary.alwaysFalse",
+   "message": "Ternary operator condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 302,
+   "identifier": "booleanAnd.resultUnused",
+   "message": "Unused result of \"&&\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 303,
+   "identifier": "booleanOr.resultUnused",
+   "message": "Unused result of \"||\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 309,
+   "identifier": "booleanAnd.leftAlwaysFalse",
+   "message": "Left side of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 315,
+   "identifier": "booleanOr.leftAlwaysTrue",
+   "message": "Left side of || is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 321,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 321,
+   "identifier": "booleanAnd.alwaysFalse",
+   "message": "Result of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 327,
+   "identifier": "while.alwaysFalse",
+   "message": "While loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 352,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 364,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 382,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 400,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 409,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 416,
+   "identifier": "doWhile.alwaysFalse",
+   "message": "Do-while loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 451,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 467,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"match ($b) {\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 492,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 624,
+   "identifier": "greater.alwaysTrue",
+   "message": "Comparison operation \">\" between int<50207, 80599> and 0 is always true.",
+   "tip": null
+  },
+  {
    "file": "src/noop.php",
    "line": 20,
    "identifier": "impureFunction.pure",

@@ -1,0 +1,1277 @@
+{
+    "test": "Comparison/MatchExpressionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/match-expr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 13,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 14,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 1|2|3 and 'foo' is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 18,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 19,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 1|2|3 and 0 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 25,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 28,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between 3 and 3 is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 35,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between 3 and 3 is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 39,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (1) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 40,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between 1 and 1 is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 45,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (1) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 46,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between 1 and 1 is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 50,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: 3",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 55,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 60,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 61,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 1|2 and 3 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 65,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (1) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 69,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 73,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 78,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining values: 1|2|3",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 85,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 86,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between Exception and InvalidArgumentException will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 90,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: true",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 92,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between Exception and InvalidArgumentException will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 99,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $obj contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 101,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($obj) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 123,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 133,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($i) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 168,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining values: int<min, 0>|int<2, max>",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 199,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (get_class($class)) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 211,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (get_debug_type($class)) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 230,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($type) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr.php",
+                    "line": 236,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($day) {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5161",
+            "files": [
+                "Comparison/data/bug-5161.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4857",
+            "files": [
+                "Comparison/data/bug-4857.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4857.php",
+                    "line": 13,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: true",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-4857.php",
+                    "line": 23,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: true",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-4857.php",
+                    "line": 35,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5454",
+            "files": [
+                "Comparison/data/bug-5454.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Comparison/data/match-enums.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 19,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining values: MatchEnums\\Foo::THREE|MatchEnums\\Foo::TWO",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 35,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining values: MatchEnums\\Foo::THREE|MatchEnums\\Foo::TWO",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 56,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: MatchEnums\\Foo::THREE",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 56,
+                    "identifier": "return.type",
+                    "message": "Method MatchEnums\\Bar::doFoo() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 64,
+                    "identifier": "return.type",
+                    "message": "Method MatchEnums\\Bar::doBar() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 73,
+                    "identifier": "return.type",
+                    "message": "Method MatchEnums\\Bar::doBaz() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 76,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between MatchEnums\\Foo::THREE and MatchEnums\\Foo::THREE is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 83,
+                    "identifier": "return.type",
+                    "message": "Method MatchEnums\\Bar::doFoo2() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 85,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between MatchEnums\\Foo and MatchEnums\\Foo::ONE is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 93,
+                    "identifier": "return.type",
+                    "message": "Method MatchEnums\\Bar::doFoo3() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 95,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between MatchEnums\\Foo::THREE|MatchEnums\\Foo::TWO and MatchEnums\\DifferentEnum::ONE is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 103,
+                    "identifier": "return.type",
+                    "message": "Method MatchEnums\\Bar::doFoo4() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 104,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between MatchEnums\\Foo and MatchEnums\\Foo::ONE is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 112,
+                    "identifier": "return.type",
+                    "message": "Method MatchEnums\\Bar::doFoo5() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-enums.php",
+                    "line": 113,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between MatchEnums\\Foo::THREE|MatchEnums\\Foo::TWO and MatchEnums\\DifferentEnum::ONE is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6394",
+            "files": [
+                "Comparison/data/bug-6394.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6394.php",
+                    "line": 16,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug6394\\Foo::$type.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6115",
+            "files": [
+                "Comparison/data/bug-6115.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6115.php",
+                    "line": 32,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: 3",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6115.php",
+                    "line": 37,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6115.php",
+                    "line": 47,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6115.php",
+                    "line": 58,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7095",
+            "files": [
+                "Comparison/data/bug-7095.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7095.php",
+                    "line": 5,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (isset($foo)) {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7176",
+            "files": [
+                "Comparison/data/bug-7176.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6064",
+            "files": [
+                "Comparison/data/bug-6064.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6647",
+            "files": [
+                "Comparison/data/bug-6647.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6647.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug6647\\RuntimeException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-6647.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug6647\\RuntimeException.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7622",
+            "files": [
+                "Comparison/data/bug-7622.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7698",
+            "files": [
+                "Comparison/data/bug-7698.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7746",
+            "files": [
+                "Comparison/data/bug-7746.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8240",
+            "files": [
+                "Comparison/data/bug-8240.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8240.php",
+                    "line": 13,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between Bug8240\\Foo::BAR and Bug8240\\Foo::BAR is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/bug-8240.php",
+                    "line": 28,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between Bug8240\\Foo2::BAZ and Bug8240\\Foo2::BAZ is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLastArmAlwaysTrue",
+            "files": [
+                "Comparison/data/last-match-arm-always-true.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 12,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 20,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 22,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between $this(LastMatchArmAlwaysTrue\\Foo)&LastMatchArmAlwaysTrue\\Foo::TWO and LastMatchArmAlwaysTrue\\Foo::TWO is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 29,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 31,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between $this(LastMatchArmAlwaysTrue\\Foo)&LastMatchArmAlwaysTrue\\Foo::TWO and LastMatchArmAlwaysTrue\\Foo::TWO is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 38,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 40,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between $this(LastMatchArmAlwaysTrue\\Foo)&LastMatchArmAlwaysTrue\\Foo::TWO and LastMatchArmAlwaysTrue\\Foo::TWO is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 54,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 61,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 62,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between $this(LastMatchArmAlwaysTrue\\Bar)&LastMatchArmAlwaysTrue\\Bar::ONE and LastMatchArmAlwaysTrue\\Bar::ONE is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 69,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: 1",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/last-match-arm-always-true.php",
+                    "line": 70,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 1 and 0 is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLastCondition",
+            "files": [
+                "Comparison/data/match-always-true-last-arm.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 13,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 21,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 23,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between $this(MatchAlwaysTrueLastArm\\Foo)&MatchAlwaysTrueLastArm\\Foo::BAR and MatchAlwaysTrueLastArm\\Foo::BAR is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 36,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 48,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($this) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 49,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between $this(MatchAlwaysTrueLastArm\\Foo)&MatchAlwaysTrueLastArm\\Foo::BAR and MatchAlwaysTrueLastArm\\Foo::BAR is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-always-true-last-arm.php",
+                    "line": 56,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($a) {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8932",
+            "files": [
+                "Comparison/data/bug-8932.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8932.php",
+                    "line": 14,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between 'B' and 'B' is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8937",
+            "files": [
+                "Comparison/data/bug-8937.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8937.php",
+                    "line": 23,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_array() with array<string> will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8900",
+            "files": [
+                "Comparison/data/bug-8900.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8900.php",
+                    "line": 15,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4451",
+            "files": [
+                "Comparison/data/bug-4451.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9007",
+            "files": [
+                "Comparison/data/bug-9007.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9457",
+            "files": [
+                "Comparison/data/bug-9457.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8614",
+            "files": [
+                "Comparison/data/bug-8614.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8536",
+            "files": [
+                "Comparison/data/bug-8536.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9499",
+            "files": [
+                "Comparison/data/bug-9499.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-9499.php",
+                    "line": 25,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($arr['f']) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9499.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($foo->f) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9499.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($arr['f']) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9499.php",
+                    "line": 48,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($foo->f) {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6407",
+            "files": [
+                "Comparison/data/bug-6407.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6407.php",
+                    "line": 60,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between 4 and 4 is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBugUnhandledTrueWithComplexCondition",
+            "files": [
+                "Comparison/data/bug-unhandled-true-with-complex-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-unhandled-true-with-complex-condition.php",
+                    "line": 29,
+                    "identifier": "enum.nameCase",
+                    "message": "Enum MatchUnhandledTrueWithComplexCondition\\Bar referenced with incorrect case: MatchUnhandledTrueWithComplexCondition\\BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-unhandled-true-with-complex-condition.php",
+                    "line": 30,
+                    "identifier": "enum.nameCase",
+                    "message": "Enum MatchUnhandledTrueWithComplexCondition\\Bar referenced with incorrect case: MatchUnhandledTrueWithComplexCondition\\BAR.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11246",
+            "files": [
+                "Comparison/data/bug-11246.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11246.php",
+                    "line": 9,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($var % 5) {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9879",
+            "files": [
+                "Comparison/data/bug-9879.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-9879.php",
+                    "line": 9,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($idx % 3) {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11313",
+            "files": [
+                "Comparison/data/bug-11313.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9436",
+            "files": [
+                "Comparison/data/bug-9436.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11852",
+            "files": [
+                "Comparison/data/bug-11852.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Comparison/data/match-expr-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/match-expr-property-hooks.php",
+                    "line": 13,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: 3",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr-property-hooks.php",
+                    "line": 13,
+                    "identifier": "return.type",
+                    "message": "Get hook for property MatchExprPropertyHooks\\Foo::$i should return 1|2|3 but returns 'bar'|'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-expr-property-hooks.php",
+                    "line": 26,
+                    "identifier": "return.type",
+                    "message": "Get hook for property MatchExprPropertyHooks\\Foo::$j should return 1|2|3 but returns 10|20.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13048",
+            "files": [
+                "Comparison/data/bug-13048.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13303",
+            "files": [
+                "Comparison/data/bug-13303.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 9,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 10,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 18,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 19,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 27,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between true and true will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 28,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between false and false will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 28,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between true and true will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-13303.php",
+                    "line": 34,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: true",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12998",
+            "files": [
+                "Comparison/data/bug-12998.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-12998.php",
+                    "line": 37,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: class-string<T of Bug12998\\C|Bug12998\\D>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9534",
+            "files": [
+                "Comparison/data/bug-9534.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-9534.php",
+                    "line": 21,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: class-string<Bug9534\\Bike|Bug9534\\Boat|Bug9534\\Car>",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9534.php",
+                    "line": 33,
+                    "identifier": "void.pure",
+                    "message": "Function Bug9534\\accept_final_class() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9534.php",
+                    "line": 34,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match ($string) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9534.php",
+                    "line": 47,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: class-string<Bug9534\\FinalBike|Bug9534\\FinalBoat>",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9534.php",
+                    "line": 58,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining value: class-string<Bug9534\\Bike|Bug9534\\Car>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12241",
+            "files": [
+                "Comparison/data/bug-12241.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14412",
+            "files": [
+                "Comparison/data/bug-14412.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13029",
+            "files": [
+                "Comparison/data/bug-13029.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-13029.php",
+                    "line": 7,
+                    "identifier": "void.pure",
+                    "message": "Function Bug13029\\foo() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12790",
+            "files": [
+                "Comparison/data/bug-12790.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10128",
+            "files": [
+                "Comparison/data/bug-10128.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11453",
+            "files": [
+                "Comparison/data/bug-11453.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11310",
+            "files": [
+                "Comparison/data/bug-11310.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11310.php",
+                    "line": 24,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between int<1, max> and 0 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11310.php",
+                    "line": 49,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between int<1, 6>|int<8, 14> and 0 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11310.php",
+                    "line": 74,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 1|2|3|4|5|6 and 0 is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/match-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/match-in-trait.php",
+                    "line": 21,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between true and false is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-in-trait.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method MatchInTrait\\Foo::doBar() should return false but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-in-trait.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method MatchInTrait\\Foo::doBar2() should return false but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-in-trait.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method MatchInTrait\\FooAnother::doBar() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-in-trait.php",
+                    "line": 55,
+                    "identifier": "return.missing",
+                    "message": "Method MatchInTrait\\FooAnother::doBar2() should return false but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

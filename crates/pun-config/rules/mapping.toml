@@ -1052,17 +1052,17 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/non-boolean-while" = { preset = "strict", status = "decided" }
 "control-flow/switch-type-mismatch" = { preset = "strict", status = "decided" }
 "control-flow/unhandled-match" = { preset = "recommended", status = "decided" }
-"dead-code/boolean-and-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/boolean-not-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/boolean-or-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/boolean-and-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/boolean-not-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/boolean-or-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/call-condition-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/discarded-function-result" = { preset = "basic", status = "decided" }
 "dead-code/discarded-method-result" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/discarded-static-method-result" = { preset = "basic", ported = true, status = "decided" }
-"dead-code/do-while-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/elseif-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/do-while-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/elseif-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/finally-overrides-exit" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/if-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/if-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-in-array" = { preset = "recommended", status = "decided" }
 "dead-code/impossible-instanceof" = { preset = "recommended", fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
 "dead-code/impossible-method-type-check" = { preset = "recommended", status = "decided" }
@@ -1076,7 +1076,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/pure-static-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/redundant-null-coalesce" = { preset = "basic", status = "decided" }
 "dead-code/strict-comparison-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/ternary-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/ternary-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/trait-condition-always-constant" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unreachable-code" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unreachable-code"], ported = true, status = "decided" }
 "dead-code/unused-argument" = { preset = "basic", ported = true, status = "decided" }
@@ -1093,9 +1093,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-static-method-result" = { preset = "recommended", status = "decided" }
 "dead-code/unused-trait" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/useless-return-value" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/while-always-false" = { preset = "recommended", status = "decided" }
-"dead-code/while-always-true" = { preset = "recommended", status = "decided" }
-"dead-code/xor-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/while-always-false" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/while-always-true" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/xor-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "debug/assert-type" = { preset = "basic", status = "decided" }
 "debug/dump-native-type" = { preset = "basic", status = "decided" }
 "debug/dump-phpdoc-type" = { preset = "basic", status = "decided" }
