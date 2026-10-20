@@ -60,6 +60,10 @@ pub(crate) struct Checks {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with [`Project::unused_label`].
     unused_label: bool,
+    /// [`Project::switch_condition`].
+    switch_condition: bool,
+    /// [`Project::sort_without_effect`].
+    sort_without_effect: bool,
     /// [`Project::check_non_stringable_dynamic_access`].
     non_stringable_names: bool,
     /// [`Project::report_method_purity_override`].
@@ -108,6 +112,8 @@ impl Checks {
             deprecations: project.deprecation_rules,
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
+            switch_condition: project.switch_condition,
+            sort_without_effect: project.sort_without_effect,
             non_stringable_names: project.check_non_stringable_dynamic_access,
             method_purity_override: project.report_method_purity_override,
             uninitialized_properties: project.check_uninitialized_properties,
@@ -216,6 +222,8 @@ fn checker<'a, 'arena>(
         deprecations: project.deprecations,
         bleeding_edge: project.bleeding_edge,
         unused_label: project.unused_label,
+        switch_condition: project.switch_condition,
+        sort_without_effect: project.sort_without_effect,
         non_stringable_names: project.non_stringable_names,
         method_purity_override: project.method_purity_override,
         uninitialized_properties: project.uninitialized_properties,

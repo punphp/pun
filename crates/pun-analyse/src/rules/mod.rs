@@ -681,6 +681,12 @@ pub const IDENTIFIERS: &[&str] = &[
     "nullsafe.neverNull",
     "nullCoalesce.unnecessary",
     "nullCoalesce.initializedProperty",
+    "switch.duplicateCase",
+    "switch.alwaysFalse",
+    "switch.alwaysTrue",
+    "sortArray.empty",
+    "sortArray.list",
+    "sortArray.noop",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -833,6 +839,10 @@ pub struct Checker<'a, 'arena> {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with `featureToggles.unusedLabel`.
     unused_label: bool,
+    /// SwitchConditionRule: `featureToggles.switchConditionAlwaysFalse`.
+    switch_condition: bool,
+    /// SortWithoutEffectRule: `featureToggles.sortWithoutEffect`.
+    sort_without_effect: bool,
     /// NonStringableDynamicAccessCheck: `featureToggles.checkNonStringableDynamicAccess`.
     non_stringable_names: bool,
     /// MethodSignatureRule's purity checks: `featureToggles.reportMethodPurityOverride`.
@@ -1903,6 +1913,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::callable_call(self, call);
         types::call_user_func(self, call);
         dead_code::function_call(self, call);
+        dead_code::sort_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
         self.in_exists_call += usize::from(calls::is_class_exists_family(self, call));
@@ -2439,7 +2450,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_out_do_while(&mut self, _: &'ast DoWhile<'arena>, _: &mut ()) {
         self.syntax.parents.pop();
     }
-    fn walk_in_switch(&mut self, _: &'ast Switch<'arena>, _: &mut ()) {
+    fn walk_in_switch(&mut self, s: &'ast Switch<'arena>, _: &mut ()) {
+        dead_code::switch_statement(self, s);
         self.syntax.parents.push(syntax::Parent::Loop);
     }
     fn walk_out_switch(&mut self, _: &'ast Switch<'arena>, _: &mut ()) {

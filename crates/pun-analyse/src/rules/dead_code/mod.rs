@@ -14,6 +14,9 @@ pub(super) use conditions::{
     Facts as ConditionFacts, binary, boolean_not, do_while, facts as condition_facts, function_check,
     if_statement, match_expression, match_subject_types, method_check, static_method_check, ternary, while_loop,
 };
+pub(super) use conditions::switch_statement;
+mod sort;
+pub(super) use sort::call as sort_call;
 pub(crate) use conditions::conditions_in_traits;
 pub(crate) use impure_points::resolve as impure_points;
 pub(super) use impure_points::{function as impure_function, method as impure_method};

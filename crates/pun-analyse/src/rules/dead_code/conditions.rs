@@ -28,7 +28,7 @@ use super::super::declarations::doc_before;
 use super::super::members;
 use mago_codex::symbol::SymbolKind;
 use pun_phpstan::ignore::Error;
-use pun_phpstan::types::{Level, NeverKind, Tri, Type, is_super_type_of, recommended_level, union};
+use pun_phpstan::types::{Accessory, Level, NeverKind, Tri, Type, float_to_string, is_super_type_of, recommended_level, union};
 use super::finally;
 use super::no_discard::unparen;
 use super::noop::{self, asserts, function_of};
@@ -362,6 +362,10 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
                     self.spans.extend(a.conditions.iter().map(|c| c.span()));
                 }
             }
+        }
+        fn walk_in_switch(&mut self, s: &'ast Switch<'arena>, _: &mut ()) {
+            self.spans.push(s.expression.span());
+            self.spans.extend(s.body.cases().iter().filter_map(|c| c.expression()).map(|e| e.span()));
         }
     }
     let mut wanted = Wanted { spans: Vec::new() };
@@ -1269,6 +1273,297 @@ impl Checker<'_, '_> {
     }
 }
 
+/// SwitchConditionRule: a case duplicating an earlier one under `==`, and cases always false or always true against
+/// the subject narrowed by the cases above that leave the switch.
+pub(in super::super) fn switch_statement(c: &mut Checker, s: &Switch) {
+    if !c.conditions_checked() || !c.switch_condition {
+        return;
+    }
+    let mut remaining = c.phpstan_type(s.expression).map(void_null);
+    // an enum of one case is that case
+    if let Some(expanded @ Type::EnumCase(..)) = remaining.clone().map(|t| c.expand_enums(t)) {
+        remaining = Some(expanded);
+    }
+    let cases: Vec<&SwitchCase> = s.body.cases().iter().collect();
+    let last = cases.iter().rposition(|case| case.expression().is_some());
+    let mut seen: Vec<(Type, String, i64)> = Vec::new();
+    // the conditions since the last case that left the switch (SwitchHandler's `$fullCondExpr`)
+    let mut group: Vec<(Option<Type>, &Expression)> = Vec::new();
+    let mut dead = false;
+    for (i, case) in cases.iter().enumerate() {
+        let Some(cond) = case.expression() else {
+            group.clear();
+            continue;
+        };
+        let value = c.phpstan_type(cond).map(void_null);
+        let subject = remaining.clone();
+        group.push((value.clone(), cond));
+        if case.statements().iter().any(|s| finally::always_terminates(c, s)) {
+            // the cases' `||` is false: each narrows the subject the group started with
+            let base = remaining.clone();
+            for (value, cond) in group.drain(..) {
+                remaining = match (remaining, base.as_ref().and_then(|b| unequal(c, b, value.as_ref(), cond))) {
+                    (Some(t), Some(Some(v))) => Some(c.remove(t, &v)),
+                    (t, Some(None)) => t,
+                    _ => None,
+                };
+            }
+        }
+        if dead {
+            continue;
+        }
+        let line = c.line_of(cond.span());
+        if let Some(value) = value.as_ref().filter(|v| single(v) || matches!(v, Type::ConstFloat(_))) {
+            let printed = noop::print(c, cond);
+            if let Some((_, first, at)) = seen.iter().find(|(t, ..)| t == value || loose(t, value).yes()) {
+                let message = format!("Case {printed} in switch is a duplicate of case {first} on line {at}.");
+                c.report_at_line(line, "switch.duplicateCase", message, None);
+                continue;
+            }
+            seen.push((value.clone(), printed, line));
+        }
+        let (Some(subject), Some(value)) = (subject, value) else {
+            c.no_condition(cond.span(), "switch.alwaysTrue");
+            continue;
+        };
+        let Some(result) = equal(c, &subject, &value) else {
+            c.no_condition(cond.span(), "switch.alwaysTrue");
+            continue;
+        };
+        dead |= result;
+        if matches!(subject, Type::ConstBool(_)) && c.constant(cond).is_none() || result && Some(i) == last {
+            c.no_condition(cond.span(), "switch.alwaysTrue");
+            continue;
+        }
+        let (s, v) = super::super::declared::with_classes(c, || (subject.describe(Level::Value), value.describe(Level::Value)));
+        let (identifier, text, tip) = if result { ("switch.alwaysTrue", "true", Some(REMOVE_TIP)) } else { ("switch.alwaysFalse", "false", None) };
+        let message = format!("Switch condition comparison between {s} and {v} is always {text}.");
+        c.condition_error(cond.span(), line, identifier, result, message, tip);
+    }
+}
+
+impl Checker<'_, '_> {
+    /// `isEnum()->yes()`.
+    fn is_enum(&self, t: &Type) -> bool {
+        match t {
+            Type::Union(ts) => ts.iter().all(|t| self.is_enum(t)),
+            Type::EnumCase(..) => true,
+            Type::Object(class, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
+            _ => false,
+        }
+    }
+}
+
+/// resolveEqualType() of `$subject == $case` as a constant.
+fn equal(c: &Checker, subject: &Type, value: &Type) -> Option<bool> {
+    if matches!(subject, Type::Never(_)) || matches!(value, Type::Never(_)) {
+        return Some(false);
+    }
+    if c.is_enum(subject) && *value != Type::ConstBool(true) || c.is_enum(value) && *subject != Type::ConstBool(true) {
+        return identical(&c.expand_enums(subject.clone()), value);
+    }
+    decided(loose(subject, value))
+}
+
+/// The value `$subject == $case` being false removes from the subject (IdenticalNarrowingHelper::specifyEqual() in
+/// the falsey context): None when the narrowing isn't ported, Some(None) when it removes nothing.
+// ponytail: the narrowings of null, a bool, 0, '' and an empty array are not ported
+fn unequal(c: &Checker, subject: &Type, value: Option<&Type>, cond: &Expression) -> Option<Option<Type>> {
+    if matches!(subject, Type::Mixed { .. }) {
+        return Some(None);
+    }
+    let value = value?;
+    // a bool subject compares with the case's truthiness
+    if subject.is_boolean().yes() {
+        return Some(truthy(value).map(Type::ConstBool));
+    }
+    // a constant subject narrows the case
+    if scalar(subject) && !matches!(unparen(cond), Expression::Literal(Literal::True(_) | Literal::False(_) | Literal::Null(_)) | Expression::ConstantAccess(_)) {
+        return Some(None);
+    }
+    match value {
+        Type::Null | Type::ConstBool(_) => return None,
+        Type::ConstInt(0) if !is_int(subject) => return None,
+        Type::ConstString(s) if s.is_empty() => return None,
+        _ => {}
+    }
+    let same = subject.is_string().yes() && value.is_string().yes()
+        || is_int(subject) && is_int(value)
+        || subject.is_float().yes() && value.is_float().yes()
+        || c.is_enum(subject) && c.is_enum(value);
+    Some((same && single(value) && c.subtractable(subject)).then(|| value.clone()))
+}
+
+/// `toBoolean()` as a constant, of the types a case value has.
+// ponytail: an array case is left unknown (no narrowing)
+fn truthy(t: &Type) -> Option<bool> {
+    match t {
+        t if scalar(t) => Some(loose_scalars(t, &Type::ConstBool(true))),
+        Type::Object(..) | Type::EnumCase(..) => Some(true),
+        _ => None,
+    }
+}
+
+/// A constant scalar type (ConstantScalarType).
+fn scalar(t: &Type) -> bool {
+    matches!(t, Type::ConstInt(_) | Type::ConstString(_) | Type::ConstFloat(_) | Type::ConstBool(_) | Type::Null)
+}
+
+/// `is_numeric()` of a string (PHP 8: leading and trailing whitespace allowed).
+fn numeric(s: &str) -> bool {
+    let s = s.trim_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
+    let s = s.strip_prefix(['+', '-']).unwrap_or(s);
+    let (mantissa, exponent) = match s.find(['e', 'E']) {
+        Some(i) => (&s[..i], Some(&s[i + 1..])),
+        None => (s, None),
+    };
+    let digits = |s: &str| s.bytes().all(|b| b.is_ascii_digit());
+    let mantissa_ok = match mantissa.split_once('.') {
+        Some((int, frac)) => digits(int) && digits(frac) && !(int.is_empty() && frac.is_empty()),
+        None => !mantissa.is_empty() && digits(mantissa),
+    };
+    let exponent_ok = exponent.is_none_or(|e| {
+        let e = e.strip_prefix(['+', '-']).unwrap_or(e);
+        !e.is_empty() && digits(e)
+    });
+    mantissa_ok && exponent_ok
+}
+
+/// `isString()->yes() && isNumericString()->no()`.
+fn non_numeric_string(t: &Type) -> bool {
+    match t {
+        Type::ConstString(s) => !numeric(s),
+        Type::Union(ts) => ts.iter().all(non_numeric_string),
+        _ => false,
+    }
+}
+
+/// PHP 8's `==` of two constant scalars (LooseComparisonHelper::compareConstantScalars()).
+fn loose_scalars(a: &Type, b: &Type) -> bool {
+    let truthy = |t: &Type| match t {
+        Type::ConstInt(i) => *i != 0,
+        Type::ConstFloat(f) => *f != 0.0,
+        Type::ConstString(s) => !s.is_empty() && s != "0",
+        Type::ConstBool(b) => *b,
+        _ => false,
+    };
+    let number = |t: &Type| match t {
+        Type::ConstInt(i) => Some(*i as f64),
+        Type::ConstFloat(f) => Some(*f),
+        Type::ConstString(s) if numeric(s) => s.trim_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']).parse().ok(),
+        _ => None,
+    };
+    let string = |t: &Type| match t {
+        Type::ConstString(s) => s.clone(),
+        Type::ConstInt(i) => i.to_string(),
+        t => float_to_string(number(t).unwrap_or_default()),
+    };
+    match (a, b) {
+        (Type::Null, Type::Null) => true,
+        (Type::ConstBool(_), _) | (_, Type::ConstBool(_)) => truthy(a) == truthy(b),
+        (Type::Null, Type::ConstString(s)) | (Type::ConstString(s), Type::Null) => s.is_empty(),
+        (Type::Null, t) | (t, Type::Null) => !truthy(t),
+        (Type::ConstString(x), Type::ConstString(y)) if !(numeric(x) && numeric(y)) => x == y,
+        _ => match (number(a), number(b)) {
+            (Some(x), Some(y)) => x == y,
+            _ => string(a) == string(b),
+        },
+    }
+}
+
+/// `Type::looseCompare()` (PHP 8) as a Tri.
+fn loose(a: &Type, b: &Type) -> Tri {
+    let compound = |t: &Type| {
+        matches!(t, Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_) | Type::IntRange(..) | Type::Mixed { .. } | Type::Never(_))
+    };
+    let empty_array = |t: &Type| matches!(t, Type::ConstArray(a) if a.keys.is_empty());
+    let object = |t: &Type| matches!(t, Type::Object(..) | Type::Static(..) | Type::This(_) | Type::EnumCase(..) | Type::Closure(_));
+    match a {
+        Type::Union(ts) | Type::Benevolent(ts) => extreme(ts.iter().map(|t| loose(t, b))),
+        Type::Intersection(ts) => {
+            let results: Vec<Tri> = ts.iter().map(|t| loose(t, b)).collect();
+            if results.iter().any(|r| r.yes()) { Tri::Yes } else if results.iter().any(|r| r.no()) { Tri::No } else { Tri::Maybe }
+        }
+        a if scalar(a) && scalar(b) => Tri::from(loose_scalars(a, b)),
+        a if scalar(a) && empty_array(b) => Tri::from(matches!(a, Type::Null | Type::ConstBool(false))),
+        a if scalar(a) && compound(b) => loose(b, a),
+        Type::ConstBool(x) if object(b) => Tri::from(*x),
+        Type::IntRange(min, max) => {
+            if min.is_some_and(|m| m > 0) || max.is_some_and(|m| m < 0) {
+                match b {
+                    Type::ConstBool(true) => return Tri::Yes,
+                    Type::ConstBool(false) => return Tri::No,
+                    _ => {}
+                }
+            }
+            if let Type::ConstInt(n) = b
+                && (max.is_some_and(|m| m < *n) || min.is_some_and(|m| m > *n))
+            {
+                return Tri::No;
+            }
+            int_loose(b)
+        }
+        Type::Int | Type::ConstInt(_) => int_loose(b),
+        Type::String | Type::ConstString(_) | Type::ClassString(_) => if b.is_array().yes() { Tri::No } else { Tri::Maybe },
+        Type::Array(..) => if is_int(b) { Tri::No } else { Tri::Maybe },
+        Type::ConstArray(arr) => {
+            if is_int(b) {
+                return Tri::No;
+            }
+            if arr.keys.is_empty() {
+                if b.is_iterable_at_least_once().yes() {
+                    return Tri::No;
+                }
+                let values: Vec<&Type> = match b {
+                    Type::Union(ts) if ts.iter().all(scalar) => ts.iter().collect(),
+                    b if scalar(b) => vec![b],
+                    _ => vec![],
+                };
+                if !values.is_empty() {
+                    return extreme(values.into_iter().map(|v| Tri::from(matches!(v, Type::Null | Type::ConstBool(false)))));
+                }
+            }
+            Tri::Maybe
+        }
+        Type::Object(..) | Type::Static(..) | Type::This(_) | Type::EnumCase(..) => match b {
+            Type::ConstBool(x) => Tri::from(*x),
+            _ => Tri::Maybe,
+        },
+        Type::Accessory(accessory) => {
+            let no = match accessory {
+                Accessory::NonEmptyString => *b == Type::Null || matches!(b, Type::ConstString(s) if s.is_empty()),
+                Accessory::NonFalsyString => {
+                    let falsy = |t: &Type| matches!(t, Type::Null | Type::ConstBool(false)) || matches!(t, Type::ConstString(s) if s.is_empty()) || empty_array(t);
+                    match b {
+                        Type::Union(ts) => ts.iter().all(falsy),
+                        b => falsy(b),
+                    }
+                }
+                Accessory::NumericString | Accessory::DecimalIntString { inverse: false } => *b == Type::Null || non_numeric_string(b),
+                Accessory::LowercaseString => matches!(b, Type::ConstString(s) if s.to_lowercase() != *s && !numeric(s)),
+                Accessory::UppercaseString => matches!(b, Type::ConstString(s) if s.to_uppercase() != *s && !numeric(s)),
+                Accessory::NonEmptyArray => empty_array(b),
+                _ => false,
+            };
+            if no { Tri::No } else { Tri::Maybe }
+        }
+        _ => Tri::Maybe,
+    }
+}
+
+/// IntegerType::looseCompare().
+fn int_loose(b: &Type) -> Tri {
+    if b.is_array().yes() || non_numeric_string(b) { Tri::No } else { Tri::Maybe }
+}
+
+/// `isInteger()->yes()`.
+fn is_int(t: &Type) -> bool {
+    match t {
+        Type::Union(ts) => ts.iter().all(is_int),
+        t => matches!(t, Type::Int | Type::ConstInt(_) | Type::IntRange(..)),
+    }
+}
+
 /// MatchExpressionRule: arms always true or false against the subject narrowed by the arms above, and the values no
 /// arm handles.
 pub(in super::super) fn match_expression(c: &mut Checker, m: &Match) {
@@ -1489,4 +1784,28 @@ pub(in super::super) fn match_subject_types(
         types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, subjects, Vec::new()).0);
     }
     (types, unknown)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Accessory, Tri, Type, loose};
+
+    /// SwitchConditionRule on PHPStan 2.3.1: `numeric-string` and `decimal-int-string` subjects are never `==` to
+    /// `'abc'` or null (Mago types neither parameter as PHPStan does).
+    #[test]
+    fn numeric_strings() {
+        for accessory in [Accessory::NumericString, Accessory::DecimalIntString { inverse: false }] {
+            let t = Type::Intersection(vec![Type::String, Type::Accessory(accessory)]);
+            assert_eq!(loose(&t, &Type::ConstString("abc".into())), Tri::No);
+            assert_eq!(loose(&t, &Type::Null), Tri::No);
+            assert_eq!(loose(&t, &Type::ConstString("1".into())), Tri::Maybe);
+        }
+    }
+
+    /// `int == ('a'|'b')` is false on PHP 8 (IntegerType::looseCompare(): a non-numeric string).
+    #[test]
+    fn int_and_non_numeric_strings() {
+        let strings = Type::Union(vec![Type::ConstString("a".into()), Type::ConstString("b".into())]);
+        assert_eq!(loose(&Type::Int, &strings), Tri::No);
+    }
 }

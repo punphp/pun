@@ -1,0 +1,236 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "extra.php",
+   "line": 13,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function sort is empty, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "extra.php",
+   "line": 21,
+   "identifier": "sortArray.list",
+   "message": "Parameter #1 $array (list<int>) of function ksort is a list, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect-named-args.php",
+   "line": 10,
+   "identifier": "sortArray.list",
+   "message": "Parameter #1 $array (list<string>) of function ksort is a list, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 8,
+   "identifier": "sortArray.list",
+   "message": "Parameter #1 $array (list<string>) of function ksort is a list, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 14,
+   "identifier": "sortArray.list",
+   "message": "Parameter #1 $array (list<string>) of function ksort is a list, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 20,
+   "identifier": "sortArray.list",
+   "message": "Parameter #1 $array (list<string>) of function ksort is a list, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 80,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function ksort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 86,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function krsort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 92,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function asort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 98,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function arsort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 104,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function sort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 110,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function rsort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 116,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function usort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 122,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function uasort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 128,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function uksort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 134,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function shuffle is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 140,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function natsort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 146,
+   "identifier": "sortArray.empty",
+   "message": "Parameter #1 $array (array{}) of function natcasesort is empty, call has no effect.",
+   "tip": null
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 152,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function ksort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 158,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function krsort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 164,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function asort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 170,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function arsort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 176,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function uasort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 182,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function uksort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 188,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function natsort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 194,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo: int}) of function natcasesort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 224,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{int}) of function sort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 230,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{int}) of function rsort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 236,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{int}) of function usort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 242,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{int}) of function shuffle has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 254,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{bar: int}|array{foo: int}) of function ksort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 265,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{foo?: int}) of function ksort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "sort-without-effect.php",
+   "line": 271,
+   "identifier": "sortArray.noop",
+   "message": "Parameter #1 $array (array{0?: int}) of function sort has at most 1 element, call has no effect.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  }
+ ]
+}

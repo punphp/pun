@@ -49,6 +49,10 @@ pub struct Project {
     pub bleeding_edge: bool,
     /// `featureToggles.unusedLabel` (on with bleedingEdge).
     pub unused_label: bool,
+    /// `featureToggles.switchConditionAlwaysFalse` (on with bleedingEdge): SwitchConditionRule.
+    pub switch_condition: bool,
+    /// `featureToggles.sortWithoutEffect` (on with bleedingEdge): SortWithoutEffectRule.
+    pub sort_without_effect: bool,
     /// `featureToggles.checkNonStringableDynamicAccess` (on with bleedingEdge): the `*.nameNotString` checks.
     pub check_non_stringable_dynamic_access: bool,
     /// `featureToggles.reportMethodPurityOverride` (on with bleedingEdge): MethodSignatureRule's purity checks.
@@ -217,6 +221,8 @@ impl Project {
             only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
+            switch_condition: toggle("switchConditionAlwaysFalse"),
+            sort_without_effect: toggle("sortWithoutEffect"),
             check_non_stringable_dynamic_access: toggle("checkNonStringableDynamicAccess"),
             report_method_purity_override: toggle("reportMethodPurityOverride"),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
@@ -263,6 +269,8 @@ impl Project {
             only_files: true,
             bleeding_edge: false,
             unused_label: false,
+            switch_condition: false,
+            sort_without_effect: false,
             check_non_stringable_dynamic_access: false,
             report_method_purity_override: false,
             check_uninitialized_properties: false,

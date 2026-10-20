@@ -1135,7 +1135,7 @@ pub(super) fn typed(s: &ExpressionStatement) -> Vec<Span> {
 }
 
 /// php-parser's Standard printer, for the expressions NoopRule prints; other nodes print as written.
-fn print(c: &Checker, e: &Expression) -> String {
+pub(super) fn print(c: &Checker, e: &Expression) -> String {
     let written =
         || String::from_utf8_lossy(&c.file.contents[e.span().to_range_usize()]).into_owned();
     match e {

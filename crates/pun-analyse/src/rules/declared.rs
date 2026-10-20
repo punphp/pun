@@ -354,7 +354,7 @@ pub fn from_tunion(
 }
 
 /// [`from_tunion()`] in a class-like or not (a function's).
-fn from_tunion_in(
+pub(super) fn from_tunion_in(
     c: &Checker,
     t: &mago_codex::ttype::union::TUnion,
     class: Option<&ClassLikeMetadata>,
