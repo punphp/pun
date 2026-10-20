@@ -150,6 +150,126 @@
         "callable<X of PunProbe\\Child>(X, PunProbe\\Coll, 0): static"
     ],
     [
+        "PunProbe\\Child",
+        "Coll<covariant int, contravariant string>",
+        "PunProbe\\Coll<covariant int, contravariant string>"
+    ],
+    [
+        "PunProbe\\Child",
+        "Coll<*, int>",
+        "PunProbe\\Coll<*, int>"
+    ],
+    [
+        "PunProbe\\Child",
+        "static<covariant string>",
+        "static(PunProbe\\Child<covariant string>)"
+    ],
+    [
+        "PunProbe\\Child",
+        "array<int, covariant string>",
+        "array<int, string>"
+    ],
+    [
+        "PunProbe\\Child",
+        "list<contravariant int>",
+        "list<int>"
+    ],
+    [
+        "PunProbe\\Child",
+        "array{a: int, b?: string}['a']",
+        "array{a: int, b?: string}['a']"
+    ],
+    [
+        "PunProbe\\Child",
+        "array{a: int, b?: string}['b']",
+        "array{a: int, b?: string}['b']"
+    ],
+    [
+        "PunProbe\\Child",
+        "array{a: int}['z']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "array<string, int>['k']",
+        "array<string, int>['k']"
+    ],
+    [
+        "PunProbe\\Child",
+        "array<int, string>['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "list<string>[0]",
+        "list<string>[0]"
+    ],
+    [
+        "PunProbe\\Child",
+        "int['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "string[0]",
+        "string[0]"
+    ],
+    [
+        "PunProbe\\Child",
+        "string['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "mixed['k']",
+        "mixed['k']"
+    ],
+    [
+        "PunProbe\\Child",
+        "(array{a: int}|array{a: string})['a']",
+        "(array{a: int}|array{a: string})['a']"
+    ],
+    [
+        "PunProbe\\Child",
+        "(array{a: int}|int)['a']",
+        "(array{a: int}|int)['a']"
+    ],
+    [
+        "PunProbe\\Child",
+        "array{a: int, ...<string, bool>}['z']",
+        "array{a: int, ...<string, bool>}['z']"
+    ],
+    [
+        "PunProbe\\Child",
+        "non-empty-array<string, int>['k']",
+        "non-empty-array<string, int>['k']"
+    ],
+    [
+        "PunProbe\\Child",
+        "Coll['k']",
+        "PunProbe\\Coll['k']"
+    ],
+    [
+        "PunProbe\\Child",
+        "\\ArrayObject['k']",
+        "ArrayObject['k']"
+    ],
+    [
+        "PunProbe\\Child",
+        "array{a: int}[string]",
+        "array{a: int}[string]"
+    ],
+    [
+        "PunProbe\\Child",
+        "non-empty-list<string>[0]",
+        "non-empty-list<string>[0]"
+    ],
+    [
+        "PunProbe\\Child",
+        "Coll<covariant int, string>['k']",
+        "PunProbe\\Coll<covariant int, string>['k']"
+    ],
+    [
         "PunProbe\\Coll",
         "static",
         "static(PunProbe\\Coll<TKey (class PunProbe\\Coll, argument), TValue (class PunProbe\\Coll, argument)>)"
@@ -298,6 +418,126 @@
         "PunProbe\\Coll",
         "callable<X of self>(X, parent, SORT_REGULAR): static",
         "callable<X of PunProbe\\Coll>(X, parent, 0): static"
+    ],
+    [
+        "PunProbe\\Coll",
+        "Coll<covariant int, contravariant string>",
+        "PunProbe\\Coll<covariant int, contravariant string>"
+    ],
+    [
+        "PunProbe\\Coll",
+        "Coll<*, int>",
+        "PunProbe\\Coll<*, int>"
+    ],
+    [
+        "PunProbe\\Coll",
+        "static<covariant string>",
+        "static(PunProbe\\Coll<covariant string>)"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array<int, covariant string>",
+        "array<int, string>"
+    ],
+    [
+        "PunProbe\\Coll",
+        "list<contravariant int>",
+        "list<int>"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array{a: int, b?: string}['a']",
+        "array{a: int, b?: string}['a']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array{a: int, b?: string}['b']",
+        "array{a: int, b?: string}['b']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array{a: int}['z']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array<string, int>['k']",
+        "array<string, int>['k']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array<int, string>['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "list<string>[0]",
+        "list<string>[0]"
+    ],
+    [
+        "PunProbe\\Coll",
+        "int['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "string[0]",
+        "string[0]"
+    ],
+    [
+        "PunProbe\\Coll",
+        "string['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "mixed['k']",
+        "mixed['k']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "(array{a: int}|array{a: string})['a']",
+        "(array{a: int}|array{a: string})['a']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "(array{a: int}|int)['a']",
+        "(array{a: int}|int)['a']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array{a: int, ...<string, bool>}['z']",
+        "array{a: int, ...<string, bool>}['z']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "non-empty-array<string, int>['k']",
+        "non-empty-array<string, int>['k']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "Coll['k']",
+        "PunProbe\\Coll['k']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "\\ArrayObject['k']",
+        "ArrayObject['k']"
+    ],
+    [
+        "PunProbe\\Coll",
+        "array{a: int}[string]",
+        "array{a: int}[string]"
+    ],
+    [
+        "PunProbe\\Coll",
+        "non-empty-list<string>[0]",
+        "non-empty-list<string>[0]"
+    ],
+    [
+        "PunProbe\\Coll",
+        "Coll<covariant int, string>['k']",
+        "PunProbe\\Coll<covariant int, string>['k']"
     ],
     [
         "PunProbe\\Missing",
@@ -450,6 +690,126 @@
         "callable<X of PunProbe\\Missing>(X, parent, 0): mixed"
     ],
     [
+        "PunProbe\\Missing",
+        "Coll<covariant int, contravariant string>",
+        "PunProbe\\Coll<covariant int, contravariant string>"
+    ],
+    [
+        "PunProbe\\Missing",
+        "Coll<*, int>",
+        "PunProbe\\Coll<*, int>"
+    ],
+    [
+        "PunProbe\\Missing",
+        "static<covariant string>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array<int, covariant string>",
+        "array<int, string>"
+    ],
+    [
+        "PunProbe\\Missing",
+        "list<contravariant int>",
+        "list<int>"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array{a: int, b?: string}['a']",
+        "array{a: int, b?: string}['a']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array{a: int, b?: string}['b']",
+        "array{a: int, b?: string}['b']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array{a: int}['z']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array<string, int>['k']",
+        "array<string, int>['k']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array<int, string>['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "list<string>[0]",
+        "list<string>[0]"
+    ],
+    [
+        "PunProbe\\Missing",
+        "int['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "string[0]",
+        "string[0]"
+    ],
+    [
+        "PunProbe\\Missing",
+        "string['k']",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "mixed['k']",
+        "mixed['k']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "(array{a: int}|array{a: string})['a']",
+        "(array{a: int}|array{a: string})['a']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "(array{a: int}|int)['a']",
+        "(array{a: int}|int)['a']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array{a: int, ...<string, bool>}['z']",
+        "array{a: int, ...<string, bool>}['z']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "non-empty-array<string, int>['k']",
+        "non-empty-array<string, int>['k']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "Coll['k']",
+        "PunProbe\\Coll['k']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "\\ArrayObject['k']",
+        "ArrayObject['k']"
+    ],
+    [
+        "PunProbe\\Missing",
+        "array{a: int}[string]",
+        "array{a: int}[string]"
+    ],
+    [
+        "PunProbe\\Missing",
+        "non-empty-list<string>[0]",
+        "non-empty-list<string>[0]"
+    ],
+    [
+        "PunProbe\\Missing",
+        "Coll<covariant int, string>['k']",
+        "PunProbe\\Coll<covariant int, string>['k']"
+    ],
+    [
         null,
         "static",
         "PunProbe\\static"
@@ -600,6 +960,126 @@
         "callable<X of PunProbe\\self>(X, PunProbe\\parent, 0): PunProbe\\static"
     ],
     [
+        null,
+        "Coll<covariant int, contravariant string>",
+        "PunProbe\\Coll<covariant int, contravariant string>"
+    ],
+    [
+        null,
+        "Coll<*, int>",
+        "PunProbe\\Coll<*, int>"
+    ],
+    [
+        null,
+        "static<covariant string>",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "array<int, covariant string>",
+        "array<int, string>"
+    ],
+    [
+        null,
+        "list<contravariant int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "array{a: int, b?: string}['a']",
+        "array{a: int, b?: string}['a']"
+    ],
+    [
+        null,
+        "array{a: int, b?: string}['b']",
+        "array{a: int, b?: string}['b']"
+    ],
+    [
+        null,
+        "array{a: int}['z']",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "array<string, int>['k']",
+        "array<string, int>['k']"
+    ],
+    [
+        null,
+        "array<int, string>['k']",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "list<string>[0]",
+        "list<string>[0]"
+    ],
+    [
+        null,
+        "int['k']",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "string[0]",
+        "string[0]"
+    ],
+    [
+        null,
+        "string['k']",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "mixed['k']",
+        "mixed['k']"
+    ],
+    [
+        null,
+        "(array{a: int}|array{a: string})['a']",
+        "(array{a: int}|array{a: string})['a']"
+    ],
+    [
+        null,
+        "(array{a: int}|int)['a']",
+        "(array{a: int}|int)['a']"
+    ],
+    [
+        null,
+        "array{a: int, ...<string, bool>}['z']",
+        "array{a: int, ...<string, bool>}['z']"
+    ],
+    [
+        null,
+        "non-empty-array<string, int>['k']",
+        "non-empty-array<string, int>['k']"
+    ],
+    [
+        null,
+        "Coll['k']",
+        "PunProbe\\Coll['k']"
+    ],
+    [
+        null,
+        "\\ArrayObject['k']",
+        "ArrayObject['k']"
+    ],
+    [
+        null,
+        "array{a: int}[string]",
+        "array{a: int}[string]"
+    ],
+    [
+        null,
+        "non-empty-list<string>[0]",
+        "non-empty-list<string>[0]"
+    ],
+    [
+        null,
+        "Coll<covariant int, string>['k']",
+        "PunProbe\\Coll<covariant int, string>['k']"
+    ],
+    [
         "templates",
         "T",
         "T (function probe(), parameter)"
@@ -640,6 +1120,21 @@
         "callable<X of PunProbe\\Coll, Y of mixed>(X): Y"
     ],
     [
+        "templates",
+        "T['k']",
+        "T['k']"
+    ],
+    [
+        "templates",
+        "list<U>[0]",
+        "list<U>[0]"
+    ],
+    [
+        "templates",
+        "(T|U)['k']",
+        "(T|U)['k']"
+    ],
+    [
         "late",
         "value-of<E>",
         "int|string"
@@ -663,5 +1158,60 @@
         "late",
         "value-of<G>",
         "string"
+    ],
+    [
+        "resolved",
+        "array{a: int, b?: string}['a']",
+        "int"
+    ],
+    [
+        "resolved",
+        "array{a: int, b?: string}['b']",
+        "string"
+    ],
+    [
+        "resolved",
+        "array<string, int>['k']",
+        "int"
+    ],
+    [
+        "resolved",
+        "list<string>[0]",
+        "string"
+    ],
+    [
+        "resolved",
+        "string[0]",
+        "non-empty-string"
+    ],
+    [
+        "resolved",
+        "mixed['k']",
+        "mixed"
+    ],
+    [
+        "resolved",
+        "(array{a: int}|array{a: string})['a']",
+        "int|string"
+    ],
+    [
+        "resolved",
+        "(array{a: int}|int)['a']",
+        "int"
+    ],
+    [
+        "resolved",
+        "array{a: int, ...<string, bool>}['z']",
+        "bool"
+    ],
+    [
+        "resolved",
+        "non-empty-array<string, int>['k']",
+        "int"
+    ],
+    [
+        "resolved",
+        "array{a: list<int>}['a'][0]",
+        "int"
     ]
 ]

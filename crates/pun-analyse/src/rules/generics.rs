@@ -3,8 +3,8 @@
 //! MethodTagTemplateTypeTraitRule), EnumTemplateTypeRule, and GenericAncestorsCheck (ClassAncestorsRule,
 //! InterfaceAncestorsRule, EnumAncestorsRule, UsedTraitsRule), both through GenericObjectTypeCheck.
 //!
-//! ponytail: call-site variance (`Foo<covariant T>`), template variance (VarianceCheck), unresolvable ancestor
-//! types and CrossCheckInterfacesHelper are not ported yet.
+//! ponytail: template variance (VarianceCheck), unresolvable ancestor types and CrossCheckInterfacesHelper are not
+//! ported yet.
 
 use std::cell::RefCell;
 
@@ -39,18 +39,25 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.shadowTemplate",
     "methodTag.shadowTemplate",
     "enum.generic",
+    "generics.callSiteVarianceConflict",
+    "generics.callSiteVarianceRedundant",
+    "generics.callSiteVarianceNotAllowed",
 ];
 
-/// What a check found: (identifier, message); and the class names ClassNameCheck reads.
+/// What a check found: (identifier, message, tip); and the class names ClassNameCheck reads.
 #[derive(Default)]
 pub(super) struct Found {
-    pub(super) errors: Vec<(&'static str, String)>,
+    /// (identifier, message, tip)
+    pub(super) errors: Vec<(&'static str, String, Option<&'static str>)>,
     names: Vec<String>,
 }
 
 impl Found {
     fn push(&mut self, identifier: &'static str, message: String) {
-        self.errors.push((identifier, message));
+        self.errors.push((identifier, message, None));
+    }
+    fn push_tip(&mut self, identifier: &'static str, message: String, tip: &'static str) {
+        self.errors.push((identifier, message, Some(tip)));
     }
 }
 
@@ -183,12 +190,33 @@ fn infer(pattern: &Type, received: &Type, out: &mut TemplateMap) {
     }
 }
 
-/// GenericObjectTypeCheck's messages (the call-site variance ones are not ported).
+/// GenericObjectTypeCheck's messages.
 pub(super) struct GenericMessages {
     pub(super) not_generic: String,
     pub(super) less: String,
     pub(super) more: String,
     pub(super) not_subtype: String,
+    /// a call-site variance in conflict with the template's, the same as the template's
+    pub(super) conflict: String,
+    pub(super) redundant: String,
+}
+
+impl GenericMessages {
+    /// The messages of a PHPDoc type at `s` (escaped, e.g. `PHPDoc tag @var`).
+    pub(super) fn at(s: &str) -> GenericMessages {
+        GenericMessages {
+            not_generic: format!("{s} contains generic type %s but %s %s is not generic."),
+            less: format!("Generic type %s in {s} does not specify all template types of %s %s: %s"),
+            more: format!("Generic type %s in {s} specifies %d template types, but %s %s supports only %d: %s"),
+            not_subtype: format!("Type %s in generic type %s in {s} is not subtype of template type %s of %s %s."),
+            conflict: format!(
+                "Call-site variance of %s in generic type %s in {s} is in conflict with %s template type %s of %s %s."
+            ),
+            redundant: format!(
+                "Call-site variance of %s in generic type %s in {s} is redundant, template type %s of %s %s has the same variance."
+            ),
+        }
+    }
 }
 
 /// `getGenericTypes()`: each generic object or `static` type, resolved to its bounds, outermost first: the type,
@@ -277,6 +305,49 @@ pub(super) fn generic_object_check(ty: &Type, m: &GenericMessages, out: &mut Fou
                 continue;
             };
             let template = templates[i].clone();
+            if let Type::Projection(covariant, inner) = arg {
+                let projection = arg.describe(Level::TypeOnly);
+                let variance = class.templates[i].variance;
+                if variance == pun_phpstan::types::variance_name(*covariant) {
+                    if class.name != "ReflectionClass" || class.templates[i].name != "T" {
+                        let args = [projection, described.clone(), template.describe(Level::TypeOnly), kind.clone(), class.name.clone()];
+                        out.push_tip(
+                            "generics.callSiteVarianceRedundant",
+                            sprintf(&m.redundant, &args),
+                            "You can safely remove the call-site variance annotation.",
+                        );
+                    }
+                } else if variance != "invariant" {
+                    let args = [
+                        projection,
+                        described.clone(),
+                        variance.to_string(),
+                        template.describe(Level::TypeOnly),
+                        kind.clone(),
+                        class.name.clone(),
+                    ];
+                    out.push("generics.callSiteVarianceConflict", sprintf(&m.conflict, &args));
+                }
+                let arg = &**inner;
+                if is_super_type_of(&template.resolve_to_bounds(), arg).yes() {
+                    let mut map = Vec::new();
+                    infer(&template, arg, &mut map);
+                    for (j, other) in templates.iter_mut().enumerate() {
+                        if j != i {
+                            *other = apply(other, &map);
+                        }
+                    }
+                    continue;
+                }
+                out.push(
+                    "generics.notSubtype",
+                    sprintf(
+                        &m.not_subtype,
+                        &[arg.describe(Level::TypeOnly), described.clone(), template.describe(Level::TypeOnly), kind.clone(), class.name.clone()],
+                    ),
+                );
+                continue;
+            }
             if is_super_type_of(&template.resolve_to_bounds(), arg).yes() {
                 let mut map = Vec::new();
                 infer(&template, arg, &mut map);
@@ -468,6 +539,12 @@ fn template_check(
             not_subtype: format!(
                 "Type %s in generic type %s in PHPDoc tag @template {escaped} is not subtype of template type %s of %s %s."
             ),
+            conflict: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} is in conflict with %s template type %s of %s %s."
+            ),
+            redundant: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} is redundant, template type %s of %s %s has the same variance."
+            ),
         };
         generic_object_check(&t.bound, &bound_messages, out);
         let Some(default) = &t.default else {
@@ -503,6 +580,12 @@ fn template_check(
             ),
             not_subtype: format!(
                 "Type %s in generic type %s in PHPDoc tag @template {escaped} default is not subtype of template type %s of class %s."
+            ),
+            conflict: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} default is in conflict with %s template type %s of %s %s."
+            ),
+            redundant: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} default is redundant, template type %s of %s %s has the same variance."
             ),
         };
         generic_object_check(default, &default_messages, out);
@@ -638,8 +721,8 @@ fn report(c: &mut Checker, at: Span, found: Found) {
         .collect();
     let case = c.case_sensitivity;
     class_names::check(c, &pairs, case);
-    for (identifier, message) in found.errors {
-        c.report(at, identifier, message, None);
+    for (identifier, message, tip) in found.errors {
+        c.report(at, identifier, message, tip);
     }
 }
 
@@ -815,13 +898,13 @@ fn ancestor_types(nodes: &[pun_phpstan::phpdoc::Node], scope: &NameScope) -> Vec
     out.into_iter().map(|(_, t)| t).collect()
 }
 
-/// GenericAncestorsCheck::check() without the variance checks and the `missingType.generics` of unused names
+/// GenericAncestorsCheck::check() without VarianceCheck and the `missingType.generics` of unused names
 /// (MissingTypehintCheck's rules report those).
 fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: &mut Found) {
     let tag = m.tag;
     let mut unused: Vec<&String> = names.iter().collect();
     for ty in types {
-        let Type::Object(class, _) = ty else {
+        let Type::Object(class, args) = ty else {
             out.push(
                 "generics.notCompatible",
                 sprintf(&m.incompatible, &[ty.describe(Level::TypeOnly)]),
@@ -853,6 +936,9 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
             not_subtype: format!(
                 "Type %s in generic type %s in PHPDoc tag {tag} is not subtype of template type %s of %s %s."
             ),
+            // (GenericAncestorsCheck passes empty ones)
+            conflict: String::new(),
+            redundant: String::new(),
         };
         generic_object_check(ty, &messages, out);
         for referenced in referenced_classes(ty) {
@@ -863,6 +949,14 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
                 Some(k) if k.is_trait => out.push("generics.trait", message),
                 Some(_) => {}
             }
+        }
+        for arg in args.iter().filter(|a| matches!(a, Type::Projection(..) | Type::Wildcard)) {
+            let message = format!(
+                "Call-site variance annotation of {} in generic type {} in PHPDoc tag {tag} is not allowed.",
+                arg.describe(Level::TypeOnly),
+                ty.describe(Level::TypeOnly)
+            );
+            out.push("generics.callSiteVarianceNotAllowed", message);
         }
     }
     let Some(missing) = &m.missing else {

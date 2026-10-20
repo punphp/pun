@@ -2,7 +2,6 @@
 //! MixinRule on a class, interface or enum (InClassNode), MixinTraitRule on a trait declaration, and
 //! MethodTagTraitUseRule, PropertyTagTraitUseRule and MixinTraitUseRule on a trait in the context of a class
 //! using it (InTraitNode). The `checkMissingTypehints` parts are level 6 (missing_types.rs).
-//! ponytail: GenericObjectTypeCheck's call-site variance errors are not ported (generics.rs).
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_span::Span;
@@ -202,22 +201,13 @@ impl Found {
         let mut found = generics::Found::default();
         generics::generic_object_check(ty, generic, &mut found);
         self.errors
-            .extend(found.errors.into_iter().map(|(id, m)| (id, m, None)));
+            .extend(found.errors);
     }
 }
 
 fn messages(subject: &str) -> GenericMessages {
     let s = generics::escape(subject);
-    GenericMessages {
-        not_generic: format!("{s} contains generic type %s but %s %s is not generic."),
-        less: format!("Generic type %s in {s} does not specify all template types of %s %s: %s"),
-        more: format!(
-            "Generic type %s in {s} specifies %d template types, but %s %s supports only %d: %s"
-        ),
-        not_subtype: format!(
-            "Type %s in generic type %s in {s} is not subtype of template type %s of %s %s."
-        ),
-    }
+    GenericMessages::at(&s)
 }
 
 /// `checkInTraitUseContext()` of the three checks on `tags`, `display` naming the class-like that declares them.

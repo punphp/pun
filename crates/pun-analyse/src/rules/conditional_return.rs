@@ -110,9 +110,6 @@ fn check(sig: &declared::Signature) -> Vec<(&'static str, String)> {
     for conditional in found.into_inner() {
         let subject = match &conditional.subject {
             Subject::Type(Type::Static(..) | Type::This(_)) => continue,
-            // ponytail: an OffsetAccessType subject (`T['key']`) resolves to an error type, so it is not checked
-            // (PLAN.md "resolve `Node::OffsetAccess`")
-            Subject::Type(Type::Error) => continue,
             Subject::Type(subject) => {
                 if !has_template(subject) {
                     errors.push((
@@ -136,7 +133,16 @@ fn check(sig: &declared::Signature) -> Vec<(&'static str, String)> {
             }
         };
         let target = &conditional.target;
-        let is = is_super_type_of(target, &subject);
+        // (an OffsetAccessType subject of a template resolves as its bound's offset type)
+        let resolved = match &subject {
+            Type::OffsetAccess(..) => match pun_phpstan::resolve::resolve_late(&subject.resolve_to_bounds()) {
+                // ponytail: an offset Pun's resolver leaves unresolved is not checked
+                Type::OffsetAccess(..) => continue,
+                t => t,
+            },
+            _ => subject.clone(),
+        };
+        let is = is_super_type_of(target, &resolved);
         if is.maybe() {
             continue;
         }
