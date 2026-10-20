@@ -47,6 +47,8 @@ pub(crate) struct Checks {
     internal: Option<super::internal::Names>,
     /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension (config.level0.neon).
     internal_tag: bool,
+    /// [`Project::type_aliases`].
+    pub(super) type_aliases: Vec<(String, String)>,
 }
 
 impl Checks {
@@ -68,6 +70,7 @@ impl Checks {
             internal: (project.level >= 2 && project.internal_tag)
                 .then(|| super::internal::Names::of(codebase)),
             internal_tag: project.internal_tag,
+            type_aliases: project.type_aliases.clone(),
         }
     }
 }
@@ -181,7 +184,9 @@ pub(crate) fn check_file(
     let mut checker = checker(
         &arena, file, program, &names, codebase, project, files, sources,
     );
-    checker.walk_program(program, &mut ());
+    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
+        checker.walk_program(program, &mut ())
+    });
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
     let mut unmatched = lines.clone();
@@ -265,7 +270,9 @@ fn in_trait_context(
         trait_name: String::from_utf8_lossy(t.name.as_bytes()).into_owned(),
         renames: u.renames.clone(),
     });
-    checker.walk_program(program, &mut ());
+    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
+        checker.walk_program(program, &mut ())
+    });
     let label = checker.label.clone();
     let (mut lines, _) = lines_to_ignore(&file.contents);
     lines.retain(|line, _| {

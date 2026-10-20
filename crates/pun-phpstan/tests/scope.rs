@@ -8,7 +8,9 @@ use std::sync::Arc;
 
 use common::fixture;
 use pun_phpstan::phpdoc;
-use pun_phpstan::resolve::{Scope, const_expr, resolve_in, resolve_str};
+use pun_phpstan::resolve::{
+    Scope, const_expr, has_global_alias, resolve_in, resolve_str, with_type_aliases,
+};
 use pun_phpstan::symbols::{self, Class, Template};
 use pun_phpstan::types::{Level, Type, ancestor_args, decide_type, is_super_type_of};
 
@@ -407,4 +409,25 @@ fn constant_expressions() {
         }
     });
     assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// The `typeAliases` parameter's global type aliases.
+#[test]
+fn global_type_aliases() {
+    let f = fixture("type-global-aliases.json");
+    for row in f.as_array().unwrap() {
+        let aliases: Vec<(String, String)> = row[0]
+            .as_object()
+            .unwrap()
+            .iter()
+            .map(|(k, v)| (k.clone(), v.as_str().unwrap().to_string()))
+            .collect();
+        let input = row[1].as_str().unwrap();
+        let got = with_type_aliases(&aliases, || {
+            assert!(has_global_alias("PunAlias"));
+            resolve_in(&phpdoc::parse(input).unwrap(), &InNamespace).describe(Level::Precise)
+        });
+        assert_eq!(got, row[2].as_str().unwrap(), "{input}");
+    }
+    assert!(!has_global_alias("PunAlias"));
 }

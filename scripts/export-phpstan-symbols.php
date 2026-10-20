@@ -599,6 +599,17 @@ if (($argv[1] ?? '') === 'probes') {
         }
     }
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-const-expr.json', json_encode($constants, $flags | JSON_PRETTY_PRINT)."\n");
+    // the typeAliases parameter's global type aliases: [aliases, type, described in namespace PunProbe]
+    $globalAliases = ['PunAlias' => 'int|string', 'PunNested' => 'list<PunAlias>', 'PunClass' => 'Countable'];
+    $tmp = sys_get_temp_dir().'/pun-symbols-aliases';
+    @mkdir($tmp);
+    file_put_contents($tmp.'/v.neon', "parameters:\n\tphpVersion: 80400\n\ttypeAliases:\n".implode('', array_map(fn ($k, $v) => "\t\t$k: '$v'\n", array_keys($globalAliases), $globalAliases)));
+    $aliasResolver = (new ContainerFactory($tmp))->create($tmp, [$tmp.'/v.neon'], [])->getByType(TypeStringResolver::class);
+    $aliased = [];
+    foreach (['PunAlias', 'PunNested', 'array<PunAlias, PunClass>', 'punalias'] as $s) {
+        $aliased[] = [$globalAliases, $s, $aliasResolver->resolve($s, new NameScope('PunProbe', []))->describe(VerbosityLevel::precise())];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-global-aliases.json', json_encode($aliased, $flags | JSON_PRETTY_PRINT)."\n");
     // getObjectClassNames(): [type, names]
     $names = [];
     foreach (['Coll|Child<int>|int', 'Coll&\\Countable', 'Coll|Coll<int, int>'] as $t) {

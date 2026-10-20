@@ -44,6 +44,8 @@ pub struct Project {
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
     pub larastan: Option<crate::Larastan>,
+    /// `typeAliases`: the global type aliases (name, type string).
+    pub type_aliases: Vec<(String, String)>,
 }
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
@@ -158,6 +160,15 @@ impl Project {
                 == Some(&Value::Bool(true)),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
+            type_aliases: params
+                .get_str("typeAliases")
+                .and_then(Value::as_array)
+                .map(|a| {
+                    a.iter()
+                        .filter_map(|(k, v)| Some((k.as_string(), v.as_str()?.to_string())))
+                        .collect()
+                })
+                .unwrap_or_default(),
         }
     }
 
@@ -179,6 +190,7 @@ impl Project {
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,
             larastan: None,
+            type_aliases: Vec::new(),
         }
     }
 }

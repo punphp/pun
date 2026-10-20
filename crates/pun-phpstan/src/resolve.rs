@@ -10,6 +10,40 @@ use crate::types::{
     intersect, is_super_type_of, mixed, to_benevolent, union,
 };
 
+thread_local! {
+    /// The `typeAliases` parameter while [`with_type_aliases()`] runs, and the aliases being resolved.
+    static GLOBAL_ALIASES: std::cell::RefCell<(Vec<(String, String)>, Vec<String>)> = Default::default();
+}
+
+/// Runs `f` with the `typeAliases` parameter's global type aliases (name, type string) in effect.
+pub fn with_type_aliases<R>(aliases: &[(String, String)], f: impl FnOnce() -> R) -> R {
+    let previous = GLOBAL_ALIASES.with(|g| std::mem::replace(&mut g.borrow_mut().0, aliases.to_vec()));
+    let out = f();
+    GLOBAL_ALIASES.with(|g| g.borrow_mut().0 = previous);
+    out
+}
+
+/// `UsefulTypeAliasResolver::hasTypeAlias()` of a global type alias.
+pub fn has_global_alias(name: &str) -> bool {
+    GLOBAL_ALIASES.with(|g| g.borrow().0.iter().any(|(n, _)| n == name))
+}
+
+/// `resolveGlobalTypeAlias()`: the alias's type string resolved in no namespace.
+fn global_alias(name: &str) -> Option<Type> {
+    let definition = GLOBAL_ALIASES.with(|g| {
+        let g = g.borrow();
+        g.0.iter().find(|(n, _)| n == name).map(|(_, t)| t.clone())
+    })?;
+    if GLOBAL_ALIASES.with(|g| g.borrow().1.iter().any(|n| n == name)) {
+        // PHPStan throws ShouldNotHappenException on a circular definition; see COVERAGE.md
+        return Some(Type::Error);
+    }
+    GLOBAL_ALIASES.with(|g| g.borrow_mut().1.push(name.to_string()));
+    let ty = resolve_str(&definition, None);
+    GLOBAL_ALIASES.with(|g| g.borrow_mut().1.pop());
+    Some(ty)
+}
+
 /// `TypeStringResolver::resolve($type, new NameScope(null, [], $class))`; a parse error is an `ErrorType`.
 pub fn resolve_str(input: &str, class: Option<&str>) -> Type {
     match phpdoc::parse(input) {
@@ -450,6 +484,9 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             }
             _ => {}
         }
+    }
+    if let Some(alias) = global_alias(name) {
+        return alias;
     }
     if let Some(template) = scope.template(name) {
         return template;
