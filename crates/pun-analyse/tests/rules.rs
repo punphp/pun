@@ -28,10 +28,13 @@ fn phpstan_rule_fixtures() {
     let mut files = Vec::new();
     fixtures(&root, &mut files);
     files.sort();
+    // PUN_RULES_FILTER=Functions/ runs only the fixtures (and checks only the gaps) whose name contains it
+    let filter = std::env::var("PUN_RULES_FILTER").unwrap_or_default();
+    files.retain(|f| f.to_string_lossy().contains(&filter));
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
-        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .filter(|l| !l.is_empty() && !l.starts_with('#') && l.contains(&filter))
         .map(str::to_string)
         .collect();
     let prefix = format!("{}/", data.display());

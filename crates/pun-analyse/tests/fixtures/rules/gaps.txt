@@ -66,9 +66,6 @@ Methods/StaticMethodCallableRuleTest::testConditionallyExecutedCode
 Properties/PropertiesInInterfaceRuleTest::testPhpVersionNarrowedScope
 Properties/PropertyInClassRuleTest::testPhpVersionNarrowedScope
 Traits/ConstantsInTraitsRuleTest::testPhpVersionNarrowedScope
-# PHPStan 2.3 replaced PrintfHelper with PrintfFormatParser (`%5%`, `%ls`, `%*2$d` and positional width/precision
-# arguments, sscanf() counted by PHP itself); not ported
-Functions/PrintfParametersRuleTest::testFormatParser
 # PHPStan 2.3's template types in return.missing descriptions: an array shape with a template key of a non-key bound
 # is no shape, a template key prints as `T|TKey of (int|string)`, and an inherited template argument resolves to its
 # bound (`RecursiveIterator<mixed, mixed>`)

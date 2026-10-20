@@ -1,54 +1,101 @@
-//! PHPStan 2.3.1 PrintfHelper; scanf's count is PHP 8.5 ValidateFormat(format, 0), not a printf regex.
+//! PHPStan 2.3.1's PrintfFormatParser (php_formatted_print() of PHP 8.0+); scanf's count is PHP 8.5
+//! ValidateFormat(format, 0).
 
 use std::collections::HashSet;
-use std::sync::OnceLock;
 
-/// PrintfHelper::parsePlaceholders / getPlaceholdersCount, using the same PCRE pattern and byte lengths.
+const INT_MAX: u64 = 2147483647;
+
+/// `PrintfFormatParser::parse()` then `getRequiredArgumentsCount()`: how many arguments the format consumes, `None`
+/// when it throws ValueError. `h`/`H` are specifiers from PHP 8.0 (`supportsHhPrintfSpecifier()`).
 pub(super) fn printf_count(format: &[u8], php_version: u32) -> Option<usize> {
-    static PHP8: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
-    static PHP7: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
-    let (cache, extra) = if php_version >= 80000 {
-        (&PHP8, "hH")
-    } else {
-        (&PHP7, "")
-    };
-    let regex = cache.get_or_init(|| pun_phpstan::php::preg(&format!(
-        r"~(?<before>%*)%(?:(?<position>\d+)\$)?[-+]?(?:[ 0]|(?:'[^%]))?(?<width>\*)?-?\d*(?:\.(?:\d+|(?<precision>\*))?)?(?<specifier>[bs{extra}s]|l?[cdeEgfFGouxX])?~"
-    )).unwrap());
-    let mut parameter = 0usize;
-    let mut maximum = 0usize;
-    for captures in regex.captures_iter(format) {
-        let captures = captures.ok()?;
-        if captures.name("before").unwrap().as_bytes().len() % 2 != 0 {
+    let length = format.len();
+    let (mut i, mut next, mut count) = (0, 0, 0);
+    let mut use_index = |index: usize| count = count.max(index + 1);
+    while let Some(percent) = format[i..].iter().position(|b| *b == b'%').map(|p| p + i) {
+        i = percent + 1;
+        if format.get(i) == Some(&b'%') {
+            i += 1;
             continue;
         }
-        for name in ["width", "precision"] {
-            if captures
-                .name(name)
-                .is_some_and(|m| !m.as_bytes().is_empty())
-            {
-                parameter += 1;
-                maximum = maximum.max(parameter);
+        let mut argument = None;
+        if !format.get(i).is_some_and(u8::is_ascii_alphabetic) {
+            argument = argument_number(format, &mut i)?;
+            while let Some(&char) = format.get(i) {
+                if matches!(char, b' ' | b'0' | b'-' | b'+') {
+                    i += 1;
+                } else if char == b'\'' {
+                    if length - i <= 1 {
+                        return None;
+                    }
+                    i += 2;
+                } else {
+                    break;
+                }
+            }
+            if format.get(i) == Some(&b'*') {
+                i += 1;
+                let width = argument_number(format, &mut i)?.unwrap_or_else(|| {
+                    next += 1;
+                    next - 1
+                });
+                use_index(width);
+            } else if format.get(i).is_some_and(u8::is_ascii_digit) && number(format, &mut i) >= INT_MAX {
+                return None;
+            }
+            if format.get(i) == Some(&b'.') {
+                i += 1;
+                if format.get(i) == Some(&b'*') {
+                    i += 1;
+                    let precision = argument_number(format, &mut i)?.unwrap_or_else(|| {
+                        next += 1;
+                        next - 1
+                    });
+                    use_index(precision);
+                } else if format.get(i).is_some_and(u8::is_ascii_digit) && number(format, &mut i) >= INT_MAX {
+                    return None;
+                }
             }
         }
-        captures
-            .name("specifier")
-            .filter(|m| !m.as_bytes().is_empty())?;
-        let position = match captures
-            .name("position")
-            .filter(|m| !m.as_bytes().is_empty())
-        {
-            Some(m) => {
-                pun_tokens::php_compat::intval(&String::from_utf8_lossy(m.as_bytes())) as usize
-            }
-            None => {
-                parameter += 1;
-                parameter
-            }
-        };
-        maximum = maximum.max(position);
+        if format.get(i) == Some(&b'l') {
+            i += 1;
+        }
+        let argument = argument.unwrap_or_else(|| {
+            next += 1;
+            next - 1
+        });
+        let specifier = *format.get(i)?;
+        if !b"sdueEfFgGcoxXb%".contains(&specifier) && !(php_version >= 80000 && b"hH".contains(&specifier)) {
+            return None;
+        }
+        use_index(argument);
+        i += 1;
     }
-    Some(maximum)
+    Some(count)
+}
+
+/// `parseArgumentNumber()`: `Some(None)` without an `n$`, the zero-based index after one, `None` out of range.
+fn argument_number(format: &[u8], i: &mut usize) -> Option<Option<usize>> {
+    let end = *i + format[*i..].iter().take_while(|b| b.is_ascii_digit()).count();
+    if format.get(end) != Some(&b'$') {
+        return Some(None);
+    }
+    let value = number(format, i);
+    *i += 1;
+    (value > 0 && value < INT_MAX).then(|| Some(value as usize - 1))
+}
+
+/// `parseNumber()`: the digits at `i`, INT_MAX past ten significant digits.
+fn number(format: &[u8], i: &mut usize) -> u64 {
+    let start = *i;
+    while format.get(*i).is_some_and(u8::is_ascii_digit) {
+        *i += 1;
+    }
+    let digits = &format[start..*i];
+    let digits = &digits[digits.iter().take_while(|b| **b == b'0').count()..];
+    if digits.len() > 10 {
+        return INT_MAX;
+    }
+    digits.iter().fold(0, |n, d| n * 10 + u64::from(d - b'0'))
 }
 
 /// `count(sscanf('', '%*n' . $format))`: `%*n` prevents EOF from replacing the preallocated array with null.
