@@ -41,6 +41,7 @@ mod require_ancestors;
 mod reflection;
 mod restricted_functions;
 mod scope;
+mod selector;
 mod set_hook;
 mod signatures;
 mod statements;

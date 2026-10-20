@@ -2,7 +2,8 @@
 //! `checkExplicitMixed`, `checkImplicitMixed`), and `findTypeToCheck()` of an expression.
 
 use mago_syntax::cst::*;
-use pun_phpstan::types::{StrictMixed, Type, accepts_with, to_benevolent, union};
+use pun_phpstan::symbols;
+use pun_phpstan::types::{StrictMixed, Type, accepts_reasons, ancestor_args, accepts_with, to_benevolent, union};
 
 use super::super::Checker;
 
@@ -38,9 +39,33 @@ impl Levels {
         fn go(t: &Type, accepting: &Type) -> Type {
             match t {
                 Type::Callable(_) | Type::Closure(_) => t.clone(),
+                Type::Object(name, args) if !args.is_empty() => generic(name, args, accepting),
                 Type::Null | Type::Benevolent(_) => t.traverse(&|i| go(i, accepting)),
                 _ if !matches!(accepting, Type::Null) => t.clone().remove_null().traverse(&|i| go(i, accepting)),
                 _ => t.traverse(&|i| go(i, accepting)),
+            }
+        }
+        // `traverseWithoutMapping()`: a generic object's argument loses its null only where the accepting type's
+        // does not take one
+        fn generic(name: &str, args: &[Type], accepting: &Type) -> Type {
+            let contains_null = |t: &Type| matches!(t, Type::Null) || matches!(t, Type::Union(ts) if ts.contains(&Type::Null));
+            let theirs = match accepting {
+                Type::Object(a, theirs) if a.eq_ignore_ascii_case(name) => Some(theirs.clone()),
+                Type::Object(a, theirs) => symbols::lookup(a).and_then(|c| ancestor_args(&c, name, theirs)),
+                _ => None,
+            };
+            match theirs.filter(|theirs| theirs.len() == args.len()) {
+                Some(theirs) => Type::Object(
+                    name.to_string(),
+                    args.iter()
+                        .zip(&theirs)
+                        .map(|(t, o)| match t {
+                            Type::Union(_) if contains_null(t) && !contains_null(o) => go(&t.clone().remove_null(), accepting),
+                            t => t.clone(),
+                        })
+                        .collect(),
+                ),
+                None => Type::Object(name.to_string(), args.to_vec()),
             }
         }
         if self.check_nullables { accepted.clone() } else { go(accepted, accepting) }
@@ -51,6 +76,17 @@ impl Levels {
         let accepted = self.transform_accepted(accepting, accepted);
         let r = accepts_with(accepting, &accepted, strict_types, self.strict_mixed());
         if self.check_union_types { r.yes() } else { !r.no() }
+    }
+
+    /// `RuleLevelHelper::accepts()->reasons` as an error's tip (`acceptsReasonsTip()`: one reason as is, more as a
+    /// bullet list).
+    pub fn accepts_tip(self, accepting: &Type, accepted: &Type, strict_types: bool) -> Option<String> {
+        let accepted = self.transform_accepted(accepting, accepted);
+        match accepts_reasons(accepting, &accepted, strict_types, self.strict_mixed()).as_slice() {
+            [] => None,
+            [one] => Some(one.clone()),
+            all => Some(all.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
+        }
     }
 }
 

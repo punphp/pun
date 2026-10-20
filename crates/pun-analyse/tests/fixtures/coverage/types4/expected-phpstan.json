@@ -1,0 +1,68 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "types4.php",
+   "line": 37,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function Types4\\pick expects 1, 1.5 given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 39,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $f of function Types4\\keep expects callable(1|2): bool, Closure(string): true given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 40,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $callback of function array_filter expects (callable(0|1): bool)|null, Closure(string): true given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 41,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $callback of function array_filter expects (callable(1, 'a'): bool)|null, Closure(int, int): true given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 42,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $callback of function array_map expects (callable(1, 2): mixed)|null, Closure(string, string): string given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 44,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $callback of function array_map expects (callable(1, 2, 3): mixed)|null, Closure(string, string): string given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 46,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $callback of function array_walk expects callable(int, int<0, max>, 1): mixed, Closure(int, int, string): null given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 47,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $callback of function array_find expects callable(1, 0): bool, Closure(string): true given.",
+   "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 49,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $separator (string) in call to function implode.",
+   "tip": null
+  }
+ ]
+}
