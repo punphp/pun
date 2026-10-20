@@ -1,0 +1,159 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "types.php",
+   "line": 32,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant PhpDocTypes\\Child::THIRD with type int is incompatible with native type string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 35,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant PhpDocTypes\\Child::FOURTH with type int|string is not subtype of native type string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 38,
+   "identifier": "generics.notGeneric",
+   "message": "PHPDoc tag @var for constant PhpDocTypes\\Child::LAST contains generic type PhpDocTypes\\Base<int> but class PhpDocTypes\\Base is not generic.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 41,
+   "identifier": "property.phpDocType",
+   "message": "PHPDoc tag @var for property PhpDocTypes\\Child::$wrong with type int is incompatible with native type string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 61,
+   "identifier": "paramClosureThis.nonClosure",
+   "message": "PHPDoc tag @param-closure-this is for parameter $notClosure with non-Closure type int.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 61,
+   "identifier": "parameter.notFound",
+   "message": "PHPDoc tag @param-closure-this references unknown parameter: $missing",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 61,
+   "identifier": "parameter.notFound",
+   "message": "PHPDoc tag @param-out references unknown parameter: $missingOut",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 61,
+   "identifier": "return.phpDocType",
+   "message": "PHPDoc tag @return with type int is incompatible with native type string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 61,
+   "identifier": "parameter.notByRef",
+   "message": "Parameter $notRef for PHPDoc tag @param-out is not passed by reference.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 71,
+   "identifier": "parameter.phpDocType",
+   "message": "PHPDoc tag @param for parameter $t with type T is not subtype of native type string.",
+   "tip": "Write @template T of string to fix this."
+  },
+  {
+   "file": "types.php",
+   "line": 71,
+   "identifier": "return.phpDocType",
+   "message": "PHPDoc tag @return with type T is not subtype of native type string.",
+   "tip": "Write @template T of string to fix this."
+  },
+  {
+   "file": "types.php",
+   "line": 71,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of method PhpDocTypes\\Child::template() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 77,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @return has invalid value (Foo(): Unexpected token \"(\", expected TOKEN_HORIZONTAL_WS at offset 22 on line 2",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 96,
+   "identifier": "parameter.phpDocType",
+   "message": "PHPDoc tag @param for parameter $promoted with type string is incompatible with native type int.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 98,
+   "identifier": "property.phpDocType",
+   "message": "PHPDoc type for property PhpDocTypes\\Child::$own with type int is incompatible with native type string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 99,
+   "identifier": "property.phpDocType",
+   "message": "PHPDoc type for property PhpDocTypes\\Child::$promoted with type string is incompatible with native type int.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 111,
+   "identifier": "return.phpDocType",
+   "message": "PHPDoc tag @return with type string is incompatible with native type int.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 118,
+   "identifier": "parameter.phpDocType",
+   "message": "PHPDoc tag @param for parameter $value with type string is incompatible with native type int.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 125,
+   "identifier": "parameter.phpDocType",
+   "message": "PHPDoc tag @param for parameter $value with type string is incompatible with native type int.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 142,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $x (string) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 142,
+   "identifier": "parameter.phpDocType",
+   "message": "PHPDoc tag @param for parameter $x with type int is incompatible with native type string|null.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 142,
+   "identifier": "return.phpDocType",
+   "message": "PHPDoc tag @return with type string is incompatible with native type int.",
+   "tip": null
+  }
+ ]
+}

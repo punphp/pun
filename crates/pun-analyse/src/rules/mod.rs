@@ -56,6 +56,10 @@ mod require_tags;
 mod var_tags;
 mod callable_tags;
 mod class_tags;
+mod operators;
+mod conditional_return;
+mod assert_tags;
+mod phpdoc_types;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -94,6 +98,10 @@ pub fn reports(identifier: &str) -> bool {
         || var_tags::IDENTIFIERS.contains(&identifier)
         || class_tags::IDENTIFIERS.contains(&identifier)
         || callable_tags::IDENTIFIERS.contains(&identifier)
+        || operators::IDENTIFIERS.contains(&identifier)
+        || conditional_return::IDENTIFIERS.contains(&identifier)
+        || assert_tags::IDENTIFIERS.contains(&identifier)
+        || phpdoc_types::IDENTIFIERS.contains(&identifier)
 }
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -626,6 +634,24 @@ pub const IDENTIFIERS: &[&str] = &[
     "logicalXor.leftAlwaysFalse",
     "logicalXor.rightAlwaysTrue",
     "logicalXor.rightAlwaysFalse",
+    "identical.alwaysTrue",
+    "identical.alwaysFalse",
+    "notIdentical.alwaysTrue",
+    "notIdentical.alwaysFalse",
+    "equal.alwaysTrue",
+    "equal.alwaysFalse",
+    "notEqual.alwaysTrue",
+    "notEqual.alwaysFalse",
+    "greater.alwaysTrue",
+    "greater.alwaysFalse",
+    "greaterOrEqual.alwaysTrue",
+    "greaterOrEqual.alwaysFalse",
+    "smaller.alwaysTrue",
+    "smaller.alwaysFalse",
+    "smallerOrEqual.alwaysTrue",
+    "smallerOrEqual.alwaysFalse",
+    "instanceof.alwaysTrue",
+    "instanceof.alwaysFalse",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -1359,6 +1385,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
         callable_tags::function_like(self, f.span(), &f.parameter_list);
+        conditional_return::function(self, f);
+        assert_tags::function(self, f);
+        phpdoc_types::function(self, f);
         self.enter_this(false);
         functions::inner_function(self, f);
         self.larastan_enter_function(&f.parameter_list);
@@ -1434,6 +1463,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
         phpdoc_tags::node(self, m.span());
         callable_tags::function_like(self, m.span(), &m.parameter_list);
+        conditional_return::method(self, m);
+        assert_tags::method(self, m);
+        phpdoc_types::method(self, m);
+        phpdoc_types::promoted(self, m);
         self.enter_this(!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))));
         functions::function_like(self, m, &m.parameter_list);
         statements::constructor_return_type(self, m);
@@ -1685,6 +1718,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_binary(&mut self, b: &'ast Binary<'arena>, c: &mut ()) {
         types::binary(self, b);
         dead_code::binary(self, b);
+        operators::binary(self, b);
         if matches!(b.operator, BinaryOperator::Instanceof(_)) {
             names::instanceof(self, b.lhs, b.rhs);
         }
@@ -1731,6 +1765,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::property_assign_ref(self, a);
         types::assignment(self, a);
         types::property_assignment(self, a);
+        operators::assignment(self, a);
         if let AssignmentOperator::Assign(_) = a.operator {
             arrays::destructuring(self, a.lhs, true);
         }
@@ -1939,10 +1974,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
             types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
+            for hook in h.hook_list.hooks.iter() {
+                phpdoc_types::hook(self, hook, p.hint());
+            }
         }
         properties::property(self, p);
         missing_types::property(self, p);
         types::property_default(self, p);
+        phpdoc_types::property(self, p);
         larastan::property(self, p);
         for v in p.variables() {
             hierarchy::callable_property(self, v.span(), v.name, p.hint());
@@ -1967,6 +2006,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         constants::class_constant(self, k);
         missing_types::class_constant(self, k);
         types::class_constant(self, k);
+        phpdoc_types::class_constant(self, k);
         attributes::check(
             self,
             k.attribute_lists.as_slice(),
@@ -2208,6 +2248,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         statements::cast(self, u);
         types::prefix(self, u);
         types::unary(self, u);
+        operators::unary_prefix(self, u);
         internal::string_cast(self, u);
         if matches!(
             u.operator,
@@ -2222,6 +2263,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
         types::postfix(self, u);
+        operators::unary_postfix(self, u);
         assign::increment(self, u.operand);
         self.incremented(u.operand);
         types::property_increment(self, u.operand);

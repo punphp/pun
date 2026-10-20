@@ -179,6 +179,22 @@ const PORTED: &[&str] = &[
     "mixin.trait",
     "varTag.unresolvableType",
     "varTag.trait",
+    "conditionalType.subjectNotFound",
+    "conditionalType.alwaysTrue",
+    "conditionalType.alwaysFalse",
+    "assert.unknownExpr",
+    "assert.unresolvableType",
+    "assert.impossibleType",
+    "assert.alreadyNarrowedType",
+    "assert.trait",
+    "parameter.unresolvableType",
+    "parameter.phpDocType",
+    "paramClosureThis.nonClosure",
+    "return.unresolvableType",
+    "return.phpDocType",
+    "property.unresolvableType",
+    "property.phpDocType",
+    "classConstant.unresolvableType",
     "paramImmediatelyInvokedCallable.nonCallable",
     "paramLaterInvokedCallable.nonCallable",
     "property.internal",
@@ -215,9 +231,6 @@ const PORTED: &[&str] = &[
     "method.resultUnused",
     "staticMethod.resultUnused",
     "new.resultUnused",
-    "constant.notFound",
-    "class.missingExtends",
-    "class.missingImplements",
     "if.alwaysTrue",
     "if.alwaysFalse",
     "elseif.alwaysTrue",
@@ -258,6 +271,27 @@ const PORTED: &[&str] = &[
     "logicalXor.leftAlwaysFalse",
     "logicalXor.rightAlwaysTrue",
     "logicalXor.rightAlwaysFalse",
+    "identical.alwaysTrue",
+    "identical.alwaysFalse",
+    "notIdentical.alwaysTrue",
+    "notIdentical.alwaysFalse",
+    "equal.alwaysTrue",
+    "equal.alwaysFalse",
+    "notEqual.alwaysTrue",
+    "notEqual.alwaysFalse",
+    "greater.alwaysTrue",
+    "greater.alwaysFalse",
+    "greaterOrEqual.alwaysTrue",
+    "greaterOrEqual.alwaysFalse",
+    "smaller.alwaysTrue",
+    "smaller.alwaysFalse",
+    "smallerOrEqual.alwaysTrue",
+    "smallerOrEqual.alwaysFalse",
+    "instanceof.alwaysTrue",
+    "instanceof.alwaysFalse",
+    "constant.notFound",
+    "class.missingExtends",
+    "class.missingImplements",
 ];
 
 /// The `class.notFound` messages of the level-2 Generics and PHPDoc tag rules (other rules report the identifier at every level).
@@ -278,12 +312,18 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "Throwing object of an unknown class ",
     "Cloning object of an unknown class ",
     "Iterating over an object of an unknown class ",
+    "PHPDoc tag @phpstan-assert",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).
 const PARAMETER_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @param-immediately-invoked-callable references unknown parameter",
     "PHPDoc tag @param-later-invoked-callable references unknown parameter",
+    "Conditional return type references unknown parameter",
+    "Assert references unknown parameter",
+    "PHPDoc tag @param references unknown parameter",
+    "PHPDoc tag @param-out references unknown parameter",
+    "PHPDoc tag @param-closure-this references unknown parameter",
 ];
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
@@ -352,6 +392,8 @@ fn phpstan_level_fixtures() {
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         || (id == "parameter.notFound"
                             && PARAMETER_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                        // (ValueAssignedToClassConstantRule's errors share the identifier and are not ported)
+                        || (id == "classConstant.phpDocType" && message.contains(" native type "))
                 };
                 let want: BTreeSet<Key> = case["errors"]
                     .as_array()

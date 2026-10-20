@@ -22,7 +22,7 @@ pub const IDENTIFIERS: &[&str] = &[
 ];
 
 /// `MissingTypehintCheck::MISSING_ITERABLE_VALUE_TYPE_TIP`
-const TIP: &str =
+pub(super) const TIP: &str =
     "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type";
 
 /// `featureToggles.skipCheckGenericClasses`
@@ -319,7 +319,7 @@ pub fn method(c: &mut Checker, m: &Method) {
 }
 
 /// The class-like the method at `span` is declared in: the class being walked or one of its traits.
-fn declaring<'a>(
+pub(super) fn declaring<'a>(
     c: &Checker<'a, '_>,
     span: mago_span::Span,
 ) -> Option<&'a mago_codex::metadata::class_like::ClassLikeMetadata> {

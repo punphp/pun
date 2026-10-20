@@ -1,0 +1,243 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "asserts.php",
+   "line": 5,
+   "identifier": "trait.unused",
+   "message": "Trait PhpDocAsserts\\SomeTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "asserts.php",
+   "line": 18,
+   "identifier": "missingType.return",
+   "message": "Method PhpDocAsserts\\Other::untyped() has no return type specified.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 29,
+   "identifier": "missingType.property",
+   "message": "Property PhpDocAsserts\\Foo::$untypedProp has no type specified.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 33,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @phpstan-assert has invalid value (int): Unexpected token \"\\n     * \", expected variable at offset 60 on line 3",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "assert.unknownExpr",
+   "message": "Assert references unknown $o->missing().",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "assert.unknownExpr",
+   "message": "Assert references unknown $o->missing.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "assert.alreadyNarrowedType",
+   "message": "Asserted type int for $i with type int does not narrow down the type.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "assert.impossibleType",
+   "message": "Asserted type int for $u->prop with type string|null can never happen.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "assert.impossibleType",
+   "message": "Asserted type string for $o->count with type int can never happen.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "missingType.parameter",
+   "message": "Method PhpDocAsserts\\Foo::check() has parameter $a with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "missingType.parameter",
+   "message": "Method PhpDocAsserts\\Foo::check() has parameter $a2 with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "missingType.parameter",
+   "message": "Method PhpDocAsserts\\Foo::check() has parameter $t with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "missingType.iterableValue",
+   "message": "PHPDoc tag @phpstan-assert for $a has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "missingType.generics",
+   "message": "PHPDoc tag @phpstan-assert for $a2 contains generic class ArrayIterator but does not specify its types: TKey, TValue",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 46,
+   "identifier": "assert.trait",
+   "message": "PHPDoc tag @phpstan-assert for $t contains invalid type PhpDocAsserts\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 54,
+   "identifier": "assert.alreadyNarrowedType",
+   "message": "Asserted type int for $i with type int does not narrow down the type.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 61,
+   "identifier": "assert.alreadyNarrowedType",
+   "message": "Asserted type int for $i with type int does not narrow down the type.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 70,
+   "identifier": "assert.alreadyNarrowedType",
+   "message": "Asserted type int for $x with type int does not narrow down the type.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 79,
+   "identifier": "return.unusedType",
+   "message": "Function PhpDocAsserts\\templated() never returns string so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 88,
+   "identifier": "conditionalType.subjectNotFound",
+   "message": "Conditional return type uses subject type int which is not part of PHPDoc @template tags.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 104,
+   "identifier": "parameter.notFound",
+   "message": "Conditional return type references unknown parameter $v.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 104,
+   "identifier": "parameter.notFound",
+   "message": "Conditional return type references unknown parameter $v.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 104,
+   "identifier": "parameter.notFound",
+   "message": "Conditional return type references unknown parameter $v.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 104,
+   "identifier": "parameter.notFound",
+   "message": "Conditional return type references unknown parameter $w.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 104,
+   "identifier": "conditionalType.subjectNotFound",
+   "message": "Conditional return type uses subject type string which is not part of PHPDoc @template tags.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 111,
+   "identifier": "parameter.notFound",
+   "message": "Conditional return type references unknown parameter $p.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 111,
+   "identifier": "return.unusedType",
+   "message": "Function PhpDocAsserts\\noParams() never returns string so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 122,
+   "identifier": "conditionalType.alwaysTrue",
+   "message": "Condition \"int is int\" in conditional return type is always true.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 130,
+   "identifier": "parameter.notFound",
+   "message": "Conditional return type references unknown parameter $missing.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 130,
+   "identifier": "missingType.parameter",
+   "message": "Method PhpDocAsserts\\Base::unknownParameter() has parameter $p with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 148,
+   "identifier": "parameter.notFound",
+   "message": "Conditional return type references unknown parameter $missing.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 148,
+   "identifier": "missingType.parameter",
+   "message": "Method PhpDocAsserts\\Child::unknownParameter() has parameter $x with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 158,
+   "identifier": "conditionalType.alwaysTrue",
+   "message": "Condition \"int is int\" in conditional return type is always true.",
+   "tip": null
+  },
+  {
+   "file": "asserts.php",
+   "line": 177,
+   "identifier": "conditionalType.alwaysTrue",
+   "message": "Condition \"array<T> is array\" in conditional return type is always true.",
+   "tip": null
+  }
+ ]
+}

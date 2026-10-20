@@ -51,17 +51,24 @@
 3 Methods/ReturnTypeRuleTest::testBug11160
 3 Methods/ReturnTypeRuleTest::testBug5946
 3 Methods/ReturnTypeRuleTest::testBug9669
-# generics.* / parameter.notByRef errors of the level-2 PHPDoc tag rules not ported yet (Incompatible*PhpDocTypeRule,
-# MethodAssertRule; PLAN.md "analyse phpdoc/operators").
-2 PhpDoc/IncompatibleClassConstantPhpDocTypeRuleTest::testRule
-2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testEnums
-2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testParamOut
+# GenericCallableRuleHelper (callable.shadowTemplate and a callable's own template checks) is not ported: Pun's
+# callable types do not keep their templates (PLAN.md "analyse phpdoc/operators").
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testGenericCallables
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testParamClosureThis
-2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testGenericStatic
 2 PhpDoc/IncompatiblePropertyHookPhpDocTypeRuleTest::testRule
 2 PhpDoc/IncompatiblePropertyPhpDocTypeRuleTest::testGenericCallables
-2 PhpDoc/MethodAssertRuleTest::testRule
+# Incompatible*PhpDocTypeRule skip the PHPDoc types Pun's resolver does not model (`value-of`, `key-of`, `T['k']`,
+# pure and static callables), so their errors are missing; a template with generic arguments
+# (`TypeCommunicator<TypeConcurrent>`) resolves to an error type (PLAN.md).
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testRule
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testValueOfEnum
+3 Functions/ReturnTypeRuleTest::testBug13190TemplateGeneric
+# A conditional type's branches are not narrowed by its condition (`getNormalizedIf()`, types.rs), so
+# GenericObjectTypeCheck finds the unnarrowed template arguments out of bounds.
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug10622
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug10622B
+# `@phpstan-template TKey` with `@psalm-template TKey`, `@psalm-template T`: Pun lists the templates of every prefix.
+3 Methods/ReturnTypeRuleTest::testBug4605
 # Pun reports generics.notSupportedBound / generics.notSubtype on these templates where PHPStan does not.
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug13652
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug9708
@@ -111,26 +118,6 @@
 4 Functions/HelperDeadCode::testRule
 7 Functions/HelperDeadCode::testRule
 8 Functions/HelperDeadCode::testRule
-# offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic
-# return type extension
-3 Arrays/InvalidKeyInArrayDimFetchRuleTest::testBug12981
-# throw.notThrowable: an inline `@var` without a variable name above `throw $foo` is not applied by Mago
-3 Exceptions/ThrowExprTypeRuleTest::testRule
-# generator.valueType, property.defaultValue: the accepts reasons tip (acceptsReasonsTip()) is not ported
-3 Generators/YieldFromTypeRuleTest::testRule
-3 Generators/YieldTypeRuleTest::testRule
-6 Properties/MissingPropertyTypehintRuleTest::testBug14012
-# foreach.emptyArray: Mago keeps `array{}` where PHPStan's scope does not (a branch `!empty()` makes dead, a property
-# a called closure assigns, an array written through a reference)
-4 Arrays/DeadForeachRuleTest::testBug7913
-4 Arrays/DeadForeachRuleTest::testBug14888
-4 Arrays/DeadForeachRuleTest::testBug8056
-# class.notFound of an inline `@var` tag naming an unknown class (a variable its scope does not know yet)
-4 Methods/NullsafeMethodCallRuleTest::testBug12222
-# expr.resultUnused: `null?->foo` printed `(null)?->foo`
-4 Properties/NullsafePropertyFetchRuleTest::testRule
-# class.notFound: Mago reads `callable-array` as a class name
-6 Methods/MissingMethodParameterTypehintRuleTest::testBug14549
 # an-dead: ConstantConditionInTraitRule (the trait collector) is unported: nothing reports a constant condition in a trait
 4 Comparison/BooleanAndConstantConditionRuleTest::testInTrait
 4 Comparison/BooleanNotConstantConditionRuleTest::testInTrait
@@ -165,7 +152,6 @@
 4 Comparison/ElseIfConstantConditionRuleTest::testBug6947
 4 Comparison/IfConstantConditionRuleTest::testRule
 4 Comparison/IfConstantConditionRuleTest::testDoNotReportPhpDoc
-4 Comparison/IfConstantConditionRuleTest::testBug13384b
 4 Comparison/IfConstantConditionRuleTest::testReportPhpDoc
 4 Comparison/IfConstantConditionRuleTest::testBug11417
 4 Comparison/IfConstantConditionRuleTest::testBug4284
@@ -238,5 +224,71 @@
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypes
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypesLevel8
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug10749
-# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
+# offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic
+# return type extension
+3 Arrays/InvalidKeyInArrayDimFetchRuleTest::testBug12981
+# throw.notThrowable: an inline `@var` without a variable name above `throw $foo` is not applied by Mago
+3 Exceptions/ThrowExprTypeRuleTest::testRule
+# generator.valueType, property.defaultValue: the accepts reasons tip (acceptsReasonsTip()) is not ported
+3 Generators/YieldFromTypeRuleTest::testRule
+3 Generators/YieldTypeRuleTest::testRule
+6 Properties/MissingPropertyTypehintRuleTest::testBug14012
+# foreach.emptyArray: Mago keeps `array{}` where PHPStan's scope does not (a branch `!empty()` makes dead, a property
+# a called closure assigns, an array written through a reference)
+4 Arrays/DeadForeachRuleTest::testBug7913
+4 Arrays/DeadForeachRuleTest::testBug14888
+4 Arrays/DeadForeachRuleTest::testBug8056
+# class.notFound of an inline `@var` tag naming an unknown class (a variable its scope does not know yet)
+# expr.resultUnused: `null?->foo` printed `(null)?->foo`
+4 Properties/NullsafePropertyFetchRuleTest::testRule
+# class.notFound: Mago reads `callable-array` as a class name
+6 Methods/MissingMethodParameterTypehintRuleTest::testBug14549
+# an-dead: Strict/Loose/Number comparison and ImpossibleInstanceOf rules: the treatPhpDocTypesAsCertain tip needs native types; Mago's types differ (int ranges for constants, Traversable<mixed, mixed> generics, lowercase-string, enums compared with ==, object shapes, traits)
+4 Comparison/BooleanAndConstantConditionRuleTest::testReportAlwaysTrueInLastCondition#0
+4 Comparison/BooleanAndConstantConditionRuleTest::testReportAlwaysTrueInLastCondition#1
+4 Comparison/BooleanOrConstantConditionRuleTest::testReportAlwaysTrueInLastCondition#0
+4 Comparison/BooleanOrConstantConditionRuleTest::testReportAlwaysTrueInLastCondition#1
+4 Comparison/ConstantLooseComparisonRuleTest::testRule
+4 Comparison/ConstantLooseComparisonRuleTest::testBug8485
+4 Comparison/ConstantLooseComparisonRuleTest::testTreatPhpDocTypesAsCertain#0
+4 Comparison/ConstantLooseComparisonRuleTest::testTreatPhpDocTypesAsCertain#1
+4 Comparison/ConstantLooseComparisonRuleTest::testBug11694
+4 Comparison/ConstantLooseComparisonRuleTest::testBug8800
+4 Comparison/ConstantLooseComparisonRuleTest::testInTrait
+4 Comparison/ConstantLooseComparisonRuleTest::testBug14606
+4 Comparison/IfConstantConditionRuleTest::testBug4043
+4 Comparison/IfConstantConditionRuleTest::testBug8485
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug7052
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug7044
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug3277
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testTreatPhpDocTypesAsCertain#0
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testTreatPhpDocTypesAsCertain#1
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug7075
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testInTrait
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug11146
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug5362
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug7555
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug5474
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug4993
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug2851b
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8485
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug3633
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug7578
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug6260
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug9104
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug9142
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testLowercaseString
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testUppercaseString
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testHashing
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug3803
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11019
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug10884
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug3761
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11609
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testPossiblyImpureTip
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testInTrait
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11054
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14847
+4 DeadCode/UnreachableStatementRuleTest::testBug7531
+4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
+4 DeadCode/UnusedPrivateConstantRuleTest::testRule

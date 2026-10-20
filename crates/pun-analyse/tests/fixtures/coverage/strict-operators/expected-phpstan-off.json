@@ -1,0 +1,236 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "operators.php",
+   "line": 33,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 35,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 47,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between string and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 48,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"-\" between int and string results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 51,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between array and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 56,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between stdClass and 1 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 59,
+   "identifier": "plus.leftNonNumeric",
+   "message": "Only numeric types are allowed in +, bool given on the left side.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 60,
+   "identifier": "plus.leftNonNumeric",
+   "message": "Only numeric types are allowed in +, null given on the left side.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 61,
+   "identifier": "unaryOp.invalid",
+   "message": "Unary operation \"-\" on string results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 62,
+   "identifier": "unaryOp.invalid",
+   "message": "Unary operation \"+\" on string results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 65,
+   "identifier": "assignOp.invalid",
+   "message": "Binary operation \"+=\" between int and string results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 66,
+   "identifier": "minus.rightNonNumeric",
+   "message": "Only numeric types are allowed in -, bool given on the right side.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 67,
+   "identifier": "assignOp.invalid",
+   "message": "Binary operation \"*=\" between string and 2 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 69,
+   "identifier": "assignOp.invalid",
+   "message": "Binary operation \"%=\" between (float|int) and bool results in an error.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 69,
+   "identifier": "mod.rightNonNumeric",
+   "message": "Only numeric types are allowed in %, bool given on the right side.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 73,
+   "identifier": "preInc.type",
+   "message": "Cannot use ++ on bool.",
+   "tip": "Operator ++ is deprecated for bool."
+  },
+  {
+   "file": "operators.php",
+   "line": 73,
+   "identifier": "preInc.nonNumeric",
+   "message": "Only numeric types are allowed in pre-increment, bool given.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 74,
+   "identifier": "preDec.type",
+   "message": "Cannot use -- on bool.",
+   "tip": "Operator -- is deprecated for bool."
+  },
+  {
+   "file": "operators.php",
+   "line": 74,
+   "identifier": "preDec.nonNumeric",
+   "message": "Only numeric types are allowed in pre-decrement, bool given.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 76,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on array.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 76,
+   "identifier": "postInc.nonNumeric",
+   "message": "Only numeric types are allowed in post-increment, array given.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 78,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 78,
+   "identifier": "postInc.nonNumeric",
+   "message": "Only numeric types are allowed in post-increment, stdClass given.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 84,
+   "identifier": "postDec.type",
+   "message": "Cannot use -- on bool.",
+   "tip": "Operator -- is deprecated for bool."
+  },
+  {
+   "file": "operators.php",
+   "line": 84,
+   "identifier": "postDec.nonNumeric",
+   "message": "Only numeric types are allowed in post-decrement, bool given.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 90,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 90,
+   "identifier": "booleanAnd.rightAlwaysFalse",
+   "message": "Right side of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 95,
+   "identifier": "void.pure",
+   "message": "Function StrictOperators\\loose() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 97,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "operators.php",
+   "line": 101,
+   "identifier": "booleanNot.alwaysTrue",
+   "message": "Negated boolean expression is always true.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 101,
+   "identifier": "booleanOr.alwaysTrue",
+   "message": "Result of || is always true.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 105,
+   "identifier": "void.pure",
+   "message": "Function StrictOperators\\arrays() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 110,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  }
+ ]
+}
