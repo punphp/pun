@@ -109,6 +109,19 @@ pub(super) fn infer<'arena>(
     let mut wanted = wanted.spans;
     wanted.extend(extra);
     wanted.extend(dead_code::flow_types(program, level));
+    analyse(arena, file, program, names, codebase, php_version, wanted)
+}
+
+/// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
+pub(super) fn analyse<'arena>(
+    arena: &'arena LocalArena,
+    file: &File,
+    program: &'arena Program<'arena>,
+    names: &ResolvedNames<'arena>,
+    codebase: &CodebaseMetadata,
+    php_version: u32,
+    wanted: Vec<Span>,
+) -> HashMap<Span, TUnion> {
     if wanted.is_empty() {
         return HashMap::new();
     }
@@ -130,9 +143,7 @@ pub(super) fn infer<'arena>(
     let analysed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         analyzer.analyze_with_artifacts(program, &mut result)
     }));
-    let Ok(Ok(artifacts)) = analysed else {
-        return HashMap::new();
-    };
+    let Ok(Ok(artifacts)) = analysed else { return HashMap::new() };
     wanted
         .into_iter()
         .filter_map(|span| Some((span, artifacts.get_expression_type(&span)?.clone())))

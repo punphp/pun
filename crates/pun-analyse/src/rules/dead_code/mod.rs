@@ -10,8 +10,9 @@ mod unused_private;
 
 pub(super) use conditions::{
     Facts as ConditionFacts, binary, boolean_not, do_while, facts as condition_facts, function_check,
-    if_statement, method_check, static_method_check, ternary, while_loop,
+    if_statement, match_expression, match_subject_types, method_check, static_method_check, ternary, while_loop,
 };
+pub(crate) use conditions::conditions_in_traits;
 pub(super) use unreachable::find as unreachable_statements;
 
 use std::collections::HashSet;

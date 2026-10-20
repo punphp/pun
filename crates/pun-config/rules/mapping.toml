@@ -1051,7 +1051,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/non-boolean-ternary" = { preset = "strict", status = "decided" }
 "control-flow/non-boolean-while" = { preset = "strict", status = "decided" }
 "control-flow/switch-type-mismatch" = { preset = "strict", status = "decided" }
-"control-flow/unhandled-match" = { preset = "recommended", status = "decided" }
+"control-flow/unhandled-match" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-and-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-not-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-or-always-constant" = { preset = "recommended", ported = true, status = "decided" }
