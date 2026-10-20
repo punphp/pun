@@ -74,5 +74,12 @@
 ["ArrayIterator","array{ArrayIterator<int, string>, ArrayIterator<int, int>}",true,true,false,false,true],
 ["ArrayIterator","array{a?: int}",true,true,false,false,true],
 ["ArrayIterator","array<int, int>",true,true,false,false,true],
+["ArrayIterator","'strlen'",false,true,false,false,false],
+["ArrayIterator","'ArrayIterator::count'",false,true,false,false,false],
+["ArrayIterator","'ArrayIterator::nope'",false,true,false,false,false],
+["ArrayIterator","'Closure::nope'",false,true,false,false,false],
+["ArrayIterator","'Nope::nope'",false,true,false,false,false],
+["ArrayIterator","''",false,true,false,false,false],
+["ArrayIterator","'1a::b'",false,true,false,false,false],
 [null,"strict-mixed",true,true,true,true,true]
 ]

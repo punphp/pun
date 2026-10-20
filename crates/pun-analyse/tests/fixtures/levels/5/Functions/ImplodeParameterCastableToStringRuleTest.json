@@ -1,0 +1,337 @@
+{
+    "test": "Functions/ImplodeParameterCastableToStringRuleTest",
+    "cases": [
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Functions/data/implode-param-castable-to-string-functions-named-args.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function implode expects array<string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 8,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 9,
+                    "identifier": "argument.type",
+                    "message": "Parameter $separator of function implode expects array<string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 9,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 10,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function implode expects array<string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 10,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 11,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function implode expects array<string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 11,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 16,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $separator (string) in call to function implode.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function implode expects array, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 16,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 17,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $separator (string) in call to function join.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 17,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function join expects array, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-named-args.php",
+                    "line": 17,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function join() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnum",
+            "files": [
+                "Functions/data/implode-param-castable-to-string-functions-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-enum.php",
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<int, ImplodeParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-param-castable-to-string-functions-enum.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testImplode",
+            "files": [
+                "Functions/data/implode.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 9,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 11,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function implode expects array<string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 11,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function implode expects array<string>, array<int, array<int, int>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 13,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function implode expects array<string>, array<int, array<int, int|true>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 13,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 15,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 15,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function join expects array<string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 16,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function join() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 20,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 22,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode.php",
+                    "line": 23,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function join() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6000",
+            "files": [
+                "Arrays/data/bug-6000.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8467a",
+            "files": [
+                "Arrays/data/bug-8467a.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-8467a.php",
+                    "line": 35,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function implode() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12146",
+            "files": [
+                "Functions/data/bug-12146.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 29,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 30,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 35,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 36,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 41,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 42,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 47,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 48,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

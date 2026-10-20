@@ -102,7 +102,7 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
-        let acceptor = params::select(variants, &counts);
+        let acceptor = params::select(c, variants, &counts);
         params::check(
             c,
             &acceptor,
@@ -212,12 +212,26 @@ fn arguments<'arena>(
     name: &LocalIdentifier<'arena>,
     method: &members::Method,
 ) {
-    let subject = format!("{}::{}()", method.declaring_display(c), method.name());
+    // `ClassReflection::getDisplayName()` of `$this`'s own generic class shows its template types
+    let mut declaring = method.declaring_display(c);
+    if let Some(k) = c.class_scope()
+        && !k.template_types.is_empty()
+        && k.name.as_bytes().eq_ignore_ascii_case(method.declaring_name().as_bytes())
+    {
+        let args: Vec<String> = super::declared::with_classes(c, || {
+            super::declared::class_templates(c, k)
+                .into_iter()
+                .map(|t| pun_phpstan::types::Type::Template(Box::new(t)).describe(pun_phpstan::types::Level::TypeOnly))
+                .collect()
+        });
+        declaring = format!("{declaring}<{}>", args.join(","));
+    }
+    let subject = format!("{declaring}::{}()", method.name());
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), &counts),
+        &params::select(c, method.variants(), &counts),
         &counts,
         name,
         params::Call {
@@ -305,10 +319,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         };
         let key = format!("{guarded}::{method_name}").to_ascii_lowercase();
         let known = c.guards.contains(&super::scope::Guard::Method(key))
-            || class
-                .static_pseudo_methods
-                .iter()
-                .any(|m| m.as_bytes().eq_ignore_ascii_case(name.value));
+            || members::annotation_method(c, class, name.value).is_some();
         if !known && members::method(c, class, b"__callStatic").is_some() {
             return;
         }
@@ -391,7 +402,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), &counts),
+        &params::select(c, method.variants(), &counts),
         &counts,
         name,
         params::Call {

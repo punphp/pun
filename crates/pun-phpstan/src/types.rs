@@ -618,7 +618,7 @@ impl Type {
             | Type::Iterable(..)
             | Type::ObjectWithoutClass
             | Type::ObjectShape(_) => Tri::Maybe,
-            Type::ConstString(s) => Tri::from(symbols::function(s).is_some()),
+            Type::ConstString(s) => string_is_callable(s),
             Type::Array(_, item) => Tri::Maybe.and(item.is_string()),
             Type::ConstArray(a) => a.is_callable(),
             Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
@@ -1070,6 +1070,33 @@ fn is_instance_of(class: &str, target: &str) -> Tri {
         Some(c) if c.is_interface => Tri::Maybe,
         Some(_) => Tri::No,
         None => Tri::Maybe,
+    }
+}
+
+/// `ConstantStringType::isCallable()`: a function's name, or `Class::method`.
+fn string_is_callable(s: &str) -> Tri {
+    if s.is_empty() {
+        return Tri::No;
+    }
+    if symbols::has_function(s) {
+        return Tri::Yes;
+    }
+    let Some((class, method)) = s.split_once("::") else {
+        return Tri::No;
+    };
+    // `#^([a-zA-Z_\x7f-\xff\\][a-zA-Z0-9_\x7f-\xff\\]*)::([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\z#`
+    let word = |w: &str, backslash: bool| {
+        let ok = |ch: char| ch == '_' || !ch.is_ascii() || ch.is_ascii_alphanumeric() || (backslash && ch == '\\');
+        w.chars().next().is_some_and(|ch| ok(ch) && !ch.is_ascii_digit()) && w.chars().all(ok)
+    };
+    if !word(class, true) || !word(method, false) {
+        return Tri::No;
+    }
+    match symbols::lookup(class) {
+        None => Tri::Maybe,
+        Some(c) if has_method(&c, &method.to_ascii_lowercase()) => Tri::Yes,
+        Some(c) if !c.is_final => Tri::Maybe,
+        Some(_) => Tri::No,
     }
 }
 
@@ -2235,16 +2262,12 @@ fn conditional_super(c: &Conditional, b: &Type) -> Tri {
     }
 }
 
-/// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` against `$b`'s callable variant (a callable without
-/// a signature is the trivial `(...): mixed` one).
-/// A function name's variants are its signatures (`'Class::method'` strings are taken as trivial).
-/// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` over `b`'s variants; `accept` is `Some(strictTypes)` for
+/// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` over `b`'s variants (a callable without a signature, or a
+/// method Pun knows no signature of, is the trivial `(...): mixed` one); `accept` is `Some(strictTypes)` for
 /// `$treatMixedAsAny` (accepts() compares parameters and return with accepts()).
 fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
-    let variants = match b {
-        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
-        Type::ConstString(name) if let Some(f) = symbols::function(name) => f
-            .variants
+    let of = |f: &symbols::Function| -> Vec<Signature> {
+        f.variants
             .iter()
             .map(|v| Signature {
                 params: v
@@ -2260,12 +2283,29 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
                     .collect(),
                 ret: crate::resolve::resolve_str(&v.ret, None),
             })
-            .collect(),
-        _ => vec![Signature {
+            .collect()
+    };
+    let mut variants = match b {
+        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
+        Type::ConstString(name) if let Some(f) = symbols::function(name) => of(f),
+        // `'Class::method'`
+        Type::ConstString(name) => name
+            .split_once("::")
+            .and_then(|(class, method)| {
+                let c = symbols::lookup(class)?;
+                std::iter::once(c.name.clone())
+                    .chain(c.ancestors.iter().cloned())
+                    .find_map(|n| symbols::lookup(&n)?.methods.get(&method.to_ascii_lowercase()).map(of))
+            })
+            .unwrap_or_default(),
+        _ => Vec::new(),
+    };
+    if variants.is_empty() {
+        variants.push(Signature {
             params: vec![],
             ret: mixed(),
-        }],
-    };
+        });
+    }
     variants
         .iter()
         .map(|theirs| variant_super(ours, theirs, accept))

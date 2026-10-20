@@ -1,0 +1,91 @@
+{
+    "test": "Functions/RandomIntParametersRuleTest",
+    "cases": [
+        {
+            "method": "testFile",
+            "files": [
+                "Functions/data/random-int.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/random-int.php",
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $min (1) of function random_int expects lower number than parameter #2 $max (0).",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/random-int.php",
+                    "line": 9,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $min (0) of function random_int expects lower number than parameter #2 $max (-1).",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/random-int.php",
+                    "line": 11,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $min (0) of function random_int expects lower number than parameter #2 $max (int<-10, -1>).",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/random-int.php",
+                    "line": 15,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $min (int<1, 10>) of function random_int expects lower number than parameter #2 $max (0).",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/random-int.php",
+                    "line": 23,
+                    "identifier": "function.notFound",
+                    "message": "Function foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/random-int.php",
+                    "line": 25,
+                    "identifier": "function.notFound",
+                    "message": "Function bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6361",
+            "files": [
+                "Functions/data/bug-6361.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-6361.php",
+                    "line": 5,
+                    "identifier": "arguments.count",
+                    "message": "Function random_int invoked with 0 parameters, 2 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14468",
+            "files": [
+                "Functions/data/bug-14468.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-14468.php",
+                    "line": 57,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $min (int<5, max>) of function random_int expects lower number than parameter #2 $max (int<min, 3>).",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

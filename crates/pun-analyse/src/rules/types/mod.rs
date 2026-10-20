@@ -1,6 +1,8 @@
 //! The `analyse/types/*` rules: PHPStan's type-checking rules of levels 0 to 9, and what they share (statement
 //! results in [`flow`]).
 
+mod arguments;
+mod castable;
 mod casts;
 mod comparison;
 mod convert;
@@ -9,7 +11,9 @@ mod level;
 mod inc_dec;
 mod missing_return;
 mod param_default;
+mod properties;
 mod read_only_write;
+mod receivers;
 mod regex;
 mod returns;
 mod void_match;
@@ -20,6 +24,8 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
+pub(super) use arguments::{arguments, declared_type, is_late};
+pub(super) use castable::function_call as castable_call;
 pub(super) use casts::{echo, interpolated, print, unary};
 pub(super) use comparison::binary;
 pub(super) use param_default::{
@@ -28,6 +34,8 @@ pub(super) use param_default::{
 pub(super) use inc_dec::{postfix, prefix};
 pub(super) use missing_return::{closure, function, get_hooks, method};
 pub(super) use read_only_write::assignment;
+pub(super) use properties::{property_fetch, static_property_fetch};
+pub(super) use receivers::{method_call, static_call};
 pub(super) use regex::function_call;
 pub(super) use returns::{
     arrow_function as arrow_function_returns, closure as closure_returns, function as function_returns,
@@ -36,7 +44,7 @@ pub(super) use returns::{
 pub(super) use void_match::void_match;
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, properties::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
@@ -90,6 +98,59 @@ impl Wanted<'_> {
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         regex::typed(call, &mut self.spans);
+    }
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            receivers::typed(call.object, &mut self.spans);
+        }
+    }
+    fn walk_in_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            receivers::typed(call.object, &mut self.spans);
+        }
+    }
+    fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            properties::typed(p.object, &mut self.spans);
+        }
+    }
+    fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            properties::typed(p.object, &mut self.spans);
+        }
+    }
+    fn walk_in_static_property_access(&mut self, p: &'ast StaticPropertyAccess<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            properties::typed_class(p.class, &mut self.spans);
+        }
+    }
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            receivers::typed_class(call.class, &mut self.spans);
+        }
+    }
+    fn walk_in_argument_list(&mut self, l: &'ast ArgumentList<'arena>, _: &mut ()) {
+        if self.level >= 5 {
+            for a in l.arguments.iter() {
+                self.spans.push(a.value().span());
+                match a.value() {
+                    Expression::Array(arr) => self.spans.extend(arr.elements.iter().map(element)),
+                    Expression::LegacyArray(arr) => self.spans.extend(arr.elements.iter().map(element)),
+                    _ => {}
+                }
+            }
+        }
+    }
+    fn walk_in_partial_argument_list(&mut self, l: &'ast PartialArgumentList<'arena>, _: &mut ()) {
+        if self.level >= 5 {
+            for a in l.arguments.iter() {
+                match a {
+                    PartialArgument::Positional(p) => self.spans.push(p.value.span()),
+                    PartialArgument::Named(n) => self.spans.push(n.value.span()),
+                    _ => {}
+                }
+            }
+        }
     }
     fn walk_in_echo(&mut self, e: &'ast Echo<'arena>, _: &mut ()) {
         if self.level >= 2 {
@@ -188,6 +249,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
             }
             self.spans.extend(c.0);
         }
+    }
+}
+
+/// An array element's value expression.
+fn element(e: &ArrayElement) -> Span {
+    match e {
+        ArrayElement::KeyValue(kv) => kv.value.span(),
+        e => e.span(),
     }
 }
 

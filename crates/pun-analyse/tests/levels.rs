@@ -191,6 +191,34 @@ const PORTED: &[&str] = &[
     "constant.notFound",
     "class.missingExtends",
     "class.missingImplements",
+    // analyse types, levels 2-9 (an-types2)
+    "argument.type",
+    "argument.byRef",
+    "argument.unpackNonIterable",
+    "method.nonObject",
+    "method.notFound",
+    "staticMethod.nonObject",
+    "staticMethod.notFound",
+    "arrayFilter.empty",
+    "arrayFilter.same",
+    "arrayFilter.alwaysEmpty",
+    "arrayValues.empty",
+    "arrayValues.list",
+    "property.notFound",
+    "property.nonObject",
+    "property.private",
+    "property.protected",
+    "property.staticAccess",
+    "staticProperty.nonStaticAccess",
+    "staticProperty.nonObject",
+    "staticProperty.notFound",
+    "staticProperty.private",
+    "staticProperty.protected",
+    "method.private",
+    "method.protected",
+    "staticMethod.private",
+    "staticMethod.protected",
+    "method.staticCall",
 ];
 
 /// The `class.notFound` messages of the level-2 Generics and PHPDoc tag rules (other rules report the identifier at every level).
@@ -276,6 +304,8 @@ fn phpstan_level_fixtures() {
                 };
                 let ported = |id: &str, message: &str| {
                     PORTED.contains(&id)
+                        // CallCallablesRule's are not ported yet
+                        || (id == "arguments.count" && !message.starts_with("Callable "))
                         || (id == "class.notFound"
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         || (id == "parameter.notFound"

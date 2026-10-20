@@ -271,7 +271,15 @@ fn read_class(v: RawClass) -> Class {
             .methods
             .0
             .into_iter()
-            .map(|(k, m)| (k, read_function(m)))
+            // the exporter's php-parser prefixes a reserved word (`Generator::throw()`)
+            .map(|(k, m)| {
+                let mut f = read_function(m);
+                const PREFIX: &str = "ps_unreserve_prefix_";
+                if f.name.to_ascii_lowercase().starts_with(PREFIX) {
+                    f.name = f.name[PREFIX.len()..].to_string();
+                }
+                (k.strip_prefix(PREFIX).map_or_else(|| k.clone(), str::to_string), f)
+            })
             .collect(),
         iterable: v.iterable,
         generics: v
@@ -387,6 +395,40 @@ pub fn lookup(name: &str) -> Option<ClassRef> {
     // SAFETY: set by `with_classes()`, whose borrow outlives every call made while it is set.
     let provider = unsafe { &*provider };
     provider(name.trim_start_matches('\\')).map(ClassRef::User)
+}
+
+type FunctionProvider = dyn Fn(&str) -> bool;
+
+thread_local! {
+    static FUNCTIONS: Cell<Option<*const FunctionProvider>> = const { Cell::new(None) };
+}
+
+/// Runs `f` with `provider` answering [`has_function()`] for the functions PHP does not define, on this thread.
+pub fn with_functions<R>(provider: &dyn Fn(&str) -> bool, f: impl FnOnce() -> R) -> R {
+    struct Restore(Option<*const FunctionProvider>);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            FUNCTIONS.with(|p| p.set(self.0));
+        }
+    }
+    let ptr: *const (dyn Fn(&str) -> bool + '_) = provider;
+    // SAFETY: as in `with_classes()`.
+    let ptr: *const FunctionProvider = unsafe { std::mem::transmute(ptr) };
+    let _restore = Restore(FUNCTIONS.with(|p| p.replace(Some(ptr))));
+    f()
+}
+
+/// `ReflectionProvider::hasFunction()`: a built-in function, else one the [`with_functions()`] provider knows.
+pub fn has_function(name: &str) -> bool {
+    if function(name).is_some() {
+        return true;
+    }
+    let Some(provider) = FUNCTIONS.with(Cell::get) else {
+        return false;
+    };
+    // SAFETY: set by `with_functions()`, whose borrow outlives every call made while it is set.
+    let provider = unsafe { &*provider };
+    provider(name.trim_start_matches('\\'))
 }
 
 pub fn function(name: &str) -> Option<&'static Function> {

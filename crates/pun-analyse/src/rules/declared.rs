@@ -263,12 +263,72 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
     }
 }
 
+/// `getType()` of each parameter of a function-like from the codex (a callee in any file): its native type decided
+/// with its PHPDoc type (a method's inherited one too), `declaring` being the class-like declaring a method.
+pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Vec<Type> {
+    let doc = match declaring {
+        Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),
+        None => doc_at(c, f.span).map(|(doc, _)| {
+            let doc = Doc::parse(&doc);
+            let mut scope = scope_at(c, f.span, None);
+            let name = text(f.original_name.as_bytes());
+            for t in templates(&doc, &scope, &format!("function {name}()")) {
+                scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
+            }
+            Resolved {
+                params: doc.param_types(&scope).into_iter().map(|(k, (t, _))| (k, t)).collect(),
+                ..Resolved::default()
+            }
+        }),
+    }
+    .unwrap_or_default();
+    f.parameters
+        .iter()
+        .map(|p| {
+            let name = text(&p.name.0.as_bytes()[1..]);
+            // `isParameterValueNullable()` of a parameter that is no promoted property
+            let null_default = !p.flags.is_promoted_property()
+                && p.default_type.as_ref().is_some_and(|d| d.type_union.is_null());
+            let native = p.type_declaration_metadata.as_ref().map(|t| {
+                let t = from_tunion_in(c, &t.type_union, declaring);
+                if null_default { t.add_null() } else { t }
+            });
+            let mut phpdoc = doc.params.get(&name).cloned();
+            if p.default_type.as_ref().is_some_and(|d| d.type_union.is_null())
+                && let Some(t) = &phpdoc
+                && !has_template(t)
+            {
+                phpdoc = Some(t.clone().add_null());
+            }
+            match native {
+                // decideTypeFromReflection(null, ...): a variadic's array PHPDoc type is its item type
+                None if p.flags.is_variadic() => match phpdoc {
+                    Some(Type::Array(_, item)) => *item,
+                    Some(t @ Type::ConstArray(_)) => t.iterable_value_type(),
+                    t => t.unwrap_or_else(mixed),
+                },
+                None => phpdoc.unwrap_or_else(mixed),
+                Some(native) => decide_type(native, phpdoc),
+            }
+        })
+        .collect()
+}
+
 /// `TypehintHelper::decideTypeFromReflection()` of a native type declaration Mago's codex holds (the `TUnion` its
 /// scanner built from the hint), declared in class-like `class`: what [`native()`] gives for the hint itself.
 pub fn from_tunion(
     c: &Checker,
     t: &mago_codex::ttype::union::TUnion,
     class: &ClassLikeMetadata,
+) -> Type {
+    from_tunion_in(c, t, Some(class))
+}
+
+/// [`from_tunion()`] in a class-like or not (a function's).
+fn from_tunion_in(
+    c: &Checker,
+    t: &mago_codex::ttype::union::TUnion,
+    class: Option<&ClassLikeMetadata>,
 ) -> Type {
     use mago_codex::ttype::union::TUnion;
     use mago_codex::ttype::atomic::TAtomic;
@@ -295,7 +355,7 @@ pub fn from_tunion(
             let ty = if n.is_static {
                 Type::Static(name, vec![])
             } else if name.eq_ignore_ascii_case("parent") {
-                Type::Object(parent_name(c.codebase, class).unwrap_or(name), vec![])
+                Type::Object(class.and_then(|k| parent_name(c.codebase, k)).unwrap_or(name), vec![])
             } else {
                 Type::Object(name, vec![])
             };
@@ -303,7 +363,7 @@ pub fn from_tunion(
                 None => ty,
                 Some(more) => intersect(
                     std::iter::once(ty)
-                        .chain(more.iter().map(|m| from_tunion(c, &TUnion::from_atomic(m.clone()), class)))
+                        .chain(more.iter().map(|m| from_tunion_in(c, &TUnion::from_atomic(m.clone()), class)))
                         .collect(),
                 ),
             }
@@ -1094,7 +1154,23 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                     )
                 })
                 .collect(),
-            methods: HashMap::new(),
+            // the names only (StringType::accepts() asks for `__toString()`, a callable string for its method)
+            methods: k
+                .declaring_method_ids
+                .keys()
+                .map(|m| {
+                    let f = symbols::Function {
+                        name: text(m.as_bytes()),
+                        side_effects: "Maybe".to_string(),
+                        deprecated: false,
+                        variants: Vec::new(),
+                        named: None,
+                        is_static: false,
+                        doc: None,
+                    };
+                    (text(m.as_bytes()).to_ascii_lowercase(), f)
+                })
+                .collect(),
             iterable: None,
             generics,
             property_docs: HashMap::new(),
@@ -1213,5 +1289,6 @@ fn serialize(t: &Type) -> String {
 /// Runs `f` with the type model knowing the project's classes.
 pub fn with_classes<R>(c: &Checker, f: impl FnOnce() -> R) -> R {
     let classes = Classes::new(c);
-    symbols::with_classes(&|name| classes.get(name), f)
+    let functions = |name: &str| c.codebase.get_function(name.as_bytes()).is_some();
+    symbols::with_classes(&|name| classes.get(name), || symbols::with_functions(&functions, f))
 }
