@@ -253,6 +253,44 @@
             "general": []
         },
         {
+            "method": "testBug12201",
+            "files": [
+                "DeadCode/data/bug-12201.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-12201.php",
+                    "line": 9,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201\\AppKernel uses unknown trait Bug12201\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201.php",
+                    "line": 14,
+                    "identifier": "method.unused",
+                    "message": "Method Bug12201\\AppKernel::getAllowedEnvs() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-12201.php",
+                    "line": 22,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201\\AnotherKernel uses unknown trait Bug12201\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201.php",
+                    "line": 24,
+                    "identifier": "method.unused",
+                    "message": "Method Bug12201\\AnotherKernel::doNothing() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug14880",
             "files": [
                 "DeadCode/data/bug-14880.php"

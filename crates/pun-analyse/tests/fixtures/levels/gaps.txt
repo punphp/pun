@@ -60,12 +60,9 @@
 # Pun reports generics.notSupportedBound / generics.notSubtype on this template where PHPStan does not.
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug13652
 # Anonymous class names print the fixture path relative to the exporter's working directory.
-2 PhpDoc/RequireExtendsDefinitionClassRuleTest::testRule
-2 PhpDoc/RequireExtendsDefinitionTraitRuleTest::testRule
 2 PhpDoc/RequireImplementsDefinitionClassRuleTest::testRule
 2 PhpDoc/RequireImplementsDefinitionTraitRuleTest::testRule
 4 DeadCode/NoopRuleTest::testRuleImpurePoints
-4 DeadCode/UnusedPrivatePropertyRuleTest::testRule/0
 # PHPStan remembers `$dt->getTimestamp() === 1000` from assert(), so the while loop never ends; Mago does not.
 4 DeadCode/UnreachableStatementRuleTest::testRule
 # `$y !== 'doBar'` leaves mixed~'doBar', which Mago's types cannot express (a dynamic name may be any member).
@@ -535,7 +532,6 @@
 4 Comparison/BooleanNotConstantConditionRuleTest::testBug11903
 4 Comparison/BooleanOrConstantConditionRuleTest::testRule
 4 Comparison/BooleanOrConstantConditionRuleTest::testRuleLogicalOr
-4 Comparison/BooleanOrConstantConditionRuleTest::testDoNotReportPhpDoc
 4 Comparison/BooleanOrConstantConditionRuleTest::testReportPhpDoc
 4 Comparison/ElseIfConstantConditionRuleTest::testRule#0
 4 Comparison/ElseIfConstantConditionRuleTest::testRule#1
@@ -553,8 +549,6 @@
 4 Comparison/TernaryOperatorConstantConditionRuleTest::testBug7580
 4 Comparison/WhileLoopAlwaysFalseConditionRuleTest::testRule
 4 Comparison/WhileLoopAlwaysTrueConditionRuleTest::testRule
-4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1#0
-4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1#1
 # an-dead: NoopRule on match: exhaustiveness through get_class()/get_debug_type()/class-string/int-range subjects, and constant-condition types in arms
 4 Comparison/MatchExpressionRuleTest::testRule
 4 Comparison/MatchExpressionRuleTest::testBug8900
@@ -666,27 +660,69 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testInTrait
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11054
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14847
-4 DeadCode/UnreachableStatementRuleTest::testBug7531
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
 4 DeadCode/UnusedPrivateConstantRuleTest::testRule
+# PHPStan 2.3: UnusedClosureUsesRule and UnusedConstructorParametersRule follow VariableWritesNode dataflow (a use or
+# parameter overwritten before any read is unused, compact() of a resolved name reads it); Pun keeps the 2.2 name check
+1 Classes/UnusedConstructorParametersRuleTest::testResolvedDynamicUsages
+1 Classes/UnusedConstructorParametersRuleTest::testValueFlow
+1 Classes/UnusedConstructorParametersRuleTest::testValueFlowWithoutBleedingEdge
+1 Functions/HelperDeadCode::testRule
+1 Functions/UnusedClosureUsesRuleTest::testResolvedDynamicUsages
+1 Functions/UnusedClosureUsesRuleTest::testValueFlow
+1 Functions/UnusedClosureUsesRuleTest::testValueFlowWithoutBleedingEdge
+# PHPStan 2.3's ClassConstantAccessType: a deferred `T::CONFIG_*` or `static::FOO_*` PHPDoc type is no unresolvable type
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testClassConstantWildcardUnresolvable
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug4548
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11510
+2 PhpDoc/IncompatiblePropertyPhpDocTypeRuleTest::testBug4548
+# PHPStan 2.3 narrows the scope's PHP version by `PHP_VERSION_ID` conditions (rules/gaps.txt)
+3 Arrays/ArrayUnpackingRuleTest::testPhpVersionNarrowedScope
+# PHPStan 2.3's inferred types in return.type: template arguments (`Foo<non-empty-array<non-falsy-string, ...>>`,
+# `static(Value)`, `*NEVER*` printed as `never`), callable arrays, iterator template defaults, and the template
+# covariance tip on generic returns
+3 Functions/ReturnTypeRuleTest::testBug13114
+3 Functions/ReturnTypeRuleTest::testBug10419
+3 Functions/ReturnTypeRuleTest::testBug10290
+3 Functions/ReturnTypeRuleTest::testBug5741
+3 Methods/ReturnTypeRuleTest::testBug14647
+3 Methods/ReturnTypeRuleTest::testBug12601
+3 Methods/ReturnTypeRuleTest::testBug12490
+3 Methods/ReturnTypeRuleTest::testBug11835
+3 Methods/ReturnTypeRuleTest::testBug10289
+3 Methods/ReturnTypeRuleTest::testBug12984
+3 Methods/ReturnTypeRuleTest::testBug13325
+# PHPStan 2.3's scope: a PHPDoc-certain condition's tip, an empty array after a loop that empties it, a `for` loop
+# that runs once, nullsafe short-circuits that terminate
+4 Arrays/DeadForeachRuleTest::testBug15147
+4 Comparison/BooleanOrConstantConditionRuleTest::testBug15169TreatPhpDocTypesAsCertain
+4 Comparison/IfConstantConditionRuleTest::testDeferredErrorsAreNotCollapsedAcrossFiles
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14248
+4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1
+4 DeadCode/UnreachableStatementRuleTest::testBug15169TreatPhpDocTypesAsCertain
+4 DeadCode/UnreachableStatementRuleTest::testNullsafeShortCircuitTerminating
+# PHPStan 2.3 counts an expression that can throw an Error (`/` and `%` by a non-constant, sprintf(), strpos() and
+# array_combine() with a ValueError) as an impure point, so it is no noop
+4 DeadCode/NoopRuleTest::testErrorThrows
+4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testErrorThrows
+# missingType.iterableValue and missingType.generics on a class's `@phpstan-type` aliases (LocalTypeAliasesRule) are not
+# ported
+6 Methods/MissingMethodParameterTypehintRuleTest::testRepeatedIterableTypeReportedOnce
 # an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 # an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
 # an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
 # an-dead: ImpossibleCheckType{Function,Method,StaticMethod}CallRule: type-specifying extensions are not ported beyond in_array/method_exists/property_exists/class_exists (a `new` object's exact class aside) (the value comes from Mago's return type or a void function's @phpstan-assert); the treatPhpDocTypesAsCertain tip needs native types; the trait collector; Mago's types differ (superglobal keys, narrowing after method_exists())
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleCheckTypeFunctionCall
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testDoNotReportTypesFromPhpDocs
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testReportTypesFromPhpDocs
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testArrayIsList
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6305
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13713
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBugInArrayDateFormat
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug3314
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug5695
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleMethodExistOnGenericClassString
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testObjectShapes
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testLooseComparisonAgainstEnums
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testLooseComparisonAgainstEnumsNoPhpdoc
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug4890b
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug10502
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBugPR3404
@@ -699,7 +735,6 @@
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13474
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug4570
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug9666
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug14429
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13799
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testInTrait
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8980
@@ -758,6 +793,79 @@
 # an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook
+# PHPStan 2.3.1: get_class()/sprintf() calls get explicit throw points from the new DynamicFunctionThrowTypeExtensions
+# (GetClass, Printf, ArrayChunk, MinMax, Round, StrSplit, TriggerError, Unserialize, FilterFunctions), so the calls are
+# no longer noops; Pun's noop.rs does not model them yet and still reports function.resultUnused
+5 Functions/CallToFunctionParametersRuleTest::testCallToFunctionWithOptionalParameters
+5 Functions/CallToFunctionParametersRuleTest::testUnpackOperator
+9 Functions/CallToFunctionParametersRuleTest::testCallToFunctionWithOptionalParameters
+9 Functions/CallToFunctionParametersRuleTest::testUnpackOperator
+# PHPStan 2.3.1 no longer reports constructor.unusedParameter in bug-6370.php; the dataflow change is not ported
+5 Classes/InstantiationRuleTest::testBug6370
+# PHPStan 2.3.1 reports a match arm's always-false comparison even when the arm is an impossible type check call
+4 Comparison/MatchExpressionRuleTest::testMatchArmComparisonNotSuppressedByImpossibleCheck
+# PHPStan 2.3.1's new regression tests (added since 2.2.7) for the typed receiver, argument, property, offset and
+# impossible-check rules: generic template arguments and nullability, closure signatures from usages, callable
+# lists (bug 13114), void conditional returns, wildcard class constants and narrowing fixes not ported yet
+3 Arrays/OffsetAccessValueAssignmentRuleTest::testBug10783
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13114
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13431
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13876
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug8441
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug9096
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug14705Php8
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug15147
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug15250TreatPhpDocTypesAsCertain
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug15328
+4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug15328
+4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testBug15328
+5 Classes/InstantiationRuleTest::testBug4548
+5 Classes/InstantiationRuleTest::testTemplateArgumentNestedCollection
+5 Functions/CallToFunctionParametersRuleTest::testBug11041
+5 Functions/CallToFunctionParametersRuleTest::testBug11510
+5 Functions/CallToFunctionParametersRuleTest::testBug13114#0
+5 Functions/CallToFunctionParametersRuleTest::testBug13114#1
+5 Functions/CallToFunctionParametersRuleTest::testBug13114#2
+5 Functions/CallToFunctionParametersRuleTest::testBug15168
+5 Functions/CallToFunctionParametersRuleTest::testBug1946
+5 Functions/CallToFunctionParametersRuleTest::testBug9377
+5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
+5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject
+5 Functions/CallToFunctionParametersRuleTest::testOversizedArrayUnionWithEmptyArray
+5 Functions/CallUserFuncRuleTest::testBug15251
+5 Methods/CallMethodsRuleTest::testBug15251
+5 Methods/CallMethodsRuleTest::testBug8441
+5 Methods/CallMethodsRuleTest::testClassConstantWildcardArguments
+5 Methods/CallMethodsRuleTest::testGenericArgumentNullability#0
+5 Methods/CallMethodsRuleTest::testGenericArgumentNullability#1
+5 Methods/CallMethodsRuleTest::testUnconstrainedCollectionTemplateArguments
+5 Methods/CallMethodsRuleTest::testVoidConditionalReturnType
+5 Methods/CallStaticMethodsRuleTest::testBug15168
+5 Methods/CallStaticMethodsRuleTest::testBug15251
+9 Functions/CallToFunctionParametersRuleTest::testBug11041
+9 Functions/CallToFunctionParametersRuleTest::testBug11510
+9 Functions/CallToFunctionParametersRuleTest::testBug11919
+9 Functions/CallToFunctionParametersRuleTest::testBug13114#0
+9 Functions/CallToFunctionParametersRuleTest::testBug13114#1
+9 Functions/CallToFunctionParametersRuleTest::testBug13114#2
+9 Functions/CallToFunctionParametersRuleTest::testBug13334
+9 Functions/CallToFunctionParametersRuleTest::testBug15168
+9 Functions/CallToFunctionParametersRuleTest::testBug1946
+9 Functions/CallToFunctionParametersRuleTest::testBug9377
+9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
+9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject
+9 Functions/CallToFunctionParametersRuleTest::testOversizedArrayUnionWithEmptyArray
+9 Methods/CallMethodsRuleTest::testBug15251
+9 Methods/CallMethodsRuleTest::testBug8441
+9 Methods/CallMethodsRuleTest::testClassConstantWildcardArguments
+9 Methods/CallMethodsRuleTest::testGenericArgumentNullability#0
+9 Methods/CallMethodsRuleTest::testGenericArgumentNullability#1
+9 Methods/CallMethodsRuleTest::testNullSafeOnTemplateTypeNarrowedAgainstNull
+9 Methods/CallMethodsRuleTest::testUnconstrainedCollectionTemplateArguments
+9 Methods/CallMethodsRuleTest::testVoidConditionalReturnType
+9 Methods/CallStaticMethodsRuleTest::testBug10698
+9 Methods/CallStaticMethodsRuleTest::testBug15168
+9 Methods/CallStaticMethodsRuleTest::testBug15251
 # an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 # an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
@@ -780,14 +888,9 @@
 9 Methods/CallStaticMethodsRuleTest::testPipeOperator
 # an-dead: ImpossibleInstanceOfRule: the treatPhpDocTypesAsCertain and possibly impure tips need native types; Mago's types differ (`instanceof self` narrows to `$this`, narrowing in loops and after early returns, a `new` object's exact class, the trait's `$this`)
 4 Classes/ImpossibleInstanceOfRuleTest::testInstanceof
-4 Classes/ImpossibleInstanceOfRuleTest::testDoNotReportTypesFromPhpDocs
 4 Classes/ImpossibleInstanceOfRuleTest::testReportTypesFromPhpDocs
-4 Classes/ImpossibleInstanceOfRuleTest::testBug5333
-4 Classes/ImpossibleInstanceOfRuleTest::testIfBranchesDoNotReportPhpDoc
 4 Classes/ImpossibleInstanceOfRuleTest::testIfBranchesReportPhpDoc
-4 Classes/ImpossibleInstanceOfRuleTest::testTernaryElseDoNotReportPhpDoc
 4 Classes/ImpossibleInstanceOfRuleTest::testTernaryElseReportPhpDoc
-4 Classes/ImpossibleInstanceOfRuleTest::testBug4689
 4 Classes/ImpossibleInstanceOfRuleTest::testReportAlwaysTrueInLastCondition#0
 4 Classes/ImpossibleInstanceOfRuleTest::testReportAlwaysTrueInLastCondition#1
 4 Classes/ImpossibleInstanceOfRuleTest::testBug3632

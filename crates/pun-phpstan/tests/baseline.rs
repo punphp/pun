@@ -1,4 +1,4 @@
-//! `--generate-baseline` output against PHPStan 2.2.7's own formatters (tests/fixtures/baseline.json, exported by
+//! `--generate-baseline` output against PHPStan 2.3.1's own formatters (tests/fixtures/baseline.json, exported by
 //! scripts/export-baseline-fixtures.php from phpstan-src's formatter tests plus extra cases), and reading the files
 //! back as PHPStan does (Neon::decode / `require`).
 

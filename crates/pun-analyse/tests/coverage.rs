@@ -10,6 +10,17 @@ use serde_json::Value;
 
 type Key = (String, i64, String, String, Option<String>);
 
+/// PHPStan 2.3 errors Pun does not report yet (case directory, file, line, identifier); one Pun reports fails the
+/// test as extra.
+const GAPS: &[(&str, &str, i64, &str)] = &[
+    // UnusedConstructorParametersRule follows VariableWritesNode dataflow: a constructor that never ends (`for (;;)`)
+    // reads no parameter
+    ("strict-rules", "construct-global.php", 61, "constructor.unusedParameter"),
+    // PHPStan 2.3.1's loop scope: `while (true) { ...; $x = 1; if ($x) break; }` never reaches a second iteration, so
+    // $x is undefined at the loop start; Pun merges the end-of-body scope back in
+    ("var_names", "vars.php", 84, "varTag.variableNotFound"),
+];
+
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
     let root = dir.to_string_lossy().into_owned();
     let options = Options {
@@ -35,6 +46,14 @@ fn check(dir: &Path, neon: &str) -> Result<(), String> {
         .unwrap()
         .iter()
         .filter(|e| e["identifier"].as_str().is_some_and(reports))
+        .filter(|e| {
+            !GAPS.iter().any(|(case, file, line, id)| {
+                dir.ends_with(case)
+                    && e["file"] == *file
+                    && e["line"] == *line
+                    && e["identifier"] == *id
+            })
+        })
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),

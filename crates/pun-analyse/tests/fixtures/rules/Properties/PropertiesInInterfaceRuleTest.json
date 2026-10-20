@@ -2,6 +2,23 @@
     "test": "Properties/PropertiesInInterfaceRuleTest",
     "cases": [
         {
+            "method": "testPhpVersionNarrowedScope",
+            "files": [
+                "Properties/data/properties-in-interface-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-in-interface-php-versions.php",
+                    "line": 18,
+                    "identifier": "property.inInterface",
+                    "message": "Interfaces can include properties only on PHP 8.4 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testPhp84AndPropertiesInInterface",
             "files": [
                 "Properties/data/properties-in-interface.php"

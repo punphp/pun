@@ -2,6 +2,30 @@
     "test": "Arrays/ArrayUnpackingRuleTest",
     "cases": [
         {
+            "method": "testPhpVersionNarrowedScope",
+            "files": [
+                "Arrays/data/array-unpacking-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/array-unpacking-php-versions.php",
+                    "line": 8,
+                    "identifier": "void.pure",
+                    "message": "Function ArrayUnpackingPhpVersions\\doFoo() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/array-unpacking-php-versions.php",
+                    "line": 11,
+                    "identifier": "arrayUnpacking.stringOffset",
+                    "message": "Array unpacking cannot be used on an array with string keys: array<string, string>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testRuleOnPHP81#0",
             "files": [
                 "Arrays/data/array-unpacking.php"

@@ -40,6 +40,44 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testConditionallyExecutedCode",
+            "files": [
+                "Cast/data/void-cast-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/void-cast-php-versions.php",
+                    "line": 8,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function VoidCastPhpVersions\\doBar() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/void-cast-php-versions.php",
+                    "line": 12,
+                    "identifier": "cast.voidNotSupported",
+                    "message": "The (void) cast is supported only on PHP 8.5 and later.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/void-cast-php-versions.php",
+                    "line": 12,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function VoidCastPhpVersions\\doBar() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/void-cast-php-versions.php",
+                    "line": 15,
+                    "identifier": "function.inVoidCast",
+                    "message": "Call to function VoidCastPhpVersions\\doBar() in (void) cast but function allows discarding return value.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

@@ -2,6 +2,30 @@
     "test": "Properties/PropertyInClassRuleTest",
     "cases": [
         {
+            "method": "testPhpVersionNarrowedScope",
+            "files": [
+                "Properties/data/property-in-class-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-in-class-php-versions.php",
+                    "line": 18,
+                    "identifier": "property.final",
+                    "message": "Final properties are supported only on PHP 8.4 and later.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-in-class-php-versions.php",
+                    "line": 52,
+                    "identifier": "property.hooksNotSupported",
+                    "message": "Property hooks are supported only on PHP 8.4 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testPhp84AndHookedPropertiesWithoutBodiesInClass",
             "files": [
                 "Properties/data/hooked-properties-without-bodies-in-class.php"

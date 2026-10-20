@@ -1,4 +1,4 @@
-//! parametersSchema building and validation against PHPStan 2.2.7's ContainerFactory::validateParameters()
+//! parametersSchema building and validation against PHPStan 2.3.1's ContainerFactory::validateParameters()
 //! (tests/fixtures/schema.json, scripts/export-schema-fixtures.php).
 
 mod common;
@@ -17,7 +17,7 @@ fn container_factory_validate_parameters() {
     let mut failures = Vec::new();
     for case in fixture("schema.json").as_array().unwrap() {
         std::fs::write(&file, case["neon"].as_str().unwrap()).unwrap();
-        let data = di::load_neon(&files, &file, &[]).unwrap();
+        let data = di::load_neon(&files, &file, &[], &Default::default()).unwrap();
         let mut params = data
             .get_str("parameters")
             .and_then(Value::as_array)

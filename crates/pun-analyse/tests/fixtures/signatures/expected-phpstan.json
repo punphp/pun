@@ -388,13 +388,6 @@
   },
   {
    "file": "templates.php",
-   "line": 136,
-   "identifier": "method.templateTypeNotInParameter",
-   "message": "Template type T of function SignatureTemplates\\unsealedKey() is not referenced in a parameter.",
-   "tip": null
-  },
-  {
-   "file": "templates.php",
    "line": 181,
    "identifier": "method.templateTypeNotInParameter",
    "message": "Template type T of function SignatureTemplates\\conditionalNative() is not referenced in a parameter.",
@@ -573,13 +566,6 @@
    "line": 38,
    "identifier": "parameter.unresolvableNativeType",
    "message": "Parameter $a of method SignatureUnresolvable\\Holder::params() has unresolvable native type.",
-   "tip": null
-  },
-  {
-   "file": "unresolvable.php",
-   "line": 38,
-   "identifier": "parameter.unresolvableNativeType",
-   "message": "Parameter $b of method SignatureUnresolvable\\Holder::params() has unresolvable native type.",
    "tip": null
   },
   {

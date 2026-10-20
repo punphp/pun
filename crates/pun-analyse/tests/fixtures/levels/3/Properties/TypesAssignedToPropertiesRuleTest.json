@@ -304,8 +304,8 @@
                 {
                     "file": "Properties/data/properties-from-array-into-object.php",
                     "line": 83,
-                    "identifier": "assignOp.invalid",
-                    "message": "Binary operation \"+=\" between non-falsy-string and 1.1 results in an error.",
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesFromArrayIntoObject\\Foo::$foo (string) does not accept float.",
                     "tip": null
                 },
                 {
@@ -421,9 +421,23 @@
                 },
                 {
                     "file": "Properties/data/bug-3777.php",
+                    "line": 130,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug3777\\Lorem2<stdClass, Exception>, actual: Bug3777\\Lorem2<stdClass, object>",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
                     "line": 131,
                     "identifier": "assign.propertyType",
                     "message": "Property Bug3777\\Ipsum2::$ipsum2 (Bug3777\\Lorem2<stdClass, Exception>) does not accept Bug3777\\Lorem2<Exception, object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 132,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug3777\\Lorem2<Exception, Exception>, actual: Bug3777\\Lorem2<Exception, object>",
                     "tip": null
                 },
                 {
@@ -1739,6 +1753,131 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13114",
+            "files": [
+                "Properties/data/bug-13114.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-13114.php",
+                    "line": 20,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug13114Property\\Holder::$implicit (non-empty-list&callable(): mixed) does not accept array{Bug13114Property\\C, 'h'}.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-13114.php",
+                    "line": 21,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug13114Property\\Holder::$explicit (non-empty-list<mixed>&callable(): mixed) does not accept array{Bug13114Property\\C, 'h'}.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-13114.php",
+                    "line": 22,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug13114Property\\Holder::$implicit (non-empty-list&callable(): mixed) does not accept 42.",
+                    "tip": "• 42 is not a list.\n• 42 is empty."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8441",
+            "files": [
+                "Properties/data/bug-8441.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15166",
+            "files": [
+                "Properties/data/bug-15166.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6732",
+            "files": [
+                "Properties/data/bug-6732.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13431",
+            "files": [
+                "Properties/data/bug-13431.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-13431.php",
+                    "line": 20,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug13431\\ShortStepWithElements::$elementHashes (Ds\\Set<string>) does not accept Ds\\Set<lowercase-string&non-falsy-string>.",
+                    "tip": "Template type TValue on class Ds\\Set is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13876",
+            "files": [
+                "Properties/data/bug-13876.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9096",
+            "files": [
+                "Properties/data/bug-9096.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-9096.php",
+                    "line": 93,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Option<string|null>, actual: Bug9096\\Option<string|null>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionWithTemplateMixed",
+            "files": [
+                "Properties/data/intersection-template-mixed-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/intersection-template-mixed-property.php",
+                    "line": 20,
+                    "identifier": "assign.propertyType",
+                    "message": "Property IntersectionTemplateMixedProperty\\Foo::$prop (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/intersection-template-mixed-property.php",
+                    "line": 21,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property IntersectionTemplateMixedProperty\\Foo::$staticProp (int) does not accept string.",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

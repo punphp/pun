@@ -28,6 +28,15 @@
             "general": []
         },
         {
+            "method": "testOverrideAttributePhpVersionNarrowedScope",
+            "files": [
+                "Properties/data/override-attr-on-property-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testOverrideAttributeAllowed",
             "files": [
                 "Properties/data/override-attr-on-property.php"

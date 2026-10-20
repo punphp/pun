@@ -184,9 +184,11 @@ fn standalone<'arena>(hint: &Hint<'arena>) -> Option<&'arena [u8]> {
     }
 }
 
-/// UsedNamesRule: the file's top-level `use` and class-like statements, and those directly in its namespaces.
+/// UsedNamesRule: the file's top-level `use` and class-like statements, and those directly in its namespaces. Each
+/// namespace declaration starts a new import scope, even for a namespace declared earlier in the file.
 pub fn used_names(c: &mut Checker, program: &Program) {
-    let mut used: HashMap<String, Vec<String>> = HashMap::new();
+    let mut declared: HashMap<String, Vec<String>> = HashMap::new();
+    let mut file_scope = Vec::new();
     for s in program.statements.iter() {
         if let Statement::Namespace(n) = s {
             let namespace = n
@@ -194,12 +196,13 @@ pub fn used_names(c: &mut Checker, program: &Program) {
                 .as_ref()
                 .map(|id| c.written(id.span()))
                 .unwrap_or_default();
+            let mut namespace_scope = Vec::new();
             for s in n.statements().iter() {
-                names_of(c, s, &namespace, &mut used);
+                names_of(c, s, &namespace, &mut declared, &mut namespace_scope);
             }
             continue;
         }
-        names_of(c, s, "", &mut used);
+        names_of(c, s, "", &mut declared, &mut file_scope);
     }
 }
 
@@ -208,9 +211,9 @@ fn names_of(
     c: &mut Checker,
     s: &Statement,
     namespace: &str,
-    used: &mut HashMap<String, Vec<String>>,
+    declared: &mut HashMap<String, Vec<String>>,
+    scope: &mut Vec<String>,
 ) {
-    let lower_namespace = namespace.to_ascii_lowercase();
     let (kind, name, at) = match s {
         Statement::Use(u) => {
             let (prefix, items): (String, Vec<&UseItem>) = match &u.items {
@@ -225,7 +228,7 @@ fn names_of(
                         .collect(),
                 ),
             };
-            uses(c, &prefix, &items, &lower_namespace, used);
+            uses(c, &prefix, &items, scope);
             return;
         }
         Statement::Class(k) => ("class", k.name.value, s.span()),
@@ -235,8 +238,9 @@ fn names_of(
         _ => return,
     };
     let name = String::from_utf8_lossy(name).into_owned();
-    let names = used.entry(lower_namespace).or_default();
-    if names.contains(&name.to_ascii_lowercase()) {
+    let lower = name.to_ascii_lowercase();
+    let names = declared.entry(namespace.to_ascii_lowercase()).or_default();
+    if scope.contains(&lower) || names.contains(&lower) {
         let full = if namespace.is_empty() {
             name
         } else {
@@ -250,7 +254,8 @@ fn names_of(
         );
         return;
     }
-    names.push(name.to_ascii_lowercase());
+    scope.push(lower.clone());
+    names.push(lower);
 }
 
 /// findErrorsInUses().
@@ -258,8 +263,7 @@ fn uses(
     c: &mut Checker,
     prefix: &str,
     items: &[&UseItem],
-    lower_namespace: &str,
-    used: &mut HashMap<String, Vec<String>>,
+    scope: &mut Vec<String>,
 ) {
     for item in items {
         // php-parser drops a use name's leading `\`
@@ -269,8 +273,7 @@ fn uses(
             Some(a) => String::from_utf8_lossy(a.identifier.value).into_owned(),
             None => name.rsplit('\\').next().unwrap_or(name).to_string(),
         };
-        let names = used.entry(lower_namespace.to_string()).or_default();
-        if names.contains(&alias.to_ascii_lowercase()) {
+        if scope.contains(&alias.to_ascii_lowercase()) {
             let full = if prefix.is_empty() {
                 name.to_string()
             } else {
@@ -284,6 +287,6 @@ fn uses(
             );
             continue;
         }
-        names.push(alias.to_ascii_lowercase());
+        scope.push(alias.to_ascii_lowercase());
     }
 }

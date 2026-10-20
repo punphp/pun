@@ -37,6 +37,10 @@ pub(super) fn typed(call: &FunctionCall, out: &mut Vec<Span>) {
         out.push(a.value().span());
         if i == 0 {
             concat_leaves(a.value(), out);
+            for item in items(a.value()) {
+                out.push(item.span());
+                concat_leaves(item, out);
+            }
         }
     }
 }
@@ -178,12 +182,37 @@ fn quoting(c: &mut Checker, call: &FunctionCall, name: &str) {
     ) {
         return;
     }
-    let Some(Expression::Binary(concat)) = argument(call, 0, "pattern")
-        .map(unparen)
-        .filter(|e| matches!(e, Expression::Binary(b) if matches!(b.operator, BinaryOperator::StringConcat(_))))
-    else {
+    let Some(pattern) = argument(call, 0, "pattern").map(unparen) else {
         return;
     };
+    // preg_replace, preg_replace_callback and preg_filter also take an array of patterns, each one in its own right
+    // (another function's array pattern is no concatenation, so it is skipped below)
+    let patterns: Vec<&Expression> = if matches!(pattern, Expression::Array(_) | Expression::LegacyArray(_))
+        && matches!(name, "preg_filter" | "preg_replace" | "preg_replace_callback")
+    {
+        items(pattern)
+    } else {
+        vec![pattern]
+    };
+    for pattern in patterns {
+        if let Expression::Binary(concat) = unparen(pattern)
+            && matches!(concat.operator, BinaryOperator::StringConcat(_))
+        {
+            quote_delimiters(c, concat);
+        }
+    }
+}
+
+/// The values of an array literal's items (an unpacked one too, as `$item->value`).
+fn items<'a, 'arena>(e: &'a Expression<'arena>) -> Vec<&'a Expression<'arena>> {
+    let elements = match unparen(e) {
+        Expression::Array(Array { elements, .. }) | Expression::LegacyArray(LegacyArray { elements, .. }) => elements,
+        _ => return vec![],
+    };
+    elements.iter().filter_map(ArrayElement::get_value).collect()
+}
+
+fn quote_delimiters(c: &mut Checker, concat: &Binary) {
     // RegexExpressionHelper::getPatternDelimiters(): the first character of the leftmost operand's constant strings
     let mut left = concat.lhs;
     while let Expression::Binary(b) = unparen(left)

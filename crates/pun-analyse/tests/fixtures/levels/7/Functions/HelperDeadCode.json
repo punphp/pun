@@ -158,13 +158,6 @@
                 {
                     "file": "Functions/data/helper-dead-code.php",
                     "line": 37,
-                    "identifier": "closure.unusedUse",
-                    "message": "Anonymous function has an unused use $used.",
-                    "tip": null
-                },
-                {
-                    "file": "Functions/data/helper-dead-code.php",
-                    "line": 37,
                     "identifier": "echo.nonString",
                     "message": "Parameter #1 (array{used: 1}) of echo cannot be converted to string.",
                     "tip": null
@@ -223,6 +216,13 @@
                     "line": 47,
                     "identifier": "closure.unusedUse",
                     "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/helper-dead-code.php",
+                    "line": 47,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $used.",
                     "tip": null
                 },
                 {

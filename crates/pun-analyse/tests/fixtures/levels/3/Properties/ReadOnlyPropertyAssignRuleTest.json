@@ -235,8 +235,22 @@
                 {
                     "file": "Properties/data/readonly-assign.php",
                     "line": 228,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 'a' to ArrayObject<*NEVER*, *NEVER*>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 228,
                     "identifier": "offsetAssign.valueType",
                     "message": "ArrayObject<*NEVER*, *NEVER*> does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 229,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 'a' to ArrayObject<*NEVER*, *NEVER*>.",
                     "tip": null
                 },
                 {

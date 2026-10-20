@@ -1,4 +1,31 @@
 {
     "test": "Exceptions/ThrowExpressionRuleTest",
-    "cases": []
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/throw-expr.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConditionallyExecutedCode",
+            "files": [
+                "Exceptions/data/throw-expr-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throw-expr-php-versions.php",
+                    "line": 18,
+                    "identifier": "throw.notSupported",
+                    "message": "Throw expression is supported only on PHP 8.0 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
 }

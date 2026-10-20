@@ -52,6 +52,8 @@ const POSSIBLE_PHPSTAN_TAGS: &[&str] = &[
     "@phpstan-param-immediately-invoked-callable",
     "@phpstan-param-later-invoked-callable",
     "@phpstan-param-closure-this",
+    "@phpstan-pure-unless-callable-is-impure",
+    "@phpstan-pure-unless-parameter-passed",
     "@phpstan-all-methods-pure",
     "@phpstan-all-methods-impure",
 ];

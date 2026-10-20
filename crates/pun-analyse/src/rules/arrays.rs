@@ -104,6 +104,12 @@ pub fn literal_array<'arena>(
         // assistant's call: a missing element (`[1, , 2]`, a php-parser error outside a list) counts as one without a key
         let (key, at) = match element {
             ArrayElement::KeyValue(kv) => (Some(kv.key), kv.span()),
+            // ArrayUnpackingHelper::getKeyTypes() gives no keys for a constant array that is not sealed, which a
+            // literal is not without bleeding edge, so (as the oracle shows) an unpacked item's keys are unknown
+            ArrayElement::Variadic(_) => {
+                auto = Auto::Unknown;
+                continue;
+            }
             e => (None, e.span()),
         };
         let (value, print) = match key {
@@ -111,7 +117,12 @@ pub fn literal_array<'arena>(
                 let next = match auto {
                     Auto::Unknown => continue,
                     Auto::NotYet => 0,
-                    Auto::Known(b) => b.saturating_add(1),
+                    // PHP throws "Cannot add element to the array as the next element is already occupied"
+                    Auto::Known(i64::MAX) => {
+                        auto = Auto::Unknown;
+                        continue;
+                    }
+                    Auto::Known(b) => b + 1,
                 };
                 auto = Auto::Known(next);
                 (Key::Int(next), next.to_string())
@@ -121,13 +132,12 @@ pub fn literal_array<'arena>(
                     auto = Auto::Unknown;
                     continue;
                 };
+                // once the implicit index is unknown an explicit key can't bring it back
                 if let Key::Int(i) = value {
                     auto = match auto {
                         Auto::NotYet => Auto::Known(i),
                         Auto::Known(b) => Auto::Known(b.max(i)),
-                        // `max(false, $i)`: false unless `$i` is truthy
-                        Auto::Unknown if i == 0 => Auto::Unknown,
-                        Auto::Unknown => Auto::Known(i),
+                        Auto::Unknown => Auto::Unknown,
                     };
                 }
                 (value, written(c, key))

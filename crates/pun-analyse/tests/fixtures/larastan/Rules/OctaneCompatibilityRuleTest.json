@@ -6,6 +6,7 @@
             "files": [
                 "Rules/data/ContainerInjection.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/data/ContainerInjection.php",
@@ -56,8 +57,7 @@
                     "message": "Consider using bind method instead or pass a closure.",
                     "tip": "See: https://laravel.com/docs/octane#dependency-injection-and-octane"
                 }
-            ],
-            "general": []
+            ]
         }
     ]
 }

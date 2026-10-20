@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Exact results of PHPStan 2.2.7's ignore logic, from the phar's own classes:
+ * Exact results of PHPStan 2.3.1's ignore logic, from the phar's own classes:
  *
  *   tests/fixtures/comments.json  RichParser::getLinesToIgnore() over php-parser's tokens (the inputs of
  *                                 phpstan-src's RichParserTest and IgnoreLexerTest, plus extra cases)

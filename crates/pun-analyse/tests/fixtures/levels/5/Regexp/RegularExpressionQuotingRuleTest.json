@@ -175,6 +175,34 @@
                     "identifier": "regexp.pattern",
                     "message": "Regex pattern is invalid: No ending delimiter '@' found in pattern: @\\d*(?:.*)pattern/",
                     "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 102,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 103,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 104,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 105,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
                 }
             ],
             "general": []

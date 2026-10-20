@@ -1258,13 +1258,16 @@ posix_setuid
 proc_nice
 proc_terminate
 property_exists
+ps_add_kerning
 ps_add_launchlink
+ps_add_ligature
 ps_add_locallink
 ps_add_note
 ps_add_pdflink
 ps_add_weblink
 ps_arc
 ps_arcn
+ps_begin_glyph
 ps_begin_page
 ps_circle
 ps_clip
@@ -1274,6 +1277,8 @@ ps_closepath_stroke
 ps_continue_text
 ps_curveto
 ps_delete
+ps_end_font
+ps_end_glyph
 ps_end_page
 ps_end_pattern
 ps_end_template
@@ -1775,6 +1780,7 @@ xslt_set_object
 yaml_emit_file
 yaz_ccl_parse
 yaz_close
+yaz_cql_parse
 yaz_database
 yaz_element
 yaz_present

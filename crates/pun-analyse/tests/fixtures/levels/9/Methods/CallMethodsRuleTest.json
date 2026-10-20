@@ -1045,7 +1045,7 @@
                     "line": 518,
                     "identifier": "if.alwaysTrue",
                     "message": "If condition is always true.",
-                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If Test\\NullCoalesce::find() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 },
                 {
                     "file": "Methods/data/call-methods.php",
@@ -1066,7 +1066,7 @@
                     "line": 522,
                     "identifier": "ternary.alwaysTrue",
                     "message": "Ternary operator condition is always true.",
-                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If Test\\NullCoalesce::find() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 },
                 {
                     "file": "Methods/data/call-methods.php",
@@ -1352,7 +1352,7 @@
                     "file": "Methods/data/call-methods.php",
                     "line": 743,
                     "identifier": "return.missing",
-                    "message": "Method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/call-methods.php:735::doBar() should return string but return statement is missing.",
+                    "message": "Method class@anonymous/call-methods.php:735::doBar() should return string but return statement is missing.",
                     "tip": null
                 },
                 {
@@ -3407,7 +3407,7 @@
                     "line": 518,
                     "identifier": "if.alwaysTrue",
                     "message": "If condition is always true.",
-                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If Test\\NullCoalesce::find() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 },
                 {
                     "file": "Methods/data/call-methods.php",
@@ -3428,7 +3428,7 @@
                     "line": 522,
                     "identifier": "ternary.alwaysTrue",
                     "message": "Ternary operator condition is always true.",
-                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If Test\\NullCoalesce::find() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 },
                 {
                     "file": "Methods/data/call-methods.php",
@@ -3714,7 +3714,7 @@
                     "file": "Methods/data/call-methods.php",
                     "line": 743,
                     "identifier": "return.missing",
-                    "message": "Method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/call-methods.php:735::doBar() should return string but return statement is missing.",
+                    "message": "Method class@anonymous/call-methods.php:735::doBar() should return string but return statement is missing.",
                     "tip": null
                 },
                 {
@@ -4896,6 +4896,30 @@
             "general": []
         },
         {
+            "method": "testVoidConditionalReturnType",
+            "files": [
+                "Methods/data/void-conditional-return-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/void-conditional-return-type.php",
+                    "line": 34,
+                    "identifier": "method.void",
+                    "message": "Result of method VoidConditionalReturnType\\Wormhole::seconds() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/void-conditional-return-type.php",
+                    "line": 37,
+                    "identifier": "method.void",
+                    "message": "Result of method VoidConditionalReturnType\\Wormhole::seconds() (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testClosureBind",
             "files": [
                 "Methods/data/closure-bind.php"
@@ -5734,7 +5758,7 @@
                     "file": "Methods/data/sibling-method-prototype.php",
                     "line": 39,
                     "identifier": "missingType.return",
-                    "message": "Method SiblingMethodPrototype\\Base@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/sibling-method-prototype.php:37::bar() has no return type specified.",
+                    "message": "Method SiblingMethodPrototype\\Base@anonymous/sibling-method-prototype.php:37::bar() has no return type specified.",
                     "tip": null
                 },
                 {
@@ -8135,6 +8159,23 @@
             "general": []
         },
         {
+            "method": "testNullSafeOnTemplateTypeNarrowedAgainstNull",
+            "files": [
+                "Methods/data/nullsafe-method-call-template-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/nullsafe-method-call-template-type.php",
+                    "line": 19,
+                    "identifier": "missingType.return",
+                    "message": "Function NullsafeMethodCallTemplateType\\foo() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testDisallowNamedArgumentsInPhpVersionScope",
             "files": [
                 "Methods/data/disallow-named-arguments-php-version-scope.php"
@@ -8717,6 +8758,37 @@
             "general": []
         },
         {
+            "method": "testArrayShapeTemplateKey",
+            "files": [
+                "Methods/data/array-shape-template-key.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/array-shape-template-key.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayShapeTemplateKeyMethods\\Foo::stringKey() should return array<string, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/array-shape-template-key.php",
+                    "line": 45,
+                    "identifier": "method.unresolvableReturnType",
+                    "message": "Return type of call to method ArrayShapeTemplateKeyMethods\\Foo::objectKey() contains unresolvable type.",
+                    "tip": "Type stdClass cannot be used as an array shape key."
+                },
+                {
+                    "file": "Methods/data/array-shape-template-key.php",
+                    "line": 46,
+                    "identifier": "method.unresolvableReturnType",
+                    "message": "Return type of call to method ArrayShapeTemplateKeyMethods\\Foo::arrayKey() contains unresolvable type.",
+                    "tip": "Type array<int, string> cannot be used as an array shape key."
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testUnableToResolveCallbackParameterType",
             "files": [
                 "Methods/data/unable-to-resolve-callback-parameter-type.php"
@@ -8848,6 +8920,20 @@
                 },
                 {
                     "file": "Methods/data/bug-5372.php",
+                    "line": 60,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, 'bar'|'foo'>, actual: Bug5372\\Collection<int, string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 63,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, non-falsy-string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
                     "line": 64,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $list of method Bug5372\\Foo::takesStrings() expects Bug5372\\Collection<int, string>, Bug5372\\Collection<int, non-falsy-string> given.",
@@ -8855,10 +8941,24 @@
                 },
                 {
                     "file": "Methods/data/bug-5372.php",
+                    "line": 67,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, class-string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
                     "line": 68,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $list of method Bug5372\\Foo::takesStrings() expects Bug5372\\Collection<int, string>, Bug5372\\Collection<int, class-string> given.",
                     "tip": "Template type T on class Bug5372\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 71,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, class-string>",
+                    "tip": null
                 },
                 {
                     "file": "Methods/data/bug-5372.php",
@@ -8876,10 +8976,24 @@
                 },
                 {
                     "file": "Methods/data/bug-5372.php",
+                    "line": 80,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, literal-string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
                     "line": 81,
                     "identifier": "argument.type",
                     "message": "Parameter #1 $list of method Bug5372\\Foo::takesStrings() expects Bug5372\\Collection<int, string>, Bug5372\\Collection<int, literal-string> given.",
                     "tip": "Template type T on class Bug5372\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 84,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, literal-string>",
+                    "tip": null
                 },
                 {
                     "file": "Methods/data/bug-5372.php",
@@ -9438,7 +9552,7 @@
                     "file": "Methods/data/generics-empty-array.php",
                     "line": 14,
                     "identifier": "return.missing",
-                    "message": "Method GenericsEmptyArrayCall\\Foo::doFoo() should return array<int, int|string|T> but return statement is missing.",
+                    "message": "Method GenericsEmptyArrayCall\\Foo::doFoo() should return array<int, T|TKey of (int|string)> but return statement is missing.",
                     "tip": null
                 },
                 {
@@ -10282,6 +10396,68 @@
                     "identifier": "argument.type",
                     "message": "Parameter #1 $cb of method CallablesWithoutCheckNullables\\Foo::doBaz2() expects Closure(float|null): float, Closure(float): float given.",
                     "tip": "Type float of parameter #1 $f of passed callable needs to be same or wider than parameter type float|null of accepting callable."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericArgumentNullability#0",
+            "files": [
+                "Methods/data/generic-argument-nullability.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/generic-argument-nullability.php",
+                    "line": 74,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method GenericArgumentNullability\\Foo::acceptPlain() expects GenericArgumentNullability\\Collection<string, int>, GenericArgumentNullability\\Collection<string, int|null> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/generic-argument-nullability.php",
+                    "line": 75,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method GenericArgumentNullability\\Foo::acceptNullable() expects GenericArgumentNullability\\Collection<string, int|null>, GenericArgumentNullability\\Collection<string, int> given.",
+                    "tip": "Template type TValue on class GenericArgumentNullability\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Methods/data/generic-argument-nullability.php",
+                    "line": 76,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method GenericArgumentNullability\\Foo::acceptCovariantPlain() expects GenericArgumentNullability\\CovariantCollection<int>, GenericArgumentNullability\\CovariantCollection<int|null> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericArgumentNullability#1",
+            "files": [
+                "Methods/data/generic-argument-nullability.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/generic-argument-nullability.php",
+                    "line": 74,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method GenericArgumentNullability\\Foo::acceptPlain() expects GenericArgumentNullability\\Collection<string, int>, GenericArgumentNullability\\Collection<string, int|null> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/generic-argument-nullability.php",
+                    "line": 75,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method GenericArgumentNullability\\Foo::acceptNullable() expects GenericArgumentNullability\\Collection<string, int|null>, GenericArgumentNullability\\Collection<string, int> given.",
+                    "tip": "Template type TValue on class GenericArgumentNullability\\Collection is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                },
+                {
+                    "file": "Methods/data/generic-argument-nullability.php",
+                    "line": 76,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method GenericArgumentNullability\\Foo::acceptCovariantPlain() expects GenericArgumentNullability\\CovariantCollection<int>, GenericArgumentNullability\\CovariantCollection<int|null> given.",
+                    "tip": null
                 }
             ],
             "general": []
@@ -11183,42 +11359,42 @@
                     "file": "Methods/data/bug-11559c.php",
                     "line": 6,
                     "identifier": "new.noConstructor",
-                    "message": "Class class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/bug-11559c.php:6:1 does not have a constructor and must be instantiated without any parameters.",
+                    "message": "Class class@anonymous/bug-11559c.php:6:1 does not have a constructor and must be instantiated without any parameters.",
                     "tip": null
                 },
                 {
                     "file": "Methods/data/bug-11559c.php",
                     "line": 7,
                     "identifier": "missingType.return",
-                    "message": "Method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/bug-11559c.php:6:1::implicit_variadic_fn() has no return type specified.",
+                    "message": "Method class@anonymous/bug-11559c.php:6:1::implicit_variadic_fn() has no return type specified.",
                     "tip": null
                 },
                 {
                     "file": "Methods/data/bug-11559c.php",
                     "line": 10,
                     "identifier": "missingType.return",
-                    "message": "Method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/bug-11559c.php:6:1::regular_fn() has no return type specified.",
+                    "message": "Method class@anonymous/bug-11559c.php:6:1::regular_fn() has no return type specified.",
                     "tip": null
                 },
                 {
                     "file": "Methods/data/bug-11559c.php",
                     "line": 14,
                     "identifier": "method.resultUnused",
-                    "message": "Call to method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/bug-11559c.php:6:1::implicit_variadic_fn() on a separate line has no effect.",
+                    "message": "Call to method class@anonymous/bug-11559c.php:6:1::implicit_variadic_fn() on a separate line has no effect.",
                     "tip": null
                 },
                 {
                     "file": "Methods/data/bug-11559c.php",
                     "line": 15,
                     "identifier": "arguments.count",
-                    "message": "Method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/bug-11559c.php:6:1::regular_fn() invoked with 3 parameters, 1 required.",
+                    "message": "Method class@anonymous/bug-11559c.php:6:1::regular_fn() invoked with 3 parameters, 1 required.",
                     "tip": null
                 },
                 {
                     "file": "Methods/data/bug-11559c.php",
                     "line": 15,
                     "identifier": "method.resultUnused",
-                    "message": "Call to method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/bug-11559c.php:6:1::regular_fn() on a separate line has no effect.",
+                    "message": "Call to method class@anonymous/bug-11559c.php:6:1::regular_fn() on a separate line has no effect.",
                     "tip": null
                 }
             ],
@@ -11390,6 +11566,15 @@
                     "tip": null
                 }
             ],
+            "general": []
+        },
+        {
+            "method": "testDynamicMethodName",
+            "files": [
+                "Methods/data/dynamic-method-name.php"
+            ],
+            "scan": [],
+            "errors": [],
             "general": []
         },
         {
@@ -11599,6 +11784,15 @@
             "method": "testBug13708",
             "files": [
                 "Methods/data/bug-13708.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13054",
+            "files": [
+                "Methods/data/bug-13054.php"
             ],
             "scan": [],
             "errors": [],
@@ -12013,6 +12207,30 @@
             "general": []
         },
         {
+            "method": "testBug11317",
+            "files": [
+                "Methods/data/bug-11317.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-11317.php",
+                    "line": 26,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (array{string, int, bool}): Unexpected token \"\\n\\t\\t \", expected variable at offset 40 on line 2",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-11317.php",
+                    "line": 30,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of method Bug11317\\A::do() expects array{string, int, bool}, array given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug4608",
             "files": [
                 "Methods/data/bug-4608.php"
@@ -12023,7 +12241,7 @@
                     "file": "Methods/data/bug-4608.php",
                     "line": 11,
                     "identifier": "method.notFound",
-                    "message": "Call to an undefined method class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Methods/data/bug-4608.php:5::not_abc().",
+                    "message": "Call to an undefined method class@anonymous/bug-4608.php:5::not_abc().",
                     "tip": null
                 }
             ],
@@ -12251,6 +12469,23 @@
             "general": []
         },
         {
+            "method": "testBug15306",
+            "files": [
+                "Methods/data/bug-15306.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15306.php",
+                    "line": 7,
+                    "identifier": "argument.exclusiveConstants",
+                    "message": "Constants ZipArchive::RDONLY, ZipArchive::OVERWRITE cannot be combined for parameter #2 $flags of method ZipArchive::open().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug14893",
             "files": [
                 "Methods/data/bug-14893.php"
@@ -12311,6 +12546,386 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15167",
+            "files": [
+                "Methods/data/bug-15167.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8441",
+            "files": [
+                "Methods/data/bug-8441.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 12,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug8441Methods\\Collection::$t is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 22,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug8441Methods\\CollectionWithNonNullableParam::$t is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 73,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeInts() expects Bug8441Methods\\Collection<int>, Bug8441Methods\\Collection<mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 74,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeInts() expects Bug8441Methods\\Collection<int>, Bug8441Methods\\Collection<mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 77,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeInts() expects Bug8441Methods\\Collection<int>, Bug8441Methods\\Collection<string> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 79,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeIntsNonNullableParam() expects Bug8441Methods\\CollectionWithNonNullableParam<int>, Bug8441Methods\\CollectionWithNonNullableParam<null> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 80,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeIntsNonNullableParam() expects Bug8441Methods\\CollectionWithNonNullableParam<int>, Bug8441Methods\\CollectionWithNonNullableParam<null> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 83,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeInts() expects Bug8441Methods\\Collection<int>, Bug8441Methods\\Collection<mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 84,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeInts() expects Bug8441Methods\\Collection<int>, Bug8441Methods\\Collection<mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 86,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $c of method Bug8441Methods\\Consumer::takeInts() expects Bug8441Methods\\Collection<int>, Bug8441Methods\\Collection<string> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8441.php",
+                    "line": 90,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of method Bug8441Methods\\Consumer::takeInt() expects int, string given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15166",
+            "files": [
+                "Methods/data/bug-15166.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15166.php",
+                    "line": 77,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug15166\\Setter::$value is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6732",
+            "files": [
+                "Methods/data/bug-6732.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-6732.php",
+                    "line": 10,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug6732Methods\\Collection has an unused parameter $items.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-6732.php",
+                    "line": 25,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug6732Methods\\Foo::$ints is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnconstrainedCollectionTemplateArguments",
+            "files": [
+                "Functions/data/bug-15168.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 10,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug15168Functions\\Coll has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 23,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\withNull() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 33,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\withFalse() should return T but returns T|false.",
+                    "tip": "Type false is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 43,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\withIntAndFloat() should return T but returns float|int|T.",
+                    "tip": "• Type int is not always the same as T. It breaks the contract for some argument types, typically subtypes.\n• Type float is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 73,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\fromShape() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 83,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug15168Functions\\Coll<T|null>::$t.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 93,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\fromCallable() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 103,
+                    "identifier": "return.type",
+                    "message": "Function Bug15168Functions\\variadic() should return T but returns T|null.",
+                    "tip": "Type null is not always the same as T. It breaks the contract for some argument types, typically subtypes."
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 118,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withNull() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 119,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withFalse() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 120,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withIntAndFloat() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 121,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\withIntAndFloat() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 122,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromList() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 123,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromIterable() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 124,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromShape() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 125,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\fromColl() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 127,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug15168Functions\\variadic() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 145,
+                    "identifier": "return.missing",
+                    "message": "Method Bug15168Functions\\Sink::read() should return U but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 157,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $collection of method Bug15168Functions\\Sink<T>::take() expects Bug15168Functions\\Coll<T>, Bug15168Functions\\Coll<mixed> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnconstrainedQueryResult",
+            "files": [
+                "Methods/data/unconstrained-query-result.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 28,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\QueryResultSet has an unused parameter $query.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 59,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\BatchIterator has an unused parameter $batchSize.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 59,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\BatchIterator has an unused parameter $queryBuilder.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 59,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\BatchIterator has an unused parameter $uniqueIdColumn.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 64,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method UnconstrainedQueryResult\\BatchIterator::current() is not covariant with tentative return type mixed of method Iterator<int,T>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15251.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug15251\\A::sfoo() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassConstantWildcardArguments",
+            "files": [
+                "Methods/data/class-constant-wildcard-arguments.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/class-constant-wildcard-arguments.php",
+                    "line": 54,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $type of method ClassConstantWildcardArguments\\Tracker::trackValueDependency() expects 'file', 'hasService' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/class-constant-wildcard-arguments.php",
+                    "line": 55,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $type of method ClassConstantWildcardArguments\\Tracker::trackValueDependency() expects 'file', 'nope' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/class-constant-wildcard-arguments.php",
+                    "line": 58,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $type of method ClassConstantWildcardArguments\\FileExtension::doFoo() expects 'file', 'hasService' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/class-constant-wildcard-arguments.php",
+                    "line": 59,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $type of method ClassConstantWildcardArguments\\ContainerExtension::doFoo() expects 'hasService', 'nope' given.",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

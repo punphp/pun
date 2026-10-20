@@ -6,6 +6,7 @@
             "files": [
                 "Rules/data/no-public-model-scope-and-accessor.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/data/no-public-model-scope-and-accessor.php",
@@ -42,8 +43,7 @@
                     "message": "Model accessor method 'privateAccessor' should be declared as protected.",
                     "tip": null
                 }
-            ],
-            "general": []
+            ]
         }
     ]
 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Runs PHPStan 2.2.7's real BaselineNeonErrorFormatter / BaselinePhpErrorFormatter (from the phar) on the error lists
+ * Runs PHPStan 2.3.1's real BaselineNeonErrorFormatter / BaselinePhpErrorFormatter (from the phar) on the error lists
  * of phpstan-src's own formatter tests (their data providers, called directly) plus extra cases, and writes
  * crates/pun-phpstan/tests/fixtures/baseline.json with the exact output and what PHPStan reads back from it
  * (Neon::decode for .neon, `require` for .php).
@@ -138,7 +138,7 @@ namespace {
                 } catch (TypeError) { // preg_quote(int) of a numeric message: PHPStan crashes, Pun quotes it
                     continue 2;
                 }
-                $cases[] = ['format' => 'neon', 'raw' => $raw, 'errors' => $input, 'has_errors' => $result->hasErrors(), 'existing' => $content, 'output' => $out->out, 'read' => tagged(_PHPStan_88a9c7bcc\Nette\Neon\Neon::decode($out->out))];
+                $cases[] = ['format' => 'neon', 'raw' => $raw, 'errors' => $input, 'has_errors' => $result->hasErrors(), 'existing' => $content, 'output' => $out->out, 'read' => tagged(_PHPStan_cb3b7e994\Nette\Neon\Neon::decode($out->out))];
             }
             $out = new Buffer();
             (new BaselinePhpErrorFormatter($helper, $raw))->formatErrors($result, $out);

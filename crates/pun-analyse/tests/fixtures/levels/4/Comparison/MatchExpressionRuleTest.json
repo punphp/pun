@@ -1189,6 +1189,15 @@
             "general": []
         },
         {
+            "method": "testNullInMultiConditionArm",
+            "files": [
+                "Comparison/data/match-null-in-multi-condition-arm.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug11453",
             "files": [
                 "Comparison/data/bug-11453.php"
@@ -1269,6 +1278,37 @@
                     "identifier": "return.missing",
                     "message": "Method MatchInTrait\\FooAnother::doBar2() should return false but return statement is missing.",
                     "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMatchArmComparisonNotSuppressedByImpossibleCheck",
+            "files": [
+                "Comparison/data/match-arm-type-check-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/match-arm-type-check-call.php",
+                    "line": 8,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/match-arm-type-check-call.php",
+                    "line": 8,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between int and true is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/match-arm-type-check-call.php",
+                    "line": 16,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
                 }
             ],
             "general": []

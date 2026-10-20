@@ -2,87 +2,7 @@
     "test": "Classes/InvalidPromotedPropertiesRuleTest",
     "cases": [
         {
-            "method": "testNotSupportedOnPhp7",
-            "files": [
-                "Classes/data/invalid-promoted-properties.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 10,
-                    "identifier": "property.invalidPromoted",
-                    "message": "Promoted properties can be in constructor only.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 17,
-                    "identifier": "property.invalidPromoted",
-                    "message": "Promoted properties can be in constructor only.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 21,
-                    "identifier": "property.invalidPromoted",
-                    "message": "Promoted properties can be in constructor only.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 23,
-                    "identifier": "property.invalidPromoted",
-                    "message": "Promoted properties can be in constructor only.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 28,
-                    "identifier": "method.abstract",
-                    "message": "Non-abstract class InvalidPromotedProperties\\Bar contains abstract method __construct() from class InvalidPromotedProperties\\Bar.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 31,
-                    "identifier": "method.abstract",
-                    "message": "Non-abstract class InvalidPromotedProperties\\Bar contains abstract method __construct().",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 31,
-                    "identifier": "property.invalidPromoted",
-                    "message": "Promoted properties are not allowed in abstract constructors.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 38,
-                    "identifier": "property.invalidPromoted",
-                    "message": "Promoted properties are not allowed in abstract constructors.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 38,
-                    "identifier": "property.nonHookedInInterface",
-                    "message": "Interfaces can only include hooked properties.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/invalid-promoted-properties.php",
-                    "line": 45,
-                    "identifier": "property.invalidPromoted",
-                    "message": "Promoted property parameter $i can not be variadic.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testSupportedOnPhp8",
+            "method": "testRule",
             "files": [
                 "Classes/data/invalid-promoted-properties.php"
             ],
@@ -209,6 +129,23 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConditionallyDeclaredClass",
+            "files": [
+                "Classes/data/promoted-properties-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/promoted-properties-php-versions.php",
+                    "line": 20,
+                    "identifier": "property.promotedNotSupported",
+                    "message": "Promoted properties are supported only on PHP 8.0 and later.",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

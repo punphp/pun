@@ -43,7 +43,7 @@
             "scan": [],
             "errors": [],
             "general": [
-                "Internal error: Internal error. while analysing file /home/forge/projects/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Keywords/data/declare-position-nested.php\n\nRun PHPStan with -v option and post the stack trace to:\nhttps://github.com/phpstan/phpstan/issues/new?template=Bug_report.yaml\n"
+                "Internal error: Internal error. while analysing file /home/forge/projects/pun-oracle-23/.oracle/phpstan-src/tests/PHPStan/Rules/Keywords/data/declare-position-nested.php\n\nRun PHPStan with -v option and post the stack trace to:\nhttps://github.com/phpstan/phpstan/issues/new?template=Bug_report.yaml\n"
             ]
         },
         {
