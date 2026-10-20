@@ -713,6 +713,9 @@ pub fn method_scope(
                 .insert(t.name.clone(), Type::Template(Box::new(t)));
         }
     }
+    if k.name.as_bytes().starts_with(b"{anonymous-class:") {
+        enclosing_templates(c, m.span(), &mut scope);
+    }
     let method = text(m.name.value);
     for t in templates(
         doc,
@@ -724,6 +727,34 @@ pub fn method_scope(
             .insert(t.name.clone(), Type::Template(Box::new(t)));
     }
     scope
+}
+
+/// FileTypeMapper's template map stack: an anonymous class's members see the templates of the function or method
+/// it is declared in (the innermost walked one around `at`).
+fn enclosing_templates(c: &Checker, at: Span, scope: &mut NameScope) {
+    let Some(i) = c
+        .var_tag_functions
+        .iter()
+        .rposition(|f| f.start.offset < at.start.offset && at.end.offset <= f.end.offset)
+    else {
+        return;
+    };
+    let (span, function) = (c.var_tag_functions[i], &c.functions[i]);
+    let Some(doc) = doc_before(&c.file.contents, span.start.offset as usize) else {
+        return;
+    };
+    let described = match function.kind {
+        super::FunctionScopeKind::Method { .. } => {
+            // (the class around the anonymous one)
+            let class = c.classes.iter().rev().nth(1).and_then(|k| k.name.as_deref()).unwrap_or_default();
+            let class = c.codebase.get_class_like(class.as_bytes()).map_or_else(|| class.to_string(), original_name);
+            format!("method {class}::{}()", function.name)
+        }
+        super::FunctionScopeKind::Function => format!("function {}()", function.name),
+    };
+    for t in templates(&Doc::parse(doc), scope, &described) {
+        scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
+    }
 }
 
 /// The `NameScope` of function `f`'s own PHPDoc `doc`, with its templates.

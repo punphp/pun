@@ -133,6 +133,13 @@
    "identifier": "class.notFound",
    "message": "Parameter $a of method CovPhpDocClasses\\Q::m() has invalid type CovPhpDocClasses\\Inherited.",
    "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 115,
+   "identifier": "class.notFound",
+   "message": "Method class@anonymous/phpdoc_classes.php:107::nope() has invalid return type CovPhpDocClasses\\Nope.",
+   "tip": null
   }
  ]
 }

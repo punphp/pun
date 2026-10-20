@@ -74,3 +74,47 @@ class Q extends P
 
 $f = /** @param Missing $a */ function ($a): void {
 };
+
+class Outer
+{
+    /**
+     * @template T
+     * @param T $t
+     */
+    public function some($t): object
+    {
+        return new class($t) {
+            /** @param T $t */
+            public function __construct(private $t)
+            {
+            }
+
+            /** @return T */
+            public function get()
+            {
+                return $this->t;
+            }
+        };
+    }
+}
+
+/**
+ * @template T
+ * @param T $t
+ */
+function wrap($t): object
+{
+    return new class {
+        /** @return T|null */
+        public function get()
+        {
+            return null;
+        }
+
+        /** @return Nope */
+        public function nope()
+        {
+            return null;
+        }
+    };
+}
