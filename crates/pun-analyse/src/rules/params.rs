@@ -148,17 +148,8 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
             let variadic = combined.variadics[i] || v.variadics[i];
             combined.variadics[i] = variadic;
             if variadic {
-                // the variadic parameter swallows every parameter behind it, and their types
-                let dropped: Vec<String> = combined.types[i + 1..]
-                    .iter()
-                    .chain(&v.types[i + 1..])
-                    .cloned()
-                    .collect();
-                for t in dropped {
-                    if !combined.types[i].split('|').any(|m| m == t) {
-                        combined.types[i] = format!("{}|{}", combined.types[i], t);
-                    }
-                }
+                // the variadic parameter swallows every parameter behind it (upstream merges their types into its
+                // type, which no message here prints: a variadic parameter is never missing)
                 combined.names.truncate(i + 1);
                 combined.types.truncate(i + 1);
                 combined.variadics.truncate(i + 1);
