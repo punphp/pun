@@ -124,7 +124,7 @@
    "file": "operators.php",
    "line": 69,
    "identifier": "assignOp.invalid",
-   "message": "Binary operation \"%=\" between (float|int) and bool results in an error.",
+   "message": "Binary operation \"%=\" between float and bool results in an error.",
    "tip": null
   },
   {

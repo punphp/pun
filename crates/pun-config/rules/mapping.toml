@@ -1228,7 +1228,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/interpolated-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-arrow-function-signature" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-assignment-target" = { preset = "basic", ported = true, status = "decided" }
-"types/invalid-binary-operation" = { preset = "essential", status = "decided" }
+"types/invalid-binary-operation" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-cast" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-class-generics" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-class-template" = { preset = "essential", ported = true, status = "decided" }
@@ -1273,9 +1273,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/missing-self-out-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-throws" = { preset = "max", status = "decided" }
 "types/nullsafe-by-ref-return" = { preset = "basic", ported = true, status = "decided" }
-"types/offset-assign" = { preset = "essential", status = "decided" }
-"types/offset-assign-op" = { preset = "essential", status = "decided" }
-"types/offset-assign-value" = { preset = "essential", status = "decided" }
+"types/offset-assign" = { preset = "essential", ported = true, status = "decided" }
+"types/offset-assign-op" = { preset = "essential", ported = true, status = "decided" }
+"types/offset-assign-value" = { preset = "essential", ported = true, status = "decided" }
 "types/param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/param-out" = { preset = "essential", status = "decided" }
 "types/param-out-at-end" = { preset = "essential", status = "decided" }

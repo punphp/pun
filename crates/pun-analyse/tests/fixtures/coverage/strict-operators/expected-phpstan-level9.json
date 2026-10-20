@@ -143,13 +143,6 @@
   },
   {
    "file": "operators.php",
-   "line": 57,
-   "identifier": "binaryOp.invalid",
-   "message": "Binary operation \"-\" between mixed and 1 results in an error.",
-   "tip": null
-  },
-  {
-   "file": "operators.php",
    "line": 58,
    "identifier": "binaryOp.invalid",
    "message": "Binary operation \"*\" between T and 2 results in an error.",
@@ -222,7 +215,7 @@
    "file": "operators.php",
    "line": 69,
    "identifier": "assignOp.invalid",
-   "message": "Binary operation \"%=\" between (float|int) and bool results in an error.",
+   "message": "Binary operation \"%=\" between float and bool results in an error.",
    "tip": null
   },
   {

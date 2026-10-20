@@ -13,6 +13,10 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "binaryOp.invalid",
+    "assignOp.invalid",
+    "offsetAssign.dimType",
+    "offsetAssign.valueType",
     "assign.propertyType",
     "property.readOnlyAssignOutOfClass",
     "property.readOnlyAssignNotOnThis",

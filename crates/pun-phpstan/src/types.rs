@@ -1988,11 +1988,13 @@ impl ShapeBuilder {
                 } else {
                     a.is_list = Tri::No;
                 }
+                // (past PHP_INT_MAX there is no next index)
                 if offset >= max {
+                    let next = offset.checked_add(1);
                     if !optional {
-                        a.next_auto_indexes = vec![offset + 1];
+                        a.next_auto_indexes = next.into_iter().collect();
                     } else {
-                        a.next_auto_indexes.push(offset + 1);
+                        a.next_auto_indexes.extend(next);
                     }
                 }
             }

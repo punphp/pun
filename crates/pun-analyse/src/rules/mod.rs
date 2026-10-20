@@ -1734,6 +1734,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_binary(&mut self, b: &'ast Binary<'arena>, c: &mut ()) {
         types::binary(self, b);
+        types::binary_operation(self, b);
         dead_code::binary(self, b);
         operators::binary(self, b);
         if matches!(b.operator, BinaryOperator::Instanceof(_)) {
@@ -1781,8 +1782,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::assignment(self, a);
         assign::property_assign_ref(self, a);
         types::assignment(self, a);
-        operators::assignment(self, a);
         types::property_assignment(self, a);
+        types::offset_assignment(self, a);
+        types::assign_operation(self, a);
+        operators::assignment(self, a);
         if let AssignmentOperator::Assign(_) = a.operator {
             arrays::destructuring(self, a.lhs, true);
         }
