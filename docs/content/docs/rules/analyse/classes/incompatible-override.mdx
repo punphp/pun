@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/classes/incompatible-override" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -32,6 +32,7 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 - [`MissingOverrideAttribute`](https://mago.carthage.software/1.57.0/en/tools/analyzer/overview/) (mago-analyzer).
 - [`impureFunction.pure`](https://phpstan.org/error-identifiers/impureFunction.pure) (phpstan).
 - [`impureMethod.pure`](https://phpstan.org/error-identifiers/impureMethod.pure) (phpstan).
+- [`impurePropertyHook.pure`](https://phpstan.org/error-identifiers/impurePropertyHook.pure) (phpstan).
 - [`method.abstractOverridingNonAbstract`](https://phpstan.org/error-identifiers/method.abstractOverridingNonAbstract) (phpstan).
 - [`method.childParameterType`](https://phpstan.org/error-identifiers/method.childParameterType) (phpstan).
 - [`method.childReturnType`](https://phpstan.org/error-identifiers/method.childReturnType) (phpstan).
@@ -41,6 +42,7 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 - [`method.deprecatedTrait`](https://phpstan.org/error-identifiers/method.deprecatedTrait) (phpstan).
 - [`method.impure`](https://phpstan.org/error-identifiers/method.impure) (phpstan).
 - [`method.impureOverridePureUnlessCallable`](https://phpstan.org/error-identifiers/method.impureOverridePureUnlessCallable) (phpstan).
+- [`method.impureOverridePureUnlessParameterPassed`](https://phpstan.org/error-identifiers/method.impureOverridePureUnlessParameterPassed) (phpstan).
 - [`method.internal`](https://phpstan.org/error-identifiers/method.internal) (phpstan).
 - [`method.internalClass`](https://phpstan.org/error-identifiers/method.internalClass) (phpstan).
 - [`method.internalEnum`](https://phpstan.org/error-identifiers/method.internalEnum) (phpstan).

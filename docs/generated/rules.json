@@ -2744,7 +2744,7 @@
       "upstream": [
         "heredoc_closing_marker"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "format/strings/heredoc-indentation",
@@ -3563,7 +3563,7 @@
         "IllegalConstructorStaticCallRule",
         "PHPStan\\Rules\\Methods\\IllegalConstructorStaticCallRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/classes/no-underscore-class",
@@ -4186,7 +4186,7 @@
         "BooleanNotIdenticalToNotIdenticalRector",
         "Rector\\CodeQuality\\Rector\\Identical\\BooleanNotIdenticalToNotIdenticalRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-negated-group",
@@ -4541,7 +4541,7 @@
         "TernaryEmptyArrayArrayDimFetchToCoalesce",
         "TernaryEmptyArrayArrayDimFetchToCoalesceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-coalesce-over-foreach",
@@ -4877,7 +4877,7 @@
         "SortAttributeNamedArgs",
         "SortAttributeNamedArgsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/require-consistent-return",
@@ -4937,7 +4937,7 @@
         "SortCallLikeNamedArgs",
         "SortCallLikeNamedArgsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/require-previous-exception",
@@ -5034,7 +5034,7 @@
         "PHPStan\\Rules\\ForLoop\\OverwriteVariablesWithForLoopInitRule",
         "for.variableOverwrite"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/control-flow/no-loop-variable-overwrite",
@@ -5056,7 +5056,7 @@
         "foreach.keyOverwrite",
         "foreach.valueOverwrite"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/control-flow/no-return-assignment",
@@ -5470,7 +5470,7 @@
         "RemoveDeadCatch",
         "RemoveDeadCatchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-dead-php-version-check",
@@ -5772,7 +5772,7 @@
         "RemoveNullArgOnNullDefaultParam",
         "RemoveNullArgOnNullDefaultParamRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-null-default-named-argument",
@@ -5792,7 +5792,7 @@
         "RemoveNullNamedArgOnNullDefaultParam",
         "RemoveNullNamedArgOnNullDefaultParamRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-null-tag-value",
@@ -5812,7 +5812,7 @@
         "RemoveNullTagValueNode",
         "RemoveNullTagValueNodeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-overwritten-assignment",
@@ -5852,7 +5852,7 @@
         "RemoveParentCallWithoutParent",
         "RemoveParentCallWithoutParentRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-redundant-condition",
@@ -6094,7 +6094,7 @@
         "RemoveUnusedConstructorParam",
         "RemoveUnusedConstructorParamRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-expression",
@@ -6172,7 +6172,7 @@
         "RemoveUnusedPrivateClassConstant",
         "RemoveUnusedPrivateClassConstantRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-private-method",
@@ -6252,7 +6252,7 @@
         "RemoveUnusedPromotedProperty",
         "RemoveUnusedPromotedPropertyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-public-method-param",
@@ -6556,7 +6556,7 @@
         "SimplifyUselessVariable",
         "SimplifyUselessVariableRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/functions/no-assign-in-argument",
@@ -6828,7 +6828,7 @@
         "StrictFunctionCallsRule",
         "function.strict"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/functions/require-strict-in-array",
@@ -7189,7 +7189,7 @@
       "upstream": [
         "no-request-all"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-useless-value-call",
@@ -7292,7 +7292,7 @@
         "RectorLaravel\\Rector\\Class_\\AnonymousMigrationsRector",
         "prefer-anonymous-migration"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-appends-attribute",
@@ -7388,7 +7388,7 @@
       "upstream": [
         "prefer-casts-method"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-class-container-key",
@@ -7563,7 +7563,7 @@
         "CarbonToDateFacadeRector",
         "RectorLaravel\\Rector\\StaticCall\\CarbonToDateFacadeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-date-format-attribute",
@@ -7622,7 +7622,7 @@
         "ApplyDefaultInsteadOfNullCoalesceRector",
         "RectorLaravel\\Rector\\Coalesce\\ApplyDefaultInsteadOfNullCoalesceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-delay-attribute",
@@ -7803,7 +7803,7 @@
         "JsonCallToExplicitJsonCallRector",
         "RectorLaravel\\Rector\\MethodCall\\JsonCallToExplicitJsonCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-facade-over-app",
@@ -8016,7 +8016,7 @@
         "OptionalToNullsafeOperatorRector",
         "RectorLaravel\\Rector\\PropertyFetch\\OptionalToNullsafeOperatorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-preserve-keys-attribute",
@@ -8136,7 +8136,7 @@
         "RequestVariablesToRequestFacade",
         "RequestVariablesToRequestFacadeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-request-server",
@@ -8197,7 +8197,7 @@
         "AppToResolveRector",
         "RectorLaravel\\Rector\\FuncCall\\AppToResolveRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-session-facade",
@@ -8458,7 +8458,7 @@
         "CarbonSetTestNowToTravelToRector",
         "RectorLaravel\\Rector\\StaticCall\\CarbonSetTestNowToTravelToRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-tries-attribute",
@@ -8708,7 +8708,7 @@
         "equal.notAllowed",
         "notEqual.notAllowed"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/operators/no-useless-nullsafe",
@@ -13362,7 +13362,7 @@
         "RemoveDebugExpectationsRector",
         "no-debug-symbols"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/security/no-eval",
@@ -14622,7 +14622,7 @@
         "CatchExceptionNameMatchingTypeRector",
         "Rector\\CodingStyle\\Rector\\Catch_\\CatchExceptionNameMatchingTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-class-constant",
@@ -14664,7 +14664,7 @@
         "UseClassKeywordForClassNameResolution",
         "UseClassKeywordForClassNameResolutionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-class-keyword-on-object",
@@ -15117,7 +15117,7 @@
         "CallUserFuncArrayToVariadicRector",
         "Rector\\CodingStyle\\Rector\\FuncCall\\CallUserFuncArrayToVariadicRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-static-private-method",
@@ -15176,7 +15176,7 @@
         "FuncGetArgsToVariadicParamRector",
         "Rector\\CodingStyle\\Rector\\ClassMethod\\FuncGetArgsToVariadicParamRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-while-loop",
@@ -15410,7 +15410,7 @@
         "MakeInheritedMethodVisibilitySameAsParentRector",
         "Rector\\CodingStyle\\Rector\\ClassMethod\\MakeInheritedMethodVisibilitySameAsParentRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-phpdoc",
@@ -15657,7 +15657,7 @@
         "MergeDateTimePropertyTypeDeclarationRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\MergeDateTimePropertyTypeDeclarationRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-doctrine-repository-return-type",
@@ -16217,7 +16217,7 @@
         "AddParamStringTypeFromSprintfUseRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamStringTypeFromSprintfUseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-variable-call",
@@ -17584,7 +17584,7 @@
         "PHPStan\\Rules\\Methods\\WrongCaseOfInheritedMethodRule",
         "WrongCaseOfInheritedMethodRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/casts/unset-not-supported",
@@ -17930,7 +17930,7 @@
         "PHPStan\\Rules\\StrictCalls\\DynamicCallOnStaticMethodsRule",
         "staticMethod.dynamicCall"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/dynamic-static-callable",
@@ -17951,7 +17951,7 @@
         "DynamicCallOnStaticMethodsCallableRule",
         "PHPStan\\Rules\\StrictCalls\\DynamicCallOnStaticMethodsCallableRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/enum-case-outside-enum",
@@ -18070,7 +18070,7 @@
         "PHPStan\\Rules\\Properties\\GetNonVirtualPropertyHookReadRule",
         "propertyGetHook.noRead"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/inaccessible-class-constant",
@@ -18213,6 +18213,7 @@
         "impure%s.pure",
         "impureFunction.pure",
         "impureMethod.pure",
+        "impurePropertyHook.pure",
         "method.%s",
         "method.abstractOverridingNonAbstract",
         "method.childParameterType",
@@ -18223,6 +18224,7 @@
         "method.deprecatedTrait",
         "method.impure",
         "method.impureOverridePureUnlessCallable",
+        "method.impureOverridePureUnlessParameterPassed",
         "method.internal",
         "method.internalClass",
         "method.internalEnum",
@@ -18244,7 +18246,7 @@
         "parameter.notVariadic",
         "parameter.variadic"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/incompatible-property-override",
@@ -18301,7 +18303,7 @@
         "property.static",
         "property.visibility"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/inconsistent-constructor",
@@ -18324,7 +18326,7 @@
         "ConsistentConstructorRule",
         "PHPStan\\Rules\\Methods\\ConsistentConstructorRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/internal-constant-access",
@@ -18348,7 +18350,7 @@
         "RestrictedClassConstantUsageRule",
         "classConstant.internal"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/internal-method-call",
@@ -18394,7 +18396,7 @@
         "PHPStan\\Rules\\RestrictedUsage\\RestrictedMethodCallableUsageRule",
         "RestrictedMethodCallableUsageRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/internal-property-access",
@@ -18417,7 +18419,7 @@
         "PHPStan\\Rules\\RestrictedUsage\\RestrictedPropertyUsageRule",
         "RestrictedPropertyUsageRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/internal-static-method-call",
@@ -18463,7 +18465,7 @@
         "PHPStan\\Rules\\RestrictedUsage\\RestrictedStaticMethodCallableUsageRule",
         "RestrictedStaticMethodCallableUsageRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/internal-static-property-access",
@@ -18497,7 +18499,7 @@
         "staticProperty.internalTrait",
         "staticProperty.protected"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/invalid-dynamic-constant-fetch",
@@ -18522,7 +18524,7 @@
         "classConstant.dynamicFetch",
         "classConstant.nameType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/invalid-enum",
@@ -18890,7 +18892,7 @@
         "propertySetHook.nativeParameterType",
         "propertySetHook.parameterType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/invalid-readonly-property",
@@ -18991,7 +18993,7 @@
         "RequireParentConstructCallRule",
         "constructor.missingParentCall"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/missing-required-interface",
@@ -19014,7 +19016,7 @@
         "RequireImplementsRule",
         "class.missingImplements"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/missing-required-parent",
@@ -19040,7 +19042,7 @@
         "RequireExtendsRule",
         "class.missingExtends"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/missing-serialize-methods",
@@ -19112,7 +19114,7 @@
         "PHPStan\\Rules\\Classes\\NewStaticInAbstractClassStaticMethodRule",
         "new.staticInAbstractClassStaticMethod"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/non-public-interface-method",
@@ -19183,7 +19185,7 @@
         "ReadingWriteOnlyPropertiesRule",
         "property.writeOnly"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/readonly-class-not-supported",
@@ -19230,7 +19232,7 @@
         "SetNonVirtualPropertyHookAssignRule",
         "propertySetHook.noAssign"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/typed-constant-not-supported",
@@ -19280,7 +19282,7 @@
         "assign.readOnlyPropertyByPhpDoc",
         "property.uninitializedReadonlyByPhpDoc"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/uninitialized-property",
@@ -19307,7 +19309,7 @@
         "UninitializedPropertyRule",
         "property.uninitialized"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/uninitialized-readonly",
@@ -19331,7 +19333,7 @@
         "PHPStan\\Rules\\Properties\\MissingReadOnlyPropertyAssignRule",
         "property.uninitializedReadonly"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/unsafe-new-static",
@@ -19589,7 +19591,7 @@
         "BooleanAndConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\BooleanAndConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/boolean-not-always-constant",
@@ -19610,7 +19612,7 @@
         "BooleanNotConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\BooleanNotConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/boolean-or-always-constant",
@@ -19631,7 +19633,7 @@
         "BooleanOrConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\BooleanOrConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/call-condition-always-constant",
@@ -19750,7 +19752,7 @@
         "DoWhileLoopConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\DoWhileLoopConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/elseif-always-constant",
@@ -19771,7 +19773,7 @@
         "ElseIfConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\ElseIfConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/finally-overrides-exit",
@@ -19793,7 +19795,7 @@
         "PHPStan\\Rules\\Exceptions\\OverwrittenExitPointByFinallyRule",
         "finally.exitPoint"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/if-always-constant",
@@ -19814,7 +19816,7 @@
         "IfConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\IfConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/impossible-in-array",
@@ -19860,7 +19862,7 @@
         "instanceof.alwaysTrue",
         "instanceof.invalidExprType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/impossible-method-type-check",
@@ -19957,7 +19959,7 @@
         "ConstantLooseComparisonRule",
         "PHPStan\\Rules\\Comparison\\ConstantLooseComparisonRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/number-comparison-always-constant",
@@ -20029,7 +20031,7 @@
         "ternary.alwaysFalse",
         "ternary.alwaysTrue"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/pure-function-result-unused",
@@ -20050,7 +20052,7 @@
         "CallToFunctionStatementWithoutSideEffectsRule",
         "PHPStan\\Rules\\Functions\\CallToFunctionStatementWithoutSideEffectsRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/pure-method-result-unused",
@@ -20071,7 +20073,7 @@
         "CallToMethodStatementWithoutSideEffectsRule",
         "PHPStan\\Rules\\Methods\\CallToMethodStatementWithoutSideEffectsRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/pure-new-result-unused",
@@ -20092,7 +20094,7 @@
         "CallToConstructorStatementWithoutSideEffectsRule",
         "PHPStan\\Rules\\Methods\\CallToConstructorStatementWithoutSideEffectsRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/pure-static-method-result-unused",
@@ -20113,7 +20115,7 @@
         "CallToStaticMethodStatementWithoutSideEffectsRule",
         "PHPStan\\Rules\\Methods\\CallToStaticMethodStatementWithoutSideEffectsRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/redundant-null-coalesce",
@@ -20142,6 +20144,31 @@
       "ported": false
     },
     {
+      "id": "analyse/dead-code/sort-without-effect",
+      "command": "analyse",
+      "group": "dead-code",
+      "summary": "",
+      "enabled": [
+        "analyse-recommended",
+        "analyse-strict",
+        "analyse-max"
+      ],
+      "fix": "none",
+      "ecosystem": "core",
+      "tools": [
+        "phpstan"
+      ],
+      "upstream": [
+        "PHPStan\\Rules\\Functions\\SortWithoutEffectRule",
+        "SortWithoutEffectRule",
+        "sortArray.%s",
+        "sortArray.empty",
+        "sortArray.list",
+        "sortArray.noop"
+      ],
+      "ported": false
+    },
+    {
       "id": "analyse/dead-code/strict-comparison-always-constant",
       "command": "analyse",
       "group": "dead-code",
@@ -20159,6 +20186,30 @@
       "upstream": [
         "PHPStan\\Rules\\Comparison\\StrictComparisonOfDifferentTypesRule",
         "StrictComparisonOfDifferentTypesRule"
+      ],
+      "ported": true
+    },
+    {
+      "id": "analyse/dead-code/switch-always-constant",
+      "command": "analyse",
+      "group": "dead-code",
+      "summary": "",
+      "enabled": [
+        "analyse-recommended",
+        "analyse-strict",
+        "analyse-max"
+      ],
+      "fix": "none",
+      "ecosystem": "core",
+      "tools": [
+        "phpstan"
+      ],
+      "upstream": [
+        "PHPStan\\Rules\\Comparison\\SwitchConditionRule",
+        "SwitchConditionRule",
+        "switch.alwaysFalse",
+        "switch.alwaysTrue",
+        "switch.duplicateCase"
       ],
       "ported": false
     },
@@ -20181,7 +20232,7 @@
         "PHPStan\\Rules\\Comparison\\TernaryOperatorConstantConditionRule",
         "TernaryOperatorConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/trait-condition-always-constant",
@@ -20228,7 +20279,7 @@
         "UnreachableStatementRule",
         "deadCode.unreachable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-argument",
@@ -20274,9 +20325,10 @@
       "upstream": [
         "PHPStan\\Rules\\Functions\\UnusedClosureUsesRule",
         "UnusedClosureUsesRule",
-        "closure.unusedUse"
+        "closure.unusedUse",
+        "closure.unusedUseFlow"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-constructor-parameter",
@@ -20298,7 +20350,31 @@
       "upstream": [
         "PHPStan\\Rules\\Classes\\UnusedConstructorParametersRule",
         "UnusedConstructorParametersRule",
-        "constructor.unusedParameter"
+        "constructor.unusedParameter",
+        "constructor.unusedParameterFlow"
+      ],
+      "ported": true
+    },
+    {
+      "id": "analyse/dead-code/unused-function-parameter",
+      "command": "analyse",
+      "group": "dead-code",
+      "summary": "",
+      "enabled": [
+        "analyse-recommended",
+        "analyse-strict",
+        "analyse-max"
+      ],
+      "fix": "none",
+      "ecosystem": "core",
+      "tools": [
+        "phpstan"
+      ],
+      "upstream": [
+        "PHPStan\\Rules\\Functions\\UnusedFunctionParametersRule",
+        "UnusedFunctionParametersRule",
+        "function.unusedParameter",
+        "function.unusedParameterFlow"
       ],
       "ported": false
     },
@@ -20343,6 +20419,29 @@
         "PHPStan\\Rules\\Keywords\\UnusedLabelRule",
         "UnusedLabelRule",
         "label.unused"
+      ],
+      "ported": true
+    },
+    {
+      "id": "analyse/dead-code/unused-method-parameter",
+      "command": "analyse",
+      "group": "dead-code",
+      "summary": "",
+      "enabled": [
+        "analyse-recommended",
+        "analyse-strict",
+        "analyse-max"
+      ],
+      "fix": "none",
+      "ecosystem": "core",
+      "tools": [
+        "phpstan"
+      ],
+      "upstream": [
+        "PHPStan\\Rules\\Methods\\UnusedMethodParametersRule",
+        "UnusedMethodParametersRule",
+        "method.unusedParameter",
+        "method.unusedParameterFlow"
       ],
       "ported": false
     },
@@ -20410,7 +20509,7 @@
         "UnusedPrivateConstantRule",
         "classConstant.unused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-private-method",
@@ -20434,7 +20533,7 @@
         "UnusedPrivateMethodRule",
         "method.unused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-private-property",
@@ -20463,7 +20562,7 @@
         "property.onlyWritten",
         "property.unused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-result",
@@ -20496,7 +20595,7 @@
         "logicalXor.resultUnused",
         "ternary.resultUnused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-static-method-result",
@@ -20540,6 +20639,28 @@
         "PHPStan\\Rules\\Traits\\NotAnalysedTraitRule",
         "Traits\\NotAnalysedTraitRule",
         "trait.unused"
+      ],
+      "ported": true
+    },
+    {
+      "id": "analyse/dead-code/unused-variable",
+      "command": "analyse",
+      "group": "dead-code",
+      "summary": "",
+      "enabled": [
+        "analyse-recommended",
+        "analyse-strict",
+        "analyse-max"
+      ],
+      "fix": "none",
+      "ecosystem": "core",
+      "tools": [
+        "phpstan"
+      ],
+      "upstream": [
+        "PHPStan\\Rules\\DeadCode\\UnusedVariableRule",
+        "UnusedVariableRule",
+        "assign.redundant"
       ],
       "ported": false
     },
@@ -20585,7 +20706,7 @@
         "WhileLoopAlwaysFalseConditionRule",
         "while.alwaysFalse"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/while-always-true",
@@ -20607,7 +20728,7 @@
         "WhileLoopAlwaysTrueConditionRule",
         "while.alwaysTrue"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/xor-always-constant",
@@ -20652,7 +20773,7 @@
         "logicalXor.rightAlwaysFalse",
         "logicalXor.rightAlwaysTrue"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/debug/assert-type",
@@ -20852,7 +20973,7 @@
         "RestrictedDeprecatedClassNameUsageExtension",
         "class.deprecated"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/class-constant",
@@ -20878,7 +20999,7 @@
         "classConstant.deprecated",
         "enumCase.deprecated"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/constant",
@@ -20903,7 +21024,7 @@
         "PHPStan\\Rules\\Deprecations\\FetchingDeprecatedConstRule",
         "constant.deprecated"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/function",
@@ -20928,7 +21049,7 @@
         "RestrictedDeprecatedFunctionUsageExtension",
         "function.deprecated"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/ini-option",
@@ -20950,7 +21071,7 @@
         "CallWithDeprecatedIniOptionRule",
         "PHPStan\\Rules\\Deprecations\\CallWithDeprecatedIniOptionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/method",
@@ -20976,7 +21097,7 @@
         "method.deprecated",
         "staticMethod.deprecated"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/property",
@@ -21002,7 +21123,7 @@
         "property.deprecated",
         "staticProperty.deprecated"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/to-string",
@@ -21027,7 +21148,7 @@
         "RestrictedUsageOfDeprecatedStringCastRule",
         "class.toStringDeprecated"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/closure-uses-this",
@@ -21051,7 +21172,7 @@
         "ClosureUsesThisRule",
         "PHPStan\\Rules\\Functions\\ClosureUsesThisRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/conflicting-filter-var-flags",
@@ -21075,7 +21196,7 @@
         "PHPStan\\Rules\\Functions\\FilterVarRule",
         "filterVar.nullOnFailureAndThrowOnFailure"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/duplicate-parameter",
@@ -21122,7 +21243,7 @@
         "PHPStan\\Rules\\RestrictedUsage\\RestrictedFunctionUsageRule",
         "RestrictedFunctionUsageRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/internal-function-callable",
@@ -21146,7 +21267,7 @@
         "RestrictedFunctionCallableUsageRule",
         "function.internal"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/invalid-callable-call",
@@ -21307,13 +21428,23 @@
         "possiblyImpure.superglobal",
         "possiblyImpure.yield",
         "possiblyImpure.yieldFrom",
+        "pure%s.nonOptionalParameterPassed",
         "pure%s.parameterByRef",
+        "pure%s.parameterPassedNotByRef",
         "pure%s.redundantUnlessCallable",
         "pure%s.void",
+        "pureFunction.nonOptionalParameterPassed",
         "pureFunction.parameterByRef",
+        "pureFunction.parameterPassedNotByRef",
         "pureFunction.redundantUnlessCallable",
+        "pureMethod.nonOptionalParameterPassed",
         "pureMethod.parameterByRef",
+        "pureMethod.parameterPassedNotByRef",
         "pureMethod.redundantUnlessCallable",
+        "purePropertyHook.nonOptionalParameterPassed",
+        "purePropertyHook.parameterByRef",
+        "purePropertyHook.parameterPassedNotByRef",
+        "purePropertyHook.redundantUnlessCallable",
         "void.pure"
       ],
       "ported": false
@@ -21337,6 +21468,28 @@
       "upstream": [
         "PHPStan\\Rules\\Pure\\PureMethodRule",
         "PureMethodRule"
+      ],
+      "ported": false
+    },
+    {
+      "id": "analyse/functions/invalid-pure-property-hook",
+      "command": "analyse",
+      "group": "functions",
+      "summary": "",
+      "enabled": [
+        "analyse-essential",
+        "analyse-recommended",
+        "analyse-strict",
+        "analyse-max"
+      ],
+      "fix": "none",
+      "ecosystem": "core",
+      "tools": [
+        "phpstan"
+      ],
+      "upstream": [
+        "PHPStan\\Rules\\Pure\\PurePropertyHookRule",
+        "PurePropertyHookRule"
       ],
       "ported": false
     },
@@ -21892,7 +22045,7 @@
         "logicalOr.leftNotBoolean",
         "logicalOr.rightNotBoolean"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-boolean-not-operand",
@@ -21914,7 +22067,7 @@
         "PHPStan\\Rules\\BooleansInConditions\\BooleanInBooleanNotRule",
         "booleanNot.exprNotBoolean"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-boolean-or-operand",
@@ -21935,7 +22088,7 @@
         "BooleanInBooleanOrRule",
         "PHPStan\\Rules\\BooleansInConditions\\BooleanInBooleanOrRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-addition",
@@ -21958,7 +22111,7 @@
         "plus.leftNonNumeric",
         "plus.rightNonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-division",
@@ -21981,7 +22134,7 @@
         "div.leftNonNumeric",
         "div.rightNonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-exponentiation",
@@ -22004,7 +22157,7 @@
         "pow.leftNonNumeric",
         "pow.rightNonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-modulo",
@@ -22027,7 +22180,7 @@
         "mod.leftNonNumeric",
         "mod.rightNonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-multiplication",
@@ -22050,7 +22203,7 @@
         "mul.leftNonNumeric",
         "mul.rightNonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-post-decrement",
@@ -22071,7 +22224,7 @@
         "OperandInArithmeticPostDecrementRule",
         "PHPStan\\Rules\\Operators\\OperandInArithmeticPostDecrementRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-post-increment",
@@ -22092,7 +22245,7 @@
         "OperandInArithmeticPostIncrementRule",
         "PHPStan\\Rules\\Operators\\OperandInArithmeticPostIncrementRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-pre-decrement",
@@ -22113,7 +22266,7 @@
         "OperandInArithmeticPreDecrementRule",
         "PHPStan\\Rules\\Operators\\OperandInArithmeticPreDecrementRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-pre-increment",
@@ -22134,7 +22287,7 @@
         "OperandInArithmeticPreIncrementRule",
         "PHPStan\\Rules\\Operators\\OperandInArithmeticPreIncrementRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-subtraction",
@@ -22157,7 +22310,7 @@
         "minus.leftNonNumeric",
         "minus.rightNonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-unary-minus",
@@ -22184,7 +22337,7 @@
         "preInc.nonNumeric",
         "unaryMinus.nonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/operators/non-numeric-unary-plus",
@@ -22206,7 +22359,7 @@
         "PHPStan\\Rules\\Operators\\OperandInArithmeticUnaryPlusRule",
         "unaryPlus.nonNumeric"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/constant-type-mismatch",
@@ -22229,7 +22382,7 @@
         "PHPStan\\Rules\\PhpDoc\\IncompatibleClassConstantPhpDocTypeRule",
         "classConstant.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/hook-type-mismatch",
@@ -22251,7 +22404,7 @@
         "IncompatiblePropertyHookPhpDocTypeRule",
         "PHPStan\\Rules\\PhpDoc\\IncompatiblePropertyHookPhpDocTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid",
@@ -22276,7 +22429,7 @@
         "PHPStan\\Rules\\PhpDoc\\InvalidPhpDocTagValueRule",
         "phpDoc.parseError"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-assert-tag",
@@ -22303,7 +22456,7 @@
         "assert.unknownExpr",
         "assert.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-conditional-return",
@@ -22327,7 +22480,7 @@
         "conditionalType.always%s",
         "conditionalType.subjectNotFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-method-assert-tag",
@@ -22349,7 +22502,7 @@
         "MethodAssertRule",
         "PHPStan\\Rules\\PhpDoc\\MethodAssertRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-method-conditional-return",
@@ -22371,7 +22524,7 @@
         "MethodConditionalReturnTypeRule",
         "PHPStan\\Rules\\PhpDoc\\MethodConditionalReturnTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-method-tag",
@@ -22395,7 +22548,7 @@
         "methodTag.trait",
         "methodTag.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-mixin-tag",
@@ -22420,7 +22573,7 @@
         "mixin.trait",
         "mixin.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-param-callable-tag",
@@ -22448,7 +22601,7 @@
         "paramLaterInvokedCallable.nonCallable",
         "parameter.notFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-phpstan-tag",
@@ -22471,7 +22624,7 @@
         "PHPStan\\Rules\\PhpDoc\\InvalidPHPStanDocTagRule",
         "phpDoc.phpstanTag"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-property-tag",
@@ -22495,7 +22648,7 @@
         "propertyTag.trait",
         "propertyTag.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-require-tag",
@@ -22540,7 +22693,7 @@
         "requireImplements.onTrait",
         "requireImplements.trait"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-sealed-tag",
@@ -22564,7 +22717,7 @@
         "sealed.nonObject",
         "sealed.onEnum"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-method-tag",
@@ -22586,7 +22739,7 @@
         "MethodTagTraitRule",
         "PHPStan\\Rules\\Classes\\MethodTagTraitRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-mixin-tag",
@@ -22608,7 +22761,7 @@
         "MixinTraitRule",
         "PHPStan\\Rules\\Classes\\MixinTraitRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-property-tag",
@@ -22630,7 +22783,7 @@
         "PHPStan\\Rules\\Classes\\PropertyTagTraitRule",
         "PropertyTagTraitRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-require-extends",
@@ -22652,7 +22805,7 @@
         "PHPStan\\Rules\\PhpDoc\\RequireExtendsDefinitionTraitRule",
         "RequireExtendsDefinitionTraitRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-require-implements",
@@ -22675,7 +22828,7 @@
         "RequireImplementsDefinitionTraitRule",
         "requireImplements.nonObject"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-type-alias",
@@ -22720,7 +22873,7 @@
         "MethodTagTraitUseRule",
         "PHPStan\\Rules\\Classes\\MethodTagTraitUseRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-use-mixin-tag",
@@ -22742,7 +22895,7 @@
         "MixinTraitUseRule",
         "PHPStan\\Rules\\Classes\\MixinTraitUseRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-use-property-tag",
@@ -22764,7 +22917,7 @@
         "PHPStan\\Rules\\Classes\\PropertyTagTraitUseRule",
         "PropertyTagTraitUseRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-trait-use-type-alias",
@@ -22868,7 +23021,7 @@
         "varTag.trait",
         "varTag.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/misplaced-require-implements",
@@ -22890,7 +23043,7 @@
         "PHPStan\\Rules\\PhpDoc\\RequireImplementsDefinitionClassRule",
         "RequireImplementsDefinitionClassRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/property-type-mismatch",
@@ -22914,7 +23067,7 @@
         "callable.shadowTemplate",
         "property.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/sealed-on-trait",
@@ -22967,7 +23120,7 @@
         "return.phpDocType",
         "return.unresolvableType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/var-tag-type-mismatch",
@@ -23278,6 +23431,7 @@
         "nullableType.void",
         "pureFunction.void",
         "pureMethod.void",
+        "purePropertyHook.void",
         "staticMethod.unresolvableReturnType",
         "staticMethod.void",
         "unionType.void"
@@ -23369,7 +23523,7 @@
         "IncompatibleArrowFunctionDefaultParameterTypeRule",
         "PHPStan\\Rules\\Functions\\IncompatibleArrowFunctionDefaultParameterTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/arrow-function-return",
@@ -23393,7 +23547,7 @@
         "return.empty",
         "return.void"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/assign-to-this",
@@ -23542,7 +23696,7 @@
         "VariableCloningRule",
         "clone.nonObject"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/closure-param-default",
@@ -23564,7 +23718,7 @@
         "IncompatibleClosureDefaultParameterTypeRule",
         "PHPStan\\Rules\\Functions\\IncompatibleClosureDefaultParameterTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/closure-return",
@@ -23586,7 +23740,7 @@
         "ClosureReturnTypeRule",
         "PHPStan\\Rules\\Functions\\ClosureReturnTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/constant-value",
@@ -23682,7 +23836,7 @@
         "PHPStan\\Rules\\Cast\\EchoRule",
         "echo.nonString"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/enum-template-not-allowed",
@@ -23736,7 +23890,7 @@
         "PossiblyNullIterator",
         "foreach.nonIterable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/foreach-on-empty-array",
@@ -23758,7 +23912,7 @@
         "PHPStan\\Rules\\Arrays\\DeadForeachRule",
         "foreach.emptyArray"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/function-return",
@@ -23781,7 +23935,7 @@
         "PHPStan\\Rules\\Functions\\ReturnTypeRule",
         "ReturnTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/function-variance",
@@ -23835,7 +23989,7 @@
         "generator.valueType",
         "generator.void"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/implode-non-string",
@@ -23879,7 +24033,7 @@
         "PHPStan\\Rules\\Cast\\InvalidPartOfEncapsedStringRule",
         "encapsedStringPart.nonString"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-arrow-function-signature",
@@ -23984,7 +24138,7 @@
         "cast.int",
         "cast.string"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-class-generics",
@@ -24126,7 +24280,7 @@
         "smallerOrEqual.invalid",
         "spaceship.invalid"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-enum-generics",
@@ -24388,7 +24542,7 @@
         "PossiblyNullArrayIndex",
         "offsetAccess.invalidOffset"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-pipe",
@@ -24494,7 +24648,7 @@
         "RegularExpressionPatternRule",
         "regexp.pattern"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-self-out-tag",
@@ -24632,7 +24786,7 @@
         "PHPStan\\Rules\\Operators\\InvalidUnaryOperationRule",
         "unaryOp.invalid"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-union-type",
@@ -24740,7 +24894,7 @@
         "Methods\\IncompatibleDefaultParameterTypeRule",
         "PHPStan\\Rules\\Methods\\IncompatibleDefaultParameterTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/method-variance",
@@ -24961,7 +25115,7 @@
         "return.missing",
         "return.never"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/missing-return-type",
@@ -25144,7 +25298,7 @@
         "PHPStan\\Rules\\Functions\\IncompatibleDefaultParameterTypeRule",
         "parameter.defaultValue"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/param-out",
@@ -25260,7 +25414,7 @@
         "PrintRule",
         "print.nonString"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/printf-argument",
@@ -25336,7 +25490,7 @@
         "PHPStan\\Rules\\Properties\\DefaultValueTypesAssignedToPropertiesRule",
         "property.defaultValue"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/property-variance",
@@ -25554,6 +25708,29 @@
         "ReturnTypeRule",
         "return.type"
       ],
+      "ported": true
+    },
+    {
+      "id": "analyse/types/return-by-ref-finally",
+      "command": "analyse",
+      "group": "types",
+      "summary": "",
+      "enabled": [
+        "analyse-essential",
+        "analyse-recommended",
+        "analyse-strict",
+        "analyse-max"
+      ],
+      "fix": "none",
+      "ecosystem": "core",
+      "tools": [
+        "phpstan"
+      ],
+      "upstream": [
+        "PHPStan\\Rules\\Functions\\ReturnTypeAfterFinallyRule",
+        "ReturnTypeAfterFinallyRule",
+        "return.byRefFinally"
+      ],
       "ported": false
     },
     {
@@ -25648,7 +25825,7 @@
         "ThrowExprTypeRule",
         "throw.notThrowable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/throws-not-covariant",
@@ -25928,7 +26105,7 @@
         "UnpackIterableInArrayRule",
         "arrayUnpacking.nonIterable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/unpack-string-key",
@@ -25951,7 +26128,7 @@
         "PHPStan\\Rules\\Arrays\\ArrayUnpackingRule",
         "arrayUnpacking.stringOffset"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/unused-hook-throws-type",
@@ -26062,7 +26239,7 @@
         "UsageOfVoidMatchExpressionRule",
         "match.void"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/write-to-readonly-property",
@@ -26114,7 +26291,7 @@
         "generator.nonIterable",
         "generator.sendType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/yield-outside-function",
@@ -26140,7 +26317,7 @@
         "generator.outOfFunction",
         "generator.returnType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/assigned-property",
@@ -26296,7 +26473,7 @@
         "PHPStan\\Rules\\Constants\\ConstantRule",
         "constant.notFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/function",
@@ -26322,7 +26499,7 @@
         "PHPStan\\Rules\\Functions\\CallToNonExistentFunctionRule",
         "function.notFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/goto-label",
@@ -26379,7 +26556,7 @@
         "interface.nameCase",
         "trait.nameCase"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/import",
@@ -26402,7 +26579,7 @@
         "ExistingNamesInUseRule",
         "PHPStan\\Rules\\Namespaces\\ExistingNamesInUseRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/include-file",
@@ -26487,6 +26664,7 @@
         "PHPStan\\Rules\\Methods\\CallMethodsRule",
         "PossiblyNonExistentMethod",
         "checkThisOnly",
+        "method.nameNotString",
         "method.notFound",
         "reportMagicMethods"
       ],
@@ -26580,6 +26758,7 @@
         "staticMethod.internalEnum",
         "staticMethod.internalInterface",
         "staticMethod.internalTrait",
+        "staticMethod.nameNotString",
         "staticMethod.notFound",
         "staticMethod.private",
         "staticMethod.protected"
@@ -26608,6 +26787,7 @@
         "AccessStaticPropertiesRule",
         "NonExistentProperty",
         "PHPStan\\Rules\\Properties\\AccessStaticPropertiesRule",
+        "staticProperty.nameNotString",
         "staticProperty.notFound"
       ],
       "ported": true
@@ -26668,6 +26848,7 @@
         "UndefinedVariable",
         "UndefinedVariableInClosureUse",
         "checkMaybeUndefinedVariables",
+        "variable.nameNotString",
         "variable.undefined"
       ],
       "ported": false
