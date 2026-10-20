@@ -279,22 +279,7 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
 /// `getType()` of each parameter of a function-like from the codex (a callee in any file): its native type decided
 /// with its PHPDoc type (a method's inherited one too), `declaring` being the class-like declaring a method.
 pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Vec<Type> {
-    let doc = match declaring {
-        Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),
-        None => doc_at(c, f.span).map(|(doc, _)| {
-            let doc = Doc::parse(&doc);
-            let mut scope = scope_at(c, f.span, None);
-            let name = text(f.original_name.as_bytes());
-            for t in templates(&doc, &scope, &format!("function {name}()")) {
-                scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
-            }
-            Resolved {
-                params: doc.param_types(&scope).into_iter().map(|(k, (t, _))| (k, t)).collect(),
-                ..Resolved::default()
-            }
-        }),
-    }
-    .unwrap_or_default();
+    let doc = codex_doc(c, f, declaring);
     f.parameters
         .iter()
         .map(|p| {
@@ -325,6 +310,37 @@ pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&Cl
             }
         })
         .collect()
+}
+
+/// The `@param-closure-this` types of a function-like from the codex by parameter name (a method's inherited ones too).
+pub fn codex_closure_this(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> HashMap<String, Type> {
+    codex_doc(c, f, declaring).closure_this
+}
+
+/// The PHPDoc return type of a function-like from the codex (a method's inherited one too).
+pub fn codex_return(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Option<Type> {
+    codex_doc(c, f, declaring).ret
+}
+
+fn codex_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Resolved {
+    match declaring {
+        Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),
+        None => doc_at(c, f.span).map(|(doc, _)| {
+            let doc = Doc::parse(&doc);
+            let mut scope = scope_at(c, f.span, None);
+            let name = text(f.original_name.as_bytes());
+            for t in templates(&doc, &scope, &format!("function {name}()")) {
+                scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
+            }
+            Resolved {
+                params: doc.param_types(&scope).into_iter().map(|(k, (t, _))| (k, t)).collect(),
+                ret: doc.return_type(&scope),
+                closure_this: Doc::named_types(&doc.closure_this, &scope),
+                ..Resolved::default()
+            }
+        }),
+    }
+    .unwrap_or_default()
 }
 
 /// `TypehintHelper::decideTypeFromReflection()` of a native type declaration Mago's codex holds (the `TUnion` its

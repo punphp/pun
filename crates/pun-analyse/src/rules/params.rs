@@ -645,7 +645,7 @@ pub fn check<'a>(
     }
     let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
     if c.level >= 5 {
-        super::types::arguments(c, acceptor, &arguments, &parameters, &call);
+        super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call);
     }
 }
 

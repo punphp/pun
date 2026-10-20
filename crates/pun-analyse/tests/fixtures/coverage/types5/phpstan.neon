@@ -1,0 +1,7 @@
+parameters:
+    level: max
+    checkClassCaseSensitivity: false
+    phpVersion:
+        min: 80100
+        max: 80500
+    paths: [.]

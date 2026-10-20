@@ -4,7 +4,7 @@
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Level, Tri, Type};
+use pun_phpstan::types::{Level, Tri, Type, is_super_type_of};
 
 use super::super::reflection::Lookup;
 use super::super::{Checker, calls, declared, members, params};
@@ -230,9 +230,19 @@ pub(in super::super) fn method_call<'arena>(
     let subject = format!("{declaring}::{}()", method.name());
     let first_level = c.is_top_level(span);
     let counts = params::count(args);
+    let mut variants = method.variants();
+    // ClosureBindToVarVisitor: `$var->bindTo(...)` on a Closure
+    if method.name().eq_ignore_ascii_case("bindTo")
+        && !args.arguments.is_empty()
+        && let Expression::Variable(Variable::Direct(v)) = object
+        && declared::with_classes(c, || is_super_type_of(&Type::Object("Closure".into(), vec![]), &t).yes())
+    {
+        let var = String::from_utf8_lossy(&v.name[1..]);
+        variants = super::super::selector::closure_bind(c, &var, span.start.offset, 0, variants);
+    }
     params::check(
         c,
-        &params::select(c, method.variants(), &counts),
+        &params::select(c, variants, &counts),
         &counts,
         name,
         params::Call {

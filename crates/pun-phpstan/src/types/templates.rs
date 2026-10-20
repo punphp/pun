@@ -93,6 +93,11 @@ impl TemplateMap {
         self.types.iter().chain(lower).map(|((n, s), t)| (n.as_str(), s.as_str(), t)).collect()
     }
 
+    /// The type of template `name` of `scope` is an `AbsorbedTemplateArgumentType`.
+    pub fn is_absorbed(&self, name: &str, scope: &str) -> bool {
+        self.absorbed.iter().any(|(n, s)| n == name && s == scope)
+    }
+
     fn get(&self, t: &Template) -> Option<&Type> {
         self.types().into_iter().find(|(n, s, _)| *n == t.name && *s == t.scope).map(|(_, _, t)| t)
     }

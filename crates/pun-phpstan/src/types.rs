@@ -2375,7 +2375,7 @@ impl Conditional {
     }
 
     /// `isResolvable()`: no templates involved, or the subject's branch is certain (never for a parameter).
-    fn is_resolvable(&self) -> bool {
+    pub fn is_resolvable(&self) -> bool {
         let Subject::Type(subject) = &self.subject else {
             return false;
         };

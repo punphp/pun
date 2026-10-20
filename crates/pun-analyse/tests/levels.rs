@@ -335,6 +335,7 @@ const PORTED: &[&str] = &[
     "callable.void",
     "argument.byRef",
     "argument.unpackNonIterable",
+    "argument.templateType",
     "method.nonObject",
     "method.notFound",
     "staticMethod.nonObject",
