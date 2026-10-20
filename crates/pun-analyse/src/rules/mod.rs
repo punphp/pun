@@ -86,6 +86,7 @@ pub(crate) use doc::{doc_before, tags as doc_tags};
 pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
 pub(crate) use dead_code::conditions_in_traits;
+pub(crate) use dead_code::impure_points;
 pub(crate) use larastan::finish as larastan_finish;
 pub(crate) use reflection::builtins;
 pub(crate) use unused_trait::unused_traits;
@@ -1402,6 +1403,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+        dead_code::impure_function(self, f);
         callable_tags::function_like(self, f.span(), &f.parameter_list);
         conditional_return::function(self, f);
         assert_tags::function(self, f);
@@ -1487,6 +1489,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.functions.pop();
     }
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+        dead_code::impure_method(self, m);
         phpdoc_tags::node(self, m.span());
         callable_tags::function_like(self, m.span(), &m.parameter_list);
         conditional_return::method(self, m);

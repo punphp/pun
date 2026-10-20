@@ -110,6 +110,8 @@ pub(in super::super) struct Facts {
     caught: HashMap<Span, Vec<Span>>,
     /// The matches in a function whose `@throws` tag covers UnhandledMatchError.
     throws: HashSet<Span>,
+    /// The variables holding only `new` objects of named classes, whose classes NewHandler makes final.
+    pub(in super::super) exact: HashSet<Span>,
 }
 
 pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
@@ -121,6 +123,7 @@ pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
     };
     if c.level >= 4 {
         pass.walk_program(program, &mut ());
+        pass.facts.exact = super::impure_points::exact_variables(program);
     }
     pass.facts
 }

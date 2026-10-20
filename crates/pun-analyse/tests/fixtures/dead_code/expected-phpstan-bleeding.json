@@ -716,6 +716,195 @@
    "tip": null
   },
   {
+   "file": "src/impure-points.php",
+   "line": 71,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 89,
+   "identifier": "throws.unusedType",
+   "message": "Function DeadCode\\ImpurePoints\\throwsTag() has Exception in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 132,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DeadCode\\ImpurePoints\\Box() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 157,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::hidden() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 168,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 169,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\dependsOnPure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 175,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\declaresClass() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 177,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\declares() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 181,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $i",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 182,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 183,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::viaThis() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 184,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::viaNew() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 186,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 187,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to DeadCode\\ImpurePoints\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 188,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to DeadCode\\ImpurePoints\\Box::viaStatic() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 189,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DeadCode\\ImpurePoints\\Box() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 194,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 198,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 199,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to DeadCode\\ImpurePoints\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 200,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 201,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 202,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"|>\" between 5 and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 202,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke int but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 203,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 205,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 207,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $fresh.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 218,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
    "file": "src/matches.php",
    "line": 13,
    "identifier": "match.unhandled",

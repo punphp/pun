@@ -72,93 +72,64 @@
 4 DeadCode/UnusedPrivateMethodRuleTest::testBug11802
 4 DeadCode/UnusedPrivatePropertyRuleTest::testBug11802
 
-# an-dead: CallTo*StatementWithoutImpurePointsRule (the collector rules reporting calls to bodies without impure points) is not
-# ported; its errors share the *.resultUnused identifiers
-4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testRule
-4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testTransitive
+# an-dead: CallTo*StatementWithoutImpurePointsRule: the treatPhpDocTypesAsCertain tip of the fixtures' is_int(); a union receiver's classes in PHPStan's order (the message names the last one)
 4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testRule
-4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testTransitive
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testRule
-4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testTransitive
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testBug11011
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/UnreachableStatementRuleTest::testBug13232a
 4 DeadCode/UnusedPrivateMethodRuleTest::testRule
-4 Exceptions/OverwrittenExitPointByFinallyRuleTest::testBug5627
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
-4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
 # an-dead: PHPStan's built-in throw-type extensions (DateTime*::createFromFormat, DateTimeImmutable::sub) make an explicit throw point
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testRule
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testBug11503
 4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testRule
 4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testBug10819
-# an-dead: impure-points rule calls (ParentClass::value()) and `$dynamic('used')` needing the callable string's type
 # an-types2: other rules' identifiers in the level-5/9 exports of the call and property rules (statement
 # NoDiscard and purity, return types, casts, dead code)
-5 Classes/InstantiationRuleTest::testBug4030
 5 Classes/InstantiationRuleTest::testBug7574
 5 Classes/InstantiationRuleTest::testFirstClassCallable
-5 Functions/CallToFunctionParametersRuleTest::testBug11559
-5 Functions/CallToFunctionParametersRuleTest::testBug13556
 5 Functions/CallToFunctionParametersRuleTest::testBug2343
 5 Functions/CallToFunctionParametersRuleTest::testBug2846
 5 Functions/CallToFunctionParametersRuleTest::testBug3608
 5 Functions/CallToFunctionParametersRuleTest::testBug3920
 5 Functions/CallToFunctionParametersRuleTest::testBug4608
 5 Functions/CallToFunctionParametersRuleTest::testBug9697
-5 Functions/CallToFunctionParametersRuleTest::testCallToFunctionInDoWhileLoop
 5 Functions/CallToFunctionParametersRuleTest::testCallUserFuncArray
 5 Functions/CallToFunctionParametersRuleTest::testConstantParameterCheck
-5 Functions/CallToFunctionParametersRuleTest::testUnionIterableTypeShouldAcceptTypeFromOtherTypes
-5 Functions/CallToFunctionParametersRuleTest::testVariableIsNotNullAfterSeriesOfConditions
 5 Functions/CallUserFuncRuleTest::testConstantParameterCheckCallUserFunc
 5 Functions/CallUserFuncRuleTest::testNoNamedArguments
 5 Functions/ParameterCastableToStringRuleTest::testNamedArguments
 5 Functions/SortParameterCastableToStringRuleTest::testRule
 5 Methods/CallMethodsRuleTest::testBug12544
 5 Methods/CallMethodsRuleTest::testBug3465
-5 Methods/CallMethodsRuleTest::testBug3589
 5 Methods/CallMethodsRuleTest::testBug5536
 5 Methods/CallMethodsRuleTest::testBug6828
 5 Methods/CallMethodsRuleTest::testBug7369
 5 Methods/CallMethodsRuleTest::testBug8048
 5 Methods/CallMethodsRuleTest::testBug8888
-5 Methods/CallMethodsRuleTest::testCallMethodWithInheritDoc
-5 Methods/CallMethodsRuleTest::testCallMethodWithInheritDocWithoutCurlyBraces
-5 Methods/CallMethodsRuleTest::testOverridenMethodPrototype
-5 Methods/CallMethodsRuleTest::testProtectedMethodCallFromParent
 5 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 5 Methods/CallMethodsRuleTest::testTypedClassConstants
-5 Methods/CallStaticMethodsRuleTest::testBug13556
 5 Methods/CallStaticMethodsRuleTest::testBug14150
 5 Methods/CallStaticMethodsRuleTest::testBug5536
 5 Methods/CallStaticMethodsRuleTest::testBug6249
 5 Methods/CallStaticMethodsRuleTest::testBug7489
-5 Methods/CallStaticMethodsRuleTest::testStaticCallsToInstanceMethods
 5 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
 9 Functions/CallToFunctionParametersRuleTest::testBug10297
 9 Functions/CallToFunctionParametersRuleTest::testBug10559
 9 Functions/CallToFunctionParametersRuleTest::testBug10612
 9 Functions/CallToFunctionParametersRuleTest::testBug11386
-9 Functions/CallToFunctionParametersRuleTest::testBug11559
 9 Functions/CallToFunctionParametersRuleTest::testBug11894
 9 Functions/CallToFunctionParametersRuleTest::testBug11942
 9 Functions/CallToFunctionParametersRuleTest::testBug11982
-9 Functions/CallToFunctionParametersRuleTest::testBug13556
 9 Functions/CallToFunctionParametersRuleTest::testBug3631
 9 Functions/CallToFunctionParametersRuleTest::testBug7283
 9 Functions/CallToFunctionParametersRuleTest::testBug9580
 9 Functions/CallToFunctionParametersRuleTest::testBug9652
 9 Functions/CallToFunctionParametersRuleTest::testBug9697
-9 Functions/CallToFunctionParametersRuleTest::testCallToFunctionInDoWhileLoop
 9 Functions/CallToFunctionParametersRuleTest::testCallUserFuncArray
 9 Functions/CallToFunctionParametersRuleTest::testConstantParameterCheck
-9 Functions/CallToFunctionParametersRuleTest::testUnionIterableTypeShouldAcceptTypeFromOtherTypes
-9 Functions/CallToFunctionParametersRuleTest::testVariableIsNotNullAfterSeriesOfConditions
 9 Methods/CallMethodsRuleTest::testBug11894
 9 Methods/CallMethodsRuleTest::testBug12544
 9 Methods/CallMethodsRuleTest::testBug2837
@@ -170,21 +141,14 @@
 9 Methods/CallMethodsRuleTest::testBug7600
 9 Methods/CallMethodsRuleTest::testBug8048
 9 Methods/CallMethodsRuleTest::testBug8888
-9 Methods/CallMethodsRuleTest::testCallMethodWithInheritDoc
-9 Methods/CallMethodsRuleTest::testCallMethodWithInheritDocWithoutCurlyBraces
 9 Methods/CallMethodsRuleTest::testCallTraitOverridenMethods
-9 Methods/CallMethodsRuleTest::testInvokeMagicInvokeMethod
-9 Methods/CallMethodsRuleTest::testOverridenMethodPrototype
-9 Methods/CallMethodsRuleTest::testProtectedMethodCallFromParent
 9 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 9 Methods/CallMethodsRuleTest::testTypedClassConstants
 9 Methods/CallStaticMethodsRuleTest::testBug11894
-9 Methods/CallStaticMethodsRuleTest::testBug13556
 9 Methods/CallStaticMethodsRuleTest::testBug14150
 9 Methods/CallStaticMethodsRuleTest::testBug5536
 9 Methods/CallStaticMethodsRuleTest::testBug6249
 9 Methods/CallStaticMethodsRuleTest::testBug7489
-9 Methods/CallStaticMethodsRuleTest::testStaticCallsToInstanceMethods
 # an-types2: ResolvedFunctionVariant is not ported: template parameters and callback signatures (array_map, usort,
 # array_filter, ...) resolved from the arguments
 5 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
@@ -334,7 +298,6 @@
 5 Functions/ArrayFilterRuleTest::testFile
 5 Functions/ArrayValuesRuleTest::testFile
 5 Functions/CallToFunctionParametersRuleTest::testBenevolentSuperglobalKeys
-5 Functions/CallToFunctionParametersRuleTest::testBug11559b
 5 Functions/CallToFunctionParametersRuleTest::testBug12676
 5 Functions/CallToFunctionParametersRuleTest::testBug12847
 5 Functions/CallToFunctionParametersRuleTest::testBug2940
@@ -399,7 +362,6 @@
 5 Methods/CallStaticMethodsRuleTest::testBug5781
 5 Methods/CallStaticMethodsRuleTest::testBug8296
 5 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
-5 Methods/CallStaticMethodsRuleTest::testCallStaticMethods
 5 Methods/CallStaticMethodsRuleTest::testConditionalParam
 5 Methods/CallStaticMethodsRuleTest::testDynamicCall
 5 Methods/CallStaticMethodsRuleTest::testRequireExtends
@@ -418,7 +380,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug10974
 9 Functions/CallToFunctionParametersRuleTest::testBug11533
 9 Functions/CallToFunctionParametersRuleTest::testBug11534
-9 Functions/CallToFunctionParametersRuleTest::testBug11559b
 9 Functions/CallToFunctionParametersRuleTest::testBug12676
 9 Functions/CallToFunctionParametersRuleTest::testBug12847
 9 Functions/CallToFunctionParametersRuleTest::testBug13247
@@ -523,7 +484,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug5781
 9 Methods/CallStaticMethodsRuleTest::testBug8296
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
-9 Methods/CallStaticMethodsRuleTest::testCallStaticMethods
 9 Methods/CallStaticMethodsRuleTest::testConditionalParam
 9 Methods/CallStaticMethodsRuleTest::testDiscussion7004
 9 Methods/CallStaticMethodsRuleTest::testDynamicCall
@@ -812,11 +772,6 @@
 4 Comparison/MatchExpressionRuleTest::testBug12790
 4 Comparison/MatchExpressionRuleTest::testInTrait
 # pipe calls (`|>`) are not checked as calls (restored after the pipe binaryOp fix dropped them)
-4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testPipeOperator
-4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
-4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
-4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
-4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPipeOperator
 5 Functions/CallToFunctionParametersRuleTest::testPipeOperator
 5 Methods/CallMethodsRuleTest::testPipeOperator
 5 Methods/CallStaticMethodsRuleTest::testPipeOperator

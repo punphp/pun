@@ -3,6 +3,7 @@
 mod conditions;
 mod finally;
 mod function_discard;
+mod impure_points;
 mod no_discard;
 mod noop;
 mod unreachable;
@@ -13,6 +14,8 @@ pub(super) use conditions::{
     if_statement, match_expression, match_subject_types, method_check, static_method_check, ternary, while_loop,
 };
 pub(crate) use conditions::conditions_in_traits;
+pub(crate) use impure_points::resolve as impure_points;
+pub(super) use impure_points::{function as impure_function, method as impure_method};
 pub(super) use unreachable::find as unreachable_statements;
 
 use std::collections::HashSet;
@@ -36,6 +39,7 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
     let mut spans = finally::typed(program);
     spans.extend(unused_private::typed(program));
     spans.extend(conditions::typed(program));
+    spans.extend(impure_points::typed(program));
     spans
 }
 
@@ -45,6 +49,7 @@ pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);
     function_discard::statement(c, s);
     noop::statement(c, s);
+    impure_points::statement(c, s);
 }
 
 pub(super) fn typed_statement(
