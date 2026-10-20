@@ -9,14 +9,14 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for parallel work (AGENTS.md "How work runs"). All earlier
 agents and helper branches are stopped and merged; there is nothing in flight.
 
-- **Counts** (mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 244 of 378.
+- **Counts** (mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 244 of 385.
 - **Rule docs:** steps 1–5 built locally: all 1,249 rule pages, 64 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   Docs pushes are blocked by this runner's GitHub authentication; no docs commit has been published.
 - **Green on main:** `cargo test -p punphp-analyse` (levels included; the generics wiring from salvage/handoff is applied).
 - **Salvage ref on origin:** `salvage/stash-0b0ef5b` (Blade Prettier probe; §3 "perf format" row). Delete it once that row lands.
 - **Paused (Pushpak, 2026-10-19): all lint work and `pun check`; PHPStan compatibility only.** Parked branches with their work: `wt-lint-rules2` (lint batch 2, WIP), `wt-lint-types` (types vs Rector, tested, unmerged), `wt-check` (one-pass check, WIP).
-- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); Pun emits 577 (2026-10-20). Extensions are tracked apart, not targets yet: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is still PHPStan 2.2.7; moving it to 2.3.1 is in progress (wt-oracle-23).
+- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); Pun emits 577 (2026-10-20). Extensions are tracked apart, not targets yet: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
 - **Priorities, in order:** (1) done; (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) coverage back to 100% in pun-lint (pun-analyse and punphp are at 100%); (4) analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
@@ -346,7 +346,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse types (levels 1-9, `analyse/types/*`): ported MissingReturnRule (return.missing/never, the php-parser trailing-comment `Nop` end statement, exhaustive switch over enum cases and literals), RegularExpressionPatternRule, Echo/Print/InvalidPartOfEncapsedString/InvalidCast/InvalidUnaryOperation/InvalidComparisonOperation, UsageOfVoidMatchExpression, the four IncompatibleDefaultParameterType rules, Function/Method/Closure/ArrowFunction ReturnTypeRule (get/set hooks too). Level 3: ThrowExprType, VariableCloning, IterableInForeach, UnpackIterableInArray, ArrayUnpacking, InvalidKeyInArrayDimFetch, the three Yield rules, DefaultValueTypesAssignedToProperties (types/values.rs, yields.rs, property_default.rs; findTypeToCheck's class.notFound errors with class_exists() guards); level 4: DeadForeach. Shared: rules/types/flow.rs (StatementResult, ExecutionEndNode), convert.rs (Mago type -> pun_phpstan Type), level.rs (RuleLevelHelper findTypeToCheck/accepts), pun-phpstan types/accepts.rs (`Type::accepts()` in each type's order, checked pair by pair against PHPStan in tests/fixtures/type-accepts.json), casts.rs (toString/toNumber/... ErrorType, type-casts.json), verbosity.rs (getRecommendedLevelByType). Left: accepts reasons tips, template variance (the symbols carry none: built-in covariant templates count as invariant), a constant array's keys against another constant array in accepts, closure/arrow `@param`/`@return` PHPDoc, WritingToReadOnlyProperties and InvalidIncDec `.type` beyond `$this` (level 2+), InvalidBinaryOperationRule, the level 3 rules property assign, offset assign, readonly, param-out and throws-void, the nullsafe rules (need native types for the treatPhpDocTypesAsCertain tip, and IssetCheck's nullsafe.neverNull), the rest of level 4 and levels 5-9; the level gaps list the Mago inference differences | todo |
 | analyse bug: anonymous class names carry the scratch path (`Foo@anonymous/scratch/laravel-framework/src/...`); PHPStan writes `Foo@anonymous/Illuminate/...` (68 missingType differences on laravel-framework) | todo |
 | analyse follow-up: crates/pun-phpstan/data/symbols.json is the Linux export (constants such as MSG_* differ on macOS); the method `doc`/`propertyDocs` data was merged in from a macOS run, so re-run `scripts/export-phpstan-symbols.php` on the Linux server to refresh it and its php85 entries | todo |
-| analyse 4-5: all 378 analyse rules native (one PHPStan Rule class each, rules.md §7) | todo |
+| analyse 4-5: all 385 analyse rules native (one PHPStan Rule class each, rules.md §7) | todo |
 | analyse (from mapping): re-link `fixed_by` from analyse/types/missing-param-type, missing-property-type and missing-return-type to the split lint type rules where one fits | todo |
 | analyse (from mapping): consider dedicated home rules for identifiers that many classes emit (class.notFound, missingType.iterableValue), so migrated ignores read naturally | todo |
 | analyse (from mapping): revisit the Symfony and phpstanApi exclusions if the scope widens | todo |
@@ -378,7 +378,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | Work | Status |
 | --- | --- |
 | docs 6: CLI rule-page links (needs the public docs origin; the plan settles the path, not the hostname) | blocked (needs Pushpak) |
-| docs content: 378 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
+| docs content: 385 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
 
 ### Foundations, alongside every step (plan/foundations.md)
 
@@ -440,6 +440,12 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit-hygiene follow-up (item 66): pun-lint's examples repeat their file walkers; share one helper (left for the lint track) | todo |
 | audit-hygiene follow-up (item 87): `unreachable_pub` is still open in pun-cli run.rs, report.rs, pint_error.rs, fix_report.rs, watch.rs, main.rs, console.rs, render.rs, in pun-analyse/src/rules and in pun-lint (files owned by other tracks); without the item 28 lint gate the narrowing can regress | todo |
 | clippy: pun-cli tests/output.rs:467 (`iter().copied().collect()`) warns on main (the pun-analyse warnings were fixed in 52ec4f2) | todo |
+| oracle 2.3.1 follow-up: port PHPStan 2.3's new rules, all unported in mapping.toml: SwitchConditionRule (switch.alwaysFalse/alwaysTrue/duplicateCase), UnusedVariableRule (assign.redundant), UnusedFunctionParametersRule and UnusedMethodParametersRule (bleeding edge, level 4), SortWithoutEffectRule (bleeding edge, level 5), ReturnTypeAfterFinallyRule (return.byRefFinally, level 3), PurePropertyHookRule (level 2) | todo |
+| oracle 2.3.1 follow-up: PHPStan 2.3 narrows the scope's PHP version by `PHP_VERSION_ID` conditions; version-gated rules read it (16 rules/gaps.txt cases: casts, promoted/readonly/final, callables, property hooks, never) | todo |
+| oracle 2.3.1 follow-up: UnusedClosureUsesRule and UnusedConstructorParametersRule moved to VariableWritesNode dataflow (closure.unusedUseFlow, constructor.unusedParameterFlow: a use or parameter overwritten before any read is unused); Pun keeps the 2.2 name check (levels/gaps.txt) | todo |
+| oracle 2.3.1 follow-up: PHPStan 2.3's scope and impure points: a `for` loop whose body always exits checks its condition once (tests/dead_code.rs GAPS), an expression that can throw an Error (`/`, `%`, sprintf(), strpos(), array_combine()) is no noop, PHPDoc-certain tips, nullsafe short-circuits that terminate; ClassConstantAccessType (`T::CONFIG_*` is deferred, no unresolvable type); the inferred types in return.type messages (levels/gaps.txt) | todo |
+| oracle 2.3.1 follow-up: port PrintfFormatParser (sprintf/printf counts, PrintfParameterTypeRule) and sscanf counting; FilterVarRule's new filter_input()/filter_var_array() checks; 2.3's template-type descriptions (CallMethodsRuleTest::testArrayShapeTemplateKey, testGenericsEmptyArray, OverridingMethodRuleTest::testBug9615) | todo |
+| oracle 2.3.1 follow-up: pun-phpstan's 2.3 type gaps (tests/types.rs SIGNATURE_GAPS, PROBE_GAPS makeList intersections and `array\|static` template probes, SUPER_GAPS) and corpus/larastan's config (registers a service class the oracle's Larastan v3.10.0 lacks, skipped in tests/config.rs) | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
