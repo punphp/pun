@@ -68,6 +68,9 @@ pub struct Template {
     pub name: String,
     pub bound: String,
     pub default: Option<String>,
+    /// `TemplateTypeVariance::describe()`
+    // ponytail: a built-in class's templates are read as invariant (symbols.json has no variance)
+    pub variance: &'static str,
 }
 
 #[derive(Debug, PartialEq)]
@@ -260,6 +263,7 @@ fn read_class(v: RawClass) -> Class {
                 name,
                 bound,
                 default,
+                variance: "invariant",
             })
             .collect(),
         is_enum: !v.cases.is_empty(),

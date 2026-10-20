@@ -1139,12 +1139,16 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
         }
         let own = class_templates(c, k);
         let generics = self.generics(k, &own);
+        // (`class_templates()` reads the templates of this PHPDoc, in its order)
+        let variances = doc_at(c, k.span).map(|(doc, _)| Doc::parse(&doc).template_variances).unwrap_or_default();
         let templates = own
             .into_iter()
-            .map(|t| Template {
+            .zip(variances)
+            .map(|(t, variance)| Template {
                 name: t.name,
                 bound: serialize(&t.bound),
                 default: t.default.as_ref().map(serialize),
+                variance,
             })
             .collect();
         Some(Class {

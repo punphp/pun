@@ -218,15 +218,10 @@ fn check(c: &Checker, doc: &[u8], scope: &NameScope, sig: &declared::Signature, 
             }
         }
         let s = generics::escape(&format!("PHPDoc tag {tag} for {expr}"));
-        let messages = generics::GenericMessages {
-            not_generic: format!("{s} contains generic type %s but %s %s is not generic."),
-            less: format!("Generic type %s in {s} does not specify all template types of %s %s: %s"),
-            more: format!("Generic type %s in {s} specifies %d template types, but %s %s supports only %d: %s"),
-            not_subtype: format!("Type %s in generic type %s in {s} is not subtype of template type %s of %s %s."),
-        };
+        let messages = generics::GenericMessages::at(&s);
         let mut found = generics::Found::default();
         generics::generic_object_check(&asserted, &messages, &mut found);
-        errors.extend(found.errors.into_iter().map(|(id, m)| (id, m, None, None)));
+        errors.extend(found.errors.into_iter().map(|(id, m, tip)| (id, m, tip.map(String::from), None)));
         errors.extend(names);
         if c.level < 6 {
             continue;

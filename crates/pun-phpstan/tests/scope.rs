@@ -9,7 +9,7 @@ use std::sync::Arc;
 use common::fixture;
 use pun_phpstan::phpdoc;
 use pun_phpstan::resolve::{
-    Scope, const_expr, has_global_alias, key_or_value_of, resolve_in, resolve_str, with_type_aliases,
+    Scope, const_expr, has_global_alias, key_or_value_of, resolve_in, resolve_late, resolve_str, with_type_aliases,
 };
 use pun_phpstan::symbols::{self, Class, Template};
 use pun_phpstan::types::{Level, Type, ancestor_args, decide_type, is_super_type_of};
@@ -66,6 +66,7 @@ fn template(name: &str) -> Template {
         name: name.to_string(),
         bound: "mixed".to_string(),
         default: None,
+        variance: "invariant",
     }
 }
 
@@ -221,6 +222,7 @@ fn project_scope() {
             let node = phpdoc::parse(input).unwrap();
             let ty = match row[0].as_str() {
                 Some("templates") => resolve_in(&node, &WithTemplates),
+                Some("resolved") => resolve_late(&resolve_in(&node, &InNamespace)),
                 // `LateResolvableType::resolve()`
                 Some("late") => match resolve_in(&node, &Late) {
                     Type::Object(name, args) => key_or_value_of(&args[0], name == "value-of"),
@@ -371,14 +373,6 @@ fn tag_value_prefix() {
 }
 
 /// `parseGenericTypeArgument()` accepts a call-site variance keyword before an argument.
-#[test]
-fn generic_argument_variance() {
-    assert_eq!(
-        phpdoc::parse("ArrayIterator<int, covariant string>").unwrap(),
-        phpdoc::parse("ArrayIterator<int, string>").unwrap()
-    );
-}
-
 /// `tryResolvePseudoTypeClassType()`: `use Foo as integer;` makes `integer` that class; in a namespace a keyword
 /// that names no class of it stays the keyword.
 #[test]

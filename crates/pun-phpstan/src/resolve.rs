@@ -158,6 +158,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             Some(c) => Type::This(c.name.clone()),
             None => Type::Error,
         },
+        Node::Projection(covariant, inner) => Type::Projection(*covariant, Box::new(r(inner))),
         Node::Star(s) => match s.as_str() {
             "*" => Type::Wildcard,
             "NEVER" => Type::Never(NeverKind::Explicit),
@@ -358,8 +359,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 .collect(),
         ),
         Node::Const(c) => constant(c, scope),
-        // ponytail: PHPStan's OffsetAccessType is not modelled
-        Node::OffsetAccess(..) => Type::Error,
+        Node::OffsetAccess(t, o) => offset_access(r(t), r(o)),
     }
 }
 
@@ -609,7 +609,15 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             argument: false,
         }));
     }
-    let types: Vec<Type> = args.iter().map(|a| resolve_in(a, scope)).collect();
+    // (the call-site variances are a generic object's or `static`'s only)
+    let projected: Vec<Type> = args.iter().map(|a| resolve_in(a, scope)).collect();
+    let types: Vec<Type> = projected
+        .iter()
+        .map(|t| match t {
+            Type::Projection(_, t) => (**t).clone(),
+            t => t.clone(),
+        })
+        .collect();
     match lower.as_str() {
         "array" | "non-empty-array" => {
             let array = match types.as_slice() {
@@ -681,7 +689,7 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
         },
         // GenericStaticType
         "static" => match scope.class().and_then(symbols::lookup) {
-            Some(c) => Type::Static(c.name.clone(), types),
+            Some(c) => Type::Static(c.name.clone(), projected),
             None => Type::Error,
         },
         "__benevolent" => match types.as_slice() {
@@ -695,8 +703,76 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             [t] => key_or_value_of(t, lower == "value-of"),
             _ => Type::Error,
         },
-        _ => generic_object(base, types, scope),
+        _ => generic_object(base, projected, scope),
     }
+}
+
+/// `resolveOffsetAccessNode()`: an error type when `t` has no `o` offset, else an OffsetAccessType (resolved
+/// late, [`resolve_late()`]).
+// ponytail: a template's offset is not checked against its bound
+fn offset_access(t: Type, o: Type) -> Type {
+    if !crate::types::contains_template(&t) && offset_value(&t, &o) == Some(Type::Error) {
+        return Type::Error;
+    }
+    Type::OffsetAccess(Box::new(t), Box::new(o))
+}
+
+/// `TypeUtils::resolveLateResolvableTypes()` of the OffsetAccessTypes without templates Pun models.
+// ponytail: an object's offset (ArrayAccess) and a non-constant offset of a constant array stay unresolved
+pub fn resolve_late(t: &Type) -> Type {
+    let t = t.traverse(&resolve_late);
+    if let Type::OffsetAccess(on, o) = &t
+        && !crate::types::contains_template(&t)
+        && let Some(value) = offset_value(on, o)
+    {
+        return value;
+    }
+    t
+}
+
+/// `getOffsetValueType()` of the types modelled (`None` for the others), an error type when there is no offset `o`.
+fn offset_value(t: &Type, o: &Type) -> Option<Type> {
+    let key = array_key(o.clone());
+    Some(match t {
+        Type::Mixed { .. } => Type::Mixed { explicit: false },
+        Type::ConstArray(a) => {
+            if !matches!(key, Type::ConstInt(_) | Type::ConstString(_)) {
+                return None;
+            }
+            match a.keys.iter().position(|k| *k == key) {
+                Some(i) => a.values[i].clone(),
+                None => match &a.unsealed {
+                    Some((k, v)) if !is_super_type_of(k, &key).no() => v.clone(),
+                    _ => Type::Error,
+                },
+            }
+        }
+        Type::Array(k, v) => {
+            if is_super_type_of(k, &key).no() {
+                Type::Error
+            } else {
+                (**v).clone()
+            }
+        }
+        // `list<T>`, `non-empty-array<T>`: the array's
+        Type::Intersection(types) => {
+            let array = types.iter().find(|t| matches!(t, Type::Array(..)))?;
+            offset_value(array, o)?
+        }
+        Type::String => match key {
+            Type::ConstInt(_) | Type::Int => intersect(vec![Type::String, Type::Accessory(Accessory::NonEmptyString)]),
+            _ => Type::Error,
+        },
+        Type::Int | Type::ConstInt(_) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_) | Type::Null => {
+            Type::Error
+        }
+        Type::Union(types) => {
+            let found: Vec<Type> = types.iter().map(|m| offset_value(m, o)).collect::<Option<_>>()?;
+            let found: Vec<Type> = found.into_iter().filter(|f| *f != Type::Error).collect();
+            if found.is_empty() { Type::Error } else { union(found) }
+        }
+        _ => return None,
+    })
 }
 
 /// `KeyOfType::getResult()` / `ValueOfType::getResult()`: an enum's case values, else the iterable key or value type.
