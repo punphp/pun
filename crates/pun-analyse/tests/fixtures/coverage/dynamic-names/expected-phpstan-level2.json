@@ -1,0 +1,194 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 16,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for ClassConstantDynamicStringableAccess\\Foo must be a string, but Stringable was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 16,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, Stringable given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 17,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for ClassConstantDynamicStringableAccess\\Foo must be a string, but int was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 17,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, int given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 18,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for ClassConstantDynamicStringableAccess\\Foo must be a string, but int was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 18,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, int given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 20,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for ClassConstantDynamicStringableAccess\\Foo must be a string, but 1111 was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 20,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, int given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 22,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for ClassConstantDynamicStringableAccess\\Foo must be a string, but Stringable was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-constant-stringable-access.php",
+   "line": 22,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, Stringable given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-method-name.php",
+   "line": 16,
+   "identifier": "method.nameNotString",
+   "message": "Method name for $this(DynamicMethodName\\Foo) must be a string, but $this(DynamicMethodName\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-method-name.php",
+   "line": 18,
+   "identifier": "method.nameNotString",
+   "message": "Method name for $this(DynamicMethodName\\Foo) must be a string, but Stringable was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-method-name.php",
+   "line": 19,
+   "identifier": "method.nameNotString",
+   "message": "Method name for $this(DynamicMethodName\\Foo) must be a string, but int was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-static-method-name.php",
+   "line": 17,
+   "identifier": "staticMethod.nameNotString",
+   "message": "Method name for DynamicStaticMethodName\\Foo must be a string, but Stringable was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-static-method-name.php",
+   "line": 18,
+   "identifier": "staticMethod.nameNotString",
+   "message": "Method name for DynamicStaticMethodName\\Foo must be a string, but int was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-static-property-name.php",
+   "line": 20,
+   "identifier": "staticProperty.nameNotString",
+   "message": "Static property name for DynamicStaticPropertyName\\Foo must be a string, but array was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-access.php",
+   "line": 13,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableAccess\\Foo) must be a string, but $this(DynamicStringableAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-access.php",
+   "line": 14,
+   "identifier": "property.nameNotString",
+   "message": "Property name for DynamicStringableAccess\\Foo must be a string, but $this(DynamicStringableAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-access.php",
+   "line": 15,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableAccess\\Foo) must be a string, but $this(DynamicStringableAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-access.php",
+   "line": 16,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableAccess\\Foo) must be a string, but $this(DynamicStringableAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-access.php",
+   "line": 18,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableAccess\\Foo) must be a string, but array was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-access.php",
+   "line": 30,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableAccess\\Foo) must be a string, but $this(DynamicStringableAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-access.php",
+   "line": 31,
+   "identifier": "property.nameNotString",
+   "message": "Property name for DynamicStringableAccess\\Foo must be a string, but $this(DynamicStringableAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-nullsafe-access.php",
+   "line": 13,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableNullsafeAccess\\Foo) must be a string, but $this(DynamicStringableNullsafeAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-nullsafe-access.php",
+   "line": 14,
+   "identifier": "property.nameNotString",
+   "message": "Property name for DynamicStringableNullsafeAccess\\Foo must be a string, but $this(DynamicStringableNullsafeAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-nullsafe-access.php",
+   "line": 15,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableNullsafeAccess\\Foo) must be a string, but $this(DynamicStringableNullsafeAccess\\Foo) was given.",
+   "tip": null
+  },
+  {
+   "file": "dynamic-stringable-nullsafe-access.php",
+   "line": 16,
+   "identifier": "property.nameNotString",
+   "message": "Property name for $this(DynamicStringableNullsafeAccess\\Foo) must be a string, but $this(DynamicStringableNullsafeAccess\\Foo) was given.",
+   "tip": null
+  }
+ ]
+}

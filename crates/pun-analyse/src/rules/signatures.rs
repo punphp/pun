@@ -701,7 +701,7 @@ pub fn check<'arena>(
     let of = kind.named();
     let subject = kind.subject();
     let params: Vec<&FunctionLikeParameter> = parameters.parameters.iter().collect();
-    if c.php_version < 80000 {
+    if !c.surely_at_least(80000) {
         // (a hook's message starts lowercase, but PHPStan's parser rejects hooks before PHP 8.4)
         let message = format!(
             "{subject} uses native union types but they're supported only on PHP 8.0 and later."
@@ -1072,7 +1072,7 @@ fn required_after_optional(c: &mut Checker, params: &[&FunctionLikeParameter]) {
 
 /// ExistingClassesInArrowFunctionTypehintsRule: a `never` return type before PHP 8.2.
 pub fn arrow_never(c: &mut Checker, f: &ArrowFunction) {
-    if c.php_version < 80200
+    if !c.surely_at_least(80200)
         && matches!(
             f.return_type_hint.as_ref().map(|r| &r.hint),
             Some(Hint::Never(_))

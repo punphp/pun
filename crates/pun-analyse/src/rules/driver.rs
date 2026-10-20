@@ -60,6 +60,10 @@ pub(crate) struct Checks {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with [`Project::unused_label`].
     unused_label: bool,
+    /// [`Project::check_non_stringable_dynamic_access`].
+    non_stringable_names: bool,
+    /// [`Project::report_method_purity_override`].
+    method_purity_override: bool,
     /// [`Project::check_uninitialized_properties`].
     uninitialized_properties: bool,
     /// [`Project::check_missing_callable_signature`].
@@ -104,6 +108,8 @@ impl Checks {
             deprecations: project.deprecation_rules,
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
+            non_stringable_names: project.check_non_stringable_dynamic_access,
+            method_purity_override: project.report_method_purity_override,
             uninitialized_properties: project.check_uninitialized_properties,
             missing_callable_signature: project.check_missing_callable_signature,
             strict: project.strict_rules,
@@ -116,6 +122,8 @@ pub(super) struct TraitUse {
     pub(super) class: String,
     pub(super) trait_name: String,
     pub(super) renames: HashMap<String, String>,
+    /// The `PHP_VERSION_ID` guards at the `use`: the trait is analysed in that scope.
+    pub(super) php_versions: Vec<super::scope::Guard>,
 }
 
 /// A checker for one walk of `file`.
@@ -208,6 +216,8 @@ fn checker<'a, 'arena>(
         deprecations: project.deprecations,
         bleeding_edge: project.bleeding_edge,
         unused_label: project.unused_label,
+        non_stringable_names: project.non_stringable_names,
+        method_purity_override: project.method_purity_override,
         uninitialized_properties: project.uninitialized_properties,
         missing_callable_signature: project.missing_callable_signature,
         strict: project.strict,
@@ -315,6 +325,7 @@ fn in_trait_context(
         format!("class {display}")
     };
     checker.label = format!("{} (in context of {context})", checker.file_name());
+    checker.guards = u.php_versions.clone();
     checker.trait_context = Some(super::TraitContext {
         class_file: class_file.to_string(),
         class: class.to_string(),

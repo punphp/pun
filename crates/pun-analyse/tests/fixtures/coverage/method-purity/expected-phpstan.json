@@ -1,0 +1,159 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "bug-14563-trait.php",
+   "line": 19,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563Trait\\ImpureTraitUser::pureTraitMethod() overrides pure method Bug14563Trait\\PureTrait::pureTraitMethod().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 31,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\ChildImpureOverridesPure::pure() overrides pure method Bug14563\\Foo::pure().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 93,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\ImpureImplementation::pureMethod() overrides pure method Bug14563\\PureInterface::pureMethod().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 126,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\ImpureChildOfAllMethodsPure::method() overrides pure method Bug14563\\AllMethodsPureParent::method().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 137,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\ChildImpureOverridesPureExtended::pure() overrides pure method Bug14563\\Foo::pure().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 148,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\GrandchildImpureOverridesPure::pure() overrides pure method Bug14563\\ChildPureOverridesPure::pure().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 161,
+   "identifier": "impure.functionCall",
+   "message": "Impure call to function random_int() in pure method Bug14563\\AllMethodsImpureChildOfPure::pure().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 186,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\ImpureMultipleInterfaces::sharedMethod() overrides pure method Bug14563\\PureInterfaceA::sharedMethod().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 186,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\ImpureMultipleInterfaces::sharedMethod() overrides pure method Bug14563\\PureInterfaceB::sharedMethod().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 197,
+   "identifier": "pureMethod.void",
+   "message": "Method Bug14563\\VoidFoo::pureVoid() is marked as pure but returns void.",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 211,
+   "identifier": "method.impure",
+   "message": "Impure method Bug14563\\ChildImpureOverridesPureVoid::pureVoid() overrides pure method Bug14563\\VoidFoo::pureVoid().",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 222,
+   "identifier": "pureMethod.void",
+   "message": "Method Bug14563\\ChildPureOverridesPureVoid::pureVoid() is marked as pure but returns void.",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 231,
+   "identifier": "pureMethod.void",
+   "message": "Method Bug14563\\ChildNoAnnotationOverridesPureVoid::pureVoid() is marked as pure but returns void.",
+   "tip": null
+  },
+  {
+   "file": "bug-14563.php",
+   "line": 252,
+   "identifier": "pureMethod.void",
+   "message": "Method Bug14563\\ChildPureOverridesUnannotatedVoid::unannotatedVoid() is marked as pure but returns void.",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-callable.php",
+   "line": 21,
+   "identifier": "method.impureOverridePureUnlessCallable",
+   "message": "Impure method MethodSignaturePureUnlessCallable\\ImpureChild::run() overrides method MethodSignaturePureUnlessCallable\\PureUnlessParent::run() marked @pure-unless-callable-is-impure.",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-callable.php",
+   "line": 23,
+   "identifier": "impure.echo",
+   "message": "Impure echo in pure method MethodSignaturePureUnlessCallable\\ImpureChild::run().",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-parameter-passed.php",
+   "line": 22,
+   "identifier": "method.impureOverridePureUnlessParameterPassed",
+   "message": "Impure method MethodSignaturePureUnlessParameterPassed\\ImpureChild::replace() overrides method MethodSignaturePureUnlessParameterPassed\\PureUnlessParent::replace() marked @pure-unless-parameter-passed.",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-parameter-passed.php",
+   "line": 24,
+   "identifier": "impure.echo",
+   "message": "Impure echo in pure method MethodSignaturePureUnlessParameterPassed\\ImpureChild::replace().",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-parameter-passed.php",
+   "line": 50,
+   "identifier": "pureMethod.parameterByRef",
+   "message": "Method MethodSignaturePureUnlessParameterPassed\\PureChild::replace() is marked as pure but parameter $count is passed by reference.",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-parameter-passed.php",
+   "line": 63,
+   "identifier": "pureMethod.parameterByRef",
+   "message": "Method MethodSignaturePureUnlessParameterPassed\\AllMethodsPureChild::replace() is marked as pure but parameter $count is passed by reference.",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-parameter-passed.php",
+   "line": 76,
+   "identifier": "method.impureOverridePureUnlessParameterPassed",
+   "message": "Impure method MethodSignaturePureUnlessParameterPassed\\AllMethodsImpureChild::replace() overrides method MethodSignaturePureUnlessParameterPassed\\PureUnlessParent::replace() marked @pure-unless-parameter-passed.",
+   "tip": null
+  },
+  {
+   "file": "method-signature-pure-unless-parameter-passed.php",
+   "line": 78,
+   "identifier": "impure.echo",
+   "message": "Impure echo in pure method MethodSignaturePureUnlessParameterPassed\\AllMethodsImpureChild::replace().",
+   "tip": null
+  }
+ ]
+}

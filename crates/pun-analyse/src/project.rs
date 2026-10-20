@@ -49,6 +49,10 @@ pub struct Project {
     pub bleeding_edge: bool,
     /// `featureToggles.unusedLabel` (on with bleedingEdge).
     pub unused_label: bool,
+    /// `featureToggles.checkNonStringableDynamicAccess` (on with bleedingEdge): the `*.nameNotString` checks.
+    pub check_non_stringable_dynamic_access: bool,
+    /// `featureToggles.reportMethodPurityOverride` (on with bleedingEdge): MethodSignatureRule's purity checks.
+    pub report_method_purity_override: bool,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
     pub check_uninitialized_properties: bool,
     /// `checkMissingCallableSignature`: MissingTypehintCheck's `missingType.callable` (off by default).
@@ -213,6 +217,8 @@ impl Project {
             only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
+            check_non_stringable_dynamic_access: toggle("checkNonStringableDynamicAccess"),
+            report_method_purity_override: toggle("reportMethodPurityOverride"),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
             check_missing_callable_signature: flag("checkMissingCallableSignature"),
             deprecation_rules: flag("deprecationRulesInstalled"),
@@ -257,6 +263,8 @@ impl Project {
             only_files: true,
             bleeding_edge: false,
             unused_label: false,
+            check_non_stringable_dynamic_access: false,
+            report_method_purity_override: false,
             check_uninitialized_properties: false,
             check_missing_callable_signature: false,
             deprecation_rules: false,

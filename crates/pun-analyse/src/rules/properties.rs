@@ -139,7 +139,7 @@ fn error(c: &mut Checker, node: &PropertyNode, identifier: &str, message: &str) 
 
 /// PropertiesInInterfaceRule.
 fn in_interface(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
-    let (identifier, message) = if c.php_version < 80400 {
+    let (identifier, message) = if !c.surely_at_least(80400) {
         (
             "property.inInterface",
             "Interfaces can include properties only on PHP 8.4 and later.",
@@ -197,7 +197,7 @@ fn in_class(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
     let final_ = node.has(is_final);
     let hooked = !node.hooks.is_empty();
     let any_abstract_hook = node.hooks.iter().any(PropertyNode::hook_abstract);
-    let (identifier, message) = if final_ && c.php_version < 80400 {
+    let (identifier, message) = if final_ && !c.surely_at_least(80400) {
         (
             "property.final",
             "Final properties are supported only on PHP 8.4 and later.",
@@ -259,7 +259,7 @@ fn in_class(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
             "Hooked properties cannot be static.",
         )
     } else if node.is_static()
-        && c.php_version < 80500
+        && !c.surely_at_least(80500)
         && node.has(|m| {
             matches!(
                 m,
@@ -276,7 +276,7 @@ fn in_class(c: &mut Checker, node: &PropertyNode, is_readonly: bool) {
             "property.virtualDefault",
             "Virtual hooked properties cannot have a default value.",
         )
-    } else if c.php_version < 80400 && hooked {
+    } else if !c.surely_at_least(80400) && hooked {
         (
             "property.hooksNotSupported",
             "Property hooks are supported only on PHP 8.4 and later.",

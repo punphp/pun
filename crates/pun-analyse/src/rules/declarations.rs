@@ -181,21 +181,6 @@ impl<'arena> Checker<'_, 'arena> {
         self.immutable.insert(key, result);
         result
     }
-
-    /// `$scope->getPhpVersion()->...()->no()` for a feature of PHP `version` and later: false only when every
-    /// version the narrowed `PHP_VERSION_ID` allows is older.
-    pub(super) fn may_be_at_least(&self, version: i64) -> bool {
-        // ConstantResolver::PHP_MIN_ANALYZABLE_VERSION_ID: a range no narrower is the configured version
-        const MIN: i64 = 50207;
-        match super::scope::version_range(&self.guards) {
-            Some((lo, hi)) if lo.is_some_and(|l| l > MIN) || hi.is_some() => {
-                let lo = lo.unwrap_or(MIN).max(MIN);
-                // an empty range is never, which every version range contains
-                hi.is_none_or(|h| h >= version || h < lo)
-            }
-            _ => i64::from(self.php_version) >= version,
-        }
-    }
 }
 
 /// DuplicateDeclarationRule: the duplicate constants, enum cases, properties (promoted ones too) and methods of a
@@ -384,7 +369,7 @@ pub fn promoted<'arena>(
     if !parameters.parameters.iter().any(promotes) {
         return;
     }
-    if i64::from(c.php_version) < 80000 {
+    if !c.surely_at_least(80000) {
         c.report_non_ignorable(
             at,
             "property.promotedNotSupported",
@@ -426,7 +411,7 @@ pub fn promoted<'arena>(
         if p.modifiers.is_empty() {
             continue;
         }
-        if has(p.modifiers.as_slice(), is_final) && i64::from(c.php_version) < 80500 {
+        if has(p.modifiers.as_slice(), is_final) && !c.surely_at_least(80500) {
             c.report_non_ignorable(
                 p,
                 "property.invalidPromoted",
