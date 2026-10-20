@@ -14,6 +14,7 @@ use mago_syntax::walker::MutWalker;
 use super::super::Checker;
 use super::super::declarations::doc_before;
 use super::super::members;
+use pun_phpstan::types::{Level, Type, recommended_level};
 use super::finally;
 use super::no_discard::unparen;
 use super::noop::{self, asserts, function_of};
@@ -103,6 +104,8 @@ const NEVER: &[&str] = &[
 pub(in super::super) struct Facts {
     last: HashMap<Span, bool>,
     never_loops: HashSet<Span>,
+    /// LastConditionVisitor's `isMatch`: a match arm's last condition.
+    match_arms: HashSet<Span>,
 }
 
 pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
@@ -203,6 +206,18 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Pass<'_> {
     fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
         self.list(n.statements().as_slice());
     }
+    fn walk_in_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {
+        let last = m.arms.len().saturating_sub(1);
+        for (n, arm) in m.arms.iter().enumerate() {
+            if let MatchArm::Expression(a) = arm
+                && let Some(cond) = a.conditions.iter().last()
+            {
+                let span = unparen(cond).span();
+                self.facts.last.insert(span, n == last);
+                self.facts.match_arms.insert(span);
+            }
+        }
+    }
     fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
         let elseifs = i.body.else_if_clauses();
         if let Some(last) = elseifs.len().checked_sub(1) {
@@ -270,7 +285,7 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
             self.spans.push(t.condition.span());
         }
         fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
-            if logical(&b.operator).is_some() {
+            if logical(&b.operator).is_some() || comparison(&b.operator).is_some() {
                 self.spans.extend([b.lhs.span(), b.rhs.span(), b.span()]);
             }
         }
@@ -532,8 +547,89 @@ pub(in super::super) fn boolean_not(c: &mut Checker, u: &UnaryPrefix) {
     }
 }
 
+/// The identifier prefix, sigil and rule kind of a comparison: StrictComparisonOfDifferentTypesRule,
+/// ConstantLooseComparisonRule or NumberComparisonOperatorsConstantConditionRule.
+fn comparison(op: &BinaryOperator) -> Option<(&'static str, &'static str, &'static str)> {
+    Some(match op {
+        BinaryOperator::Identical(_) => ("identical", "===", "Strict"),
+        BinaryOperator::NotIdentical(_) => ("notIdentical", "!==", "Strict"),
+        BinaryOperator::Equal(_) => ("equal", "==", "Loose"),
+        BinaryOperator::NotEqual(_) | BinaryOperator::AngledNotEqual(_) => ("notEqual", "!=", "Loose"),
+        BinaryOperator::GreaterThan(_) => ("greater", ">", ""),
+        BinaryOperator::GreaterThanOrEqual(_) => ("greaterOrEqual", ">=", ""),
+        BinaryOperator::LessThan(_) => ("smaller", "<", ""),
+        BinaryOperator::LessThanOrEqual(_) => ("smallerOrEqual", "<=", ""),
+        BinaryOperator::Instanceof(_) => ("instanceof", "instanceof", "Instanceof"),
+        _ => return None,
+    })
+}
+
+fn compare(c: &mut Checker, b: &Binary) {
+    let Some((identifier, sigil, kind)) = comparison(&b.operator) else {
+        return;
+    };
+    let value = c.types.get(&b.span()).and_then(|t| {
+        if t.is_true() {
+            Some(true)
+        } else {
+            t.is_false().then_some(false)
+        }
+    });
+    let right = match (kind, b.rhs) {
+        // ImpossibleInstanceOfRule: a class name, as ObjectType
+        ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![])),
+        _ => c.phpstan_type(b.rhs),
+    };
+    let (Some(value), Some(left), Some(right)) = (value, c.phpstan_type(b.lhs), right) else {
+        return;
+    };
+    let last = c.last_condition(b.span());
+    let (text, suffix) = if value { ("true", "True") } else { ("false", "False") };
+    let (l, r) = super::super::declared::with_classes(c, || {
+        if kind == "Instanceof" {
+            (left.describe(Level::TypeOnly), right.describe(recommended_level(&right, None)))
+        } else {
+            (left.describe(Level::Value), right.describe(Level::Value))
+        }
+    });
+    let message = if kind == "Instanceof" {
+        if value && last == Some(true) {
+            return;
+        }
+        format!("Instanceof between {l} and {r} will always evaluate to {text}.")
+    } else if kind.is_empty() {
+        format!("Comparison operation \"{sigil}\" between {l} and {r} is always {text}.")
+    } else {
+        // the always-true one is left to the last condition
+        if value && last == Some(true) {
+            return;
+        }
+        format!("{kind} comparison using {sigil} between {l} and {r} will always evaluate to {text}.")
+    };
+    let mut tips = Vec::new();
+    if value && last == Some(false) && !kind.is_empty() {
+        tips.push(REMOVE_TIP);
+    }
+    if value
+        && kind == "Strict"
+        && !c.conditions.match_arms.contains(&b.span())
+        && [&left, &right].iter().all(|t| matches!(t, Type::EnumCase(..)))
+    {
+        tips.push("Use match expression instead. PHPStan will report unhandled enum cases.");
+    }
+    let tip = match tips.as_slice() {
+        [] => None,
+        [tip] => Some(tip.to_string()),
+        tips => Some(tips.iter().map(|t| format!("• {t}")).collect::<Vec<_>>().join("\n")),
+    };
+    c.report(b, &format!("{identifier}.always{suffix}"), message, tip.as_deref());
+}
+
 pub(in super::super) fn binary(c: &mut Checker, b: &Binary) {
     let Some((identifier, sigil)) = logical(&b.operator) else {
+        if c.conditions_checked() {
+            compare(c, b);
+        }
         return;
     };
     if !c.conditions_checked() {

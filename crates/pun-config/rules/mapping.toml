@@ -1064,18 +1064,18 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/finally-overrides-exit" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/if-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-in-array" = { preset = "recommended", status = "decided" }
-"dead-code/impossible-instanceof" = { preset = "recommended", fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
+"dead-code/impossible-instanceof" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
 "dead-code/impossible-method-type-check" = { preset = "recommended", status = "decided" }
 "dead-code/impossible-static-type-check" = { preset = "recommended", status = "decided" }
 "dead-code/impossible-type-check" = { preset = "recommended", status = "decided" }
-"dead-code/loose-comparison-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/number-comparison-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/loose-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/number-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-function-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-new-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-static-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/redundant-null-coalesce" = { preset = "basic", status = "decided" }
-"dead-code/strict-comparison-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/strict-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/ternary-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/trait-condition-always-constant" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unreachable-code" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unreachable-code"], ported = true, status = "decided" }
