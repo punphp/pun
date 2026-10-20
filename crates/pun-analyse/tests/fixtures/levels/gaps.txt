@@ -145,7 +145,6 @@
 4 Comparison/ElseIfConstantConditionRuleTest::testBug6947
 4 Comparison/IfConstantConditionRuleTest::testRule
 4 Comparison/IfConstantConditionRuleTest::testDoNotReportPhpDoc
-4 Comparison/IfConstantConditionRuleTest::testBug13384b
 4 Comparison/IfConstantConditionRuleTest::testReportPhpDoc
 4 Comparison/IfConstantConditionRuleTest::testBug11417
 4 Comparison/IfConstantConditionRuleTest::testBug4284
