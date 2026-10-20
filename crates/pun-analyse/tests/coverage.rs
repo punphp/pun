@@ -19,6 +19,17 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     // PHPStan 2.3.1's loop scope: `while (true) { ...; $x = 1; if ($x) break; }` never reaches a second iteration, so
     // $x is undefined at the loop start; Pun merges the end-of-body scope back in
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
+    // a native `mixed` parameter is explicit mixed, which level 9 checks; Mago's mixed does not tell it apart
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameType"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameNotString"),
+    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameType"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
@@ -82,6 +93,9 @@ fn coverage_fixtures() {
         .map(|e| e.path())
         .collect();
     cases.sort();
+    // PUN_COVERAGE_FILTER=types runs only the cases whose directory name contains it
+    let filter = std::env::var("PUN_COVERAGE_FILTER").unwrap_or_default();
+    cases.retain(|d| d.file_name().unwrap().to_string_lossy().contains(&filter));
     let mut failures = Vec::new();
     for dir in cases {
         let mut neons: Vec<String> = std::fs::read_dir(&dir)

@@ -49,6 +49,8 @@ pub struct Project {
     pub bleeding_edge: bool,
     /// `featureToggles.unusedLabel` (on with bleedingEdge).
     pub unused_label: bool,
+    /// `featureToggles.checkNonStringableDynamicAccess` (on with bleedingEdge): the `*.nameNotString` checks.
+    pub check_non_stringable_dynamic_access: bool,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
     pub check_uninitialized_properties: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
@@ -211,6 +213,7 @@ impl Project {
             only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
+            check_non_stringable_dynamic_access: toggle("checkNonStringableDynamicAccess"),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
@@ -254,6 +257,7 @@ impl Project {
             only_files: true,
             bleeding_edge: false,
             unused_label: false,
+            check_non_stringable_dynamic_access: false,
             check_uninitialized_properties: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
