@@ -3464,13 +3464,13 @@
     [
         null,
         "non-empty-list&array{a?: int}",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "non-empty-list&list{a: int}",
+        "non-empty-list&list{a: int}",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -4376,13 +4376,13 @@
     [
         null,
         "array<'a', int>&list",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "list&list{a?: int}",
+        "list&list{a?: int}",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -29074,7 +29074,7 @@
         "array|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "mixed"
         ]
     ],
@@ -29098,7 +29098,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|array",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "mixed"
         ]
     ],
@@ -30766,7 +30766,7 @@
         "array<string, int>|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "'a'|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -30790,7 +30790,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|array<string, int>",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "'a'|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -31612,7 +31612,7 @@
         "list<int>|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int<0, max>|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -31636,7 +31636,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|list<int>",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int<0, max>|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -32458,7 +32458,7 @@
         "array<int>|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -32482,7 +32482,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|array<int>",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -34030,7 +34030,7 @@
         "array|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "mixed"
         ]
     ],
@@ -34078,7 +34078,7 @@
         "array<string, int>|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "'a'|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -34102,7 +34102,7 @@
         "list<int>|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int<0, max>|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -34126,7 +34126,7 @@
         "array<int>|static(ArrayIterator<TKey of (int|string), TValue>)",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -34876,7 +34876,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|array",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "mixed"
         ]
     ],
@@ -34924,7 +34924,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|array<string, int>",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "'a'|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -34948,7 +34948,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|list<int>",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int<0, max>|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -34972,7 +34972,7 @@
         "$this(ArrayIterator<TKey of (int|string), TValue>)|array<int>",
         null,
         [
-            "TKey of (int|string) (class ArrayIterator, argument)",
+            "int|string|TKey of (int|string) (class ArrayIterator, argument)",
             "int|TValue (class ArrayIterator, argument)"
         ]
     ],
@@ -45437,13 +45437,13 @@
     [
         null,
         "list<int>&array{a?: int}",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "list<int>&list{a?: int}",
+        "list<int>&list{a?: int}",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -45797,13 +45797,13 @@
     [
         null,
         "non-empty-list<int>&array{a?: int}",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "non-empty-list<int>&list{a: int}",
+        "non-empty-list<int>&list{a: int}",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -46229,13 +46229,13 @@
     [
         null,
         "array<string, int>&array{0?: int}",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "list{0?: int}&list<int>",
+        "list{0?: int}&list<int>",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -47477,13 +47477,13 @@
     [
         null,
         "array{a?: int}&list<int>",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "list<int>&list{a?: int}",
+        "list<int>&list{a?: int}",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -47501,13 +47501,13 @@
     [
         null,
         "array{a?: int}&non-empty-list<int>",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "non-empty-list<int>&list{a: int}",
+        "non-empty-list<int>&list{a: int}",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -47741,9 +47741,9 @@
     [
         null,
         "array{a?: int}&array<int, string>",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "array<int, string>&array{a?: int}",
+        "array<int, string>&array{a?: int}",
+        "array<int, string>&array<string, int>",
         null,
         [
             "*NEVER*",
@@ -48605,13 +48605,13 @@
     [
         null,
         "array{0?: int}&array<string, int>",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "list{0?: int}&list<int>",
+        "list{0?: int}&list<int>",
+        "list<int>",
         null,
         [
             "*NEVER*",
-            "*NEVER*"
+            "int"
         ]
     ],
     [
@@ -48821,12 +48821,12 @@
     [
         null,
         "array{0?: int}&array<int, string>",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "list{0?: int}&list<string>",
+        "list{0?: int}&list<string>",
+        "list<string>",
         null,
         [
-            "*NEVER*",
+            "0",
             "*NEVER*"
         ]
     ],
@@ -49781,9 +49781,9 @@
     [
         null,
         "array<int, string>&array{a?: int}",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "array<int, string>&array{a?: int}",
+        "array<int, string>&array{a?: int}",
+        "array<int, string>&array<string, int>",
         null,
         [
             "*NEVER*",
@@ -49853,12 +49853,12 @@
     [
         null,
         "array<int, string>&array{0?: int}",
-        "*NEVER*",
-        "*NEVER*",
-        "*NEVER*",
+        "list{0?: int}&list<string>",
+        "list{0?: int}&list<string>",
+        "list<string>",
         null,
         [
-            "*NEVER*",
+            "0",
             "*NEVER*"
         ]
     ],
@@ -60422,8 +60422,8 @@
     [
         null,
         "array{k0: 1, k1: 1, k2: 1, k3: 1, k4: 1, k5: 1, k6: 1, k7: 1, k8: 1, k9: 1, k10: 1, k11: 1, k12: 1, k13: 1, k14: 1, k15: 1, k16: 1, k17: 1, k18: 1, k19: 1, k20: 1, k21: 1, k22: 1, k23: 1, k24: 1, k25: 1, k26: 1, k27: 1, k28: 1, k29: 1, k30: 1, k31: 1, k32: 1, k33: 1, k34: 1, k35: 1, k36: 1, k37: 1, k38: 1, k39: 1, k40: 1, k41: 1, k42: 1, k43: 1, k44: 1, k45: 1, k46: 1, k47: 1, k48: 1, k49: 1, k50: 1, k51: 1, k52: 1, k53: 1, k54: 1, k55: 1, k56: 1, k57: 1, k58: 1, k59: 1, k60: 1, k61: 1, k62: 1, k63: 1}|array{k0: 2, k1: 2, k2: 2, k3: 2, k4: 2, k5: 2, k6: 2, k7: 2, k8: 2, k9: 2, k10: 2, k11: 2, k12: 2, k13: 2, k14: 2, k15: 2, k16: 2, k17: 2, k18: 2, k19: 2, k20: 2, k21: 2, k22: 2, k23: 2, k24: 2, k25: 2, k26: 2, k27: 2, k28: 2, k29: 2, k30: 2, k31: 2, k32: 2, k33: 2, k34: 2, k35: 2, k36: 2, k37: 2, k38: 2, k39: 2, k40: 2, k41: 2, k42: 2, k43: 2, k44: 2, k45: 2, k46: 2, k47: 2, k48: 2, k49: 2, k50: 2, k51: 2, k52: 2, k53: 2, k54: 2, k55: 2, k56: 2, k57: 2, k58: 2, k59: 2, k60: 2, k61: 2, k62: 2, k63: 2}",
-        "array{k0: 1|2, k1: 1|2, k2: 1|2, k3: 1|2, k4: 1|2, k5: 1|2, k6: 1|2, k7: 1|2, k8: 1|2, k9: 1|2, k10: 1|2, k11: 1|2, k12: 1|2, k13: 1|2, k14: 1|2, k15: 1|2, k16: 1|2, k17: 1|2, k18: 1|2, k19: 1|2, k20: 1|2, k21: 1|2, k22: 1|2, k23: 1|2, k24: 1|2, k25: 1|2, k26: 1|2, k27: 1|2, k28: 1|2, k29: 1|2, k30: 1|2, k31: 1|2, k32: 1|2, k33: 1|2, k34: 1|2, k35: 1|2, k36: 1|2, k37: 1|2, k38: 1|2, k39: 1|2, k40: 1|2, k41: 1|2, k42: 1|2, k43: 1|2, k44: 1|2, k45: 1|2, k46: 1|2, k47: 1|2, k48: 1|2, k49: 1|2, k50: 1|2, k51: 1|2, k52: 1|2, k53: 1|2, k54: 1|2, k55: 1|2, k56: 1|2, k57: 1|2, k58: 1|2, k59: 1|2, k60: 1|2, k61: 1|2, k62: 1|2, k63: 1|2}",
-        "array{k0: 1|2, k1: 1|2, k2: 1|2, k3: 1|2, k4: 1|2, k5: 1|2, k6: 1|2, k7: 1|2, ...}",
+        "array{k0: 1, k1: 1, k2: 1, k3: 1, k4: 1, k5: 1, k6: 1, k7: 1, k8: 1, k9: 1, k10: 1, k11: 1, k12: 1, k13: 1, k14: 1, k15: 1, k16: 1, k17: 1, k18: 1, k19: 1, k20: 1, k21: 1, k22: 1, k23: 1, k24: 1, k25: 1, k26: 1, k27: 1, k28: 1, k29: 1, k30: 1, k31: 1, k32: 1, k33: 1, k34: 1, k35: 1, k36: 1, k37: 1, k38: 1, k39: 1, k40: 1, k41: 1, k42: 1, k43: 1, k44: 1, k45: 1, k46: 1, k47: 1, k48: 1, k49: 1, k50: 1, k51: 1, k52: 1, k53: 1, k54: 1, k55: 1, k56: 1, k57: 1, k58: 1, k59: 1, k60: 1, k61: 1, k62: 1, k63: 1}|array{k0: 2, k1: 2, k2: 2, k3: 2, k4: 2, k5: 2, k6: 2, k7: 2, k8: 2, k9: 2, k10: 2, k11: 2, k12: 2, k13: 2, k14: 2, k15: 2, k16: 2, k17: 2, k18: 2, k19: 2, k20: 2, k21: 2, k22: 2, k23: 2, k24: 2, k25: 2, k26: 2, k27: 2, k28: 2, k29: 2, k30: 2, k31: 2, k32: 2, k33: 2, k34: 2, k35: 2, k36: 2, k37: 2, k38: 2, k39: 2, k40: 2, k41: 2, k42: 2, k43: 2, k44: 2, k45: 2, k46: 2, k47: 2, k48: 2, k49: 2, k50: 2, k51: 2, k52: 2, k53: 2, k54: 2, k55: 2, k56: 2, k57: 2, k58: 2, k59: 2, k60: 2, k61: 2, k62: 2, k63: 2}",
+        "array{k0: 1, k1: 1, k2: 1, k3: 1, k4: 1, k5: 1, k6: 1, k7: 1, ...}|array{k0: 2, k1: 2, k2: 2, k3: 2, k4: 2, k5: 2, k6: 2, k7: 2, ...}",
         "array<string, int>",
         null,
         [
@@ -60434,8 +60434,8 @@
     [
         null,
         "array{}|array{k0: 1, k1: 1, k2: 1, k3: 1, k4: 1, k5: 1, k6: 1, k7: 1, k8: 1, k9: 1, k10: 1, k11: 1, k12: 1, k13: 1, k14: 1, k15: 1, k16: 1, k17: 1, k18: 1, k19: 1, k20: 1, k21: 1, k22: 1, k23: 1, k24: 1, k25: 1, k26: 1, k27: 1, k28: 1, k29: 1, k30: 1, k31: 1, k32: 1, k33: 1, k34: 1, k35: 1, k36: 1, k37: 1, k38: 1, k39: 1, k40: 1, k41: 1, k42: 1, k43: 1, k44: 1, k45: 1, k46: 1, k47: 1, k48: 1, k49: 1, k50: 1, k51: 1, k52: 1, k53: 1, k54: 1, k55: 1, k56: 1, k57: 1, k58: 1, k59: 1, k60: 1, k61: 1, k62: 1, k63: 1}|array{k0: 2, k1: 2, k2: 2, k3: 2, k4: 2, k5: 2, k6: 2, k7: 2, k8: 2, k9: 2, k10: 2, k11: 2, k12: 2, k13: 2, k14: 2, k15: 2, k16: 2, k17: 2, k18: 2, k19: 2, k20: 2, k21: 2, k22: 2, k23: 2, k24: 2, k25: 2, k26: 2, k27: 2, k28: 2, k29: 2, k30: 2, k31: 2, k32: 2, k33: 2, k34: 2, k35: 2, k36: 2, k37: 2, k38: 2, k39: 2, k40: 2, k41: 2, k42: 2, k43: 2, k44: 2, k45: 2, k46: 2, k47: 2, k48: 2, k49: 2, k50: 2, k51: 2, k52: 2, k53: 2, k54: 2, k55: 2, k56: 2, k57: 2, k58: 2, k59: 2, k60: 2, k61: 2, k62: 2, k63: 2}",
-        "array<'k0'|'k1'|'k10'|'k11'|'k12'|'k13'|'k14'|'k15'|'k16'|'k17'|'k18'|'k19'|'k2'|'k20'|'k21'|'k22'|'k23'|'k24'|'k25'|'k26'|'k27'|'k28'|'k29'|'k3'|'k30'|'k31'|'k32'|'k33'|'k34'|'k35'|'k36'|'k37'|'k38'|'k39'|'k4'|'k40'|'k41'|'k42'|'k43'|'k44'|'k45'|'k46'|'k47'|'k48'|'k49'|'k5'|'k50'|'k51'|'k52'|'k53'|'k54'|'k55'|'k56'|'k57'|'k58'|'k59'|'k6'|'k60'|'k61'|'k62'|'k63'|'k7'|'k8'|'k9', 1|2>",
-        "array<'k0'|'k1'|'k10'|'k11'|'k12'|'k13'|'k14'|'k15'|'k16'|'k17'|'k18'|'k19'|'k2'|'k20'|'k21'|'k22'|'k23'|'k24'|'k25'|'k26'|'k27'|'k28'|'k29'|'k3'|'k30'|'k31'|'k32'|'k33'|'k34'|'k35'|'k36'|'k37'|'k38'|'k39'|'k4'|'k40'|'k41'|'k42'|'k43'|'k44'|'k45'|'k46'|'k47'|'k48'|'k49'|'k5'|'k50'|'k51'|'k52'|'k53'|'k54'|'k55'|'k56'|'k57'|'k58'|'k59'|'k6'|'k60'|'k61'|'k62'|'k63'|'k7'|'k8'|'k9', 1|2>",
+        "array{}|array{k0: 1, k1: 1, k2: 1, k3: 1, k4: 1, k5: 1, k6: 1, k7: 1, k8: 1, k9: 1, k10: 1, k11: 1, k12: 1, k13: 1, k14: 1, k15: 1, k16: 1, k17: 1, k18: 1, k19: 1, k20: 1, k21: 1, k22: 1, k23: 1, k24: 1, k25: 1, k26: 1, k27: 1, k28: 1, k29: 1, k30: 1, k31: 1, k32: 1, k33: 1, k34: 1, k35: 1, k36: 1, k37: 1, k38: 1, k39: 1, k40: 1, k41: 1, k42: 1, k43: 1, k44: 1, k45: 1, k46: 1, k47: 1, k48: 1, k49: 1, k50: 1, k51: 1, k52: 1, k53: 1, k54: 1, k55: 1, k56: 1, k57: 1, k58: 1, k59: 1, k60: 1, k61: 1, k62: 1, k63: 1}|array{k0: 2, k1: 2, k2: 2, k3: 2, k4: 2, k5: 2, k6: 2, k7: 2, k8: 2, k9: 2, k10: 2, k11: 2, k12: 2, k13: 2, k14: 2, k15: 2, k16: 2, k17: 2, k18: 2, k19: 2, k20: 2, k21: 2, k22: 2, k23: 2, k24: 2, k25: 2, k26: 2, k27: 2, k28: 2, k29: 2, k30: 2, k31: 2, k32: 2, k33: 2, k34: 2, k35: 2, k36: 2, k37: 2, k38: 2, k39: 2, k40: 2, k41: 2, k42: 2, k43: 2, k44: 2, k45: 2, k46: 2, k47: 2, k48: 2, k49: 2, k50: 2, k51: 2, k52: 2, k53: 2, k54: 2, k55: 2, k56: 2, k57: 2, k58: 2, k59: 2, k60: 2, k61: 2, k62: 2, k63: 2}",
+        "array{}|array{k0: 1, k1: 1, k2: 1, k3: 1, k4: 1, k5: 1, k6: 1, k7: 1, ...}|array{k0: 2, k1: 2, k2: 2, k3: 2, k4: 2, k5: 2, k6: 2, k7: 2, ...}",
         "array<string, int>",
         null,
         [

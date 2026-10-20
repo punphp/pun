@@ -1,7 +1,7 @@
 //! PHPStan's type representation (the subset built-in signatures use), with `describe()` at each
 //! `VerbosityLevel`, `isSuperTypeOf()` and `TypeCombinator::union()` / `intersect()`.
 //!
-//! Each variant is one of PHPStan 2.2.7's `Type` classes; methods keep upstream's control flow so a PHP and a
+//! Each variant is one of PHPStan 2.3.1's `Type` classes; methods keep upstream's control flow so a PHP and a
 //! Rust function can be read side by side. Class knowledge (canonical names, ancestors) comes from
 //! [`crate::symbols`]: PHPStan's own reflection of built-in classes.
 
@@ -967,11 +967,11 @@ impl Type {
                 otherwise: f(&c.otherwise),
                 negated: c.negated,
             })),
-            // `ConstantArrayType::traverse()`: the values and the unsealed `...<K, V>`'s value, not the keys
+            // `ConstantArrayType::traverse()`: the values and the unsealed `...<K, V>`, not the keys
             Type::ConstArray(a) => {
                 let mut a = a.clone();
                 a.values = a.values.iter().map(f).collect();
-                a.unsealed = a.unsealed.map(|(k, v)| (k, f(&v)));
+                a.unsealed = a.unsealed.map(|(k, v)| (f(&k), f(&v)));
                 Type::ConstArray(a)
             }
             Type::ObjectShape(props) => Type::ObjectShape(
@@ -2125,11 +2125,17 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             }
         }
         T::Array(_, item) => match b {
-            T::Array(..) | T::ConstArray(_) => is_super_type_of(item, &b.iterable_value_type())
-                .and(is_super_type_of(
-                    &a.iterable_key_type(),
-                    &b.iterable_key_type(),
-                )),
+            T::Array(..) | T::ConstArray(_) => {
+                let result = is_super_type_of(item, &b.iterable_value_type()).and(
+                    is_super_type_of(&a.iterable_key_type(), &b.iterable_key_type()),
+                );
+                // a possibly-empty constant array admits `[]`, a subtype of every array type
+                if result.no() && matches!(b, T::ConstArray(_)) && !b.is_iterable_at_least_once().yes() {
+                    Tri::Maybe
+                } else {
+                    result
+                }
+            }
             _ => Tri::No,
         },
         T::ConstArray(ca) => match b {
@@ -2974,12 +2980,9 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
         )];
     }
     let (mut keys, mut values, mut seen) = (Vec::new(), Vec::new(), Vec::<Type>::new());
-    let (mut general, mut overflowed, mut filled) = (false, false, 0);
+    let mut general = false;
     for a in &arrays {
         let constant = a.constant_arrays();
-        if constant.is_empty() || !a.is_iterable_at_least_once().no() {
-            filled += 1;
-        }
         if constant.is_empty() {
             for (key, item) in a.general_arrays() {
                 keys.push(key);
@@ -2988,24 +2991,17 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
             }
             continue;
         }
-        'array: for ca in constant {
+        for ca in constant {
             for (key, value) in ca.keys.iter().zip(&ca.values) {
                 values.push(value.clone());
-                if seen.contains(key) {
-                    continue;
-                }
-                keys.push(key.clone());
-                seen.push(key.clone());
-                // the bit index of each key would overflow an int
-                if seen.len() >= 63 {
-                    general = true;
-                    overflowed = true;
-                    break 'array;
+                if !seen.contains(key) {
+                    keys.push(key.clone());
+                    seen.push(key.clone());
                 }
             }
         }
     }
-    if general && (!overflowed || filled > 1) {
+    if general {
         let reduced = reduce_arrays(&arrays, false);
         if reduced.len() == 1 {
             return vec![with(
@@ -3524,9 +3520,9 @@ impl Type {
         matches!(self, Type::Mixed { explicit: false })
     }
 
-    /// `TypeCombinator::addNull()`: unchanged when it may already be null
+    /// `TypeCombinator::addNull()`: unchanged when it may already be null (`never` is not null, so it becomes null)
     pub fn add_null(self) -> Type {
-        if is_super_type_of(&Type::Null, &self).no() {
+        if self.is_null().no() {
             union(vec![self, Type::Null])
         } else {
             self

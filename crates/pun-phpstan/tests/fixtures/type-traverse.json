@@ -5,7 +5,7 @@
     ],
     [
         "array{int, ...<int, int>}",
-        "array{string, ...<int, string>}"
+        "array{string, ...<string, string>}"
     ],
     [
         "list<int>|int",
