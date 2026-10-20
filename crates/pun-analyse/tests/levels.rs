@@ -13,6 +13,18 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "assign.propertyType",
+    "property.readOnlyAssignOutOfClass",
+    "property.readOnlyAssignNotOnThis",
+    "property.readOnlyAssignNotInConstructor",
+    "property.readOnlyAssignByRef",
+    "property.readOnlyByPhpDocAssignOutOfClass",
+    "property.readOnlyByPhpDocAssignNotOnThis",
+    "property.readOnlyByPhpDocAssignNotInConstructor",
+    "property.readOnlyByPhpDocAssignByRef",
+    "classConstant.value",
+    "classConstant.phpDocType",
+    "assign.propertyReadOnly",
     "property.defaultValue",
     "generator.outOfFunction",
     "generator.returnType",
@@ -346,10 +358,12 @@ fn phpstan_level_fixtures() {
     let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let root = tests.join("levels");
     let data = tests.join("rules/data");
+    // PUN_LEVELS_FILTER=Properties/ runs only the fixtures (and checks only the gaps) whose name contains it
+    let filter = std::env::var("PUN_LEVELS_FILTER").unwrap_or_default();
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
-        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .filter(|l| !l.is_empty() && !l.starts_with('#') && l.contains(&filter))
         .map(str::to_string)
         .collect();
     let prefix = format!("{}/", data.display());
@@ -367,7 +381,7 @@ fn phpstan_level_fixtures() {
         let mut files = Vec::new();
         fixtures(&dir, &mut files);
         files.sort();
-        for f in files {
+        for f in files.into_iter().filter(|f| f.to_string_lossy().contains(&filter)) {
             let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
             for case in test["cases"].as_array().unwrap() {
                 let paths = |k: &str| -> Vec<PathBuf> {

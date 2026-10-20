@@ -1,0 +1,1745 @@
+{
+    "test": "Properties/TypesAssignedToPropertiesRuleTest",
+    "cases": [
+        {
+            "method": "testTypesAssignedToProperties",
+            "files": [
+                "Properties/data/properties-assigned-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 24,
+                    "identifier": "class.notFound",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$unionPropertyBar has unknown class PropertiesAssignedTypes\\Bar as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 29,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$stringProperty (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 31,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$intProperty (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 33,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$fooProperty (PropertiesAssignedTypes\\Foo) does not accept PropertiesAssignedTypes\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 33,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PropertiesAssignedTypes\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 35,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property PropertiesAssignedTypes\\Foo::$staticStringProperty (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 37,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property PropertiesAssignedTypes\\Foo::$staticStringProperty (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 38,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property PropertiesAssignedTypes\\Ipsum::$parentStringProperty.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 39,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property PropertiesAssignedTypes\\Ipsum::$parentStringProperty.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 40,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property PropertiesAssignedTypes\\Foo::$nonexistentProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 44,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$unionPropertySelf (array<PropertiesAssignedTypes\\Foo>|(iterable<PropertiesAssignedTypes\\Foo>&PropertiesAssignedTypes\\Collection)) does not accept PropertiesAssignedTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 45,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$unionPropertySelf (array<PropertiesAssignedTypes\\Foo>|(iterable<PropertiesAssignedTypes\\Foo>&PropertiesAssignedTypes\\Collection)) does not accept array<int, PropertiesAssignedTypes\\Bar>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 45,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PropertiesAssignedTypes\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 46,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$unionPropertySelf (array<PropertiesAssignedTypes\\Foo>|(iterable<PropertiesAssignedTypes\\Foo>&PropertiesAssignedTypes\\Collection)) does not accept PropertiesAssignedTypes\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 46,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PropertiesAssignedTypes\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 48,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Ipsum::$parentStringProperty (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 50,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property PropertiesAssignedTypes\\Ipsum::$parentStaticStringProperty (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 60,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Foo::$intProperty (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 143,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\Ipsum::$foo (PropertiesAssignedTypes\\Ipsum) does not accept PropertiesAssignedTypes\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PropertiesAssignedTypes\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 144,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property PropertiesAssignedTypes\\Ipsum::$fooStatic (PropertiesAssignedTypes\\Ipsum) does not accept PropertiesAssignedTypes\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 144,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PropertiesAssignedTypes\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 256,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class PropertiesAssignedTypes\\GenericClass has an unused parameter $type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 312,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\AssignRefFoo::$stringProperty (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 360,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\ListAssign::$foo (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 375,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, string> does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 400,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\ParamOutAssign::$foo (list<string>) does not accept string.",
+                    "tip": "string is not a list."
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 410,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\ParamOutAssign::$foo2 (list<list<string>>) does not accept string.",
+                    "tip": "string is not a list."
+                },
+                {
+                    "file": "Properties/data/properties-assigned-types.php",
+                    "line": 415,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesAssignedTypes\\ParamOutAssign::$foo2 (list<list<string>>) does not accept non-empty-list<list<string>|string>.",
+                    "tip": "list<string>|string might not be a list."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1216",
+            "files": [
+                "Properties/data/bug-1216.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-1216.php",
+                    "line": 38,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug1216PropertyTest\\Baz::$untypedBar (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-1216.php",
+                    "line": 46,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug1216PropertyTest\\Baz::$untypedBar (string) does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-1216.php",
+                    "line": 68,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug1216PropertyTest\\Dummy::$foo (Exception) does not accept stdClass.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTypesAssignedToPropertiesExpressionNames",
+            "files": [
+                "Properties/data/properties-from-array-into-object.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 42,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesFromArrayIntoObject\\Foo::$lall (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 42,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property PropertiesFromArrayIntoObject\\Foo::$noop.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 54,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesFromArrayIntoObject\\Foo::$lall (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 54,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property PropertiesFromArrayIntoObject\\Foo::$noop.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 66,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesFromArrayIntoObject\\Foo::$test (int|null) does not accept stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 69,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesFromArrayIntoObject\\Foo::$lall (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 69,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property PropertiesFromArrayIntoObject\\Foo::$noop.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 83,
+                    "identifier": "assignOp.invalid",
+                    "message": "Binary operation \"+=\" between non-falsy-string and 1.1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 110,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesFromArrayIntoObject\\Foo::$lall (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 110,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property PropertiesFromArrayIntoObject\\Foo::$noop.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-object.php",
+                    "line": 147,
+                    "identifier": "assign.propertyType",
+                    "message": "Property PropertiesFromArrayIntoObject\\FooBar::$foo (string) does not accept float.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTypesAssignedToStaticPropertiesExpressionNames",
+            "files": [
+                "Properties/data/properties-from-array-into-static-object.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-from-array-into-static-object.php",
+                    "line": 29,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property PropertiesFromArrayIntoStaticObject\\Foo::$lall (stdClass|null) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-static-object.php",
+                    "line": 29,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property PropertiesFromArrayIntoStaticObject\\Foo::$noop.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-static-object.php",
+                    "line": 36,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property PropertiesFromArrayIntoStaticObject\\Foo::$foo (string) does not accept float.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-from-array-into-static-object.php",
+                    "line": 72,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property PropertiesFromArrayIntoStaticObject\\FooBar::$foo (string) does not accept float.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3777/0",
+            "files": [
+                "Properties/data/bug-3777.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 58,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug3777\\Bar::$foo (Bug3777\\Foo<stdClass>) does not accept Bug3777\\Fooo<object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 75,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777\\Lorem has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 75,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777\\Lorem has an unused parameter $u.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 95,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug3777\\Ipsum::$ipsum (Bug3777\\Lorem<stdClass, Exception>) does not accept Bug3777\\Lorem<Exception, stdClass>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 111,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777\\Lorem2 has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 129,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug3777\\Ipsum2::$lorem2 (Bug3777\\Lorem2<stdClass, Exception>) does not accept Bug3777\\Lorem2<stdClass, object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 131,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug3777\\Ipsum2::$ipsum2 (Bug3777\\Lorem2<stdClass, Exception>) does not accept Bug3777\\Lorem2<Exception, object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 148,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777\\Lorem3 has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 148,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777\\Lorem3 has an unused parameter $u.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777.php",
+                    "line": 168,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug3777\\Ipsum3::$ipsum3 (Bug3777\\Lorem3<stdClass, Exception>) does not accept Bug3777\\Lorem3<Exception, stdClass>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3777/1",
+            "files": [
+                "Properties/data/bug-3777-static.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 49,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Bar::$foo through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 50,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Bar::$foo through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 52,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Bar::$fooo through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 53,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Bar::$fooo through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 58,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property Bug3777Static\\Bar::$foo (Bug3777Static\\Foo<stdClass>) does not accept Bug3777Static\\Fooo<object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 58,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Bar::$foo through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 59,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Bar::$foo through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 75,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777Static\\Lorem has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 75,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777Static\\Lorem has an unused parameter $u.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 93,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum::$lorem through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 94,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum::$lorem through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 95,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property Bug3777Static\\Ipsum::$ipsum (Bug3777Static\\Lorem<stdClass, Exception>) does not accept Bug3777Static\\Lorem<Exception, stdClass>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 95,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum::$ipsum through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 96,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum::$ipsum through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 111,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777Static\\Lorem2 has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 129,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property Bug3777Static\\Ipsum2::$lorem2 (Bug3777Static\\Lorem2<stdClass, Exception>) does not accept Bug3777Static\\Lorem2<stdClass, object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 129,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum2::$lorem2 through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 130,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum2::$lorem2 through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 131,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property Bug3777Static\\Ipsum2::$ipsum2 (Bug3777Static\\Lorem2<stdClass, Exception>) does not accept Bug3777Static\\Lorem2<Exception, object>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 131,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum2::$ipsum2 through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 132,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum2::$ipsum2 through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 148,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777Static\\Lorem3 has an unused parameter $t.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 148,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug3777Static\\Lorem3 has an unused parameter $u.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 166,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum3::$lorem3 through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 167,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum3::$lorem3 through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 168,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property Bug3777Static\\Ipsum3::$ipsum3 (Bug3777Static\\Lorem3<stdClass, Exception>) does not accept Bug3777Static\\Lorem3<Exception, stdClass>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 168,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum3::$ipsum3 through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3777-static.php",
+                    "line": 169,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug3777Static\\Ipsum3::$ipsum3 through static::.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAppendendArrayKey",
+            "files": [
+                "Arrays/data/appended-array-key.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/appended-array-key.php",
+                    "line": 27,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/appended-array-key.php",
+                    "line": 38,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AppendedArrayKey\\Foo::$stringArray (array<string, mixed>) does not accept array<int|string, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/appended-array-key.php",
+                    "line": 46,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AppendedArrayKey\\Foo::$stringArray (array<string, mixed>) does not accept array<int|string, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/appended-array-key.php",
+                    "line": 80,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AppendedArrayKey\\MorePreciseKey::$test (array<1|2|3, string>) does not accept non-empty-array<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/appended-array-key.php",
+                    "line": 85,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AppendedArrayKey\\MorePreciseKey::$test (array<1|2|3, string>) does not accept non-empty-array<1|2|3|4, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5372Two",
+            "files": [
+                "Arrays/data/bug-5372_2.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5447",
+            "files": [
+                "Arrays/data/bug-5447.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAppendedArrayItemType",
+            "files": [
+                "Arrays/data/appended-array-item.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/appended-array-item.php",
+                    "line": 32,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AppendedArrayItem\\Foo::$integers (array<int>) does not accept array<int|string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/appended-array-item.php",
+                    "line": 53,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return string but returns int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5804",
+            "files": [
+                "Properties/data/bug-5804.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6286",
+            "files": [
+                "Properties/data/bug-6286.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6286.php",
+                    "line": 19,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6286\\HelloWorld::$details (array{name: string, age: int}) does not accept array{name: string, age: 'Forty-two'}.",
+                    "tip": "Offset 'age' (int) does not accept type string."
+                },
+                {
+                    "file": "Properties/data/bug-6286.php",
+                    "line": 22,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6286\\HelloWorld::$nestedDetails (array<array{name: string, age: int}>) does not accept non-empty-array<array{name: string, age: 'Eleventy-one'|int}>.",
+                    "tip": "Offset 'age' (int) does not accept type int|string."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4906",
+            "files": [
+                "Properties/data/bug-4906.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4910",
+            "files": [
+                "Properties/data/bug-4910.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3703",
+            "files": [
+                "Properties/data/bug-3703.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-3703.php",
+                    "line": 18,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug3703\\Foo::$bar (array<string, array<string, array<int>>>) does not accept array<string, array<string, array<int|string>|int>>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-3703.php",
+                    "line": 21,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug3703\\Foo::$bar (array<string, array<string, array<int>>>) does not accept array<string, array<string, array<int>>|string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6333",
+            "files": [
+                "Properties/data/bug-6333.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3339",
+            "files": [
+                "Properties/data/bug-3339.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5336",
+            "files": [
+                "Properties/data/bug-5336.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6117",
+            "files": [
+                "Properties/data/bug-6117.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericObjectWithUnspecifiedTemplateTypes",
+            "files": [
+                "Properties/data/generic-object-unspecified-template-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 28,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class GenericObjectUnspecifiedTemplateTypes\\ArrayCollection has an unused parameter $items.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 42,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class GenericObjectUnspecifiedTemplateTypes\\ArrayCollection2 has an unused parameter $items.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 67,
+                    "identifier": "assign.propertyType",
+                    "message": "Property GenericObjectUnspecifiedTemplateTypes\\Bar::$ints (GenericObjectUnspecifiedTemplateTypes\\ArrayCollection<int, int>) does not accept GenericObjectUnspecifiedTemplateTypes\\ArrayCollection<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 104,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class GenericObjectUnspecifiedTemplateTypes\\MyObject has an unused parameter $input.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericObjectWithUnspecifiedTemplateTypesLevel8",
+            "files": [
+                "Properties/data/generic-object-unspecified-template-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 28,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class GenericObjectUnspecifiedTemplateTypes\\ArrayCollection has an unused parameter $items.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 42,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class GenericObjectUnspecifiedTemplateTypes\\ArrayCollection2 has an unused parameter $items.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 67,
+                    "identifier": "assign.propertyType",
+                    "message": "Property GenericObjectUnspecifiedTemplateTypes\\Bar::$ints (GenericObjectUnspecifiedTemplateTypes\\ArrayCollection<int, int>) does not accept GenericObjectUnspecifiedTemplateTypes\\ArrayCollection<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/generic-object-unspecified-template-types.php",
+                    "line": 104,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class GenericObjectUnspecifiedTemplateTypes\\MyObject has an unused parameter $input.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5382",
+            "files": [
+                "Properties/data/bug-5382.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6757",
+            "files": [
+                "Properties/data/bug-6757.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4526",
+            "files": [
+                "Properties/data/bug-4526.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7200",
+            "files": [
+                "Properties/data/bug-7200.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4680",
+            "files": [
+                "Properties/data/bug-4680.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3383",
+            "files": [
+                "Properties/data/bug-3383.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6356",
+            "files": [
+                "Properties/data/bug-6356.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6356b",
+            "files": [
+                "Properties/data/bug-6356b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6356b.php",
+                    "line": 19,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6356b\\HelloWorld2::$details (array{name: string, age: int}) does not accept array{name: string, age: 'Forty-two'}.",
+                    "tip": "Offset 'age' (int) does not accept type string."
+                },
+                {
+                    "file": "Properties/data/bug-6356b.php",
+                    "line": 26,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6356b\\HelloWorld2::$nestedDetails (array<array{name: string, age: int}>) does not accept non-empty-array<array{name: string, age: 'Twelve'|int}>.",
+                    "tip": "Offset 'age' (int) does not accept type int|string."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntegerRangesAndConstants",
+            "files": [
+                "Properties/data/int-ranges-and-constants.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/int-ranges-and-constants.php",
+                    "line": 29,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (0| $a): Unexpected token \"$a\", expected type at offset 18 on line 2",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3311b",
+            "files": [
+                "Properties/data/bug-3311b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7789",
+            "files": [
+                "Properties/data/bug-7789.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9131",
+            "files": [
+                "Properties/data/bug-9131.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8222",
+            "files": [
+                "Properties/data/bug-8222.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testWritingReadonlyProperty",
+            "files": [
+                "Properties/data/writing-to-read-only-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 20,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 21,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 24,
+                    "identifier": "assign.propertyType",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$usualProperty (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 27,
+                    "identifier": "assign.propertyType",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$writeOnlyProperty (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 27,
+                    "identifier": "property.writeOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$writeOnlyProperty is not readable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 30,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 31,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 34,
+                    "identifier": "assign.propertyType",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$usualProperty (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 40,
+                    "identifier": "assign.propertyType",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$writeOnlyProperty (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 40,
+                    "identifier": "property.writeOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$writeOnlyProperty is not readable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 43,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8190",
+            "files": [
+                "Properties/data/bug-8190.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8074",
+            "files": [
+                "Properties/data/bug-8074.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7087",
+            "files": [
+                "Properties/data/bug-7087.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnset",
+            "files": [
+                "Properties/data/property-type-after-unset.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericsInCallableInConstructor",
+            "files": [
+                "Properties/data/generics-in-callable-in-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/generics-in-callable-in-constructor.php",
+                    "line": 21,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class GenericsInCallableInConstructor\\Differ has an unused parameter $isEqual.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10686",
+            "files": [
+                "Properties/data/bug-10686.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11275",
+            "files": [
+                "Properties/data/bug-11275.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11617",
+            "files": [
+                "Properties/data/bug-11617.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4174",
+            "files": [
+                "Properties/data/bug-4174.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12131",
+            "files": [
+                "Properties/data/bug-12131.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6398",
+            "files": [
+                "Properties/data/bug-6398.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6571",
+            "files": [
+                "Properties/data/bug-6571.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6571.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Property Bug6571\\HelloWorld::$classLoaders has unknown class ClassLoader as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/bug-6571.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $autoloaders of method Bug6571\\HelloWorld::setClassLoaders() has invalid type ClassLoader.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12565",
+            "files": [
+                "Properties/data/bug-12565.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testShortBodySetHook",
+            "files": [
+                "Properties/data/short-set-property-hook-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/short-set-property-hook-assign.php",
+                    "line": 9,
+                    "identifier": "assign.propertyType",
+                    "message": "Property ShortSetPropertyHookAssign\\Foo::$i (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/short-set-property-hook-assign.php",
+                    "line": 18,
+                    "identifier": "assign.propertyType",
+                    "message": "Property ShortSetPropertyHookAssign\\Foo::$s (non-empty-string) does not accept ''.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Properties/data/assign-hooked-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/assign-hooked-properties.php",
+                    "line": 27,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AssignHookedProperties\\Foo::$i (array<string>|int) does not accept array<int, int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/assign-hooked-properties.php",
+                    "line": 52,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AssignHookedProperties\\FooGenerics<int>::$a (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/assign-hooked-properties.php",
+                    "line": 91,
+                    "identifier": "assign.propertyType",
+                    "message": "Property AssignHookedProperties\\FooGenericsParam<int>::$a (array<int>|int) does not accept array<int, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13093c",
+            "files": [
+                "Properties/data/bug-13093c.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13093d",
+            "files": [
+                "Properties/data/bug-13093d.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8825",
+            "files": [
+                "Properties/data/bug-8825.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-8825.php",
+                    "line": 22,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method someMethod() on bool.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7844",
+            "files": [
+                "Properties/data/bug-7844.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7844b",
+            "files": [
+                "Properties/data/bug-7844b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12675",
+            "files": [
+                "Properties/data/bug-12675.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11171",
+            "files": [
+                "Properties/data/bug-11171.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8282",
+            "files": [
+                "Properties/data/bug-8282.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7824",
+            "files": [
+                "Properties/data/bug-7824.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13438",
+            "files": [
+                "Properties/data/bug-13438.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13438b",
+            "files": [
+                "Properties/data/bug-13438b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13438c",
+            "files": [
+                "Properties/data/bug-13438c.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13438d",
+            "files": [
+                "Properties/data/bug-13438d.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-13438d.php",
+                    "line": 18,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug13438d\\Test::$queue (array{}) does not accept array{1}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13438e",
+            "files": [
+                "Properties/data/bug-13438e.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-13438e.php",
+                    "line": 18,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug13438e\\Test::$queue (array{}) does not accept array{1}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7880",
+            "files": [
+                "Properties/data/bug-7880.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7880b",
+            "files": [
+                "Properties/data/bug-7880b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13438f",
+            "files": [
+                "Properties/data/bug-13438f.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-13438f.php",
+                    "line": 25,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug13438f\\Test::$queue (array<int, non-empty-list<int>>) does not accept non-empty-array<int, list<int>>.",
+                    "tip": "list<int> might be empty."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2888",
+            "files": [
+                "Properties/data/bug-2888.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11241b",
+            "files": [
+                "Properties/data/bug-11241b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-11241b.php",
+                    "line": 14,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug11241b\\HelloWorld::$property1 (bool) does not accept string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11777",
+            "files": [
+                "Properties/data/bug-11777.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13035",
+            "files": [
+                "Properties/data/bug-13035.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7912",
+            "files": [
+                "Properties/data/bug-7912.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7912.php",
+                    "line": 35,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug7912\\A::$has (int<0, 1>) does not accept 999.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9384",
+            "files": [
+                "Properties/data/bug-9384.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-9384.php",
+                    "line": 21,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property Bug9384\\Deprecation::$type (int<0, 3>) does not accept 10|11.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13654",
+            "files": [
+                "Properties/data/bug-13654.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14150",
+            "files": [
+                "Properties/data/bug-14150.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-14150.php",
+                    "line": 20,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug14150Properties\\HelloWorld::$x (int) does not accept null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14150.php",
+                    "line": 27,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug14150Properties\\HelloWorld::$x (int) does not accept null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCloneWith",
+            "files": [
+                "Properties/data/types-assigned-to-property-clone-with.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/types-assigned-to-property-clone-with.php",
+                    "line": 21,
+                    "identifier": "assign.propertyType",
+                    "message": "Property TypesAssignedToPropertyCloneWith\\Foo::$i (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/types-assigned-to-property-clone-with.php",
+                    "line": 21,
+                    "identifier": "assign.propertyType",
+                    "message": "Property TypesAssignedToPropertyCloneWith\\Foo::$j (string) does not accept int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12250",
+            "files": [
+                "Properties/data/bug-12250.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12688",
+            "files": [
+                "Properties/data/bug-12688.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4525",
+            "files": [
+                "Properties/data/bug-4525.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5298",
+            "files": [
+                "Properties/data/bug-5298.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-5298.php",
+                    "line": 38,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: Bug5298\\WorldProviderManagerEntry<T of Bug5298\\WorldProvider (method Bug5298\\WorldProviderManager::addProvider(), argument)>",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-5298.php",
+                    "line": 39,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: non-empty-array<string, Bug5298\\WorldProviderManagerEntry<Bug5298\\WorldProvider>|Bug5298\\WorldProviderManagerEntry<T of Bug5298\\WorldProvider (method Bug5298\\WorldProviderManager::addProvider(), argument)>>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10924",
+            "files": [
+                "Methods/data/bug-10924.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10749",
+            "files": [
+                "Properties/data/bug-10749.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}
