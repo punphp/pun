@@ -465,16 +465,121 @@
   },
   {
    "file": "src/conditions.php",
-   "line": 492,
-   "identifier": "while.alwaysTrue",
-   "message": "While loop condition is always true.",
+   "line": 476,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
    "tip": null
   },
   {
    "file": "src/conditions.php",
-   "line": 624,
-   "identifier": "greater.alwaysTrue",
-   "message": "Comparison operation \">\" between int<50207, 80599> and 0 is always true.",
+   "line": 477,
+   "identifier": "notIdentical.alwaysFalse",
+   "message": "Strict comparison using !== between 1 and 1 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 478,
+   "identifier": "equal.alwaysFalse",
+   "message": "Loose comparison using == between 1 and 2 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 479,
+   "identifier": "notEqual.alwaysTrue",
+   "message": "Loose comparison using != between 1 and 2 will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 480,
+   "identifier": "smaller.alwaysTrue",
+   "message": "Comparison operation \"<\" between 1 and 2 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 481,
+   "identifier": "greater.alwaysFalse",
+   "message": "Comparison operation \">\" between 1 and 2 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 482,
+   "identifier": "smallerOrEqual.alwaysTrue",
+   "message": "Comparison operation \"<=\" between 1 and 2 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 483,
+   "identifier": "greaterOrEqual.alwaysFalse",
+   "message": "Comparison operation \">=\" between 1 and 2 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 484,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between Conditions\\Checks and Conditions\\Checks will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 485,
+   "identifier": "instanceof.alwaysFalse",
+   "message": "Instanceof between Conditions\\Checks and Exception will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 493,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 505,
+   "identifier": "equal.alwaysTrue",
+   "message": "Loose comparison using == between 1 and 1 will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 512,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between Conditions\\Checks and Conditions\\Checks will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 526,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "Use match expression instead. PHPStan will report unhandled enum cases."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 529,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "\u2022 Remove remaining cases below this one and this error will disappear too.\n\u2022 Use match expression instead. PHPStan will report unhandled enum cases."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 535,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 559,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
    "tip": null
   },
   {

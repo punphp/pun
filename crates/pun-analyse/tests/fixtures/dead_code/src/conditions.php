@@ -471,6 +471,73 @@ class Checks
 		};
 	}
 
+	public function comparisons(): void
+	{
+		$a = 1 === 1;
+		$a = 1 !== 1;
+		$a = 1 == 2;
+		$a = 1 != 2;
+		$a = 1 < 2;
+		$a = 1 > 2;
+		$a = 1 <= 2;
+		$a = 1 >= 2;
+		$a = new Checks() instanceof Checks;
+		$a = new Checks() instanceof \Exception;
+		echo $a;
+	}
+
+	public function lastComparison(int $i): void
+	{
+		if ($i === 1) {
+			echo 1;
+		} elseif (1 === 1) {
+			echo 2;
+		} elseif ($i === 2) {
+			echo 3;
+		}
+		if ($i === 1) {
+			echo 1;
+		} elseif (1 === 1) {
+			echo 2;
+		}
+		if ($i === 1) {
+			echo 1;
+		} elseif (1 == 1) {
+			echo 2;
+		} elseif ($i === 2) {
+			echo 3;
+		}
+		if ($i === 1) {
+			echo 1;
+		} elseif (new Checks() instanceof Checks) {
+			echo 2;
+		} elseif ($i === 2) {
+			echo 3;
+		}
+		if ($i === 1) {
+			echo 1;
+		} elseif (new Checks() instanceof Checks) {
+			echo 2;
+		}
+	}
+
+	public function enums(Suit $s): void
+	{
+		$a = Suit::Hearts === Suit::Hearts;
+		if ($s === Suit::Hearts) {
+			echo 1;
+		} elseif (Suit::Hearts === Suit::Hearts) {
+			echo 2;
+		} elseif ($s === Suit::Spades) {
+			echo 3;
+		}
+		echo match (true) {
+			Suit::Hearts === Suit::Hearts => 1,
+			$a => 2,
+		};
+		echo $a;
+	}
+
 	public function never(): never
 	{
 		while (true) {
@@ -598,6 +665,12 @@ class Checks
 	}
 }
 
+enum Suit
+{
+	case Hearts;
+	case Spades;
+}
+
 trait ConditionTrait
 {
 	public function inTrait(bool $b): void
@@ -621,7 +694,7 @@ function topLevel(bool $b): void
 	throw new \Exception();
 }
 
-if (PHP_VERSION_ID > 0 && true) {
+if (function_exists('foo') && true) {
 	echo 1;
 }
 throw new \Exception();
