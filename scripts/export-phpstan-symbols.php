@@ -463,7 +463,8 @@ $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
 // php scripts/export-phpstan-symbols.php accepts: tests/fixtures/type-accepts.json, every ordered pair of the atoms as
 // [context, a, b, accepts(b, strict) result, accepts(b, non-strict) result, getRecommendedLevelByType(a, b)] (b null:
 // getRecommendedLevelByType(a) alone; b `strict-mixed`: RuleLevelHelper's StrictMixedType), and type-casts.json,
-// [context, a, toString, toNumber, toInteger, toFloat, toBitwiseNotType] each true when an ErrorType
+// [context, a, toString, toNumber, toInteger, toFloat, toBitwiseNotType] each true when an ErrorType, then isCloneable()
+// (null for the StrictMixedType, which the analyser tells apart itself)
 if (($argv[1] ?? '') === 'accepts') {
     $resolver = container(80400)->getByType(TypeStringResolver::class);
     $templates = probe_templates($resolver);
@@ -491,7 +492,7 @@ if (($argv[1] ?? '') === 'accepts') {
             $resolve = fn (string $t) => $t === '*NEVER*' ? new PHPStan\Type\NeverType() : $resolver->resolve($t, $scope);
             $at = $resolve($a);
             if ($i === 0) {
-                $casts[] = json_encode([$ctx, $pun($a), $error($at->toString()), $error($at->toNumber()), $error($at->toInteger()), $error($at->toFloat()), $error($at->toBitwiseNotType())], $flags);
+                $casts[] = json_encode([$ctx, $pun($a), $error($at->toString()), $error($at->toNumber()), $error($at->toInteger()), $error($at->toFloat()), $error($at->toBitwiseNotType()), $at->isCloneable()->describe()], $flags);
             }
             foreach ([...$set, null, 'strict-mixed'] as $b) {
                 $bt = $b === null ? null : ($b === 'strict-mixed' ? new PHPStan\Type\StrictMixedType() : $resolve($b));
@@ -503,7 +504,7 @@ if (($argv[1] ?? '') === 'accepts') {
         }
     }
     $sm = new PHPStan\Type\StrictMixedType();
-    $casts[] = json_encode([null, 'strict-mixed', $error($sm->toString()), $error($sm->toNumber()), $error($sm->toInteger()), $error($sm->toFloat()), $error($sm->toBitwiseNotType())], $flags);
+    $casts[] = json_encode([null, 'strict-mixed', $error($sm->toString()), $error($sm->toNumber()), $error($sm->toInteger()), $error($sm->toFloat()), $error($sm->toBitwiseNotType()), null], $flags);
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-accepts.json', "[\n".implode(",\n", $rows)."\n]\n");
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-casts.json', "[\n".implode(",\n", $casts)."\n]\n");
     echo count($rows), " accepts pairs, ", count($casts), " casts\n";

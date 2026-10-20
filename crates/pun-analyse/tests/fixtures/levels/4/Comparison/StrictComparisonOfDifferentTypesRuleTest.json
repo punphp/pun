@@ -1,0 +1,2702 @@
+{
+    "test": "Comparison/StrictComparisonOfDifferentTypesRuleTest",
+    "cases": [
+        {
+            "method": "testStrictComparison",
+            "files": [
+                "Comparison/data/strict-comparison.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 10,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"1 === 1\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 10,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 11,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"1 === '1'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 11,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and '1' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 12,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"1 !== '1'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 12,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between 1 and '1' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 13,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 13,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"1 === null\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 14,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class StrictComparison\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 15,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between StrictComparison\\Bar and 1 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $unionIterableType contains unknown class StrictComparison\\Collection.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 18,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 19,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"1 === $unionIterableType\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 19,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and array<StrictComparison\\Foo>|bool|StrictComparison\\Collection will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 20,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"false === $unionIterableType\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 21,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$unionIterableType === [new \\StrictComparison\\Foo()]\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 22,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class StrictComparison\\Collection not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 25,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 26,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"true === $boolean\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 27,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"false === $boolean\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 28,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$boolean === true\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 29,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$boolean === false\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 30,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"true === false\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 30,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between true and false will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 31,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"false === true\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 31,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between false and true will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 34,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this === $foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 46,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"1.0 === 1\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 46,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1.0 and 1 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"1 === 1.0\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 47,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 1.0 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 50,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 51,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$stringOrMixed === 'foo'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 54,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $a (string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 54,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $b (string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 69,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 76,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between string and null will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 84,
+                    "identifier": "foreach.emptyArray",
+                    "message": "Empty array passed to foreach.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 88,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between StrictComparison\\Foo|null and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 92,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 98,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1|2|3 and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 118,
+                    "identifier": "greater.alwaysTrue",
+                    "message": "Comparison operation \">\" between 1 and 0 is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 126,
+                    "identifier": "function.notFound",
+                    "message": "Function fetch not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 130,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between StrictComparison\\Foo|null and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 134,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 140,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between non-empty-array and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 150,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between non-empty-array and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 161,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between StrictComparison\\Foo|null and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 165,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 171,
+                    "identifier": "return.missing",
+                    "message": "Method StrictComparison\\Foo::returnArray() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 182,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparison\\Node::$next is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 182,
+                    "identifier": "property.unusedType",
+                    "message": "Property StrictComparison\\Node::$next (StrictComparison\\Node|null) is never assigned StrictComparison\\Node so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 185,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparison\\Node::$id is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 212,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between StrictComparison\\Node|null and false will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 226,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 255,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between StrictComparison\\Node|null and false will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 271,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between stdClass and null will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 284,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$a === $b\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 284,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 292,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$a === $b\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 292,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between array{X: 1} and array{X: 2} will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 300,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$a === $b\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 300,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between array{X: 1, Y: 2} and array{X: 2, Y: 1} will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 308,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$a === $b\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 308,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between array{X: 1, Y: 2} and array{Y: 2, X: 1} will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 318,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"DIRECTORY_SEPARATOR === '/'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 319,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"DIRECTORY_SEPARATOR === '\\\\'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 320,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"DIRECTORY_SEPARATOR === '//'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 320,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between '/'|'\\\\' and '//' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 335,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<1, max> and 'string' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 343,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<1, max> and 'string' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 360,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<0, max> and 'string' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 368,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<1, max> and 'string' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 386,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between float and 'string' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 394,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between float and 'string' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 408,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between null and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 421,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 426,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$array['key'] === 0\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 426,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 0 and 0 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 444,
+                    "identifier": "return.missing",
+                    "message": "Method StrictComparison\\StrictComparisonOfSpecifiedFunctionCall::nullableInt() should return int|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 464,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between (int<min, 0>|int<2, max>|string) and 1.0 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 466,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between (int<min, 0>|int<2, max>|string) and stdClass will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 478,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparison\\DoNotReportPropertyFetchAndNullComparison::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 481,
+                    "identifier": "property.onlyRead",
+                    "message": "Static property StrictComparison\\DoNotReportPropertyFetchAndNullComparison::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 622,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<0, 1> and 100 will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 624,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 100 and 'foo' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 635,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<10, max> and 'foo' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 683,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === 'str'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 684,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === null\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 685,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === 1\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 685,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string|null and 1 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 693,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === 'str'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 694,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === null\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 695,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === 1\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 695,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string|null and 1 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 703,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === 'str'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 704,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === null\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 705,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$str === 1\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 705,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string|null and 1 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 808,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between mixed and 'foo' will always evaluate to false.",
+                    "tip": "Type 1|string has already been eliminated from mixed."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 812,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between mixed and 1 will always evaluate to true.",
+                    "tip": "Type 1|string has already been eliminated from mixed."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 821,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property StrictComparison\\SubtractedMixed::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 825,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$mixed === null\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 837,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparison\\InvalidatingProperties::$selfa is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 840,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparison\\InvalidatingProperties::$prop is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 846,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'foo' and 'foo' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 849,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'foo' and 'foo' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 857,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'foo' and 'foo' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 868,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparison\\InvalidatingVariables::$prop is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 876,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'foo' and 'foo' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 879,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'foo' and 'foo' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 887,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'foo' and 'foo' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 909,
+                    "identifier": "method.resultDiscarded",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line discards return value.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 909,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DateTimeImmutable::modify() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 910,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 1000 and 1000 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 979,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"INF === INF\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 979,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between INF and INF will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 980,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"NAN === NAN\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 980,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between NAN and NAN will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 982,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"INF !== INF\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 982,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between INF and INF will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 983,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"NAN !== NAN\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 983,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between NAN and NAN will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 996,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'foofoofoofoofoofoof…' and 'foofoofoofoofoofoof…' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 1014,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between lowercase-string|false and 'AB' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 1030,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between mixed and null will always evaluate to false.",
+                    "tip": "Type null has already been eliminated from mixed."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 1034,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between mixed and null will always evaluate to true.",
+                    "tip": "Type null has already been eliminated from mixed."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
+                    "line": 1048,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between array{1, mixed, 3} and array{int, null, int} will always evaluate to true.",
+                    "tip": "Offset 1: Type null has already been eliminated from mixed."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStrictComparisonPhp71",
+            "files": [
+                "Comparison/data/strict-comparison-71.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison-71.php",
+                    "line": 20,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between null and null will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-71.php",
+                    "line": 23,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStrictComparisonPropertyNativeTypesPhp74",
+            "files": [
+                "Comparison/data/strict-comparison-property-native-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison-property-native-types.php",
+                    "line": 8,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparisonPropertyNativeTypes\\Foo::$string is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-property-native-types.php",
+                    "line": 10,
+                    "identifier": "property.onlyRead",
+                    "message": "Property StrictComparisonPropertyNativeTypes\\Foo::$nullableString is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-property-native-types.php",
+                    "line": 14,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-property-native-types.php",
+                    "line": 25,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between string and null will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-property-native-types.php",
+                    "line": 36,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between null and string will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-property-native-types.php",
+                    "line": 47,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between null and string will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2835",
+            "files": [
+                "Comparison/data/bug-2835.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14951",
+            "files": [
+                "Comparison/data/bug-14951.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1860",
+            "files": [
+                "Comparison/data/bug-1860.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-1860.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method Bug1860\\Foo::doFoo() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-1860.php",
+                    "line": 15,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-1860.php",
+                    "line": 19,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between string and null will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3544",
+            "files": [
+                "Comparison/data/bug-3544.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2675",
+            "files": [
+                "Comparison/data/bug-2675.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2220",
+            "files": [
+                "Comparison/data/bug-2220.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-2220.php",
+                    "line": 10,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug2220\\HelloWorld::$privateModule is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1707",
+            "files": [
+                "Comparison/data/bug-1707.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3357",
+            "files": [
+                "Comparison/data/bug-3357.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4848",
+            "files": [
+                "Comparison/data/bug-4848.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4848.php",
+                    "line": 7,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between '18446744073709551615' and '9223372036854775807' will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4793",
+            "files": [
+                "Comparison/data/bug-4793.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5062",
+            "files": [
+                "Comparison/data/bug-5062.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5062.php",
+                    "line": 10,
+                    "identifier": "return.type",
+                    "message": "Method Bug5062\\Foo::isKnownUOM() should return string but returns bool.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3366",
+            "files": [
+                "Comparison/data/bug-3366.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5362",
+            "files": [
+                "Comparison/data/bug-5362.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5362.php",
+                    "line": 23,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 0 and 1|2 will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6939",
+            "files": [
+                "Comparison/data/bug-6939.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6939.php",
+                    "line": 10,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and false will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7166",
+            "files": [
+                "Comparison/data/bug-7166.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7166.php",
+                    "line": 13,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: string",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7555",
+            "files": [
+                "Comparison/data/bug-7555.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7555.php",
+                    "line": 11,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 2 and 2 will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7257",
+            "files": [
+                "Comparison/data/bug-7257.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5474",
+            "files": [
+                "Comparison/data/bug-5474.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5474.php",
+                    "line": 25,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between array{test: 1} and array{test: 1} will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-5474.php",
+                    "line": 29,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between array{test: 1} and array{test: 5} will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7684",
+            "files": [
+                "Comparison/data/bug-7684.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4993",
+            "files": [
+                "Comparison/data/bug-4993.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4993.php",
+                    "line": 11,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between non-empty-list<string|null> and null will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6181",
+            "files": [
+                "Comparison/data/bug-6181.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2851b",
+            "files": [
+                "Comparison/data/bug-2851b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-2851b.php",
+                    "line": 21,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function assert() with true will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-2851b.php",
+                    "line": 21,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 0 and 0 will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8158",
+            "files": [
+                "Comparison/data/bug-8158.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8485",
+            "files": [
+                "Comparison/data/bug-8485.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 15,
+                    "identifier": "void.pure",
+                    "message": "Function Bug8485\\shouldError() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 19,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\E::c and Bug8485\\E::c will always evaluate to true.",
+                    "tip": "Use match expression instead. PHPStan will report unhandled enum cases."
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 21,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between Bug8485\\E::c and Bug8485\\E::c will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 24,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 26,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 29,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 31,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 35,
+                    "identifier": "void.pure",
+                    "message": "Function Bug8485\\allGood() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 36,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F and Bug8485\\E will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 38,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F and Bug8485\\E will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 41,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 43,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 67,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\FooEnum::C and Bug8485\\FooEnum::C will always evaluate to true.",
+                    "tip": "• Remove remaining cases below this one and this error will disappear too.\n• Use match expression instead. PHPStan will report unhandled enum cases."
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 74,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\FooEnum::C and Bug8485\\FooEnum::C will always evaluate to true.",
+                    "tip": "• Remove remaining cases below this one and this error will disappear too.\n• Use match expression instead. PHPStan will report unhandled enum cases."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8516",
+            "files": [
+                "Comparison/data/bug-8516.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8516.php",
+                    "line": 5,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $options (array) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8586",
+            "files": [
+                "Comparison/data/bug-8586.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4242",
+            "files": [
+                "Comparison/data/bug-4242.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3633",
+            "files": [
+                "Comparison/data/bug-3633.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 37,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between class-string<$this(Bug3633\\HelloWorld)> and 'Bug3633\\\\OtherClass' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 41,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'Bug3633\\\\HelloWorld' and 'Bug3633\\\\HelloWorld' will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 44,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 'Bug3633\\\\HelloWorld' and 'Bug3633\\\\OtherClass' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 56,
+                    "identifier": "arguments.count",
+                    "message": "Method Bug3633\\HelloWorld::test() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 64,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between class-string<$this(Bug3633\\OtherClass)> and 'Bug3633\\\\HelloWorld' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 71,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 'Bug3633\\\\OtherClass' and 'Bug3633\\\\HelloWorld' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 74,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'Bug3633\\\\OtherClass' and 'Bug3633\\\\OtherClass' will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 85,
+                    "identifier": "arguments.count",
+                    "message": "Method Bug3633\\OtherClass::test() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 93,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between class-string<$this(Bug3633\\FinalClass)> and 'Bug3633\\\\HelloWorld' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 96,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between class-string<$this(Bug3633\\FinalClass)> and 'Bug3633\\\\OtherClass' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 102,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'Bug3633\\\\FinalClass' and 'Bug3633\\\\FinalClass' will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 106,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 'Bug3633\\\\FinalClass' and 'Bug3633\\\\HelloWorld' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 109,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 'Bug3633\\\\FinalClass' and 'Bug3633\\\\OtherClass' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 112,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between 'Bug3633\\\\FinalClass' and 'Bug3633\\\\FinalClass' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 115,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'Bug3633\\\\FinalClass' and 'Bug3633\\\\FinalClass' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-3633.php",
+                    "line": 126,
+                    "identifier": "arguments.count",
+                    "message": "Method Bug3633\\FinalClass::test() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLastConditionAlwaysTrue",
+            "files": [
+                "Comparison/data/strict-comparison-last-condition-always-true.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison-last-condition-always-true.php",
+                    "line": 15,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bar' and 'bar' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7578",
+            "files": [
+                "Comparison/data/bug-7578.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7578.php",
+                    "line": 12,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between array{} and non-empty-array<mixed> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-7578.php",
+                    "line": 22,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 0 and int<1, max> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6260",
+            "files": [
+                "Comparison/data/bug-6260.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6260.php",
+                    "line": 10,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<1, max> and 0 will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14904",
+            "files": [
+                "Comparison/data/bug-14904.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-14904.php",
+                    "line": 7,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_replace_callback() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-14904.php",
+                    "line": 13,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return 'aa' but returns 'possible?'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8736",
+            "files": [
+                "Comparison/data/bug-8736.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testLastMatchArm#0",
+            "files": [
+                "Comparison/data/strict-comparison-last-match-arm.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 15,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 36,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 38,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between *NEVER* and 'ccc' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 46,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 60,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 62,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 74,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 78,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 79,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLastMatchArm#1",
+            "files": [
+                "Comparison/data/strict-comparison-last-match-arm.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 15,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 36,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 38,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between *NEVER* and 'ccc' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 46,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 60,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 62,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 74,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 78,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"match (true) {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-last-match-arm.php",
+                    "line": 79,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 'bbb' and 'bbb' will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8030",
+            "files": [
+                "Comparison/data/bug-8030.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8776Part1",
+            "files": [
+                "Comparison/data/bug-8776-1.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8776-1.php",
+                    "line": 14,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $schema (array) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8776Part2",
+            "files": [
+                "Comparison/data/bug-8776-2.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5978",
+            "files": [
+                "Comparison/data/bug-5978.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5978.php",
+                    "line": 7,
+                    "identifier": "booleanOr.alwaysFalse",
+                    "message": "Result of || is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-5978.php",
+                    "line": 7,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between non-empty-string and false will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-5978.php",
+                    "line": 7,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between non-empty-string and null will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9104",
+            "files": [
+                "Comparison/data/bug-9104.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-9104.php",
+                    "line": 12,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between int<1, max> and 0 will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnumTips",
+            "files": [
+                "Comparison/data/strict-comparison-enum-tips.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison-enum-tips.php",
+                    "line": 35,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-enum-tips.php",
+                    "line": 43,
+                    "identifier": "match.alwaysTrue",
+                    "message": "Match arm comparison between $this(StrictComparisonEnumTips\\SomeEnum)&StrictComparisonEnumTips\\SomeEnum::Two and StrictComparisonEnumTips\\SomeEnum::Two is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-enum-tips.php",
+                    "line": 52,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between StrictComparisonEnumTips\\SomeEnum::Two and StrictComparisonEnumTips\\SomeEnum::Two will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9142",
+            "files": [
+                "Comparison/data/bug-9142.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-9142.php",
+                    "line": 18,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between $this(Bug9142\\MyEnum) and Bug9142\\MyEnum::Three will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-9142.php",
+                    "line": 31,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug9142\\MyEnum and Bug9142\\MyEnum::Three will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4918",
+            "files": [
+                "Comparison/data/bug-4918.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4918.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug4918\\LogicException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-4918.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug4918\\LogicException.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-4918.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Caught class Bug4918\\LogicException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-4918.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug4918\\LogicException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-4918.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug4918\\LogicException.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4061",
+            "files": [
+                "Comparison/data/bug-4061.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9723",
+            "files": [
+                "Comparison/data/bug-9723.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-9723.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug9723\\Exception not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-9723.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug9723\\Exception.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9723b",
+            "files": [
+                "Comparison/data/bug-9723b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-9723b.php",
+                    "line": 32,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug9723b\\Exception not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/bug-9723b.php",
+                    "line": 32,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class Bug9723b\\Exception.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9804",
+            "files": [
+                "Comparison/data/bug-9804.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11161",
+            "files": [
+                "Comparison/data/bug-11161.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10697",
+            "files": [
+                "Comparison/data/bug-10697.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testLowercaseString",
+            "files": [
+                "Comparison/data/lowercase-string.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 10,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between lowercase-string and 'AB' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 11,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 'AB' and lowercase-string will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 12,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between 'AB' and lowercase-string will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 15,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between lowercase-string and 'aBc' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 16,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between lowercase-string and 'aBc' will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant myConst on an unknown class LowercaseString\\MyClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 20,
+                    "identifier": "constant.notFound",
+                    "message": "Constant A_GLOBAL_CONST not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 21,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/lowercase-string.php",
+                    "line": 28,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between lowercase-string and 'AB' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUppercaseString",
+            "files": [
+                "Comparison/data/uppercase-string.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 10,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between uppercase-string and 'ab' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 11,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 'ab' and uppercase-string will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 12,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between 'ab' and uppercase-string will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 15,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between uppercase-string and 'aBc' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 16,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between uppercase-string and 'aBc' will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant myConst on an unknown class UppercaseString\\MyClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 20,
+                    "identifier": "constant.notFound",
+                    "message": "Constant A_GLOBAL_CONST not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 21,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/uppercase-string.php",
+                    "line": 28,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between uppercase-string and 'ab' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10493",
+            "files": [
+                "Comparison/data/bug-10493.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7173",
+            "files": [
+                "Comparison/data/bug-7173.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testHashing",
+            "files": [
+                "Comparison/data/hashing.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/hashing.php",
+                    "line": 9,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between lowercase-string&non-falsy-string and 'ABC' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/hashing.php",
+                    "line": 12,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between (lowercase-string&non-falsy-string)|false and 'ABC' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/hashing.php",
+                    "line": 21,
+                    "identifier": "void.pure",
+                    "message": "Function Hashing\\doFooBar() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/hashing.php",
+                    "line": 31,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between (lowercase-string&non-falsy-string)|(non-falsy-string&numeric-string) and 'A' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12772",
+            "files": [
+                "Comparison/data/bug-12772.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-12772.php",
+                    "line": 7,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $date of method Bug12772\\HelloWorld::sayHello() has invalid type Bug12772\\DateTimeImutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-12772.php",
+                    "line": 9,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $tables",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12748",
+            "files": [
+                "Comparison/data/bug-12748.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3803",
+            "files": [
+                "Comparison/data/bug-3803.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11019",
+            "files": [
+                "Comparison/data/bug-11019.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11485",
+            "files": [
+                "Comparison/data/bug-11485.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10215",
+            "files": [
+                "Comparison/data/bug-10215.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12946",
+            "files": [
+                "Comparison/data/bug-12946.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10884",
+            "files": [
+                "Comparison/data/bug-10884.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-10884.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $map of method Bug10884\\Manager::doSomething() has invalid type Bug10884\\SplObjectStorage.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-10884.php",
+                    "line": 17,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $map with type Bug10884\\SplObjectStorage<Bug10884\\Cat, null> is not subtype of native type SplObjectStorage.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-10884.php",
+                    "line": 45,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between Bug10884\\Cat and true will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3761",
+            "files": [
+                "Comparison/data/bug-3761.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8060",
+            "files": [
+                "Comparison/data/bug-8060.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8060.php (in context of class Bug8060\\Example)",
+                    "line": 15,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9515",
+            "files": [
+                "Comparison/data/bug-9515.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4121",
+            "files": [
+                "Comparison/data/bug-4121.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13208",
+            "files": [
+                "Comparison/data/bug-13208.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11609",
+            "files": [
+                "Comparison/data/bug-11609.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11609.php",
+                    "line": 10,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between string and null will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPossiblyImpureTip",
+            "files": [
+                "Comparison/data/possibly-impure-tip.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 34,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": "If PossiblyImpureTip\\maybeImpureFunction() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 40,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 85,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": "If PossiblyImpureTip\\MethodCallTest::maybeImpureMethod() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 94,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 114,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between null and null will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 114,
+                    "identifier": "method.void",
+                    "message": "Result of method PossiblyImpureTip\\MethodCallTest::voidMethod() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 156,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": "If PossiblyImpureTip\\StaticCallTest::maybeImpureStatic() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 165,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 233,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": "If PossiblyImpureTip\\ObjectInvalidationTest::maybeImpureIntermediate() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 243,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method PossiblyImpureTip\\ObjectInvalidationTest::pureIntermediate() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 244,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 294,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": "If PossiblyImpureTip\\IntermediateCallPriority::next() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 303,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 2 will always evaluate to false.",
+                    "tip": "If PossiblyImpureTip\\IntermediateCallPriority::fetch() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 324,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/possibly-impure-tip.php",
+                    "line": 328,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between string and null will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/strict-comparison-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/strict-comparison-in-trait.php",
+                    "line": 19,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between string and null will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-in-trait.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method StrictComparisonInTrait\\Foo::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-in-trait.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method StrictComparisonInTrait\\Foo::doBar2() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-in-trait.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method StrictComparisonInTrait\\FooAnother::doBar() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison-in-trait.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method StrictComparisonInTrait\\FooAnother::doBar2() should return string but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11054",
+            "files": [
+                "Comparison/data/bug-11054.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11054.php",
+                    "line": 47,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between mixed and array{INF} will always evaluate to false.",
+                    "tip": "Type array{INF} has already been eliminated from mixed."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13444",
+            "files": [
+                "Comparison/data/bug-13444.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14473",
+            "files": [
+                "Comparison/data/bug-14519.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14985",
+            "files": [
+                "Comparison/data/bug-14985.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14847",
+            "files": [
+                "Comparison/data/bug-14847.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-14847.php",
+                    "line": 18,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-14847.php",
+                    "line": 29,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and null will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

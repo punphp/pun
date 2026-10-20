@@ -13,6 +13,33 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "assign.propertyType",
+    "property.readOnlyAssignOutOfClass",
+    "property.readOnlyAssignNotOnThis",
+    "property.readOnlyAssignNotInConstructor",
+    "property.readOnlyAssignByRef",
+    "property.readOnlyByPhpDocAssignOutOfClass",
+    "property.readOnlyByPhpDocAssignNotOnThis",
+    "property.readOnlyByPhpDocAssignNotInConstructor",
+    "property.readOnlyByPhpDocAssignByRef",
+    "classConstant.value",
+    "classConstant.phpDocType",
+    "assign.propertyReadOnly",
+    "property.defaultValue",
+    "generator.outOfFunction",
+    "generator.returnType",
+    "generator.keyType",
+    "generator.valueType",
+    "generator.nonIterable",
+    "generator.sendType",
+    "generator.void",
+    "throw.notThrowable",
+    "clone.nonObject",
+    "foreach.nonIterable",
+    "arrayUnpacking.nonIterable",
+    "arrayUnpacking.stringOffset",
+    "offsetAccess.invalidOffset",
+    "foreach.emptyArray",
     "echo.nonString",
     "print.nonString",
     "encapsedStringPart.nonString",
@@ -152,6 +179,22 @@ const PORTED: &[&str] = &[
     "mixin.trait",
     "varTag.unresolvableType",
     "varTag.trait",
+    "conditionalType.subjectNotFound",
+    "conditionalType.alwaysTrue",
+    "conditionalType.alwaysFalse",
+    "assert.unknownExpr",
+    "assert.unresolvableType",
+    "assert.impossibleType",
+    "assert.alreadyNarrowedType",
+    "assert.trait",
+    "parameter.unresolvableType",
+    "parameter.phpDocType",
+    "paramClosureThis.nonClosure",
+    "return.unresolvableType",
+    "return.phpDocType",
+    "property.unresolvableType",
+    "property.phpDocType",
+    "classConstant.unresolvableType",
     "paramImmediatelyInvokedCallable.nonCallable",
     "paramLaterInvokedCallable.nonCallable",
     "property.internal",
@@ -188,6 +231,70 @@ const PORTED: &[&str] = &[
     "method.resultUnused",
     "staticMethod.resultUnused",
     "new.resultUnused",
+    "if.alwaysTrue",
+    "if.alwaysFalse",
+    "elseif.alwaysTrue",
+    "elseif.alwaysFalse",
+    "ternary.alwaysTrue",
+    "ternary.alwaysFalse",
+    "doWhile.alwaysTrue",
+    "doWhile.alwaysFalse",
+    "booleanNot.alwaysTrue",
+    "booleanNot.alwaysFalse",
+    "while.alwaysTrue",
+    "while.alwaysFalse",
+    "booleanAnd.alwaysTrue",
+    "booleanAnd.alwaysFalse",
+    "booleanAnd.leftAlwaysTrue",
+    "booleanAnd.leftAlwaysFalse",
+    "booleanAnd.rightAlwaysTrue",
+    "booleanAnd.rightAlwaysFalse",
+    "booleanOr.alwaysTrue",
+    "booleanOr.alwaysFalse",
+    "booleanOr.leftAlwaysTrue",
+    "booleanOr.leftAlwaysFalse",
+    "booleanOr.rightAlwaysTrue",
+    "booleanOr.rightAlwaysFalse",
+    "logicalAnd.alwaysTrue",
+    "logicalAnd.alwaysFalse",
+    "logicalAnd.leftAlwaysTrue",
+    "logicalAnd.leftAlwaysFalse",
+    "logicalAnd.rightAlwaysTrue",
+    "logicalAnd.rightAlwaysFalse",
+    "logicalOr.alwaysTrue",
+    "logicalOr.alwaysFalse",
+    "logicalOr.leftAlwaysTrue",
+    "logicalOr.leftAlwaysFalse",
+    "logicalOr.rightAlwaysTrue",
+    "logicalOr.rightAlwaysFalse",
+    "logicalXor.leftAlwaysTrue",
+    "logicalXor.leftAlwaysFalse",
+    "logicalXor.rightAlwaysTrue",
+    "logicalXor.rightAlwaysFalse",
+    "identical.alwaysTrue",
+    "identical.alwaysFalse",
+    "notIdentical.alwaysTrue",
+    "notIdentical.alwaysFalse",
+    "equal.alwaysTrue",
+    "equal.alwaysFalse",
+    "notEqual.alwaysTrue",
+    "notEqual.alwaysFalse",
+    "greater.alwaysTrue",
+    "greater.alwaysFalse",
+    "greaterOrEqual.alwaysTrue",
+    "greaterOrEqual.alwaysFalse",
+    "smaller.alwaysTrue",
+    "smaller.alwaysFalse",
+    "smallerOrEqual.alwaysTrue",
+    "smallerOrEqual.alwaysFalse",
+    "instanceof.alwaysTrue",
+    "instanceof.alwaysFalse",
+    "function.alreadyNarrowedType",
+    "function.impossibleType",
+    "method.alreadyNarrowedType",
+    "method.impossibleType",
+    "staticMethod.alreadyNarrowedType",
+    "staticMethod.impossibleType",
     "constant.notFound",
     "class.missingExtends",
     "class.missingImplements",
@@ -236,12 +343,21 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @property",
     "PHPDoc tag @var for variable ",
     "PHPDoc tag @var contains unknown class",
+    "Throwing object of an unknown class ",
+    "Cloning object of an unknown class ",
+    "Iterating over an object of an unknown class ",
+    "PHPDoc tag @phpstan-assert",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).
 const PARAMETER_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @param-immediately-invoked-callable references unknown parameter",
     "PHPDoc tag @param-later-invoked-callable references unknown parameter",
+    "Conditional return type references unknown parameter",
+    "Assert references unknown parameter",
+    "PHPDoc tag @param references unknown parameter",
+    "PHPDoc tag @param-out references unknown parameter",
+    "PHPDoc tag @param-closure-this references unknown parameter",
 ];
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
@@ -270,10 +386,12 @@ fn phpstan_level_fixtures() {
     let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let root = tests.join("levels");
     let data = tests.join("rules/data");
+    // PUN_LEVELS_FILTER=Properties/ runs only the fixtures (and checks only the gaps) whose name contains it
+    let filter = std::env::var("PUN_LEVELS_FILTER").unwrap_or_default();
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
-        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .filter(|l| !l.is_empty() && !l.starts_with('#') && l.contains(&filter))
         .map(str::to_string)
         .collect();
     let prefix = format!("{}/", data.display());
@@ -291,7 +409,7 @@ fn phpstan_level_fixtures() {
         let mut files = Vec::new();
         fixtures(&dir, &mut files);
         files.sort();
-        for f in files {
+        for f in files.into_iter().filter(|f| f.to_string_lossy().contains(&filter)) {
             let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
             for case in test["cases"].as_array().unwrap() {
                 let paths = |k: &str| -> Vec<PathBuf> {
@@ -310,6 +428,8 @@ fn phpstan_level_fixtures() {
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         || (id == "parameter.notFound"
                             && PARAMETER_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                        // (ValueAssignedToClassConstantRule's errors share the identifier and are not ported)
+                        || (id == "classConstant.phpDocType" && message.contains(" native type "))
                 };
                 let want: BTreeSet<Key> = case["errors"]
                     .as_array()

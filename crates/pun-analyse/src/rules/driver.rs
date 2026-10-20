@@ -138,6 +138,7 @@ fn checker<'a, 'arena>(
     ));
     typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
+    typed.extend(super::operators::typed_expressions(project.strict, program));
     Checker {
         anonymous: anonymous::names(file, program, names, &project.relative_path),
         property_access: property_access::state(program),
@@ -199,6 +200,7 @@ fn checker<'a, 'arena>(
         internal_tag: project.internal_tag,
         precise_unused_parameter_line: project.precise_unused_parameter_line,
         unreachable: HashSet::new(),
+        conditions: Default::default(),
         internal_members: project.internal_members,
         deprecations: project.deprecations,
         bleeding_edge: project.bleeding_edge,

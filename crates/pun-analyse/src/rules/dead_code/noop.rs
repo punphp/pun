@@ -8,6 +8,7 @@ use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
@@ -107,7 +108,7 @@ fn builtin_effects(s: &str) -> Effects {
 }
 
 /// A `@phpstan-assert` tag.
-fn asserts(f: &FunctionLikeMetadata) -> bool {
+pub(super) fn asserts(f: &FunctionLikeMetadata) -> bool {
     !f.assertions.is_empty()
         || !f.assertions_inferred
             && !(f.if_true_assertions.is_empty() && f.if_false_assertions.is_empty())
@@ -177,12 +178,12 @@ fn class_of<'a>(c: &Checker<'a, '_>, e: &Expression) -> Option<&'a ClassLikeMeta
 }
 
 /// ReflectionProvider::getFunction() of a named call.
-enum Function<'a> {
+pub(super) enum Function<'a> {
     User(&'a FunctionLikeMetadata),
     Builtin(&'static symbols::Function),
 }
 
-fn function_of<'a>(c: &Checker<'a, '_>, callee: &Expression) -> Option<Function<'a>> {
+pub(super) fn function_of<'a>(c: &Checker<'a, '_>, callee: &Expression) -> Option<Function<'a>> {
     let Expression::Identifier(id) = callee else {
         return None;
     };
@@ -325,6 +326,8 @@ impl Checker<'_, '_> {
             Expression::Construct(Construct::Empty(i)) => self.points(i.value, p),
             Expression::Clone(k) => self.points(k.object, p),
             Expression::Match(m) => {
+                // a match that isn't exhaustive has an explicit UnhandledMatchError throw point
+                p.impure |= !self.exhaustive(m);
                 self.points(m.expression, p);
                 for arm in m.arms.iter() {
                     if let MatchArm::Expression(a) = arm {
@@ -469,7 +472,64 @@ impl Checker<'_, '_> {
         }
     }
 
-    fn method_target(
+    /// MatchHandler's `$isExhaustive`: a `default` arm, or a subject of finite values the arms all match (its remaining
+    /// type is never).
+    fn exhaustive(&self, m: &Match) -> bool {
+        let values = |e: &Expression| -> Option<Vec<Vec<u8>>> {
+            let mut values = Vec::new();
+            for atom in self.type_of(e)?.types.iter() {
+                match atom {
+                    TAtomic::Scalar(TScalar::Integer(i)) => {
+                        values.push(format!("i{}", i.get_literal_value()?).into_bytes());
+                    }
+                    TAtomic::Scalar(TScalar::String(s)) => {
+                        values.push([b"s".as_slice(), s.literal.as_ref()?.get_value()?].concat());
+                    }
+                    TAtomic::Scalar(scalar @ TScalar::ClassLikeString(_)) => {
+                        let name = scalar.get_literal_class_string_value()?;
+                        values.push([b"s".as_slice(), name.as_bytes()].concat());
+                    }
+                    TAtomic::Scalar(TScalar::Bool(b)) => match b.value {
+                        Some(true) => values.push(b"t".to_vec()),
+                        Some(false) => values.push(b"f".to_vec()),
+                        None => values.extend([b"t".to_vec(), b"f".to_vec()]),
+                    },
+                    TAtomic::Null => values.push(b"n".to_vec()),
+                    TAtomic::Object(TObject::Enum(e)) => {
+                        let k = self.codebase.get_class_like(e.name.as_bytes())?;
+                        values.extend(
+                            k.enum_cases
+                                .keys()
+                                .filter(|c| e.case.is_none_or(|case| case == **c))
+                                .map(|c| {
+                                    [e.name.to_ascii_lowercase().as_bytes(), b"::", c.as_bytes()]
+                                        .concat()
+                                }),
+                        );
+                    }
+                    _ => return None,
+                }
+            }
+            Some(values)
+        };
+        let mut covered: Vec<Vec<u8>> = Vec::new();
+        for arm in m.arms.iter() {
+            let MatchArm::Expression(a) = arm else {
+                return true;
+            };
+            // a condition of one value
+            covered.extend(
+                a.conditions
+                    .iter()
+                    .filter_map(|e| values(e))
+                    .filter(|v| v.len() == 1)
+                    .flatten(),
+            );
+        }
+        values(m.expression).is_some_and(|v| v.iter().all(|v| covered.contains(v)))
+    }
+
+    pub(super) fn method_target(
         &self,
         on: &Expression,
         method: &ClassLikeMemberSelector,
@@ -872,6 +932,14 @@ pub(super) fn typed(s: &ExpressionStatement) -> Vec<Span> {
         fn walk_in_static_method_call(&mut self, m: &'ast StaticMethodCall<'arena>, _: &mut ()) {
             self.0.push(unparen(m.class).span());
         }
+        fn walk_in_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {
+            self.0.push(m.expression.span());
+            for arm in m.arms.iter() {
+                if let MatchArm::Expression(a) = arm {
+                    self.0.extend(a.conditions.iter().map(|c| c.span()));
+                }
+            }
+        }
         fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
         fn walk_arrow_function(&mut self, _: &'ast ArrowFunction<'arena>, _: &mut ()) {}
     }
@@ -886,6 +954,7 @@ fn print(c: &Checker, e: &Expression) -> String {
         || String::from_utf8_lossy(&c.file.contents[e.span().to_range_usize()]).into_owned();
     match e {
         Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
+        Expression::Match(m) => format!("match ({}) {{\n", print(c, m.expression)),
         Expression::Variable(Variable::Nested(v)) => format!(
             "${{{}}}",
             print(c, &Expression::Variable(v.variable.clone()))
@@ -1010,7 +1079,7 @@ fn print(c: &Checker, e: &Expression) -> String {
     }
 }
 
-fn source(c: &Checker, span: Span) -> String {
+pub(super) fn source(c: &Checker, span: Span) -> String {
     String::from_utf8_lossy(&c.file.contents[span.to_range_usize()]).into_owned()
 }
 

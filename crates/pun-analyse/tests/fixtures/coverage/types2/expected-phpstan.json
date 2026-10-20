@@ -227,84 +227,98 @@
   },
   {
    "file": "types2.php",
+   "line": 127,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method instance() on int|Types2\\Leaf.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
    "line": 128,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $own on int|Types2\\Leaf.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 130,
    "identifier": "property.notFound",
    "message": "Access to an undefined property Types2\\Middle::$zzz.",
    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
   },
   {
    "file": "types2.php",
-   "line": 130,
+   "line": 132,
    "identifier": "function.resultUnused",
    "message": "Call to function array_filter() on a separate line has no effect.",
    "tip": null
   },
   {
    "file": "types2.php",
-   "line": 130,
+   "line": 132,
    "identifier": "arguments.count",
    "message": "Function array_filter invoked with 0 parameters, 1-3 required.",
    "tip": null
   },
   {
    "file": "types2.php",
-   "line": 131,
+   "line": 133,
    "identifier": "argument.type",
    "message": "Parameter #1 ...$pairs of function Types2\\variadic2 expects int|string, float given.",
    "tip": null
   },
   {
    "file": "types2.php",
-   "line": 133,
+   "line": 135,
    "identifier": "staticMethod.notFound",
    "message": "Call to an undefined static method Types2\\Mixer::foo().",
    "tip": null
   },
   {
    "file": "types2.php",
-   "line": 134,
+   "line": 136,
    "identifier": "staticProperty.notFound",
    "message": "Access to an undefined static property Types2\\Mixer::$shared.",
    "tip": null
   },
   {
    "file": "types2.php",
-   "line": 137,
+   "line": 139,
    "identifier": "property.notFound",
    "message": "Access to an undefined property Types2\\Mixer::$none.",
    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
   },
   {
    "file": "types2.php",
-   "line": 140,
+   "line": 142,
    "identifier": "method.notFound",
    "message": "Call to an undefined method Countable&Types2\\Base::nothing().",
    "tip": null
   },
   {
    "file": "types2.php",
-   "line": 141,
+   "line": 143,
    "identifier": "property.notFound",
    "message": "Access to an undefined property Countable&Types2\\Base::$own.",
    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
   },
   {
    "file": "types2.php",
-   "line": 161,
+   "line": 163,
    "identifier": "property.notFound",
    "message": "Access to an undefined property Types2\\Selfish::$nope.",
    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
   },
   {
    "file": "types2.php",
-   "line": 167,
+   "line": 169,
    "identifier": "new.static",
    "message": "Unsafe usage of new static().",
    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
   },
   {
    "file": "types2.php",
-   "line": 172,
+   "line": 174,
    "identifier": "property.notFound",
    "message": "Access to an undefined property Types2\\Selfish::$nope2.",
    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"

@@ -56,8 +56,7 @@ impl<'a> Checker<'a, '_> {
     fn class_of<'t>(t: &'t Type) -> Option<&'t str> {
         match t {
             Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
-            Type::Closure(_) => Some("Closure"),
-            _ => None,
+            t => matches!(t, Type::Closure(_)).then_some("Closure"),
         }
     }
 
@@ -93,7 +92,10 @@ impl<'a> Checker<'a, '_> {
             Type::Union(ts) => all(ts.iter().map(|t| self.has_method(t, name))),
             Type::Benevolent(ts) | Type::Intersection(ts) => any(ts.iter().map(|t| self.has_method(t, name))),
             Type::Template(tt) => self.has_method(&tt.bound, name),
-            Type::Mixed { .. } | Type::ObjectWithoutClass | Type::Callable(None) | Type::Iterable(..) | Type::Error => {
+            // (`Callable(None)` as a nested pattern leaves an uncovered region on the `match` line)
+            t if matches!(t, Type::Mixed { .. } | Type::ObjectWithoutClass | Type::Iterable(..) | Type::Error)
+                || matches!(t, Type::Callable(None)) =>
+            {
                 Tri::Maybe
             }
             // (what Pun does not see is taken as there: the call is not checked further)

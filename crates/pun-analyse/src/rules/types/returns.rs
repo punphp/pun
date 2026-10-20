@@ -16,14 +16,21 @@ pub const IDENTIFIERS: &[&str] = &["return.type", "return.empty", "return.void"]
 #[derive(Default)]
 struct Returns<'ast, 'arena> {
     returns: Vec<&'ast Return<'arena>>,
+    yields: Vec<&'ast Yield<'arena>>,
+    /// The expressions that are statements.
+    statements: Vec<Span>,
     generator: bool,
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Returns<'ast, 'arena> {
+    fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
+        self.statements.push(s.expression.span());
+    }
     fn walk_in_return(&mut self, r: &'ast Return<'arena>, _: &mut ()) {
         self.returns.push(r);
     }
-    fn walk_in_yield(&mut self, _: &'ast Yield<'arena>, _: &mut ()) {
+    fn walk_in_yield(&mut self, y: &'ast Yield<'arena>, _: &mut ()) {
+        self.yields.push(y);
         self.generator = true;
     }
     fn walk_closure(&mut self, _: &'ast Closure<'arena>, _: &mut ()) {}
@@ -46,7 +53,25 @@ fn returns<'ast, 'arena>(b: &'ast Block<'arena>) -> Returns<'ast, 'arena> {
 
 /// The returned values whose types the rules read, of the function-likes with a body.
 pub(super) fn typed(b: &Block, spans: &mut Vec<Span>) {
-    spans.extend(returns(b).returns.iter().filter_map(|r| r.value).map(|v| v.span()));
+    let r = returns(b);
+    spans.extend(r.returns.iter().filter_map(|r| r.value).map(|v| v.span()));
+    for y in &r.yields {
+        super::yields::typed(y, spans);
+    }
+}
+
+/// The yields of an arrow function's expression.
+fn arrow_yields<'ast, 'arena>(e: &'ast Expression<'arena>) -> Vec<&'ast Yield<'arena>> {
+    let mut r = Returns::default();
+    r.walk_expression(e, &mut ());
+    r.yields
+}
+
+/// [`typed()`] of an arrow function.
+pub(super) fn typed_arrow(e: &Expression, spans: &mut Vec<Span>) {
+    for y in arrow_yields(e) {
+        super::yields::typed(y, spans);
+    }
 }
 
 /// `declare(strict_types=1)` in the file.
@@ -118,6 +143,8 @@ fn body(c: &mut Checker, b: &Block, ret: &Type, of: &str) {
     for ret_stmt in &r.returns {
         check(c, ret, ret_stmt.value, ret_stmt.span(), of, r.generator);
     }
+    let strict = strict_types(c);
+    super::yields::check(c, &r.yields, &r.statements, ret, strict);
 }
 
 pub(in super::super) fn function(c: &mut Checker, f: &Function) {
@@ -174,6 +201,8 @@ pub(in super::super) fn arrow_function(c: &mut Checker, f: &ArrowFunction) {
     }
     let generator = matches!(&ret, Type::Object(n, _) if n.eq_ignore_ascii_case("Generator"));
     check(c, &ret, Some(f.expression), f.expression.span(), "Anonymous function", generator);
+    let strict = strict_types(c);
+    super::yields::check(c, &arrow_yields(f.expression), &[], &ret, strict);
 }
 
 /// The hooks of property `name` (with its `$`): a `get` hook returns the property's type (an `=> expr` body is its

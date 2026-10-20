@@ -142,6 +142,545 @@
    "tip": null
   },
   {
+   "file": "src/checks.php",
+   "line": 47,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\Checks\\Checker::assertString() with string will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 48,
+   "identifier": "method.impossibleType",
+   "message": "Call to method DeadCode\\Checks\\Checker::assertString() with int will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 50,
+   "identifier": "staticMethod.alreadyNarrowedType",
+   "message": "Call to static method DeadCode\\Checks\\Checker::staticString() with string will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 51,
+   "identifier": "staticMethod.impossibleType",
+   "message": "Call to static method DeadCode\\Checks\\Checker::staticString() with int will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 58,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 59,
+   "identifier": "function.impossibleType",
+   "message": "Call to function is_string() with int will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 61,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assert() with true will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 62,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 63,
+   "identifier": "function.impossibleType",
+   "message": "Call to function assertInt() with string will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 65,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 66,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertNotNull() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 68,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertThree() with arguments 1, 2 and 'c' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 69,
+   "identifier": "function.impossibleType",
+   "message": "Call to function assertThree() with arguments 1, 2 and 3 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 71,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 81,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 42,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 49,
+   "identifier": "if.alwaysFalse",
+   "message": "If condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 58,
+   "identifier": "elseif.alwaysTrue",
+   "message": "Elseif condition is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 89,
+   "identifier": "elseif.alwaysFalse",
+   "message": "Elseif condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 98,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 107,
+   "identifier": "booleanNot.alwaysTrue",
+   "message": "Negated boolean expression is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 127,
+   "identifier": "booleanOr.rightAlwaysTrue",
+   "message": "Right side of || is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 147,
+   "identifier": "logicalXor.rightAlwaysTrue",
+   "message": "Right side of xor is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 167,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 167,
+   "identifier": "booleanAnd.rightAlwaysTrue",
+   "message": "Right side of && is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 185,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 188,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 191,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 194,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method Conditions\\Checks::isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 197,
+   "identifier": "staticMethod.alreadyNarrowedType",
+   "message": "Call to static method Conditions\\Checks::isIntStatic() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 200,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 203,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 281,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 282,
+   "identifier": "booleanAnd.rightAlwaysTrue",
+   "message": "Right side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 283,
+   "identifier": "booleanAnd.rightAlwaysFalse",
+   "message": "Right side of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 284,
+   "identifier": "booleanOr.rightAlwaysTrue",
+   "message": "Right side of || is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 285,
+   "identifier": "booleanOr.rightAlwaysFalse",
+   "message": "Right side of || is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 286,
+   "identifier": "logicalAnd.leftAlwaysTrue",
+   "message": "Left side of and is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 287,
+   "identifier": "logicalOr.rightAlwaysTrue",
+   "message": "Right side of or is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 288,
+   "identifier": "logicalXor.leftAlwaysTrue",
+   "message": "Left side of xor is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 289,
+   "identifier": "logicalXor.rightAlwaysFalse",
+   "message": "Right side of xor is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 290,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 291,
+   "identifier": "booleanNot.alwaysTrue",
+   "message": "Negated boolean expression is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 293,
+   "identifier": "ternary.alwaysTrue",
+   "message": "Ternary operator condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 294,
+   "identifier": "ternary.alwaysFalse",
+   "message": "Ternary operator condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 295,
+   "identifier": "booleanAnd.resultUnused",
+   "message": "Unused result of \"&&\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 296,
+   "identifier": "booleanOr.resultUnused",
+   "message": "Unused result of \"||\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 302,
+   "identifier": "booleanAnd.leftAlwaysFalse",
+   "message": "Left side of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 308,
+   "identifier": "booleanOr.leftAlwaysTrue",
+   "message": "Left side of || is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 314,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 314,
+   "identifier": "booleanAnd.alwaysFalse",
+   "message": "Result of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 320,
+   "identifier": "while.alwaysFalse",
+   "message": "While loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 345,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 357,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 375,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 393,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 402,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 409,
+   "identifier": "doWhile.alwaysFalse",
+   "message": "Do-while loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 444,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 460,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"match ($b) {\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 469,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 470,
+   "identifier": "notIdentical.alwaysFalse",
+   "message": "Strict comparison using !== between 1 and 1 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 471,
+   "identifier": "equal.alwaysFalse",
+   "message": "Loose comparison using == between 1 and 2 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 472,
+   "identifier": "notEqual.alwaysTrue",
+   "message": "Loose comparison using != between 1 and 2 will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 473,
+   "identifier": "smaller.alwaysTrue",
+   "message": "Comparison operation \"<\" between 1 and 2 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 474,
+   "identifier": "greater.alwaysFalse",
+   "message": "Comparison operation \">\" between 1 and 2 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 475,
+   "identifier": "smallerOrEqual.alwaysTrue",
+   "message": "Comparison operation \"<=\" between 1 and 2 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 476,
+   "identifier": "greaterOrEqual.alwaysFalse",
+   "message": "Comparison operation \">=\" between 1 and 2 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 477,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between Conditions\\Checks and Conditions\\Checks will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 478,
+   "identifier": "instanceof.alwaysFalse",
+   "message": "Instanceof between Conditions\\Checks and Exception will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 486,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 498,
+   "identifier": "equal.alwaysTrue",
+   "message": "Loose comparison using == between 1 and 1 will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 505,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between Conditions\\Checks and Conditions\\Checks will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 519,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "Use match expression instead. PHPStan will report unhandled enum cases."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 522,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "\u2022 Remove remaining cases below this one and this error will disappear too.\n\u2022 Use match expression instead. PHPStan will report unhandled enum cases."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 528,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 552,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
    "file": "src/noop.php",
    "line": 20,
    "identifier": "impureFunction.pure",

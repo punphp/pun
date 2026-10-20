@@ -122,8 +122,10 @@ function probe(\Closure $closure, object $shape, Leaf $leaf, Base $base, mixed $
  * @param Base&\Countable $i
  * @param ($a is int ? Leaf : Base) $cond
  */
-function more($u, $i, $cond, int $a, Leaf|Middle $lb): void
+function more($u, $i, $cond, int $a, Leaf|Middle $lb, int|Leaf $il): void
 {
+    $il->instance();
+    $_ = $il->own;
     $lb->instance();
     $_ = $lb->zzz;
     $_ = random_int($a, 5);

@@ -1,0 +1,74 @@
+{
+    "test": "Arrays/UnpackIterableInArrayRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Arrays/data/unpack-iterable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/unpack-iterable.php",
+                    "line": 22,
+                    "identifier": "arrayUnpacking.nonIterable",
+                    "message": "Only iterables can be unpacked, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/unpack-iterable.php",
+                    "line": 23,
+                    "identifier": "arrayUnpacking.nonIterable",
+                    "message": "Only iterables can be unpacked, string given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Arrays/data/unpack-iterable-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#0",
+            "files": [
+                "Arrays/data/unpack-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#1",
+            "files": [
+                "Arrays/data/unpack-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#2",
+            "files": [
+                "Arrays/data/unpack-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#3",
+            "files": [
+                "Arrays/data/unpack-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

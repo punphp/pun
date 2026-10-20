@@ -378,7 +378,7 @@ impl Type {
         self.query(&|t| Tri::from(matches!(t, Type::Float | Type::ConstFloat(_))))
     }
 
-    fn is_boolean(&self) -> Tri {
+    pub fn is_boolean(&self) -> Tri {
         self.query(&|t| Tri::from(matches!(t, Type::Bool | Type::ConstBool(_))))
     }
 
@@ -476,6 +476,25 @@ impl Type {
             Type::ObjectWithoutClass | Type::ObjectShape(_) => Tri::Maybe,
             _ => Tri::No,
         })
+    }
+
+    /// `isCloneable()`: an object, `mixed` and `never`; a common callable or iterable maybe.
+    pub fn is_cloneable(&self) -> Tri {
+        match self {
+            Type::Mixed { .. } | Type::Error | Type::Never(_) => Tri::Yes,
+            Type::Template(t) => t.bound.is_cloneable(),
+            _ => self.query(&|t| match t {
+                Type::Object(..)
+                | Type::ObjectWithoutClass
+                | Type::ObjectShape(_)
+                | Type::Static(..)
+                | Type::This(_)
+                | Type::EnumCase(..)
+                | Type::Closure(_) => Tri::Yes,
+                Type::Callable(_) | Type::Iterable(..) => Tri::Maybe,
+                _ => Tri::No,
+            }),
+        }
     }
 
     pub fn is_iterable_at_least_once(&self) -> Tri {
@@ -1963,10 +1982,12 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         },
         T::Conditional(c) => conditional_super(c, b),
         T::Union(types) | T::Benevolent(types) => {
+            // a TemplateBenevolentUnionType is a UnionType but not a TemplateUnionType
             if matches!(
                 b,
                 T::Union(_) | T::Benevolent(_) | T::Iterable(..) | T::Never(_) | T::IntRange(..)
-            ) {
+            ) || matches!(b, T::Template(tpl) if matches!(tpl.bound, T::Benevolent(_)))
+            {
                 return is_sub_type_of(b, a);
             }
             let mut result = Tri::No;
@@ -1979,7 +2000,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             }
             // a TemplateUnionType or a conditional also answers as a whole
             let whole = matches!(b, T::Conditional(_))
-                || matches!(b, T::Template(tpl) if matches!(tpl.bound, T::Union(_)));
+                || matches!(b, T::Template(tpl) if matches!(tpl.bound, T::Union(_) | T::Benevolent(_)));
             if whole {
                 result = result.or(is_sub_type_of(b, a));
             }

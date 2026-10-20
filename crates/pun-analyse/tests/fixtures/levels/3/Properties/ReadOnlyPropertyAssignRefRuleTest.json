@@ -1,0 +1,57 @@
+{
+    "test": "Properties/ReadOnlyPropertyAssignRefRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/readonly-assign-ref.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-assign-ref.php",
+                    "line": 8,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyAssignRef\\Foo has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref.php",
+                    "line": 10,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyAssignRef\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref.php",
+                    "line": 14,
+                    "identifier": "property.readOnlyAssignByRef",
+                    "message": "Readonly property ReadOnlyPropertyAssignRef\\Foo::$foo is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref.php",
+                    "line": 15,
+                    "identifier": "property.readOnlyAssignByRef",
+                    "message": "Readonly property ReadOnlyPropertyAssignRef\\Foo::$bar is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref.php",
+                    "line": 25,
+                    "identifier": "property.assignByRef",
+                    "message": "Property ReadOnlyPropertyAssignRef\\Foo::$foo with private visibility is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref.php",
+                    "line": 26,
+                    "identifier": "property.assignByRef",
+                    "message": "Property ReadOnlyPropertyAssignRef\\Foo::$bar with protected(set) visibility is assigned by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

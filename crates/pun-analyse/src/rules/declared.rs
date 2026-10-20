@@ -67,6 +67,7 @@ pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> N
                 .templates
                 .insert(t.name.clone(), Type::Template(Box::new(t)));
         }
+        scope.templates.extend(super::type_aliases::class_aliases(c, k));
     }
     scope
 }
@@ -602,19 +603,21 @@ fn merge(
             .map(|p| text(&p.name.0.as_bytes()[1..]))
             .collect()
     };
-    if out.ret.is_none() {
-        out.ret = parent.ret;
-    }
-    let rename = |name: String| {
+    let mapped = |name: &str| {
         parent_names
             .iter()
-            .position(|n| *n == name)
+            .position(|n| n == name)
             .and_then(|i| positional.get(i))
             .cloned()
-            .unwrap_or(name)
     };
+    let rename = |name: String| mapped(&name).unwrap_or(name);
+    // `transformConditionalReturnTypeWithParameterNameMapping()`
+    let types = |t: Type| rename_conditionals(&t, &mapped);
+    if out.ret.is_none() {
+        out.ret = parent.ret.map(types);
+    }
     for (name, ty) in parent.params {
-        out.params.entry(rename(name)).or_insert(ty);
+        out.params.entry(rename(name)).or_insert_with(|| types(ty));
     }
     if out.self_out.is_none() {
         out.self_out = parent.self_out;
@@ -623,9 +626,71 @@ fn merge(
         out.outs.entry(rename(name)).or_insert(ty);
     }
     for (name, ty) in parent.closure_this {
-        out.closure_this.entry(rename(name)).or_insert(ty);
+        out.closure_this.entry(rename(name)).or_insert_with(|| types(ty));
     }
     out
+}
+
+/// The conditional types on a parameter `mapped` names differently, renamed.
+fn rename_conditionals(t: &Type, mapped: &dyn Fn(&str) -> Option<String>) -> Type {
+    let t = match t {
+        Type::Conditional(c) => match &c.subject {
+            pun_phpstan::types::Subject::Parameter(p) => match mapped(&p[1..]) {
+                Some(name) => Type::Conditional(Box::new(pun_phpstan::types::Conditional {
+                    subject: pun_phpstan::types::Subject::Parameter(format!("${name}")),
+                    ..(**c).clone()
+                })),
+                None => t.clone(),
+            },
+            _ => t.clone(),
+        },
+        _ => t.clone(),
+    };
+    t.traverse(&|i| rename_conditionals(i, mapped))
+}
+
+/// The `NameScope` of method `m`'s own PHPDoc `doc`: the class's templates (a trait's as `context` uses it) and
+/// the method's.
+pub fn method_scope(
+    c: &Checker,
+    m: &Method,
+    doc: &Doc,
+    k: &ClassLikeMetadata,
+    context: &ClassLikeMetadata,
+) -> NameScope {
+    let mut scope = scope_at(c, m.span(), Some(context));
+    if k.kind == SymbolKind::Trait && !std::ptr::eq(k, context) {
+        scope.templates.extend(trait_templates(c, k, context));
+    } else {
+        for t in class_templates(c, k) {
+            scope
+                .templates
+                .insert(t.name.clone(), Type::Template(Box::new(t)));
+        }
+    }
+    let method = text(m.name.value);
+    for t in templates(
+        doc,
+        &scope,
+        &format!("method {}::{method}()", original_name(context)),
+    ) {
+        scope
+            .templates
+            .insert(t.name.clone(), Type::Template(Box::new(t)));
+    }
+    scope
+}
+
+/// The `NameScope` of function `f`'s own PHPDoc `doc`, with its templates.
+pub fn function_scope(c: &Checker, f: &Function, doc: &Doc) -> NameScope {
+    let mut scope = scope_at(c, f.span(), None);
+    let name = text(c.names.get(&f.name.span()));
+    for t in templates(doc, &scope, &format!("function {name}()")) {
+        scope
+            .templates
+            .insert(t.name.clone(), Type::Template(Box::new(t)));
+    }
+    scope
 }
 
 /// The parameters and return type of a method declared in the analysed file, in class-like `class` (`k`, the one
@@ -638,26 +703,7 @@ pub fn method(
 ) -> Signature {
     let own = doc_before(&c.file.contents, m.span().start.offset as usize).map(|doc| {
         let doc = Doc::parse(doc);
-        let mut scope = scope_at(c, m.span(), Some(context));
-        if k.kind == SymbolKind::Trait && !std::ptr::eq(k, context) {
-            scope.templates.extend(trait_templates(c, k, context));
-        } else {
-            for t in class_templates(c, k) {
-                scope
-                    .templates
-                    .insert(t.name.clone(), Type::Template(Box::new(t)));
-            }
-        }
-        let method = text(m.name.value);
-        for t in templates(
-            &doc,
-            &scope,
-            &format!("method {}::{method}()", original_name(context)),
-        ) {
-            scope
-                .templates
-                .insert(t.name.clone(), Type::Template(Box::new(t)));
-        }
+        let scope = method_scope(c, m, &doc, k, context);
         Resolved {
             params: doc
                 .param_types(&scope)
@@ -692,13 +738,7 @@ pub fn function(c: &Checker, f: &Function) -> Signature {
     let resolved = doc_before(&c.file.contents, f.span().start.offset as usize)
         .map(|doc| {
             let doc = Doc::parse(doc);
-            let mut scope = scope_at(c, f.span(), None);
-            let name = text(c.names.get(&f.name.span()));
-            for t in templates(&doc, &scope, &format!("function {name}()")) {
-                scope
-                    .templates
-                    .insert(t.name.clone(), Type::Template(Box::new(t)));
-            }
+            let scope = function_scope(c, f, &doc);
             Resolved {
                 params: doc
                     .param_types(&scope)
@@ -923,31 +963,57 @@ fn inherited_property_doc(
                 .get(&text(name))
                 .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
         }
-        // Mago gives a plain property only its name's span: its declaration starts at the modifiers and type before it
-        // ponytail: not past an attribute, nor to the first item of `public $a, $b`
-        let span = p.span.or_else(|| {
-            let mut span = p.name_span?;
-            let contents = file_contents(c, span.file_id)?;
-            let before = contents[..span.start.offset as usize]
-                .iter()
-                .rev()
-                .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
-                .count();
-            span.start.offset -= before as u32;
-            Some(span)
-        });
-        let own = span.and_then(|span| {
-            let (doc, _) = doc_at(c, span)?;
-            let doc = Doc::parse(&doc);
-            let scope = scope_at(c, span, Some(declaring));
-            doc.var_types(&scope)
-                .into_iter()
-                .find(|(n, _)| n.is_empty() || n.as_bytes() == name)
-                .map(|(_, t)| t)
-        });
+        let own = own_property_doc(c, declaring, p, name);
         return own.or_else(|| inherited_property_doc(c, declaring, name, depth + 1));
     }
     None
+}
+
+/// A property's declaration: Mago gives a plain property only its name's span, and the declaration starts at the
+/// modifiers and type before it.
+// ponytail: not past an attribute, nor to the first item of `public $a, $b`
+pub fn property_span(c: &Checker, p: &mago_codex::metadata::property::PropertyMetadata) -> Option<Span> {
+    p.span.or_else(|| {
+        let mut span = p.name_span?;
+        let contents = file_contents(c, span.file_id)?;
+        let before = contents[..span.start.offset as usize]
+            .iter()
+            .rev()
+            .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
+            .count();
+        span.start.offset -= before as u32;
+        Some(span)
+    })
+}
+
+/// The `@var` of property `name` (without `$`) in its own declaration's PHPDoc.
+fn own_property_doc(
+    c: &Checker,
+    declaring: &ClassLikeMetadata,
+    p: &mago_codex::metadata::property::PropertyMetadata,
+    name: &[u8],
+) -> Option<Type> {
+    property_span(c, p).and_then(|span| {
+        let (doc, _) = doc_at(c, span)?;
+        let doc = Doc::parse(&doc);
+        let scope = scope_at(c, span, Some(declaring));
+        doc.var_types(&scope).into_iter().find(|(n, _)| n.is_empty() || n.as_bytes() == name).map(|(_, t)| t)
+    })
+}
+
+/// A property of any file: `decideType()` of its native type and its `@var` (its own, else an inherited one).
+pub fn property_of(
+    c: &Checker,
+    declaring: &ClassLikeMetadata,
+    p: &mago_codex::metadata::property::PropertyMetadata,
+    name: &[u8],
+) -> Type {
+    let native = p.type_declaration_metadata.as_ref().map(|t| from_tunion(c, &t.type_union, declaring));
+    let phpdoc = own_property_doc(c, declaring, p, name).or_else(|| inherited_property_doc(c, declaring, name, 0));
+    match native {
+        Some(n) => decide_type(n, phpdoc),
+        None => phpdoc.unwrap_or_else(mixed),
+    }
 }
 
 /// The `NameScope` of a class-like's own PHPDoc (at `span`), with its templates.

@@ -1,0 +1,96 @@
+{
+    "test": "Generators/YieldTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generators/data/yield.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 14,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 15,
+                    "identifier": "generator.keyType",
+                    "message": "Generator expects key type string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 15,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type int, null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 16,
+                    "identifier": "generator.keyType",
+                    "message": "Generator expects key type string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 17,
+                    "identifier": "generator.keyType",
+                    "message": "Generator expects key type string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 17,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 25,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type array{0: DateTime, 1: DateTime, 2: stdClass, 4: DateTimeImmutable}, array{DateTime, DateTime, stdClass, DateTimeImmutable} given.",
+                    "tip": "Array does not have offset 4."
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 137,
+                    "identifier": "generator.void",
+                    "message": "Result of yield (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield.php",
+                    "line": 138,
+                    "identifier": "generator.void",
+                    "message": "Result of yield (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7484",
+            "files": [
+                "Generators/data/bug-7484.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testYieldOversizedSelfRejection",
+            "files": [
+                "Generators/data/bug-yield-oversized-self-rejection.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

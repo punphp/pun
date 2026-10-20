@@ -1,0 +1,130 @@
+{
+    "test": "Comparison/WhileLoopAlwaysTrueConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/while-loop-true.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/while-loop-true.php",
+                    "line": 10,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/while-loop-true.php",
+                    "line": 20,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/while-loop-true.php",
+                    "line": 30,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between string and null will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/while-loop-true.php",
+                    "line": 65,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRulePHP81",
+            "files": [
+                "Comparison/data/while-loop-true-php81.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10054",
+            "files": [
+                "Comparison/data/bug-10054.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6189",
+            "files": [
+                "Comparison/data/bug-6189.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6189.php",
+                    "line": 33,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6189.php",
+                    "line": 44,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/while-true-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/while-true-in-trait.php",
+                    "line": 19,
+                    "identifier": "while.alwaysTrue",
+                    "message": "While loop condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/while-true-in-trait.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method WhileTrueInTrait\\Foo::doBar() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/while-true-in-trait.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method WhileTrueInTrait\\Foo::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/while-true-in-trait.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method WhileTrueInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/while-true-in-trait.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method WhileTrueInTrait\\FooAnother::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

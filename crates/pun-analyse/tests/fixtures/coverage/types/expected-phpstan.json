@@ -86,6 +86,209 @@
    "tip": null
   },
   {
+   "file": "properties.php",
+   "line": 19,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 34,
+   "identifier": "property.readOnlyAssignNotOnThis",
+   "message": "Readonly property CoverageProperties\\Holder::$r is not assigned on $this.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 40,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 41,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 43,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 44,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 49,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 50,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 51,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 52,
+   "identifier": "property.readOnlyAssignByRef",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned by reference.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 55,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$magic (string) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 56,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 70,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder|CoverageProperties\\Other::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 76,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 83,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Frozen::$a is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 96,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 97,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 103,
+   "identifier": "assign.propertyProtectedSet",
+   "message": "Assign to protected(set) property CoverageProperties\\Holder::$r.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 104,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 105,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 106,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 107,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Suit::$value is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 108,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Frozen::$a is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 109,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 115,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class CoverageProperties\\Hooked has an uninitialized @readonly property $h. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 124,
+   "identifier": "classConstant.value",
+   "message": "Constant CoverageProperties\\Constants::NATIVE (int) does not accept value 'a'.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 127,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant CoverageProperties\\Constants::DOC with type string is incompatible with value 1.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 130,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant CoverageProperties\\Constants::MAYBE2 with type true is not subtype of value bool.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 133,
+   "identifier": "classConstant.value",
+   "message": "Constant CoverageProperties\\Constants::BOTH (int<1, 5>) does not accept value 9.",
+   "tip": null
+  },
+  {
    "file": "types.php",
    "line": 20,
    "identifier": "void.pure",
@@ -398,6 +601,244 @@
    "line": 287,
    "identifier": "return.void",
    "message": "Function CoverageTypes\\growingList() with return type void returns list<int> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 10,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageValues\\UnknownThrowable not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 10,
+   "identifier": "class.notFound",
+   "message": "Throwing object of an unknown class CoverageValues\\UnknownThrowable.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 15,
+   "identifier": "throw.notThrowable",
+   "message": "Invalid type int to throw.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 21,
+   "identifier": "clone.nonObject",
+   "message": "Cannot clone non-object variable $s of type string.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 22,
+   "identifier": "clone.nonObject",
+   "message": "Cannot clone non-object variable $s of type string.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 23,
+   "identifier": "clone.nonObject",
+   "message": "Cannot clone non-object variable $x of type int|string.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 24,
+   "identifier": "class.notFound",
+   "message": "Cloning object of an unknown class CoverageValues\\UnknownCloned.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 24,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageValues\\UnknownCloned not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 30,
+   "identifier": "foreach.nonIterable",
+   "message": "Argument of an invalid type string supplied for foreach, only iterables are supported.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 32,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageValues\\UnknownIterated not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 32,
+   "identifier": "class.notFound",
+   "message": "Iterating over an object of an unknown class CoverageValues\\UnknownIterated.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 36,
+   "identifier": "arrayUnpacking.nonIterable",
+   "message": "Only iterables can be unpacked, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 37,
+   "identifier": "arrayUnpacking.nonIterable",
+   "message": "Only iterables can be unpacked, string given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 44,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Invalid array key type stdClass.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 55,
+   "identifier": "generator.keyType",
+   "message": "Generator expects key type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 56,
+   "identifier": "generator.valueType",
+   "message": "Generator expects value type int, string given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 57,
+   "identifier": "generator.keyType",
+   "message": "Generator expects key type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 57,
+   "identifier": "generator.valueType",
+   "message": "Generator expects value type int, null given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 59,
+   "identifier": "generator.nonIterable",
+   "message": "Argument of an invalid type int passed to yield from, only iterables are supported.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 60,
+   "identifier": "generator.sendType",
+   "message": "Generator expects delegated TSend type void, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 61,
+   "identifier": "generator.sendType",
+   "message": "Generator expects delegated TSend type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 62,
+   "identifier": "generator.sendType",
+   "message": "Generator expects delegated TSend type void, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 62,
+   "identifier": "generator.void",
+   "message": "Result of yield from (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 63,
+   "identifier": "generator.keyType",
+   "message": "Generator expects key type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 70,
+   "identifier": "generator.void",
+   "message": "Result of yield (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 82,
+   "identifier": "generator.returnType",
+   "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 88,
+   "identifier": "return.missing",
+   "message": "Function CoverageValues\\neverYielding() should return *NEVER* but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 88,
+   "identifier": "generator.returnType",
+   "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 102,
+   "identifier": "void.pure",
+   "message": "Function CoverageValues\\anonymous() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 116,
+   "identifier": "property.defaultValue",
+   "message": "Property CoverageValues\\Defaults::$wrong (string) does not accept default value of type int.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 117,
+   "identifier": "property.defaultValue",
+   "message": "Static property CoverageValues\\Defaults::$staticWrong (string) does not accept default value of type int.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 121,
+   "identifier": "property.defaultValue",
+   "message": "Property CoverageValues\\Defaults::$doc (list<int>) does not accept default value of type array{'a'}.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 122,
+   "identifier": "property.defaultValue",
+   "message": "Property CoverageValues\\Defaults::$hooked (string) does not accept default value of type int.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 128,
+   "identifier": "generator.outOfFunction",
+   "message": "Yield can be used only inside a function.",
    "tip": null
   }
  ]

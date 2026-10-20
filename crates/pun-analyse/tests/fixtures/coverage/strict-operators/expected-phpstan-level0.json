@@ -1,0 +1,19 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "operators.php",
+   "line": 23,
+   "identifier": "booleanAnd.leftNotBoolean",
+   "message": "Only booleans are allowed in &&, T given on the left side.",
+   "tip": null
+  },
+  {
+   "file": "operators.php",
+   "line": 33,
+   "identifier": "booleanAnd.leftNotBoolean",
+   "message": "Only booleans are allowed in &&, $this(StrictOperators\\Foo) given on the left side.",
+   "tip": null
+  }
+ ]
+}

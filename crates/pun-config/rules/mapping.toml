@@ -1052,31 +1052,31 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/non-boolean-while" = { preset = "strict", status = "decided" }
 "control-flow/switch-type-mismatch" = { preset = "strict", status = "decided" }
 "control-flow/unhandled-match" = { preset = "recommended", status = "decided" }
-"dead-code/boolean-and-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/boolean-not-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/boolean-or-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/call-condition-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/boolean-and-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/boolean-not-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/boolean-or-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/call-condition-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/discarded-function-result" = { preset = "basic", status = "decided" }
 "dead-code/discarded-method-result" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/discarded-static-method-result" = { preset = "basic", ported = true, status = "decided" }
-"dead-code/do-while-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/elseif-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/do-while-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/elseif-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/finally-overrides-exit" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/if-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/if-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-in-array" = { preset = "recommended", status = "decided" }
-"dead-code/impossible-instanceof" = { preset = "recommended", fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
-"dead-code/impossible-method-type-check" = { preset = "recommended", status = "decided" }
-"dead-code/impossible-static-type-check" = { preset = "recommended", status = "decided" }
-"dead-code/impossible-type-check" = { preset = "recommended", status = "decided" }
-"dead-code/loose-comparison-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/number-comparison-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/impossible-instanceof" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
+"dead-code/impossible-method-type-check" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/impossible-static-type-check" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/impossible-type-check" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/loose-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/number-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-function-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-new-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-static-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/redundant-null-coalesce" = { preset = "basic", status = "decided" }
-"dead-code/strict-comparison-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/ternary-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/strict-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/ternary-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/trait-condition-always-constant" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unreachable-code" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unreachable-code"], ported = true, status = "decided" }
 "dead-code/unused-argument" = { preset = "basic", ported = true, status = "decided" }
@@ -1093,9 +1093,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-static-method-result" = { preset = "recommended", status = "decided" }
 "dead-code/unused-trait" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/useless-return-value" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/while-always-false" = { preset = "recommended", status = "decided" }
-"dead-code/while-always-true" = { preset = "recommended", status = "decided" }
-"dead-code/xor-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/while-always-false" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/while-always-true" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/xor-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "debug/assert-type" = { preset = "basic", status = "decided" }
 "debug/dump-native-type" = { preset = "basic", status = "decided" }
 "debug/dump-phpdoc-type" = { preset = "basic", status = "decided" }
@@ -1145,28 +1145,28 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/unused-view" = { preset = "recommended", status = "decided" }
 "laravel/useless-value-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-value-call"], status = "decided" }
 "laravel/useless-with-call" = { preset = "recommended", fixed_by = ["lint/laravel/no-useless-with-call"], status = "decided" }
-"operators/non-boolean-and-operand" = { preset = "strict", status = "decided" }
-"operators/non-boolean-not-operand" = { preset = "strict", status = "decided" }
-"operators/non-boolean-or-operand" = { preset = "strict", status = "decided" }
-"operators/non-numeric-addition" = { preset = "strict", status = "decided" }
-"operators/non-numeric-division" = { preset = "strict", status = "decided" }
-"operators/non-numeric-exponentiation" = { preset = "strict", status = "decided" }
-"operators/non-numeric-modulo" = { preset = "strict", status = "decided" }
-"operators/non-numeric-multiplication" = { preset = "strict", status = "decided" }
-"operators/non-numeric-post-decrement" = { preset = "strict", status = "decided" }
-"operators/non-numeric-post-increment" = { preset = "strict", status = "decided" }
-"operators/non-numeric-pre-decrement" = { preset = "strict", status = "decided" }
-"operators/non-numeric-pre-increment" = { preset = "strict", status = "decided" }
-"operators/non-numeric-subtraction" = { preset = "strict", status = "decided" }
-"operators/non-numeric-unary-minus" = { preset = "strict", status = "decided" }
-"operators/non-numeric-unary-plus" = { preset = "strict", status = "decided" }
-"phpdoc/constant-type-mismatch" = { preset = "essential", status = "decided" }
-"phpdoc/hook-type-mismatch" = { preset = "essential", status = "decided" }
+"operators/non-boolean-and-operand" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-boolean-not-operand" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-boolean-or-operand" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-addition" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-division" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-exponentiation" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-modulo" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-multiplication" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-post-decrement" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-post-increment" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-pre-decrement" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-pre-increment" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-subtraction" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-unary-minus" = { preset = "strict", ported = true, status = "decided" }
+"operators/non-numeric-unary-plus" = { preset = "strict", ported = true, status = "decided" }
+"phpdoc/constant-type-mismatch" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/hook-type-mismatch" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid" = { preset = "essential", ported = true, status = "decided" }
-"phpdoc/invalid-assert-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-conditional-return" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-method-assert-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-method-conditional-return" = { preset = "essential", status = "decided" }
+"phpdoc/invalid-assert-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-conditional-return" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-method-assert-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-method-conditional-return" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-method-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-mixin-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-param-callable-tag" = { preset = "essential", ported = true, status = "decided" }
@@ -1188,9 +1188,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/invalid-var-tag" = { preset = "essential", fixed_by = ["lint/dead-code/no-invalid-var-tag"], status = "decided" }
 "phpdoc/invalid-var-tag-type" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/misplaced-require-implements" = { preset = "essential", ported = true, status = "decided" }
-"phpdoc/property-type-mismatch" = { preset = "essential", status = "decided" }
+"phpdoc/property-type-mismatch" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/sealed-on-trait" = { preset = "basic", ported = true, status = "decided" }
-"phpdoc/type-mismatch" = { preset = "essential", status = "decided" }
+"phpdoc/type-mismatch" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/var-tag-type-mismatch" = { preset = "essential", status = "decided" }
 "statements/invalid-declare-strict-types" = { preset = "basic", ported = true, status = "decided" }
 "statements/invalid-empty" = { preset = "basic", status = "decided" }
@@ -1210,8 +1210,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/by-ref-foreach-on-expression" = { preset = "basic", status = "decided" }
 "types/call-user-func-argument" = { preset = "recommended", status = "decided" }
 "types/catch-non-throwable" = { preset = "basic", ported = true, status = "decided" }
-"types/class-constant-value" = { preset = "essential", status = "decided" }
-"types/clone-non-object" = { preset = "essential", status = "decided" }
+"types/class-constant-value" = { preset = "essential", ported = true, status = "decided" }
+"types/clone-non-object" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-return" = { preset = "essential", ported = true, status = "decided" }
 "types/constant-value" = { preset = "essential", status = "decided" }
@@ -1219,11 +1219,11 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/define-value" = { preset = "essential", status = "decided" }
 "types/echo-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/enum-template-not-allowed" = { preset = "essential", ported = true, status = "decided" }
-"types/foreach-non-iterable" = { preset = "essential", status = "decided" }
-"types/foreach-on-empty-array" = { preset = "recommended", status = "decided" }
+"types/foreach-non-iterable" = { preset = "essential", ported = true, status = "decided" }
+"types/foreach-on-empty-array" = { preset = "recommended", ported = true, status = "decided" }
 "types/function-return" = { preset = "essential", ported = true, status = "decided" }
 "types/function-variance" = { preset = "essential", status = "decided" }
-"types/generator" = { preset = "essential", status = "decided" }
+"types/generator" = { preset = "essential", ported = true, status = "decided" }
 "types/implode-non-string" = { preset = "recommended", ported = true, status = "decided" }
 "types/interpolated-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-arrow-function-signature" = { preset = "basic", ported = true, status = "decided" }
@@ -1244,7 +1244,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-method-signature" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-method-tag-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-method-template" = { preset = "essential", ported = true, status = "decided" }
-"types/invalid-offset" = { preset = "essential", status = "decided" }
+"types/invalid-offset" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-pipe" = { preset = "basic", status = "decided" }
 "types/invalid-property-assignment" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-property-type" = { preset = "basic", ported = true, status = "decided" }
@@ -1279,16 +1279,16 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/param-out" = { preset = "essential", status = "decided" }
 "types/param-out-at-end" = { preset = "essential", status = "decided" }
-"types/phpdoc-readonly-by-ref" = { preset = "essential", status = "decided" }
-"types/phpdoc-readonly-property-write" = { preset = "essential", status = "decided" }
+"types/phpdoc-readonly-by-ref" = { preset = "essential", ported = true, status = "decided" }
+"types/phpdoc-readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/print-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/printf-argument" = { preset = "recommended", status = "decided" }
-"types/property-assign" = { preset = "essential", status = "decided" }
-"types/property-default" = { preset = "essential", status = "decided" }
+"types/property-assign" = { preset = "essential", ported = true, status = "decided" }
+"types/property-default" = { preset = "essential", ported = true, status = "decided" }
 "types/property-variance" = { preset = "essential", status = "decided" }
 "types/random-int-range" = { preset = "recommended", ported = true, status = "decided" }
-"types/readonly-property-by-ref" = { preset = "essential", status = "decided" }
-"types/readonly-property-write" = { preset = "essential", status = "decided" }
+"types/readonly-property-by-ref" = { preset = "essential", ported = true, status = "decided" }
+"types/readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/redundant-array-values" = { preset = "recommended", ported = true, status = "decided" }
 "types/redundant-nullsafe" = { preset = "recommended", fixed_by = ["lint/complexity/no-redundant-nullsafe"], status = "decided" }
 "types/redundant-nullsafe-method-call" = { preset = "recommended", status = "decided" }
@@ -1297,7 +1297,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/sort-non-stringable" = { preset = "recommended", ported = true, status = "decided" }
 "types/this-in-global" = { preset = "basic", ported = true, status = "decided" }
 "types/this-in-static" = { preset = "basic", ported = true, status = "decided" }
-"types/throw-non-throwable" = { preset = "essential", status = "decided" }
+"types/throw-non-throwable" = { preset = "essential", ported = true, status = "decided" }
 "types/throws-not-covariant" = { preset = "basic", status = "decided" }
 "types/throws-void-function" = { preset = "essential", status = "decided" }
 "types/throws-void-hook" = { preset = "essential", status = "decided" }
@@ -1309,16 +1309,16 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/too-wide-method-param-out" = { preset = "recommended", status = "decided" }
 "types/too-wide-method-return" = { preset = "recommended", status = "decided" }
 "types/too-wide-property" = { preset = "recommended", status = "decided" }
-"types/unpack-non-iterable" = { preset = "essential", status = "decided" }
-"types/unpack-string-key" = { preset = "essential", status = "decided" }
+"types/unpack-non-iterable" = { preset = "essential", ported = true, status = "decided" }
+"types/unpack-string-key" = { preset = "essential", ported = true, status = "decided" }
 "types/unused-hook-throws-type" = { preset = "recommended", status = "decided" }
 "types/unused-method-throws-type" = { preset = "recommended", status = "decided" }
 "types/unused-throws-type" = { preset = "recommended", status = "decided" }
 "types/useless-array-filter" = { preset = "recommended", ported = true, status = "decided" }
 "types/void-match-used" = { preset = "essential", ported = true, status = "decided" }
-"types/write-to-readonly-property" = { preset = "basic", status = "decided" }
-"types/yield-from-non-iterable" = { preset = "essential", status = "decided" }
-"types/yield-outside-function" = { preset = "essential", status = "decided" }
+"types/write-to-readonly-property" = { preset = "basic", ported = true, status = "decided" }
+"types/yield-from-non-iterable" = { preset = "essential", ported = true, status = "decided" }
+"types/yield-outside-function" = { preset = "essential", ported = true, status = "decided" }
 "undefined/assigned-property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/assigned-static-property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/class-constant" = { preset = "basic", status = "decided" }

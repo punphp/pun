@@ -649,7 +649,7 @@ enum Holder<'a> {
 }
 
 /// `ClassReflection::hasStaticProperty()`.
-fn has_static_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
+pub(super) fn has_static_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
     native_property(c, k, property) == Some(true)
 }
 
