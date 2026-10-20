@@ -12,6 +12,7 @@ use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::symbol::SymbolKind;
 use mago_span::Span;
 use pun_phpstan::phpdoc::{self, Node};
 use pun_phpstan::resolve::{Scope, resolve_in};
@@ -20,7 +21,7 @@ use pun_phpstan::types::{Level, NeverKind, Type};
 
 use super::declared::{class_scope, original_name, with_classes};
 use super::doc::{NameScope, doc_before, tags};
-use super::{Checker, DISCOVERING_SYMBOLS_TIP};
+use super::{Checker, DISCOVERING_SYMBOLS_TIP, missing_types};
 
 /// A `@phpstan-type` tag: the alias and its type (`None`: an InvalidTypeNode, which resolves to `mixed`).
 #[derive(Clone)]
@@ -365,12 +366,16 @@ fn without_aliases<R>(f: impl FnOnce() -> R) -> R {
 
 /// The type aliases class-like `k` defines or imports, resolved (FileTypeMapper's `typeAliasesMap` of its members'
 /// PHPDocs): the NameScope of a member's PHPDoc tries them just before the templates.
-pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata) -> Vec<(String, Type)> {
+/// A trait's (`k`) in the context of `using`, the class using it.
+pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata, using: Option<&ClassLikeMetadata>) -> Vec<(String, Type)> {
     if RESOLVING.with(|r| r.replace(true)) {
         return Vec::new();
     }
     let resolver = Resolver::new(c);
     let class = original_name(k);
+    if let Some(doc) = using.and_then(|u| in_context(c, k, u)) {
+        resolver.docs.borrow_mut().insert(class.to_ascii_lowercase(), Some(Rc::new(doc)));
+    }
     let aliases = resolver.doc(&class).map_or_else(Vec::new, |doc| {
         let names = doc.names();
         names
@@ -568,7 +573,16 @@ fn definition_context(r: &Resolver, k: &ClassLikeMetadata, display: &str, out: &
         let ty = fresh(r, &doc, tag);
         if let Some(found) = error_type(&ty.0, ty.1, name) {
             out.push(found);
+            continue;
         }
+        let kind = match k.kind {
+            SymbolKind::Interface => "Interface",
+            SymbolKind::Trait => "Trait",
+            SymbolKind::Enum => "Enum",
+            _ => "Class",
+        };
+        let subject = format!("{kind} {display}");
+        out.extend(missing_types::parameter(r.c, &ty.0, &subject, &format!("type alias {name}")));
     }
 }
 
@@ -717,6 +731,17 @@ pub fn trait_definition(c: &mut Checker, at: Span, name: &str) {
     report(c, at, found);
 }
 
+/// The alias PHPDoc of trait `k` in the context of `using` (which `self`, `static` and `parent` mean).
+fn in_context(c: &Checker, k: &ClassLikeMetadata, using: &ClassLikeMetadata) -> Option<AliasDoc> {
+    let mut scope = class_scope(c, k.span, k);
+    scope.class = Some(original_name(using));
+    scope.parent = using
+        .direct_parent_class
+        .and_then(|p| c.codebase.get_class_like(p.as_bytes()))
+        .map(original_name);
+    alias_doc(c, k, scope)
+}
+
 /// LocalTypeTraitUseAliasesRule on trait `name` in the context of `class`, the class using it (which `self` and
 /// `static` mean).
 pub fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
@@ -725,15 +750,8 @@ pub fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
     without_aliases(|| with_classes(c, || {
         let r = Resolver::new(c);
         let k = c.codebase.get_class_like(name.as_bytes());
-        let doc = k.and_then(|k| {
-            let mut scope = class_scope(c, k.span, k);
-            scope.class = using.map(original_name);
-            scope.parent = using
-                .and_then(|u| u.direct_parent_class)
-                .and_then(|p| c.codebase.get_class_like(p.as_bytes()))
-                .map(original_name);
-            alias_doc(c, k, scope)
-        });
+        // (the walked class using the trait is in the codebase)
+        let doc = k.zip(using).and_then(|(k, u)| in_context(c, k, u));
         if let Some(doc) = doc.map(Rc::new) {
             r.docs
                 .borrow_mut()

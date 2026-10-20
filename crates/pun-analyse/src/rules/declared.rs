@@ -67,7 +67,19 @@ pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> N
                 .templates
                 .insert(t.name.clone(), Type::Template(Box::new(t)));
         }
-        scope.templates.extend(super::type_aliases::class_aliases(c, k));
+        // a trait's PHPDoc in a using class's context has the trait's aliases
+        let owner = c
+            .in_trait()
+            .and_then(|t| c.codebase.get_class_like(t.as_bytes()))
+            .filter(|t| {
+                t.span.file_id == span.file_id
+                    && t.span.start.offset <= span.start.offset
+                    && span.end.offset <= t.span.end.offset
+            });
+        scope.templates.extend(match owner {
+            Some(t) => super::type_aliases::class_aliases(c, t, Some(k)),
+            None => super::type_aliases::class_aliases(c, k, None),
+        });
     }
     scope
 }

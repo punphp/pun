@@ -1526,6 +1526,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 types::get_hooks(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 types::hook_returns(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 set_hook::hooks(self, p.variable.name, p.hint.as_ref(), hooks);
+                set_hook::missing_types(self, p.variable.name, p.hint.as_ref(), hooks, p.span());
             }
         }
         // a trait method under its `as` alias
@@ -2039,6 +2040,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             signatures::hooks(self, h.item.variable().name, &h.hook_list);
             signatures::hook_phpdoc_classes(self, h.item.variable().name, &h.hook_list, p.span());
             set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
+            set_hook::missing_types(self, h.item.variable().name, p.hint(), &h.hook_list, p.span());
             types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             for hook in h.hook_list.hooks.iter() {
