@@ -1,7 +1,7 @@
 //! PHPStan's type representation (the subset built-in signatures use), with `describe()` at each
 //! `VerbosityLevel`, `isSuperTypeOf()` and `TypeCombinator::union()` / `intersect()`.
 //!
-//! Each variant is one of PHPStan 2.2.7's `Type` classes; methods keep upstream's control flow so a PHP and a
+//! Each variant is one of PHPStan 2.3.1's `Type` classes; methods keep upstream's control flow so a PHP and a
 //! Rust function can be read side by side. Class knowledge (canonical names, ancestors) comes from
 //! [`crate::symbols`]: PHPStan's own reflection of built-in classes.
 
@@ -988,11 +988,11 @@ impl Type {
                 otherwise: f(&c.otherwise),
                 negated: c.negated,
             })),
-            // `ConstantArrayType::traverse()`: the values and the unsealed `...<K, V>`'s value, not the keys
+            // `ConstantArrayType::traverse()`: the values and the unsealed `...<K, V>`, not the keys
             Type::ConstArray(a) => {
                 let mut a = a.clone();
                 a.values = a.values.iter().map(f).collect();
-                a.unsealed = a.unsealed.map(|(k, v)| (k, f(&v)));
+                a.unsealed = a.unsealed.map(|(k, v)| (f(&k), f(&v)));
                 Type::ConstArray(a)
             }
             Type::ObjectShape(props) => Type::ObjectShape(
@@ -1720,9 +1720,68 @@ impl ConstArray {
     }
 
     /// `isCallable()`: only a `[class-string|object, method]` shape (its missing slots possibly in the unsealed
-    /// extras) can be. ponytail: such a shape answers maybe, not yes/no from the class's methods; needs method
-    /// reflection (M2.3).
+    /// extras) can be; a sealed one answers from the class's methods (`doFindTypeAndMethodNames()`).
+    // ponytail: an unsealed shape answers maybe; `supportsCallableInstanceMethods()` (PHP < 8) is not modelled
     fn is_callable(&self) -> Tri {
+        if self.unsealed.is_none() || !self.is_unsealed().yes() {
+            if let Some(t) = self.callable_methods() {
+                return t;
+            }
+        }
+        self.callable_shape()
+    }
+
+    /// The sealed `[class, methods]` shape's certainty; `None` when its class or methods are not constant.
+    /// `[class, 'method']`: the class (and whether it is a class-string) and the constant method names.
+    fn callable_parts(&self) -> Option<(&str, bool, Vec<&str>)> {
+        if self.keys != [Type::ConstInt(0), Type::ConstInt(1)] {
+            return None;
+        }
+        let methods: Vec<&str> = match &self.values[1] {
+            Type::ConstString(m) => vec![m.as_str()],
+            Type::Union(ts) => ts.iter().map(|t| if let Type::ConstString(m) = t { Some(m.as_str()) } else { None }).collect::<Option<_>>()?,
+            _ => return None,
+        };
+        match &self.values[0] {
+            Type::ConstString(n) => Some((n, true, methods)),
+            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => Some((n, false, methods)),
+            _ => None,
+        }
+    }
+
+    fn callable_methods(&self) -> Option<Tri> {
+        let (class, string, methods) = self.callable_parts()?;
+        let class = symbols::lookup(class)?;
+        // ponytail: PHP 8 (`supportsCallableInstanceMethods()` is false): a class-string's instance method is no callable
+        let instance = |m: &str| {
+            std::iter::once(class.name.as_str())
+                .chain(class.ancestors.iter().map(String::as_str))
+                .find_map(|n| symbols::lookup(n)?.methods.get(m).map(|f| !f.is_static))
+                .unwrap_or(false)
+        };
+        let has: Vec<Tri> = methods
+            .iter()
+            .map(|m| m.to_ascii_lowercase())
+            .filter(|m| !(string && has_method(&class, m) && instance(m)))
+            .map(|m| match has_method(&class, &m) {
+                true => Tri::Yes,
+                false if class.is_final => Tri::No,
+                false => Tri::Maybe,
+            })
+            .collect();
+        if has.is_empty() {
+            return Some(Tri::No);
+        }
+        let found: Vec<Tri> = has.iter().copied().filter(|t| !t.no()).collect();
+        if found.is_empty() {
+            return Some(Tri::No);
+        }
+        let optional = if self.optional.is_empty() { Tri::Yes } else { Tri::Maybe };
+        let missing = if found.len() < has.len() { Tri::Maybe } else { Tri::Yes };
+        Some(found.into_iter().fold(Tri::Yes, Tri::and).and(optional).and(missing))
+    }
+
+    fn callable_shape(&self) -> Tri {
         let unsealed = self.unsealed.as_ref().filter(|_| self.is_unsealed().yes());
         if self.keys.len() > 2
             || (unsealed.is_none() && self.keys.len() != 2)
@@ -2213,11 +2272,17 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             }
         }
         T::Array(_, item) => match b {
-            T::Array(..) | T::ConstArray(_) => is_super_type_of(item, &b.iterable_value_type())
-                .and(is_super_type_of(
-                    &a.iterable_key_type(),
-                    &b.iterable_key_type(),
-                )),
+            T::Array(..) | T::ConstArray(_) => {
+                let result = is_super_type_of(item, &b.iterable_value_type()).and(
+                    is_super_type_of(&a.iterable_key_type(), &b.iterable_key_type()),
+                );
+                // a possibly-empty constant array admits `[]`, a subtype of every array type
+                if result.no() && matches!(b, T::ConstArray(_)) && !b.is_iterable_at_least_once().yes() {
+                    Tri::Maybe
+                } else {
+                    result
+                }
+            }
             _ => Tri::No,
         },
         T::ConstArray(ca) => match b {
@@ -2368,18 +2433,24 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
             })
             .collect()
     };
-    let mut variants = match b {
-        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
-        Type::ConstString(name) if let Some(f) = symbols::function(name) => of(f),
-        // `'Class::method'`
-        Type::ConstString(name) => name
-            .split_once("::")
-            .and_then(|(class, method)| {
-                let c = symbols::lookup(class)?;
+    let method = |class: &str, method: &str| -> Vec<Signature> {
+        symbols::lookup(class)
+            .and_then(|c| {
                 std::iter::once(c.name.clone())
                     .chain(c.ancestors.iter().cloned())
                     .find_map(|n| symbols::lookup(&n)?.methods.get(&method.to_ascii_lowercase()).map(of))
             })
+            .unwrap_or_default()
+    };
+    let mut variants = match b {
+        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
+        Type::ConstString(name) if let Some(f) = symbols::function(name) => of(f),
+        // `'Class::method'`
+        Type::ConstString(name) => name.split_once("::").map(|(c, m)| method(c, m)).unwrap_or_default(),
+        // `[class, 'method']` (`ConstantArrayType::getCallableParametersAcceptors()`)
+        Type::ConstArray(a) => a
+            .callable_parts()
+            .map(|(class, _, names)| names.into_iter().flat_map(|m| method(class, m)).collect())
             .unwrap_or_default(),
         _ => Vec::new(),
     };
@@ -3090,12 +3161,9 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
         )];
     }
     let (mut keys, mut values, mut seen) = (Vec::new(), Vec::new(), Vec::<Type>::new());
-    let (mut general, mut overflowed, mut filled) = (false, false, 0);
+    let mut general = false;
     for a in &arrays {
         let constant = a.constant_arrays();
-        if constant.is_empty() || !a.is_iterable_at_least_once().no() {
-            filled += 1;
-        }
         if constant.is_empty() {
             for (key, item) in a.general_arrays() {
                 keys.push(key);
@@ -3104,34 +3172,21 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
             }
             continue;
         }
-        'array: for ca in constant {
+        for ca in constant {
             for (key, value) in ca.keys.iter().zip(&ca.values) {
                 values.push(value.clone());
-                if seen.contains(key) {
-                    continue;
-                }
-                keys.push(key.clone());
-                seen.push(key.clone());
-                // the bit index of each key would overflow an int
-                if seen.len() >= 63 {
-                    general = true;
-                    overflowed = true;
-                    break 'array;
+                if !seen.contains(key) {
+                    keys.push(key.clone());
+                    seen.push(key.clone());
                 }
             }
         }
     }
-    if general && (!overflowed || filled > 1) {
-        let reduced = reduce_arrays(&arrays, false);
-        if reduced.len() == 1 {
-            return vec![with(
-                reduced.into_iter().next().expect("one array"),
-                &accessories,
-            )];
-        }
+    // (`reduceArrays($arrayTypes, false)` hands a union with a general array back unchanged, never as one array)
+    if general {
         return vec![with(Type::array(union(keys), union(values)), &accessories)];
     }
-    reduce_arrays(&arrays, true)
+    reduce_arrays(&arrays)
         .into_iter()
         .map(|a| {
             let applied: Vec<Type> = if a.is_iterable_at_least_once().no() {
@@ -3149,26 +3204,21 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
 }
 
 /// `TypeCombinator::reduceArrays()` for shapes without unsealed extras (PHPDoc shapes outside bleeding edge).
-fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
-    let mut new_arrays = Vec::new();
+fn reduce_arrays(arrays: &[Type]) -> Vec<Type> {
     let mut to_process: Vec<Option<ConstArray>> = Vec::new();
     let mut empty = None;
+    // (processArrayTypes() calls it with constant arrays only)
     for a in arrays {
-        // only a general union (`preserve_tagged_unions` false) has arrays that are not constant
-        if !a.is_constant_array().yes() {
-            return arrays.to_vec();
-        }
         if a.is_iterable_at_least_once().no() {
             empty = Some(a.clone());
             continue;
         }
         to_process.extend(a.constant_arrays().into_iter().map(Some));
     }
-    if let Some(empty) = empty {
-        match empty {
-            Type::ConstArray(c) if preserve_tagged_unions => to_process.push(Some(*c)),
-            e => new_arrays.push(e),
-        }
+    // the empty array takes part in the merging (an empty constant array is a plain `array{}`: intersect() folds an
+    // accessory into it)
+    if let Some(Type::ConstArray(c)) = empty {
+        to_process.push(Some(*c));
     }
     let mut per_key: Vec<(Type, Vec<usize>)> = Vec::new();
     for (i, a) in to_process.iter().enumerate() {
@@ -3205,8 +3255,7 @@ fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
                 }
                 continue;
             };
-            if preserve_tagged_unions
-                && overlap == 1
+            if overlap == 1
                 && a.keys.len() == 1
                 && b.keys.len() == 1
                 && !matches!(
@@ -3218,32 +3267,25 @@ fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
                 to_process[*i] = None;
                 break;
             }
-            if preserve_tagged_unions && overlap == a.keys.len() && b.is_keys_superset_of(a) {
+            if overlap == a.keys.len() && b.is_keys_superset_of(a) {
                 to_process[j] = Some(b.merge_with(a));
                 to_process[*i] = None;
                 break;
             }
-            if preserve_tagged_unions && overlap == b.keys.len() && a.is_keys_superset_of(b) {
+            if overlap == b.keys.len() && a.is_keys_superset_of(b) {
                 to_process[*i] = Some(a.merge_with(b));
                 to_process[j] = None;
                 continue;
-            }
-            if !preserve_tagged_unions && overlap == a.keys.len() && overlap == b.keys.len() {
-                to_process[j] = Some(b.merge_with(a));
-                to_process[*i] = None;
-                break;
             }
         }
     }
     // ponytail: reduceArrays' second pass and final collapses only apply to shapes with unsealed extras
     // (bleeding edge) or past ConstantArrayTypeBuilder::ARRAY_COUNT_LIMIT, neither of which signatures reach.
-    new_arrays.extend(
-        to_process
-            .into_iter()
-            .flatten()
-            .map(|a| Type::ConstArray(Box::new(a))),
-    );
-    new_arrays
+    to_process
+        .into_iter()
+        .flatten()
+        .map(|a| Type::ConstArray(Box::new(a)))
+        .collect()
 }
 
 impl ConstArray {
@@ -3640,9 +3682,9 @@ impl Type {
         matches!(self, Type::Mixed { explicit: false })
     }
 
-    /// `TypeCombinator::addNull()`: unchanged when it may already be null
+    /// `TypeCombinator::addNull()`: unchanged when it may already be null (`never` is not null, so it becomes null)
     pub fn add_null(self) -> Type {
-        if is_super_type_of(&Type::Null, &self).no() {
+        if self.is_null().no() {
             union(vec![self, Type::Null])
         } else {
             self

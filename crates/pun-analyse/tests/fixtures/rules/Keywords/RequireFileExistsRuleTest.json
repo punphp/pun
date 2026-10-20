@@ -2,6 +2,30 @@
     "test": "Keywords/RequireFileExistsRuleTest",
     "cases": [
         {
+            "method": "testPathWithAnUnregisteredStreamWrapper",
+            "files": [
+                "Keywords/data/require-file-stream-wrapper.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/require-file-stream-wrapper.php",
+                    "line": 7,
+                    "identifier": "includeOnce.fileNotFound",
+                    "message": "Path in include_once() \"vfs://drupal/sites/default/modules/module_a/module_a.post_update.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-stream-wrapper.php",
+                    "line": 8,
+                    "identifier": "require.fileNotFound",
+                    "message": "Path in require() \"not-a-registered-wrapper://somewhere/else.php\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBasicCase",
             "files": [
                 "Keywords/data/require-file-simple-case.php"

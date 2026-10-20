@@ -219,14 +219,14 @@
                     "file": "Arrays/data/bug-12981.php",
                     "line": 31,
                     "identifier": "offsetAccess.invalidOffset",
-                    "message": "Invalid array key type array<int, int|string>.",
+                    "message": "Invalid array key type list<(int|string)>.",
                     "tip": null
                 },
                 {
                     "file": "Arrays/data/bug-12981.php",
                     "line": 33,
                     "identifier": "offsetAccess.invalidOffset",
-                    "message": "Invalid array key type array<int, int|string>.",
+                    "message": "Invalid array key type list<(int|string)>.",
                     "tip": null
                 }
             ],

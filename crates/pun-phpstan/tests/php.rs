@@ -1,4 +1,4 @@
-//! php.rs against real PHP and PHPStan 2.2.7 (tests/fixtures/php.json, scripts/export-php-helpers-fixtures.php).
+//! php.rs against real PHP and PHPStan 2.3.1 (tests/fixtures/php.json, scripts/export-php-helpers-fixtures.php).
 
 mod common;
 

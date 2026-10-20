@@ -17,7 +17,9 @@ parameters:
 		implicitThrows: true
 		reportUncheckedExceptionDeadCatch: true
 		uncheckedExceptionRegexes: []
-		uncheckedExceptionClasses: []
+		uncheckedExceptionClasses:
+			- Error
+
 		checkedExceptionRegexes: []
 		checkedExceptionClasses: []
 		check:
@@ -32,6 +34,11 @@ parameters:
 		checkParameterCastableToNumberFunctions: false
 		skipCheckGenericClasses:
 			- DOMNamedNodeMap
+			- ParentIterator
+			- RecursiveCachingIterator
+			- RecursiveFilterIterator
+			- RecursiveRegexIterator
+			- ReflectionObject
 
 		stricterFunctionMap: false
 		reportPreciseLineForUnusedFunctionParameter: false
@@ -53,6 +60,14 @@ parameters:
 		newOnNonObject: false
 		unnecessaryNullCoalesce: false
 		finiteTypesInHaystack: false
+		switchConditionAlwaysFalse: false
+		checkImportedClassNameCase: false
+		sortWithoutEffect: false
+		unresolvedTemplateArguments: false
+		closureSignaturesFromUsages: false
+		staticVariablesFromUsages: false
+		unusedVariable: false
+		unusedParameters: false
 
 	fileExtensions:
 		- php
@@ -105,7 +120,7 @@ parameters:
 	parallel:
 		jobSize: 20
 		processTimeout: 600.0
-		maximumNumberOfProcesses: 8
+		maximumNumberOfProcesses: auto
 		minimumNumberOfJobsPerProcess: 2
 		buffer: 134217728
 		loadLimit: 1.0
@@ -154,10 +169,11 @@ parameters:
 		- ../stubs/ReflectionMethod.stub
 		- ../stubs/ReflectionParameter.stub
 		- ../stubs/ReflectionProperty.stub
+		- ../stubs/ReflectionType.stub
 		- ../stubs/iterable.stub
 		- ../stubs/ArrayObject.stub
 		- ../stubs/WeakReference.stub
-		- ../stubs/ext-ds.stub
+		- ../stubs/SensitiveParameterValue.stub
 		- ../stubs/ImagickPixel.stub
 		- ../stubs/PDOStatement.stub
 		- ../stubs/date.stub
@@ -289,6 +305,10 @@ parameters:
 		-
 			- parameters
 			- memoryLimitFile
+
+		-
+			- parameters
+			- tmpDir
 
 		-
 			- parameters

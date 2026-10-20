@@ -2,6 +2,60 @@
     "test": "Functions/CallToFunctionParametersRuleTest",
     "cases": [
         {
+            "method": "testJointTemplateInferenceNamedArguments",
+            "files": [
+                "Functions/data/joint-inference-named.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class JointInference\\Box not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class JointInference\\Box not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 15,
+                    "identifier": "function.notFound",
+                    "message": "Function both not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 16,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type JointInference\\Box<1|2>, actual: JointInference\\Box",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/joint-inference-named.php",
+                    "line": 17,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type JointInference\\Box<1|2>, actual: JointInference\\Box",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTemplateArgumentReduceIterator",
+            "files": [
+                "Functions/data/template-argument-reduce-iterator.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testCallToFunctionWithoutParameters",
             "files": [
                 "Functions/data/existing-function.php"
@@ -790,6 +844,33 @@
             "method": "testBug3660",
             "files": [
                 "Functions/data/bug-3660.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClosureSignatureFromUsages",
+            "files": [
+                "Functions/data/closure-signature-from-usages.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClosureByRefUsesAtInvocation",
+            "files": [
+                "Functions/data/closure-byref-uses-at-invocation.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClosureSignatureFromUsagesOfGenericObject",
+            "files": [
+                "Functions/data/closure-signature-from-usages-generics.php"
             ],
             "scan": [],
             "errors": [],
@@ -2555,6 +2636,15 @@
             "general": []
         },
         {
+            "method": "testBug15306",
+            "files": [
+                "Functions/data/bug-15306.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug4608",
             "files": [
                 "Functions/data/bug-4608-call-user-func.php"
@@ -2591,6 +2681,15 @@
             "general": []
         },
         {
+            "method": "testBug13334",
+            "files": [
+                "Functions/data/bug-13334.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug11894",
             "files": [
                 "Functions/data/bug-11894.php"
@@ -2603,6 +2702,171 @@
             "method": "testBug11494",
             "files": [
                 "Functions/data/bug-11494.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13114#0",
+            "files": [
+                "Functions/data/bug-13114.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13114#1",
+            "files": [
+                "Functions/data/bug-13114.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13114#2",
+            "files": [
+                "Functions/data/bug-13114.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15167",
+            "files": [
+                "Functions/data/bug-15167.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15168",
+            "files": [
+                "Functions/data/bug-15168.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 145,
+                    "identifier": "return.missing",
+                    "message": "Method Bug15168Functions\\Sink::read() should return U but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6732",
+            "files": [
+                "Functions/data/bug-6732.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9377",
+            "files": [
+                "Functions/data/bug-9377.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11041",
+            "files": [
+                "Functions/data/bug-11041.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1946",
+            "files": [
+                "Functions/data/bug-1946.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11919",
+            "files": [
+                "Functions/data/bug-11919.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArgumentsCountAcceptedByNoVariant",
+            "files": [
+                "Functions/data/arguments-count-accepted-by-no-variant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arguments-count-accepted-by-no-variant.php",
+                    "line": 12,
+                    "identifier": "arguments.count",
+                    "message": "Function mt_rand invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arguments-count-accepted-by-no-variant.php",
+                    "line": 15,
+                    "identifier": "arguments.count",
+                    "message": "Function rand invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/arguments-count-accepted-by-no-variant.php",
+                    "line": 20,
+                    "identifier": "arguments.count",
+                    "message": "Function stream_context_set_option invoked with 3 parameters, 4 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLevenshteinArgumentsCount",
+            "files": [
+                "Functions/data/levenshtein-arguments-count.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRoundModePhp84",
+            "files": [
+                "Functions/data/round-mode-php84.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOversizedArrayUnionWithEmptyArray",
+            "files": [
+                "Functions/data/oversized-array-union-with-empty-array.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11510",
+            "files": [
+                "Functions/data/bug-11510.php"
             ],
             "scan": [],
             "errors": [],

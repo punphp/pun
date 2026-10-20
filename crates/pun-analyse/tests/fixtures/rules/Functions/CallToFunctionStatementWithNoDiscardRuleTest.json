@@ -17,79 +17,89 @@
                 },
                 {
                     "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 25,
+                    "line": 23,
                     "identifier": "function.resultDiscarded",
                     "message": "Call to function FunctionCallStatementResultDiscarded\\differentCase() on a separate line discards return value.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 30,
+                    "line": 28,
                     "identifier": "callable.resultDiscarded",
                     "message": "Call to callable 'FunctionCallStateme…' on a separate line discards return value.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 35,
+                    "line": 33,
                     "identifier": "callable.resultDiscarded",
                     "message": "Call to callable Closure(int): array on a separate line discards return value.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 40,
+                    "line": 38,
                     "identifier": "callable.resultDiscarded",
                     "message": "Call to callable Closure(): 1 on a separate line discards return value.",
                     "tip": null
                 },
                 {
                     "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 45,
+                    "line": 43,
                     "identifier": "callable.resultDiscarded",
                     "message": "Call to callable Closure(): 1 on a separate line discards return value.",
                     "tip": null
-                },
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRulePhp85",
+            "files": [
+                "Functions/data/function-call-statement-result-discarded-php85.php"
+            ],
+            "scan": [],
+            "errors": [
                 {
-                    "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 55,
+                    "file": "Functions/data/function-call-statement-result-discarded-php85.php",
+                    "line": 17,
                     "identifier": "function.inVoidCast",
-                    "message": "Call to function FunctionCallStatementResultDiscarded\\canDiscard() in (void) cast but function allows discarding return value.",
+                    "message": "Call to function FunctionCallStatementResultDiscardedPhp85\\canDiscard() in (void) cast but function allows discarding return value.",
                     "tip": null
                 },
                 {
-                    "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 59,
+                    "file": "Functions/data/function-call-statement-result-discarded-php85.php",
+                    "line": 20,
                     "identifier": "callable.inVoidCast",
                     "message": "Call to callable 'FunctionCallStateme…' in (void) cast but callable allows discarding return value.",
                     "tip": null
                 },
                 {
-                    "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 61,
+                    "file": "Functions/data/function-call-statement-result-discarded-php85.php",
+                    "line": 22,
                     "identifier": "function.resultDiscarded",
-                    "message": "Call to function FunctionCallStatementResultDiscarded\\withSideEffects() on a separate line discards return value.",
+                    "message": "Call to function FunctionCallStatementResultDiscardedPhp85\\withSideEffects() on a separate line discards return value.",
                     "tip": null
                 },
                 {
-                    "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 64,
+                    "file": "Functions/data/function-call-statement-result-discarded-php85.php",
+                    "line": 25,
                     "identifier": "function.inVoidCast",
-                    "message": "Call to function FunctionCallStatementResultDiscarded\\canDiscard() in (void) cast but function allows discarding return value.",
+                    "message": "Call to function FunctionCallStatementResultDiscardedPhp85\\canDiscard() in (void) cast but function allows discarding return value.",
                     "tip": null
                 },
                 {
-                    "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 66,
+                    "file": "Functions/data/function-call-statement-result-discarded-php85.php",
+                    "line": 27,
                     "identifier": "function.resultDiscarded",
-                    "message": "Call to function FunctionCallStatementResultDiscarded\\withSideEffects() on a separate line discards return value.",
+                    "message": "Call to function FunctionCallStatementResultDiscardedPhp85\\withSideEffects() on a separate line discards return value.",
                     "tip": null
                 },
                 {
-                    "file": "Functions/data/function-call-statement-result-discarded.php",
-                    "line": 69,
+                    "file": "Functions/data/function-call-statement-result-discarded-php85.php",
+                    "line": 30,
                     "identifier": "function.inVoidCast",
-                    "message": "Call to function FunctionCallStatementResultDiscarded\\canDiscard() in (void) cast but function allows discarding return value.",
+                    "message": "Call to function FunctionCallStatementResultDiscardedPhp85\\canDiscard() in (void) cast but function allows discarding return value.",
                     "tip": null
                 }
             ],

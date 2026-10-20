@@ -1249,6 +1249,44 @@
             "general": []
         },
         {
+            "method": "testArrayShapeTemplateKey",
+            "files": [
+                "PhpDoc/data/array-shape-template-key.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/array-shape-template-key.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayShapeTemplateKeyPhpDoc\\Foo::stringKey() should return array<string, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/array-shape-template-key.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayShapeTemplateKeyPhpDoc\\Foo::objectUnsealedKey() should return array<string, bool|int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/array-shape-template-key.php",
+                    "line": 33,
+                    "identifier": "return.unresolvableType",
+                    "message": "PHPDoc tag @return contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/array-shape-template-key.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayShapeTemplateKeyPhpDoc\\Foo::mixedKey() should return array<int> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testExplainUnresolvable",
             "files": [
                 "PhpDoc/data/explain-unresolvable-method-parameter.php"
@@ -1263,6 +1301,55 @@
                     "tip": null
                 }
             ],
+            "general": []
+        },
+        {
+            "method": "testClassConstantWildcardUnresolvable",
+            "files": [
+                "PhpDoc/data/class-constant-wildcard-unresolvable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/class-constant-wildcard-unresolvable.php",
+                    "line": 40,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $type contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/class-constant-wildcard-unresolvable.php",
+                    "line": 65,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function ClassConstantWildcardUnresolvable\\finalBound() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/class-constant-wildcard-unresolvable.php",
+                    "line": 65,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $type contains unresolvable type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4548",
+            "files": [
+                "PhpDoc/data/bug-4548.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11510",
+            "files": [
+                "PhpDoc/data/bug-11510.php"
+            ],
+            "scan": [],
+            "errors": [],
             "general": []
         }
     ]

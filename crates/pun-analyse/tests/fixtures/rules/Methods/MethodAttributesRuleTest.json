@@ -35,6 +35,24 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug12827#0",
+            "files": [
+                "Methods/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827#1",
+            "files": [
+                "Methods/data/bug-12827.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

@@ -38,6 +38,30 @@
                 }
             ],
             "general": []
+        },
+        {
+            "method": "testConditionallyExecutedCode",
+            "files": [
+                "Cast/data/deprecated-cast-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/deprecated-cast-php-versions.php",
+                    "line": 8,
+                    "identifier": "cast.deprecated",
+                    "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/deprecated-cast-php-versions.php",
+                    "line": 15,
+                    "identifier": "cast.deprecated",
+                    "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

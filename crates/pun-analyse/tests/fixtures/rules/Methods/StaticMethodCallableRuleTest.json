@@ -61,6 +61,23 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testConditionallyExecutedCode",
+            "files": [
+                "Methods/data/static-method-callable-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-method-callable-php-versions.php",
+                    "line": 19,
+                    "identifier": "callable.notSupported",
+                    "message": "First-class callables are supported only on PHP 8.1 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

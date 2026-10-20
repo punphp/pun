@@ -35,6 +35,20 @@
                     "identifier": "phpstanApi.instanceofType",
                     "message": "Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error-prone and deprecated.",
                     "tip": "Learn more: https://phpstan.org/blog/why-is-instanceof-type-wrong-and-getting-deprecated"
+                },
+                {
+                    "file": "Api/data/instanceof-type.php",
+                    "line": 44,
+                    "identifier": "phpstanApi.method",
+                    "message": "Calling PHPStan\\Type\\TypeTraverser::mapMemoized() is not covered by backward compatibility promise. The method might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/instanceof-type.php",
+                    "line": 52,
+                    "identifier": "phpstanApi.instanceofType",
+                    "message": "Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error-prone and deprecated.",
+                    "tip": "Learn more: https://phpstan.org/blog/why-is-instanceof-type-wrong-and-getting-deprecated"
                 }
             ],
             "general": []

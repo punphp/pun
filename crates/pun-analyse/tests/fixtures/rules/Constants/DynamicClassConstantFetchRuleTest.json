@@ -9,6 +9,23 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testConditionallyExecutedCode",
+            "files": [
+                "Constants/data/dynamic-class-constant-fetch-php-versions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/dynamic-class-constant-fetch-php-versions.php",
+                    "line": 19,
+                    "identifier": "classConstant.dynamicFetch",
+                    "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

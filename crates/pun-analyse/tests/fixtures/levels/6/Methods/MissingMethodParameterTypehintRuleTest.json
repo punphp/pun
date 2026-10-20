@@ -412,13 +412,58 @@
                     "identifier": "missingType.iterableValue",
                     "message": "Method Bug14549\\Foo::doIntersection() has parameter $array with no value type specified in iterable type array.",
                     "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRepeatedIterableTypeReportedOnce",
+            "files": [
+                "Methods/data/bug-15350.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15350.php",
+                    "line": 17,
+                    "identifier": "missingType.generics",
+                    "message": "Class Bug15350\\Foo has type alias BareBox with generic class Bug15350\\Box but does not specify its types: T",
+                    "tip": null
                 },
                 {
-                    "file": "Methods/data/bug-14549.php",
-                    "line": 46,
+                    "file": "Methods/data/bug-15350.php",
+                    "line": 17,
                     "identifier": "missingType.iterableValue",
-                    "message": "Method Bug14549\\Foo::doIntersection() has parameter $array with no value type specified in iterable type array.",
+                    "message": "Class Bug15350\\Foo has type alias BareArr with no value type specified in iterable type array.",
                     "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/bug-15350.php",
+                    "line": 23,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method Bug15350\\Foo::inline() has parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/bug-15350.php",
+                    "line": 30,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method Bug15350\\Foo::alias() has parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/bug-15350.php",
+                    "line": 37,
+                    "identifier": "missingType.generics",
+                    "message": "Method Bug15350\\Foo::inlineGeneric() has parameter $a with generic class Bug15350\\Box but does not specify its types: T",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-15350.php",
+                    "line": 44,
+                    "identifier": "missingType.generics",
+                    "message": "Method Bug15350\\Foo::aliasGeneric() has parameter $a with generic class Bug15350\\Box but does not specify its types: T",
+                    "tip": null
                 }
             ],
             "general": []

@@ -61,6 +61,7 @@ mod conditional_return;
 mod assert_tags;
 mod phpdoc_types;
 mod var_names;
+mod variance;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -84,6 +85,7 @@ use statements::{Frame, FrameKind};
 pub(crate) use doc::{doc_before, tags as doc_tags};
 pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
+pub(crate) use dead_code::conditions_in_traits;
 pub(crate) use larastan::finish as larastan_finish;
 pub(crate) use reflection::builtins;
 pub(crate) use unused_trait::unused_traits;
@@ -104,6 +106,7 @@ pub fn reports(identifier: &str) -> bool {
         || assert_tags::IDENTIFIERS.contains(&identifier)
         || phpdoc_types::IDENTIFIERS.contains(&identifier)
         || var_names::IDENTIFIERS.contains(&identifier)
+        || variance::IDENTIFIERS.contains(&identifier)
 }
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -660,6 +663,10 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.impossibleType",
     "staticMethod.alreadyNarrowedType",
     "staticMethod.impossibleType",
+    "match.alwaysFalse",
+    "match.alwaysTrue",
+    "match.unhandled",
+    "instanceof.invalidExprType",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -1407,6 +1414,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::function_defaults(self, f);
         types::function_returns(self, f);
         generics::function(self, f);
+        variance::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
         self.push_frame(FrameKind::Named);
         self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, var_names::params(&f.parameter_list), &f.body));
@@ -1425,6 +1433,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
             f.return_type_hint.as_ref(),
         );
+        if self.level >= 2 {
+            let types = declared::function_phpdoc(self, f);
+            let kind = names::FunctionKind::Function(&name);
+            signatures::phpdoc_classes(self, kind, f.span(), &f.parameter_list, f.return_type_hint.as_ref(), &types);
+        }
         let docblock = self
             .codebase
             .get_function(name.as_bytes())
@@ -1522,6 +1535,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::method_defaults(self, m);
         types::method_returns(self, m);
         generics::method(self, m, &method);
+        variance::method(self, m, &method);
         declarations::promoted(
             self,
             m.span(),
@@ -1536,6 +1550,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             || m.name.value.eq_ignore_ascii_case(b"__construct")
         {
             properties::promoted(self, &m.parameter_list);
+            variance::promoted(self, m);
             for p in m
                 .parameter_list
                 .parameters
@@ -1565,6 +1580,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &m.parameter_list,
             m.return_type_hint.as_ref(),
         );
+        if self.level >= 2
+            && let Some(context) = self.class_scope()
+            && let Some(declaring) = missing_types::declaring(self, m.span())
+        {
+            let types = declared::method_phpdoc(self, m, declaring, context);
+            signatures::phpdoc_classes(self, kind, m.span(), &m.parameter_list, m.return_type_hint.as_ref(), &types);
+        }
         // PhpMethodFromParserNodeReflection's void methods
         let forced_void = m.name.value.eq_ignore_ascii_case(b"__construct")
             || [
@@ -1751,6 +1773,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_match(&mut self, m: &'ast Match<'arena>, c: &mut ()) {
         types::void_match(self, m);
+        dead_code::match_expression(self, m);
         self.walk_expression(m.expression, c);
         let on_true = matches!(m.expression, Expression::Literal(Literal::True(_)));
         for arm in m.arms.iter() {
@@ -1835,6 +1858,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         restricted_functions::function_call(self, call);
         deprecations::ini_option(self, call);
         calls::function_call(self, call);
+        types::callable_call(self, call);
+        types::call_user_func(self, call);
         dead_code::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
@@ -1880,6 +1905,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
         self.piped.insert(p.callable.span());
         calls::pipe(self, p);
+        types::callable_pipe(self, p);
         function_checks::pipe(self, p);
         restricted_functions::pipe(self, p);
         types::pipe_operation(self, p);

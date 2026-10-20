@@ -118,6 +118,63 @@
             "general": []
         },
         {
+            "method": "testRepeatedNamespaces",
+            "files": [
+                "Names/data/repeated-namespaces.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/repeated-namespaces.php",
+                    "line": 23,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class RepeatedNamespaces\\RepeatedUses because the name is already in use.",
+                    "tip": null
+                },
+                {
+                    "file": "Names/data/repeated-namespaces.php",
+                    "line": 29,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class RepeatedNamespaces\\RepeatedClass because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRepeatedBracedNamespaces",
+            "files": [
+                "Names/data/repeated-braced-namespaces.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/repeated-braced-namespaces.php",
+                    "line": 16,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class RepeatedBracedNamespaces\\RepeatedBracedUses because the name is already in use.",
+                    "tip": null
+                },
+                {
+                    "file": "Names/data/repeated-braced-namespaces.php",
+                    "line": 23,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class RepeatedBracedNamespaces\\RepeatedBracedClass because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15215",
+            "files": [
+                "Names/data/bug-15215.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testIgnoreUseFunctionAndConstant",
             "files": [
                 "Names/data/ignore-use-function-and-constant.php"

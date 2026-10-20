@@ -155,6 +155,72 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug12201",
+            "files": [
+                "DeadCode/data/bug-12201-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 12,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201Constant\\AppKernel uses unknown trait Bug12201Constant\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 14,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant Bug12201Constant\\AppKernel::ALLOWED_ENVS is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 21,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201Constant\\AnotherKernel uses unknown trait Bug12201Constant\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 23,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant Bug12201Constant\\AnotherKernel::UNUSED is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 30,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant Bug12201Constant\\UsesNeverFetchedTrait::NEVER_FETCHED is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 44,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201Constant\\ParentKernel uses unknown trait Bug12201Constant\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 52,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant Bug12201Constant\\ChildKernel::ALLOWED_ENVS is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-constant.php",
+                    "line": 69,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant Bug12201Constant\\RedeclaresAnalysedTrait::REDECLARED is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                }
+            ],
+            "general": []
         }
     ]
 }

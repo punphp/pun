@@ -42,6 +42,8 @@ pub enum ParamType {
     Builtin(String),
     /// A user parameter, typed from its function's reflection (`declared::codex_params()`).
     User,
+    /// A callable type's parameter.
+    Typed(pun_phpstan::types::Type),
 }
 
 impl Acceptor {
@@ -209,7 +211,6 @@ fn combine(variants: &[&Acceptor]) -> Acceptor {
         callee: None,
     };
     for v in variants {
-        // `$isVariadic` is the acceptors' until a merged parameter sets it (as upstream does)
         combined.variadic |= v.variadic;
         for i in 0..v.names.len() {
             if i == combined.names.len() {
@@ -235,9 +236,11 @@ fn combine(variants: &[&Acceptor]) -> Acceptor {
             // `PassedByReference::combine()`: the stronger
             let rank = |b: ByRef| [ByRef::No, ByRef::ReadsArgument, ByRef::CreatesNewVariable].iter().position(|x| *x == b);
             combined.by_ref[i] = std::cmp::max_by_key(combined.by_ref[i], v.by_ref[i], |b| rank(*b));
-            combined.variadic = combined.variadics[i] || v.variadics[i];
-            combined.variadics[i] = combined.variadic;
-            if combined.variadic {
+            let variadic = combined.variadics[i] || v.variadics[i];
+            combined.variadics[i] = variadic;
+            if variadic {
+                // the variadic parameter swallows every parameter behind it
+                // ponytail: upstream also merges their types into its type; a variadic parameter is never missing
                 combined.names.truncate(i + 1);
                 combined.types.truncate(i + 1);
                 combined.variadics.truncate(i + 1);
@@ -249,6 +252,41 @@ fn combine(variants: &[&Acceptor]) -> Acceptor {
         }
     }
     combined
+}
+
+/// `CallToFunctionParametersRule::getVariantForArgumentsCount()`: when no variant accepts the argument count but
+/// their combination does, the count is checked against the variant closest to it.
+pub fn closest_variant(
+    variants: &[Acceptor],
+    counts: &Counts,
+    selected: &Acceptor,
+) -> Option<Acceptor> {
+    if variants.len() < 2
+        || counts
+            .args
+            .iter()
+            .any(|a| a.unpack.is_some() || a.name.is_some())
+    {
+        return None;
+    }
+    let n = counts.args.len();
+    if !selected.accepts(n) || variants.iter().any(|v| v.accepts(n)) {
+        return None;
+    }
+    let mut closest: Option<(&Acceptor, usize)> = None;
+    for v in variants {
+        let insufficient = n < v.min();
+        let distance = if insufficient {
+            v.min() - n
+        } else {
+            n - v.optional.len()
+        };
+        if closest.is_some_and(|(_, d)| distance > d || (distance == d && !insufficient)) {
+            continue;
+        }
+        closest = Some((v, distance));
+    }
+    closest.map(|(v, _)| v.clone())
 }
 
 /// One argument as written.
@@ -362,20 +400,79 @@ pub fn count_partial(args: &PartialArgumentList) -> Counts {
 
 impl Counts {
     fn named(&mut self, n: &NamedArgument) {
+        self.push_named(String::from_utf8_lossy(n.name.value).into_owned(), n.value, n.span());
+    }
+
+    fn positional(&mut self, p: &PositionalArgument) {
+        self.push_positional(p.value, p.ellipsis.is_some(), p.span());
+    }
+
+    /// Some of a call's arguments (`call_user_func()`'s after the callback).
+    pub fn of<'x, 'arena: 'x>(args: impl IntoIterator<Item = &'x Argument<'arena>>) -> Counts {
+        let mut counts = Counts::default();
+        for arg in args {
+            counts.any = true;
+            match arg {
+                Argument::Named(n) => counts.named(n),
+                Argument::Positional(p) => counts.positional(p),
+            }
+        }
+        counts
+    }
+
+    /// One positional argument (a pipe's input).
+    pub fn of_value(value: &Expression) -> Counts {
+        let mut counts = Counts { any: true, ..Counts::default() };
+        counts.push_positional(value, false, value.span());
+        counts
+    }
+
+    /// `call_user_func_array()`'s constant array as arguments (`reorderCallUserFuncArrayArguments()`): a string key
+    /// names one; `None` for a dynamic or empty key.
+    pub fn of_array(elements: &[&ArrayElement]) -> Option<Counts> {
+        let mut counts = Counts::default();
+        for e in elements {
+            counts.any = true;
+            match e {
+                ArrayElement::Value(v) => counts.push_positional(v.value, false, e.span()),
+                ArrayElement::Variadic(v) => counts.push_positional(v.value, true, e.span()),
+                ArrayElement::KeyValue(kv) if let Expression::Literal(Literal::Integer(_)) = kv.key => {
+                    counts.push_positional(kv.value, false, e.span())
+                }
+                ArrayElement::KeyValue(kv)
+                    if let Expression::Literal(Literal::String(s)) = kv.key
+                        && let Some(key) = s.value.filter(|k| !k.is_empty()) =>
+                {
+                    let key = String::from_utf8_lossy(key).into_owned();
+                    // an integer-like string key is an integer one (`key([$k => null])`)
+                    if key.parse::<i64>().is_ok_and(|i| i.to_string() == key) {
+                        counts.push_positional(kv.value, false, e.span());
+                    } else {
+                        counts.push_named(key, kv.value, e.span());
+                    }
+                }
+                // a dynamic or empty key, or a missing element
+                _ => return None,
+            }
+        }
+        Some(counts)
+    }
+
+    fn push_named(&mut self, name: String, value: &Expression, span: Span) {
         self.named = true;
         self.names += 1;
         self.args.push(Arg {
-            name: Some(String::from_utf8_lossy(n.name.value).into_owned()),
+            name: Some(name),
             unpack: None,
-            span: n.span(),
-            value: n.value.span(),
-            kind: kind(n.value),
+            span,
+            value: value.span(),
+            kind: kind(value),
             elements: Vec::new(),
         });
     }
 
-    fn positional(&mut self, p: &PositionalArgument) {
-        let unpack = p.ellipsis.map(|_| unpacked(p.value));
+    fn push_positional(&mut self, value: &Expression, ellipsis: bool, span: Span) {
+        let unpack = ellipsis.then(|| unpacked(value));
         match &unpack {
             None => self.positional += 1,
             Some(Unpacked::Keys(keys)) => {
@@ -384,7 +481,7 @@ impl Counts {
             }
             Some(Unpacked::Unknown) => self.unpack = true,
         }
-        let elements = match (&unpack, p.value) {
+        let elements = match (&unpack, value) {
             (Some(Unpacked::Keys(_)), Expression::Array(a)) => a.elements.iter().map(element).collect(),
             (Some(Unpacked::Keys(_)), Expression::LegacyArray(a)) => a.elements.iter().map(element).collect(),
             _ => Vec::new(),
@@ -392,9 +489,9 @@ impl Counts {
         self.args.push(Arg {
             name: None,
             unpack,
-            span: p.span(),
-            value: p.value.span(),
-            kind: kind(p.value),
+            span,
+            value: value.span(),
+            kind: kind(value),
             elements,
         });
     }
@@ -445,6 +542,8 @@ pub enum CallKind {
     StaticMethod,
     New,
     Attribute,
+    /// CallCallablesRule's `$callable()`.
+    Callable,
 }
 
 /// The messages of one call kind: `subject` is e.g. `Function foo`, `Method Foo::bar()`, `Class Foo constructor`.
@@ -539,6 +638,7 @@ pub fn check<'a>(
         let identifier = match call.kind {
             CallKind::Function => "function.void",
             CallKind::Method => "method.void",
+            CallKind::Callable => "callable.void",
             _ => "staticMethod.void",
         };
         c.report(at, identifier, void, None);
@@ -628,7 +728,9 @@ fn process_arguments(
         unused.retain(|p| *p != parameter);
     }
     if has_named {
-        for p in unused.into_iter().filter(|p| !acceptor.optional[*p]) {
+        // (keyed by name: callable(int, int)'s unnamed parameters are one)
+        let mut seen = std::collections::HashSet::new();
+        for p in unused.into_iter().filter(|p| !acceptor.optional[*p] && seen.insert(&acceptor.names[*p])) {
             let message =
                 format!("Missing parameter ${} ({}) in call to {callee}.", acceptor.names[p], acceptor.types[p]);
             c.report(at.span(), "argument.missing", message, None);

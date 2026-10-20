@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Built-in classes' methods and properties as PHPStan 2.2.7's reflection gives them to OverridingMethodRule and
+ * Built-in classes' methods and properties as PHPStan 2.3.1's reflection gives them to OverridingMethodRule and
  * ConsistentConstructorRule (NativeMethodReflection over php-8-stubs, BetterReflection's prototypes and tentative
  * return types), from the phar's own container at phpVersion 8.5, with the 8.4 differences.
  *
@@ -57,7 +57,7 @@ function t(Type $type): ?string
 function dump(int $phpVersion): array
 {
     $provider = container($phpVersion)->getByType(ReflectionProvider::class);
-    $stubs = _PHPStan_88a9c7bcc\JetBrains\PHPStormStub\PhpStormStubsMap::class;
+    $stubs = _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap::class;
     $classes = [];
     foreach (array_keys($stubs::CLASSES) as $n) {
         if (!$provider->hasClass($n)) {

@@ -12,13 +12,15 @@
 #   .oracle/rector-ecosystem  rector/rector 2.6.1 + driftingly/rector-laravel 2.5.0 + pestphp/pest-plugin-rector
 #                         5.x-dev@1a4b6b7, pinned by scripts/oracle-rector-ecosystem/composer.lock (the rule mapping's
 #                         rector-laravel and Pest inventories; rector-phpunit is bundled in rector/rector).
-#   .oracle/phpstan-src   phpstan-src at the tag 2.2.7 (Rule classes and tests; the PHPStan inventories).
+#   .oracle/phpstan-src   phpstan-src at the tag 2.3.1 (Rule classes and tests; the PHPStan inventories).
+#   .oracle/phpstan       phpstan/phpstan 2.3.1 + larastan + strict/deprecation rules, pinned by scripts/oracle-phpstan/composer.lock.
+#   .oracle/phpstan-phar  that PHAR extracted, for reading (export-phpstan-api-stub.php, export-phpdoc-parser-fixtures.php).
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 PINT_REF=cef1b260c611f92e66902d678092e26932c9ea00
 FIXER_REF=0ee88422118f3cc59c8c3def222ba7f1493b6d5b # v3.95.17
 RECTOR_REF=16be33c1c2364d51038752a299fce01043d42576 # rector-src 2.6.1
-PHPSTAN_SRC_REF=88a9c7bcc61b7e8c2d95ef94427c8c34b9c8789f # phpstan-src 2.2.7
+PHPSTAN_SRC_REF=cb3b7e99489b2e3789ee2eec10501cb7a72580ea # phpstan-src 2.3.1
 
 fetch() { # dir url ref
   if [ "$(git -C "$1" rev-parse HEAD 2>/dev/null)" = "$3" ]; then return; fi
@@ -39,6 +41,8 @@ fetch "$root/.oracle/phpstan-src" https://github.com/phpstan/phpstan-src.git "$P
 mkdir -p "$root/.oracle/phpstan"
 cp "$root/scripts/oracle-phpstan/composer.json" "$root/scripts/oracle-phpstan/composer.lock" "$root/.oracle/phpstan/"
 (cd "$root/.oracle/phpstan" && composer install -q --no-interaction --no-progress)
+rm -rf "$root/.oracle/phpstan-phar"
+php -r '(new Phar($argv[1]))->extractTo($argv[2]);' "$root/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar" "$root/.oracle/phpstan-phar"
 
 # Rector oracle (pun-lint): the released rector/rector, pinned by the committed lock file.
 mkdir -p "$root/.oracle/rector-bin"

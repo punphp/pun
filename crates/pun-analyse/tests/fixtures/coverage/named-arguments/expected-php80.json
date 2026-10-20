@@ -103,7 +103,7 @@
    "file": "calls.php",
    "line": 64,
    "identifier": "arguments.count",
-   "message": "Function array_udiff invoked with 1 parameter, 3-5 required.",
+   "message": "Function array_udiff invoked with 1 parameter, at least 3 required.",
    "tip": null
   },
   {

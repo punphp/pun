@@ -2,6 +2,7 @@
 //! results in [`flow`]).
 
 mod arguments;
+mod callables;
 mod castable;
 mod access;
 mod casts;
@@ -44,6 +45,7 @@ pub(super) use read_only_write::assignment;
 pub(super) use access::{property_fetch, static_property_fetch};
 pub(super) use receivers::{method_call, static_call};
 pub(super) use regex::function_call;
+pub(super) use callables::{call as callable_call, call_user_func, pipe as callable_pipe};
 pub(super) use returns::{
     arrow_function as arrow_function_returns, closure as closure_returns, function as function_returns,
     hooks as hook_returns, method as method_returns,
@@ -58,7 +60,7 @@ pub(super) use binary_op::{assignment as assign_operation, binary as binary_oper
 pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
@@ -135,8 +137,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
             self.spans.push(f.expression.span());
         }
     }
+    fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            callables::typed_pipe(p, &mut self.spans);
+        }
+    }
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         regex::typed(call, &mut self.spans);
+        if self.level >= 2 {
+            callables::typed(call, &mut self.spans);
+        }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         if self.level >= 2 {

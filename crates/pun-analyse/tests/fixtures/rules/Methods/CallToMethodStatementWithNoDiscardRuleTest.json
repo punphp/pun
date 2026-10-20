@@ -9,6 +9,15 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testRulePhp85",
+            "files": [
+                "Methods/data/method-call-statement-result-discarded-php85.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

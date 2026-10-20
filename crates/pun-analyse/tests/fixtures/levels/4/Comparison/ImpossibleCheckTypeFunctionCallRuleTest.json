@@ -388,13 +388,6 @@
                 },
                 {
                     "file": "Comparison/data/check-type-function-call.php",
-                    "line": 689,
-                    "identifier": "method.resultUnused",
-                    "message": "Call to method CheckTypeFunctionCall\\MethodExistsWithTrait::test() on a separate line has no effect.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/check-type-function-call.php",
                     "line": 703,
                     "identifier": "function.alreadyNarrowedType",
                     "message": "Call to function is_string() with string will always evaluate to true.",
@@ -662,44 +655,6 @@
             "general": []
         },
         {
-            "method": "testDoNotReportTypesFromPhpDocs",
-            "files": [
-                "Comparison/data/check-type-function-call-not-phpdoc.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Comparison/data/check-type-function-call-not-phpdoc.php",
-                    "line": 16,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_int() with int will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/check-type-function-call-not-phpdoc.php",
-                    "line": 19,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_int() with int will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/check-type-function-call-not-phpdoc.php",
-                    "line": 27,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments int, array<string> and true will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/check-type-function-call-not-phpdoc.php",
-                    "line": 30,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments 1, array<string> and true will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                }
-            ],
-            "general": []
-        },
-        {
             "method": "testReportTypesFromPhpDocs",
             "files": [
                 "Comparison/data/check-type-function-call-not-phpdoc.php"
@@ -738,6 +693,65 @@
             "general": []
         },
         {
+            "method": "testBug15250TreatPhpDocTypesAsCertain",
+            "files": [
+                "Comparison/data/bug-15250.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-15250.php",
+                    "line": 17,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function is_int() with 'b' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-15250.php",
+                    "line": 35,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function is_int() with 'b' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-15250.php",
+                    "line": 38,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function is_float() with string will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-15250.php",
+                    "line": 49,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function is_float() with int will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-15250.php",
+                    "line": 52,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function is_float() with string will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-15250.php",
+                    "line": 76,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-15250.php",
+                    "line": 81,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug2550",
             "files": [
                 "Comparison/data/bug-2550.php"
@@ -768,24 +782,6 @@
             "method": "testBug2714",
             "files": [
                 "Comparison/data/bug-2714.php"
-            ],
-            "scan": [],
-            "errors": [],
-            "general": []
-        },
-        {
-            "method": "testBug4657",
-            "files": [
-                "Comparison/data/bug-4657.php"
-            ],
-            "scan": [],
-            "errors": [],
-            "general": []
-        },
-        {
-            "method": "testBug4999",
-            "files": [
-                "Comparison/data/bug-4999.php"
             ],
             "scan": [],
             "errors": [],
@@ -1024,6 +1020,47 @@
             "general": []
         },
         {
+            "method": "testBug14705Php8",
+            "files": [
+                "Comparison/data/bug-14705-php8.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-14705-php8.php",
+                    "line": 50,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function str_ends_with() with non-empty-string and non-empty-string will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-14705-php8.php",
+                    "line": 62,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function str_contains() with non-empty-string and non-empty-string will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15328",
+            "files": [
+                "Comparison/data/bug-15328.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-15328.php",
+                    "line": 59,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function assertSame() with int and int will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug2755",
             "files": [
                 "Comparison/data/bug-2755.php"
@@ -1140,23 +1177,6 @@
             "general": []
         },
         {
-            "method": "testBug6938",
-            "files": [
-                "Comparison/data/bug-6938.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Comparison/data/bug-6938.php",
-                    "line": 17,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_array() with array<int, string> will always evaluate to true.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
             "method": "testBug8727",
             "files": [
                 "Comparison/data/bug-8727.php"
@@ -1172,37 +1192,6 @@
             ],
             "scan": [],
             "errors": [],
-            "general": []
-        },
-        {
-            "method": "testBug5695",
-            "files": [
-                "Comparison/data/bug-5695.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Comparison/data/bug-5695.php",
-                    "line": 13,
-                    "identifier": "booleanOr.alwaysFalse",
-                    "message": "Result of || is always false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/bug-5695.php",
-                    "line": 13,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_string() with string will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/bug-5695.php",
-                    "line": 14,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_numeric() with int will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                }
-            ],
             "general": []
         },
         {
@@ -1345,254 +1334,6 @@
         },
         {
             "method": "testLooseComparisonAgainstEnums",
-            "files": [
-                "Comparison/data/loose-comparison-against-enums.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 21,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooUnitEnum and array{'A'} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 24,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum, array{'A'} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 27,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooBackedEnum and array{'A'} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 30,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooBackedEnum, array{'A'} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 33,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooBackedEnum|LooseComparisonAgainstEnums\\FooUnitEnum, array{'A'} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 39,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with 'A' and array{LooseComparisonAgainstEnums\\FooUnitEnum} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 42,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments 'A', array{LooseComparisonAgainstEnums\\FooUnitEnum} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 45,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with 'A' and array{LooseComparisonAgainstEnums\\FooBackedEnum} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 48,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments 'A', array{LooseComparisonAgainstEnums\\FooBackedEnum} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 51,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments 'A', array{LooseComparisonAgainstEnums\\FooBackedEnum|LooseComparisonAgainstEnums\\FooUnitEnum} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 57,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooUnitEnum and array{bool} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 60,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum, array{bool} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 63,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooBackedEnum and array{bool} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 66,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooBackedEnum, array{bool} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 69,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooBackedEnum|LooseComparisonAgainstEnums\\FooUnitEnum, array{bool} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 75,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with bool and array{LooseComparisonAgainstEnums\\FooUnitEnum} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 78,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments bool, array{LooseComparisonAgainstEnums\\FooUnitEnum} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 81,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with bool and array{LooseComparisonAgainstEnums\\FooBackedEnum} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 84,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments bool, array{LooseComparisonAgainstEnums\\FooBackedEnum} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 87,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments bool, array{LooseComparisonAgainstEnums\\FooBackedEnum|LooseComparisonAgainstEnums\\FooUnitEnum} and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 93,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooUnitEnum and array{null} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 96,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with null and array{LooseComparisonAgainstEnums\\FooBackedEnum} will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 125,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooUnitEnum and array<string> will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 128,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum, array<string> and false will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 131,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum, array<string> and true will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 143,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with string and array<LooseComparisonAgainstEnums\\FooUnitEnum> will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 146,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments string, array<LooseComparisonAgainstEnums\\FooUnitEnum> and false will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 149,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments string, array<LooseComparisonAgainstEnums\\FooUnitEnum> and true will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 159,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooUnitEnum::B and non-empty-array<LooseComparisonAgainstEnums\\FooUnitEnum::A> will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 162,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function in_array() with LooseComparisonAgainstEnums\\FooUnitEnum::A and non-empty-array<LooseComparisonAgainstEnums\\FooUnitEnum::A> will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 165,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum::A, non-empty-array<LooseComparisonAgainstEnums\\FooUnitEnum::A> and false will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 168,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum::A, non-empty-array<LooseComparisonAgainstEnums\\FooUnitEnum::A> and true will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 171,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum::B, non-empty-array<LooseComparisonAgainstEnums\\FooUnitEnum::A> and false will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/loose-comparison-against-enums.php",
-                    "line": 174,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function in_array() with arguments LooseComparisonAgainstEnums\\FooUnitEnum::B, non-empty-array<LooseComparisonAgainstEnums\\FooUnitEnum::A> and true will always evaluate to false.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testLooseComparisonAgainstEnumsNoPhpdoc",
             "files": [
                 "Comparison/data/loose-comparison-against-enums.php"
             ],
@@ -2137,6 +1878,13 @@
                 },
                 {
                     "file": "Comparison/data/bug-12087c.php",
+                    "line": 23,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $value",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-12087c.php",
                     "line": 29,
                     "identifier": "function.alreadyNarrowedType",
                     "message": "Call to function is_null() with null will always evaluate to true.",
@@ -2351,58 +2099,6 @@
             "general": []
         },
         {
-            "method": "testBug14429",
-            "files": [
-                "Comparison/data/bug-14429.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Comparison/data/bug-14429.php",
-                    "line": 27,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_string() with string will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/bug-14429.php",
-                    "line": 30,
-                    "identifier": "booleanAnd.alwaysFalse",
-                    "message": "Result of && is always false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/bug-14429.php",
-                    "line": 30,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_float() with float will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/bug-14429.php",
-                    "line": 30,
-                    "identifier": "function.impossibleType",
-                    "message": "Call to function is_int() with float will always evaluate to false.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/bug-14429.php",
-                    "line": 34,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_string() with string will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/bug-14429.php",
-                    "line": 39,
-                    "identifier": "function.alreadyNarrowedType",
-                    "message": "Call to function is_int() with int will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                }
-            ],
-            "general": []
-        },
-        {
             "method": "testBug13799",
             "files": [
                 "Comparison/data/bug-13799.php"
@@ -2500,6 +2196,15 @@
             "general": []
         },
         {
+            "method": "testBug14908",
+            "files": [
+                "Comparison/data/bug-14908.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug6211",
             "files": [
                 "Comparison/data/bug-6211.php"
@@ -2589,6 +2294,30 @@
                     "identifier": "function.alreadyNarrowedType",
                     "message": "Call to function method_exists() with class-string<Bug6211\\Foo> and 'test' will always evaluate to true.",
                     "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15147",
+            "files": [
+                "Arrays/data/bug-15147.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-15147.php",
+                    "line": 30,
+                    "identifier": "foreach.emptyArray",
+                    "message": "Empty array passed to foreach.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-15147.php",
+                    "line": 31,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_array() with *NEVER* will always evaluate to true.",
+                    "tip": null
                 }
             ],
             "general": []

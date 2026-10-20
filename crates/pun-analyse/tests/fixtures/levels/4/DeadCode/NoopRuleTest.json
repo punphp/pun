@@ -292,6 +292,32 @@
             "general": []
         },
         {
+            "method": "testErrorThrows",
+            "files": [
+                "DeadCode/data/noop-error-throws.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/noop-error-throws.php",
+                    "line": 8,
+                    "identifier": "match.unhandled",
+                    "message": "Match expression does not handle remaining values: int<min, 0>|int<2, max>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15258",
+            "files": [
+                "DeadCode/data/bug-15258.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testNullsafe",
             "files": [
                 "DeadCode/data/nullsafe-property-fetch-noop.php"
@@ -375,7 +401,7 @@
                     "file": "DeadCode/data/noop-impure-points.php",
                     "line": 107,
                     "identifier": "property.onlyWritten",
-                    "message": "Property class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/DeadCode/data/noop-impure-points.php:104::$i is never read, only written.",
+                    "message": "Property class@anonymous/noop-impure-points.php:104::$i is never read, only written.",
                     "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
                 }
             ],
@@ -445,6 +471,15 @@
                     "tip": null
                 }
             ],
+            "general": []
+        },
+        {
+            "method": "testBug15038",
+            "files": [
+                "DeadCode/data/bug-15038.php"
+            ],
+            "scan": [],
+            "errors": [],
             "general": []
         },
         {

@@ -867,6 +867,9 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     for (id, message, tip, ignorable) in messages {
         if ignorable {
             c.report(m, id, message, tip);
+        } else if id == "method.visibility" {
+            // MethodVisibilityComparisonHelper reports on the method name's line
+            c.report_non_ignorable(m.name, id, message, tip);
         } else {
             c.report_non_ignorable(m, id, message, tip);
         }

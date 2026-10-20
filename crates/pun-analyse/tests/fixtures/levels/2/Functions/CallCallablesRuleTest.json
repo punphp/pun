@@ -1,0 +1,447 @@
+{
+    "test": "Functions/CallCallablesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/callables.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 21,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'date' invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 25,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke 'nonexistent' but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 39,
+                    "identifier": "arguments.count",
+                    "message": "Callable array{'CallCallables\\\\Foo', 'doStaticBaz'} invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 41,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'CallCallables\\\\Foo:…' invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 52,
+                    "identifier": "callable.inaccessibleMethod",
+                    "message": "Call to private method privateFooMethod() of class CallCallables\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 58,
+                    "identifier": "arguments.count",
+                    "message": "Closure invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 59,
+                    "identifier": "callable.void",
+                    "message": "Result of closure (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 64,
+                    "identifier": "arguments.count",
+                    "message": "Closure invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 86,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke '' but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 89,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of anonymous function has invalid type CallCallables\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 90,
+                    "identifier": "class.notFound",
+                    "message": "Invoking callable on an unknown class CallCallables\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 113,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke CallCallables\\Baz but it's not a callable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 151,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $c follows optional parameter $b.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 155,
+                    "identifier": "arguments.count",
+                    "message": "Closure invoked with 0 parameters, 3 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 156,
+                    "identifier": "arguments.count",
+                    "message": "Closure invoked with 1 parameter, 3 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 157,
+                    "identifier": "arguments.count",
+                    "message": "Closure invoked with 2 parameters, 3 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables.php",
+                    "line": 229,
+                    "identifier": "callable.nonCallable",
+                    "message": "Trying to invoke array{'CallCallables\\\\ConstantArrayUnionCallables'|'CallCallables\\\\ConstantArrayUnionCallablesTest', 'doBar'|'doFoo'} but it's not a callable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Functions/data/callables-named-arguments.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/callables-named-arguments.php",
+                    "line": 14,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $j (int) in call to closure.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables-named-arguments.php",
+                    "line": 23,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $ (int) in call to callable callable(int, int): void.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables-named-arguments.php",
+                    "line": 23,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to callable callable(int, int): void.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables-named-arguments.php",
+                    "line": 24,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $j (int) in call to callable callable(int, int): void.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/callables-named-arguments.php",
+                    "line": 25,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $z in call to callable callable(int, int): void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3566#0",
+            "files": [
+                "Functions/data/bug-3566.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3566#1",
+            "files": [
+                "Functions/data/bug-3566.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Functions/data/callables-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1849",
+            "files": [
+                "Functions/data/bug-1849.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallables",
+            "files": [
+                "Functions/data/call-first-class-callables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6701",
+            "files": [
+                "Functions/data/bug-6701.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-6701.php",
+                    "line": 10,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $test (string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-6701.php",
+                    "line": 16,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $test (string) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStaticCallInFunctions",
+            "files": [
+                "Functions/data/static-call-in-functions.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5867",
+            "files": [
+                "Functions/data/bug-5867.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6485",
+            "files": [
+                "Functions/data/bug-6485.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6633",
+            "files": [
+                "Functions/data/bug-6633.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3818b",
+            "files": [
+                "Functions/data/bug-3818b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9594",
+            "files": [
+                "Functions/data/bug-9594.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9614",
+            "files": [
+                "Functions/data/bug-9614.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3616",
+            "files": [
+                "Functions/data/bug-3616.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10814",
+            "files": [
+                "Functions/data/bug-10814.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "Functions/data/call-callable-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/call-callable-pipe.php",
+                    "line": 20,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'CallCallablePipe…' invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-callable-pipe.php",
+                    "line": 26,
+                    "identifier": "arguments.count",
+                    "message": "Callable 'CallCallablePipe…' invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-callable-pipe.php",
+                    "line": 26,
+                    "identifier": "callable.void",
+                    "message": "Result of callable 'CallCallablePipe…' (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-callable-pipe.php",
+                    "line": 28,
+                    "identifier": "callable.void",
+                    "message": "Result of callable 'CallCallablePipe…' (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConstantParameterCheckCallables",
+            "files": [
+                "Functions/data/constant-parameter-check-callables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4608",
+            "files": [
+                "Functions/data/bug-4608-callables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMaybeNotCallable",
+            "files": [
+                "Functions/data/maybe-not-callable.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11935",
+            "files": [
+                "Functions/data/bug-11935.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15251.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug15251\\A::sfoo() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureSignatureFromUsages",
+            "files": [
+                "Functions/data/closure-signature-from-usages.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15285",
+            "files": [
+                "Functions/data/bug-15285.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11935WithCheckExplicitMixed",
+            "files": [
+                "Functions/data/bug-11935.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

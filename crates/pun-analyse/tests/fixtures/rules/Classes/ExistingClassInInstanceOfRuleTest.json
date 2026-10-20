@@ -41,6 +41,15 @@
             "general": []
         },
         {
+            "method": "testBug12827",
+            "files": [
+                "Classes/data/bug-12827-instanceof.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testClassExists",
             "files": [
                 "Classes/data/instanceof-class-exists.php"

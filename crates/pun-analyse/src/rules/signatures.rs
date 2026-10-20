@@ -424,8 +424,11 @@ fn reference(node: &Node, doc: &Doc, seen: &mut HashSet<String>) {
             items, unsealed, ..
         } => {
             items.iter().for_each(|i| go(&i.value));
-            // the unsealed key type is not traversed (an array key type is normalised first)
-            if let Some((_, value)) = unsealed {
+            // PHPStan 2.3 traverses the unsealed key type too
+            if let Some((key, value)) = unsealed {
+                if let Some(key) = key {
+                    go(key);
+                }
                 go(value);
             }
         }
@@ -721,8 +724,11 @@ pub fn check<'arena>(
     let pure_intersections = c.php_version >= 80100;
     for p in &params {
         let name = String::from_utf8_lossy(p.variable.name).into_owned();
+        // PHPStan 2.3 reads a function's or method's parameter with a `null` default as nullable, and `never|null` is
+        // `null` (oracle-checked; not for a closure's or a promoted property's)
         if let Some(hint) = &p.hint
             && pure_intersections
+            && (anonymous || p.is_promoted_property() || !null_default(p))
             && unresolvable(c, hint)
         {
             let line = if anonymous { hint.span() } else { p.span() };
@@ -827,6 +833,37 @@ fn templates(
             );
         }
     }
+}
+
+/// FunctionDefinitionCheck's classes of the PHPDoc parameter and return types once `checkThisOnly` is off (level 2;
+/// the native ones are names.rs's).
+pub fn phpdoc_classes(
+    c: &mut Checker,
+    kind: FunctionKind,
+    at: Span,
+    parameters: &FunctionLikeParameterList,
+    return_type: Option<&FunctionLikeReturnTypeHint>,
+    types: &super::declared::PhpDocTypes,
+) {
+    let (of, subject) = (kind.named(), kind.subject());
+    let report = |c: &mut Checker, at: Span, types: &[Type], trait_id: &str, message: &dyn Fn(&str) -> String| {
+        // (no class name has a `-`: a keyword type the resolver leaves, such as an unresolved `value-of`)
+        for class in types.iter().flat_map(super::generics::referenced_classes).filter(|n| !n.contains('-')) {
+            let identifier = match known(c, &class) {
+                None => "class.notFound",
+                Some(Known::User(k)) if k.kind == mago_codex::symbol::SymbolKind::Trait => trait_id,
+                Some(_) => continue,
+            };
+            c.report(at, identifier, message(&class), None);
+        }
+    };
+    for p in parameters.parameters.iter() {
+        let name = String::from_utf8_lossy(&p.variable.name[1..]).into_owned();
+        let types = types.params.get(&name).map_or(&[][..], Vec::as_slice);
+        report(c, p.span(), types, "parameter.trait", &|class| format!("Parameter ${name} of {of} has invalid type {class}."));
+    }
+    let at = return_type.map_or(at, |r| r.hint.span());
+    report(c, at, types.ret.as_slice(), "return.trait", &|class| format!("{subject} has invalid return type {class}."));
 }
 
 /// checkClassMethod()'s `@phpstan-self-out` classes.

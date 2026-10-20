@@ -1,0 +1,863 @@
+{
+    "test": "Functions/ExistingClassesInClosureTypehintsRuleTest",
+    "cases": [
+        {
+            "method": "testExistingClassInTypehint",
+            "files": [
+                "Functions/data/closure-typehints.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type TestClosureFunctionTypehints\\NonexistentClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return TestClosureFunctionTypehints\\NonexistentClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of anonymous function has invalid type TestClosureFunctionTypehints\\BarFunctionTypehints.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 20,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return TestClosureFunctionTypehints\\FooFunctionTypehints but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return parent but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 30,
+                    "identifier": "class.nameCase",
+                    "message": "Class TestClosureFunctionTypehints\\FooFunctionTypehints referenced with incorrect case: TestClosureFunctionTypehints\\FOOfUnctionTypehintS.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 30,
+                    "identifier": "class.nameCase",
+                    "message": "Class TestClosureFunctionTypehints\\FooFunctionTypehints referenced with incorrect case: TestClosureFunctionTypehints\\fOOfUnctionTypehints.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 30,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return TestClosureFunctionTypehints\\FooFunctionTypehints but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $ignoreAlias of anonymous function has invalid type ReturnTypes\\FooAliaS.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 45,
+                    "identifier": "parameter.trait",
+                    "message": "Parameter $trait of anonymous function has invalid type TestClosureFunctionTypehints\\SomeTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return TestClosureFunctionTypehints\\SomeTrait but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints.php",
+                    "line": 50,
+                    "identifier": "return.trait",
+                    "message": "Anonymous function has invalid return type TestClosureFunctionTypehints\\SomeTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14617",
+            "files": [
+                "Functions/data/bug-14617-closure.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14617GroupUse",
+            "files": [
+                "Functions/data/bug-14617-group-use.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClassAliasCaseSensitivity",
+            "files": [
+                "Functions/data/class-alias-case-sensitivity.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/class-alias-case-sensitivity.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type ReturnTypes\\FooAlias.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/class-alias-case-sensitivity.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $a of anonymous function has invalid type ReturnTypes\\FooAlias.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testValidTypehintPhp71",
+            "files": [
+                "Functions/data/closure-7.1-typehints.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-7.1-typehints.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return iterable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-7.1-typehints.php",
+                    "line": 20,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return iterable|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-7.1-typehints.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-7.1-typehints.php",
+                    "line": 30,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return TestClosureFunctionTypehintsPhp71\\FooFunctionTypehints|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-7.1-typehints.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type TestClosureFunctionTypehintsPhp71\\NonexistentClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-7.1-typehints.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of anonymous function has invalid type TestClosureFunctionTypehintsPhp71\\NonexistentClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-7.1-typehints.php",
+                    "line": 35,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return TestClosureFunctionTypehintsPhp71\\NonexistentClass|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testValidTypehintPhp72",
+            "files": [
+                "Functions/data/closure-7.2-typehints.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-7.2-typehints.php",
+                    "line": 5,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return object but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testVoidParameterTypehint",
+            "files": [
+                "Functions/data/void-parameter-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/void-parameter-typehint.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 5",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/void-parameter-typehint.php",
+                    "line": 9,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 9",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeUnionTypes",
+            "files": [
+                "Functions/data/native-union-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Function NativeUnionTypesSupport\\bar() should return bool|int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return bool|int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/native-union-types.php",
+                    "line": 19,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return bool|int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#0",
+            "files": [
+                "Functions/data/required-parameter-after-optional-closures.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 9,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#1",
+            "files": [
+                "Functions/data/required-parameter-after-optional-closures.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 9,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#2",
+            "files": [
+                "Functions/data/required-parameter-after-optional-closures.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 9,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#3",
+            "files": [
+                "Functions/data/required-parameter-after-optional-closures.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 5,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 9,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 13,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/required-parameter-after-optional-closures.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#0",
+            "files": [
+                "Functions/data/closure-intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return ClosureIntersectionTypes\\Bar&ClosureIntersectionTypes\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 30,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 30,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 30,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 35,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 35,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 35,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#1",
+            "files": [
+                "Functions/data/closure-intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return ClosureIntersectionTypes\\Bar&ClosureIntersectionTypes\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 30,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 30,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 30,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 35,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of anonymous function has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 35,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-intersection-types.php",
+                    "line": 35,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Anonymous function has unresolvable native return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeprecatedImplicitlyNullableParameterType",
+            "files": [
+                "Functions/data/closure-implicitly-nullable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-implicitly-nullable.php",
+                    "line": 13,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #3 $c (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-implicitly-nullable.php",
+                    "line": 15,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #5 $e (int|string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-implicitly-nullable.php",
+                    "line": 17,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #7 $g (stdClass) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNoDiscardVoid",
+            "files": [
+                "Functions/data/closure-typehints-nodiscard.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-typehints-nodiscard.php",
+                    "line": 5,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void anonymous function.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints-nodiscard.php",
+                    "line": 10,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on never anonymous function.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-typehints-nodiscard.php",
+                    "line": 10,
+                    "identifier": "return.never",
+                    "message": "Anonymous function should always throw an exception or terminate script execution but doesn't do that.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

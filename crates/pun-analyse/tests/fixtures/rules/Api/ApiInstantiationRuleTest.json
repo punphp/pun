@@ -33,7 +33,7 @@
                     "file": "Api/data/new-in-phpstan.php",
                     "line": 18,
                     "identifier": "arguments.count",
-                    "message": "Class PHPStan\\DependencyInjection\\NeonAdapter constructor invoked with 0 parameters, 1 required.",
+                    "message": "Class PHPStan\\DependencyInjection\\NeonAdapter constructor invoked with 0 parameters, 1-2 required.",
                     "tip": null
                 },
                 {
@@ -78,7 +78,7 @@
                     "file": "Api/data/new-out-of-phpstan.php",
                     "line": 19,
                     "identifier": "arguments.count",
-                    "message": "Class PHPStan\\DependencyInjection\\NeonAdapter constructor invoked with 0 parameters, 1 required.",
+                    "message": "Class PHPStan\\DependencyInjection\\NeonAdapter constructor invoked with 0 parameters, 1-2 required.",
                     "tip": null
                 },
                 {

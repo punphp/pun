@@ -1,4 +1,4 @@
-//! Larastan 3.10.0's own rule tests, run through PHPStan 2.2.7 with Larastan by
+//! Larastan 3.10.0's own rule tests, run through PHPStan 2.3.1 with Larastan by
 //! scripts/export-larastan-fixtures.php: every case's errors with an identifier of a ported Larastan rule must be
 //! exactly PHPStan's. Pun knows Laravel through tests/fixtures/larastan/stubs.php. Cases that still differ are
 //! listed in tests/fixtures/larastan/gaps.txt, and the list must be exact (a fixed case has to leave it). The app root

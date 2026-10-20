@@ -102,8 +102,8 @@
   {
    "file": "vars.php",
    "line": 84,
-   "identifier": "varTag.nativeType",
-   "message": "PHPDoc tag @var with type int is not subtype of native type *NEVER*.",
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $inLoop in PHPDoc tag @var does not exist.",
    "tip": null
   },
   {
@@ -278,7 +278,7 @@
    "file": "vars.php",
    "line": 213,
    "identifier": "varTag.nativeType",
-   "message": "PHPDoc tag @var with type int is not subtype of native type array{}|array{non-empty-string}.",
+   "message": "PHPDoc tag @var with type int is not subtype of native type array<string>|null.",
    "tip": null
   },
   {

@@ -32,11 +32,22 @@ const SKIP_GENERIC: [&str; 1] = ["DOMNamedNodeMap"];
 const ITERABLE_GENERIC: [&str; 4] = ["Traversable", "Iterator", "IteratorAggregate", "Generator"];
 
 /// `getIterableTypesWithMissingValueTypehint()`: "iterable type X" for each iterable with an implicit `mixed`
-/// value type.
+/// value type, each once.
 pub fn iterables_without_value(ty: &Type) -> Vec<String> {
     let out = RefCell::new(Vec::new());
     iterable_walk(ty, &out);
-    out.into_inner()
+    unique(out.into_inner())
+}
+
+/// PHPStan 2.3 keys the found descriptions by themselves: the first of equal ones stays, in its place.
+fn unique<T: PartialEq>(found: Vec<T>) -> Vec<T> {
+    let mut out = Vec::new();
+    for f in found {
+        if !out.contains(&f) {
+            out.push(f);
+        }
+    }
+    out
 }
 
 fn iterable_walk(ty: &Type, out: &RefCell<Vec<String>>) {
@@ -112,11 +123,11 @@ fn drop_unsealed(ty: &Type) -> Type {
 }
 
 /// `getNonGenericObjectTypesWithGenericClass()`: ("class Foo", "T, U") for each generic class used without its
-/// type arguments.
+/// type arguments, each once.
 pub fn generics_without_args(ty: &Type, check_iterable_classes: bool) -> Vec<(String, String)> {
     let out = RefCell::new(Vec::new());
     generic_walk(ty, check_iterable_classes, &out);
-    out.into_inner()
+    unique(out.into_inner())
 }
 
 fn generic_walk(ty: &Type, iterables: bool, out: &RefCell<Vec<(String, String)>>) {

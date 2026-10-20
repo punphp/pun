@@ -708,6 +708,15 @@
             "general": []
         },
         {
+            "method": "testVoidConditionalReturnType",
+            "files": [
+                "Methods/data/void-conditional-return-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testClosureBind",
             "files": [
                 "Methods/data/closure-bind.php"
@@ -1493,6 +1502,15 @@
             "general": []
         },
         {
+            "method": "testNullSafeOnTemplateTypeNarrowedAgainstNull",
+            "files": [
+                "Methods/data/nullsafe-method-call-template-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testDisallowNamedArgumentsInPhpVersionScope",
             "files": [
                 "Methods/data/disallow-named-arguments-php-version-scope.php"
@@ -1844,6 +1862,23 @@
             "general": []
         },
         {
+            "method": "testArrayShapeTemplateKey",
+            "files": [
+                "Methods/data/array-shape-template-key.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/array-shape-template-key.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Method ArrayShapeTemplateKeyMethods\\Foo::stringKey() should return array<string, int> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testUnableToResolveCallbackParameterType",
             "files": [
                 "Methods/data/unable-to-resolve-callback-parameter-type.php"
@@ -1929,7 +1964,50 @@
                 "Methods/data/bug-5372.php"
             ],
             "scan": [],
-            "errors": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 60,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, 'bar'|'foo'>, actual: Bug5372\\Collection<int, string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 63,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, non-falsy-string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 67,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, class-string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 71,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, class-string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 80,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, literal-string>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5372.php",
+                    "line": 84,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type Bug5372\\Collection<int, string>, actual: Bug5372\\Collection<int, literal-string>",
+                    "tip": null
+                }
+            ],
             "general": []
         },
         {
@@ -2200,7 +2278,7 @@
                     "file": "Methods/data/generics-empty-array.php",
                     "line": 14,
                     "identifier": "return.missing",
-                    "message": "Method GenericsEmptyArrayCall\\Foo::doFoo() should return array<int, int|string|T> but return statement is missing.",
+                    "message": "Method GenericsEmptyArrayCall\\Foo::doFoo() should return array<int, T|TKey of (int|string)> but return statement is missing.",
                     "tip": null
                 }
             ],
@@ -2449,6 +2527,24 @@
             "method": "testCallablesWithoutCheckNullables#3",
             "files": [
                 "Methods/data/callables-without-check-nullables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericArgumentNullability#0",
+            "files": [
+                "Methods/data/generic-argument-nullability.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericArgumentNullability#1",
+            "files": [
+                "Methods/data/generic-argument-nullability.php"
             ],
             "scan": [],
             "errors": [],
@@ -2834,6 +2930,15 @@
             "general": []
         },
         {
+            "method": "testDynamicMethodName",
+            "files": [
+                "Methods/data/dynamic-method-name.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug12884",
             "files": [
                 "Methods/data/bug-12884.php"
@@ -2959,6 +3064,15 @@
             "method": "testBug13708",
             "files": [
                 "Methods/data/bug-13708.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13054",
+            "files": [
+                "Methods/data/bug-13054.php"
             ],
             "scan": [],
             "errors": [],
@@ -3189,6 +3303,15 @@
             "general": []
         },
         {
+            "method": "testBug11317",
+            "files": [
+                "Methods/data/bug-11317.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug4608",
             "files": [
                 "Methods/data/bug-4608.php"
@@ -3296,6 +3419,15 @@
             "general": []
         },
         {
+            "method": "testBug15306",
+            "files": [
+                "Methods/data/bug-15306.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug14893",
             "files": [
                 "Methods/data/bug-14893.php"
@@ -3325,6 +3457,94 @@
             "method": "testBug15002",
             "files": [
                 "Methods/data/bug-15002.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15167",
+            "files": [
+                "Methods/data/bug-15167.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8441",
+            "files": [
+                "Methods/data/bug-8441.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15166",
+            "files": [
+                "Methods/data/bug-15166.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6732",
+            "files": [
+                "Methods/data/bug-6732.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnconstrainedCollectionTemplateArguments",
+            "files": [
+                "Functions/data/bug-15168.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-15168.php",
+                    "line": 145,
+                    "identifier": "return.missing",
+                    "message": "Method Bug15168Functions\\Sink::read() should return U but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnconstrainedQueryResult",
+            "files": [
+                "Methods/data/unconstrained-query-result.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 64,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method UnconstrainedQueryResult\\BatchIterator::current() is not covariant with tentative return type mixed of method Iterator<int,T>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClassConstantWildcardArguments",
+            "files": [
+                "Methods/data/class-constant-wildcard-arguments.php"
             ],
             "scan": [],
             "errors": [],
