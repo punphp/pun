@@ -1,0 +1,444 @@
+{
+    "test": "Comparison/ImpossibleCheckTypeMethodCallRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/impossible-method-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 24,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertNotInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertNotInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 44,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 45,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertNotInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 153,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleMethodCall\\Foo::nullableInt() should return int|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 208,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method ImpossibleMethodCall\\ConditionalAlwaysTrue::isInt() with int will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call.php",
+                    "line": 216,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleMethodCall\\ConditionalAlwaysTrue::isInt() should return bool but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/impossible-method-call-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDoc",
+            "files": [
+                "Comparison/data/impossible-method-call-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-not-phpdoc.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8169",
+            "files": [
+                "Comparison/data/bug-8169.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8169.php",
+                    "line": 21,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method Bug8169\\HelloWorld::assertString() with string will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8169.php",
+                    "line": 28,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method Bug8169\\HelloWorld::assertString() with string will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8169.php",
+                    "line": 35,
+                    "identifier": "method.impossibleType",
+                    "message": "Call to method Bug8169\\HelloWorld::assertString() with int will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#0",
+            "files": [
+                "Comparison/data/impossible-method-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 22,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#1",
+            "files": [
+                "Comparison/data/impossible-method-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 22,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-method-report-always-true-last-condition.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "Call to method assertString() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12473",
+            "files": [
+                "Comparison/data/bug-12473.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-12473.php",
+                    "line": 49,
+                    "identifier": "method.impossibleType",
+                    "message": "Call to method ReflectionClass<Bug12473\\PictureUser>::isSubclassOf() with 'Bug12473\\\\PictureProduct' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12087b",
+            "files": [
+                "Comparison/data/bug-12087b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-12087b.php",
+                    "line": 31,
+                    "identifier": "staticMethod.alreadyNarrowedType",
+                    "message": "Call to static method Bug12087b\\MyAssert::static_is_null() with null will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-12087b.php",
+                    "line": 31,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug12087b\\MyAssert::static_is_null() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-12087b.php",
+                    "line": 37,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method Bug12087b\\MyAssert::is_null() with null will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13566",
+            "files": [
+                "Comparison/data/bug-13566.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-13566.php",
+                    "line": 199,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_numeric() with 123 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-13566.php",
+                    "line": 204,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function assertIsInt() with int will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10337",
+            "files": [
+                "Comparison/data/bug-10337.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-10337.php",
+                    "line": 32,
+                    "identifier": "method.void",
+                    "message": "Result of method Bug10337\\App::callExit() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-10337.php",
+                    "line": 43,
+                    "identifier": "method.void",
+                    "message": "Result of method Bug10337\\App::callExit() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-10337.php",
+                    "line": 59,
+                    "identifier": "method.void",
+                    "message": "Result of method Bug10337\\App@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Comparison/data/bug-10337.php:52::callExit() (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/impossible-method-call-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-method-call-in-trait.php",
+                    "line": 30,
+                    "identifier": "method.impossibleType",
+                    "message": "Call to method ImpossibleMethodCallInTrait\\TypeChecker::isString() with int will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-in-trait.php",
+                    "line": 42,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleMethodCallInTrait\\Foo::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-in-trait.php",
+                    "line": 47,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleMethodCallInTrait\\Foo::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-in-trait.php",
+                    "line": 60,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleMethodCallInTrait\\FooAnother::doBar() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-method-call-in-trait.php",
+                    "line": 65,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleMethodCallInTrait\\FooAnother::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

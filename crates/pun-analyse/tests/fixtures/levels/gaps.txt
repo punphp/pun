@@ -201,8 +201,6 @@
 4 Arrays/DeadForeachRuleTest::testBug7913
 4 Arrays/DeadForeachRuleTest::testBug14888
 4 Arrays/DeadForeachRuleTest::testBug8056
-# class.notFound of an inline `@var` tag naming an unknown class (a variable its scope does not know yet)
-4 Methods/NullsafeMethodCallRuleTest::testBug12222
 # expr.resultUnused: `null?->foo` printed `(null)?->foo`
 4 Properties/NullsafePropertyFetchRuleTest::testRule
 # class.notFound: Mago reads `callable-array` as a class name
@@ -256,3 +254,40 @@
 4 DeadCode/UnreachableStatementRuleTest::testBug7531
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
 4 DeadCode/UnusedPrivateConstantRuleTest::testRule
+# an-dead: ImpossibleCheckType{Function,Method,StaticMethod}CallRule: ImpossibleCheckTypeHelper's in_array/method_exists/property_exists/class_exists special cases and type-specifying extensions are not ported (the value comes from Mago's return type or a void function's @phpstan-assert); the treatPhpDocTypesAsCertain tip needs native types; the trait collector; Mago's types differ (superglobal keys, narrowing after method_exists())
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleCheckTypeFunctionCall
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testStructExists
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testDoNotReportTypesFromPhpDocs
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testReportTypesFromPhpDocs
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testArrayIsList
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6305
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13713
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBugInArrayDateFormat
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug3314
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug5695
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleMethodExistOnGenericClassString
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testObjectShapes
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testLooseComparisonAgainstEnums
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testLooseComparisonAgainstEnumsNoPhpdoc
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug4890b
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug10502
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBugPR3404
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug12755
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug14873
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug2730
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug12087
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug12087c
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug10394
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13474
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug4570
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug9666
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug14429
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13799
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testInTrait
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8980
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6211
+4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12473
+4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12087b
+4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testInTrait
+4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testBug12087b
+4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testInTrait
