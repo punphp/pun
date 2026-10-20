@@ -41,8 +41,6 @@ Classes/ExistingClassInClassExtendsRuleTest::testEnums
 Api/ApiClassImplementsRuleTest::testRuleOutOfPhpStan
 # FILTER_THROW_ON_FAILURE (PHP 8.5) is missing from Mago's prelude, so a variable holding it has no constant value
 # (PHPStan 2.3's FilterVarRule also checks filter_input(), filter_var_array() and filter_input_array())
-Functions/FilterVarRuleTest::testRule
-Functions/FilterVarRuleTest::testFilterFunctions
 # argument.missing on built-ins called with named arguments: PHPStan's named-argument variant selection (and
 # combined parameter types) differ from Pun's for DatePeriod's constructor and implode()/join()
 Functions/CallToFunctionParametersRuleTest::testImplodeNamedParameters

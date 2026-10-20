@@ -8,6 +8,9 @@ use std::sync::{Arc, LazyLock, OnceLock};
 
 use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::metadata::constant::ConstantMetadata;
+use mago_codex::metadata::flags::MetadataFlags;
+use mago_codex::ttype::get_literal_int;
 use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
@@ -195,6 +198,17 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
                 .functions
                 .contains_key(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
     });
+    // the integer constants PHPStan's reflection knows and Mago's prelude lacks (PHP 8.5's FILTER_THROW_ON_FAILURE)
+    for (name, value) in &builtins.constants {
+        let key = mago_word::ascii_lowercase_constant_name_word(name.as_bytes());
+        if let Ok(value) = value.parse::<i64>()
+            && !metadata.constants.contains_key(&key)
+        {
+            let mut constant = ConstantMetadata::new(mago_word::word(name), Span::zero(), MetadataFlags::BUILTIN);
+            constant.inferred_type = Some(get_literal_int(value));
+            metadata.constants.insert(key, constant);
+        }
+    }
     (metadata, symbol_references)
 }
 

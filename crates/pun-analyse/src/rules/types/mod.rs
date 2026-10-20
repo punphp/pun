@@ -16,7 +16,7 @@ mod param_default;
 mod property_default;
 mod read_only_write;
 mod receivers;
-mod regex;
+pub(super) mod regex;
 mod returns;
 mod values;
 mod yields;

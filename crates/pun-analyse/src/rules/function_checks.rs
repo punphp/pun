@@ -53,7 +53,7 @@ pub(super) fn typed_expressions<'arena>(
                 "printf" | "sprintf" => &[0],
                 "sscanf" | "fscanf" => &[1],
                 "vprintf" | "vsprintf" => &[0, 1],
-                "filter_var" => &[2],
+                "filter_var" | "filter_input" | "filter_var_array" | "filter_input_array" => &[0, 1, 2, 3],
                 _ => &[],
             };
             self.spans.extend(
@@ -101,14 +101,18 @@ pub(super) fn function_call<'arena>(c: &mut Checker<'_, 'arena>, call: &Function
                 );
             }
         }
-        "filter_var" => filter_var(c, call),
+        "filter_var" => filter_var(c, call, 2, false),
+        "filter_input" => filter_var(c, call, 3, false),
+        "filter_var_array" | "filter_input_array" => filter_var(c, call, 1, true),
         _ => {}
     }
 }
 
-/// FilterVarRule: flags that hold both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE (PHP 8.5's).
-fn filter_var(c: &mut Checker, call: &FunctionCall) {
-    let Some(flags) = call.argument_list.arguments.get(2) else {
+/// FilterVarRule: flags that hold both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE (PHP 8.5's), in the $options
+/// argument at `position` (FilterFunctionFlagsHelper::getFlagsTypes()); the array variants take a filter specification
+/// per input key, and an integer there is the filter id, without flags.
+fn filter_var(c: &mut Checker, call: &FunctionCall, position: usize, per_key: bool) {
+    let Some(options) = super::types::regex::argument(call, position, "options") else {
         return;
     };
     if c.php_version < 80500 {
@@ -118,17 +122,24 @@ fn filter_var(c: &mut Checker, call: &FunctionCall) {
         c.builtins.constants.get(name).and_then(|v| v.parse::<i64>().ok()).expect("a PHP 8.5 filter constant")
     };
     let (null, throw) = (constant("FILTER_NULL_ON_FAILURE"), constant("FILTER_THROW_ON_FAILURE"));
-    // hasFlag(): yes when every constant value has the flag, maybe without constant values
-    let Some(values) = flag_values(c, flags.value()) else {
-        return;
+    let flags: Vec<&Expression> = match options {
+        Expression::Array(Array { elements, .. }) if per_key => elements.iter().filter_map(ArrayElement::get_value).collect(),
+        _ if per_key && c.type_of(options).is_some_and(|t| !t.types.iter().any(|t| matches!(t, TAtomic::Array(_) | TAtomic::Mixed(_)))) => vec![],
+        _ => vec![options],
     };
-    if values.iter().all(|v| v & null == null && v & throw == throw) {
-        c.report(
-            call,
-            "filterVar.nullOnFailureAndThrowOnFailure",
-            "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.".to_string(),
-            None,
-        );
+    for flags in flags {
+        // hasFlag(): yes when every constant value has the flag, maybe without constant values
+        if let Some(values) = flag_values(c, flags)
+            && values.iter().all(|v| v & null == null && v & throw == throw)
+        {
+            c.report(
+                call,
+                "filterVar.nullOnFailureAndThrowOnFailure",
+                "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.".to_string(),
+                None,
+            );
+            return;
+        }
     }
 }
 
