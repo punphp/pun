@@ -264,6 +264,18 @@ fn check(ty: &Type, m: Messages, opts: Opts, out: &mut Found) {
     }
 }
 
+/// The `checkMissingTypehints` checks of a type `{subject} has {parameter} with ...`: LocalTypeAliasesCheck's
+/// (`Class Foo has type alias X`) and SetPropertyHookParameterRule's (`... has parameter $v`), from level 6.
+pub(super) fn parameter(c: &Checker, ty: &Type, subject: &str, parameter: &str) -> Found {
+    let mut out = Vec::new();
+    if c.level >= 6 {
+        let m = Messages { subject, parameter: Some(parameter), owner: "", missing: ("", String::new()) };
+        check(ty, m, Opts::of(c), &mut out);
+    }
+    out.retain(|(id, _, _)| !id.is_empty());
+    out
+}
+
 /// The checks of a function-like's parameters and (unless `skip_return`) return type.
 fn signature(
     subject: &str,

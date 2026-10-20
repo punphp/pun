@@ -1,0 +1,186 @@
+{
+    "test": "Classes/LocalTypeAliasesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/local-type-aliases.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAlias1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAlias2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias RecursiveTypeAlias.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.duplicate",
+                    "message": "Type alias ExistingClassAlias already exists as a class in scope of LocalTypeAliases\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 23,
+                    "identifier": "typeAlias.invalidName",
+                    "message": "Type alias has an invalid name: int.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Cannot import type alias ImportedAliasFromNonClass: class LocalTypeAliases\\int does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Cannot import type alias ImportedAliasFromUnknownClass: class LocalTypeAliases\\UnknownClass does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAliasImport2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.duplicate",
+                    "message": "Type alias ExistingClassAlias already exists as a class in scope of LocalTypeAliases\\Baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.duplicate",
+                    "message": "Type alias OverwrittenTypeAlias overwrites an imported type alias of the same name.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.invalidName",
+                    "message": "Imported type alias ExportedTypeAlias has an invalid name: int.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 39,
+                    "identifier": "typeAlias.notFound",
+                    "message": "Cannot import type alias ImportedUnknownAlias: type alias does not exist in LocalTypeAliases\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 47,
+                    "identifier": "typeAlias.circular",
+                    "message": "Circular definition detected in type alias CircularTypeAliasImport1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 55,
+                    "identifier": "generics.existingTypeAlias",
+                    "message": "PHPDoc tag @template for class LocalTypeAliases\\Generic cannot have existing type alias T as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 62,
+                    "identifier": "typeAlias.invalidType",
+                    "message": "Invalid type definition detected in type alias InvalidTypeAlias.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 77,
+                    "identifier": "missingType.generics",
+                    "message": "Class LocalTypeAliases\\MissingTypehints has type alias NoGenerics with generic class LocalTypeAliases\\Generic but does not specify its types: T",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 77,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Class LocalTypeAliases\\MissingTypehints has type alias NoIterableValue with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 87,
+                    "identifier": "class.nameCase",
+                    "message": "Class LocalTypeAliases\\Foo referenced with incorrect case: LocalTypeAliases\\fOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 87,
+                    "identifier": "class.notFound",
+                    "message": "Type alias A contains unknown class LocalTypeAliases\\Nonexistent.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 87,
+                    "identifier": "class.notFound",
+                    "message": "Type alias B contains unknown class LocalTypeTraitAliases\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 95,
+                    "identifier": "typeAlias.unresolvableType",
+                    "message": "Type alias A contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/local-type-aliases.php",
+                    "line": 103,
+                    "identifier": "generics.notGeneric",
+                    "message": "Type alias A contains generic type Exception<int> but class Exception is not generic.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Classes/data/local-type-aliases-enums.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/local-type-aliases-enums.php",
+                    "line": 8,
+                    "identifier": "class.notFound",
+                    "message": "Cannot import type alias Test: class LocalTypeAliasesEnums\\NonexistentClass does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
