@@ -586,6 +586,19 @@ if (($argv[1] ?? '') === 'probes') {
         $projectSuper[] = [$a, $b, $resolver->resolve($a, $scope)->isSuperTypeOf($resolver->resolve($b, $scope))->result->describe()];
     }
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-project-super.json', json_encode($projectSuper, $flags | JSON_PRETTY_PRINT)."\n");
+    // ConstExprNodeResolver::resolve() (a `@method` parameter's default value): [class or null, expression, described]
+    $constParser = new PHPStan\PhpDocParser\Parser\ConstExprParser(new PHPStan\PhpDocParser\ParserConfig([]));
+    $lexer = new PHPStan\PhpDocParser\Lexer\Lexer(new PHPStan\PhpDocParser\ParserConfig([]));
+    $constResolver = container(80400)->getByType(PHPStan\PhpDoc\ConstExprNodeResolver::class);
+    $constants = [];
+    foreach (['PunProbe\\Child', 'PunProbe\\Coll', null] as $class) {
+        foreach (["[1, 'a' => true]", 'false', 'true', 'null', '1', '1.5', "'x'", 'self::A', 'parent::A', 'static::C', 'Coll::B',
+            'Child::A', 'Nope::A', 'Coll::NOPE', 'FOO', 'Coll::class', 'Suit::Hearts', 'Suit::X'] as $s) {
+            $node = $constParser->parse(new PHPStan\PhpDocParser\Parser\TokenIterator($lexer->tokenize($s)));
+            $constants[] = [$class, $s, $constResolver->resolve($node, new NameScope('PunProbe', [], $class))->describe(VerbosityLevel::precise())];
+        }
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-const-expr.json', json_encode($constants, $flags | JSON_PRETTY_PRINT)."\n");
     // getObjectClassNames(): [type, names]
     $names = [];
     foreach (['Coll|Child<int>|int', 'Coll&\\Countable', 'Coll|Coll<int, int>'] as $t) {

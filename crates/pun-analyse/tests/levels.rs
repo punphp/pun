@@ -123,6 +123,17 @@ const PORTED: &[&str] = &[
     "requireImplements.onInterface",
     "sealed.onEnum",
     "sealed.nonObject",
+    "methodTag.trait",
+    "methodTag.unresolvableType",
+    "propertyTag.trait",
+    "propertyTag.unresolvableType",
+    "mixin.nonObject",
+    "mixin.unresolvableType",
+    "mixin.trait",
+    "varTag.unresolvableType",
+    "varTag.trait",
+    "paramImmediatelyInvokedCallable.nonCallable",
+    "paramLaterInvokedCallable.nonCallable",
 ];
 
 /// The `class.notFound` messages of the level-2 Generics and PHPDoc tag rules (other rules report the identifier at every level).
@@ -135,6 +146,17 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @phpstan-require-extends contains unknown class",
     "PHPDoc tag @phpstan-require-implements contains unknown class",
     "PHPDoc tag @phpstan-sealed contains unknown class",
+    "PHPDoc tag @mixin contains unknown class",
+    "PHPDoc tag @method for method ",
+    "PHPDoc tag @property",
+    "PHPDoc tag @var for variable ",
+    "PHPDoc tag @var contains unknown class",
+];
+
+/// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).
+const PARAMETER_NOT_FOUND: &[&str] = &[
+    "PHPDoc tag @param-immediately-invoked-callable references unknown parameter",
+    "PHPDoc tag @param-later-invoked-callable references unknown parameter",
 ];
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
@@ -199,6 +221,8 @@ fn phpstan_level_fixtures() {
                     PORTED.contains(&id)
                         || (id == "class.notFound"
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                        || (id == "parameter.notFound"
+                            && PARAMETER_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                 };
                 let want: BTreeSet<Key> = case["errors"]
                     .as_array()

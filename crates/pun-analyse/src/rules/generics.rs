@@ -43,8 +43,8 @@ pub const IDENTIFIERS: &[&str] = &[
 
 /// What a check found: (identifier, message); and the class names ClassNameCheck reads.
 #[derive(Default)]
-struct Found {
-    errors: Vec<(&'static str, String)>,
+pub(super) struct Found {
+    pub(super) errors: Vec<(&'static str, String)>,
     names: Vec<String>,
 }
 
@@ -87,7 +87,7 @@ fn intval(s: &str) -> String {
 }
 
 /// `SprintfHelper::escapeFormatString()`
-fn escape(s: &str) -> String {
+pub(super) fn escape(s: &str) -> String {
     s.replace('%', "%%")
 }
 
@@ -121,7 +121,7 @@ fn class_templates(c: &Reflected) -> Vec<Type> {
 }
 
 /// `getReferencedClasses()`
-fn referenced_classes(ty: &Type) -> Vec<String> {
+pub(super) fn referenced_classes(ty: &Type) -> Vec<String> {
     fn walk(t: &Type, out: &RefCell<Vec<String>>) {
         if let Type::Object(name, _)
         | Type::Static(name, _)
@@ -184,11 +184,11 @@ fn infer(pattern: &Type, received: &Type, out: &mut TemplateMap) {
 }
 
 /// GenericObjectTypeCheck's messages (the call-site variance ones are not ported).
-struct GenericMessages {
-    not_generic: String,
-    less: String,
-    more: String,
-    not_subtype: String,
+pub(super) struct GenericMessages {
+    pub(super) not_generic: String,
+    pub(super) less: String,
+    pub(super) more: String,
+    pub(super) not_subtype: String,
 }
 
 /// `getGenericTypes()`: each generic object or `static` type, resolved to its bounds, outermost first: the type,
@@ -213,7 +213,7 @@ fn generic_types(ty: &Type) -> Vec<(Type, String, Vec<Type>)> {
 }
 
 /// GenericObjectTypeCheck::check()
-fn generic_object_check(ty: &Type, m: &GenericMessages, out: &mut Found) {
+pub(super) fn generic_object_check(ty: &Type, m: &GenericMessages, out: &mut Found) {
     for (generic, name, args) in generic_types(ty) {
         let Some(class) = symbols::lookup(&name) else {
             continue;

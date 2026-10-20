@@ -4,13 +4,13 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5290 | 5290 | 100.00% | ok |
-| punphp-analyse | 19591 | 19477 | 99.42% | ok |
+| punphp-analyse | 20042 | 19928 | 99.43% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 18425 | 18425 | 100.00% | ok |
-| punphp-phpstan | 8196 | 8196 | 100.00% | ok |
+| punphp-phpstan | 8230 | 8230 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
@@ -19,7 +19,7 @@ Uncovered lines:
 
 - `crates/pun-analyse/src/rules/declared.rs` 99.26% (7 lines): 278, 286, 294, 300-303
 - `crates/pun-analyse/src/rules/internal_usage.rs` 95.00% (4 lines): 32, 35, 77, 87
-- `crates/pun-analyse/src/rules/mod.rs` 99.76% (3 lines): 687, 852, 1082
+- `crates/pun-analyse/src/rules/mod.rs` 99.76% (3 lines): 695, 861, 1099
 - `crates/pun-analyse/src/rules/new_static_abstract.rs` 95.24% (1 lines): 15
 - `crates/pun-analyse/src/rules/overriding.rs` 96.39% (29 lines): 352, 358, 390, 866, 905-910, 1047, 1056-1073
 - `crates/pun-analyse/src/rules/overriding_property.rs` 98.82% (4 lines): 187-188, 258, 261

@@ -123,6 +123,7 @@ fn checker<'a, 'arena>(
         vars: HashMap::new(),
         saved: Vec::new(),
         functions: Vec::new(),
+        var_tag_functions: Vec::new(),
         in_exists_call: 0,
         top_level: HashSet::new(),
         piped: HashSet::new(),

@@ -783,6 +783,50 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
     }
 }
 
+/// `ConstExprNodeResolver::resolve()`: a constant expression's type (a `@method` parameter's default value).
+pub fn const_expr(c: &ConstExpr, scope: &dyn Scope) -> Type {
+    match c {
+        ConstExpr::Array(items) => {
+            let mut builder = ShapeBuilder::new();
+            for (key, value) in items {
+                let key = key.as_ref().map(|k| const_expr(k, scope));
+                builder.set(key, const_expr(value, scope), false);
+            }
+            builder.get()
+        }
+        ConstExpr::False => Type::ConstBool(false),
+        ConstExpr::True => Type::ConstBool(true),
+        ConstExpr::Null => Type::Null,
+        ConstExpr::Fetch(class_name, name) => {
+            // ponytail: `parent` in a class PHPStan does not know resolves as a class name there
+            let class_name = match (scope.class(), class_name.to_ascii_lowercase().as_str()) {
+                (Some(c), "self" | "static") => c.to_string(),
+                (Some(_), "parent") => match scope.parent() {
+                    Some(p) => p,
+                    None => return Type::Error,
+                },
+                _ => scope.resolve_name(class_name),
+            };
+            let Some(reflection) = symbols::lookup(&class_name) else {
+                return Type::Error;
+            };
+            if reflection.cases.iter().any(|c| c == name) {
+                return Type::EnumCase(reflection.name.clone(), name.clone());
+            }
+            std::iter::once(reflection.clone())
+                .chain(reflection.ancestors.iter().filter_map(|a| symbols::lookup(a)))
+                .find_map(|c| {
+                    c.constants
+                        .iter()
+                        .find(|(n, _)| n == name)
+                        .map(|(_, t)| resolve_str(t, Some(&c.name)))
+                })
+                .unwrap_or(Type::Error)
+        }
+        _ => constant(c, scope),
+    }
+}
+
 /// `{^PREFIX.*?REST$}` with `*` the only metacharacter.
 fn wildcard(pattern: &str, s: &str) -> bool {
     let mut parts = pattern.split('*');

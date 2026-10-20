@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use common::fixture;
 use pun_phpstan::phpdoc;
-use pun_phpstan::resolve::{Scope, resolve_in, resolve_str};
+use pun_phpstan::resolve::{Scope, const_expr, resolve_in, resolve_str};
 use pun_phpstan::symbols::{self, Class, Template};
 use pun_phpstan::types::{Level, Type, ancestor_args, decide_type, is_super_type_of};
 
@@ -118,6 +118,12 @@ fn class(name: &str) -> Option<Arc<Class>> {
             &[],
             HashMap::new(),
         ))),
+        "PunProbe\\Suit" => Some(Arc::new(Class {
+            cases: vec!["Hearts".to_string()],
+            is_enum: true,
+            is_final: true,
+            ..class(name, &[], Vec::new(), &[("X", "1")], HashMap::new())
+        })),
         "PunProbe\\Tr" => Some(Arc::new(Class {
             is_trait: true,
             ..class(name, &[], Vec::new(), &[], HashMap::new())
@@ -374,4 +380,31 @@ fn object_class_names() {
             assert_eq!(ty.object_class_names(), want, "{input}");
         }
     });
+}
+
+/// ConstExprNodeResolver on a `@method` parameter's default value.
+#[test]
+fn constant_expressions() {
+    let f = fixture("type-const-expr.json");
+    let mut failures = Vec::new();
+    symbols::with_classes(&class, || {
+        for row in f.as_array().unwrap() {
+            let input = row[1].as_str().unwrap();
+            let want = row[2].as_str().unwrap();
+            let tags = phpdoc::tags(&format!("/** @method void m($a = {input}) */")).unwrap();
+            let phpdoc::TagValue::Method { params, .. } = &tags[0].value else {
+                panic!("{input}: no method tag");
+            };
+            let default = params[0].default.as_ref().unwrap();
+            let ty = match row[0].as_str() {
+                Some(class) => const_expr(default, &InClass(class)),
+                None => const_expr(default, &InNamespace),
+            };
+            let got = ty.describe(Level::Precise);
+            if got != want {
+                failures.push(format!("{} {input}: want {want}, got {got}", row[0]));
+            }
+        }
+    });
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

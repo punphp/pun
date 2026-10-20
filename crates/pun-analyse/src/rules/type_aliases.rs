@@ -406,7 +406,7 @@ fn described(class: &symbols::Class) -> &'static str {
 }
 
 /// Every type in `ty`, outer first (TypeTraverser's order).
-fn each(ty: &Type, f: &mut dyn FnMut(&Type)) {
+pub(super) fn each(ty: &Type, f: &mut dyn FnMut(&Type)) {
     f(ty);
     let f = RefCell::new(f);
     ty.traverse(&|inner| {

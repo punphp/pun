@@ -1167,26 +1167,26 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/invalid-conditional-return" = { preset = "essential", status = "decided" }
 "phpdoc/invalid-method-assert-tag" = { preset = "essential", status = "decided" }
 "phpdoc/invalid-method-conditional-return" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-method-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-mixin-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-param-callable-tag" = { preset = "essential", status = "decided" }
+"phpdoc/invalid-method-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-mixin-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-param-callable-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-phpstan-tag" = { preset = "essential", ported = true, status = "decided" }
-"phpdoc/invalid-property-tag" = { preset = "essential", status = "decided" }
+"phpdoc/invalid-property-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-require-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-sealed-tag" = { preset = "essential", ported = true, status = "decided" }
-"phpdoc/invalid-trait-method-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-trait-mixin-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-trait-property-tag" = { preset = "essential", status = "decided" }
+"phpdoc/invalid-trait-method-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-trait-mixin-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-trait-property-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-trait-require-extends" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-trait-require-implements" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-trait-type-alias" = { preset = "basic", ported = true, status = "decided" }
-"phpdoc/invalid-trait-use-method-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-trait-use-mixin-tag" = { preset = "essential", status = "decided" }
-"phpdoc/invalid-trait-use-property-tag" = { preset = "essential", status = "decided" }
+"phpdoc/invalid-trait-use-method-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-trait-use-mixin-tag" = { preset = "essential", ported = true, status = "decided" }
+"phpdoc/invalid-trait-use-property-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-trait-use-type-alias" = { preset = "basic", ported = true, status = "decided" }
 "phpdoc/invalid-type-alias" = { preset = "basic", ported = true, status = "decided" }
 "phpdoc/invalid-var-tag" = { preset = "essential", fixed_by = ["lint/dead-code/no-invalid-var-tag"], status = "decided" }
-"phpdoc/invalid-var-tag-type" = { preset = "essential", status = "decided" }
+"phpdoc/invalid-var-tag-type" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/misplaced-require-implements" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/property-type-mismatch" = { preset = "essential", status = "decided" }
 "phpdoc/sealed-on-trait" = { preset = "basic", ported = true, status = "decided" }

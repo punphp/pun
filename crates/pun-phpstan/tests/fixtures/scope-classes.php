@@ -41,3 +41,9 @@ class Defaults
 trait Tr
 {
 }
+
+enum Suit
+{
+    case Hearts;
+    const X = 1;
+}
