@@ -1,0 +1,502 @@
+{
+    "test": "Arrays/OffsetAccessAssignmentRuleTest",
+    "cases": [
+        {
+            "method": "testOffsetAccessAssignmentToScalar",
+            "files": [
+                "Arrays/data/offset-access-assignment-to-scalar.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 14,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 'foo' to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 17,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 20,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 12.34 to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 31,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|object is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 41,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 44,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on true.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 47,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on false.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 50,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type resource is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 51,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 54,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 42.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 57,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 4.141.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 66,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset false to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 68,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset stdClass to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 72,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset array{1, 2, 3} to SplObjectStorage<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 75,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset false to OffsetAccessAssignment\\ObjectWithOffsetAccess.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 75,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "OffsetAccessAssignment\\ObjectWithOffsetAccess does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 78,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "OffsetAccessAssignment\\ObjectWithOffsetAccess does not accept array<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 81,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to OffsetAccessAssignment\\ObjectWithOffsetAccess.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 81,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "OffsetAccessAssignment\\ObjectWithOffsetAccess does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 132,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOffsetAccessAssignmentToScalarWithoutMaybes",
+            "files": [
+                "Arrays/data/offset-access-assignment-to-scalar.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 14,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 'foo' to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 17,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 20,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 12.34 to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 31,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int|object is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 41,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 44,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on true.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 47,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on false.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 50,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type resource is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 51,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 54,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 42.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 57,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 4.141.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 66,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset false to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 68,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset stdClass to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 72,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset array{1, 2, 3} to SplObjectStorage<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 75,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset false to OffsetAccessAssignment\\ObjectWithOffsetAccess.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 75,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "OffsetAccessAssignment\\ObjectWithOffsetAccess does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 78,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "OffsetAccessAssignment\\ObjectWithOffsetAccess does not accept array<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 81,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to OffsetAccessAssignment\\ObjectWithOffsetAccess.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 81,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "OffsetAccessAssignment\\ObjectWithOffsetAccess does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-to-scalar.php",
+                    "line": 132,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInheritDocTemplateTypeResolution",
+            "files": [
+                "Arrays/data/inherit-doc-template-type-resolution.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAssignNewOffsetToStubbedClass",
+            "files": [
+                "Arrays/data/new-offset-stub.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Arrays/data/offset-access-assignment-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1714",
+            "files": [
+                "Arrays/data/bug-1714.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11572",
+            "files": [
+                "Arrays/data/bug-11572.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 13,
+                    "identifier": "void.pure",
+                    "message": "Function bug11572\\doFoo() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 15,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 16,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 17,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 18,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 19,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 20,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 24,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 36,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 43,
+                    "identifier": "void.pure",
+                    "message": "Function bug11572\\doInt() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 45,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access an offset on int.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-11572.php",
+                    "line": 46,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access an offset on int<3, 4>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14054",
+            "files": [
+                "Arrays/data/bug-14054-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-14054-property.php",
+                    "line": 32,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug14054Property\\Magic::$items (array<int, string>|string) does not accept array<int|string, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14054Hook",
+            "files": [
+                "Arrays/data/bug-14054-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-14054-hook.php",
+                    "line": 22,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug14054Hook\\WithHook::$data (array<int, string>|string) does not accept array<int|string, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8648",
+            "files": [
+                "Arrays/data/bug-8648.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAppendToArrayWithPhpIntMaxKey",
+            "files": [
+                "Arrays/data/offset-access-assignment-php-int-max.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-assignment-php-int-max.php",
+                    "line": 9,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to array<int, int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignment-php-int-max.php",
+                    "line": 15,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign new offset to array<int, int>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

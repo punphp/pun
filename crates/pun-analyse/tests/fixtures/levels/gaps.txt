@@ -187,9 +187,8 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14904
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8060
 4 Comparison/TernaryOperatorConstantConditionRuleTest::testBug3370
-# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
+# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric is not reported
 2 Constants/ValueAssignedToClassConstantRuleTest::testRule
-2 PhpDoc/IncompatibleClassConstantPhpDocTypeRuleTest::testNativeType
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testRule
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testFeature7648
@@ -204,7 +203,6 @@
 3 Properties/TypesAssignedToPropertiesRuleTest::testAppendendArrayKey
 3 Properties/TypesAssignedToPropertiesRuleTest::testAppendedArrayItemType
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug6286
-3 Properties/TypesAssignedToPropertiesRuleTest::testBug4910
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug3703
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug3383
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug6356b
@@ -292,3 +290,14 @@
 4 DeadCode/UnreachableStatementRuleTest::testBug7531
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
 4 DeadCode/UnusedPrivateConstantRuleTest::testRule
+# an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value, a pipe `|>` into a string)
+2 Operators/InvalidBinaryOperationRuleTest::testRule
+2 Operators/InvalidBinaryOperationRuleTest::testBug5309
+2 Operators/InvalidBinaryOperationRuleTest::testBenevolentUnion
+2 Operators/InvalidBinaryOperationRuleTest::testBug1452
+2 PhpDoc/WrongVariableNameInVarTagRuleTest::testAssignOperator
+3 Arrays/OffsetAccessAssignOpRuleTest::testRuleWithNullsafeVariant
+4 DeadCode/NoopRuleTest::testPipeOperator
+# an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
+3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
+3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook
