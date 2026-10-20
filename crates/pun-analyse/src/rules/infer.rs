@@ -8,7 +8,7 @@ use mago_allocator::{Arena, LocalArena};
 use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
 use mago_analyzer::plugin::{
-    ExpressionHook, ExpressionHookResult, HookContext, HookResult, PluginRegistry, Provider, ProviderMeta,
+    ExpressionHook, ExpressionHookResult, HookContext, HookResult, Provider, ProviderMeta,
 };
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
@@ -132,7 +132,7 @@ pub(super) fn analyse<'arena>(
     if wanted.is_empty() {
         return Default::default();
     }
-    let mut registry = PluginRegistry::new();
+    let mut registry = super::return_types::registry(&file.contents);
     let found = Arc::<Mutex<Found>>::default();
     if !watched.is_empty() {
         let ids = watched
@@ -144,7 +144,6 @@ pub(super) fn analyse<'arena>(
             .collect();
         registry.register_expression_hook(Definedness { ids, found: Arc::clone(&found) });
     }
-    let registry = super::return_types::registry(&file.contents);
     let settings = Settings::new(crate::codebase::php_version(php_version));
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
