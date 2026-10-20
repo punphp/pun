@@ -52,6 +52,7 @@ function container(int $phpVersion): PHPStan\DependencyInjection\Container
  *   __benevolent<A|B>                                   (PHPStan's own syntax)
  *   __template<T, 'function f()', BOUND[, DEFAULT]>     a template parameter of that scope
  *   *ERROR*, *NEVER*                                     ErrorType, NeverType (`never` is NonAcceptingNeverType)
+ *   __stringAndStringable, __stringNotStringable         the string types around objects with __toString()
  *   "..."                                                constant string with control characters (PHP escapes)
  */
 function t(Type $type): string
@@ -85,6 +86,12 @@ function t(Type $type): string
         }
         if ($t instanceof PHPStan\Type\IntersectionType && array_filter($t->getTypes(), fn ($m) => $m instanceof PHPStan\Type\Generic\TemplateType) !== []) {
             return $hole('('.implode(' & ', array_map('t', (fn () => $this->getSortedTypes())->call($t))).')');
+        }
+        if ($t instanceof PHPStan\Type\StringAlwaysAcceptingObjectWithToStringType) {
+            return $hole('__stringAndStringable');
+        }
+        if ($t instanceof PHPStan\Type\StringNeverAcceptingObjectWithToStringType) {
+            return $hole('__stringNotStringable');
         }
         if ($t instanceof PHPStan\Type\ErrorType) {
             return $hole('*ERROR*');
@@ -471,7 +478,8 @@ if (($argv[1] ?? '') === 'accepts') {
         '__benevolent<int|string>', 'Countable&Traversable', '(int is int ? 1 : 2)', 'T', 'U', 'V', '*NEVER*', 'class-string<Countable>',
         'class-string<stdClass>', "'Countable'", "'Nope'", '__stringAndStringable', '__stringNotStringable', 'DateTimeInterface', 'DateTime|DateTimeImmutable',
         'Throwable', 'Error|Exception', 'array<int>', 'callable&array', '(T&Countable)', 'array{a: lowercase-string, b: int}', "1|array{}",
-        'array{ArrayIterator<int, string>, ArrayIterator<int, int>}', 'array{a?: int}', 'array<int, int>'];
+        'array{ArrayIterator<int, string>, ArrayIterator<int, int>}', 'array{a?: int}', 'array<int, int>',
+        "'strlen'", "'ArrayIterator::count'", "'ArrayIterator::nope'", "'Closure::nope'", "'Nope::nope'", "''", "'1a::b'"];
     $sets = [[$atoms, 'ArrayIterator'], [['static', '$this', 'ArrayIterator', 'ArrayIterator<int, string>', 'Iterator', 'object', 'stdClass', 'Nope', 'Countable'], 'ArrayIterator'],
         [['static', '$this', 'Nope'], 'Nope']];
     $rows = [];

@@ -153,7 +153,7 @@ pub fn check<'arena>(
         let counts = attribute.argument_list.as_ref().map(params::count_partial).unwrap_or_default();
         params::check(
             c,
-            &params::select(constructor.variants(), &counts),
+            &params::select(c, constructor.variants(), &counts),
             &counts,
             attribute,
             params::Call {

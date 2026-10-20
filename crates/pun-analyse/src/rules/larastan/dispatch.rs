@@ -103,7 +103,7 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall
                 Argument::Positional(_) => counts.positional -= 1,
             }
         }
-        let acceptor = params::select(constructor.variants(), &counts);
+        let acceptor = params::select(c, constructor.variants(), &counts);
         if counts.named {
             continue;
         }

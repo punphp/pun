@@ -1,0 +1,225 @@
+{
+    "test": "Functions/ArrayValuesRuleTest",
+    "cases": [
+        {
+            "method": "testFile",
+            "files": [
+                "Functions/data/array_values_list.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 8,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (array{0, 1, 3}) of array_values is already a list, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 8,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 9,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (array{1, 3}) of array_values is already a list, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 9,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 10,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (array{'test'}) of array_values is already a list, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 10,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 11,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 12,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (array{'', 'test'}) of array_values is already a list, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 13,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 14,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (list<int>) of array_values is already a list, call has no effect.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 14,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 15,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 17,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (array{0}) of array_values is already a list, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 17,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 18,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 19,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (array{null, null}) of array_values is already a list, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 19,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 20,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (array{null, 0}) of array_values is already a list, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 20,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 21,
+                    "identifier": "arrayValues.empty",
+                    "message": "Parameter #1 $array (array{}) to function array_values is empty, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 21,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 24,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 25,
+                    "identifier": "arrayValues.empty",
+                    "message": "Parameter #1 $array (array{}) to function array_values is empty, call has no effect.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 25,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 27,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $unused in call to function array_values.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 27,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 28,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $unused in call to function array_values.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 28,
+                    "identifier": "arrayValues.list",
+                    "message": "Parameter #1 $array (list<int>) of array_values is already a list, call has no effect.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Functions/data/array_values_list.php",
+                    "line": 28,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_values() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

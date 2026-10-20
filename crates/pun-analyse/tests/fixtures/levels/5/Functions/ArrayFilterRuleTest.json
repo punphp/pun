@@ -1,0 +1,252 @@
+{
+    "test": "Functions/ArrayFilterRuleTest",
+    "cases": [
+        {
+            "method": "testFile",
+            "files": [
+                "Functions/data/array_filter_empty.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 10,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 11,
+                    "identifier": "arrayFilter.same",
+                    "message": "Parameter #1 $array (array{1, 3}) to function array_filter does not contain falsy values, the array will always stay the same.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 11,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 12,
+                    "identifier": "arrayFilter.same",
+                    "message": "Parameter #1 $array (array{'test'}) to function array_filter does not contain falsy values, the array will always stay the same.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 13,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 14,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 15,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 16,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 17,
+                    "identifier": "arrayFilter.same",
+                    "message": "Parameter #1 $array (array{true, true}) to function array_filter does not contain falsy values, the array will always stay the same.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 17,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 18,
+                    "identifier": "arrayFilter.same",
+                    "message": "Parameter #1 $array (array{stdClass}) to function array_filter does not contain falsy values, the array will always stay the same.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 18,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 19,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 20,
+                    "identifier": "arrayFilter.same",
+                    "message": "Parameter #1 $array (array<stdClass>) to function array_filter does not contain falsy values, the array will always stay the same.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 20,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 21,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 23,
+                    "identifier": "arrayFilter.alwaysEmpty",
+                    "message": "Parameter #1 $array (array{0}) to function array_filter contains falsy values only, the result will always be an empty array.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 23,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 24,
+                    "identifier": "arrayFilter.alwaysEmpty",
+                    "message": "Parameter #1 $array (array{null}) to function array_filter contains falsy values only, the result will always be an empty array.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 24,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 25,
+                    "identifier": "arrayFilter.alwaysEmpty",
+                    "message": "Parameter #1 $array (array{null, null}) to function array_filter contains falsy values only, the result will always be an empty array.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 25,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 26,
+                    "identifier": "arrayFilter.alwaysEmpty",
+                    "message": "Parameter #1 $array (array{null, 0}) to function array_filter contains falsy values only, the result will always be an empty array.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 26,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 27,
+                    "identifier": "arrayFilter.alwaysEmpty",
+                    "message": "Parameter #1 $array (array<false|null>) to function array_filter contains falsy values only, the result will always be an empty array.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 27,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 28,
+                    "identifier": "arrayFilter.empty",
+                    "message": "Parameter #1 $array (array{}) to function array_filter is empty, call has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/array_filter_empty.php",
+                    "line": 28,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_filter() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2065WithPhpDocTypesAsCertain",
+            "files": [
+                "Functions/data/bug-array-filter.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-array-filter.php",
+                    "line": 12,
+                    "identifier": "arrayFilter.same",
+                    "message": "Parameter #1 $array (array<class-string>) to function array_filter does not contain falsy values, the array will always stay the same.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2065WithoutPhpDocTypesAsCertain",
+            "files": [
+                "Functions/data/bug-array-filter.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-array-filter.php",
+                    "line": 12,
+                    "identifier": "arrayFilter.same",
+                    "message": "Parameter #1 $array (array<class-string>) to function array_filter does not contain falsy values, the array will always stay the same.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

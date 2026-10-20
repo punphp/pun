@@ -277,7 +277,8 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
                     "self".to_string()
                 }
             }
-            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => "$this".to_string(),
+            // a variable's object gets the method (`$this::name`, `$foo::name`)
+            Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
             _ => constant_string(arg, resolve)?,
         };
         let method = call.argument_list.arguments.get(1)?.value();

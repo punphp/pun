@@ -1804,6 +1804,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         internal::property_fetch(self, p);
     }
     fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
+        property_access::null_safe_read(self, p);
         write_only::null_safe(self, p);
     }
     fn walk_in_static_property_access(
@@ -1826,6 +1827,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         dead_code::function_check(self, call);
         larastan::function_call(self, call);
         types::function_call(self, call);
+        types::castable_call(self, call);
         function_checks::function_call(self, call);
         restricted_functions::function_call(self, call);
         deprecations::ini_option(self, call);
@@ -1856,6 +1858,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
+        types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         dead_code::method_check(self, call);
@@ -1868,6 +1871,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.rebind(call.object);
         }
         calls::method_call(self, call);
+        types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
         assign::arguments(self, assign::Callee::Method(call));
     }
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
@@ -1918,6 +1922,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             }
         }
         calls::static_method_call(self, call);
+        types::static_call(self, call);
         assign::arguments(self, assign::Callee::StaticMethod(call));
     }
     fn walk_out_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {

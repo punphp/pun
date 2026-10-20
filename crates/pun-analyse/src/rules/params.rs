@@ -5,6 +5,9 @@ use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
+use pun_phpstan::symbols::ByRef;
+use pun_phpstan::types::{Tri, Type, is_super_type_of};
+
 use super::Checker;
 
 /// A ParametersAcceptor, as far as counting and naming go.
@@ -22,6 +25,23 @@ pub struct Acceptor {
     pub variadics: Vec<bool>,
     /// A built-in's (no named argument goes to its variadic parameter).
     pub builtin: bool,
+    /// Per parameter: its declared type (see [`ParamType`]) and `passedByReference()`.
+    pub param_types: Vec<ParamType>,
+    pub by_ref: Vec<ByRef>,
+    /// A built-in method's class, which `self`/`static` in its parameter types name.
+    pub class: Option<String>,
+    /// A user function-like's codex entry, to read its parameter types as PHPStan does: the declaring class-like of a
+    /// method (`None` for a function) and the function-like's name.
+    pub callee: Option<(Option<String>, String)>,
+}
+
+/// A parameter's type as its reflection declares it, converted when an argument type is checked against it.
+#[derive(Clone, Debug, PartialEq)]
+pub enum ParamType {
+    /// A built-in's PHPDoc type string (data/symbols.json).
+    Builtin(String),
+    /// A user parameter, typed from its function's reflection (`declared::codex_params()`).
+    User,
 }
 
 impl Acceptor {
@@ -63,6 +83,15 @@ impl Acceptor {
                 .collect(),
             variadics: f.parameters.iter().map(|p| p.flags.is_variadic()).collect(),
             builtin: false,
+            param_types: vec![ParamType::User; f.parameters.len()],
+            // PhpParameterReflection: a by-reference parameter of user code creates a new variable
+            by_ref: f
+                .parameters
+                .iter()
+                .map(|p| if p.flags.is_by_reference() { ByRef::CreatesNewVariable } else { ByRef::No })
+                .collect(),
+            class: None,
+            callee: Some((None, String::from_utf8_lossy(f.name.as_bytes()).into_owned())),
         }
     }
 
@@ -76,6 +105,10 @@ impl Acceptor {
             types: v.params.iter().map(|p| describe(&p.ty)).collect(),
             variadics: v.params.iter().map(|p| p.variadic).collect(),
             builtin: true,
+            param_types: v.params.iter().map(|p| ParamType::Builtin(p.ty.clone())).collect(),
+            by_ref: v.params.iter().map(|p| p.by_ref).collect(),
+            class: None,
+            callee: None,
         }
     }
 }
@@ -104,7 +137,7 @@ impl Variants {
 
 /// `ParametersAcceptorSelector::selectFromArgs()` as far as the count goes: the named-argument variants for a call
 /// with names, then the one variant that accepts the arguments, else `combineAcceptors()` of all.
-pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
+pub fn select(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
     let variants = match variants.named {
         Some(named) if counts.named => named,
         _ => variants.all,
@@ -114,11 +147,54 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
     }
     let n = counts.positional + counts.names;
     let acceptable: Vec<&Acceptor> = variants.iter().filter(|v| counts.unpack || v.accepts(n)).collect();
-    if let Some(first) = acceptable.first() {
-        // ponytail: several acceptable variants are told apart by argument types in PHPStan; the first wins here
-        return (*first).clone();
+    match acceptable.as_slice() {
+        [] => combine(&variants.iter().collect::<Vec<_>>()),
+        [one] => (*one).clone(),
+        // ponytail: without the arguments' types (below level 5, named or unpacked arguments) the first wins
+        [first, ..] => match winning(c, &acceptable, counts) {
+            Some(w) if w.is_empty() => combine(&acceptable),
+            Some(w) => combine(&w),
+            None => (*first).clone(),
+        },
     }
-    let min = variants.iter().map(Acceptor::min).min().unwrap_or(0);
+}
+
+/// `selectFromTypes()`'s winning acceptors: those whose parameters are supertypes of the arguments' types with the
+/// highest certainty (`None` when an argument's type is unknown).
+fn winning<'v>(c: &Checker, acceptable: &[&'v Acceptor], counts: &Counts) -> Option<Vec<&'v Acceptor>> {
+    if counts.args.iter().any(|a| a.unpack.is_some()) {
+        return None;
+    }
+    // a named argument's type is keyed by its name, where the loop over the parameters' indexes stops
+    let types = counts
+        .args
+        .iter()
+        .take_while(|a| a.name.is_none())
+        .map(|a| c.types.get(&a.value).map(|t| c.to_phpstan(t)))
+        .collect::<Option<Vec<_>>>()?;
+    let rank = |t: Tri| [Tri::No, Tri::Maybe, Tri::Yes].iter().position(|x| *x == t);
+    let scored: Vec<_> = acceptable
+        .iter()
+        .map(|a| {
+            let sup = types.iter().enumerate().take(a.names.len()).fold(Tri::Yes, |sup, (i, ty)| {
+                // ponytail: GenericParametersAcceptorResolver resolves a template from the argument; taken as yes
+                sup.and(match super::types::declared_type(c, a, i) {
+                    None | Some(Type::Mixed { .. }) => Tri::Maybe,
+                    Some(p) if super::types::is_late(&p) => Tri::Yes,
+                    Some(p) => super::declared::with_classes(c, || is_super_type_of(&p, ty)),
+                })
+            });
+            (rank(sup), *a)
+        })
+        .filter(|(r, _)| *r > rank(Tri::No))
+        .collect();
+    let best = scored.iter().map(|(r, _)| *r).max();
+    Some(scored.into_iter().filter(|(r, _)| Some(*r) == best).map(|(_, a)| a).collect())
+}
+
+/// `combineAcceptors()`.
+fn combine(variants: &[&Acceptor]) -> Acceptor {
+    let min = variants.iter().map(|v| v.min()).min().unwrap_or(0);
     let mut combined = Acceptor {
         optional: Vec::new(),
         variadic: false,
@@ -127,8 +203,12 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
         types: Vec::new(),
         variadics: Vec::new(),
         builtin: variants.iter().any(|v| v.builtin),
+        param_types: Vec::new(),
+        by_ref: Vec::new(),
+        class: variants.first().and_then(|v| v.class.clone()),
+        callee: None,
     };
-    for v in &variants {
+    for v in variants {
         // `$isVariadic` is the acceptors' until a merged parameter sets it (as upstream does)
         combined.variadic |= v.variadic;
         for i in 0..v.names.len() {
@@ -137,6 +217,8 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
                 combined.types.push(v.types[i].clone());
                 combined.variadics.push(v.variadics[i]);
                 combined.optional.push(i + 1 > min);
+                combined.param_types.push(v.param_types[i].clone());
+                combined.by_ref.push(v.by_ref[i]);
                 continue;
             }
             // ponytail: the union of the types prints both when they differ, without TypeCombinator's normalization
@@ -146,6 +228,13 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
             if combined.types[i] != v.types[i] {
                 combined.types[i] = format!("{}|{}", combined.types[i], v.types[i]);
             }
+            combined.param_types[i] = match (&combined.param_types[i], &v.param_types[i]) {
+                (ParamType::Builtin(a), ParamType::Builtin(b)) if a != b => ParamType::Builtin(format!("{a}|{b}")),
+                (a, _) => a.clone(),
+            };
+            // `PassedByReference::combine()`: the stronger
+            let rank = |b: ByRef| [ByRef::No, ByRef::ReadsArgument, ByRef::CreatesNewVariable].iter().position(|x| *x == b);
+            combined.by_ref[i] = std::cmp::max_by_key(combined.by_ref[i], v.by_ref[i], |b| rank(*b));
             combined.variadic = combined.variadics[i] || v.variadics[i];
             combined.variadics[i] = combined.variadic;
             if combined.variadic {
@@ -153,6 +242,8 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
                 combined.types.truncate(i + 1);
                 combined.variadics.truncate(i + 1);
                 combined.optional.truncate(i + 1);
+                combined.param_types.truncate(i + 1);
+                combined.by_ref.truncate(i + 1);
                 break;
             }
         }
@@ -167,6 +258,60 @@ pub struct Arg {
     /// `...$value`: what unpacking it gives.
     pub unpack: Option<Unpacked>,
     pub span: Span,
+    /// The value expression, and what passing it by reference takes.
+    pub value: Span,
+    pub kind: ArgKind,
+    /// A constant array unpacked: its elements' value expressions.
+    pub elements: Vec<Span>,
+}
+
+/// What an argument expression is, as the by-reference check reads it.
+#[derive(Clone, Debug)]
+pub enum ArgKind {
+    /// A variable, an offset or a property fetch.
+    Writable,
+    /// Holds a nullsafe fetch or call.
+    Nullsafe,
+    /// A call to a function named by this identifier (its by-reference return counts).
+    Function(Span),
+    /// A method call: the object, and the method's name (`None`: a dynamic name).
+    MethodCall(Span, Option<Vec<u8>>),
+    /// A static call on a named class, `self` or `static` (the class's identifier span; `None` for the keywords).
+    StaticCall(Option<Span>, Option<Vec<u8>>),
+    /// Another static call (ponytail: taken to return by reference).
+    OtherCall,
+    Other,
+}
+
+fn selector(s: &ClassLikeMemberSelector) -> Option<Vec<u8>> {
+    match s {
+        ClassLikeMemberSelector::Identifier(i) => Some(i.value.to_vec()),
+        _ => None,
+    }
+}
+
+fn kind(e: &Expression) -> ArgKind {
+    if super::assign::contains_nullsafe(e) {
+        return ArgKind::Nullsafe;
+    }
+    match e {
+        Expression::Parenthesized(p) => kind(p.expression),
+        Expression::Variable(_)
+        | Expression::ArrayAccess(_)
+        | Expression::ArrayAppend(_)
+        | Expression::Access(Access::Property(_) | Access::StaticProperty(_)) => ArgKind::Writable,
+        Expression::Call(mago_syntax::cst::Call::Function(f)) => match f.function {
+            Expression::Identifier(id) => ArgKind::Function(id.span()),
+            _ => ArgKind::Other,
+        },
+        Expression::Call(mago_syntax::cst::Call::Method(m)) => ArgKind::MethodCall(m.object.span(), selector(&m.method)),
+        Expression::Call(mago_syntax::cst::Call::StaticMethod(m)) => match m.class {
+            Expression::Identifier(id) => ArgKind::StaticCall(Some(id.span()), selector(&m.method)),
+            Expression::Self_(_) | Expression::Static(_) => ArgKind::StaticCall(None, selector(&m.method)),
+            _ => ArgKind::OtherCall,
+        },
+        _ => ArgKind::Other,
+    }
 }
 
 /// How an argument list counts.
@@ -223,6 +368,9 @@ impl Counts {
             name: Some(String::from_utf8_lossy(n.name.value).into_owned()),
             unpack: None,
             span: n.span(),
+            value: n.value.span(),
+            kind: kind(n.value),
+            elements: Vec::new(),
         });
     }
 
@@ -236,7 +384,27 @@ impl Counts {
             }
             Some(Unpacked::Unknown) => self.unpack = true,
         }
-        self.args.push(Arg { name: None, unpack, span: p.span() });
+        let elements = match (&unpack, p.value) {
+            (Some(Unpacked::Keys(_)), Expression::Array(a)) => a.elements.iter().map(element).collect(),
+            (Some(Unpacked::Keys(_)), Expression::LegacyArray(a)) => a.elements.iter().map(element).collect(),
+            _ => Vec::new(),
+        };
+        self.args.push(Arg {
+            name: None,
+            unpack,
+            span: p.span(),
+            value: p.value.span(),
+            kind: kind(p.value),
+            elements,
+        });
+    }
+}
+
+/// A constant array element's value expression (only values and key-values make one).
+fn element(e: &ArrayElement) -> Span {
+    match e {
+        ArrayElement::KeyValue(kv) => kv.value.span(),
+        e => e.span(),
     }
 }
 
@@ -288,16 +456,16 @@ pub struct Call<'s> {
 }
 
 /// `counts` is [`count()`] of the call's arguments.
-pub fn check(
+pub fn check<'a>(
     c: &mut Checker,
     acceptor: &Acceptor,
-    counts: &Counts,
+    counts: &'a Counts,
     at: impl HasSpan + Copy,
     call: Call,
     first_level: bool,
 ) {
-    // the arguments after unpacking constant arrays: (name, unpacks a non-constant array, where)
-    let mut arguments: Vec<(Option<&str>, bool, Span)> = Vec::new();
+    // the arguments after unpacking constant arrays
+    let mut arguments: Vec<Entry> = Vec::new();
     let (mut has_named, mut has_unpacked) = (false, false);
     for arg in &counts.args {
         has_named |= arg.name.is_some();
@@ -310,16 +478,27 @@ pub fn check(
             let message = "Unpacked argument (...) cannot be followed by a non-unpacked argument.".to_string();
             c.report_non_ignorable(arg.span, "argument.nonUnpackAfterUnpacked", message, None);
         }
+        let entry = |name: Option<&'a str>, unpack: bool, value: Span| Entry {
+            name,
+            unpack,
+            span: arg.span,
+            value,
+            kind: &arg.kind,
+        };
         match &arg.unpack {
-            None => arguments.push((arg.name.as_deref(), false, arg.span)),
+            None => arguments.push(entry(arg.name.as_deref(), false, arg.value)),
             Some(Unpacked::Keys(keys)) => {
                 has_unpacked = true;
                 has_named |= keys.iter().any(Option::is_some);
-                arguments.extend(keys.iter().map(|k| (k.as_deref(), false, arg.span)));
+                arguments.extend(
+                    keys.iter()
+                        .zip(&arg.elements)
+                        .map(|(k, v)| entry(k.as_deref(), false, *v)),
+                );
             }
             Some(Unpacked::Unknown) => {
                 has_unpacked = true;
-                arguments.push((None, true, arg.span));
+                arguments.push(entry(None, true, arg.value));
             }
         }
     }
@@ -335,8 +514,8 @@ pub fn check(
         } else {
             counts.positional
         };
-        // ponytail: level 0 has checkExtraArguments off, so only too few arguments are counted
-        if invoked < min {
+        // checkExtraArguments is on from level 1
+        if invoked < min || (c.level >= 1 && max.is_some_and(|m| invoked > m)) {
             let s = if invoked == 1 { "" } else { "s" };
             let subject = call.subject;
             let message = match max {
@@ -364,18 +543,34 @@ pub fn check(
         };
         c.report(at, identifier, void, None);
     }
-    process_arguments(c, acceptor, &arguments, has_named, at, &call);
+    let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
+    if c.level >= 5 {
+        super::types::arguments(c, acceptor, &arguments, &parameters, &call);
+    }
 }
 
-/// `processArguments()`: each argument's parameter, by position or by name.
+/// One argument after unpacking constant arrays.
+pub struct Entry<'a> {
+    pub name: Option<&'a str>,
+    /// Unpacks a non-constant array.
+    pub unpack: bool,
+    /// The argument (its line).
+    pub span: Span,
+    /// The expression whose type is passed: the argument's value, or an unpacked constant array's element.
+    pub value: Span,
+    pub kind: &'a ArgKind,
+}
+
+/// `processArguments()`: each argument's parameter, by position or by name (`None`: no parameter is checked).
 fn process_arguments(
     c: &mut Checker,
     acceptor: &Acceptor,
-    arguments: &[(Option<&str>, bool, Span)],
+    arguments: &[Entry],
     has_named: bool,
     at: impl HasSpan,
     call: &Call,
-) {
+) -> Vec<Option<usize>> {
+    let mut parameters = vec![None; arguments.len()];
     // `in call to function foo`, `... to method Foo::bar()`, `... to Foo constructor`
     let callee = match call.kind {
         CallKind::New => call.subject.trim_start_matches("Class "),
@@ -391,7 +586,8 @@ fn process_arguments(
     let mut unused: Vec<usize> = (0..count).filter(|i| !acceptor.variadics[*i]).collect();
     let mut named_occurred = false;
     let mut named_for_variadic: Vec<&str> = Vec::new();
-    for (i, (name, unpack, span)) in arguments.iter().enumerate() {
+    for (i, e) in arguments.iter().enumerate() {
+        let (name, unpack, span) = (&e.name, &e.unpack, &e.span);
         let parameter = match name {
             None if i < count => i,
             // func_get_args()
@@ -424,9 +620,11 @@ fn process_arguments(
         }
         if has_named && !acceptor.variadics[parameter] && !unused.contains(&parameter) {
             let message = format!("Argument for parameter ${} has already been passed.", acceptor.names[parameter]);
+            parameters[i] = Some(parameter);
             c.report(*span, "argument.duplicate", message, None);
             continue;
         }
+        parameters[i] = Some(parameter);
         unused.retain(|p| *p != parameter);
     }
     if has_named {
@@ -436,4 +634,5 @@ fn process_arguments(
             c.report(at.span(), "argument.missing", message, None);
         }
     }
+    parameters
 }

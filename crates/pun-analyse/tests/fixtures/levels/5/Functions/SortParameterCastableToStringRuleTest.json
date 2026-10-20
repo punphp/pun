@@ -1,0 +1,418 @@
+{
+    "test": "Functions/SortParameterCastableToStringRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/sort-param-castable-to-string-functions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<int, list<string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 16,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 19,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function sort expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 20,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function sort expects an array of values castable to string, array<int, SortParamCastableToStringFunctions\\ClassWithoutToString> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 21,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function rsort expects an array of values castable to string, list<array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function asort expects an array of values castable to string, list<array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 23,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function arsort expects an array of values castable to string, array<int, list<string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 25,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function sort expects an array of values castable to string, array<int, list<string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function rsort expects an array of values castable to string, list<array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 27,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function asort expects an array of values castable to string, list<array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 31,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function arsort expects an array of values castable to float, array<int, SortParamCastableToStringFunctions\\ClassWithToString> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 32,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function arsort expects an array of values castable to string and float, array<int, SortParamCastableToStringFunctions\\ClassWithToString> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 33,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function sort expects an array of values castable to string, array<int, list<string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 34,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function sort expects an array of values castable to string and float, list<array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 39,
+                    "identifier": "arguments.count",
+                    "message": "Function array_unique invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 39,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 40,
+                    "identifier": "arguments.count",
+                    "message": "Function array_combine invoked with 0 parameters, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 41,
+                    "identifier": "arguments.count",
+                    "message": "Function sort invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Function rsort invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 43,
+                    "identifier": "arguments.count",
+                    "message": "Function asort invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 44,
+                    "identifier": "arguments.count",
+                    "message": "Function arsort invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 49,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 55,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 59,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions.php",
+                    "line": 66,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Functions/data/sort-param-castable-to-string-functions-named-args.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 7,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function array_unique expects an array of values castable to string, array<int, list<string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 7,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 9,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function sort expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 10,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function rsort expects an array of values castable to string, list<array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 11,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function asort expects an array of values castable to string, list<array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter $array of function arsort expects an array of values castable to string, array<int, list<string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 17,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $array (array) in call to function array_unique.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 17,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 18,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $array (TArray of array<T>) in call to function sort.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 19,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $array (TArray of array<T>) in call to function rsort.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 20,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $array (array) in call to function asort.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 21,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $array (array) in call to function arsort.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-named-args.php",
+                    "line": 26,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnum",
+            "files": [
+                "Functions/data/sort-param-castable-to-string-functions-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-enum.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-enum.php",
+                    "line": 14,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function sort expects an array of values castable to string, array<int, SortParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-enum.php",
+                    "line": 15,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function rsort expects an array of values castable to string, list<SortParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-enum.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function asort expects an array of values castable to string, list<SortParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-enum.php",
+                    "line": 17,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function arsort expects an array of values castable to string, array<int, SortParamCastableToStringFunctionsEnum\\FooEnum> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/sort-param-castable-to-string-functions-enum.php",
+                    "line": 23,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_unique() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11167",
+            "files": [
+                "Functions/data/bug-11167.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12146",
+            "files": [
+                "Functions/data/bug-12146.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 29,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 30,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 35,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 36,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 41,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 42,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 47,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 48,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
