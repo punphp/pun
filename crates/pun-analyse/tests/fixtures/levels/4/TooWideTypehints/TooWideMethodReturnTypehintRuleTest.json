@@ -1,0 +1,717 @@
+{
+    "test": "TooWideTypehints/TooWideMethodReturnTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testPrivate",
+            "files": [
+                "TooWideTypehints/data/tooWideMethodReturnType-private.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 8,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::foo() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 14,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::bar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 14,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Foo::bar() never returns string so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 18,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::baz() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 18,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Foo::baz() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 22,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::lorem() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 34,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 34,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 48,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor2() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 48,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor2() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 49,
+                    "identifier": "return.missing",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor2() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 57,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor3() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor3() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 66,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor4() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 66,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor4() never returns int so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 67,
+                    "identifier": "return.missing",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor4() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 75,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor5() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 86,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor6() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 86,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Foo::dolor6() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 119,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\ConditionalTypeClass::conditionalType() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 119,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\ConditionalTypeClass::conditionalType() never returns string so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 133,
+                    "identifier": "method.unused",
+                    "message": "Method TooWideMethodReturnType\\InvalidPhpDoc::doFoo() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-private.php",
+                    "line": 133,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type int|string is not subtype of native type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPublicProtected",
+            "files": [
+                "TooWideTypehints/data/tooWideMethodReturnType-public-protected.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-public-protected.php",
+                    "line": 14,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Bar::bar() never returns string so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-public-protected.php",
+                    "line": 18,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Bar::baz() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-public-protected.php",
+                    "line": 35,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Bazz::lorem() never returns string so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPublicProtectedWithInheritance",
+            "files": [
+                "TooWideTypehints/data/tooWideMethodReturnType-public-protected-inheritance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/tooWideMethodReturnType-public-protected-inheritance.php",
+                    "line": 27,
+                    "identifier": "return.unusedType",
+                    "message": "Method TooWideMethodReturnType\\Baz::baz() never returns null so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5095",
+            "files": [
+                "TooWideTypehints/data/bug-5095.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-5095.php",
+                    "line": 21,
+                    "identifier": "method.unused",
+                    "message": "Method Bug5095\\Parser::unaryOperatorFor() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6158",
+            "files": [
+                "TooWideTypehints/data/bug-6158.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-6158.php",
+                    "line": 10,
+                    "identifier": "generics.wrongParent",
+                    "message": "The @implements tag of class Bug6158\\Collection describes Bug6158\\ArrayAccess but the class implements: ArrayAccess",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6175",
+            "files": [
+                "TooWideTypehints/data/bug-6175.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAlwaysCheckFinal#0",
+            "files": [
+                "TooWideTypehints/data/method-too-wide-return-always-check-final.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 8,
+                    "identifier": "method.unused",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\Foo::test() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 8,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\Foo::test() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 28,
+                    "identifier": "method.unused",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 28,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 33,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test2() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 38,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test3() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 48,
+                    "identifier": "method.unused",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 48,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 53,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test2() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 58,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test3() never returns null so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAlwaysCheckFinal#1",
+            "files": [
+                "TooWideTypehints/data/method-too-wide-return-always-check-final.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 8,
+                    "identifier": "method.unused",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\Foo::test() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 8,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\Foo::test() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 28,
+                    "identifier": "method.unused",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 28,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 33,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test2() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 38,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FinalFoo::test3() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 48,
+                    "identifier": "method.unused",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 48,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 53,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test2() never returns null so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/method-too-wide-return-always-check-final.php",
+                    "line": 58,
+                    "identifier": "return.unusedType",
+                    "message": "Method MethodTooWideReturnAlwaysCheckFinal\\FooFinalMethods::test3() never returns null so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11980",
+            "files": [
+                "TooWideTypehints/data/bug-11980.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-11980.php",
+                    "line": 37,
+                    "identifier": "return.unusedType",
+                    "message": "Method Bug11980\\Demo::process2() never returns void so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10312",
+            "files": [
+                "TooWideTypehints/data/bug-10312.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10312b",
+            "files": [
+                "TooWideTypehints/data/bug-10312b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10312c",
+            "files": [
+                "TooWideTypehints/data/bug-10312c.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10312d",
+            "files": [
+                "TooWideTypehints/data/bug-10312d.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13384c",
+            "files": [
+                "TooWideTypehints/data/bug-13384c.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 29,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBarPhpdocReturn() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 33,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 37,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBar2() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 41,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBar3() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 48,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBarMixed() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 55,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBarPhpdoc() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 62,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 66,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBar2() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 70,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBar3() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 77,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBarMixed() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 84,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBarPhpdoc() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 130,
+                    "identifier": "return.unusedType",
+                    "message": "Function Bug13384c\\returnsTrueUnionReturn() never returns int so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 137,
+                    "identifier": "return.unusedType",
+                    "message": "Function Bug13384c\\returnsTruePhpdocUnionReturn() never returns int so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13384cOff",
+            "files": [
+                "TooWideTypehints/data/bug-13384c.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 29,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBarPhpdocReturn() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 33,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 37,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBar2() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 41,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBar3() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 48,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBarMixed() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 55,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13384c\\Bug13384c::doBarPhpdoc() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 62,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBar() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 66,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBar2() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 70,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBar3() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 77,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBarMixed() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 84,
+                    "identifier": "method.unused",
+                    "message": "Static method Bug13384c\\Bug13384Static::doBarPhpdoc() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 130,
+                    "identifier": "return.unusedType",
+                    "message": "Function Bug13384c\\returnsTrueUnionReturn() never returns int so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "TooWideTypehints/data/bug-13384c.php",
+                    "line": 137,
+                    "identifier": "return.unusedType",
+                    "message": "Function Bug13384c\\returnsTruePhpdocUnionReturn() never returns int so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNestedTooWideType",
+            "files": [
+                "TooWideTypehints/data/nested-too-wide-method-return-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13676",
+            "files": [
+                "TooWideTypehints/data/bug-13676.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-13676.php",
+                    "line": 12,
+                    "identifier": "method.unused",
+                    "message": "Method Bug13676\\HelloWorld::prepareExpectedRows() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11430",
+            "files": [
+                "TooWideTypehints/data/bug-11430.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

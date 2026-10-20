@@ -945,3 +945,8 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#1
 4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
 4 Classes/ImpossibleInstanceOfRuleTest::testInTrait
+# an-types: too-wide returns where Mago's types differ (an arrow function's printed `fn ():`, a final class's constant with a @var read as the @var type, is_subclass_of() narrowing a class-string, a $_GET element)
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8954
+5 Functions/CallToFunctionParametersRuleTest::testBug9580
+4 TooWideTypehints/TooWideArrowFunctionReturnTypehintRuleTest::testRule
+4 TooWideTypehints/TooWideMethodReturnTypehintRuleTest::testBug10312b

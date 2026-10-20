@@ -1154,6 +1154,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class_tags::class_like(self, class.span(), k);
             dead_code::unused_private(self, k, class.members.as_slice());
             readonly_init::class(self, k, class.members.as_slice());
+            types::too_wide_properties(self, k, class.members.as_slice());
         }
         type_aliases::class_like(self, class.span());
         missing_types::class(self, class);
@@ -1396,6 +1397,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class_tags::class_like(self, a.span(), k);
             dead_code::unused_private(self, k, a.members.as_slice());
             readonly_init::class(self, k, a.members.as_slice());
+            types::too_wide_properties(self, k, a.members.as_slice());
         }
         generics::anonymous(self, a, &name, &display);
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
@@ -1413,6 +1415,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::function(self, f);
         types::function_defaults(self, f);
         types::function_returns(self, f);
+        types::too_wide_function(self, f);
         generics::function(self, f);
         variance::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
@@ -1534,6 +1537,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::method(self, m);
         types::method_defaults(self, m);
         types::method_returns(self, m);
+        types::too_wide_method(self, m);
         generics::method(self, m, &method);
         variance::method(self, m, &method);
         declarations::promoted(
@@ -2092,6 +2096,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::closure(self, f);
         types::anonymous_defaults(self, &f.parameter_list);
         types::closure_returns(self, f);
+        types::too_wide_closure(self, f);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         self.syntax.parents.push(syntax::Parent::Closure);
         self.syntax.by_ref.push(f.ampersand.is_some());
@@ -2162,6 +2167,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
         types::anonymous_defaults(self, &f.parameter_list);
         types::arrow_function_returns(self, f);
+        types::too_wide_arrow_function(self, f);
         self.enter_closure_this(f.r#static.is_some());
         functions::function_like(self, f, &f.parameter_list);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());

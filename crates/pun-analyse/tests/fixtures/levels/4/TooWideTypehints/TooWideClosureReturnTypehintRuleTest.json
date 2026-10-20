@@ -1,0 +1,31 @@
+{
+    "test": "TooWideTypehints/TooWideClosureReturnTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testBug10312e",
+            "files": [
+                "TooWideTypehints/data/bug-10312e.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRule",
+            "files": [
+                "TooWideTypehints/data/tooWideClosureReturnType.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/tooWideClosureReturnType.php",
+                    "line": 20,
+                    "identifier": "return.unusedType",
+                    "message": "Anonymous function never returns null so it can be removed from the return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

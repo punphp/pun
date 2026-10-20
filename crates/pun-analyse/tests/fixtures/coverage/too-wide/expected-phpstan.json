@@ -1,0 +1,271 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "properties.php",
+   "line": 19,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$a (int|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 19,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$a is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 20,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$b is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 22,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$d (int|string) is never assigned string so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 22,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$d is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 23,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$e (int|string) is never assigned string so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 23,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$e is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 24,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$f (array|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 26,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$h is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 27,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$i (int|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 29,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$j (int|string) is never assigned string so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 29,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$j is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 30,
+   "identifier": "property.unusedType",
+   "message": "Static property CoverageTooWideProperties\\Props::$k (int|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 30,
+   "identifier": "property.onlyWritten",
+   "message": "Static property CoverageTooWideProperties\\Props::$k is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 31,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$l (int|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 31,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$l is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 33,
+   "identifier": "property.unusedType",
+   "message": "Property CoverageTooWideProperties\\Props::$hooked (int|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 33,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$hooked is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 37,
+   "identifier": "property.onlyWritten",
+   "message": "Property CoverageTooWideProperties\\Props::$promoted is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "properties.php",
+   "line": 79,
+   "identifier": "property.unusedType",
+   "message": "Property class@anonymous/properties.php:78::$a (int|null) is never assigned null so it can be removed from the property type.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 79,
+   "identifier": "property.onlyWritten",
+   "message": "Property class@anonymous/properties.php:78::$a is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "returns.php",
+   "line": 5,
+   "identifier": "return.unusedType",
+   "message": "Function CoverageTooWide\\nativeUnion() never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 18,
+   "identifier": "return.missing",
+   "message": "Function CoverageTooWide\\noReturn() should return int|null but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 21,
+   "identifier": "return.unusedType",
+   "message": "Function CoverageTooWide\\bare() never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 24,
+   "identifier": "return.empty",
+   "message": "Function CoverageTooWide\\bare() should return int|null but empty return statement found.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 30,
+   "identifier": "return.unusedType",
+   "message": "Function CoverageTooWide\\phpdocOnly() never returns string so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 32,
+   "identifier": "return.missing",
+   "message": "Function CoverageTooWide\\phpdocOnly() should return int|string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 49,
+   "identifier": "return.unusedType",
+   "message": "Function CoverageTooWide\\conditional() never returns string so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 79,
+   "identifier": "return.unusedType",
+   "message": "Method CoverageTooWide\\Child::over() never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 89,
+   "identifier": "method.unused",
+   "message": "Method CoverageTooWide\\Child::priv() is unused.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 89,
+   "identifier": "return.unusedType",
+   "message": "Method CoverageTooWide\\Child::priv() never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 89,
+   "identifier": "return.unusedType",
+   "message": "Method CoverageTooWide\\Child::priv() never returns string so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 102,
+   "identifier": "return.unusedType",
+   "message": "Method CoverageTooWide\\Open::closed() never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 108,
+   "identifier": "return.unusedType",
+   "message": "Method CoverageTooWide\\Open::tagged() never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 116,
+   "identifier": "return.unusedType",
+   "message": "Method class@anonymous/returns.php:115::m() never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 122,
+   "identifier": "return.unusedType",
+   "message": "Anonymous function never returns null so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 129,
+   "identifier": "return.empty",
+   "message": "Anonymous function should return int|null but empty return statement found.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 140,
+   "identifier": "return.unusedType",
+   "message": "Anonymous function never returns null so it can be removed from the return type.",
+   "tip": null
+  }
+ ]
+}
