@@ -1,0 +1,14 @@
+{
+    "test": "Traits/NotAnalysedTraitRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Traits/data/not-analysed-trait.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

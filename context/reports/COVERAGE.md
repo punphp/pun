@@ -4,7 +4,7 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5290 | 5290 | 100.00% | ok |
-| punphp-analyse | 20074 | 19960 | 99.43% | ok |
+| punphp-analyse | 22217 | 22217 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
@@ -15,16 +15,6 @@
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
 
-Uncovered lines:
-
-- `crates/pun-analyse/src/rules/declared.rs` 99.26% (7 lines): 278, 286, 294, 300-303
-- `crates/pun-analyse/src/rules/internal_usage.rs` 95.00% (4 lines): 32, 35, 77, 87
-- `crates/pun-analyse/src/rules/mod.rs` 99.76% (3 lines): 695, 861, 1099
-- `crates/pun-analyse/src/rules/new_static_abstract.rs` 95.24% (1 lines): 15
-- `crates/pun-analyse/src/rules/overriding.rs` 96.39% (29 lines): 352, 358, 390, 866, 905-910, 1047, 1056-1073
-- `crates/pun-analyse/src/rules/overriding_property.rs` 98.82% (4 lines): 187-188, 258, 261
-- `crates/pun-analyse/src/rules/readonly_init.rs` 92.91% (65 lines): 166, 250, 264-272, 279, 283-287, 291, 295, 313, 331, 335, 343, 348, 356, 361, 369, 404, 454, 461, 551-552, 554-556, 608-609, 617, 642, 646, 659, 668, 731-744, 795, 1026, 1058, 1141-1143, 1155, 1189, 1250
-- `crates/pun-analyse/src/rules/set_hook.rs` 97.06% (1 lines): 20
 <!-- coverage:end -->
 
 ## Exclusions

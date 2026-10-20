@@ -1,0 +1,6 @@
+parameters:
+    level: 2
+    phpVersion: 80500
+    paths: [.]
+    featureToggles:
+        internalTag: true

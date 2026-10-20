@@ -4,8 +4,6 @@
 2 Generics/ClassAncestorsRuleTest::testRuleExtends
 # Mago callable union contracts and array-shape insertion order; function NoDiscard stays unported (PLAN.md).
 2 Functions/HelperFunctionDiscard::testRule
-# PHPStan synthetic multi-level break has line -1; the public Error line is u32 (PLAN.md).
-4 Exceptions/HelperFinally::testRule
 # generics.* / parameter.notByRef errors of the level-2 PHPDoc tag rules not ported yet (Incompatible*PhpDocTypeRule,
 # MethodAssertRule; PLAN.md "analyse phpdoc/operators").
 2 PhpDoc/IncompatibleClassConstantPhpDocTypeRuleTest::testRule
@@ -20,3 +18,49 @@
 # Pun reports generics.notSupportedBound / generics.notSubtype on these templates where PHPStan does not.
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug13652
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug9708
+# Anonymous class names print the fixture path relative to the exporter's working directory.
+2 PhpDoc/RequireExtendsDefinitionClassRuleTest::testRule
+2 PhpDoc/RequireExtendsDefinitionTraitRuleTest::testRule
+2 PhpDoc/RequireImplementsDefinitionClassRuleTest::testRule
+2 PhpDoc/RequireImplementsDefinitionTraitRuleTest::testRule
+4 DeadCode/NoopRuleTest::testRuleImpurePoints
+4 DeadCode/UnusedPrivatePropertyRuleTest::testRule/0
+# PHPStan remembers `$dt->getTimestamp() === 1000` from assert(), so the while loop never ends; Mago does not.
+4 DeadCode/UnreachableStatementRuleTest::testRule
+# `$y !== 'doBar'` leaves mixed~'doBar', which Mago's types cannot express (a dynamic name may be any member).
+4 DeadCode/UnusedPrivateMethodRuleTest::testBug11802
+4 DeadCode/UnusedPrivatePropertyRuleTest::testBug11802
+
+# an-dead: CallTo*StatementWithoutImpurePointsRule (the collector rules reporting calls to bodies without impure points) is not
+# ported; its errors share the *.resultUnused identifiers
+4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testRule
+4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testTransitive
+4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testThrows
+4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testRule
+4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testTransitive
+4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testThrows
+4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testRule
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testTransitive
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testBug11011
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testThrows
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testRule
+4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
+4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/UnreachableStatementRuleTest::testBug13232a
+4 DeadCode/UnusedPrivateMethodRuleTest::testRule
+4 Exceptions/OverwrittenExitPointByFinallyRuleTest::testBug5627
+4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
+4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
+4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
+4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPipeOperator
+# an-dead: PHPStan's built-in throw-type extensions (DateTime*::createFromFormat, DateTimeImmutable::sub) make an explicit throw point
+4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testRule
+4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testBug11503
+4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testRule
+4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testBug10819
+# an-dead: impure-points rule calls (ParentClass::value()) and `$dynamic('used')` needing the callable string's type
+4 Functions/HelperDeadCode::testRule
+7 Functions/HelperDeadCode::testRule
+8 Functions/HelperDeadCode::testRule

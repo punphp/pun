@@ -10,7 +10,7 @@ use pun_analyse::{IDENTIFIERS, analyse};
 use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
-type Key = (String, u32, String, String, Option<String>);
+type Key = (String, i64, String, String, Option<String>);
 
 fn check(neon: &str) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/signatures");
@@ -41,7 +41,7 @@ fn check(neon: &str) {
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),
-                e["line"].as_u64().unwrap() as u32,
+                e["line"].as_i64().unwrap(),
                 e["identifier"].as_str().unwrap().to_string(),
                 e["message"].as_str().unwrap().to_string(),
                 e["tip"].as_str().map(str::to_string),

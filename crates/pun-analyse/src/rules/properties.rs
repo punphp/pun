@@ -113,6 +113,7 @@ fn check<'arena>(c: &mut Checker<'_, 'arena>, node: &PropertyNode<'_, 'arena>) {
     }
     readonly(c, node, is_readonly);
     overriding_property::check(c, node, is_readonly);
+    super::property_hooks::check(c, node);
     // isReadOnlyByPhpDoc(): a `@readonly` tag, or the class is immutable (its PHPDoc or a parent's)
     if node.default
         && !is_readonly

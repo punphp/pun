@@ -10,8 +10,9 @@ use super::no_discard::unparen;
 #[derive(Default)]
 struct Result {
     always: bool,
-    exits: Vec<(Span, &'static str)>,
-    jumps: Vec<(Span, &'static str, u64)>,
+    /// `None`: a synthetic `break`/`continue` (getExitPointsForOuterLoop()), without a position.
+    exits: Vec<(Option<Span>, &'static str)>,
+    jumps: Vec<(Option<Span>, &'static str, u64)>,
 }
 
 /// PHPStan only builds FinallyExitPointsNode for an always-terminating finally block.
@@ -41,22 +42,86 @@ pub(super) fn check(c: &mut Checker, t: &Try) {
     if before.exits.is_empty() {
         return;
     }
-    for (span, kind) in before.exits {
-        c.report(
-            span,
-            "finally.exitPoint",
-            format!("This {kind} is overwritten by a different one in the finally block below."),
-            None,
+    let messages = before
+        .exits
+        .into_iter()
+        .map(|(span, kind)| {
+            (
+                span,
+                format!(
+                    "This {kind} is overwritten by a different one in the finally block below."
+                ),
+            )
+        })
+        .chain(
+            after
+                .exits
+                .into_iter()
+                .map(|(span, kind)| (span, format!("The overwriting {kind} is on this line."))),
         );
+    for (span, message) in messages {
+        // PHPStan's line of a node without a position
+        let line = span.map_or(-1, |span| c.line_of(span));
+        c.report_at_line(line, "finally.exitPoint", message, None);
     }
-    for (span, kind) in after.exits {
-        c.report(
-            span,
-            "finally.exitPoint",
-            format!("The overwriting {kind} is on this line."),
-            None,
-        );
+}
+
+/// `isAlwaysTerminating()` of an expression's result: a `throw`, `exit` or never-returning call that is evaluated
+/// whatever happens (not in a closure, a short-circuited operand or a branch).
+fn terminates(c: &Checker, e: &Expression) -> bool {
+    match e {
+        Expression::Throw(_) | Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => {
+            true
+        }
+        Expression::Closure(_) | Expression::ArrowFunction(_) => false,
+        Expression::Binary(b)
+            if matches!(
+                b.operator,
+                BinaryOperator::And(_)
+                    | BinaryOperator::Or(_)
+                    | BinaryOperator::LowAnd(_)
+                    | BinaryOperator::LowOr(_)
+            ) =>
+        {
+            terminates(c, b.lhs)
+        }
+        // the right side runs when the left is always null
+        Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => {
+            terminates(c, b.lhs)
+                || (c.type_of(b.lhs).is_some_and(|t| t.is_null()) && terminates(c, b.rhs))
+        }
+        Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Coalesce(_)) => {
+            terminates(c, a.lhs)
+                || (c.type_of(a.lhs).is_some_and(|t| t.is_null()) && terminates(c, a.rhs))
+        }
+        Expression::Conditional(t) => terminates(c, t.condition),
+        Expression::Match(m) => terminates(c, m.expression),
+        Expression::Call(Call::NullSafeMethod(m)) => terminates(c, m.object),
+        Expression::Access(Access::NullSafeProperty(p)) => terminates(c, p.object),
+        Expression::Call(_) if c.type_of(e).is_some_and(|t| t.is_never()) => true,
+        _ => Node::Expression(e)
+            .children()
+            .into_iter()
+            .any(|n| node_terminates(c, n)),
     }
+}
+
+fn node_terminates(c: &Checker, n: Node) -> bool {
+    match n {
+        Node::Expression(e) => terminates(c, e),
+        Node::AnonymousClass(a) => a.argument_list.as_ref().is_some_and(|args| {
+            Node::PartialArgumentList(args)
+                .children()
+                .into_iter()
+                .any(|n| node_terminates(c, n))
+        }),
+        n => n.children().into_iter().any(|n| node_terminates(c, n)),
+    }
+}
+
+/// `isAlwaysTerminating()` of a statement's result.
+pub(super) fn always_terminates(c: &Checker, s: &Statement) -> bool {
+    statement(c, s).always
 }
 
 fn statements(c: &Checker, items: &[Statement]) -> Result {
@@ -94,31 +159,35 @@ fn statement(c: &Checker, s: &Statement) -> Result {
         Statement::Return(_) => Some("return"),
         Statement::Expression(e) => match unparen(e.expression) {
             Expression::Throw(_) => Some("throw"),
-            Expression::Construct(Construct::Exit(_) | Construct::Die(_)) => Some("exit point"),
-            _ if c.type_of(e.expression).is_some_and(|t| t.is_never()) => Some("exit point"),
+            _ if terminates(c, e.expression) => Some("exit point"),
             _ => None,
         },
+        Statement::Echo(e) if e.values.iter().any(|v| terminates(c, v)) => Some("exit point"),
         _ => None,
     };
     if let Some(kind) = kind {
         return Result {
             always: true,
-            exits: vec![(s.span(), kind)],
+            exits: vec![(Some(s.span()), kind)],
             ..Result::default()
         };
     }
     match s {
         Statement::Break(b) => Result {
             always: true,
-            jumps: vec![(s.span(), "break", level(b.level))],
+            jumps: vec![(Some(s.span()), "break", level(b.level))],
             ..Result::default()
         },
         Statement::Continue(b) => Result {
             always: true,
-            jumps: vec![(s.span(), "continue", level(b.level))],
+            jumps: vec![(Some(s.span()), "continue", level(b.level))],
             ..Result::default()
         },
         Statement::Block(b) => statements(c, b.statements.as_slice()),
+        Statement::Goto(_) => Result {
+            always: true,
+            ..Result::default()
+        },
         Statement::If(i) => {
             let mut branches = vec![(Some(i.condition), i.body.statements())];
             branches.extend(
@@ -196,10 +265,7 @@ fn statement(c: &Checker, s: &Statement) -> Result {
                 let breaks = branch.jumps.iter().any(|(_, _, n)| *n == 1);
                 fallthrough = (branch.always || fallthrough) && !breaks;
                 result.always &= fallthrough;
-                branch.jumps.retain_mut(|(_, _, n)| {
-                    *n -= 1;
-                    *n > 0
-                });
+                outer_loop(&mut branch.jumps);
                 result.exits.extend(branch.exits);
                 result.jumps.extend(branch.jumps);
             }
@@ -223,11 +289,17 @@ fn loop_body(c: &Checker, s: &[Statement], condition: Option<bool>, do_while: bo
         .iter()
         .any(|(_, k, n)| *k == "continue" && *n == 1);
     result.always = !breaks && (condition == Some(true) || do_while && result.always && !continues);
-    result.jumps.retain_mut(|(_, _, n)| {
+    outer_loop(&mut result.jumps);
+    result
+}
+
+/// getExitPointsForOuterLoop(): a multi-level jump continues as a new one level lower, without a position.
+fn outer_loop(jumps: &mut Vec<(Option<Span>, &'static str, u64)>) {
+    jumps.retain_mut(|(span, _, n)| {
         *n -= 1;
+        *span = None;
         *n > 0
     });
-    result
 }
 
 fn level(e: Option<&Expression>) -> u64 {
@@ -241,21 +313,19 @@ fn level(e: Option<&Expression>) -> u64 {
 pub(super) fn typed(program: &Program) -> Vec<Span> {
     struct Wanted {
         spans: Vec<Span>,
-        tries: Vec<Span>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
-        fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
-            if t.finally_clause.is_some() {
-                self.tries.push(t.span());
+        fn walk_in_call(&mut self, call: &'ast Call<'arena>, _: &mut ()) {
+            self.spans.push(call.span());
+        }
+        fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+            if matches!(b.operator, BinaryOperator::NullCoalesce(_)) {
+                self.spans.push(b.lhs.span());
             }
         }
-        fn walk_in_statement_expression(
-            &mut self,
-            s: &'ast ExpressionStatement<'arena>,
-            _: &mut (),
-        ) {
-            if matches!(unparen(s.expression), Expression::Call(_)) {
-                self.spans.push(s.expression.span());
+        fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+            if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
+                self.spans.push(a.lhs.span());
             }
         }
         fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
@@ -273,16 +343,7 @@ pub(super) fn typed(program: &Program) -> Vec<Span> {
             self.spans.extend(f.conditions.iter().map(|e| e.span()));
         }
     }
-    let mut wanted = Wanted {
-        spans: Vec::new(),
-        tries: Vec::new(),
-    };
+    let mut wanted = Wanted { spans: Vec::new() };
     wanted.walk_program(program, &mut ());
-    wanted.spans.retain(|s| {
-        wanted
-            .tries
-            .iter()
-            .any(|t| t.start.offset <= s.start.offset && s.end.offset <= t.end.offset)
-    });
     wanted.spans
 }

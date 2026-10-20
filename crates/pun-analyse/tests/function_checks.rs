@@ -16,7 +16,7 @@ const IDENTIFIERS: &[&str] = &[
 
 #[test]
 fn printf_parameters_match_phpstan() {
-    type Diagnostic = (u32, String, String, Option<String>);
+    type Diagnostic = (i64, String, String, Option<String>);
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     for fixture in ["function_checks", "function_pipe"] {
         let expected: std::collections::BTreeMap<u32, Vec<Diagnostic>> =

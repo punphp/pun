@@ -1,0 +1,75 @@
+{
+    "test": "Methods/CallToConstructorStatementWithoutSideEffectsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/constructor-statement-no-side-effects.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/constructor-statement-no-side-effects.php",
+                    "line": 6,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to Exception::__construct() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constructor-statement-no-side-effects.php",
+                    "line": 11,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new PDOStatement() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constructor-statement-no-side-effects.php",
+                    "line": 12,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new stdClass() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constructor-statement-no-side-effects.php",
+                    "line": 57,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to ConstructorStatementNoSideEffects\\ConstructorWithPure::__construct() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constructor-statement-no-side-effects.php",
+                    "line": 58,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to ConstructorStatementNoSideEffects\\ConstructorWithPureAndThrowsVoid::__construct() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constructor-statement-no-side-effects.php",
+                    "line": 68,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to new ConstructorStatementNoSideEffects\\NoConstructor() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4455",
+            "files": [
+                "Methods/data/bug-4455-constructor.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12224",
+            "files": [
+                "Methods/data/bug-12224.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

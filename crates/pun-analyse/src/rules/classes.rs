@@ -141,7 +141,7 @@ fn named<'arena>(
 ) {
     match c.class_like(name) {
         Lookup::Found(class) => {
-            class_names::check(c, &[pair], true);
+            class_names::check_at(c, &[pair], Some(&class_names::Location::Instantiation), true);
             check_class(
                 c,
                 new.span(),
@@ -237,8 +237,8 @@ fn check_class(
     let counts = args.unwrap_or_default();
     params::check(
         c,
-        &params::select(constructor.variants(), counts.positional, counts.unpack),
-        counts,
+        &params::select(constructor.variants(), &counts),
+        &counts,
         new,
         params::Call {
             kind: params::CallKind::New,

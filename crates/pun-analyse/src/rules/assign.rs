@@ -549,6 +549,24 @@ pub(super) fn by_ref_arguments(c: &Checker, f: &FunctionCall) -> Vec<bool> {
         .collect()
 }
 
+/// Whether each argument of a method or static call, or of `new`, is passed by reference (empty when unknown).
+pub(super) fn by_ref_call_arguments(c: &Checker, call: Callee, args: &ArgumentList) -> Vec<bool> {
+    let Some(params) = callee_params(c, &call, args.arguments.len()) else {
+        return Vec::new();
+    };
+    args.arguments
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| {
+            let param = match arg {
+                Argument::Named(a) => params.iter().find(|p| p.name == a.name.value),
+                Argument::Positional(_) => params.get(i).or_else(|| params.last().filter(|p| p.variadic)),
+            };
+            param.is_some_and(|p| p.by_ref)
+        })
+        .collect()
+}
+
 /// An argument whose parameter decides an error: a `[]` fetch or a dim-fetch chain on `$this`.
 fn by_ref_candidate(value: &Expression) -> bool {
     let value = unparenthesized(value);

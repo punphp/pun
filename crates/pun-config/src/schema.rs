@@ -317,6 +317,9 @@ pub struct Analyse {
     /// The type switches the preset turns on.
     pub switches: Vec<&'static str>,
     pub ecosystems: Vec<Ecosystem>,
+    /// Larastan's knowledge and rules: the `laravel` ecosystem is on and composer.lock pins a Laravel that Larastan
+    /// supports.
+    pub larastan: bool,
     /// Every enabled rule, by ID.
     pub rules: Vec<AnalyseRule>,
 }
@@ -838,6 +841,10 @@ pub(crate) fn analyse(
         baseline: t.baseline,
         stubs: t.stubs,
         ignore,
+        larastan: ecosystems.contains(&Ecosystem::Laravel)
+            && crate::phpstan_parameters::larastan_supports(
+                gates.composer.laravel.as_ref().and_then(|l| l.semver),
+            ),
         ecosystems,
         rules: (on.into_iter())
             .map(|(id, options)| AnalyseRule { id, options })

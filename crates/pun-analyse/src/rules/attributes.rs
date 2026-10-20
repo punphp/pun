@@ -94,7 +94,8 @@ pub fn check<'arena>(
                 None,
             );
         }
-        class_names::check(c, &[Pair::node(name.clone(), attribute.span())], true);
+        let pair = Pair::node(name.clone(), attribute.span());
+        class_names::check_at(c, &[pair], Some(&class_names::Location::Attribute), true);
         if flags & required == 0 {
             c.report(
                 attribute,
@@ -115,7 +116,16 @@ pub fn check<'arena>(
             }
             present.push(lower);
         }
-        // attribute.deprecated: only with phpstan-deprecation-rules installed
+        // `deprecationRulesInstalled`
+        if c.deprecations
+            && let Some(deprecation) = c.class_deprecation(class)
+        {
+            let message = match deprecation {
+                Some(description) => format!("Attribute class {name} is deprecated: {description}"),
+                None => format!("Attribute class {name} is deprecated."),
+            };
+            c.report(attribute, "attribute.deprecated", message, None);
+        }
         let arguments: Vec<&PartialArgument> = attribute
             .argument_list
             .iter()
@@ -140,21 +150,11 @@ pub fn check<'arena>(
                 None,
             );
         }
-        // PHP rejects unpacking in an attribute's arguments, so they count as written
-        let positional = arguments
-            .iter()
-            .filter(|a| matches!(a, PartialArgument::Positional(_)))
-            .count();
-        let counts = params::Counts {
-            positional,
-            named: positional < arguments.len(),
-            unpack: false,
-            any: !arguments.is_empty(),
-        };
+        let counts = attribute.argument_list.as_ref().map(params::count_partial).unwrap_or_default();
         params::check(
             c,
-            &params::select(constructor.variants(), positional, false),
-            counts,
+            &params::select(constructor.variants(), &counts),
+            &counts,
             attribute,
             params::Call {
                 kind: params::CallKind::Attribute,

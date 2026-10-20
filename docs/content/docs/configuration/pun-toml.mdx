@@ -106,13 +106,13 @@ Laravel, Pest, and PHPUnit set rules depend on packages detected in `composer.lo
 | `paths` | What analyse checks, instead of `[files] paths` |
 | `exclude` | Added to `[files] exclude`, for analyse only |
 | `baseline` | The baseline file |
-| `stubs` | Migrated PHPStan `stubFiles`; not yet applied by the CLI |
+| `stubs` | Stub files, as PHPStan's `stubFiles`: their PHPDoc refines vendor symbols |
 | `rules` | `"on"`, `"off"` or a table of options per rule; `"on"` or `"off"` per group |
-| `[[analyse.ignore]]` | Migrated PHPStan `ignoreErrors`; not yet applied by the CLI |
+| `[[analyse.ignore]]` | Errors to ignore, as PHPStan's `ignoreErrors` |
 
-Analyse rules are on or off. Every finding is an error. Rule options and preset type switches are accepted by config but are not yet applied by the CLI. See [analysis limitations](/docs/commands/analyse#configuration).
+Analyse rules are on or off. Every finding is an error.
 
-Migration preserves ignore entries as tables with `rule`, `identifier`, `message` or `raw-message`, `paths`, and optional `count`:
+An ignore entry names a `rule`, an `identifier`, a `message` (a PCRE pattern) or a `raw-message` (the exact text), and optionally `paths` (paths or fnmatch patterns, relative to the project) and a `count` (with one path). An error is ignored when it matches every key given. An entry nothing matched, or a `count` that doesn't hold, is an error with PHPStan's message. Migration writes these tables from `ignoreErrors`:
 
 ```toml
 [[analyse.ignore]]

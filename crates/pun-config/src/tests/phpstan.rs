@@ -447,3 +447,23 @@ fn identifiers_and_groups() {
     assert!(crate::groups().iter().any(|g| g == "dead-code"));
     assert!(!crate::groups().iter().any(|g| g == "dead"));
 }
+
+/// Without a level or `customRulesetUsed`, PHPStan stops with "No rules detected" (CommandHelper); the migrated
+/// `[analyse]` turns every analyse group off, so `pun analyse` stops alike. With a level, rules run.
+#[test]
+fn no_level_runs_no_rules() {
+    let d = project(
+        "parameters:\n    paths: [app]\n",
+        &[("composer.json", "{}")],
+    );
+    let p = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
+    assert!(p.no_rules);
+    let mut parts = Parts::default();
+    let done = compose(&d, &mut parts, &p).unwrap();
+    assert!(done.off > 10 && done.on == 0, "{done:?}");
+    std::fs::write(d.join("pun.toml"), parts.render()).unwrap();
+    let cfg = load(&d, &Options::default()).unwrap();
+    assert!(cfg.analyse.rules.is_empty());
+    let d = project("parameters:\n    level: 0\n", &[]);
+    assert!(!from_phpstan(&d, &d.join("phpstan.neon")).unwrap().no_rules);
+}

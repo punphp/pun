@@ -9,7 +9,7 @@ use mago_word::word;
 use pun_phpstan::symbols;
 
 use super::Checker;
-use super::params::Acceptor;
+use super::params::Variants;
 
 pub enum Method<'a> {
     User {
@@ -90,10 +90,10 @@ impl Method<'_> {
         }
     }
 
-    pub fn variants(&self) -> Vec<Acceptor> {
+    pub fn variants(&self) -> Variants {
         match self {
-            Method::User { f, .. } => vec![Acceptor::of(f)],
-            Method::Builtin { f, .. } => f.variants.iter().map(Acceptor::of_builtin).collect(),
+            Method::User { f, .. } => Variants::of(f),
+            Method::Builtin { f, .. } => Variants::of_builtin(f),
         }
     }
 }

@@ -1,0 +1,6 @@
+includes:
+    - conf/rules.neon
+parameters:
+    level: 0
+    phpVersion: 80500
+    paths: [.]
