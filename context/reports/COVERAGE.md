@@ -10,7 +10,7 @@
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 18425 | 18425 | 100.00% | ok |
-| punphp-phpstan | 8884 | 8884 | 100.00% | ok |
+| punphp-phpstan | 8888 | 8888 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
@@ -42,7 +42,7 @@ Uncovered lines:
 - `crates/pun-analyse/src/mago.rs:74` the `catch_unwind` fallback that skips a file when Mago's analyser panics: tests/fixtures/mago/debug-panic.php (`int&mixed`) was written to trip Mago's debug assertion (`TUnion::from_vec()` with an empty Vec), but the analyser no longer reaches it and no known input panics it now, and the guard stays so a future panic costs one file, not the run.
 - `crates/pun-analyse/src/rules/types/convert.rs:101-103` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
 - `crates/pun-analyse/src/rules/types/convert.rs:280` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
-- `crates/pun-phpstan/src/symbols.rs:116-118` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
+- `crates/pun-phpstan/src/symbols.rs:115-117` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
 - `crates/pun-lint/src/rules/add_csv_escape_argument.rs:71` the non-target node guard: `Linter` dispatches only FunctionCall and MethodCall for this rule.

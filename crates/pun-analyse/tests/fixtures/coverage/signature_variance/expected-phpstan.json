@@ -1,0 +1,271 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "signature_variance.php",
+   "line": 32,
+   "identifier": "function.variance",
+   "message": "Variance annotation is only allowed for type parameters of classes and interfaces, but occurs in template type U in in function CovSigVariance\\f().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant mixed in generic type CovSigVariance\\Out<covariant mixed> in PHPDoc tag @param for parameter $e is redundant, template type T of interface CovSigVariance\\Out has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter a of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter b of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter e of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter g of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter i of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter j of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter k of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter l of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter m of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter n of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter o of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in parameter d of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in param-out type of parameter q of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 61,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in parameter i of method CovSigVariance\\C::a().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 66,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in return type of method CovSigVariance\\C::b().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 69,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in return type of method CovSigVariance\\C::c().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 72,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in return type of method CovSigVariance\\C::d().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 75,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in return type of method CovSigVariance\\C::e().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 75,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in return type of method CovSigVariance\\C::e().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 75,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in return type of method CovSigVariance\\C::e().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 78,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in return type of method CovSigVariance\\C::g().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 78,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in return type of method CovSigVariance\\C::g().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 89,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class CovSigVariance\\C has an unused parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 94,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in contravariant position in parameter a of method CovSigVariance\\C::stat().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 102,
+   "identifier": "method.variance",
+   "message": "Variance annotation is only allowed for type parameters of classes and interfaces, but occurs in template type V in in method CovSigVariance\\C::own().",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 114,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property CovSigVariance\\P::$a.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 117,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class CovSigVariance\\P has an uninitialized readonly property $b. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 134,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property CovSigVariance\\P::$f.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 139,
+   "identifier": "property.uninitializedReadonly",
+   "message": "Class CovSigVariance\\P has an uninitialized readonly property $g. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 139,
+   "identifier": "generics.variance",
+   "message": "Template type Y is declared as contravariant, but occurs in covariant position in property CovSigVariance\\P::$g.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 145,
+   "identifier": "generics.variance",
+   "message": "Template type X is declared as covariant, but occurs in invariant position in property CovSigVariance\\P::$i.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 164,
+   "identifier": "generics.variance",
+   "message": "Template type T is declared as contravariant, but occurs in covariant position in extended type CovSigVariance\\P<T, T> of class CovSigVariance\\R.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 172,
+   "identifier": "generics.variance",
+   "message": "Template type T is declared as covariant, but occurs in contravariant position in implemented type CovSigVariance\\Pair<T, T> of class CovSigVariance\\S.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 180,
+   "identifier": "generics.variance",
+   "message": "Template type T is declared as covariant, but occurs in contravariant position in extended type CovSigVariance\\Pair<T, T> of interface CovSigVariance\\I.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 193,
+   "identifier": "generics.variance",
+   "message": "Template type T is declared as contravariant, but occurs in invariant position in used type CovSigVariance\\Tr<T> of class CovSigVariance\\U.",
+   "tip": null
+  },
+  {
+   "file": "signature_variance.php",
+   "line": 205,
+   "identifier": "generics.variance",
+   "message": "Template type T is declared as covariant, but occurs in contravariant position in parameter items of method CovSigVariance\\Proc::run().",
+   "tip": null
+  }
+ ]
+}
