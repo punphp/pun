@@ -2928,6 +2928,594 @@
    "tip": null
   },
   {
+   "file": "src/switch-condition-always-false-enum.php",
+   "line": 24,
+   "identifier": "switch.duplicateCase",
+   "message": "Case \\SwitchConditionAlwaysFalseEnum\\Status::Active in switch is a duplicate of case \\SwitchConditionAlwaysFalseEnum\\Status::Active on line 20.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false-impossible.php",
+   "line": 11,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int and 'foo' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false-impossible.php",
+   "line": 22,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between 1|2|3 and 4 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false-impossible.php",
+   "line": 37,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between 'b' and 'b' is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-condition-always-false-impossible.php",
+   "line": 50,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int<5, max> and 1 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false-impossible.php",
+   "line": 66,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between *NEVER* and string is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false-native.php",
+   "line": 11,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int and 'foo' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false-native.php",
+   "line": 22,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int<5, max> and 1 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 30,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 'lb' in switch is a duplicate of case 'lb' on line 24.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 33,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 'oz' in switch is a duplicate of case 'oz' on line 27.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 46,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 1 in switch is a duplicate of case 1 on line 42.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 58,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 'x' in switch is a duplicate of case 'x' on line 54.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 60,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 'x' in switch is a duplicate of case 'x' on line 54.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 72,
+   "identifier": "switch.duplicateCase",
+   "message": "Case self::EQ in switch is a duplicate of case '=' on line 68.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 82,
+   "identifier": "switch.duplicateCase",
+   "message": "Case DUPLICATE_SWITCH_CASE_CONST in switch is a duplicate of case 'unknown' on line 80.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 92,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 94,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 'a' in switch is a duplicate of case 'a' on line 90.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 95,
+   "identifier": "function.notFound",
+   "message": "Function doBar not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 110,
+   "identifier": "switch.duplicateCase",
+   "message": "Case true in switch is a duplicate of case true on line 106.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 112,
+   "identifier": "switch.duplicateCase",
+   "message": "Case null in switch is a duplicate of case null on line 108.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 151,
+   "identifier": "switch.duplicateCase",
+   "message": "Case '1' in switch is a duplicate of case 1 on line 149.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 153,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 1.0 in switch is a duplicate of case 1 on line 149.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 155,
+   "identifier": "switch.duplicateCase",
+   "message": "Case true in switch is a duplicate of case 1 on line 149.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 159,
+   "identifier": "switch.duplicateCase",
+   "message": "Case false in switch is a duplicate of case 0 on line 157.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-always-true.php",
+   "line": 21,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between SwitchConditionAlwaysTrue\\Suit::Diamonds and SwitchConditionAlwaysTrue\\Suit::Diamonds is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-condition-always-true.php",
+   "line": 46,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between 2 and 2 is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-condition-in-trait.php",
+   "line": 20,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between true and false is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-condition-in-trait.php",
+   "line": 29,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between true and true is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 23,
+   "identifier": "void.pure",
+   "message": "Function DeadCode\\SwitchLoose\\duplicates() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 28,
+   "identifier": "switch.duplicateCase",
+   "message": "Case '' in switch is a duplicate of case null on line 26.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 30,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 0 in switch is a duplicate of case null on line 26.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 36,
+   "identifier": "switch.duplicateCase",
+   "message": "Case '10' in switch is a duplicate of case '1e1' on line 34.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 38,
+   "identifier": "switch.duplicateCase",
+   "message": "Case ' 10 ' in switch is a duplicate of case '1e1' on line 34.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 40,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 10.0 in switch is a duplicate of case '1e1' on line 34.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 44,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 0.5 in switch is a duplicate of case '.5' on line 42.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 48,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 7 in switch is a duplicate of case '+7' on line 46.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 54,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 'abc' in switch is a duplicate of case 'abc' on line 32.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 58,
+   "identifier": "switch.duplicateCase",
+   "message": "Case '1.5' in switch is a duplicate of case 1.5 on line 56.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 60,
+   "identifier": "switch.duplicateCase",
+   "message": "Case -0.0 in switch is a duplicate of case null on line 26.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 68,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 'x' in switch is a duplicate of case 'x' on line 64.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 78,
+   "identifier": "switch.duplicateCase",
+   "message": "Case false in switch is a duplicate of case null on line 76.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 98,
+   "identifier": "void.pure",
+   "message": "Function DeadCode\\SwitchLoose\\types() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 122,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int and array{1} is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 126,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int and 'abc' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 136,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between string and array{1} is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 144,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between array and 1 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 150,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between int<1, max> and true is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 156,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int<1, max> and false is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 160,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int<1, max> and 0 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 166,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int<-5, -1> and 3 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 172,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between int<-5, -1> and 'abc' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 180,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between DeadCode\\SwitchLoose\\Holder and true is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 186,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between DeadCode\\SwitchLoose\\Holder and false is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 194,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between true and DeadCode\\SwitchLoose\\Holder is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 200,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between false and DeadCode\\SwitchLoose\\Holder is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 204,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between non-empty-string and null is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 208,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between non-empty-string and '' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 212,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between non-falsy-string and false is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 216,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between non-falsy-string and '' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 222,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between string and 'ABC' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 230,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between string and 'abc' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 240,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between non-empty-array<int> and array{} is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 246,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between list<int> and 1 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 250,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between array<string, int> and 1 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 254,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between 1|'a' and array{1} is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 260,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between array{} and 1 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 264,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between array{} and array{1} is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 268,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between array{} and null is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 274,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between array{} and 'a' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 280,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between array{a: int} and 1 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 294,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between false and DeadCode\\SwitchLoose\\Holder is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 306,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between DeadCode\\SwitchLoose\\Suit::Hearts|DeadCode\\SwitchLoose\\Suit::Spades and 'Hearts' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 330,
+   "identifier": "switch.duplicateCase",
+   "message": "Case false in switch is a duplicate of case null on line 328.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 336,
+   "identifier": "switch.duplicateCase",
+   "message": "Case true in switch is a duplicate of case 1.5 on line 334.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 342,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between false and true is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 356,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between 1|2|3 and 'a'|'b' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 360,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between array{} and false|null is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 366,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between non-falsy-string and ''|null is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 394,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between 3 and 3 is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 408,
+   "identifier": "switch.duplicateCase",
+   "message": "Case 1 in switch is a duplicate of case true on line 406.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 438,
+   "identifier": "function.notFound",
+   "message": "Function unknown not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 452,
+   "identifier": "switch.alwaysFalse",
+   "message": "Switch condition comparison between 'a' and 'b' is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 456,
+   "identifier": "switch.alwaysTrue",
+   "message": "Switch condition comparison between 1.5 and 1.5 is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 461,
+   "identifier": "function.notFound",
+   "message": "Function unknown not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
    "file": "src/toggles.php",
    "line": 7,
    "identifier": "label.unused",

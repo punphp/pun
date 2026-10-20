@@ -2606,6 +2606,48 @@
    "tip": null
   },
   {
+   "file": "src/switch-condition-always-false.php",
+   "line": 92,
+   "identifier": "function.notFound",
+   "message": "Function doFoo not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/switch-condition-always-false.php",
+   "line": 95,
+   "identifier": "function.notFound",
+   "message": "Function doBar not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 23,
+   "identifier": "void.pure",
+   "message": "Function DeadCode\\SwitchLoose\\duplicates() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 98,
+   "identifier": "void.pure",
+   "message": "Function DeadCode\\SwitchLoose\\types() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 438,
+   "identifier": "function.notFound",
+   "message": "Function unknown not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/switch-loose.php",
+   "line": 461,
+   "identifier": "function.notFound",
+   "message": "Function unknown not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
    "file": "src/toggles.php",
    "line": 7,
    "identifier": "label.unused",

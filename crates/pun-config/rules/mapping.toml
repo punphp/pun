@@ -1075,9 +1075,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/pure-new-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-static-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/redundant-null-coalesce" = { preset = "basic", ported = true, status = "decided" }
-"dead-code/sort-without-effect" = { preset = "recommended", status = "decided" }
+"dead-code/sort-without-effect" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/strict-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/switch-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/switch-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/ternary-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/trait-condition-always-constant" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/unreachable-code" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unreachable-code"], ported = true, status = "decided" }

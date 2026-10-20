@@ -49,6 +49,10 @@ pub struct Project {
     pub bleeding_edge: bool,
     /// `featureToggles.unusedLabel` (on with bleedingEdge).
     pub unused_label: bool,
+    /// `featureToggles.switchConditionAlwaysFalse` (on with bleedingEdge): SwitchConditionRule.
+    pub switch_condition: bool,
+    /// `featureToggles.sortWithoutEffect` (on with bleedingEdge): SortWithoutEffectRule.
+    pub sort_without_effect: bool,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
     pub check_uninitialized_properties: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
@@ -211,6 +215,8 @@ impl Project {
             only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
+            switch_condition: toggle("switchConditionAlwaysFalse"),
+            sort_without_effect: toggle("sortWithoutEffect"),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
@@ -254,6 +260,8 @@ impl Project {
             only_files: true,
             bleeding_edge: false,
             unused_label: false,
+            switch_condition: false,
+            sort_without_effect: false,
             check_uninitialized_properties: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
