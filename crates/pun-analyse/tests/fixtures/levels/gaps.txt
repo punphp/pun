@@ -133,7 +133,6 @@
 4 Arrays/DeadForeachRuleTest::testBug14888
 4 Arrays/DeadForeachRuleTest::testBug8056
 # class.notFound of an inline `@var` tag naming an unknown class (a variable its scope does not know yet)
-4 Methods/NullsafeMethodCallRuleTest::testBug12222
 # expr.resultUnused: `null?->foo` printed `(null)?->foo`
 4 Properties/NullsafePropertyFetchRuleTest::testRule
 # class.notFound: Mago reads `callable-array` as a class name
@@ -277,7 +276,6 @@
 4 DeadCode/UnusedPrivateConstantRuleTest::testRule
 # an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
 2 Constants/ValueAssignedToClassConstantRuleTest::testRule
-2 PhpDoc/IncompatibleClassConstantPhpDocTypeRuleTest::testNativeType
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testRule
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testFeature7648
@@ -292,7 +290,6 @@
 3 Properties/TypesAssignedToPropertiesRuleTest::testAppendendArrayKey
 3 Properties/TypesAssignedToPropertiesRuleTest::testAppendedArrayItemType
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug6286
-3 Properties/TypesAssignedToPropertiesRuleTest::testBug4910
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug3703
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug3383
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug6356b
