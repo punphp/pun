@@ -518,6 +518,16 @@ fn inherit(
         }
         // (a PHPDoc at all: `getResolvedPhpDoc() !== null`)
         let parent_doc = method_doc(c, declaring.0, &lower, depth + 1)?;
+        let parent_doc = {
+            let map = |t: Type| ancestor_types(class, declaring.0, &t);
+            Resolved {
+                params: parent_doc.params.into_iter().map(|(k, t)| (k, map(t))).collect(),
+                ret: parent_doc.ret.map(map),
+                outs: parent_doc.outs.into_iter().map(|(k, t)| (k, map(t))).collect(),
+                closure_this: parent_doc.closure_this.into_iter().map(|(k, t)| (k, map(t))).collect(),
+                ..parent_doc
+            }
+        };
         Some(merge(
             current.clone(),
             parent_doc,
@@ -591,6 +601,32 @@ fn declaring_method<'c>(
 
 /// `ResolvedPhpDocBlock::merge()` of the parameter and return tags: the parent's tags fill what `current` lacks,
 /// with the parent's parameter names mapped to the child's by position.
+/// `resolveTemplateTypeInTag()`: an inherited PHPDoc type `t` of ancestor `declaring`, with its templates as
+/// `class`'s `@extends`/`@implements` tags (or their defaults) give them.
+fn ancestor_types(class: &ClassLikeMetadata, declaring: &ClassLikeMetadata, t: &Type) -> Type {
+    let (Some(k), Some(d)) = (symbols::lookup(&original_name(class)), symbols::lookup(&original_name(declaring))) else {
+        return t.clone();
+    };
+    let Some(args) = k.generics.get(&d.name) else {
+        return t.clone();
+    };
+    let args: Vec<Type> = args.iter().map(|s| pun_phpstan::resolve::resolve_str(s, Some(&k.name))).collect();
+    let scope = format!("class {}", d.name);
+    fn map(t: &Type, scope: &str, d: &symbols::Class, args: &[Type]) -> Type {
+        match t {
+            Type::Template(tpl) if tpl.scope == scope => d
+                .templates
+                .iter()
+                .position(|x| x.name == tpl.name)
+                .and_then(|i| args.get(i))
+                .cloned()
+                .unwrap_or_else(|| t.clone()),
+            _ => t.traverse(&|i| map(i, scope, d, args)),
+        }
+    }
+    map(t, &scope, &d, &args)
+}
+
 fn merge(
     current: Option<Resolved>,
     parent: Resolved,
@@ -677,6 +713,9 @@ pub fn method_scope(
                 .insert(t.name.clone(), Type::Template(Box::new(t)));
         }
     }
+    if k.name.as_bytes().starts_with(b"{anonymous-class:") {
+        enclosing_templates(c, m.span(), &mut scope);
+    }
     let method = text(m.name.value);
     for t in templates(
         doc,
@@ -688,6 +727,34 @@ pub fn method_scope(
             .insert(t.name.clone(), Type::Template(Box::new(t)));
     }
     scope
+}
+
+/// FileTypeMapper's template map stack: an anonymous class's members see the templates of the function or method
+/// it is declared in (the innermost walked one around `at`).
+fn enclosing_templates(c: &Checker, at: Span, scope: &mut NameScope) {
+    let Some(i) = c
+        .var_tag_functions
+        .iter()
+        .rposition(|f| f.start.offset < at.start.offset && at.end.offset <= f.end.offset)
+    else {
+        return;
+    };
+    let (span, function) = (c.var_tag_functions[i], &c.functions[i]);
+    let Some(doc) = doc_before(&c.file.contents, span.start.offset as usize) else {
+        return;
+    };
+    let described = match function.kind {
+        super::FunctionScopeKind::Method { .. } => {
+            // (the class around the anonymous one)
+            let class = c.classes.iter().rev().nth(1).and_then(|k| k.name.as_deref()).unwrap_or_default();
+            let class = c.codebase.get_class_like(class.as_bytes()).map_or_else(|| class.to_string(), original_name);
+            format!("method {class}::{}()", function.name)
+        }
+        super::FunctionScopeKind::Function => format!("function {}()", function.name),
+    };
+    for t in templates(&Doc::parse(doc), scope, &described) {
+        scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
+    }
 }
 
 /// The `NameScope` of function `f`'s own PHPDoc `doc`, with its templates.
@@ -1020,7 +1087,9 @@ fn inherited_property_doc(
                 .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
         }
         let own = own_property_doc(c, declaring, p, name);
-        return own.or_else(|| inherited_property_doc(c, declaring, name, depth + 1));
+        return own
+            .or_else(|| inherited_property_doc(c, declaring, name, depth + 1))
+            .map(|t| ancestor_types(class, declaring, &t));
     }
     None
 }

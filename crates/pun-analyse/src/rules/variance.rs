@@ -135,16 +135,11 @@ fn function_scope(t: &Template) -> bool {
     t.scope.starts_with("function ") || t.scope.starts_with("method ")
 }
 
-/// VarianceCheck::check(); with `own` (`class X`), only that class's templates count.
-// ponytail: an inherited PHPDoc type keeps the parent's templates (declared.rs does not map them through the
-// `@extends`/`@implements` arguments), so a member's check skips other classes' templates
-pub(super) fn check(position: Variance, ty: &Type, context: &str, own: Option<&str>, out: &mut Vec<String>) {
+/// VarianceCheck::check()
+pub(super) fn check(position: Variance, ty: &Type, context: &str, out: &mut Vec<String>) {
     let mut refs = Vec::new();
     referenced(ty, position, &mut refs);
     for (t, at) in refs {
-        if own.is_some_and(|own| t.scope.starts_with("class ") && t.scope != own) {
-            continue;
-        }
         let declared = declared_variance(t);
         if (function_scope(t) && declared != Invariant) || at.valid_position(declared) {
             continue;
@@ -184,18 +179,16 @@ fn parameters_acceptor(
     }
     if !skip {
         let mut found = Vec::new();
-        let own = c.class_scope().map(|k| format!("class {}", declared::original_name(k)));
-        let own = own.as_deref();
         declared::with_classes(c, || {
             let s = signature(c);
             for (name, ty, out_ty, _) in &s.params {
-                check(Contravariant, ty, &format!("in parameter {name} of {subject}"), own, &mut found);
+                check(Contravariant, ty, &format!("in parameter {name} of {subject}"), &mut found);
                 if let Some(out_ty) = out_ty {
                     let context = format!("in param-out type of parameter {name} of {subject}");
-                    check(Covariant, out_ty, &context, own, &mut found);
+                    check(Covariant, out_ty, &context, &mut found);
                 }
             }
-            check(Covariant, &s.ret, &format!("in return type of {subject}"), own, &mut found);
+            check(Covariant, &s.ret, &format!("in return type of {subject}"), &mut found);
         });
         errors.extend(found.into_iter().map(|m| ("generics.variance", m)));
     }
@@ -235,12 +228,11 @@ fn restricted(c: &Checker, modifiers: &[Modifier], hooks: &[PropertyHook], by_ph
 }
 
 fn property_check(c: &mut Checker, at: Span, name: &[u8], position: Variance, ty: impl FnOnce(&Checker) -> Type) {
-    let (k, display) = c.member_scope();
-    let own = format!("class {}", declared::original_name(k));
+    let (_, display) = c.member_scope();
     let mut found = Vec::new();
     declared::with_classes(c, || {
         let context = format!("in property {display}::${}", String::from_utf8_lossy(name));
-        check(position, &ty(c), &context, Some(&own), &mut found);
+        check(position, &ty(c), &context, &mut found);
     });
     for message in found {
         c.report(at, "generics.variance", message, None);

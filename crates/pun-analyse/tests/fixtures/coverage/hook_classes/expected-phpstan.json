@@ -1,0 +1,75 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "hooks.php",
+   "line": 8,
+   "identifier": "class.notFound",
+   "message": "Property CovHookClasses\\C::$a has unknown class CovHookClasses\\Missing as its type.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "hooks.php",
+   "line": 9,
+   "identifier": "class.notFound",
+   "message": "Get hook for property CovHookClasses\\C::$a has invalid return type CovHookClasses\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 10,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of set hook for property CovHookClasses\\C::$a has invalid type CovHookClasses\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 17,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of set hook for property CovHookClasses\\C::$b has invalid type CovHookClasses\\Gone2.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 17,
+   "identifier": "propertySetHook.nativeParameterType",
+   "message": "Parameter $value of set hook has a native type but the property CovHookClasses\\C::$b does not.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 21,
+   "identifier": "class.nameCase",
+   "message": "Class CovHookClasses\\Foo referenced with incorrect case: CovHookClasses\\foo.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 22,
+   "identifier": "class.nameCase",
+   "message": "Class CovHookClasses\\Foo referenced with incorrect case: CovHookClasses\\foo.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 38,
+   "identifier": "parameter.trait",
+   "message": "Parameter $p of method CovHookClasses\\D::__construct() has invalid type CovHookClasses\\T.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 38,
+   "identifier": "property.trait",
+   "message": "Property CovHookClasses\\D::$p has invalid type CovHookClasses\\T.",
+   "tip": null
+  },
+  {
+   "file": "hooks.php",
+   "line": 39,
+   "identifier": "parameter.trait",
+   "message": "Parameter $value of set hook for property CovHookClasses\\D::$p has invalid type CovHookClasses\\T.",
+   "tip": null
+  }
+ ]
+}

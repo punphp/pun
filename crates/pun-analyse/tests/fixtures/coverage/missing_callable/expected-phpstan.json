@@ -1,0 +1,110 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "callables.php",
+   "line": 10,
+   "identifier": "missingType.callable",
+   "message": "Class CovMissingCallable\\C has PHPDoc tag @method for method run() parameter #1 $c with no signature specified for Closure.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 10,
+   "identifier": "missingType.callable",
+   "message": "Class CovMissingCallable\\C has PHPDoc tag @mixin with no signature specified for Closure.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 10,
+   "identifier": "missingType.callable",
+   "message": "Class CovMissingCallable\\C has PHPDoc tag @property for property $prop with no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 16,
+   "identifier": "missingType.callable",
+   "message": "Property CovMissingCallable\\C::$closure type has no signature specified for Closure.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 19,
+   "identifier": "missingType.callable",
+   "message": "Constant CovMissingCallable\\C::X type has no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 28,
+   "identifier": "missingType.callable",
+   "message": "Method CovMissingCallable\\C::m() has @param-out PHPDoc tag for parameter $d with no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 28,
+   "identifier": "missingType.callable",
+   "message": "Method CovMissingCallable\\C::m() has parameter $a with no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 28,
+   "identifier": "missingType.callable",
+   "message": "Method CovMissingCallable\\C::m() has parameter $b with no signature specified for Closure.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 28,
+   "identifier": "missingType.callable",
+   "message": "Method CovMissingCallable\\C::m() has parameter $c with no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 28,
+   "identifier": "missingType.parameter",
+   "message": "Method CovMissingCallable\\C::m() has parameter $d with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 28,
+   "identifier": "missingType.callable",
+   "message": "Method CovMissingCallable\\C::m() return type has no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 38,
+   "identifier": "missingType.callable",
+   "message": "Function CovMissingCallable\\f() has parameter $plain with no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 38,
+   "identifier": "missingType.callable",
+   "message": "Function CovMissingCallable\\f() return type has no signature specified for Closure.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 46,
+   "identifier": "missingType.callable",
+   "message": "PHPDoc tag @phpstan-assert for $x has no signature specified for callable.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 55,
+   "identifier": "generics.notSupportedBound",
+   "message": "PHPDoc tag @template T for function CovMissingCallable\\bound() with bound type callable is not supported.",
+   "tip": null
+  }
+ ]
+}

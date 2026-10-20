@@ -51,6 +51,8 @@ pub struct Project {
     pub unused_label: bool,
     /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
     pub check_uninitialized_properties: bool,
+    /// `checkMissingCallableSignature`: MissingTypehintCheck's `missingType.callable` (off by default).
+    pub check_missing_callable_signature: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
     pub deprecation_rules: bool,
     /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
@@ -212,6 +214,7 @@ impl Project {
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
             check_uninitialized_properties: flag("checkUninitializedProperties"),
+            check_missing_callable_signature: flag("checkMissingCallableSignature"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
             precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
@@ -255,6 +258,7 @@ impl Project {
             bleeding_edge: false,
             unused_label: false,
             check_uninitialized_properties: false,
+            check_missing_callable_signature: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
             precise_unused_parameter_line: false,

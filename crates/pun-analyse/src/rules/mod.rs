@@ -821,6 +821,8 @@ pub struct Checker<'a, 'arena> {
     unused_label: bool,
     /// UninitializedPropertyRule: `checkUninitializedProperties`.
     uninitialized_properties: bool,
+    /// MissingTypehintCheck's `checkMissingCallableSignature`.
+    missing_callable_signature: bool,
     /// The phpstan-strict-rules switches.
     strict: crate::StrictRules,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
@@ -1440,7 +1442,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             f.return_type_hint.as_ref(),
         );
         if self.level >= 2 {
-            let types = declared::function_phpdoc(self, f);
+            let types = declared::with_classes(self, || declared::function_phpdoc(self, f));
             let kind = names::FunctionKind::Function(&name);
             signatures::phpdoc_classes(self, kind, f.span(), &f.parameter_list, f.return_type_hint.as_ref(), &types);
         }
@@ -1520,6 +1522,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             signatures::property(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
             if let Some(hooks) = &p.hooks {
                 signatures::hooks(self, p.variable.name, hooks);
+                signatures::hook_phpdoc_classes(self, p.variable.name, hooks, p.span());
                 types::get_hooks(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 types::hook_returns(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 set_hook::hooks(self, p.variable.name, p.hint.as_ref(), hooks);
@@ -1592,7 +1595,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             && let Some(context) = self.class_scope()
             && let Some(declaring) = missing_types::declaring(self, m.span())
         {
-            let types = declared::method_phpdoc(self, m, declaring, context);
+            let types = declared::with_classes(self, || declared::method_phpdoc(self, m, declaring, context));
             signatures::phpdoc_classes(self, kind, m.span(), &m.parameter_list, m.return_type_hint.as_ref(), &types);
         }
         // PhpMethodFromParserNodeReflection's void methods
@@ -2034,6 +2037,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         signatures::property(self, p.span(), p.hint(), &names);
         if let Property::Hooked(h) = p {
             signatures::hooks(self, h.item.variable().name, &h.hook_list);
+            signatures::hook_phpdoc_classes(self, h.item.variable().name, &h.hook_list, p.span());
             set_hook::hooks(self, h.item.variable().name, p.hint(), &h.hook_list);
             types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);

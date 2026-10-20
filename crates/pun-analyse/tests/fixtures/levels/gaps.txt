@@ -14,6 +14,7 @@
 3 Functions/ReturnTypeRuleTest::testBug3801
 3 Functions/ReturnTypeRuleTest::testBug7766
 3 Functions/ReturnTypeRuleTest::testBug3028
+3 Methods/ReturnTypeRuleTest::testBug11435
 3 Methods/ReturnTypeRuleTest::testBug4590
 3 Methods/ReturnTypeRuleTest::testTaggedUnions
 3 Methods/ReturnTypeRuleTest::testBug6358
@@ -29,6 +30,7 @@
 3 Methods/ReturnTypeRuleTest::testBug3997
 3 Methods/ReturnTypeRuleTest::testBug3118
 3 Methods/ReturnTypeRuleTest::testBug12739
+3 Methods/ReturnTypeRuleTest::testBug10924
 6 Methods/MissingMethodReturnTypehintRuleTest::testIndirectInheritanceBug2740
 # Mago's inference differs from PHPStan's: `static`/`$this` lost on fluent and `new $class` returns, array shapes
 # and lists, SimpleXMLElement and DateTime::format() return types, intersections and narrowing, a trait method
@@ -721,9 +723,6 @@
 2 Methods/ExistingClassesInTypehintsRuleTest::testExistingClassInTypehint
 # an-types2: PHPDoc classes (FunctionDefinitionCheck, level 2): imported type aliases that import each other, and an anonymous
 # class's use of its enclosing method's template are not resolved; Closure::bind() returns ?Closure (no dynamic return type extension)
-2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463
-2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463b
-3 Methods/ReturnTypeRuleTest::testBug6353
 9 Methods/CallMethodsRuleTest::testBug4865
 # an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value)
 2 Operators/InvalidBinaryOperationRuleTest::testRule
