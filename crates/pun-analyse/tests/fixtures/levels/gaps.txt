@@ -181,8 +181,9 @@
 9 Methods/CallStaticMethodsRuleTest::testBug7489
 9 Methods/CallStaticMethodsRuleTest::testStaticCallsToInstanceMethods
 # an-types2: callbacks: a closure's parameter types are not narrowed by the callable it is passed to (ClosureTypeResolver),
-# Mago's closure return types differ (`<=>` is -1|0|1), accepts-reason tips, curl_setopt()'s option types, conditional
-# parameter types and parameter default values in template inference
+# Mago's closure return types differ (`<=>` is -1|0|1); curl: curl_init() is CurlHandle|false (no CurlInitReturnTypeExtension),
+# Mago orders a constant array's integer keys (curl_setopt_array()'s shape follows them) and merges `array{}|array{10022: 123}`
+5 Functions/CallToFunctionParametersRuleTest::testBug13862c
 5 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayDiffUassoc
@@ -200,8 +201,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug12317
 5 Functions/CallToFunctionParametersRuleTest::testBug3506
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptCallback
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptPrereqCallback
 5 Methods/CallMethodsRuleTest::testBug14549
 5 Methods/CallMethodsRuleTest::testBug14893
 5 Methods/CallMethodsRuleTest::testInvokeMagicInvokeMethod
@@ -266,7 +265,8 @@
 9 Functions/CallToFunctionParametersRuleTest::testNamedParametersForMultiVariantFunctions
 9 Methods/CallMethodsRuleTest::testBug11559c
 9 Methods/CallMethodsRuleTest::testBug4608
-# an-types2: Closure::bind()/bindTo() scopes
+# an-types2: Closure::bind()/bindTo() scopes, `Foo::class` of an unknown class is no class-string, Closure::bind() and
+# bindTo() are not reported as calls without effect (staticMethod.resultUnused, method.resultUnused)
 5 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 5 Methods/CallMethodsRuleTest::testClosureBind
 5 Methods/CallMethodsRuleTest::testClosureBindToParamClosureThis
@@ -303,8 +303,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug5986
 5 Functions/CallToFunctionParametersRuleTest::testBug7823
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOpt
-5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptInvalidShare
 5 Functions/CallToFunctionParametersRuleTest::testGenericFunction
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 5 Functions/CallToFunctionParametersRuleTest::testProcOpen

@@ -584,6 +584,27 @@ if (($argv[1] ?? '') === 'reasons') {
     exit;
 }
 
+if (($argv[1] ?? '') === 'curl') {
+    // ParametersAcceptorSelector::getCurlOptValueType() of each CURLOPT_* value: curl_setopt()'s value type
+    $method = new ReflectionMethod(PHPStan\Reflection\ParametersAcceptorSelector::class, 'getCurlOptValueType');
+    // per the PHP version from which they hold (CurlHandle from 8.0, CurlSharePersistentHandle from 8.5)
+    $versions = [];
+    foreach ([70400, 80000, 80500] as $version) {
+        container($version);
+        $types = [];
+        foreach (get_defined_constants(true)['curl'] as $name => $value) {
+            if (str_starts_with($name, 'CURLOPT_') && is_int($value) && ($type = $method->invoke(null, $value)) !== null) {
+                $types[$value] = $type->describe(VerbosityLevel::precise());
+            }
+        }
+        ksort($types);
+        $versions[$version] = (object) $types;
+    }
+    file_put_contents($root.'/crates/pun-analyse/src/rules/curl-options.json', json_encode($versions, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
+    echo count($types), " curl options\n";
+    exit;
+}
+
 if (($argv[1] ?? '') === 'probes') {
     $probes = array_map(fn ($s) => [null, $s], PROBES);
     foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'ArrayIterator::STD*LIST', 'ArrayIterator::*_PROP_*', 'ArrayIterator::*X*Y', 'ArrayIterator::S*P*T', 'ArrayIterator::*P*O*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {

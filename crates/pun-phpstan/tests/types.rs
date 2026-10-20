@@ -392,6 +392,8 @@ fn infer_template_types() {
         let (at, bt) = (resolve_str(a, None), resolve_str(b, None));
         let map = infer_template_types(&at, &bt);
         let mut got: Vec<(String, String)> = map.types().into_iter().map(|(n, _, t)| (n.to_string(), t.describe(Level::Precise))).collect();
+        // what the arguments leave as `*ERROR*` is absorbed by a union member
+        assert!(map.types().into_iter().all(|(n, s, t)| (*t == Type::Error) == map.is_absorbed(n, s)));
         got.sort();
         let want: Vec<(String, String)> =
             row[2].as_object().unwrap().iter().map(|(k, v)| (k.clone(), v.as_str().unwrap().to_string())).collect();

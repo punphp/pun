@@ -2358,7 +2358,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
 impl Conditional {
     /// `LateResolvableType::resolve()`: the branch the subject takes, both when it may take either.
     /// ponytail: the subject inside the branches is not narrowed (`getNormalizedIf()`); add for `(T is int ? T : ...)`.
-    fn resolve(&self) -> Type {
+    pub fn resolve(&self) -> Type {
         let Subject::Type(subject) = &self.subject else {
             return union(vec![self.then.clone(), self.otherwise.clone()]);
         };
@@ -2375,7 +2375,7 @@ impl Conditional {
     }
 
     /// `isResolvable()`: no templates involved, or the subject's branch is certain (never for a parameter).
-    fn is_resolvable(&self) -> bool {
+    pub fn is_resolvable(&self) -> bool {
         let Subject::Type(subject) = &self.subject else {
             return false;
         };

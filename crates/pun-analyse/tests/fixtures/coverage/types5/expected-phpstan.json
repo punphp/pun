@@ -1,0 +1,61 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "types5.php",
+   "line": 62,
+   "identifier": "return.unusedType",
+   "message": "Function Types5\\conditional() never returns T of string so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "types5.php",
+   "line": 91,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $newThis of static method Closure::bind() expects stdClass, $this(Types5\\Box<T>) given.",
+   "tip": null
+  },
+  {
+   "file": "types5.php",
+   "line": 92,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $newThis of method Closure::bindTo() expects stdClass, $this(Types5\\Box<T>) given.",
+   "tip": null
+  },
+  {
+   "file": "types5.php",
+   "line": 116,
+   "identifier": "missingType.iterableValue",
+   "message": "Function Types5\\calls() has parameter $options with no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "types5.php",
+   "line": 118,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of function Types5\\narrow expects DateTime, DateTimeImmutable given.",
+   "tip": null
+  },
+  {
+   "file": "types5.php",
+   "line": 118,
+   "identifier": "argument.templateType",
+   "message": "Unable to resolve the template type A in call to function Types5\\narrow",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type"
+  },
+  {
+   "file": "types5.php",
+   "line": 131,
+   "identifier": "argument.type",
+   "message": "Parameter #3 $value of function curl_setopt expects bool, string given.",
+   "tip": null
+  },
+  {
+   "file": "types5.php",
+   "line": 135,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $options of function curl_setopt_array expects array{13: int}, array{13: 'slow'} given.",
+   "tip": "Offset 13 (int) does not accept type string."
+  }
+ ]
+}
