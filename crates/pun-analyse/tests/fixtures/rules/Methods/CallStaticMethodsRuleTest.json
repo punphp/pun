@@ -1061,6 +1061,15 @@
             "general": []
         },
         {
+            "method": "testDynamicStaticMethodName",
+            "files": [
+                "Methods/data/dynamic-static-method-name.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug13267",
             "files": [
                 "Methods/data/bug-13267.php"
@@ -1209,6 +1218,42 @@
             "method": "testBug15002",
             "files": [
                 "Methods/data/bug-15002.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15168",
+            "files": [
+                "Methods/data/bug-15168.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12827",
+            "files": [
+                "Methods/data/bug-12827-static-call.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10698",
+            "files": [
+                "Methods/data/bug-10698.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
             ],
             "scan": [],
             "errors": [],

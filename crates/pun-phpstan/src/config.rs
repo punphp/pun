@@ -1,4 +1,4 @@
-//! Resolving a project's PHPStan configuration the way `phpstan analyse` does (PHPStan 2.2.7): the config half of
+//! Resolving a project's PHPStan configuration the way `phpstan analyse` does (PHPStan 2.3.1): the config half of
 //! `CommandHelper::begin()` and `ContainerFactory::create()`, down to the container's parameters, including the
 //! validation errors PHPStan prints for broken configs. Services are not built.
 
@@ -16,7 +16,7 @@ macro_rules! conf {
     };
 }
 
-/// PHPStan 2.2.7's `conf/` directory (from the PHAR).
+/// PHPStan 2.3.1's `conf/` directory (from the PHAR).
 pub const CONF: &[(&str, &str)] = conf![
     "bleedingEdge.neon",
     "config.level0.neon",
@@ -556,9 +556,9 @@ fn config_files(
 ) -> Result<(Vec<String>, Array), String> {
     // (getConfigFiles() skips missing files, but the project config was loaded before: none is missing here)
     let mut data = if file.ends_with(".php") {
-        di::load_file(files, file, &[])?
+        di::load_file(files, file, &[], &Array::new())?
     } else {
-        di::load_neon(files, file, &[])?
+        di::load_neon(files, file, &[], &Array::new())?
     };
     let mut all = vec![file.to_string()];
     if let Some(includes) = data

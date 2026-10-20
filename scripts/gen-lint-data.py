@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Writes crates/pun-lint/data/ from crates/pun-phpstan/data/symbols.json (PHPStan 2.2.7's reflection of PHP 8.4):
+"""Writes crates/pun-lint/data/ from crates/pun-phpstan/data/symbols.json (PHPStan 2.3.1's reflection of PHP 8.4):
 pure-functions.txt, the built-in functions whose hasSideEffects() is No (PureFunctionDetector), and throwables.txt,
 the built-in classes that are Throwable or implement it, and bool-functions.txt, the built-in functions every variant
 of which returns `bool`, and int-functions.txt, those that return an `int`, lowercase, one a line."""

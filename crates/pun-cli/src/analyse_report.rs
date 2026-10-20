@@ -1,4 +1,4 @@
-//! `pun analyse --format=<f>`: PHPStan 2.2.7's error formatters, byte for byte
+//! `pun analyse --format=<f>`: PHPStan 2.3.1's error formatters, byte for byte
 //! (.oracle/phpstan-src/src/Command/ErrorFormatter/*.php). `json` and `raw` print absolute paths, the others paths
 //! relative to the project root (PHPStan's simple relative path helper, the cwd being the root). The errors about
 //! ignores can't be ignored, and an unmatched `ignoreErrors` entry has no line (or, without a file path, no file:

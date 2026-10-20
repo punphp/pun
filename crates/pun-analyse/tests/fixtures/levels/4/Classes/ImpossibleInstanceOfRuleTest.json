@@ -299,58 +299,6 @@
             "general": []
         },
         {
-            "method": "testDoNotReportTypesFromPhpDocs",
-            "files": [
-                "Classes/data/impossible-instanceof-not-phpdoc.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
-                    "line": 12,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
-                    "line": 15,
-                    "identifier": "instanceof.alwaysFalse",
-                    "message": "Instanceof between stdClass and Exception will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
-                    "line": 27,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between DateTimeImmutable and DateTimeInterface will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
-                    "line": 30,
-                    "identifier": "instanceof.alwaysFalse",
-                    "message": "Instanceof between DateTimeImmutable and ImpossibleInstanceofNotPhpDoc\\SomeFinalClass will always evaluate to false.",
-                    "tip": null
-                },
-                {
-                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
-                    "line": 33,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between DateTimeImmutable and DateTimeImmutable will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
-                    "line": 36,
-                    "identifier": "instanceof.alwaysFalse",
-                    "message": "Instanceof between DateTimeImmutable and DateTime will always evaluate to false.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
             "method": "testReportTypesFromPhpDocs",
             "files": [
                 "Classes/data/impossible-instanceof-not-phpdoc.php"
@@ -421,30 +369,6 @@
             "general": []
         },
         {
-            "method": "testBug5333",
-            "files": [
-                "Classes/data/bug-5333.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Classes/data/bug-5333.php",
-                    "line": 25,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between Bug5333\\Route and Bug5333\\Route will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Classes/data/bug-5333.php",
-                    "line": 113,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between Bug5333\\FinalRoute and Bug5333\\FinalRoute will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                }
-            ],
-            "general": []
-        },
-        {
             "method": "testBug8042",
             "files": [
                 "Classes/data/bug-8042.php"
@@ -510,58 +434,6 @@
                     "line": 37,
                     "identifier": "instanceof.alwaysTrue",
                     "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
-                    "tip": "Remove remaining cases below this one and this error will disappear too."
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testIfBranchesDoNotReportPhpDoc",
-            "files": [
-                "Comparison/data/unreachable-if-branches-not-phpdoc.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
-                    "line": 16,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
-                    "line": 26,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": "Remove remaining cases below this one and this error will disappear too."
-                },
-                {
-                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
-                    "line": 36,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": "Remove remaining cases below this one and this error will disappear too."
-                },
-                {
-                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
-                    "line": 42,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
-                    "line": 52,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": "Remove remaining cases below this one and this error will disappear too."
-                },
-                {
-                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
-                    "line": 62,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
                     "tip": "Remove remaining cases below this one and this error will disappear too."
                 }
             ],
@@ -672,72 +544,6 @@
             "general": []
         },
         {
-            "method": "testTernaryElseDoNotReportPhpDoc",
-            "files": [
-                "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 16,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 16,
-                    "identifier": "ternary.resultUnused",
-                    "message": "Unused result of ternary operator.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 17,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 17,
-                    "identifier": "ternary.resultUnused",
-                    "message": "Unused result of ternary operator.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 19,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 19,
-                    "identifier": "ternary.resultUnused",
-                    "message": "Unused result of ternary operator.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 20,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
-                    "tip": null
-                },
-                {
-                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
-                    "line": 20,
-                    "identifier": "ternary.resultUnused",
-                    "message": "Unused result of ternary operator.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
             "method": "testTernaryElseReportPhpDoc",
             "files": [
                 "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php"
@@ -799,23 +605,6 @@
                     "identifier": "ternary.resultUnused",
                     "message": "Unused result of ternary operator.",
                     "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug4689",
-            "files": [
-                "Classes/data/bug-4689.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Classes/data/bug-4689.php",
-                    "line": 18,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between Bug4689\\KeywordList and Bug4689\\KeywordList will always evaluate to true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
                 }
             ],
             "general": []
@@ -1038,23 +827,6 @@
                     "line": 88,
                     "identifier": "instanceof.alwaysFalse",
                     "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar|null and ImpossibleInstanceofNewIsAlwaysFinal\\Baz will always evaluate to false.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug13469",
-            "files": [
-                "Classes/data/bug-13469.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Classes/data/bug-13469.php",
-                    "line": 23,
-                    "identifier": "instanceof.alwaysTrue",
-                    "message": "Instanceof between Bug13469\\Foo and Stringable will always evaluate to true.",
                     "tip": null
                 }
             ],

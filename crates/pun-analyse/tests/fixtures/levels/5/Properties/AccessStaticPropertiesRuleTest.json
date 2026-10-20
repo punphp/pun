@@ -626,6 +626,15 @@
             "general": []
         },
         {
+            "method": "testDynamicStaticPropertyName",
+            "files": [
+                "Properties/data/dynamic-static-property-name.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testBug5143",
             "files": [
                 "Properties/data/bug-5143.php"

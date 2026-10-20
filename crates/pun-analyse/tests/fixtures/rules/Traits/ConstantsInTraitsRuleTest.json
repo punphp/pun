@@ -2,7 +2,7 @@
     "test": "Traits/ConstantsInTraitsRuleTest",
     "cases": [
         {
-            "method": "testRule#0",
+            "method": "testRule",
             "files": [
                 "Traits/data/constants-in-traits.php"
             ],
@@ -11,12 +11,20 @@
             "general": []
         },
         {
-            "method": "testRule#1",
+            "method": "testPhpVersionNarrowedScope",
             "files": [
-                "Traits/data/constants-in-traits.php"
+                "Traits/data/constants-in-traits-php-versions.php"
             ],
             "scan": [],
-            "errors": [],
+            "errors": [
+                {
+                    "file": "Traits/data/constants-in-traits-php-versions.php (in context of class ConstantsInTraitsPhpVersions\\UnsupportedConsumer)",
+                    "line": 12,
+                    "identifier": "classConstant.inTrait",
+                    "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

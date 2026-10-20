@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Which PHPStan parameters each rule reads, as PHPStan 2.2.7 (and the Larastan, strict-rules and deprecation-rules
+ * Which PHPStan parameters each rule reads, as PHPStan 2.3.1 (and the Larastan, strict-rules and deprecation-rules
  * versions in .oracle/phpstan) wire them, for `pun migrate`'s phpstan.neon parameters (context/plan/migrate.md Build 5).
  *
  *   php scripts/export-phpstan-parameters.php <rule classes JSON>   prints {"rules": {class: [parameter]},

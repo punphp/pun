@@ -136,6 +136,15 @@
             "general": []
         },
         {
+            "method": "testEnumFrom",
+            "files": [
+                "Methods/data/static-method-call-statement-no-side-effects-enum-from.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testDynamicStaticCall",
             "files": [
                 "Methods/data/dynamic-static-call.php"

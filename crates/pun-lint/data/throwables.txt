@@ -137,6 +137,17 @@ imagickpixelexception
 imagickpixeliteratorexception
 intlexception
 invalidargumentexception
+io\ioexception
+io\poll\backendunavailableexception
+io\poll\failedcontextinitializationexception
+io\poll\failedhandleaddexception
+io\poll\failedpolloperationexception
+io\poll\failedpollwaitexception
+io\poll\failedwatchermodificationexception
+io\poll\handlealreadywatchedexception
+io\poll\inactivewatcherexception
+io\poll\invalidhandleexception
+io\poll\pollexception
 jsonexception
 jsonpath\jsonpathexception
 lengthexception
@@ -149,7 +160,7 @@ luasandboxmemoryerror
 luasandboxruntimeerror
 luasandboxsyntaxerror
 luasandboxtimeouterror
-maxmind\db\invaliddatabaseexception
+maxmind\db\reader\invaliddatabaseexception
 memcachedexception
 mongoconnectionexception
 mongocursorexception
@@ -231,6 +242,7 @@ redisclusterexception
 redisexception
 reflectionexception
 relay\exception
+relay\tablemetricsschemaexception
 requestparsebodyexception
 runtimeexception
 simdjsonexception

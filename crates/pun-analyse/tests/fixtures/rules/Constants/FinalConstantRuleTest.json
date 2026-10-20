@@ -2,7 +2,7 @@
     "test": "Constants/FinalConstantRuleTest",
     "cases": [
         {
-            "method": "testRule#0",
+            "method": "testRule",
             "files": [
                 "Constants/data/final-constant.php"
             ],
@@ -11,12 +11,20 @@
             "general": []
         },
         {
-            "method": "testRule#1",
+            "method": "testConditionallyDeclaredClass",
             "files": [
-                "Constants/data/final-constant.php"
+                "Constants/data/final-constant-php-versions.php"
             ],
             "scan": [],
-            "errors": [],
+            "errors": [
+                {
+                    "file": "Constants/data/final-constant-php-versions.php",
+                    "line": 18,
+                    "identifier": "classConstant.finalNotSupported",
+                    "message": "Final class constants are supported only on PHP 8.1 and later.",
+                    "tip": null
+                }
+            ],
             "general": []
         }
     ]

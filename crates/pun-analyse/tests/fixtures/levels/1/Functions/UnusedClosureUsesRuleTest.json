@@ -2,6 +2,15 @@
     "test": "Functions/UnusedClosureUsesRuleTest",
     "cases": [
         {
+            "method": "testCapturesAssignedThroughVariableVariables",
+            "files": [
+                "Functions/data/unused-closure-uses-variable-variables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testUnusedClosureUses",
             "files": [
                 "Functions/data/unused-closure-uses.php"
@@ -76,6 +85,81 @@
                     "line": 44,
                     "identifier": "variable.undefined",
                     "message": "Undefined variable: $notContainer",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testResolvedDynamicUsages",
+            "files": [
+                "Functions/data/unused-closure-uses-resolved-dynamic.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/unused-closure-uses-resolved-dynamic.php",
+                    "line": 6,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $other.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/unused-closure-uses-resolved-dynamic.php",
+                    "line": 22,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $overwritten.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReferenceCapturedInSkippedCatch",
+            "files": [
+                "Functions/data/unused-closure-uses-skipped-catch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/unused-closure-uses-skipped-catch.php",
+                    "line": 15,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testValueFlow",
+            "files": [
+                "Functions/data/unused-input-value-flow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/unused-input-value-flow.php",
+                    "line": 49,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $input.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testValueFlowWithoutBleedingEdge",
+            "files": [
+                "Functions/data/unused-input-value-flow.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/unused-input-value-flow.php",
+                    "line": 49,
+                    "identifier": "closure.unusedUse",
+                    "message": "Anonymous function has an unused use $input.",
                     "tip": null
                 }
             ],

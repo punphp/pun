@@ -55,10 +55,9 @@ fn type_schema(ty: &str) -> Schema {
     s
 }
 
-/// `Expect::{$statement->getEntity()}()` needs a method name (a chain or `null()` gives none).
+/// A non-string entity (a chain or `null()`) throws ShouldNotHappenException before `Expect::{$entity}()`.
 fn entity_name(v: &Value) -> Result<&str, String> {
-    v.as_str()
-        .ok_or_else(|| "Method name must be a string".to_string())
+    v.as_str().ok_or_else(|| "Internal error.".to_string())
 }
 
 /// `ContainerFactory::processArgument()`.
@@ -255,7 +254,7 @@ fn call(mut s: Schema, name: &str, args: Vec<Arg>) -> Result<Schema, String> {
                 Kind::AnyOf(_) => "AnyOf",
             };
             return Err(format!(
-                "Call to undefined method _PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\{class}::{m}()."
+                "Call to undefined method _PHPStan_cb3b7e994\\Nette\\Schema\\Elements\\{class}::{m}()."
             ));
         }
     }
@@ -372,7 +371,7 @@ pub(crate) fn format_value(v: &Value) -> String {
 fn object_class(v: &Value) -> &'static str {
     match v {
         Value::DateTime(_) => "DateTimeImmutable",
-        _ => "_PHPStan_88a9c7bcc\\Nette\\DI\\Definitions\\Statement",
+        _ => "_PHPStan_cb3b7e994\\Nette\\DI\\Definitions\\Statement",
     }
 }
 

@@ -89,7 +89,7 @@
                     "file": "PhpDoc/data/incompatible-require-implements.php",
                     "line": 117,
                     "identifier": "class.missingImplements",
-                    "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:117 does not.",
+                    "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/incompatible-require-implements.php:117 does not.",
                     "tip": null
                 },
                 {
@@ -131,21 +131,21 @@
                     "file": "PhpDoc/data/incompatible-require-implements.php",
                     "line": 164,
                     "identifier": "class.missingImplements",
-                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but IncompatibleRequireImplements\\RequiredInterface@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:164 does not.",
+                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but IncompatibleRequireImplements\\RequiredInterface@anonymous/incompatible-require-implements.php:164 does not.",
                     "tip": null
                 },
                 {
                     "file": "PhpDoc/data/incompatible-require-implements.php",
                     "line": 168,
                     "identifier": "class.missingImplements",
-                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:168 does not.",
+                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/incompatible-require-implements.php:168 does not.",
                     "tip": null
                 },
                 {
                     "file": "PhpDoc/data/incompatible-require-implements.php",
                     "line": 168,
                     "identifier": "class.missingImplements",
-                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:168 does not.",
+                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but class@anonymous/incompatible-require-implements.php:168 does not.",
                     "tip": null
                 },
                 {

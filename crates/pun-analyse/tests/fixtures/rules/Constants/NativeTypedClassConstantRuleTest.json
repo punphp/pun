@@ -9,6 +9,24 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testPhpVersionIdNarrowedScope",
+            "files": [
+                "Constants/data/native-typed-class-constant-version-id-narrowed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13133",
+            "files": [
+                "Constants/data/bug-13133.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

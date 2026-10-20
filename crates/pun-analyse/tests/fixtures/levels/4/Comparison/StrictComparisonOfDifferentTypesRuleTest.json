@@ -507,6 +507,13 @@
                 },
                 {
                     "file": "Comparison/data/strict-comparison.php",
+                    "line": 331,
+                    "identifier": "while.alwaysFalse",
+                    "message": "While loop condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/strict-comparison.php",
                     "line": 335,
                     "identifier": "identical.alwaysFalse",
                     "message": "Strict comparison using === between int<1, max> and 'string' will always evaluate to false.",
@@ -1656,13 +1663,6 @@
                     "identifier": "function.resultUnused",
                     "message": "Call to function preg_replace_callback() on a separate line has no effect.",
                     "tip": null
-                },
-                {
-                    "file": "Comparison/data/bug-14904.php",
-                    "line": 13,
-                    "identifier": "return.type",
-                    "message": "Anonymous function should return 'aa' but returns 'possible?'.",
-                    "tip": null
                 }
             ],
             "general": []
@@ -2672,6 +2672,41 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14908",
+            "files": [
+                "Comparison/data/bug-14908.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14966",
+            "files": [
+                "Comparison/data/bug-14966.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14248",
+            "files": [
+                "Comparison/data/bug-14248.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-14248.php",
+                    "line": 13,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 0 and 0 will always evaluate to true.",
+                    "tip": null
+                }
+            ],
             "general": []
         },
         {

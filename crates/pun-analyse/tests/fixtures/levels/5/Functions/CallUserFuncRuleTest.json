@@ -314,6 +314,23 @@
             "general": []
         },
         {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15251.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug15251\\A::sfoo() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testConstantParameterCheckCallUserFunc",
             "files": [
                 "Functions/data/constant-parameter-check-call-user-func.php"

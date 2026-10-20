@@ -1,5 +1,5 @@
 //! phpstan.neon to `[analyse]`. Levels, packages and identifiers are rules/mapping.toml's `[upstream.phpstan-classes]`
-//! and `[upstream.phpstan]` rows (PHPStan 2.2.7's rule registry); the parameter handling is PHPStan's own
+//! and `[upstream.phpstan]` rows (PHPStan 2.3.1's rule registry); the parameter handling is PHPStan's own
 //! (`NeonAdapter` makes paths absolute, `bleedingEdge.neon` ships in the phar).
 use super::*;
 use crate::migrate::Parts;

@@ -3164,6 +3164,17 @@
             ]
         },
         {
+            "doc": "/**\n\t\t * @param array{string, int, bool}\n\t\t */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    "array{string, int, bool}",
+                    "Unexpected token \"\\n\\t\\t \", expected variable at offset 40 on line 2"
+                ]
+            ]
+        },
+        {
             "doc": "/**\n\t * @return \\PHPStan\\Foo\\Bar |\n\t *         \\PHPStan\\Foo\\Baz\n\t */",
             "tags": [
                 [
@@ -3768,6 +3779,67 @@
             ]
         },
         {
+            "doc": "/** @param iterable<T> $items */",
+            "tags": [
+                [
+                    "@param",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @template T of Event = Event\n * @extends Collection<T>\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@extends",
+                    3,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @template ID of string|array<string, string> = string */",
+            "tags": [
+                [
+                    "@template",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @param ID $id */",
+            "tags": [
+                [
+                    "@param",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @param EventCollection<WrittenEvent<ID>> $events */",
+            "tags": [
+                [
+                    "@param",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
             "doc": "/**\n\t * @param float|null $timeout\n\t */",
             "tags": [
                 [
@@ -4192,6 +4264,17 @@
                 [
                     "@phpstan-return",
                     4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @param stdClass&object{since_year:int,until_year?:int} $data\n\t */",
+            "tags": [
+                [
+                    "@param",
+                    2,
                     null,
                     null
                 ]
@@ -4777,6 +4860,28 @@
             ]
         },
         {
+            "doc": "/** @var static::* */",
+            "tags": [
+                [
+                    "@var",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @param static::* $value */",
+            "tags": [
+                [
+                    "@param",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
             "doc": "/**\n\t * @param class-string<\\DateTimeInterface> $class\n\t */",
             "tags": [
                 [
@@ -4916,6 +5021,39 @@
                 [
                     "@extends",
                     2,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @var array<string, mixed> */",
+            "tags": [
+                [
+                    "@var",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @param string[] $keys\n\t */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @var array<mixed> */",
+            "tags": [
+                [
+                    "@var",
+                    1,
                     null,
                     null
                 ]
@@ -5357,6 +5495,90 @@
             ]
         },
         {
+            "doc": "/**\n * @template TKey of array-key\n * @template TValue\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@template",
+                    3,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @template TKey of array-key\n * @template TValue\n * @implements ReadableCollection<TKey, TValue>\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@template",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@implements",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @param array<TKey, TValue> $values */",
+            "tags": [
+                [
+                    "@param",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @template TValue */",
+            "tags": [
+                [
+                    "@template",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @param ReadableCollection<int, TValue> $collection */",
+            "tags": [
+                [
+                    "@param",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @param list<object> $addresses */",
+            "tags": [
+                [
+                    "@param",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
             "doc": "/**\n * @template TModel of ?Model\n */",
             "tags": [
                 [
@@ -5679,6 +5901,121 @@
             ]
         },
         {
+            "doc": "/**\n\t * @template TKey of string\n\t * @param TKey $key\n\t * @return array{TKey: int}\n\t */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@return",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @template TKey of \\stdClass\n\t * @param TKey $key\n\t * @return array{TKey: int}\n\t */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@return",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @template TKey of \\stdClass\n\t * @param TKey $key\n\t * @return array{a: int, ...<TKey, bool>}\n\t */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@return",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @template TKey of array<string>\n\t * @param TKey $key\n\t * @return array{TKey: int}\n\t */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@return",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @template TKey\n\t * @param TKey $key\n\t * @return array{TKey: int}\n\t */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@return",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
             "doc": "/**\n * @template TKey of array-key\n * @template TModel\n *\n */",
             "tags": [
                 [
@@ -5986,6 +6323,149 @@
                 [
                     "@throws",
                     1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @param int $x\n * @throws ($x is 0 ? \\Exception : void)\n */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@throws",
+                    3,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @param int $x\n * @throws ($x is 0 ? \\Exception : \\RuntimeException)\n */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@throws",
+                    3,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @param int $x\n * @throws ($x is 0 ? \\stdClass : void)\n */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@throws",
+                    3,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @template TKey of int|string\n * @param TKey $key\n * @throws (TKey is int ? void : \\Exception)\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@throws",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @template TKey of int|string\n * @param TKey $key\n * @throws (TKey is int ? void : \\stdClass)\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@throws",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @param int $x\n * @param int $y\n * @throws ($x is 0 ? \\Exception : ($y is 0 ? \\RuntimeException : void))\n */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@throws",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @param int $x\n * @param int $y\n * @throws ($x is 0 ? \\Exception : ($y is 0 ? \\stdClass : void))\n */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@throws",
+                    4,
                     null,
                     null
                 ]
@@ -7170,6 +7650,29 @@
             ]
         },
         {
+            "doc": "/**\n * @template T of FooInterface\n * @param class-string<T> $class\n * @param T::CONFIG_* $classConfig\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    4,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
             "doc": "/**\n * @param-out positive-int $i\n */",
             "tags": [
                 [
@@ -7465,6 +7968,29 @@
                 [
                     "@phpstan-varr",
                     1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @param-out int $count\n * @phpstan-pure-unless-callable-is-impure $callback\n * @phpstan-pure-unless-parameter-passed $count\n */",
+            "tags": [
+                [
+                    "@param-out",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@phpstan-pure-unless-callable-is-impure",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@phpstan-pure-unless-parameter-passed",
+                    4,
                     null,
                     null
                 ]
@@ -8641,6 +9167,84 @@
             ]
         },
         {
+            "doc": "/**\n\t * @param static::* $type\n\t */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @param static::VERSION $type\n\t */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @param static::NOPE_* $type\n\t */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n\t * @param static::F* $type\n\t */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @template T of NotFinal\n * @param T::NOPE_* $type\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/**\n * @template T of IsFinal\n * @param T::NOPE_* $type\n */",
+            "tags": [
+                [
+                    "@template",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
             "doc": "/**\n * @phpstan-assert int $i\n */",
             "tags": [
                 [
@@ -9021,6 +9625,28 @@
         },
         {
             "doc": "/** @var array<string,mixed> $values_1 */",
+            "tags": [
+                [
+                    "@var",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @var array{array{int}} $arr */",
+            "tags": [
+                [
+                    "@var",
+                    1,
+                    null,
+                    null
+                ]
+            ]
+        },
+        {
+            "doc": "/** @var string $s */",
             "tags": [
                 [
                     "@var",
@@ -13743,6 +14369,29 @@
             ]
         },
         {
+            "doc": "/**\n * @param array{exists: int, optional?: int, extra: int} $input\n * @param array<mixed> $arrayFilter\n * @param FILTER_VALIDATE_* $intFilter\n */",
+            "tags": [
+                [
+                    "@param",
+                    2,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    3,
+                    null,
+                    null
+                ],
+                [
+                    "@param",
+                    4,
+                    "FILTER_VALIDATE_* $intFilter",
+                    "Unexpected token \"*\", expected variable at offset 130 on line 4"
+                ]
+            ]
+        },
+        {
             "doc": "/**\n\t * @psalm-param Foo|Bar $unionTypeParameter\n\t * @psalm-param int $anotherMixedParameter\n\t * @psalm-param int $anotherMixedParameter\n\t * @psalm-paran int $yetAnotherMixedProperty\n\t * @psalm-param int $integerParameter\n\t * @psalm-param integer $anotherIntegerParameter\n\t * @psalm-param aRray $arrayParameterOne\n\t * @psalm-param mixed[] $arrayParameterOther\n\t * @psalm-param Lorem $objectRelative\n\t * @psalm-param \\SomeOtherNamespace\\Ipsum $objectFullyQualified\n\t * @psalm-param Dolor $objectUsed\n\t * @psalm-param null|int $nullableInteger\n\t * @psalm-param Dolor|null $nullableObject\n\t * @psalm-param Dolor $anotherNullableObject\n\t * @psalm-param self $selfType\n\t * @psalm-param static $staticType\n\t * @psalm-param Null $nullType\n\t * @psalm-param Bar $barObject\n\t * @psalm-param Foo $conflictedObject\n\t * @psalm-param Baz $moreSpecifiedObject\n\t * @psalm-param resource $resource\n\t * @psalm-param array[array] $yetAnotherAnotherMixedParameter\n\t * @psalm-param \\\\Test\\Bar $yetAnotherAnotherAnotherMixedParameter\n\t * @psalm-param New $yetAnotherAnotherAnotherAnotherMixedParameter\n\t * @psalm-param void $voidParameter\n\t * @psalm-param Consecteur $useWithoutAlias\n\t * @psalm-param true $true\n\t * @psalm-param false $false\n\t * @psalm-param true $boolTrue\n\t * @psalm-param false $boolFalse\n\t * @psalm-param bool $trueBoolean\n\t * @psalm-param bool $parameterWithDefaultValueFalse\n\t * @psalm-param object $objectWithoutNativeTypehint\n\t * @psalm-param object $objectWithNativeTypehint\n\t * @psalm-return Foo\n\t */",
             "tags": [
                 [
@@ -13954,29 +14603,6 @@
                     36,
                     null,
                     null
-                ]
-            ]
-        },
-        {
-            "doc": "/**\n * @param array{exists: int, optional?: int, extra: int} $input\n * @param array<mixed> $arrayFilter\n * @param FILTER_VALIDATE_* $intFilter\n */",
-            "tags": [
-                [
-                    "@param",
-                    2,
-                    null,
-                    null
-                ],
-                [
-                    "@param",
-                    3,
-                    null,
-                    null
-                ],
-                [
-                    "@param",
-                    4,
-                    "FILTER_VALIDATE_* $intFilter",
-                    "Unexpected token \"*\", expected variable at offset 130 on line 4"
                 ]
             ]
         },

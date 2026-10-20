@@ -1,4 +1,4 @@
-//! Nette DI's config machinery as PHPStan 2.2.7 uses it: `Nette\Schema\Helpers::merge`, `Nette\DI\Helpers::expand`
+//! Nette DI's config machinery as PHPStan 2.3.1 uses it: `Nette\Schema\Helpers::merge`, `Nette\DI\Helpers::expand`
 //! / `escape`, `Nette\DI\Config\Loader` (includes) and `PHPStan\DependencyInjection\NeonAdapter::process` (`!`
 //! replacing, statements, relative paths, `(?)` optional excludePaths).
 
@@ -264,11 +264,13 @@ pub trait Files {
     fn is_file(&self, path: &str) -> bool;
 }
 
-/// `PHPStan\DependencyInjection\NeonAdapter::load()`.
+/// `PHPStan\DependencyInjection\NeonAdapter::load()`. `known` holds the parameters known before the container
+/// is compiled (rootDir, currentWorkingDirectory, env; LoaderFactory's), which path entries may use.
 pub fn load_neon(
     files: &dyn Files,
     file: &str,
     expand_relative: &[String],
+    known: &Array,
 ) -> Result<Array, String> {
     let contents = files
         .read(file)
@@ -280,7 +282,7 @@ pub fn load_neon(
         Value::Null => Array::new(),
         other => Array::list([other]),
     };
-    process(arr, "", file, expand_relative)
+    process(arr, "", file, expand_relative, known)
 }
 
 const EXCLUDE_PATH_KEYS: [&str; 3] = [
@@ -294,11 +296,41 @@ fn relative_to(file: &str, path: &str) -> String {
     normalize_path(&absolutize_path(&dir, path))
 }
 
+/// `NeonAdapter::expandKnownParameters()`: replaces each `~%([\w.-]*)%~` with a known string parameter (`env.HOME`
+/// is nested), or None when one is not known.
+fn expand_known(value: &str, known: &Array) -> Option<String> {
+    let b = value.as_bytes();
+    let mut out = String::new();
+    let (mut i, mut last) = (0, 0);
+    while i < b.len() {
+        let name_len = b[i + 1..]
+            .iter()
+            .take_while(|c| c.is_ascii_alphanumeric() || matches!(c, b'_' | b'.' | b'-'))
+            .count();
+        let end = i + 1 + name_len;
+        if b[i] != b'%' || b.get(end) != Some(&b'%') {
+            i += 1;
+            continue;
+        }
+        let mut v = Some(&Value::Array(known.clone()));
+        for key in value[i + 1..end].split('.') {
+            v = v.and_then(Value::as_array).and_then(|a| a.get_str(key));
+        }
+        out.push_str(&value[last..i]);
+        out.push_str(v.and_then(Value::as_str)?);
+        i = end + 1;
+        last = i;
+    }
+    out.push_str(&value[last..]);
+    Some(out)
+}
+
 fn process(
     arr: Array,
     file_key: &str,
     file: &str,
     expand_relative: &[String],
+    known: &Array,
 ) -> Result<Array, String> {
     let mut res = Array::new();
     for (key, mut val) in arr {
@@ -329,7 +361,7 @@ fn process(
         };
         let key_to_resolve = segment('[', ']');
         val = match val {
-            Value::Array(a) => Value::Array(process(a, &segment('[', ']'), file, expand_relative)?),
+            Value::Array(a) => Value::Array(process(a, &segment('[', ']'), file, expand_relative, known)?),
             Value::Entity(e) => {
                 let pass = if int_key {
                     format!("{file_key}()")
@@ -338,30 +370,42 @@ fn process(
                 };
                 // (NeonAdapter folds `a()::b()` chains into nested statements; Pun only reads parameters, where any
                 // statement ends resolution (see config.rs), so chains stay as decoded.)
-                if EXCLUDE_PATH_KEYS.contains(&key_to_resolve.as_str())
-                    && e.attributes.len() == 1
-                    && e.attributes.get(&Key::Int(0)) == Some(&Value::str("?"))
-                    && matches!(&e.value, Value::Str(s) if !s.contains('%') && !s.starts_with('*'))
-                {
-                    Value::OptionalPath(relative_to(file, e.value.as_str().expect("string")))
+                // `createOptionalPath()`
+                let optional = match &e.value {
+                    Value::Str(s)
+                        if EXCLUDE_PATH_KEYS.contains(&key_to_resolve.as_str())
+                            && e.attributes.len() == 1
+                            && e.attributes.get(&Key::Int(0)) == Some(&Value::str("?"))
+                            && !s.starts_with('*') =>
+                    {
+                        if expand_relative.contains(&key_to_resolve) {
+                            expand_known(s, known).map(|p| relative_to(file, &p))
+                        } else {
+                            Some(s.clone())
+                        }
+                    }
+                    _ => None,
+                };
+                if let Some(path) = optional {
+                    Value::OptionalPath(path)
                 } else {
-                    let tmp = process(Array::list([e.value]), &pass, file, expand_relative)?;
+                    let tmp = process(Array::list([e.value]), &pass, file, expand_relative, known)?;
                     let entity = tmp
                         .into_iter()
                         .next()
                         .map(|(_, v)| v)
                         .unwrap_or(Value::Null);
-                    statement(entity, process(e.attributes, &pass, file, expand_relative)?)
+                    statement(entity, process(e.attributes, &pass, file, expand_relative, known)?)
                 }
             }
             v => v,
         };
         if expand_relative.contains(&key_to_resolve)
             && let Value::Str(s) = &val
-            && !s.contains('%')
             && !s.starts_with('*')
+            && let Some(path) = expand_known(s, known)
         {
-            val = Value::Str(relative_to(file, s));
+            val = Value::Str(relative_to(file, &path));
         }
         if key_to_resolve == "[parameters][excludePaths]"
             && let Value::Array(a) = &val
@@ -400,7 +444,7 @@ pub(crate) fn assert_list(v: &Value, label: &str) -> Result<(), String> {
         Value::Str(_) => "string".to_string(),
         Value::Array(_) => "array".to_string(),
         // (the phar's scoped class name)
-        _ => "object _PHPStan_88a9c7bcc\\Nette\\DI\\Definitions\\Statement".to_string(),
+        _ => "object _PHPStan_cb3b7e994\\Nette\\DI\\Definitions\\Statement".to_string(),
     };
     Err(format!("The {label} expects to be list, {ty} given."))
 }
@@ -426,6 +470,7 @@ pub(crate) fn load_file(
     files: &dyn Files,
     file: &str,
     expand_relative: &[String],
+    known: &Array,
 ) -> Result<Array, String> {
     let ext = file
         .rsplit_once('.')
@@ -433,7 +478,7 @@ pub(crate) fn load_file(
         .filter(|e| !e.contains('/'))
         .unwrap_or_default();
     match ext.as_str() {
-        "neon" | "dist" => load_neon(files, file, expand_relative),
+        "neon" | "dist" => load_neon(files, file, expand_relative, known),
         "php" => {
             let contents = files
                 .read(file)
@@ -492,7 +537,7 @@ impl<'a> Loader<'a> {
             return Err(format!("Recursive included file '{file}'"));
         }
         self.loaded.push(file.to_string());
-        let mut data = load_file(self.files, file, &self.expand_relative)?;
+        let mut data = load_file(self.files, file, &self.expand_relative, &self.parameters)?;
         let mut list = Vec::new();
         let mut res = Array::new();
         if let Some(includes) = data

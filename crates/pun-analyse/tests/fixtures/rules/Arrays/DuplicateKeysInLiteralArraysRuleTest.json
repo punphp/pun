@@ -163,6 +163,90 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug15244",
+            "files": [
+                "Arrays/data/bug-15244.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-15244.php",
+                    "line": 38,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, 9223372036854775807).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-15244.php",
+                    "line": 49,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15248",
+            "files": [
+                "Arrays/data/bug-15248.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-15248.php",
+                    "line": 20,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'a' ('a', 'a').",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15247",
+            "files": [
+                "Arrays/data/bug-15247.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-15247.php",
+                    "line": 51,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'a' ('a', 'a').",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15247Php81",
+            "files": [
+                "Arrays/data/bug-15247-php81.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15295",
+            "files": [
+                "Arrays/data/bug-15295.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-15295.php",
+                    "line": 53,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'start' ('start', 'start').",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

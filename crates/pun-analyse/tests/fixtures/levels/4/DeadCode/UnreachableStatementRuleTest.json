@@ -99,24 +99,7 @@
             "general": []
         },
         {
-            "method": "testBugWithoutGitHubIssue1#0",
-            "files": [
-                "DeadCode/data/bug-without-issue-1.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-without-issue-1.php",
-                    "line": 39,
-                    "identifier": "booleanAnd.leftAlwaysTrue",
-                    "message": "Left side of && is always true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBugWithoutGitHubIssue1#1",
+            "method": "testBugWithoutGitHubIssue1",
             "files": [
                 "DeadCode/data/bug-without-issue-1.php"
             ],
@@ -383,39 +366,6 @@
             "general": []
         },
         {
-            "method": "testBug11992",
-            "files": [
-                "DeadCode/data/bug-11992.php"
-            ],
-            "scan": [],
-            "errors": [],
-            "general": []
-        },
-        {
-            "method": "testBug7531",
-            "files": [
-                "DeadCode/data/bug-7531.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-7531.php",
-                    "line": 18,
-                    "identifier": "greater.alwaysTrue",
-                    "message": "Comparison operation \">\" between 1|2|3 and int<min, 0> is always true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
-                },
-                {
-                    "file": "DeadCode/data/bug-7531.php",
-                    "line": 22,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
             "method": "testMultipleUnreachable",
             "files": [
                 "DeadCode/data/multiple_unreachable.php"
@@ -444,289 +394,6 @@
                     "tip": null
                 }
             ],
-            "general": []
-        },
-        {
-            "method": "testBug11909",
-            "files": [
-                "DeadCode/data/bug-11909.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-11909.php",
-                    "line": 6,
-                    "identifier": "class.notFound",
-                    "message": "Instantiated class Bug11909\\LogicException not found.",
-                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
-                },
-                {
-                    "file": "DeadCode/data/bug-11909.php",
-                    "line": 6,
-                    "identifier": "class.notFound",
-                    "message": "Throwing object of an unknown class Bug11909\\LogicException.",
-                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
-                },
-                {
-                    "file": "DeadCode/data/bug-11909.php",
-                    "line": 10,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug13232a",
-            "files": [
-                "DeadCode/data/bug-13232a.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 10,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 17,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 23,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 32,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 37,
-                    "identifier": "arguments.count",
-                    "message": "Method Bug13232a\\HelloWorld::doFoo() invoked with 1 parameter, 0 required.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 37,
-                    "identifier": "method.resultUnused",
-                    "message": "Call to method Bug13232a\\HelloWorld::doFoo() on a separate line has no effect.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 38,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 43,
-                    "identifier": "arguments.count",
-                    "message": "Static method Bug13232a\\HelloWorld::doStaticFoo() invoked with 1 parameter, 0 required.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 43,
-                    "identifier": "staticMethod.resultUnused",
-                    "message": "Call to Bug13232a\\HelloWorld::doStaticFoo() on a separate line has no effect.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 44,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 52,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 61,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232a.php",
-                    "line": 70,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug13232b",
-            "files": [
-                "DeadCode/data/bug-13232b.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-13232b.php",
-                    "line": 19,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232b.php",
-                    "line": 27,
-                    "identifier": "class.notFound",
-                    "message": "Instantiated class Bug13232b\\LogicException not found.",
-                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
-                },
-                {
-                    "file": "DeadCode/data/bug-13232b.php",
-                    "line": 27,
-                    "identifier": "class.notFound",
-                    "message": "Throwing object of an unknown class Bug13232b\\LogicException.",
-                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug13232c",
-            "files": [
-                "DeadCode/data/bug-13232c.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-13232c.php",
-                    "line": 12,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232c.php",
-                    "line": 20,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug13232d",
-            "files": [
-                "DeadCode/data/bug-13232d.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-13232d.php",
-                    "line": 11,
-                    "identifier": "deadCode.unreachable",
-                    "message": "Unreachable statement - code above always terminates.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13232d.php",
-                    "line": 14,
-                    "identifier": "return.never",
-                    "message": "Function Bug13232d\\neverReturns() should always throw an exception or terminate script execution but doesn't do that.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug13288",
-            "files": [
-                "DeadCode/data/bug-13288.php"
-            ],
-            "scan": [],
-            "errors": [],
-            "general": []
-        },
-        {
-            "method": "testBug13311",
-            "files": [
-                "DeadCode/data/bug-13311.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "DeadCode/data/bug-13311.php",
-                    "line": 11,
-                    "identifier": "variable.undefined",
-                    "message": "Variable $from might not be defined.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13311.php",
-                    "line": 11,
-                    "identifier": "variable.undefined",
-                    "message": "Variable $iconv_options might not be defined.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13311.php",
-                    "line": 11,
-                    "identifier": "variable.undefined",
-                    "message": "Variable $str might not be defined.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13311.php",
-                    "line": 11,
-                    "identifier": "variable.undefined",
-                    "message": "Variable $to might not be defined.",
-                    "tip": null
-                },
-                {
-                    "file": "DeadCode/data/bug-13311.php",
-                    "line": 12,
-                    "identifier": "class.notFound",
-                    "message": "Caught class Bug13311\\Throwable not found.",
-                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testBug13307",
-            "files": [
-                "DeadCode/data/bug-13307.php"
-            ],
-            "scan": [],
-            "errors": [],
-            "general": []
-        },
-        {
-            "method": "testBug13331",
-            "files": [
-                "DeadCode/data/bug-13331.php"
-            ],
-            "scan": [],
-            "errors": [],
             "general": []
         },
         {
@@ -832,6 +499,367 @@
                 {
                     "file": "DeadCode/data/bug-11731.php",
                     "line": 19,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15169TreatPhpDocTypesAsCertain",
+            "files": [
+                "DeadCode/data/bug-15169.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 23,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 27,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 32,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 36,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 41,
+                    "identifier": "empty.offset",
+                    "message": "Offset 'zzz' on array{a: int} in empty() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 45,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 50,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 50,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 54,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 62,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 66,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 72,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169.php",
+                    "line": 76,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15169AnalogousTreatPhpDocTypesAsCertain",
+            "files": [
+                "DeadCode/data/bug-15169b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 36,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 40,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 45,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 49,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 62,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 66,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 71,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 75,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 80,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 84,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 89,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 93,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 98,
+                    "identifier": "empty.offset",
+                    "message": "Offset 'zzz' on array{a: int} in empty() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 102,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 123,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169b.php",
+                    "line": 127,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15169FirstClassCallablesTreatPhpDocTypesAsCertain",
+            "files": [
+                "DeadCode/data/bug-15169c.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 41,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 45,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 51,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 55,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 61,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 65,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 71,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'zzz' on array{a: int} in isset() does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-15169c.php",
+                    "line": 75,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDynamicNameAlwaysTerminating",
+            "files": [
+                "DeadCode/data/dynamic-name-always-terminating.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/dynamic-name-always-terminating.php",
+                    "line": 23,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/dynamic-name-always-terminating.php",
+                    "line": 29,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallableTerminatingVar",
+            "files": [
+                "DeadCode/data/first-class-callable-terminating-var.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/first-class-callable-terminating-var.php",
+                    "line": 19,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullsafeShortCircuitTerminating",
+            "files": [
+                "DeadCode/data/nullsafe-short-circuit-terminating.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/nullsafe-short-circuit-terminating.php",
+                    "line": 49,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/nullsafe-short-circuit-terminating.php",
+                    "line": 54,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type NullsafeShortCircuitTerminating\\Holder. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/nullsafe-short-circuit-terminating.php",
+                    "line": 56,
                     "identifier": "deadCode.unreachable",
                     "message": "Unreachable statement - code above always terminates.",
                     "tip": null

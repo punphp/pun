@@ -186,6 +186,48 @@
             "general": []
         },
         {
+            "method": "testBug15223",
+            "files": [
+                "Comparison/data/bug-15223-static.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15223TreatPhpDocTypesAsCertain",
+            "files": [
+                "Comparison/data/bug-15223-static.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15328",
+            "files": [
+                "Comparison/data/bug-15328-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-15328-method.php",
+                    "line": 69,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method Bug15328Method\\Assert::assertSame() with int and int will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-15328-method.php",
+                    "line": 75,
+                    "identifier": "staticMethod.alreadyNarrowedType",
+                    "message": "Call to static method Bug15328Method\\Assert::assertSame() with int and int will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testAssertUnresolvedGeneric",
             "files": [
                 "Comparison/data/assert-unresolved-generic.php"

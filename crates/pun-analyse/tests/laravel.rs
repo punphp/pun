@@ -3,7 +3,7 @@
 //! Pinkary migrations its table and its foreign keys come from, plus models and a migration that reach every branch
 //! of Larastan's SchemaAggregator and ModelPropertyHelper.
 //!
-//! Expected: tests/fixtures/laravel/expected.json, PHPStan 2.2.7 + Larastan 3.10.0's own dumps on a copy of Pinkary
+//! Expected: tests/fixtures/laravel/expected.json, PHPStan 2.3.1 + Larastan 3.10.0's own dumps on a copy of Pinkary
 //! (`scripts/analyse-spike.py oracle`), for `parseModelCastsMethod` false (Larastan's default) and true. Mago's type
 //! is read back with pun-phpstan's type-string resolver and printed with PHPStan's `describe()`.
 

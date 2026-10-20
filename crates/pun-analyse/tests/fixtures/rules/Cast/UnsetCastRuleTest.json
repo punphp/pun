@@ -2,7 +2,7 @@
     "test": "Cast/UnsetCastRuleTest",
     "cases": [
         {
-            "method": "testRule#0",
+            "method": "testRule",
             "files": [
                 "Cast/data/unset-cast.php"
             ],
@@ -19,15 +19,22 @@
             "general": []
         },
         {
-            "method": "testRule#1",
+            "method": "testPhpVersionNarrowedScope",
             "files": [
-                "Cast/data/unset-cast.php"
+                "Cast/data/unset-cast-php-versions.php"
             ],
             "scan": [],
             "errors": [
                 {
-                    "file": "Cast/data/unset-cast.php",
-                    "line": 6,
+                    "file": "Cast/data/unset-cast-php-versions.php",
+                    "line": 11,
+                    "identifier": "cast.unset",
+                    "message": "The (unset) cast is no longer supported in PHP 8.0 and later.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/unset-cast-php-versions.php",
+                    "line": 14,
                     "identifier": "cast.unset",
                     "message": "The (unset) cast is no longer supported in PHP 8.0 and later.",
                     "tip": null

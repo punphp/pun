@@ -319,24 +319,7 @@
             "general": []
         },
         {
-            "method": "testNativeUnionTypes#0",
-            "files": [
-                "Methods/data/native-union-types.php"
-            ],
-            "scan": [],
-            "errors": [
-                {
-                    "file": "Methods/data/native-union-types.php",
-                    "line": 13,
-                    "identifier": "return.missing",
-                    "message": "Method NativeUnionTypesSupport\\Foo::doBar() should return bool|int but return statement is missing.",
-                    "tip": null
-                }
-            ],
-            "general": []
-        },
-        {
-            "method": "testNativeUnionTypes#1",
+            "method": "testNativeUnionTypes",
             "files": [
                 "Methods/data/native-union-types.php"
             ],

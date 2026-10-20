@@ -123,22 +123,22 @@ Intentional differences:
 
 | component | version | ref |
 |---|---|---|
-| phpstan/phpstan | 2.2.7 (what Pinkary's composer.lock pins; PHAR, vendor prefixed `_PHPStan_88a9c7bcc\`) | phpstan-src `88a9c7bcc61b7e8c2d95ef94427c8c34b9c8789f` |
+| phpstan/phpstan | 2.3.1 (the latest release, Pun's parity target; PHAR, vendor prefixed `_PHPStan_cb3b7e994\`) | phpstan-src `cb3b7e99489b2e3789ee2eec10501cb7a72580ea` |
 | larastan/larastan | v3.10.0 (Pinkary's composer.lock) | |
 | phpstan/phpstan-deprecation-rules | ^2.0 (Pinkary requires it) | |
 | nette/neon | v3.3.4 (bundled in the PHAR) | `bb88bf3a54dd21bf4dbddb5cd525d7b0c61b7cda` |
 | nette/di / nette/schema | 3.1.10 / 1.2.5 (bundled in the PHAR) | |
 
-- `.oracle/phpstan`: installed by `scripts/oracle.sh` from the committed `scripts/oracle-phpstan/composer.{json,lock}` (exactly `phpstan/phpstan: 2.2.7`, `larastan/larastan: 3.10.0`,
+- `.oracle/phpstan`: installed by `scripts/oracle.sh` from the committed `scripts/oracle-phpstan/composer.{json,lock}` (exactly `phpstan/phpstan: 2.3.1`, `larastan/larastan: 3.10.0`,
   `phpstan/phpstan-deprecation-rules: ^2.0`; `composer install` there. Oracle binary:
   `php .oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar`. Its `vendor/` also serves the corpus parity
   tests (symlinked into a farm, so `%rootDir%` and `includes: vendor/...` resolve as in a real project).
 - `.oracle/neon`: nette/neon source + tests at the bundled tag (`git fetch --depth 1 https://github.com/nette/neon.git v3.3.4`).
-- `.oracle/phpstan-src`: phpstan-src at the tag 2.2.7 (`scripts/oracle.sh` fetches it; its `tests/` give data
+- `.oracle/phpstan-src`: phpstan-src at the tag 2.3.1 (`scripts/oracle.sh` fetches it; its `tests/` give data
   providers, its `src/Rules/` and `conf/` the PHPStan inventory).
 - phpstan/phpstan-strict-rules 2.0.12 and phpstan/phpstan-deprecation-rules 2.0.5 are the versions the rule mapping's
   inventory read (`crates/pun-config/rules/upstream/phpstan-extensions.json`).
-- `.oracle/phpstan-phar`: an extracted copy of the PHAR, for reading only (nothing runs it).
+- `.oracle/phpstan-phar`: an extracted copy of the PHAR (`scripts/oracle.sh` extracts it), for reading only (nothing runs it).
 
 All exporters run the PHAR's real classes (private methods through reflection, test data providers with stub
 parents); expected values are never written by hand. Re-run one after touching its cases, then the tests.
@@ -153,7 +153,7 @@ parents); expected values are never written by hand. Re-run one after touching i
 | `php scripts/export-ignore-fixtures.php` | `comments.json` (RichParser::getLinesToIgnore), `local-processor.json` (LocalIgnoresProcessor), `ignore.json` (IgnoredErrorHelper + result processing) |
 | `php scripts/export-local-ignore-fixtures.php` | `local.json`: real `phpstan analyse` on `local/*.php`, comments blanked vs. kept |
 | `php scripts/export-php-helpers-fixtures.php` | `php.json`: regex (Nette Strings::match), preg_quote, FileHelper, relative paths, fnmatch, (string) casts, `phpfile/ok-*.php` |
-| `php scripts/export-phpstan-symbols.php` | `../data/symbols.json` (every built-in function, method, class and constant as PHPStan 2.2.7 reflects them on PHP 8.4, with the 8.5 differences), `type-strings.json` (every signature-map type string through TypeStringResolver + `describe()`), `reflected-types.json` (every type in those signatures, `toPhpDocNode()` and its descriptions) |
+| `php scripts/export-phpstan-symbols.php` | `../data/symbols.json` (every built-in function, method, class and constant as PHPStan 2.3.1 reflects them on PHP 8.4, with the 8.5 differences), `type-strings.json` (every signature-map type string through TypeStringResolver + `describe()`), `reflected-types.json` (every type in those signatures, `toPhpDocNode()` and its descriptions) |
 | `php scripts/export-phpstan-symbols.php probes` | `type-probes.json` (hand-picked and generated type strings: descriptions and iterable key/value), `type-super.json` (`isSuperTypeOf()` of every ordered pair within each atom set) |
 
 ### How PHPStan resolves a built-in function's signature
@@ -179,7 +179,7 @@ resolver (`resolve.rs`) and type model (`types.rs`: `TypeCombinator` union/inter
 
 Rule fixtures and corpus parity run the real PHAR at level 0. Two environment traps, both handled by the scripts:
 
-- PHPStan 2.2.7 detects AI agents (`src/Internal/AgentDetector.php`: `AI_AGENT`, `CLAUDECODE`,
+- PHPStan 2.3.1 detects AI agents (`src/Internal/AgentDetector.php`: `AI_AGENT`, `CLAUDECODE`,
   `AMP_CURRENT_THREAD_ID`, ...) and switches its output format; the scripts unset those variables.
 - PHP 8.5's `max_memory_limit` (512M in php.ini) caps `--memory-limit`, also in worker processes, which don't
   inherit `-d`. The scripts set `PHP_INI_SCAN_DIR=:target-analyse/php-ini` with `max_memory_limit = -1` there.

@@ -302,6 +302,24 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug14914",
+            "files": [
+                "Functions/data/bug-14914.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12008",
+            "files": [
+                "Functions/data/bug-12008.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

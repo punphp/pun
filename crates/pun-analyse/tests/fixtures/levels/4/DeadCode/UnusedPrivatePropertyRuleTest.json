@@ -89,7 +89,7 @@
                     "file": "DeadCode/data/unused-private-property.php",
                     "line": 153,
                     "identifier": "property.unused",
-                    "message": "Property class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/DeadCode/data/unused-private-property.php:152::$bar is unused.",
+                    "message": "Property class@anonymous/unused-private-property.php:152::$bar is unused.",
                     "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
                 },
                 {
@@ -681,6 +681,86 @@
             ],
             "scan": [],
             "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12201",
+            "files": [
+                "DeadCode/data/bug-12201-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 10,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201Property\\AppKernel uses unknown trait Bug12201Property\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 13,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug12201Property\\AppKernel::$allowedEnvs is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 20,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201Property\\AnotherKernel uses unknown trait Bug12201Property\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 22,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug12201Property\\AnotherKernel::$unused is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 22,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug12201Property\\AnotherKernel::$unused (string|null) is never assigned string so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 29,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201Property\\StaticKernel uses unknown trait Bug12201Property\\StaticKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 32,
+                    "identifier": "property.onlyWritten",
+                    "message": "Static property Bug12201Property\\StaticKernel::$staticAllowedEnvs is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 39,
+                    "identifier": "trait.notFound",
+                    "message": "Class Bug12201Property\\ParentKernel uses unknown trait Bug12201Property\\MicroKernelTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 48,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug12201Property\\ChildKernel::$allowedEnvs is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "DeadCode/data/bug-12201-property.php",
+                    "line": 82,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug12201Property\\RedeclaresAnalysedTrait::$redeclared is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
             "general": []
         }
     ]

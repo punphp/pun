@@ -12,7 +12,7 @@
                     "file": "Api/data/static-call-in-phpstan.php",
                     "line": 12,
                     "identifier": "arguments.count",
-                    "message": "Static method PHPStan\\Command\\CommandHelper::begin() invoked with 0 parameters, 14 required.",
+                    "message": "Static method PHPStan\\Command\\CommandHelper::begin() invoked with 0 parameters, 14-15 required.",
                     "tip": null
                 },
                 {
@@ -36,7 +36,7 @@
                     "file": "Api/data/static-call-out-of-phpstan.php",
                     "line": 17,
                     "identifier": "arguments.count",
-                    "message": "Static method PHPStan\\Command\\CommandHelper::begin() invoked with 0 parameters, 14 required.",
+                    "message": "Static method PHPStan\\Command\\CommandHelper::begin() invoked with 0 parameters, 14-15 required.",
                     "tip": null
                 },
                 {

@@ -19,7 +19,7 @@
   "registered_by": "src/Rules/Api/ApiClassConstFetchRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiClassConstFetchRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -41,7 +41,7 @@
   "registered_by": "src/Rules/Api/ApiClassExtendsRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiClassExtendsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -63,7 +63,7 @@
   "registered_by": "src/Rules/Api/ApiClassImplementsRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiClassImplementsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -91,7 +91,7 @@
   "registered_by": "src/Rules/Api/ApiInstanceofRule.php:23 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiInstanceofRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -113,7 +113,7 @@
   "registered_by": "src/Rules/Api/ApiInstanceofTypeRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiInstanceofTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -135,7 +135,7 @@
   "registered_by": "src/Rules/Api/ApiInstantiationRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiInstantiationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -157,7 +157,7 @@
   "registered_by": "src/Rules/Api/ApiInterfaceExtendsRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiInterfaceExtendsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -179,7 +179,7 @@
   "registered_by": "src/Rules/Api/ApiMethodCallRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiMethodCallRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -201,7 +201,7 @@
   "registered_by": "src/Rules/Api/ApiStaticCallRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiStaticCallRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -223,7 +223,7 @@
   "registered_by": "src/Rules/Api/ApiTraitUseRule.php:16 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/ApiTraitUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -245,7 +245,7 @@
   "registered_by": "src/Rules/Api/GetTemplateTypeRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/GetTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -267,7 +267,7 @@
   "registered_by": "src/Rules/Api/NodeConnectingVisitorAttributesRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/NodeConnectingVisitorAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -289,7 +289,7 @@
   "registered_by": "src/Rules/Api/OldPhpParser4ClassRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/OldPhpParser4ClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -311,7 +311,7 @@
   "registered_by": "src/Rules/Api/PhpStanNamespaceIn3rdPartyPackageRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/PhpStanNamespaceIn3rdPartyPackageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -333,7 +333,7 @@
   "registered_by": "src/Rules/Api/RuntimeReflectionFunctionRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/RuntimeReflectionFunctionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -355,7 +355,7 @@
   "registered_by": "src/Rules/Api/RuntimeReflectionInstantiationRule.php:29 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Api/RuntimeReflectionInstantiationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -390,7 +390,7 @@
   "registered_by": "src/Rules/Arrays/ArrayDestructuringRule.php:27 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/ArrayDestructuringRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -418,10 +418,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Arrays/ArrayUnpackingRule.php:22 #[RegisteredRule(level: 3)]",
+  "registered_by": "src/Rules/Arrays/ArrayUnpackingRule.php:21 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/ArrayUnpackingRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -443,7 +443,7 @@
   "registered_by": "src/Rules/Arrays/DeadForeachRule.php:14 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/DeadForeachRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -462,10 +462,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Arrays/DuplicateKeysInLiteralArraysRule.php:28 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Arrays/DuplicateKeysInLiteralArraysRule.php:34 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/DuplicateKeysInLiteralArraysRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -499,7 +499,7 @@
   "registered_by": "src/Rules/Arrays/InvalidKeyInArrayDimFetchRule.php:21 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/InvalidKeyInArrayDimFetchRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -532,7 +532,7 @@
   "registered_by": "src/Rules/Arrays/InvalidKeyInArrayItemRule.php:21 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/InvalidKeyInArrayItemRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -563,7 +563,7 @@
   "registered_by": "src/Rules/Arrays/IterableInForeachRule.php:20 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/IterableInForeachRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -599,7 +599,7 @@
   "registered_by": "src/Rules/Arrays/NonexistentOffsetInArrayDimFetchRule.php:29 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/NonexistentOffsetInArrayDimFetchRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -630,7 +630,7 @@
   "registered_by": "src/Rules/Arrays/OffsetAccessAssignOpRule.php:21 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/OffsetAccessAssignOpRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -661,7 +661,7 @@
   "registered_by": "src/Rules/Arrays/OffsetAccessAssignmentRule.php:21 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/OffsetAccessAssignmentRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -692,7 +692,7 @@
   "registered_by": "src/Rules/Arrays/OffsetAccessValueAssignmentRule.php:23 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/OffsetAccessValueAssignmentRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -714,7 +714,7 @@
   "registered_by": "src/Rules/Arrays/OffsetAccessWithoutDimForReadingRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/OffsetAccessWithoutDimForReadingRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -745,7 +745,7 @@
   "registered_by": "src/Rules/Arrays/UnpackIterableInArrayRule.php:20 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Arrays/UnpackIterableInArrayRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -764,10 +764,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Cast/DeprecatedCastRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Cast/DeprecatedCastRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Cast/DeprecatedCastRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -798,7 +798,7 @@
   "registered_by": "src/Rules/Cast/EchoRule.php:19 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Cast/EchoRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -834,7 +834,7 @@
   "registered_by": "src/Rules/Cast/InvalidCastRule.php:23 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Cast/InvalidCastRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -865,7 +865,7 @@
   "registered_by": "src/Rules/Cast/InvalidPartOfEncapsedStringRule.php:20 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Cast/InvalidPartOfEncapsedStringRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -896,7 +896,7 @@
   "registered_by": "src/Rules/Cast/PrintRule.php:19 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Cast/PrintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -915,10 +915,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Cast/UnsetCastRule.php:15 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Cast/UnsetCastRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Cast/UnsetCastRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -938,10 +938,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Cast/VoidCastRule.php:15 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Cast/VoidCastRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Cast/VoidCastRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -963,7 +963,7 @@
   "registered_by": "src/Rules/Classes/AccessPrivateConstantThroughStaticRule.php:16 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/AccessPrivateConstantThroughStaticRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -990,7 +990,7 @@
   "registered_by": "src/Rules/Classes/AllowedSubTypesRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/AllowedSubTypesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1078,7 +1078,7 @@
   "registered_by": "src/Rules/Classes/ClassAttributesRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ClassAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1159,7 +1159,7 @@
   "registered_by": "src/Rules/Classes/ClassConstantAttributesRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ClassConstantAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1208,10 +1208,10 @@
   "parameters": [
    "featureToggles.checkNonStringableDynamicAccess"
   ],
-  "registered_by": "src/Rules/Classes/ClassConstantRule.php:38 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Classes/ClassConstantRule.php:36 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ClassConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1238,7 +1238,7 @@
   "registered_by": null,
   "registration_kind": "stubValidatorOnly",
   "source_file": "src/Rules/Classes/DuplicateClassDeclarationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1278,7 +1278,7 @@
   "registered_by": "src/Rules/Classes/DuplicateDeclarationRule.php:16 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/DuplicateDeclarationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1317,7 +1317,7 @@
   "registered_by": "src/Rules/Classes/DuplicateTraitDeclarationRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/DuplicateTraitDeclarationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1348,7 +1348,7 @@
   "registered_by": "src/Rules/Classes/EnumSanityRule.php:29 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/EnumSanityRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1389,7 +1389,7 @@
   "registered_by": "src/Rules/Classes/ExistingClassInClassExtendsRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ExistingClassInClassExtendsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1427,7 +1427,7 @@
   "registered_by": "src/Rules/Classes/ExistingClassInInstanceOfRule.php:25 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ExistingClassInInstanceOfRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1465,7 +1465,7 @@
   "registered_by": "src/Rules/Classes/ExistingClassInTraitUseRule.php:23 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ExistingClassInTraitUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1502,7 +1502,7 @@
   "registered_by": "src/Rules/Classes/ExistingClassesInClassImplementsRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ExistingClassesInClassImplementsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1538,7 +1538,7 @@
   "registered_by": "src/Rules/Classes/ExistingClassesInEnumImplementsRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ExistingClassesInEnumImplementsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1575,7 +1575,7 @@
   "registered_by": "src/Rules/Classes/ExistingClassesInInterfaceExtendsRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ExistingClassesInInterfaceExtendsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1613,7 +1613,7 @@
   "registered_by": "src/Rules/Classes/ImpossibleInstanceOfRule.php:30 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ImpossibleInstanceOfRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1635,7 +1635,7 @@
   "registered_by": "src/Rules/Classes/InstantiationCallableRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/InstantiationCallableRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1718,10 +1718,10 @@
    "featureToggles.newOnNonObject",
    "tips.discoveringSymbols"
   ],
-  "registered_by": "src/Rules/Classes/InstantiationRule.php:47 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Classes/InstantiationRule.php:49 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/InstantiationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1741,10 +1741,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Classes/InvalidPromotedPropertiesRule.php:18 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Classes/InvalidPromotedPropertiesRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/InvalidPromotedPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1799,7 +1799,7 @@
   "registered_by": "src/Rules/Classes/LocalTypeAliasesRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/LocalTypeAliasesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1854,7 +1854,7 @@
   "registered_by": "src/Rules/Classes/LocalTypeTraitAliasesRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/LocalTypeTraitAliasesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1909,7 +1909,7 @@
   "registered_by": "src/Rules/Classes/LocalTypeTraitUseAliasesRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/LocalTypeTraitUseAliasesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -1958,7 +1958,7 @@
   "registered_by": "src/Rules/Classes/MethodTagRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/MethodTagRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2007,7 +2007,7 @@
   "registered_by": "src/Rules/Classes/MethodTagTraitRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/MethodTagTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2056,7 +2056,7 @@
   "registered_by": "src/Rules/Classes/MethodTagTraitUseRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/MethodTagTraitUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2106,7 +2106,7 @@
   "registered_by": "src/Rules/Classes/MixinRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/MixinRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2156,7 +2156,7 @@
   "registered_by": "src/Rules/Classes/MixinTraitRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/MixinTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2206,7 +2206,7 @@
   "registered_by": "src/Rules/Classes/MixinTraitUseRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/MixinTraitUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2228,7 +2228,7 @@
   "registered_by": "conf/config.level0.neon:15 conditionalTags phpstan.rules.rule: %featureToggles.newStaticInAbstractClassStaticMethod%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Classes/NewStaticInAbstractClassStaticMethodRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2250,7 +2250,7 @@
   "registered_by": "src/Rules/Classes/NewStaticRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/NewStaticRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2279,7 +2279,7 @@
   "registered_by": "src/Rules/Classes/NonClassAttributeClassRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/NonClassAttributeClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2328,7 +2328,7 @@
   "registered_by": "src/Rules/Classes/PropertyTagRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/PropertyTagRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2377,7 +2377,7 @@
   "registered_by": "src/Rules/Classes/PropertyTagTraitRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/PropertyTagTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2426,7 +2426,7 @@
   "registered_by": "src/Rules/Classes/PropertyTagTraitUseRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/PropertyTagTraitUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2445,10 +2445,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Classes/ReadOnlyClassRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Classes/ReadOnlyClassRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/ReadOnlyClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2470,7 +2470,7 @@
   "registered_by": "src/Rules/Classes/RequireExtendsRule.php:17 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/RequireExtendsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2492,7 +2492,7 @@
   "registered_by": "src/Rules/Classes/RequireImplementsRule.php:18 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/RequireImplementsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2514,7 +2514,7 @@
   "registered_by": "src/Rules/Classes/TraitAttributeClassRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/TraitAttributeClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2526,8 +2526,12 @@
    "featureToggles.reportPreciseLineForUnusedFunctionParameter"
   ],
   "identifiers": [
-   "closure.unusedUse",
-   "constructor.unusedParameter"
+   "constructor.unusedParameter",
+   "constructor.unusedParameterFlow",
+   "function.unusedParameter",
+   "function.unusedParameterFlow",
+   "method.unusedParameter",
+   "method.unusedParameterFlow"
   ],
   "in_scope": true,
   "kind": "phpstan-rule",
@@ -2536,10 +2540,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Classes/UnusedConstructorParametersRule.php:24 #[RegisteredRule(level: 1)]",
+  "registered_by": "src/Rules/Classes/UnusedConstructorParametersRule.php:19 #[RegisteredRule(level: 1)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Classes/UnusedConstructorParametersRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2580,7 +2584,7 @@
   "registered_by": "src/Rules/Comparison/BooleanAndConstantConditionRule.php:23 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/BooleanAndConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2611,7 +2615,7 @@
   "registered_by": "src/Rules/Comparison/BooleanNotConstantConditionRule.php:20 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/BooleanNotConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2652,7 +2656,7 @@
   "registered_by": "src/Rules/Comparison/BooleanOrConstantConditionRule.php:23 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/BooleanOrConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2671,10 +2675,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Comparison/ConstantConditionInTraitRule.php:20 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Comparison/ConstantConditionInTraitRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/ConstantConditionInTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2707,7 +2711,7 @@
   "registered_by": "src/Rules/Comparison/ConstantLooseComparisonRule.php:20 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/ConstantLooseComparisonRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2737,7 +2741,7 @@
   "registered_by": "src/Rules/Comparison/DoWhileLoopConstantConditionRule.php:24 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/DoWhileLoopConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2768,7 +2772,7 @@
   "registered_by": "src/Rules/Comparison/ElseIfConstantConditionRule.php:20 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/ElseIfConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2787,10 +2791,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Comparison/FunctionCallConstantConditionRule.php:26 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/Comparison/FunctionCallConstantConditionRule.php:27 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/FunctionCallConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2820,7 +2824,7 @@
   "registered_by": "src/Rules/Comparison/IfConstantConditionRule.php:19 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/IfConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2846,10 +2850,10 @@
    "tips.treatPhpDocTypesAsCertain",
    "treatPhpDocTypesAsCertain"
   ],
-  "registered_by": "src/Rules/Comparison/ImpossibleCheckTypeFunctionCallRule.php:19 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/Comparison/ImpossibleCheckTypeFunctionCallRule.php:20 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/ImpossibleCheckTypeFunctionCallRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2875,10 +2879,10 @@
    "tips.treatPhpDocTypesAsCertain",
    "treatPhpDocTypesAsCertain"
   ],
-  "registered_by": "src/Rules/Comparison/ImpossibleCheckTypeMethodCallRule.php:22 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/Comparison/ImpossibleCheckTypeMethodCallRule.php:23 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/ImpossibleCheckTypeMethodCallRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2904,10 +2908,10 @@
    "tips.treatPhpDocTypesAsCertain",
    "treatPhpDocTypesAsCertain"
   ],
-  "registered_by": "src/Rules/Comparison/ImpossibleCheckTypeStaticMethodCallRule.php:22 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/Comparison/ImpossibleCheckTypeStaticMethodCallRule.php:23 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/ImpossibleCheckTypeStaticMethodCallRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2929,7 +2933,7 @@
   "registered_by": "conf/config.level4.neon:17 conditionalTags phpstan.rules.rule: %featureToggles.finiteTypesInHaystack%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Comparison/ImpossibleInArrayHaystackFiniteTypesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2962,7 +2966,7 @@
   "registered_by": "src/Rules/Comparison/LogicalXorConstantConditionRule.php:22 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/LogicalXorConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -2990,7 +2994,7 @@
   "registered_by": "src/Rules/Comparison/MatchExpressionRule.php:30 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/MatchExpressionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3026,7 +3030,7 @@
   "registered_by": "src/Rules/Comparison/NumberComparisonOperatorsConstantConditionRule.php:23 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/NumberComparisonOperatorsConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3059,7 +3063,31 @@
   "registered_by": "src/Rules/Comparison/StrictComparisonOfDifferentTypesRule.php:26 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/StrictComparisonOfDifferentTypesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://phpstan.org/error-identifiers/switch.alwaysFalse",
+  "fqcn": "PHPStan\\Rules\\Comparison\\SwitchConditionRule",
+  "gated_by": "bleedingEdge (featureToggles.switchConditionAlwaysFalse)",
+  "helper_parameters": [],
+  "identifiers": [
+   "switch.alwaysFalse",
+   "switch.alwaysTrue",
+   "switch.duplicateCase"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": 4,
+  "notes": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan",
+  "parameters": [],
+  "registered_by": "conf/config.level4.neon:19 conditionalTags phpstan.rules.rule: %featureToggles.switchConditionAlwaysFalse%",
+  "registration_kind": "conditionalTags",
+  "source_file": "src/Rules/Comparison/SwitchConditionRule.php",
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3089,7 +3117,7 @@
   "registered_by": "src/Rules/Comparison/TernaryOperatorConstantConditionRule.php:19 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/TernaryOperatorConstantConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3111,7 +3139,7 @@
   "registered_by": "src/Rules/Comparison/UsageOfVoidMatchExpressionRule.php:14 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/UsageOfVoidMatchExpressionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3138,7 +3166,7 @@
   "registered_by": "src/Rules/Comparison/WhileLoopAlwaysFalseConditionRule.php:19 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/WhileLoopAlwaysFalseConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3165,7 +3193,7 @@
   "registered_by": "src/Rules/Comparison/WhileLoopAlwaysTrueConditionRule.php:23 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Comparison/WhileLoopAlwaysTrueConditionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3187,7 +3215,7 @@
   "registered_by": "src/Rules/Constants/ClassAsClassConstantRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/ClassAsClassConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3267,10 +3295,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Constants/ConstantAttributesRule.php:20 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Constants/ConstantAttributesRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/ConstantAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3294,7 +3322,7 @@
   "registered_by": "src/Rules/Constants/ConstantRule.php:16 #[RegisteredRule(level: 1)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/ConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3323,10 +3351,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Constants/DynamicClassConstantFetchRule.php:21 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Constants/DynamicClassConstantFetchRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/DynamicClassConstantFetchRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3345,10 +3373,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Constants/FinalConstantRule.php:14 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Constants/FinalConstantRule.php:13 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/FinalConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3370,7 +3398,7 @@
   "registered_by": "src/Rules/Constants/FinalPrivateConstantRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/FinalPrivateConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3395,7 +3423,7 @@
   "registered_by": "src/Rules/Constants/MagicConstantContextRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/MagicConstantContextRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3423,7 +3451,7 @@
   "registered_by": "src/Rules/Constants/MissingClassConstantTypehintRule.php:21 #[RegisteredRule(level: 6)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/MissingClassConstantTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3442,10 +3470,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Constants/NativeTypedClassConstantRule.php:15 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Constants/NativeTypedClassConstantRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/NativeTypedClassConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3473,7 +3501,7 @@
   "registered_by": "src/Rules/Constants/OverridingConstantRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/OverridingConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3498,7 +3526,7 @@
   "registered_by": "src/Rules/Constants/ValueAssignedToClassConstantRule.php:24 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Constants/ValueAssignedToClassConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3520,7 +3548,7 @@
   "registered_by": "conf/config.level2.neon:18 conditionalTags phpstan.rules.rule: %featureToggles.checkDynamicConstantNameValues%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Constants/ValueAssignedToDefineRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3542,7 +3570,7 @@
   "registered_by": "conf/config.level2.neon:20 conditionalTags phpstan.rules.rule: %featureToggles.checkDynamicConstantNameValues%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Constants/ValueAssignedToGlobalConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3564,7 +3592,7 @@
   "registered_by": "conf/config.level5.neon:13 conditionalTags phpstan.rules.rule: %featureToggles.checkDateIntervalConstructor%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/DateIntervalInstantiationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3589,7 +3617,7 @@
   "registered_by": "src/Rules/DateTimeInstantiationRule.php:19 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DateTimeInstantiationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3611,7 +3639,7 @@
   "registered_by": "src/Rules/DeadCode/CallToConstructorStatementWithoutImpurePointsRule.php:18 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/CallToConstructorStatementWithoutImpurePointsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3633,7 +3661,7 @@
   "registered_by": "src/Rules/DeadCode/CallToFunctionStatementWithoutImpurePointsRule.php:18 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/CallToFunctionStatementWithoutImpurePointsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3655,7 +3683,7 @@
   "registered_by": "src/Rules/DeadCode/CallToMethodStatementWithoutImpurePointsRule.php:18 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/CallToMethodStatementWithoutImpurePointsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3677,7 +3705,7 @@
   "registered_by": "src/Rules/DeadCode/CallToStaticMethodStatementWithoutImpurePointsRule.php:18 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/CallToStaticMethodStatementWithoutImpurePointsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3707,7 +3735,7 @@
   "registered_by": "src/Rules/DeadCode/NoopRule.php:19 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/NoopRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3729,7 +3757,7 @@
   "registered_by": "src/Rules/DeadCode/UnreachableStatementRule.php:15 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/UnreachableStatementRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3748,10 +3776,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/DeadCode/UnusedPrivateConstantRule.php:20 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/DeadCode/UnusedPrivateConstantRule.php:23 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/UnusedPrivateConstantRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3770,10 +3798,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/DeadCode/UnusedPrivateMethodRule.php:26 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/DeadCode/UnusedPrivateMethodRule.php:27 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/UnusedPrivateMethodRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3800,10 +3828,32 @@
    "propertyAlwaysReadTags",
    "propertyAlwaysWrittenTags"
   ],
-  "registered_by": "src/Rules/DeadCode/UnusedPrivatePropertyRule.php:32 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/DeadCode/UnusedPrivatePropertyRule.php:34 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/DeadCode/UnusedPrivatePropertyRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://phpstan.org/error-identifiers/assign.redundant",
+  "fqcn": "PHPStan\\Rules\\DeadCode\\UnusedVariableRule",
+  "gated_by": "bleedingEdge (featureToggles.unusedVariable)",
+  "helper_parameters": [],
+  "identifiers": [
+   "assign.redundant"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": 4,
+  "notes": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan",
+  "parameters": [],
+  "registered_by": "conf/config.level4.neon:21 conditionalTags phpstan.rules.rule: %featureToggles.unusedVariable%",
+  "registration_kind": "conditionalTags",
+  "source_file": "src/Rules/DeadCode/UnusedVariableRule.php",
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3828,7 +3878,7 @@
   "registered_by": "src/Rules/Debug/DebugScopeRule.php:20 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/Debug/DebugScopeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3853,7 +3903,7 @@
   "registered_by": "src/Rules/Debug/DumpNativeTypeRule.php:19 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/Debug/DumpNativeTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3878,7 +3928,7 @@
   "registered_by": "src/Rules/Debug/DumpPhpDocTypeRule.php:19 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/Debug/DumpPhpDocTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3903,7 +3953,7 @@
   "registered_by": "src/Rules/Debug/DumpTypeRule.php:19 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/Debug/DumpTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -3932,7 +3982,7 @@
   "registered_by": "src/Rules/Debug/FileAssertRule.php:23 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/Debug/FileAssertRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4013,7 +4063,7 @@
   "registered_by": "src/Rules/EnumCases/EnumCaseAttributesRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/EnumCases/EnumCaseAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4035,7 +4085,7 @@
   "registered_by": "src/Rules/EnumCases/EnumCaseOutsideEnumRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/EnumCases/EnumCaseOutsideEnumRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4065,7 +4115,7 @@
   "registered_by": "src/Rules/Exceptions/CatchWithUnthrownExceptionRule.php:19 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/CatchWithUnthrownExceptionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4100,7 +4150,7 @@
   "registered_by": "src/Rules/Exceptions/CaughtExceptionExistenceRule.php:23 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/CaughtExceptionExistenceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4121,10 +4171,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "conf/config.neon:265 conditionalTags phpstan.rules.rule: %exceptions.check.throwTypeCovariance%",
+  "registered_by": "conf/config.neon:281 conditionalTags phpstan.rules.rule: %exceptions.check.throwTypeCovariance%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Exceptions/MethodThrowTypeCovarianceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4148,10 +4198,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "conf/config.neon:257 conditionalTags phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%",
+  "registered_by": "conf/config.neon:273 conditionalTags phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Exceptions/MissingCheckedExceptionInFunctionThrowsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4175,10 +4225,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "conf/config.neon:259 conditionalTags phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%",
+  "registered_by": "conf/config.neon:275 conditionalTags phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Exceptions/MissingCheckedExceptionInMethodThrowsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4202,10 +4252,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "conf/config.neon:261 conditionalTags phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%",
+  "registered_by": "conf/config.neon:277 conditionalTags phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Exceptions/MissingCheckedExceptionInPropertyHookThrowsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4227,7 +4277,7 @@
   "registered_by": "src/Rules/Exceptions/NoncapturingCatchRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/NoncapturingCatchRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4249,7 +4299,7 @@
   "registered_by": "src/Rules/Exceptions/OverwrittenExitPointByFinallyRule.php:17 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/OverwrittenExitPointByFinallyRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4280,7 +4330,7 @@
   "registered_by": "src/Rules/Exceptions/ThrowExprTypeRule.php:21 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/ThrowExprTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4299,10 +4349,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Exceptions/ThrowExpressionRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Exceptions/ThrowExpressionRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/ThrowExpressionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4331,7 +4381,7 @@
   "registered_by": "src/Rules/Exceptions/ThrowsVoidFunctionWithExplicitThrowPointRule.php:20 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/ThrowsVoidFunctionWithExplicitThrowPointRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4360,7 +4410,7 @@
   "registered_by": "src/Rules/Exceptions/ThrowsVoidMethodWithExplicitThrowPointRule.php:20 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/ThrowsVoidMethodWithExplicitThrowPointRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4389,7 +4439,7 @@
   "registered_by": "src/Rules/Exceptions/ThrowsVoidPropertyHookWithExplicitThrowPointRule.php:22 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Exceptions/ThrowsVoidPropertyHookWithExplicitThrowPointRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4415,7 +4465,7 @@
   "registered_by": "conf/config.level4.neon:9 conditionalTags phpstan.rules.rule: %exceptions.check.tooWideThrowType%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Exceptions/TooWideFunctionThrowTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4441,7 +4491,7 @@
   "registered_by": "conf/config.level4.neon:11 conditionalTags phpstan.rules.rule: %exceptions.check.tooWideThrowType%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Exceptions/TooWideMethodThrowTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4467,7 +4517,7 @@
   "registered_by": "conf/config.level4.neon:13 conditionalTags phpstan.rules.rule: %exceptions.check.tooWideThrowType%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Exceptions/TooWidePropertyHookThrowTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4494,7 +4544,7 @@
   "registered_by": "src/Rules/Functions/ArrayFilterRule.php:23 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ArrayFilterRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4520,7 +4570,7 @@
   "registered_by": "src/Rules/Functions/ArrayValuesRule.php:22 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ArrayValuesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4601,7 +4651,7 @@
   "registered_by": "src/Rules/Functions/ArrowFunctionAttributesRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ArrowFunctionAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4623,7 +4673,7 @@
   "registered_by": "src/Rules/Functions/ArrowFunctionReturnNullsafeByRefRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ArrowFunctionReturnNullsafeByRefRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4657,7 +4707,7 @@
   "registered_by": "src/Rules/Functions/ArrowFunctionReturnTypeRule.php:19 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ArrowFunctionReturnTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4727,7 +4777,7 @@
   "registered_by": "src/Rules/Functions/CallCallablesRule.php:32 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/CallCallablesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4790,10 +4840,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Functions/CallToFunctionParametersRule.php:20 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Functions/CallToFunctionParametersRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/CallToFunctionParametersRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4815,10 +4865,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Functions/CallToFunctionStatementWithNoDiscardRule.php:19 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Functions/CallToFunctionStatementWithNoDiscardRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/CallToFunctionStatementWithNoDiscardRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4840,7 +4890,7 @@
   "registered_by": "src/Rules/Functions/CallToFunctionStatementWithoutSideEffectsRule.php:20 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/CallToFunctionStatementWithoutSideEffectsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4866,7 +4916,7 @@
   "registered_by": "src/Rules/Functions/CallToNonExistentFunctionRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/CallToNonExistentFunctionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -4932,7 +4982,7 @@
   "registered_by": "src/Rules/Functions/CallUserFuncRule.php:22 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/CallUserFuncRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5013,7 +5063,7 @@
   "registered_by": "src/Rules/Functions/ClosureAttributesRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ClosureAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5047,7 +5097,7 @@
   "registered_by": "src/Rules/Functions/ClosureReturnTypeRule.php:16 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ClosureReturnTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5069,7 +5119,7 @@
   "registered_by": "src/Rules/Functions/DefineParametersRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/DefineParametersRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5091,7 +5141,7 @@
   "registered_by": null,
   "registration_kind": "stubValidatorOnly",
   "source_file": "src/Rules/Functions/DuplicateFunctionDeclarationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5135,10 +5185,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Functions/ExistingClassesInArrowFunctionTypehintsRule.php:19 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Functions/ExistingClassesInArrowFunctionTypehintsRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ExistingClassesInArrowFunctionTypehintsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5184,7 +5234,7 @@
   "registered_by": "src/Rules/Functions/ExistingClassesInClosureTypehintsRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ExistingClassesInClosureTypehintsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5231,7 +5281,7 @@
   "registered_by": "src/Rules/Functions/ExistingClassesInTypehintsRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ExistingClassesInTypehintsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5253,7 +5303,7 @@
   "registered_by": "src/Rules/Functions/FilterVarRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/FilterVarRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5334,7 +5384,7 @@
   "registered_by": "src/Rules/Functions/FunctionAttributesRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/FunctionAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5368,10 +5418,10 @@
    "checkFunctionNameCase",
    "reportMaybes"
   ],
-  "registered_by": "src/Rules/Functions/FunctionCallableRule.php:25 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Functions/FunctionCallableRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/FunctionCallableRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5402,7 +5452,7 @@
   "registered_by": "src/Rules/Functions/ImplodeParameterCastableToStringRule.php:23 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ImplodeParameterCastableToStringRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5424,7 +5474,7 @@
   "registered_by": "src/Rules/Functions/IncompatibleArrowFunctionDefaultParameterTypeRule.php:20 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/IncompatibleArrowFunctionDefaultParameterTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5446,7 +5496,7 @@
   "registered_by": "src/Rules/Functions/IncompatibleClosureDefaultParameterTypeRule.php:20 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/IncompatibleClosureDefaultParameterTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5468,7 +5518,7 @@
   "registered_by": "src/Rules/Functions/IncompatibleDefaultParameterTypeRule.php:20 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/IncompatibleDefaultParameterTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5490,7 +5540,7 @@
   "registered_by": "src/Rules/Functions/InnerFunctionRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/InnerFunctionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5514,7 +5564,7 @@
   "registered_by": "src/Rules/Functions/InvalidLexicalVariablesInClosureUseRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/InvalidLexicalVariablesInClosureUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5537,7 +5587,7 @@
   "registered_by": "src/Rules/Functions/InvalidParameterNameRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/InvalidParameterNameRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5568,7 +5618,7 @@
   "registered_by": "src/Rules/Functions/MissingFunctionParameterTypehintRule.php:23 #[RegisteredRule(level: 6)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/MissingFunctionParameterTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5599,7 +5649,7 @@
   "registered_by": "src/Rules/Functions/MissingFunctionReturnTypehintRule.php:20 #[RegisteredRule(level: 6)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/MissingFunctionReturnTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5680,7 +5730,7 @@
   "registered_by": "src/Rules/Functions/ParamAttributesRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ParamAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5711,7 +5761,7 @@
   "registered_by": "conf/config.level5.neon:9 conditionalTags phpstan.rules.rule: %featureToggles.checkParameterCastableToNumberFunctions%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Functions/ParameterCastableToNumberRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5742,7 +5792,7 @@
   "registered_by": "src/Rules/Functions/ParameterCastableToStringRule.php:21 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ParameterCastableToStringRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5764,10 +5814,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Functions/PrintfArrayParametersRule.php:26 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Functions/PrintfArrayParametersRule.php:27 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/PrintfArrayParametersRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5798,7 +5848,7 @@
   "registered_by": "conf/config.level5.neon:11 conditionalTags phpstan.rules.rule: %featureToggles.checkPrintfParameterTypes%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Functions/PrintfParameterTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5822,10 +5872,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Functions/PrintfParametersRule.php:20 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Functions/PrintfParametersRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/PrintfParametersRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5849,7 +5899,7 @@
   "registered_by": "src/Rules/Functions/RandomIntParametersRule.php:23 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/RandomIntParametersRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5871,7 +5921,7 @@
   "registered_by": "src/Rules/Functions/RedefinedParametersRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/RedefinedParametersRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5893,7 +5943,29 @@
   "registered_by": "src/Rules/Functions/ReturnNullsafeByRefRule.php:16 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ReturnNullsafeByRefRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://phpstan.org/error-identifiers/return.byRefFinally",
+  "fqcn": "PHPStan\\Rules\\Functions\\ReturnTypeAfterFinallyRule",
+  "gated_by": null,
+  "helper_parameters": [],
+  "identifiers": [
+   "return.byRefFinally"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": 3,
+  "notes": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan",
+  "parameters": [],
+  "registered_by": "src/Rules/Functions/ReturnTypeAfterFinallyRule.php:28 #[RegisteredRule(level: 3)]",
+  "registration_kind": "RegisteredRule",
+  "source_file": "src/Rules/Functions/ReturnTypeAfterFinallyRule.php",
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5927,7 +5999,7 @@
   "registered_by": "src/Rules/Functions/ReturnTypeRule.php:17 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/ReturnTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5958,7 +6030,31 @@
   "registered_by": "src/Rules/Functions/SortParameterCastableToStringRule.php:30 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/SortParameterCastableToStringRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://phpstan.org/error-identifiers/sortArray.empty",
+  "fqcn": "PHPStan\\Rules\\Functions\\SortWithoutEffectRule",
+  "gated_by": "bleedingEdge (featureToggles.sortWithoutEffect)",
+  "helper_parameters": [],
+  "identifiers": [
+   "sortArray.empty",
+   "sortArray.list",
+   "sortArray.noop"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": 5,
+  "notes": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan",
+  "parameters": [],
+  "registered_by": "conf/config.level5.neon:15 conditionalTags phpstan.rules.rule: %featureToggles.sortWithoutEffect%",
+  "registration_kind": "conditionalTags",
+  "source_file": "src/Rules/Functions/SortWithoutEffectRule.php",
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -5971,7 +6067,7 @@
   ],
   "identifiers": [
    "closure.unusedUse",
-   "constructor.unusedParameter"
+   "closure.unusedUseFlow"
   ],
   "in_scope": true,
   "kind": "phpstan-rule",
@@ -5980,10 +6076,37 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Functions/UnusedClosureUsesRule.php:16 #[RegisteredRule(level: 1)]",
+  "registered_by": "src/Rules/Functions/UnusedClosureUsesRule.php:18 #[RegisteredRule(level: 1)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/UnusedClosureUsesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://phpstan.org/error-identifiers/constructor.unusedParameter",
+  "fqcn": "PHPStan\\Rules\\Functions\\UnusedFunctionParametersRule",
+  "gated_by": "bleedingEdge (featureToggles.unusedParameters)",
+  "helper_parameters": [],
+  "identifiers": [
+   "constructor.unusedParameter",
+   "constructor.unusedParameterFlow",
+   "function.unusedParameter",
+   "function.unusedParameterFlow",
+   "method.unusedParameter",
+   "method.unusedParameterFlow"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": 4,
+  "notes": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan",
+  "parameters": [],
+  "registered_by": "conf/config.level4.neon:23 conditionalTags phpstan.rules.rule: %featureToggles.unusedParameters%",
+  "registration_kind": "conditionalTags",
+  "source_file": "src/Rules/Functions/UnusedFunctionParametersRule.php",
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6005,7 +6128,7 @@
   "registered_by": "src/Rules/Functions/UselessFunctionReturnValueRule.php:21 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/UselessFunctionReturnValueRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6027,7 +6150,7 @@
   "registered_by": "src/Rules/Functions/VariadicParametersDeclarationRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Functions/VariadicParametersDeclarationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6064,7 +6187,7 @@
   "registered_by": "src/Rules/Generators/YieldFromTypeRule.php:22 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generators/YieldFromTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6089,7 +6212,7 @@
   "registered_by": "src/Rules/Generators/YieldInGeneratorRule.php:19 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generators/YieldInGeneratorRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6122,7 +6245,7 @@
   "registered_by": "src/Rules/Generators/YieldTypeRule.php:20 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generators/YieldTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6167,7 +6290,7 @@
   "registered_by": "src/Rules/Generics/ClassAncestorsRule.php:22 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/ClassAncestorsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6212,7 +6335,7 @@
   "registered_by": "src/Rules/Generics/ClassTemplateTypeRule.php:18 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/ClassTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6257,7 +6380,7 @@
   "registered_by": "src/Rules/Generics/EnumAncestorsRule.php:22 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/EnumAncestorsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6281,7 +6404,7 @@
   "registered_by": "src/Rules/Generics/EnumTemplateTypeRule.php:18 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/EnumTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6308,7 +6431,7 @@
   "registered_by": "src/Rules/Generics/FunctionSignatureVarianceRule.php:17 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/FunctionSignatureVarianceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6353,7 +6476,7 @@
   "registered_by": "src/Rules/Generics/FunctionTemplateTypeRule.php:19 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/FunctionTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6398,7 +6521,7 @@
   "registered_by": "src/Rules/Generics/InterfaceAncestorsRule.php:22 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/InterfaceAncestorsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6443,7 +6566,7 @@
   "registered_by": "src/Rules/Generics/InterfaceTemplateTypeRule.php:18 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/InterfaceTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6470,7 +6593,7 @@
   "registered_by": "src/Rules/Generics/MethodSignatureVarianceRule.php:17 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/MethodSignatureVarianceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6516,7 +6639,7 @@
   "registered_by": "src/Rules/Generics/MethodTagTemplateTypeRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/MethodTagTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6562,7 +6685,7 @@
   "registered_by": "src/Rules/Generics/MethodTagTemplateTypeTraitRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/MethodTagTemplateTypeTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6608,7 +6731,7 @@
   "registered_by": "src/Rules/Generics/MethodTemplateTypeRule.php:22 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/MethodTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6635,7 +6758,7 @@
   "registered_by": "src/Rules/Generics/PropertyVarianceRule.php:18 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/PropertyVarianceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6680,7 +6803,7 @@
   "registered_by": "src/Rules/Generics/TraitTemplateTypeRule.php:19 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/TraitTemplateTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6724,7 +6847,7 @@
   "registered_by": "src/Rules/Generics/UsedTraitsRule.php:23 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Generics/UsedTraitsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6746,7 +6869,7 @@
   "registered_by": "src/Rules/Ignore/IgnoreParseErrorRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Ignore/IgnoreParseErrorRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6771,7 +6894,7 @@
   "registered_by": "src/Rules/Keywords/ContinueBreakInLoopRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Keywords/ContinueBreakInLoopRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6794,7 +6917,7 @@
   "registered_by": "src/Rules/Keywords/DeclareStrictTypesRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Keywords/DeclareStrictTypesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6816,7 +6939,7 @@
   "registered_by": "src/Rules/Keywords/GotoUndefinedLabelRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Keywords/GotoUndefinedLabelRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6841,10 +6964,10 @@
    "currentWorkingDirectory",
    "featureToggles.magicDirInInclude"
   ],
-  "registered_by": "src/Rules/Keywords/RequireFileExistsRule.php:32 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Keywords/RequireFileExistsRule.php:30 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Keywords/RequireFileExistsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6866,7 +6989,7 @@
   "registered_by": "conf/config.level4.neon:15 conditionalTags phpstan.rules.rule: %featureToggles.unusedLabel%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Keywords/UnusedLabelRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6889,7 +7012,7 @@
   "registered_by": "src/Rules/Methods/AbstractMethodInNonAbstractClassRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/AbstractMethodInNonAbstractClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6911,7 +7034,7 @@
   "registered_by": "src/Rules/Methods/AbstractPrivateMethodRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/AbstractPrivateMethodRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -6961,6 +7084,7 @@
    "function.unresolvableReturnType",
    "function.void",
    "method.nameCase",
+   "method.nameNotString",
    "method.nonObject",
    "method.notFound",
    "method.private",
@@ -6981,10 +7105,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Methods/CallMethodsRule.php:23 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Methods/CallMethodsRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallMethodsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7006,7 +7130,7 @@
   "registered_by": "src/Rules/Methods/CallPrivateMethodThroughStaticRule.php:17 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallPrivateMethodThroughStaticRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7072,6 +7196,7 @@
    "outOfClass.static",
    "staticMethod.callToAbstract",
    "staticMethod.nameCase",
+   "staticMethod.nameNotString",
    "staticMethod.nonObject",
    "staticMethod.notFound",
    "staticMethod.private",
@@ -7089,10 +7214,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Methods/CallStaticMethodsRule.php:24 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Methods/CallStaticMethodsRule.php:25 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallStaticMethodsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7114,7 +7239,7 @@
   "registered_by": "src/Rules/Methods/CallToConstructorStatementWithoutSideEffectsRule.php:19 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallToConstructorStatementWithoutSideEffectsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7143,10 +7268,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Methods/CallToMethodStatementWithNoDiscardRule.php:20 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Methods/CallToMethodStatementWithNoDiscardRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallToMethodStatementWithNoDiscardRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7177,7 +7302,7 @@
   "registered_by": "src/Rules/Methods/CallToMethodStatementWithoutSideEffectsRule.php:22 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallToMethodStatementWithoutSideEffectsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7206,10 +7331,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Methods/CallToStaticMethodStatementWithNoDiscardRule.php:22 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Methods/CallToStaticMethodStatementWithNoDiscardRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallToStaticMethodStatementWithNoDiscardRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7240,7 +7365,7 @@
   "registered_by": "src/Rules/Methods/CallToStaticMethodStatementWithoutSideEffectsRule.php:25 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/CallToStaticMethodStatementWithoutSideEffectsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7262,7 +7387,7 @@
   "registered_by": "src/Rules/Methods/ConsistentConstructorDeclarationRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/ConsistentConstructorDeclarationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7291,7 +7416,7 @@
   "registered_by": "src/Rules/Methods/ConsistentConstructorRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/ConsistentConstructorRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7313,7 +7438,7 @@
   "registered_by": "src/Rules/Methods/ConstructorReturnTypeRule.php:16 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/ConstructorReturnTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7360,7 +7485,7 @@
   "registered_by": "src/Rules/Methods/ExistingClassesInTypehintsRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/ExistingClassesInTypehintsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7382,7 +7507,7 @@
   "registered_by": "src/Rules/Methods/FinalPrivateMethodRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/FinalPrivateMethodRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7404,7 +7529,7 @@
   "registered_by": "src/Rules/Methods/IncompatibleDefaultParameterTypeRule.php:20 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/IncompatibleDefaultParameterTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7485,7 +7610,7 @@
   "registered_by": "src/Rules/Methods/MethodAttributesRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MethodAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7507,7 +7632,7 @@
   "registered_by": "src/Rules/Methods/MethodCallWithPossiblyRenamedNamedArgumentRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MethodCallWithPossiblyRenamedNamedArgumentRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7544,10 +7669,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Methods/MethodCallableRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Methods/MethodCallableRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MethodCallableRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7578,7 +7703,7 @@
   "registered_by": null,
   "registration_kind": "helper",
   "source_file": "src/Rules/Methods/MethodSignatureRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7600,7 +7725,7 @@
   "registered_by": "src/Rules/Methods/MethodVisibilityInInterfaceRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MethodVisibilityInInterfaceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7622,7 +7747,7 @@
   "registered_by": "src/Rules/Methods/MissingMagicSerializationMethodsRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MissingMagicSerializationMethodsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7644,7 +7769,7 @@
   "registered_by": "src/Rules/Methods/MissingMethodImplementationRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MissingMethodImplementationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7675,7 +7800,7 @@
   "registered_by": "src/Rules/Methods/MissingMethodParameterTypehintRule.php:23 #[RegisteredRule(level: 6)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MissingMethodParameterTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7706,7 +7831,7 @@
   "registered_by": "src/Rules/Methods/MissingMethodReturnTypehintRule.php:20 #[RegisteredRule(level: 6)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MissingMethodReturnTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7736,7 +7861,7 @@
   "registered_by": "src/Rules/Methods/MissingMethodSelfOutTypeRule.php:19 #[RegisteredRule(level: 6)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/MissingMethodSelfOutTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7758,10 +7883,10 @@
    "tips.treatPhpDocTypesAsCertain",
    "treatPhpDocTypesAsCertain"
   ],
-  "registered_by": "src/Rules/Methods/NullsafeMethodCallRule.php:17 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/Methods/NullsafeMethodCallRule.php:18 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/NullsafeMethodCallRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7776,6 +7901,7 @@
    "method.childReturnType",
    "method.impure",
    "method.impureOverridePureUnlessCallable",
+   "method.impureOverridePureUnlessParameterPassed",
    "method.missingOverride",
    "method.nonStatic",
    "method.override",
@@ -7803,10 +7929,10 @@
    "checkMissingOverrideMethodAttribute",
    "checkPhpDocMethodSignatures"
   ],
-  "registered_by": "src/Rules/Methods/OverridingMethodRule.php:31 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Methods/OverridingMethodRule.php:32 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/OverridingMethodRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7840,7 +7966,7 @@
   "registered_by": "src/Rules/Methods/ReturnTypeRule.php:30 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/ReturnTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7890,10 +8016,37 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Methods/StaticMethodCallableRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Methods/StaticMethodCallableRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Methods/StaticMethodCallableRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://phpstan.org/error-identifiers/constructor.unusedParameter",
+  "fqcn": "PHPStan\\Rules\\Methods\\UnusedMethodParametersRule",
+  "gated_by": "bleedingEdge (featureToggles.unusedParameters)",
+  "helper_parameters": [],
+  "identifiers": [
+   "constructor.unusedParameter",
+   "constructor.unusedParameterFlow",
+   "function.unusedParameter",
+   "function.unusedParameterFlow",
+   "method.unusedParameter",
+   "method.unusedParameterFlow"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": 4,
+  "notes": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan",
+  "parameters": [],
+  "registered_by": "conf/config.level4.neon:25 conditionalTags phpstan.rules.rule: %featureToggles.unusedParameters%",
+  "registration_kind": "conditionalTags",
+  "source_file": "src/Rules/Methods/UnusedMethodParametersRule.php",
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7919,7 +8072,7 @@
   "registered_by": "src/Rules/Missing/MissingReturnRule.php:29 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Missing/MissingReturnRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7947,7 +8100,7 @@
   "registered_by": "src/Rules/Names/UsedNamesRule.php:26 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Names/UsedNamesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -7983,7 +8136,7 @@
   "registered_by": "src/Rules/Namespaces/ExistingNamesInGroupUseRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Namespaces/ExistingNamesInGroupUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8019,7 +8172,7 @@
   "registered_by": "src/Rules/Namespaces/ExistingNamesInUseRule.php:23 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Namespaces/ExistingNamesInUseRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8041,7 +8194,7 @@
   "registered_by": "src/Rules/Operators/BacktickRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Operators/BacktickRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8065,7 +8218,7 @@
   "registered_by": "src/Rules/Operators/InvalidAssignVarRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Operators/InvalidAssignVarRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8099,7 +8252,7 @@
   "registered_by": "src/Rules/Operators/InvalidBinaryOperationRule.php:25 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Operators/InvalidBinaryOperationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8140,7 +8293,7 @@
   "registered_by": "src/Rules/Operators/InvalidComparisonOperationRule.php:31 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Operators/InvalidComparisonOperationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8180,7 +8333,7 @@
   "registered_by": "src/Rules/Operators/InvalidIncDecOperationRule.php:32 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Operators/InvalidIncDecOperationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8211,7 +8364,7 @@
   "registered_by": "src/Rules/Operators/InvalidUnaryOperationRule.php:20 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Operators/InvalidUnaryOperationRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8242,7 +8395,7 @@
   "registered_by": "src/Rules/Operators/PipeOperatorRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Operators/PipeOperatorRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8294,7 +8447,7 @@
   "registered_by": "src/Rules/PhpDoc/FunctionAssertRule.php:16 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/FunctionAssertRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8322,7 +8475,7 @@
   "registered_by": "src/Rules/PhpDoc/FunctionConditionalReturnTypeRule.php:16 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/FunctionConditionalReturnTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8353,7 +8506,7 @@
   "registered_by": "src/Rules/PhpDoc/IncompatibleClassConstantPhpDocTypeRule.php:25 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/IncompatibleClassConstantPhpDocTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8380,7 +8533,7 @@
   "registered_by": "src/Rules/PhpDoc/IncompatibleParamImmediatelyInvokedCallableRule.php:23 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/IncompatibleParamImmediatelyInvokedCallableRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8433,7 +8586,7 @@
   "registered_by": "src/Rules/PhpDoc/IncompatiblePhpDocTypeRule.php:20 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/IncompatiblePhpDocTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8485,7 +8638,7 @@
   "registered_by": "src/Rules/PhpDoc/IncompatiblePropertyHookPhpDocTypeRule.php:17 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/IncompatiblePropertyHookPhpDocTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8530,10 +8683,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/PhpDoc/IncompatiblePropertyPhpDocTypeRule.php:22 #[RegisteredRule(level: 2)]",
+  "registered_by": "src/Rules/PhpDoc/IncompatiblePropertyPhpDocTypeRule.php:23 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/IncompatiblePropertyPhpDocTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8565,7 +8718,7 @@
   "registered_by": "src/Rules/PhpDoc/IncompatibleSelfOutTypeRule.php:22 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/IncompatibleSelfOutTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8589,7 +8742,7 @@
   "registered_by": "src/Rules/PhpDoc/InvalidPHPStanDocTagRule.php:23 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/InvalidPHPStanDocTagRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8613,7 +8766,7 @@
   "registered_by": "src/Rules/PhpDoc/InvalidPhpDocTagValueRule.php:25 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/InvalidPhpDocTagValueRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8661,7 +8814,7 @@
   "registered_by": "src/Rules/PhpDoc/InvalidPhpDocVarTagTypeRule.php:27 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/InvalidPhpDocVarTagTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8682,10 +8835,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/PhpDoc/InvalidThrowsPhpDocValueRule.php:25 #[RegisteredRule(level: 2)]",
+  "registered_by": "src/Rules/PhpDoc/InvalidThrowsPhpDocValueRule.php:27 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/InvalidThrowsPhpDocValueRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8737,7 +8890,7 @@
   "registered_by": "src/Rules/PhpDoc/MethodAssertRule.php:16 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/MethodAssertRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8765,7 +8918,7 @@
   "registered_by": "src/Rules/PhpDoc/MethodConditionalReturnTypeRule.php:16 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/MethodConditionalReturnTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8810,7 +8963,7 @@
   "registered_by": "src/Rules/PhpDoc/RequireExtendsDefinitionClassRule.php:18 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/RequireExtendsDefinitionClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8851,7 +9004,7 @@
   "registered_by": "src/Rules/PhpDoc/RequireExtendsDefinitionTraitRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/RequireExtendsDefinitionTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8879,7 +9032,7 @@
   "registered_by": "src/Rules/PhpDoc/RequireImplementsDefinitionClassRule.php:18 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/RequireImplementsDefinitionClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8919,7 +9072,7 @@
   "registered_by": "src/Rules/PhpDoc/RequireImplementsDefinitionTraitRule.php:25 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/RequireImplementsDefinitionTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8956,7 +9109,7 @@
   "registered_by": "src/Rules/PhpDoc/SealedDefinitionClassRule.php:25 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/SealedDefinitionClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -8980,7 +9133,7 @@
   "registered_by": "src/Rules/PhpDoc/SealedDefinitionTraitRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/SealedDefinitionTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9007,7 +9160,7 @@
   "registered_by": "src/Rules/PhpDoc/VarTagChangedExpressionTypeRule.php:14 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/VarTagChangedExpressionTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9039,7 +9192,7 @@
   "registered_by": "src/Rules/PhpDoc/WrongVariableNameInVarTagRule.php:34 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/PhpDoc/WrongVariableNameInVarTagRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9061,7 +9214,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/ArrayDimCastRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9083,7 +9236,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/FunctionNeverRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9105,7 +9258,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/LiteralArrayKeyCastRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9127,7 +9280,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/MethodNeverRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9149,7 +9302,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/NoPhpCodeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9171,7 +9324,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/NotAnalysedTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9193,7 +9346,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/PhpdocCommentRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9215,29 +9368,7 @@
   "registered_by": null,
   "registration_kind": "playground",
   "source_file": "src/Rules/Playground/PromoteParameterRule.php",
-  "version": "2.2.7"
- },
- {
-  "deprecated": false,
-  "deprecation_evidence": null,
-  "docs_url": "https://phpstan.org/error-identifiers/phpstanPlayground.staticWithoutType",
-  "fqcn": "PHPStan\\Rules\\Playground\\StaticVarWithoutTypeRule",
-  "gated_by": null,
-  "helper_parameters": [],
-  "identifiers": [
-   "phpstanPlayground.staticWithoutType"
-  ],
-  "in_scope": false,
-  "kind": "phpstan-rule",
-  "level": null,
-  "notes": null,
-  "out_of_scope_reason": "playground-only (phpstan.org playground); registered by no config",
-  "package": "phpstan/phpstan",
-  "parameters": [],
-  "registered_by": null,
-  "registration_kind": "playground",
-  "source_file": "src/Rules/Playground/StaticVarWithoutTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9259,7 +9390,7 @@
   "registered_by": "src/Rules/Properties/AccessPrivatePropertyThroughStaticRule.php:16 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/AccessPrivatePropertyThroughStaticRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9302,7 +9433,7 @@
   "registered_by": "src/Rules/Properties/AccessPropertiesInAssignRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/AccessPropertiesInAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9345,7 +9476,7 @@
   "registered_by": "src/Rules/Properties/AccessPropertiesRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/AccessPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9376,6 +9507,7 @@
    "outOfClass.self",
    "outOfClass.static",
    "property.staticAccess",
+   "staticProperty.nameNotString",
    "staticProperty.nonObject",
    "staticProperty.notFound",
    "staticProperty.private",
@@ -9394,7 +9526,7 @@
   "registered_by": "src/Rules/Properties/AccessStaticPropertiesInAssignRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/AccessStaticPropertiesInAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9425,6 +9557,7 @@
    "outOfClass.self",
    "outOfClass.static",
    "property.staticAccess",
+   "staticProperty.nameNotString",
    "staticProperty.nonObject",
    "staticProperty.notFound",
    "staticProperty.private",
@@ -9443,7 +9576,7 @@
   "registered_by": "src/Rules/Properties/AccessStaticPropertiesRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/AccessStaticPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9474,7 +9607,7 @@
   "registered_by": "src/Rules/Properties/DefaultValueTypesAssignedToPropertiesRule.php:18 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/DefaultValueTypesAssignedToPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9512,7 +9645,7 @@
   "registered_by": "src/Rules/Properties/ExistingClassesInPropertiesRule.php:26 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ExistingClassesInPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9558,7 +9691,7 @@
   "registered_by": "src/Rules/Properties/ExistingClassesInPropertyHookTypehintsRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ExistingClassesInPropertyHookTypehintsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9580,7 +9713,7 @@
   "registered_by": "src/Rules/Properties/GetNonVirtualPropertyHookReadRule.php:20 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/GetNonVirtualPropertyHookReadRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9602,7 +9735,7 @@
   "registered_by": "src/Rules/Properties/InvalidCallablePropertyTypeRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/InvalidCallablePropertyTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9633,7 +9766,7 @@
   "registered_by": "src/Rules/Properties/MissingPropertyTypehintRule.php:20 #[RegisteredRule(level: 6)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/MissingPropertyTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9656,7 +9789,7 @@
   "registered_by": "src/Rules/Properties/MissingReadOnlyByPhpDocPropertyAssignRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/MissingReadOnlyByPhpDocPropertyAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9679,7 +9812,7 @@
   "registered_by": "src/Rules/Properties/MissingReadOnlyPropertyAssignRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/MissingReadOnlyPropertyAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9701,10 +9834,10 @@
    "tips.treatPhpDocTypesAsCertain",
    "treatPhpDocTypesAsCertain"
   ],
-  "registered_by": "src/Rules/Properties/NullsafePropertyFetchRule.php:17 #[RegisteredRule(level: 4)]",
+  "registered_by": "src/Rules/Properties/NullsafePropertyFetchRule.php:18 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/NullsafePropertyFetchRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9746,7 +9879,7 @@
   "registered_by": "src/Rules/Properties/OverridingPropertyRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/OverridingPropertyRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9773,10 +9906,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Properties/PropertiesInInterfaceRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Properties/PropertiesInInterfaceRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/PropertiesInInterfaceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9798,7 +9931,7 @@
   "registered_by": "src/Rules/Properties/PropertyAssignRefRule.php:16 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/PropertyAssignRefRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9877,10 +10010,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Properties/PropertyAttributesRule.php:21 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Properties/PropertyAttributesRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/PropertyAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9961,7 +10094,7 @@
   "registered_by": "src/Rules/Properties/PropertyHookAttributesRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/PropertyHookAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -9993,10 +10126,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Properties/PropertyInClassRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Properties/PropertyInClassRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/PropertyInClassRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10018,7 +10151,7 @@
   "registered_by": "src/Rules/Properties/ReadOnlyByPhpDocPropertyAssignRefRule.php:15 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ReadOnlyByPhpDocPropertyAssignRefRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10042,7 +10175,7 @@
   "registered_by": "src/Rules/Properties/ReadOnlyByPhpDocPropertyAssignRule.php:23 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ReadOnlyByPhpDocPropertyAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10064,7 +10197,7 @@
   "registered_by": "src/Rules/Properties/ReadOnlyByPhpDocPropertyRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ReadOnlyByPhpDocPropertyRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10086,7 +10219,7 @@
   "registered_by": "src/Rules/Properties/ReadOnlyPropertyAssignRefRule.php:15 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ReadOnlyPropertyAssignRefRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10111,7 +10244,7 @@
   "registered_by": "src/Rules/Properties/ReadOnlyPropertyAssignRule.php:24 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ReadOnlyPropertyAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10133,10 +10266,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Properties/ReadOnlyPropertyRule.php:16 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Properties/ReadOnlyPropertyRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ReadOnlyPropertyRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10168,7 +10301,7 @@
   "registered_by": "src/Rules/Properties/ReadingWriteOnlyPropertiesRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/ReadingWriteOnlyPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10190,7 +10323,7 @@
   "registered_by": "src/Rules/Properties/SetNonVirtualPropertyHookAssignRule.php:19 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/SetNonVirtualPropertyHookAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10223,7 +10356,7 @@
   "registered_by": "src/Rules/Properties/SetPropertyHookParameterRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/SetPropertyHookParameterRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10254,7 +10387,7 @@
   "registered_by": "src/Rules/Properties/TypesAssignedToPropertiesRule.php:25 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/TypesAssignedToPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10273,10 +10406,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "conf/config.neon:263 conditionalTags phpstan.rules.rule: %checkUninitializedProperties%",
+  "registered_by": "conf/config.neon:279 conditionalTags phpstan.rules.rule: %checkUninitializedProperties%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Properties/UninitializedPropertyRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10308,7 +10441,7 @@
   "registered_by": "src/Rules/Properties/WritingToReadOnlyPropertiesRule.php:18 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Properties/WritingToReadOnlyPropertiesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10340,6 +10473,7 @@
    "impure.yieldFrom",
    "impureFunction.pure",
    "impureMethod.pure",
+   "impurePropertyHook.pure",
    "possiblyImpure.betweenPhpTags",
    "possiblyImpure.die",
    "possiblyImpure.echo",
@@ -10360,12 +10494,21 @@
    "possiblyImpure.superglobal",
    "possiblyImpure.yield",
    "possiblyImpure.yieldFrom",
+   "pureFunction.nonOptionalParameterPassed",
    "pureFunction.parameterByRef",
+   "pureFunction.parameterPassedNotByRef",
    "pureFunction.redundantUnlessCallable",
    "pureFunction.void",
+   "pureMethod.nonOptionalParameterPassed",
    "pureMethod.parameterByRef",
+   "pureMethod.parameterPassedNotByRef",
    "pureMethod.redundantUnlessCallable",
    "pureMethod.void",
+   "purePropertyHook.nonOptionalParameterPassed",
+   "purePropertyHook.parameterByRef",
+   "purePropertyHook.parameterPassedNotByRef",
+   "purePropertyHook.redundantUnlessCallable",
+   "purePropertyHook.void",
    "void.pure"
   ],
   "in_scope": true,
@@ -10380,7 +10523,7 @@
   "registered_by": "src/Rules/Pure/PureFunctionRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Pure/PureFunctionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10412,6 +10555,7 @@
    "impure.yieldFrom",
    "impureFunction.pure",
    "impureMethod.pure",
+   "impurePropertyHook.pure",
    "possiblyImpure.betweenPhpTags",
    "possiblyImpure.die",
    "possiblyImpure.echo",
@@ -10432,12 +10576,21 @@
    "possiblyImpure.superglobal",
    "possiblyImpure.yield",
    "possiblyImpure.yieldFrom",
+   "pureFunction.nonOptionalParameterPassed",
    "pureFunction.parameterByRef",
+   "pureFunction.parameterPassedNotByRef",
    "pureFunction.redundantUnlessCallable",
    "pureFunction.void",
+   "pureMethod.nonOptionalParameterPassed",
    "pureMethod.parameterByRef",
+   "pureMethod.parameterPassedNotByRef",
    "pureMethod.redundantUnlessCallable",
    "pureMethod.void",
+   "purePropertyHook.nonOptionalParameterPassed",
+   "purePropertyHook.parameterByRef",
+   "purePropertyHook.parameterPassedNotByRef",
+   "purePropertyHook.redundantUnlessCallable",
+   "purePropertyHook.void",
    "void.pure"
   ],
   "in_scope": true,
@@ -10452,7 +10605,87 @@
   "registered_by": "src/Rules/Pure/PureMethodRule.php:15 #[RegisteredRule(level: 2)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Pure/PureMethodRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://phpstan.org/error-identifiers/impure.betweenPhpTags",
+  "fqcn": "PHPStan\\Rules\\Pure\\PurePropertyHookRule",
+  "gated_by": null,
+  "helper_parameters": [],
+  "identifiers": [
+   "impure.betweenPhpTags",
+   "impure.die",
+   "impure.echo",
+   "impure.eval",
+   "impure.exit",
+   "impure.functionCall",
+   "impure.global",
+   "impure.include",
+   "impure.methodCall",
+   "impure.new",
+   "impure.print",
+   "impure.propertyAssign",
+   "impure.propertyAssignByRef",
+   "impure.propertyUnset",
+   "impure.require",
+   "impure.static",
+   "impure.staticPropertyAccess",
+   "impure.superglobal",
+   "impure.yield",
+   "impure.yieldFrom",
+   "impureFunction.pure",
+   "impureMethod.pure",
+   "impurePropertyHook.pure",
+   "possiblyImpure.betweenPhpTags",
+   "possiblyImpure.die",
+   "possiblyImpure.echo",
+   "possiblyImpure.eval",
+   "possiblyImpure.exit",
+   "possiblyImpure.functionCall",
+   "possiblyImpure.global",
+   "possiblyImpure.include",
+   "possiblyImpure.methodCall",
+   "possiblyImpure.new",
+   "possiblyImpure.print",
+   "possiblyImpure.propertyAssign",
+   "possiblyImpure.propertyAssignByRef",
+   "possiblyImpure.propertyUnset",
+   "possiblyImpure.require",
+   "possiblyImpure.static",
+   "possiblyImpure.staticPropertyAccess",
+   "possiblyImpure.superglobal",
+   "possiblyImpure.yield",
+   "possiblyImpure.yieldFrom",
+   "pureFunction.nonOptionalParameterPassed",
+   "pureFunction.parameterByRef",
+   "pureFunction.parameterPassedNotByRef",
+   "pureFunction.redundantUnlessCallable",
+   "pureFunction.void",
+   "pureMethod.nonOptionalParameterPassed",
+   "pureMethod.parameterByRef",
+   "pureMethod.parameterPassedNotByRef",
+   "pureMethod.redundantUnlessCallable",
+   "pureMethod.void",
+   "purePropertyHook.nonOptionalParameterPassed",
+   "purePropertyHook.parameterByRef",
+   "purePropertyHook.parameterPassedNotByRef",
+   "purePropertyHook.redundantUnlessCallable",
+   "purePropertyHook.void",
+   "void.pure"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": 2,
+  "notes": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan",
+  "parameters": [],
+  "registered_by": "src/Rules/Pure/PurePropertyHookRule.php:17 #[RegisteredRule(level: 2)]",
+  "registration_kind": "RegisteredRule",
+  "source_file": "src/Rules/Pure/PurePropertyHookRule.php",
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10474,7 +10707,7 @@
   "registered_by": "src/Rules/Regexp/RegularExpressionPatternRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Regexp/RegularExpressionPatternRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10493,10 +10726,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Regexp/RegularExpressionQuotingRule.php:31 #[RegisteredRule(level: 5)]",
+  "registered_by": "src/Rules/Regexp/RegularExpressionQuotingRule.php:32 #[RegisteredRule(level: 5)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Regexp/RegularExpressionQuotingRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10534,7 +10767,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedClassConstantUsageRule.php:22 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedClassConstantUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10559,7 +10792,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedFunctionCallableUsageRule.php:19 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedFunctionCallableUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10584,7 +10817,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedFunctionUsageRule.php:18 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedFunctionUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10613,7 +10846,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedMethodCallableUsageRule.php:19 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedMethodCallableUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10642,7 +10875,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedMethodUsageRule.php:19 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedMethodUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10671,7 +10904,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedPropertyUsageRule.php:18 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedPropertyUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10709,7 +10942,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedStaticMethodCallableUsageRule.php:23 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedStaticMethodCallableUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10747,7 +10980,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedStaticMethodUsageRule.php:22 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedStaticMethodUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10785,7 +11018,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedStaticPropertyUsageRule.php:22 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedStaticPropertyUsageRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10814,7 +11047,7 @@
   "registered_by": "src/Rules/RestrictedUsage/RestrictedUsageOfDeprecatedStringCastRule.php:18 #[AutowiredService] (auto-tagged phpstan.rules.rule, registered at every level)",
   "registration_kind": "AutowiredService",
   "source_file": "src/Rules/RestrictedUsage/RestrictedUsageOfDeprecatedStringCastRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10852,7 +11085,7 @@
   "registered_by": "src/Rules/TooWideTypehints/TooWideArrowFunctionReturnTypehintRule.php:15 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/TooWideTypehints/TooWideArrowFunctionReturnTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10890,7 +11123,7 @@
   "registered_by": "src/Rules/TooWideTypehints/TooWideClosureReturnTypehintRule.php:17 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/TooWideTypehints/TooWideClosureReturnTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10928,7 +11161,7 @@
   "registered_by": "src/Rules/TooWideTypehints/TooWideFunctionParameterOutTypeRule.php:15 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/TooWideTypehints/TooWideFunctionParameterOutTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -10966,7 +11199,7 @@
   "registered_by": "src/Rules/TooWideTypehints/TooWideFunctionReturnTypehintRule.php:15 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/TooWideTypehints/TooWideFunctionReturnTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11006,7 +11239,7 @@
   "registered_by": "src/Rules/TooWideTypehints/TooWideMethodParameterOutTypeRule.php:16 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/TooWideTypehints/TooWideMethodParameterOutTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11046,7 +11279,7 @@
   "registered_by": "src/Rules/TooWideTypehints/TooWideMethodReturnTypehintRule.php:16 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/TooWideTypehints/TooWideMethodReturnTypehintRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11084,7 +11317,7 @@
   "registered_by": "src/Rules/TooWideTypehints/TooWidePropertyTypeRule.php:19 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/TooWideTypehints/TooWidePropertyTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11111,7 +11344,7 @@
   "registered_by": "src/Rules/Traits/ConflictingTraitConstantsRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Traits/ConflictingTraitConstantsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11130,10 +11363,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Traits/ConstantsInTraitsRule.php:15 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Traits/ConstantsInTraitsRule.php:14 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Traits/ConstantsInTraitsRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11155,7 +11388,7 @@
   "registered_by": "src/Rules/Traits/NotAnalysedTraitRule.php:17 #[RegisteredRule(level: 4)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Traits/NotAnalysedTraitRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11235,10 +11468,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Traits/TraitAttributesRule.php:21 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Traits/TraitAttributesRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Traits/TraitAttributesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11267,7 +11500,7 @@
   "registered_by": "src/Rules/Types/InvalidTypesInUnionRule.php:19 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Types/InvalidTypesInUnionRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11289,7 +11522,7 @@
   "registered_by": "conf/config.level1.neon:15 conditionalTags phpstan.rules.rule: %featureToggles.assignToByRefForeachExpr%",
   "registration_kind": "conditionalTags",
   "source_file": "src/Rules/Variables/AssignToByRefExprFromForeachRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11313,7 +11546,7 @@
   "registered_by": "src/Rules/Variables/CompactVariablesRule.php:21 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/CompactVariablesRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11323,6 +11556,7 @@
   "gated_by": null,
   "helper_parameters": [],
   "identifiers": [
+   "variable.nameNotString",
    "variable.undefined"
   ],
   "in_scope": true,
@@ -11335,10 +11569,10 @@
    "checkMaybeUndefinedVariables",
    "cliArgumentsVariablesRegistered"
   ],
-  "registered_by": "src/Rules/Variables/DefinedVariableRule.php:23 #[RegisteredRule(level: 0)]",
+  "registered_by": "src/Rules/Variables/DefinedVariableRule.php:24 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/DefinedVariableRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11377,10 +11611,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Variables/EmptyRule.php:15 #[RegisteredRule(level: 1)]",
+  "registered_by": "src/Rules/Variables/EmptyRule.php:19 #[RegisteredRule(level: 1)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/EmptyRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11402,7 +11636,7 @@
   "registered_by": "src/Rules/Variables/InvalidVariableAssignRule.php:17 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/InvalidVariableAssignRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11441,10 +11675,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Variables/IssetRule.php:15 #[RegisteredRule(level: 1)]",
+  "registered_by": "src/Rules/Variables/IssetRule.php:19 #[RegisteredRule(level: 1)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/IssetRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11486,10 +11720,10 @@
   "parameters": [
    "featureToggles.unnecessaryNullCoalesce"
   ],
-  "registered_by": "src/Rules/Variables/NullCoalesceRule.php:19 #[RegisteredRule(level: 1)]",
+  "registered_by": "src/Rules/Variables/NullCoalesceRule.php:26 #[RegisteredRule(level: 1)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/NullCoalesceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11520,10 +11754,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Variables/ParameterOutAssignedTypeRule.php:23 #[RegisteredRule(level: 3)]",
+  "registered_by": "src/Rules/Variables/ParameterOutAssignedTypeRule.php:16 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/ParameterOutAssignedTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11542,7 +11776,8 @@
   ],
   "identifiers": [
    "class.notFound",
-   "paramOut.type"
+   "paramOut.type",
+   "parameterByRef.type"
   ],
   "in_scope": true,
   "kind": "phpstan-rule",
@@ -11551,10 +11786,10 @@
   "out_of_scope_reason": null,
   "package": "phpstan/phpstan",
   "parameters": [],
-  "registered_by": "src/Rules/Variables/ParameterOutExecutionEndTypeRule.php:27 #[RegisteredRule(level: 3)]",
+  "registered_by": "src/Rules/Variables/ParameterOutExecutionEndTypeRule.php:21 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/ParameterOutExecutionEndTypeRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11576,7 +11811,7 @@
   "registered_by": "src/Rules/Variables/ThisInGlobalStatementRule.php:16 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/ThisInGlobalStatementRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11598,7 +11833,7 @@
   "registered_by": "src/Rules/Variables/ThisInStaticStatementRule.php:15 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/ThisInStaticStatementRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11625,7 +11860,7 @@
   "registered_by": "src/Rules/Variables/UnsetRule.php:20 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/UnsetRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11656,7 +11891,7 @@
   "registered_by": "src/Rules/Variables/VariableCloningRule.php:22 #[RegisteredRule(level: 3)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Variables/VariableCloningRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  },
  {
   "deprecated": false,
@@ -11679,6 +11914,6 @@
   "registered_by": "src/Rules/Whitespace/FileWhitespaceRule.php:22 #[RegisteredRule(level: 0)]",
   "registration_kind": "RegisteredRule",
   "source_file": "src/Rules/Whitespace/FileWhitespaceRule.php",
-  "version": "2.2.7"
+  "version": "2.3.1"
  }
 ]

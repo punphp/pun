@@ -7,14 +7,15 @@
                 "Rules/data/CorrectModelInstantiation.php",
                 "Rules/data/ModelMakeTrait.php"
             ],
-            "errors": [],
-            "general": []
+            "scanned": [],
+            "errors": []
         },
         {
             "method": "testModelMake",
             "files": [
                 "Rules/data/ModelMake.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/data/ModelMake.php",
@@ -30,8 +31,7 @@
                     "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
                     "tip": null
                 }
-            ],
-            "general": []
+            ]
         },
         {
             "method": "testReportsModelMakeCallsInTraitRatherThanClass",
@@ -39,6 +39,7 @@
                 "Rules/data/ModelMake.php",
                 "Rules/data/ModelMakeTrait.php"
             ],
+            "scanned": [],
             "errors": [
                 {
                     "file": "Rules/data/ModelMake.php",
@@ -61,8 +62,7 @@
                     "message": "Called 'Model::make()' which performs unnecessary work, use 'new Model()'.",
                     "tip": null
                 }
-            ],
-            "general": []
+            ]
         }
     ]
 }

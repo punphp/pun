@@ -148,6 +148,24 @@
             "general": []
         },
         {
+            "method": "testBug15223",
+            "files": [
+                "Comparison/data/bug-15223.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15223TreatPhpDocTypesAsCertain",
+            "files": [
+                "Comparison/data/bug-15223.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
             "method": "testReportPhpDoc",
             "files": [
                 "Comparison/data/impossible-method-call-not-phpdoc.php"
@@ -389,7 +407,31 @@
                     "file": "Comparison/data/bug-10337.php",
                     "line": 59,
                     "identifier": "method.void",
-                    "message": "Result of method Bug10337\\App@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Comparison/data/bug-10337.php:52::callExit() (void) is used.",
+                    "message": "Result of method Bug10337\\App@anonymous/bug-10337.php:52::callExit() (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15328",
+            "files": [
+                "Comparison/data/bug-15328-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-15328-method.php",
+                    "line": 69,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method Bug15328Method\\Assert::assertSame() with int and int will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-15328-method.php",
+                    "line": 75,
+                    "identifier": "staticMethod.alreadyNarrowedType",
+                    "message": "Call to static method Bug15328Method\\Assert::assertSame() with int and int will always evaluate to true.",
                     "tip": null
                 }
             ],

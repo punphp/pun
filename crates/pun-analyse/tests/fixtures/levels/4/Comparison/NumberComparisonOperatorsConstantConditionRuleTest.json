@@ -465,7 +465,7 @@
                     "line": 8,
                     "identifier": "if.alwaysTrue",
                     "message": "If condition is always true.",
-                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                    "tip": null
                 }
             ],
             "general": []
@@ -547,15 +547,6 @@
                     "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
                 }
             ],
-            "general": []
-        },
-        {
-            "method": "testBug13984",
-            "files": [
-                "Comparison/data/bug-13984.php"
-            ],
-            "scan": [],
-            "errors": [],
             "general": []
         },
         {

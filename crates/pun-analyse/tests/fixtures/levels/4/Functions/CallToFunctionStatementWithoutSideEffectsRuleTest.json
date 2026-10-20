@@ -172,6 +172,47 @@
             "general": []
         },
         {
+            "method": "testErrorThrows",
+            "files": [
+                "Functions/data/function-call-statement-no-side-effects-error-throws.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-error-throws.php",
+                    "line": 9,
+                    "identifier": "throws.unusedType",
+                    "message": "Function FunctionCallStatementNoSideEffectsErrorThrows\\pureAndThrowsError() has TypeError in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-error-throws.php",
+                    "line": 15,
+                    "identifier": "throws.unusedType",
+                    "message": "Function FunctionCallStatementNoSideEffectsErrorThrows\\pureAndThrowsException() has Exception in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testThrowExprInCallbackArgument",
+            "files": [
+                "Functions/data/function-call-statement-no-side-effects-throw-expr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-call-statement-no-side-effects-throw-expr.php",
+                    "line": 21,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_map() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
             "method": "testBug4455",
             "files": [
                 "Functions/data/bug-4455.php"

@@ -1,4 +1,4 @@
-//! PHPStan 2.2.7's reflection of built-in functions, classes and constants (`data/symbols.json`, written by
+//! PHPStan 2.3.1's reflection of built-in functions, classes and constants (`data/symbols.json`, written by
 //! `scripts/export-phpstan-symbols.php`). Types are kept as the strings PHPStan's `toPhpDocNode()` printed, in
 //! the syntax [`crate::resolve`] reads back.
 

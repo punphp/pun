@@ -1373,6 +1373,60 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testDestructuringChecksAgainstNativeOffsetType",
+            "files": [
+                "PhpDoc/data/var-tag-destructuring-native.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnconstrainedQueryResult",
+            "files": [
+                "Methods/data/unconstrained-query-result.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 28,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\QueryResultSet has an unused parameter $query.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 59,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\BatchIterator has an unused parameter $batchSize.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 59,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\BatchIterator has an unused parameter $queryBuilder.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 59,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class UnconstrainedQueryResult\\BatchIterator has an unused parameter $uniqueIdColumn.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/unconstrained-query-result.php",
+                    "line": 64,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method UnconstrainedQueryResult\\BatchIterator::current() is not covariant with tentative return type mixed of method Iterator<int,T>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
         }
     ]
 }

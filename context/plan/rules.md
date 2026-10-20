@@ -185,7 +185,7 @@ AccessTypeAnnotationToAttribute = { unsupported = "Symfony rules: out of scope (
 - **`variant`** on PHPStan-family entries keeps the original identifier when one Pun rule replaces several, so `-v`
   output can print it and migrated `ignoreErrors` keep their narrow scope.
 - **Pinned upstream versions** in `[meta] upstream`: PHP-CS-Fixer 3.95.17, Rector 2.6.1 (with rector-phpunit
-  dev-main@e68085d bundled), rector-laravel 2.5.0, pest-plugin-rector 5.x-dev@1a4b6b7, PHPStan 2.2.7, strict-rules
+  dev-main@e68085d bundled), rector-laravel 2.5.0, pest-plugin-rector 5.x-dev@1a4b6b7, PHPStan 2.3.1, strict-rules
   2.0.12, deprecation-rules 2.0.5, Larastan 3.10.0, Mago 1.57.0. reference/oracle.md says how to fetch each.
 
 **What Step 1 changes in the data** (config.md Build 1-3): rule keys become `<group>/<name>` under `[rules.<command>]`
@@ -218,15 +218,15 @@ so every new rule needs a decision.
 | pest-plugin-rector 5.x-dev@1a4b6b7 | 61 | - | 59 | - | - | 2 |
 | rector-phpunit (bundled) | 113 | - | 79 | - | - | 34 |
 | rector-symfony / doctrine / downgrade-php | 267 | - | - | - | - | 267 |
-| PHPStan-family `Rule` classes | 426 | 2 | 17 | 378 | - | 29 |
-| PHPStan 2.2.7 core identifiers | 614 | 2 | - | 589 | 8 | 15 |
+| PHPStan-family `Rule` classes | 432 | 2 | 17 | 385 | - | 28 |
+| PHPStan 2.3.1 core identifiers | 632 | 2 | - | 608 | 7 | 15 |
 | PHPStan level parameters | 18 | - | - | 13 options + 5 switches | - | - |
 | phpstan-strict-rules 2.0.12 identifiers | 44 | 1 | 16 | 27 | - | - |
 | phpstan-deprecation-rules 2.0.5 identifiers | 10 | - | - | 10 | - | - |
 | Larastan 3.10.0 identifiers | 20 | - | - | 20 | - | - |
 | Mago 1.57.0 linter | 190 | 28 | 141 | - | 2 | 19 |
 | Mago 1.57.0 analyzer codes | 329 | - | - | 190 | - | 139 |
-| **Pun rules** | | **168** | **703** | **378** | | |
+| **Pun rules** | | **168** | **703** | **385** | | |
 
 Ported today: 125 of 168 format rules and 50 of 703 lint rules (`ported = true`). In scope: 493 Rector rules (482 →
 lint, 11 → format) and 397 PHPStan classes (378 → analyse, 17 → lint, 2 → format).

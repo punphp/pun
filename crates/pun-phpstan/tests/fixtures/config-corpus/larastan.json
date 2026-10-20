@@ -1,6 +1,6 @@
 {
     "project": "larastan",
     "expected": {
-        "error": "Missing parameter 'featureToggles.unresolvedTemplateArguments'."
+        "error": "Service (Larastan\\Larastan\\ReturnTypes\\ModelSerializationDynamicMethodReturnTypeExtension::__construct()): Class 'Larastan\\Larastan\\ReturnTypes\\ModelSerializationDynamicMethodReturnTypeExtension' not found."
     }
 }

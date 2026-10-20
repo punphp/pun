@@ -115,6 +115,23 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug10783",
+            "files": [
+                "Variables/data/bug-10783.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-10783.php",
+                    "line": 12,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<*NEVER*, *NEVER*> does not accept string.",
+                    "tip": null
+                }
+            ],
+            "general": []
         }
     ]
 }

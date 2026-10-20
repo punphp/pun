@@ -143,6 +143,13 @@
   },
   {
    "file": "construct-global.php",
+   "line": 61,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class StrictLoops has an unused parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "construct-global.php",
    "line": 97,
    "identifier": "function.inner",
    "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
