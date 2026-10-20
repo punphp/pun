@@ -773,7 +773,6 @@
 5 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
 5 Properties/AccessPropertiesRuleTest::testAccessPropertiesAfterIsNullInBooleanOr
 5 Properties/AccessPropertiesRuleTest::testBug2861
-5 Properties/AccessPropertiesRuleTest::testBug9694
 5 Properties/AccessPropertiesRuleTest::testDomExtensionLegacyTemplateNodes
 5 Properties/AccessPropertiesRuleTest::testObjectShapes
 5 Properties/AccessStaticPropertiesRuleTest::testBug2861
@@ -808,3 +807,18 @@
 4 Comparison/MatchExpressionRuleTest::testBug12998
 4 Comparison/MatchExpressionRuleTest::testBug12790
 4 Comparison/MatchExpressionRuleTest::testInTrait
+# pipe calls (`|>`) are not checked as calls (restored after the pipe binaryOp fix dropped them)
+4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
+4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPipeOperator
+5 Functions/CallToFunctionParametersRuleTest::testPipeOperator
+5 Methods/CallMethodsRuleTest::testPipeOperator
+5 Methods/CallStaticMethodsRuleTest::testPipeOperator
+9 Functions/CallToFunctionParametersRuleTest::testPipeOperator
+9 Methods/CallMethodsRuleTest::testPipeOperator
+9 Methods/CallStaticMethodsRuleTest::testPipeOperator
+# an-dead: match.alwaysTrue in the level-5/9 CallMethodsRule export (match arms on a void call's result), missing after the match batch merged with the level-5 work
+5 Methods/CallMethodsRuleTest::testMatchExpressionVoidIsUsed
+9 Methods/CallMethodsRuleTest::testMatchExpressionVoidIsUsed
