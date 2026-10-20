@@ -202,7 +202,6 @@
 4 Arrays/DeadForeachRuleTest::testBug14888
 4 Arrays/DeadForeachRuleTest::testBug8056
 # class.notFound of an inline `@var` tag naming an unknown class (a variable its scope does not know yet)
-4 Methods/NullsafeMethodCallRuleTest::testBug12222
 # expr.resultUnused: `null?->foo` printed `(null)?->foo`
 4 Properties/NullsafePropertyFetchRuleTest::testRule
 # class.notFound: Mago reads `callable-array` as a class name
