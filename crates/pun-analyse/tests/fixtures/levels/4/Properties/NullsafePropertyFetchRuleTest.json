@@ -1,0 +1,309 @@
+{
+    "test": "Properties/NullsafePropertyFetchRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/nullsafe-property-fetch-rule.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$mixed?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 15,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$nullable?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 15,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Exception::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 16,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$nonNullable?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 16,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type Exception. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 16,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Exception::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 17,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"null?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch-rule.php",
+                    "line": 17,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $foo on null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6020",
+            "files": [
+                "Properties/data/bug-6020.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6020.php",
+                    "line": 8,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$xml->foo?->bar?->baz\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7109",
+            "files": [
+                "Properties/data/bug-7109.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 17,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 18,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 19,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 28,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 29,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 30,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 40,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 41,
+                    "identifier": "isset.expr",
+                    "message": "Expression in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 42,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 54,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->notFalsy\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 59,
+                    "identifier": "empty.expr",
+                    "message": "Expression in empty() is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 66,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 67,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in isset() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 68,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->aaa\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 73,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this?->aaa ?? 'edge'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 73,
+                    "identifier": "nullCoalesce.expr",
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 74,
+                    "identifier": "isset.expr",
+                    "message": "Expression in isset() is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 74,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 75,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->(Expression)\" in empty() is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-7109.php",
+                    "line": 75,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14150",
+            "files": [
+                "Properties/data/bug-14150-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-14150-nullsafe.php",
+                    "line": 19,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this?->x\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14150-nullsafe.php",
+                    "line": 20,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(Bug14150NullsafeProperty\\HelloWorld). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14150-nullsafe.php",
+                    "line": 27,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(Bug14150NullsafeProperty\\HelloWorld). Use -> instead.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14150WithoutCertainPhpDocTypes",
+            "files": [
+                "Properties/data/bug-14150-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-14150-nullsafe.php",
+                    "line": 19,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this?->x\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14150-nullsafe.php",
+                    "line": 20,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(Bug14150NullsafeProperty\\HelloWorld). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14150-nullsafe.php",
+                    "line": 27,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(Bug14150NullsafeProperty\\HelloWorld). Use -> instead.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6922",
+            "files": [
+                "Properties/data/bug-6922.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

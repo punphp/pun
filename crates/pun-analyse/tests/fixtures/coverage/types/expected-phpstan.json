@@ -399,6 +399,244 @@
    "identifier": "return.void",
    "message": "Function CoverageTypes\\growingList() with return type void returns list<int> but should not return anything.",
    "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 10,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageValues\\UnknownThrowable not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 10,
+   "identifier": "class.notFound",
+   "message": "Throwing object of an unknown class CoverageValues\\UnknownThrowable.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 15,
+   "identifier": "throw.notThrowable",
+   "message": "Invalid type int to throw.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 21,
+   "identifier": "clone.nonObject",
+   "message": "Cannot clone non-object variable $s of type string.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 22,
+   "identifier": "clone.nonObject",
+   "message": "Cannot clone non-object variable $s of type string.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 23,
+   "identifier": "clone.nonObject",
+   "message": "Cannot clone non-object variable $x of type int|string.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 24,
+   "identifier": "class.notFound",
+   "message": "Cloning object of an unknown class CoverageValues\\UnknownCloned.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 24,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageValues\\UnknownCloned not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 30,
+   "identifier": "foreach.nonIterable",
+   "message": "Argument of an invalid type string supplied for foreach, only iterables are supported.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 32,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageValues\\UnknownIterated not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 32,
+   "identifier": "class.notFound",
+   "message": "Iterating over an object of an unknown class CoverageValues\\UnknownIterated.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "values.php",
+   "line": 36,
+   "identifier": "arrayUnpacking.nonIterable",
+   "message": "Only iterables can be unpacked, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 37,
+   "identifier": "arrayUnpacking.nonIterable",
+   "message": "Only iterables can be unpacked, string given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 44,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Invalid array key type stdClass.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 55,
+   "identifier": "generator.keyType",
+   "message": "Generator expects key type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 56,
+   "identifier": "generator.valueType",
+   "message": "Generator expects value type int, string given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 57,
+   "identifier": "generator.keyType",
+   "message": "Generator expects key type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 57,
+   "identifier": "generator.valueType",
+   "message": "Generator expects value type int, null given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 59,
+   "identifier": "generator.nonIterable",
+   "message": "Argument of an invalid type int passed to yield from, only iterables are supported.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 60,
+   "identifier": "generator.sendType",
+   "message": "Generator expects delegated TSend type void, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 61,
+   "identifier": "generator.sendType",
+   "message": "Generator expects delegated TSend type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 62,
+   "identifier": "generator.sendType",
+   "message": "Generator expects delegated TSend type void, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 62,
+   "identifier": "generator.void",
+   "message": "Result of yield from (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 63,
+   "identifier": "generator.keyType",
+   "message": "Generator expects key type string, int given.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 70,
+   "identifier": "generator.void",
+   "message": "Result of yield (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 82,
+   "identifier": "generator.returnType",
+   "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 88,
+   "identifier": "return.missing",
+   "message": "Function CoverageValues\\neverYielding() should return *NEVER* but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 88,
+   "identifier": "generator.returnType",
+   "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 102,
+   "identifier": "void.pure",
+   "message": "Function CoverageValues\\anonymous() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 116,
+   "identifier": "property.defaultValue",
+   "message": "Property CoverageValues\\Defaults::$wrong (string) does not accept default value of type int.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 117,
+   "identifier": "property.defaultValue",
+   "message": "Static property CoverageValues\\Defaults::$staticWrong (string) does not accept default value of type int.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 121,
+   "identifier": "property.defaultValue",
+   "message": "Property CoverageValues\\Defaults::$doc (list<int>) does not accept default value of type array{'a'}.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 122,
+   "identifier": "property.defaultValue",
+   "message": "Property CoverageValues\\Defaults::$hooked (string) does not accept default value of type int.",
+   "tip": null
+  },
+  {
+   "file": "values.php",
+   "line": 128,
+   "identifier": "generator.outOfFunction",
+   "message": "Yield can be used only inside a function.",
+   "tip": null
   }
  ]
 }

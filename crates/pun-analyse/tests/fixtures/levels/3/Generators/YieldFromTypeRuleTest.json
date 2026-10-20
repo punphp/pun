@@ -1,0 +1,66 @@
+{
+    "test": "Generators/YieldFromTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generators/data/yield-from.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generators/data/yield-from.php",
+                    "line": 15,
+                    "identifier": "generator.nonIterable",
+                    "message": "Argument of an invalid type int passed to yield from, only iterables are supported.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-from.php",
+                    "line": 16,
+                    "identifier": "generator.keyType",
+                    "message": "Generator expects key type DateTimeImmutable, stdClass given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-from.php",
+                    "line": 16,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-from.php",
+                    "line": 61,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type array{0: DateTime, 1: DateTime, 2: stdClass, 4: DateTimeImmutable}, array{DateTime, DateTime, stdClass, DateTimeImmutable} given.",
+                    "tip": "Array does not have offset 4."
+                },
+                {
+                    "file": "Generators/data/yield-from.php",
+                    "line": 74,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type array{DateTime, DateTime, stdClass, DateTimeImmutable}, array{0: DateTime, 1: DateTime, 2: stdClass, 4: DateTimeImmutable} given.",
+                    "tip": "Array does not have offset 3."
+                },
+                {
+                    "file": "Generators/data/yield-from.php",
+                    "line": 111,
+                    "identifier": "generator.void",
+                    "message": "Result of yield from (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11517",
+            "files": [
+                "Generators/data/bug-11517.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

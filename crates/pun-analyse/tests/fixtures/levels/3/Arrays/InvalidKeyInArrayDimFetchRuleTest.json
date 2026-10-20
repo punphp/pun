@@ -1,0 +1,245 @@
+{
+    "test": "Arrays/InvalidKeyInArrayDimFetchRuleTest",
+    "cases": [
+        {
+            "method": "testInvalidKey",
+            "files": [
+                "Arrays/data/invalid-key-array-dim-fetch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 7,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 8,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type array.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 16,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 23,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 27,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 31,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 34,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 44,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 45,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 46,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 47,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 47,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 48,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type DateTimeImmutable.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 51,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type float.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 52,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/invalid-key-array-dim-fetch.php",
+                    "line": 55,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6315",
+            "files": [
+                "Arrays/data/bug-6315.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-6315.php",
+                    "line": 18,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type Bug6315\\FooEnum::A.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-6315.php",
+                    "line": 19,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type Bug6315\\FooEnum::A.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-6315.php",
+                    "line": 20,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type Bug6315\\FooEnum::A.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-6315.php",
+                    "line": 21,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type Bug6315\\FooEnum::A.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-6315.php",
+                    "line": 21,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type Bug6315\\FooEnum::B.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-6315.php",
+                    "line": 22,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type Bug6315\\FooEnum::A.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13135",
+            "files": [
+                "Arrays/data/bug-13135.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12273",
+            "files": [
+                "Arrays/data/bug-12273.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-12273.php",
+                    "line": 13,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array{datetime: 'DateTime', stdclass: 'stdClass'}",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-12273.php",
+                    "line": 14,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: mixed",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12981",
+            "files": [
+                "Arrays/data/bug-12981.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-12981.php",
+                    "line": 31,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type array<int, int|string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-12981.php",
+                    "line": 33,
+                    "identifier": "offsetAccess.invalidOffset",
+                    "message": "Invalid array key type array<int, int|string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnsetFalseKey",
+            "files": [
+                "Arrays/data/unset-false-key.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

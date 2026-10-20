@@ -1,0 +1,124 @@
+{
+    "test": "Exceptions/ThrowExprTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/throw-values.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 16,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type ThrowExprValues\\ValidInterfaceException is not subtype of native type Exception.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 18,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type ThrowExprValues\\InvalidInterfaceException is not subtype of native type Exception.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 20,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Exception|null is not subtype of native type Exception.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 29,
+                    "identifier": "throw.notThrowable",
+                    "message": "Invalid type int to throw.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 32,
+                    "identifier": "throw.notThrowable",
+                    "message": "Invalid type ThrowExprValues\\InvalidException to throw.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 35,
+                    "identifier": "throw.notThrowable",
+                    "message": "Invalid type ThrowExprValues\\InvalidInterfaceException to throw.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 41,
+                    "identifier": "function.notFound",
+                    "message": "Function foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 44,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ThrowExprValues\\NonexistentClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 44,
+                    "identifier": "class.notFound",
+                    "message": "Throwing object of an unknown class ThrowExprValues\\NonexistentClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 56,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Exception is not subtype of native type stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 61,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Exception is not subtype of native type stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 65,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throw-values.php",
+                    "line": 65,
+                    "identifier": "throw.notThrowable",
+                    "message": "Invalid type int to throw.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Exceptions/data/throw-class-exists.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Exceptions/data/throw-values-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -13,6 +13,21 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "property.defaultValue",
+    "generator.outOfFunction",
+    "generator.returnType",
+    "generator.keyType",
+    "generator.valueType",
+    "generator.nonIterable",
+    "generator.sendType",
+    "generator.void",
+    "throw.notThrowable",
+    "clone.nonObject",
+    "foreach.nonIterable",
+    "arrayUnpacking.nonIterable",
+    "arrayUnpacking.stringOffset",
+    "offsetAccess.invalidOffset",
+    "foreach.emptyArray",
     "echo.nonString",
     "print.nonString",
     "encapsedStringPart.nonString",
@@ -208,6 +223,9 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @property",
     "PHPDoc tag @var for variable ",
     "PHPDoc tag @var contains unknown class",
+    "Throwing object of an unknown class ",
+    "Cloning object of an unknown class ",
+    "Iterating over an object of an unknown class ",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).

@@ -1848,14 +1848,23 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         statements::standalone_throw(self, s);
         dead_code::statement(self, s);
     }
+    fn walk_in_clone(&mut self, k: &'ast Clone<'arena>, _: &mut ()) {
+        types::clone(self, k);
+    }
+    fn walk_in_array_access(&mut self, a: &'ast ArrayAccess<'arena>, _: &mut ()) {
+        types::array_access(self, a);
+    }
     fn walk_in_throw(&mut self, t: &'ast Throw<'arena>, _: &mut ()) {
         statements::throw_expression(self, t);
+        types::throw(self, t);
     }
     fn walk_in_array(&mut self, a: &'ast Array<'arena>, _: &mut ()) {
         arrays::literal_array(self, a.span(), &a.elements);
+        types::array(self, a.elements.as_slice());
     }
     fn walk_in_legacy_array(&mut self, a: &'ast LegacyArray<'arena>, _: &mut ()) {
         arrays::literal_array(self, a.span(), &a.elements);
+        types::array(self, a.elements.as_slice());
     }
     fn walk_in_for(&mut self, f: &'ast For<'arena>, _: &mut ()) {
         self.syntax.parents.push(syntax::Parent::Loop);
@@ -1887,6 +1896,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         properties::property(self, p);
         missing_types::property(self, p);
+        types::property_default(self, p);
         larastan::property(self, p);
         for v in p.variables() {
             hierarchy::callable_property(self, v.span(), v.name, p.hint());
@@ -2056,6 +2066,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         syntax::used_names(self, program);
         self.unreachable = dead_code::unreachable_statements(self, program);
         self.push_frame(FrameKind::Top);
+        types::yields_outside(self, program);
     }
     fn walk_out_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
         let end = mago_span::Position::new(program.source_text.len() as u32);
@@ -2168,6 +2179,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
         self.syntax.parents.push(syntax::Parent::Loop);
         assign::foreach(self, f);
+        types::foreach(self, f);
         let (key, value) = match &f.target {
             ForeachTarget::Value(t) => (None, t.value),
             ForeachTarget::KeyValue(t) => (Some(t.key), t.value),

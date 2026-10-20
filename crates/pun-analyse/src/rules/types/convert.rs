@@ -27,7 +27,17 @@ fn text(b: &[u8]) -> String {
 impl<'a, 'arena> Checker<'a, 'arena> {
     /// `$scope->getType($expr)`: Mago's type of an expression the rules asked about, as PHPStan's.
     pub(in super::super) fn phpstan_type(&self, e: &mago_syntax::cst::Expression) -> Option<Type> {
-        self.type_of(e).map(|t| self.to_phpstan(t))
+        use mago_syntax::cst::Expression as E;
+        let t = self.type_of(e)?;
+        // Mago types `new` of an unknown class `never` (NonExistentClass), PHPStan as an object of that class
+        if let E::Instantiation(new) = e
+            && let E::Identifier(id) = new.class
+            && t.is_never()
+            && self.codebase.get_class_like(self.names.get(id)).is_none()
+        {
+            return Some(Type::Object(text(self.names.get(id)), vec![]));
+        }
+        Some(self.to_phpstan(t))
     }
 
     /// A Mago type as PHPStan's.

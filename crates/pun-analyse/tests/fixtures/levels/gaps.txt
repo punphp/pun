@@ -111,3 +111,23 @@
 4 Functions/HelperDeadCode::testRule
 7 Functions/HelperDeadCode::testRule
 8 Functions/HelperDeadCode::testRule
+# offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic
+# return type extension
+3 Arrays/InvalidKeyInArrayDimFetchRuleTest::testBug12981
+# throw.notThrowable: an inline `@var` without a variable name above `throw $foo` is not applied by Mago
+3 Exceptions/ThrowExprTypeRuleTest::testRule
+# generator.valueType, property.defaultValue: the accepts reasons tip (acceptsReasonsTip()) is not ported
+3 Generators/YieldFromTypeRuleTest::testRule
+3 Generators/YieldTypeRuleTest::testRule
+6 Properties/MissingPropertyTypehintRuleTest::testBug14012
+# foreach.emptyArray: Mago keeps `array{}` where PHPStan's scope does not (a branch `!empty()` makes dead, a property
+# a called closure assigns, an array written through a reference)
+4 Arrays/DeadForeachRuleTest::testBug7913
+4 Arrays/DeadForeachRuleTest::testBug14888
+4 Arrays/DeadForeachRuleTest::testBug8056
+# class.notFound of an inline `@var` tag naming an unknown class (a variable its scope does not know yet)
+4 Methods/NullsafeMethodCallRuleTest::testBug12222
+# expr.resultUnused: `null?->foo` printed `(null)?->foo`
+4 Properties/NullsafePropertyFetchRuleTest::testRule
+# class.notFound: Mago reads `callable-array` as a class name
+6 Methods/MissingMethodParameterTypehintRuleTest::testBug14549

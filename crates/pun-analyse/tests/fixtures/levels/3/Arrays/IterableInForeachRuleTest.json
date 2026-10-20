@@ -1,0 +1,129 @@
+{
+    "test": "Arrays/IterableInForeachRuleTest",
+    "cases": [
+        {
+            "method": "testCheckWithMaybes",
+            "files": [
+                "Arrays/data/foreach-iterable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/foreach-iterable.php",
+                    "line": 10,
+                    "identifier": "foreach.nonIterable",
+                    "message": "Argument of an invalid type string supplied for foreach, only iterables are supported.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/foreach-iterable.php",
+                    "line": 15,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/foreach-iterable.php",
+                    "line": 24,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/foreach-iterable.php",
+                    "line": 41,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/foreach-iterable.php",
+                    "line": 47,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class IterablesInForeach\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Arrays/data/foreach-iterable.php",
+                    "line": 47,
+                    "identifier": "class.notFound",
+                    "message": "Iterating over an object of an unknown class IterablesInForeach\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5744",
+            "files": [
+                "Arrays/data/bug-5744.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Arrays/data/foreach-iterable-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6564",
+            "files": [
+                "Arrays/data/bug-6564.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4335",
+            "files": [
+                "Arrays/data/bug-4335.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#0",
+            "files": [
+                "Arrays/data/foreach-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#1",
+            "files": [
+                "Arrays/data/foreach-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#2",
+            "files": [
+                "Arrays/data/foreach-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#3",
+            "files": [
+                "Arrays/data/foreach-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

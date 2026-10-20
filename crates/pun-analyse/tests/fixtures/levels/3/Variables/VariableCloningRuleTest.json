@@ -1,0 +1,108 @@
+{
+    "test": "Variables/VariableCloningRuleTest",
+    "cases": [
+        {
+            "method": "testClone",
+            "files": [
+                "Variables/data/variable-cloning.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 11,
+                    "identifier": "clone.nonObject",
+                    "message": "Cannot clone int|string.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 14,
+                    "identifier": "clone.nonObject",
+                    "message": "Cannot clone non-object variable $stringData of type string.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 15,
+                    "identifier": "clone.nonObject",
+                    "message": "Cannot clone string.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 18,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 22,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $baz contains unknown class VariableCloning\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 22,
+                    "identifier": "function.notFound",
+                    "message": "Function doBaz not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "Cloning object of an unknown class VariableCloning\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 26,
+                    "identifier": "function.notFound",
+                    "message": "Function doLorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 30,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $unknownObject contains unknown class VariableCloning\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 34,
+                    "identifier": "function.notFound",
+                    "message": "Function doBaz not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Variables/data/variable-cloning.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Cloning object of an unknown class VariableCloning\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Variables/data/variable-cloning-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

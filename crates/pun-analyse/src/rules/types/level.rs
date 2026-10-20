@@ -54,10 +54,11 @@ impl Levels {
     }
 }
 
-/// `FoundTypeResult`: `None` is an ErrorType (nothing to check).
-// ponytail: the unknown classes it names (class.notFound at levels 3+) come with the first rule that reports them
+/// `FoundTypeResult`: `None` is an ErrorType (nothing to check), then with the unknown classes the type names
+/// (`getUnknownClassErrors()`, for the rules that report them).
 pub struct Found {
     pub ty: Option<Type>,
+    pub unknown: Vec<String>,
 }
 
 impl<'a, 'arena> Checker<'a, 'arena> {
@@ -70,14 +71,14 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     pub(in super::super) fn find_type_to_check(&self, e: &Expression, criteria: &dyn Fn(&Type) -> bool) -> Found {
         let l = self.levels();
         // (checkThisOnly, levels 0 and 1, is never asked: the rules that call this start at level 2)
-        Found {
-            ty: self.phpstan_type(e).and_then(|t| self.find_in(l, t, criteria, true)),
-        }
+        let mut unknown = Vec::new();
+        let ty = self.phpstan_type(e).and_then(|t| self.find_in(l, t, criteria, Some(&mut unknown)));
+        Found { ty, unknown }
     }
 
     /// `findTypeToCheckImplementation()`: `None` for an ErrorType. A strict `mixed` stays `mixed`, which
     /// [`Levels::strict_mixed`] tells apart.
-    fn find_in(&self, l: Levels, mut t: Type, criteria: &dyn Fn(&Type) -> bool, top: bool) -> Option<Type> {
+    pub(super) fn find_in(&self, l: Levels, mut t: Type, criteria: &dyn Fn(&Type) -> bool, top: Option<&mut Vec<String>>) -> Option<Type> {
         if !l.check_nullables && !t.is_null().yes() && !criteria(&Type::Null) {
             t = t.remove_null();
         }
@@ -96,14 +97,17 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         if matches!(t, Type::Never(_) | Type::Error) {
             return None;
         }
-        if top
-            && self.object_names(&t).iter().any(|n| match self.codebase.get_class_like(n.as_bytes()) {
+        if let Some(unknown) = top {
+            let missing = t.object_class_names().into_iter().filter(|n| match self.codebase.get_class_like(n.as_bytes()) {
                 Some(k) => k.kind == mago_codex::symbol::SymbolKind::Trait,
                 None => pun_phpstan::symbols::class(n).is_none(),
-            })
-        {
-            // ponytail: the class.notFound errors it builds come with the first rule that reports them (level 3+)
-            return None;
+            });
+            // a class class_exists() guards is not reported, but the type is still not checked
+            let (guarded, missing): (Vec<String>, Vec<String>) = missing.partition(|n| self.in_class_exists(n));
+            unknown.extend(missing);
+            if !unknown.is_empty() || !guarded.is_empty() {
+                return None;
+            }
         }
         if !l.check_union_types && matches!(t, Type::ObjectWithoutClass | Type::ObjectShape(_)) {
             return None;
@@ -114,7 +118,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             let kept: Vec<Type> = types
                 .iter()
                 .filter(|i| !filter || criteria(i))
-                .filter_map(|i| self.find_in(l, i.clone(), criteria, false))
+                .filter_map(|i| self.find_in(l, i.clone(), criteria, None))
                 .collect();
             if !kept.is_empty() {
                 let u = union(kept);
@@ -122,15 +126,5 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
         }
         Some(t)
-    }
-
-    /// `getObjectClassNames()`.
-    fn object_names(&self, t: &Type) -> Vec<String> {
-        match t {
-            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => vec![n.clone()],
-            Type::Union(ts) | Type::Benevolent(ts) => ts.iter().flat_map(|t| self.object_names(t)).collect(),
-            Type::Intersection(ts) => ts.iter().flat_map(|t| self.object_names(t)).collect(),
-            _ => Vec::new(),
-        }
     }
 }

@@ -1,0 +1,88 @@
+{
+    "test": "Properties/DefaultValueTypesAssignedToPropertiesRuleTest",
+    "cases": [
+        {
+            "method": "testDefaultValueTypesAssignedToProperties",
+            "files": [
+                "Properties/data/properties-assigned-default-value-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-assigned-default-value-types.php",
+                    "line": 15,
+                    "identifier": "property.defaultValue",
+                    "message": "Property PropertiesAssignedDefaultValuesTypes\\Foo::$stringPropertyWithWrongDefaultValue (string) does not accept default value of type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-default-value-types.php",
+                    "line": 18,
+                    "identifier": "property.defaultValue",
+                    "message": "Static property PropertiesAssignedDefaultValuesTypes\\Foo::$staticStringPropertyWithWrongDefaultValue (string) does not accept default value of type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-assigned-default-value-types.php",
+                    "line": 24,
+                    "identifier": "property.defaultValue",
+                    "message": "Static property PropertiesAssignedDefaultValuesTypes\\Foo::$windowsNtVersions (array<string, string>) does not accept default value of type array<int|string, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDefaultValueForNativePropertyType",
+            "files": [
+                "Properties/data/default-value-for-native-property-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/default-value-for-native-property-type.php",
+                    "line": 8,
+                    "identifier": "property.defaultValue",
+                    "message": "Property DefaultValueForNativePropertyType\\Foo::$foo (DateTime) does not accept default value of type null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5607",
+            "files": [
+                "Properties/data/bug-5607.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-5607.php",
+                    "line": 10,
+                    "identifier": "property.defaultValue",
+                    "message": "Property Bug5607\\Cl::$u (Bug5607\\A|null) does not accept default value of type array<int|string, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7933",
+            "files": [
+                "Properties/data/bug-7933.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10987",
+            "files": [
+                "Properties/data/bug-10987.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}
