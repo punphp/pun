@@ -16,7 +16,7 @@ agents and helper branches are stopped and merged; there is nothing in flight.
 - **Green on main:** `cargo test -p punphp-analyse` (levels included; the generics wiring from salvage/handoff is applied).
 - **Salvage ref on origin:** `salvage/stash-0b0ef5b` (Blade Prettier probe; §3 "perf format" row). Delete it once that row lands.
 - **Paused (Pushpak, 2026-10-19): all lint work and `pun check`; PHPStan compatibility only.** Parked branches with their work: `wt-lint-rules2` (lint batch 2, WIP), `wt-lint-types` (types vs Rector, tested, unmerged), `wt-check` (one-pass check, WIP).
-- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); Pun emits 624 (2026-10-20). Extensions are tracked apart, not targets yet: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
+- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); Pun emits 629 (2026-10-20). Extensions are tracked apart, not targets yet: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
 - **Priorities, in order:** (1) done; (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) coverage back to 100% in pun-lint (pun-analyse and punphp are at 100%); (4) analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
