@@ -77,21 +77,16 @@
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testTransitive
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testPipeOperator
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testTransitive
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testBug11011
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
 4 DeadCode/UnusedPrivateMethodRuleTest::testRule
 4 Exceptions/OverwrittenExitPointByFinallyRuleTest::testBug5627
-4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
 4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
-4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPipeOperator
 # an-dead: PHPStan's built-in throw-type extensions (DateTime*::createFromFormat, DateTimeImmutable::sub) make an explicit throw point
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testRule
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testBug11503
@@ -305,13 +300,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testNamedParametersForMultiVariantFunctions
 9 Methods/CallMethodsRuleTest::testBug11559c
 9 Methods/CallMethodsRuleTest::testBug4608
-# an-types2: pipe calls (`|>`) are not checked as calls
-5 Functions/CallToFunctionParametersRuleTest::testPipeOperator
-5 Methods/CallMethodsRuleTest::testPipeOperator
-5 Methods/CallStaticMethodsRuleTest::testPipeOperator
-9 Functions/CallToFunctionParametersRuleTest::testPipeOperator
-9 Methods/CallMethodsRuleTest::testPipeOperator
-9 Methods/CallStaticMethodsRuleTest::testPipeOperator
 # an-types2: Closure::bind()/bindTo() scopes
 5 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 5 Methods/CallMethodsRuleTest::testClosureBind
@@ -366,16 +354,13 @@
 5 Functions/RandomIntParametersRuleTest::testFile
 5 Methods/CallMethodsRuleTest::testAcceptThrowable
 5 Methods/CallMethodsRuleTest::testBug11463
-5 Methods/CallMethodsRuleTest::testBug11978
 5 Methods/CallMethodsRuleTest::testBug13171
 5 Methods/CallMethodsRuleTest::testBug13993
 5 Methods/CallMethodsRuleTest::testBug14732
 5 Methods/CallMethodsRuleTest::testBug1661
-5 Methods/CallMethodsRuleTest::testBug3481
 5 Methods/CallMethodsRuleTest::testBug3555
 5 Methods/CallMethodsRuleTest::testBug4552
 5 Methods/CallMethodsRuleTest::testBug5372
-5 Methods/CallMethodsRuleTest::testBug5642
 5 Methods/CallMethodsRuleTest::testBug6371
 5 Methods/CallMethodsRuleTest::testBug6464
 5 Methods/CallMethodsRuleTest::testBug9487
@@ -469,7 +454,6 @@
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
 9 Methods/CallMethodsRuleTest::testBug10719
 9 Methods/CallMethodsRuleTest::testBug11463
-9 Methods/CallMethodsRuleTest::testBug11978
 9 Methods/CallMethodsRuleTest::testBug12880
 9 Methods/CallMethodsRuleTest::testBug13171
 9 Methods/CallMethodsRuleTest::testBug13272
@@ -489,7 +473,6 @@
 9 Methods/CallMethodsRuleTest::testBug4552
 9 Methods/CallMethodsRuleTest::testBug5372
 9 Methods/CallMethodsRuleTest::testBug5623
-9 Methods/CallMethodsRuleTest::testBug5642
 9 Methods/CallMethodsRuleTest::testBug5868
 9 Methods/CallMethodsRuleTest::testBug6371
 9 Methods/CallMethodsRuleTest::testBug6464
@@ -561,7 +544,7 @@
 4 Properties/NullsafePropertyFetchRuleTest::testRule
 # class.notFound: Mago reads `callable-array` as a class name
 6 Methods/MissingMethodParameterTypehintRuleTest::testBug14549
-# an-dead: ConstantConditionInTraitRule (the trait collector) is unported: nothing reports a constant condition in a trait
+# an-dead: ConstantConditionInTraitRule: Mago types a trait's `$this` as the trait, so a condition on the using class (its methods' return types) is not constant in any context
 4 Comparison/BooleanAndConstantConditionRuleTest::testInTrait
 4 Comparison/BooleanNotConstantConditionRuleTest::testInTrait
 4 Comparison/BooleanOrConstantConditionRuleTest::testInTrait
@@ -768,9 +751,8 @@
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 # an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
 # an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
-# an-dead: ImpossibleCheckType{Function,Method,StaticMethod}CallRule: ImpossibleCheckTypeHelper's in_array/method_exists/property_exists/class_exists special cases and type-specifying extensions are not ported (the value comes from Mago's return type or a void function's @phpstan-assert); the treatPhpDocTypesAsCertain tip needs native types; the trait collector; Mago's types differ (superglobal keys, narrowing after method_exists())
+# an-dead: ImpossibleCheckType{Function,Method,StaticMethod}CallRule: type-specifying extensions are not ported beyond in_array/method_exists/property_exists/class_exists (a `new` object's exact class aside) (the value comes from Mago's return type or a void function's @phpstan-assert); the treatPhpDocTypesAsCertain tip needs native types; the trait collector; Mago's types differ (superglobal keys, narrowing after method_exists())
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleCheckTypeFunctionCall
-4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testStructExists
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testReportTypesFromPhpDocs
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testArrayIsList
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6305
@@ -817,7 +799,6 @@
 5 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
 5 Properties/AccessPropertiesRuleTest::testAccessPropertiesAfterIsNullInBooleanOr
 5 Properties/AccessPropertiesRuleTest::testBug2861
-5 Properties/AccessPropertiesRuleTest::testBug9694
 5 Properties/AccessPropertiesRuleTest::testDomExtensionLegacyTemplateNodes
 5 Properties/AccessPropertiesRuleTest::testObjectShapes
 5 Properties/AccessStaticPropertiesRuleTest::testBug2861
@@ -829,14 +810,25 @@
 9 Methods/CallMethodsRuleTest::testBug3534
 9 Methods/CallStaticMethodsRuleTest::testBug9732
 9 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
-# an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value, a pipe `|>` into a string)
+# an-types2: CallCallablesRule: `new Foo()` is an exact (final) object type in PHPStan, a union of constant-array
+# callables is not split into its arrays, pipe calls by expression are not checked, and Pun reports bug-3616's constant PHPDoc
+2 Functions/CallCallablesRuleTest::testBug3616
+2 Functions/CallCallablesRuleTest::testRule
+# an-types2: Pun finds array<NonexistentClass, AnotherNonexistentClass> unresolvable (parameter.unresolvableType)
+2 Methods/ExistingClassesInTypehintsRuleTest::testExistingClassInTypehint
+# an-types2: PHPDoc classes (FunctionDefinitionCheck, level 2): imported type aliases that import each other, and an anonymous
+# class's use of its enclosing method's template are not resolved; Closure::bind() returns ?Closure (no dynamic return type extension)
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463b
+3 Methods/ReturnTypeRuleTest::testBug6353
+9 Methods/CallMethodsRuleTest::testBug4865
+# an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value)
 2 Operators/InvalidBinaryOperationRuleTest::testRule
 2 Operators/InvalidBinaryOperationRuleTest::testBug5309
 2 Operators/InvalidBinaryOperationRuleTest::testBenevolentUnion
 2 Operators/InvalidBinaryOperationRuleTest::testBug1452
 2 PhpDoc/WrongVariableNameInVarTagRuleTest::testAssignOperator
 3 Arrays/OffsetAccessAssignOpRuleTest::testRuleWithNullsafeVariant
-4 DeadCode/NoopRuleTest::testPipeOperator
 # an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook
@@ -849,6 +841,8 @@
 9 Functions/CallToFunctionParametersRuleTest::testUnpackOperator
 # PHPStan 2.3.1 no longer reports constructor.unusedParameter in bug-6370.php; the dataflow change is not ported
 5 Classes/InstantiationRuleTest::testBug6370
+# PHPStan 2.3.1 reports a match arm's always-false comparison even when the arm is an impossible type check call
+4 Comparison/MatchExpressionRuleTest::testMatchArmComparisonNotSuppressedByImpossibleCheck
 # PHPStan 2.3.1's new regression tests (added since 2.2.7) for the typed receiver, argument, property, offset and
 # impossible-check rules: generic template arguments and nullability, closure signatures from usages, callable
 # lists (bug 13114), void conditional returns, wildcard class constants and narrowing fixes not ported yet
@@ -911,3 +905,43 @@
 9 Methods/CallStaticMethodsRuleTest::testBug10698
 9 Methods/CallStaticMethodsRuleTest::testBug15168
 9 Methods/CallStaticMethodsRuleTest::testBug15251
+# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
+# an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
+# an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
+# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
+# an-dead: MatchExpressionRule: Mago's types differ (rand() and <=> are int, in_array() and gettype() narrowing), the subject `$this` of a trait, TypeCombinator::remove() for class strings and templates, an unnarrowed enum subject described after removing a case
+4 Comparison/MatchExpressionRuleTest::testEnums
+4 Comparison/MatchExpressionRuleTest::testBug7176
+4 Comparison/MatchExpressionRuleTest::testBug6064
+4 Comparison/MatchExpressionRuleTest::testBug8614
+4 Comparison/MatchExpressionRuleTest::testBug9436
+4 Comparison/MatchExpressionRuleTest::testBug12998
+4 Comparison/MatchExpressionRuleTest::testBug12790
+4 Comparison/MatchExpressionRuleTest::testInTrait
+# pipe calls (`|>`) are not checked as calls (restored after the pipe binaryOp fix dropped them)
+4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
+4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPipeOperator
+5 Functions/CallToFunctionParametersRuleTest::testPipeOperator
+5 Methods/CallMethodsRuleTest::testPipeOperator
+5 Methods/CallStaticMethodsRuleTest::testPipeOperator
+9 Functions/CallToFunctionParametersRuleTest::testPipeOperator
+9 Methods/CallMethodsRuleTest::testPipeOperator
+9 Methods/CallStaticMethodsRuleTest::testPipeOperator
+# an-dead: ImpossibleInstanceOfRule: the treatPhpDocTypesAsCertain and possibly impure tips need native types; Mago's types differ (`instanceof self` narrows to `$this`, narrowing in loops and after early returns, a `new` object's exact class, the trait's `$this`)
+4 Classes/ImpossibleInstanceOfRuleTest::testInstanceof
+4 Classes/ImpossibleInstanceOfRuleTest::testReportTypesFromPhpDocs
+4 Classes/ImpossibleInstanceOfRuleTest::testIfBranchesReportPhpDoc
+4 Classes/ImpossibleInstanceOfRuleTest::testTernaryElseReportPhpDoc
+4 Classes/ImpossibleInstanceOfRuleTest::testReportAlwaysTrueInLastCondition#0
+4 Classes/ImpossibleInstanceOfRuleTest::testReportAlwaysTrueInLastCondition#1
+4 Classes/ImpossibleInstanceOfRuleTest::testBug3632
+4 Classes/ImpossibleInstanceOfRuleTest::testBug10353
+4 Classes/ImpossibleInstanceOfRuleTest::testBug12267
+4 Classes/ImpossibleInstanceOfRuleTest::testNewIsAlwaysFinalClass
+4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#0
+4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#1
+4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
+4 Classes/ImpossibleInstanceOfRuleTest::testInTrait

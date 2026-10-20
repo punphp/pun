@@ -247,6 +247,41 @@
    "tip": null
   },
   {
+   "file": "src/condition-traits.php",
+   "line": 17,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php",
+   "line": 20,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php",
+   "line": 23,
+   "identifier": "greater.alwaysTrue",
+   "message": "Comparison operation \">\" between 1 and 0 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php (in context of class DeadCode\\ConditionTraits\\IntChecker)",
+   "line": 83,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\ConditionTraits\\IntChecker::isNumber() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php (in context of class DeadCode\\ConditionTraits\\StringChecker)",
+   "line": 83,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\ConditionTraits\\StringChecker::isNumber() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
    "file": "src/conditions.php",
    "line": 42,
    "identifier": "if.alwaysTrue",
@@ -681,10 +716,59 @@
    "tip": null
   },
   {
-   "file": "src/conditions.php",
-   "line": 602,
-   "identifier": "smaller.alwaysTrue",
-   "message": "Comparison operation \"<\" between 0 and 1 is always true.",
+   "file": "src/matches.php",
+   "line": 13,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: DeadCode\\Matches\\Suit::Clubs",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 26,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining values: DeadCode\\Matches\\Suit::Clubs|DeadCode\\Matches\\Suit::Spades",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 34,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining values: int<min, 0>|int<3, max>",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 40,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between false and false is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 43,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: false",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 71,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between $this(DeadCode\\Matches\\Pair)&DeadCode\\Matches\\Pair::Two and DeadCode\\Matches\\Pair::Two is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 85,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between DeadCode\\Matches\\Single::Only and DeadCode\\Matches\\Single::Only is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 115,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: string",
    "tip": null
   },
   {
@@ -1221,163 +1305,569 @@
   },
   {
    "file": "src/noop.php",
-   "line": 199,
-   "identifier": "binaryOp.invalid",
-   "message": "Binary operation \"|>\" between 5 and 'nothing' results in an error.",
-   "tip": null
-  },
-  {
-   "file": "src/noop.php",
-   "line": 199,
-   "identifier": "expr.resultUnused",
-   "message": "Expression \"'nothing'\" on a separate line does not do anything.",
-   "tip": null
-  },
-  {
-   "file": "src/noop.php",
-   "line": 199,
-   "identifier": "callable.nonCallable",
-   "message": "Trying to invoke 'nothing' but it's not a callable.",
-   "tip": null
-  },
-  {
-   "file": "src/noop.php",
-   "line": 201,
+   "line": 200,
    "identifier": "method.resultUnused",
    "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 202,
+   "line": 201,
    "identifier": "staticMethod.resultUnused",
    "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 206,
+   "line": 205,
    "identifier": "expr.resultUnused",
    "message": "Expression \"${$s}\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 207,
+   "line": 206,
    "identifier": "expr.resultUnused",
    "message": "Expression \"${'a' . 'b'}\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 207,
+   "line": 206,
    "identifier": "variable.undefined",
    "message": "Undefined variable: $ab",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 213,
+   "line": 212,
    "identifier": "postInc.type",
    "message": "Cannot use ++ on string.",
    "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
   },
   {
    "file": "src/noop.php",
-   "line": 216,
+   "line": 215,
    "identifier": "expr.resultUnused",
    "message": "Expression \"\\NoopFixture\\Box::LIMIT\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 217,
+   "line": 216,
    "identifier": "expr.resultUnused",
    "message": "Expression \"new class(i: 1) extends \\NoopFixture\\Plain\u2026\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 218,
+   "line": 217,
    "identifier": "constructor.unusedParameter",
    "message": "Constructor of an anonymous class has an unused parameter $i.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 223,
+   "line": 222,
    "identifier": "expr.resultUnused",
    "message": "Expression \"($a + 1) * 2\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 224,
+   "line": 223,
    "identifier": "expr.resultUnused",
    "message": "Expression \"(int) $a\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 224,
+   "line": 223,
    "identifier": "cast.deprecated",
    "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 225,
+   "line": 224,
    "identifier": "expr.resultUnused",
    "message": "Expression \"(bool) $a\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 225,
+   "line": 224,
    "identifier": "cast.deprecated",
    "message": "Non-standard (boolean) cast is deprecated in PHP 8.5. Use (bool) instead.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 226,
+   "line": 225,
    "identifier": "expr.resultUnused",
    "message": "Expression \"(double) $a\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 226,
+   "line": 225,
    "identifier": "cast.deprecated",
    "message": "Non-standard (double) cast is deprecated in PHP 8.5. Use (float) instead.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 227,
+   "line": 226,
    "identifier": "expr.resultUnused",
    "message": "Expression \"(string) $a\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 227,
+   "line": 226,
    "identifier": "cast.deprecated",
    "message": "Non-standard (binary) cast is deprecated in PHP 8.5. Use (string) instead.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 228,
+   "line": 227,
    "identifier": "expr.resultUnused",
    "message": "Expression \"$box->{$s}\" on a separate line does not do anything.",
    "tip": null
   },
   {
    "file": "src/noop.php",
-   "line": 229,
+   "line": 228,
    "identifier": "expr.resultUnused",
    "message": "Expression \"$box->{$s . 'x'}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 15,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCode\\SpecialChecks\\SomeTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 73,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 74,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 75,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 76,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 77,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 78,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 78,
+   "identifier": "function.impossibleType",
+   "message": "Call to function in_array() with arguments 'a', array{} and true will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 79,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 80,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 80,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function in_array() with arguments 'a', array{'a'} and true will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 81,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 82,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 83,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 84,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 85,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 85,
+   "identifier": "function.impossibleType",
+   "message": "Call to function in_array() with DeadCode\\SpecialChecks\\Suit and array{'a'} will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 86,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 110,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 110,
+   "identifier": "function.impossibleType",
+   "message": "Call to function method_exists() with 'DeadCode\u2026' and 'native' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 111,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 112,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 112,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Open and 'native' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 113,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 114,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 115,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 115,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Closed and 'native' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 116,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 116,
+   "identifier": "function.impossibleType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Closed and 'missing' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 117,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 117,
+   "identifier": "function.impossibleType",
+   "message": "Call to function method_exists() with 'DeadCode\\\\SpecialChecks\\\\Closed' and 'missing' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 118,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 119,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 120,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 120,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Suit::Hearts and 'cases' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 122,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 123,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 124,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 124,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function property_exists() with DeadCode\\SpecialChecks\\Open and 'declared' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 125,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 126,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 127,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 127,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function property_exists() with DeadCode\\SpecialChecks\\Closed and 'counter' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 128,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 128,
+   "identifier": "function.impossibleType",
+   "message": "Call to function property_exists() with DeadCode\\SpecialChecks\\Closed and 'missing' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 129,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 130,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 131,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 132,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 133,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 137,
+   "identifier": "function.impossibleType",
+   "message": "Call to function class_exists() with 'DeadCode\\\\SpecialChecks\\\\SomeInterface' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 138,
+   "identifier": "function.impossibleType",
+   "message": "Call to function class_exists() with 'DeadCode\\\\SpecialChecks\\\\SomeTrait' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 140,
+   "identifier": "function.impossibleType",
+   "message": "Call to function interface_exists() with 'DeadCode\\\\SpecialChecks\\\\Open' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 142,
+   "identifier": "function.impossibleType",
+   "message": "Call to function trait_exists() with 'DeadCode\\\\SpecialChecks\\\\Open' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 144,
+   "identifier": "function.impossibleType",
+   "message": "Call to function enum_exists() with 'DeadCode\\\\SpecialChecks\\\\Open' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 152,
+   "identifier": "class.notFound",
+   "message": "Parameter $unknown of method DeadCode\\SpecialChecks\\Child::doFoo() has invalid type DeadCode\\SpecialChecks\\Unknown.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 154,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between $this(DeadCode\\SpecialChecks\\Child) and DeadCode\\SpecialChecks\\Child will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 156,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between $this(DeadCode\\SpecialChecks\\Child) and DeadCode\\SpecialChecks\\Child will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 158,
+   "identifier": "instanceof.invalidExprType",
+   "message": "Instanceof between DeadCode\\SpecialChecks\\Unknown and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 160,
+   "identifier": "function.impossibleType",
+   "message": "Call to function class_exists() with 'DeadCode\\\\SpecialChecks\\\\SomeInterface'|'DeadCode\\\\SpecialChecks\\\\SomeTrait' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 162,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
    "tip": null
   },
   {
@@ -1435,6 +1925,13 @@
    "identifier": "trait.unused",
    "message": "Trait DeadCodeFixture\\Outer is used zero times and is not analysed.",
    "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 602,
+   "identifier": "smaller.alwaysTrue",
+   "message": "Comparison operation \"<\" between 0 and 1 is always true.",
+   "tip": null
   }
  ]
 }

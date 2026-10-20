@@ -710,6 +710,54 @@ pub fn method(
     k: &ClassLikeMetadata,
     context: &ClassLikeMetadata,
 ) -> Signature {
+    let resolved = method_resolved(c, m, k, context);
+    signature(
+        c,
+        Some(m.name.value),
+        &m.parameter_list,
+        m.return_type_hint.as_ref(),
+        resolved,
+        Some(context),
+    )
+}
+
+/// The PHPDoc types FunctionDefinitionCheck reads from level 2: per parameter name its `@param`, `@param-out` and
+/// `@param-closure-this` types (`getPhpDocType()`, `getOutType()`, `getClosureThisType()`), and `@return`'s.
+pub struct PhpDocTypes {
+    pub params: HashMap<String, Vec<Type>>,
+    pub ret: Option<Type>,
+}
+
+impl From<Resolved> for PhpDocTypes {
+    fn from(r: Resolved) -> PhpDocTypes {
+        let mut params: HashMap<String, Vec<Type>> = HashMap::new();
+        for (name, t) in r.params.into_iter().chain(r.outs).chain(r.closure_this) {
+            params.entry(name).or_default().push(t);
+        }
+        PhpDocTypes { params, ret: r.ret }
+    }
+}
+
+/// [`PhpDocTypes`] of a method declared in the analysed file (see [`method()`]).
+pub fn method_phpdoc(c: &Checker, m: &Method, k: &ClassLikeMetadata, context: &ClassLikeMetadata) -> PhpDocTypes {
+    let mut resolved = method_resolved(c, m, k, context);
+    // a promoted property's `@var` is its parameter's PHPDoc type
+    if m.name.value.eq_ignore_ascii_case(b"__construct") {
+        for p in m.parameter_list.parameters.iter() {
+            if let Some(t) = promoted_var(c, p, Some(context)) {
+                resolved.params.insert(text(&p.variable.name[1..]), t);
+            }
+        }
+    }
+    resolved.into()
+}
+
+/// [`PhpDocTypes`] of a function declared in the analysed file.
+pub fn function_phpdoc(c: &Checker, f: &Function) -> PhpDocTypes {
+    function_resolved(c, f).into()
+}
+
+fn method_resolved(c: &Checker, m: &Method, k: &ClassLikeMetadata, context: &ClassLikeMetadata) -> Resolved {
     let own = doc_before(&c.file.contents, m.span().start.offset as usize).map(|raw| {
         let doc = Doc::parse(raw);
         let scope = method_scope(c, m, &doc, k, context);
@@ -732,20 +780,24 @@ pub fn method(
         .iter()
         .map(|p| text(&p.variable.name[1..]))
         .collect();
-    let resolved = inherit(c, context, m.name.value, own, &positional, 0).unwrap_or_default();
-    signature(
-        c,
-        Some(m.name.value),
-        &m.parameter_list,
-        m.return_type_hint.as_ref(),
-        resolved,
-        Some(context),
-    )
+    inherit(c, context, m.name.value, own, &positional, 0).unwrap_or_default()
 }
 
 /// The parameters and return type of a function declared in the analysed file.
 pub fn function(c: &Checker, f: &Function) -> Signature {
-    let resolved = doc_before(&c.file.contents, f.span().start.offset as usize)
+    let resolved = function_resolved(c, f);
+    signature(
+        c,
+        None,
+        &f.parameter_list,
+        f.return_type_hint.as_ref(),
+        resolved,
+        None,
+    )
+}
+
+fn function_resolved(c: &Checker, f: &Function) -> Resolved {
+    doc_before(&c.file.contents, f.span().start.offset as usize)
         .map(|doc| {
             let doc = Doc::parse(doc);
             let scope = function_scope(c, f, &doc);
@@ -762,15 +814,7 @@ pub fn function(c: &Checker, f: &Function) -> Signature {
                 asserts: Vec::new(),
             }
         })
-        .unwrap_or_default();
-    signature(
-        c,
-        None,
-        &f.parameter_list,
-        f.return_type_hint.as_ref(),
-        resolved,
-        None,
-    )
+        .unwrap_or_default()
 }
 
 fn signature(
@@ -1244,18 +1288,19 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                     )
                 })
                 .collect(),
-            // the names only (StringType::accepts() asks for `__toString()`, a callable string for its method)
+            // the names and staticness only (StringType::accepts() asks for `__toString()`, a callable string or array
+            // for its method)
             methods: k
                 .declaring_method_ids
-                .keys()
-                .map(|m| {
+                .iter()
+                .map(|(m, id)| {
                     let f = symbols::Function {
                         name: text(m.as_bytes()),
                         side_effects: "Maybe".to_string(),
                         deprecated: false,
                         variants: Vec::new(),
                         named: None,
-                        is_static: false,
+                        is_static: c.codebase.get_method_by_id(id).and_then(|f| f.method_metadata.as_ref()).is_some_and(|m| m.is_static),
                         doc: None,
                     };
                     (text(m.as_bytes()).to_ascii_lowercase(), f)

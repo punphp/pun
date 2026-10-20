@@ -30,7 +30,7 @@ fn check(neon: &str) {
         .unwrap()
         .into_iter()
         .map(|e| {
-            // PHPStan's JSON names a trait's file without its ` (in context of …)`
+            // compared without a trait's ` (in context of …)`: PHPStan's JSON names some errors' files without it
             let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file);
             let file = file
                 .split(" (in context of ")
@@ -56,7 +56,7 @@ fn check(neon: &str) {
         })
         .map(|e| {
             (
-                e["file"].as_str().unwrap().to_string(),
+                e["file"].as_str().unwrap().split(" (in context of ").next().unwrap().to_string(),
                 e["line"].as_i64().unwrap(),
                 e["identifier"].as_str().unwrap().to_string(),
                 e["message"].as_str().unwrap().to_string(),

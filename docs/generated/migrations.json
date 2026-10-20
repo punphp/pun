@@ -8483,7 +8483,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8493,7 +8493,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -15625,7 +15625,7 @@
         "rules": [
           "analyse/types/missing-preg-quote-delimiter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -16515,7 +16515,7 @@
         "rules": [
           "analyse/functions/invalid-callable-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -19505,7 +19505,7 @@
         "rules": [
           "analyse/control-flow/unhandled-match"
         ],
-        "note": "Merged with match.alwaysTrue, match.unhandled. Planned: not ported yet.",
+        "note": "Merged with match.alwaysTrue, match.unhandled.",
         "unsupported": false
       },
       {
@@ -19515,7 +19515,7 @@
         "rules": [
           "analyse/control-flow/unhandled-match"
         ],
-        "note": "Merged with match.alwaysFalse, match.unhandled. Planned: not ported yet.",
+        "note": "Merged with match.alwaysFalse, match.unhandled.",
         "unsupported": false
       },
       {
@@ -19525,7 +19525,7 @@
         "rules": [
           "analyse/control-flow/unhandled-match"
         ],
-        "note": "Merged with match.alwaysFalse, match.alwaysTrue. Planned: not ported yet.",
+        "note": "Merged with match.alwaysFalse, match.alwaysTrue.",
         "unsupported": false
       },
       {
@@ -28205,7 +28205,7 @@
         "rules": [
           "analyse/control-flow/unhandled-match"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

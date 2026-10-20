@@ -399,6 +399,20 @@ fn to_array_key(t: &Type) -> Type {
         Type::Bool => Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
         Type::Null => Type::ConstString(String::new()),
         Type::ConstBool(b) => Type::ConstInt(*b as i64),
+        // ObjectTypeTrait, ArrayTypeTrait, ResourceType, CallableType, IterableType, VoidType: an ErrorType (a mixed)
+        Type::Void
+        | Type::Resource
+        | Type::ObjectWithoutClass
+        | Type::Object(..)
+        | Type::Static(..)
+        | Type::This(_)
+        | Type::EnumCase(..)
+        | Type::ObjectShape(_)
+        | Type::Closure(_)
+        | Type::Callable(_)
+        | Type::Array(..)
+        | Type::ConstArray(_)
+        | Type::Iterable(..) => Type::Error,
         Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => {
             Type::ConstInt(s.parse().expect("int"))
         }

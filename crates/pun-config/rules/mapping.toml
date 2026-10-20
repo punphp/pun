@@ -361,8 +361,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/prefer-yield-from" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "If the function explicitly returns an array, and has the return type `iterable`, then `yield from` must be used instead of `return`." }
 "dead-code/no-always-false-condition" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Reduce always false in a `if (a || b)` condition" }
 "dead-code/no-always-true-if" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove if condition that is always true" }
-"dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
-"dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
+"dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
+"dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
 "dead-code/no-and-true" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `and true` that has no added value" }
 "dead-code/no-bool-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove unnecessary ternary expressions" }
 "dead-code/no-cast-in-concat" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove (string) casting when it comes to concat, that does this by default" }
@@ -1051,7 +1051,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/non-boolean-ternary" = { preset = "strict", status = "decided" }
 "control-flow/non-boolean-while" = { preset = "strict", status = "decided" }
 "control-flow/switch-type-mismatch" = { preset = "strict", status = "decided" }
-"control-flow/unhandled-match" = { preset = "recommended", status = "decided" }
+"control-flow/unhandled-match" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-and-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-not-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-or-always-constant" = { preset = "recommended", ported = true, status = "decided" }
@@ -1121,7 +1121,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/duplicate-parameter" = { preset = "basic", ported = true, status = "decided" }
 "functions/internal-function-call" = { preset = "basic", ported = true, status = "decided" }
 "functions/internal-function-callable" = { preset = "basic", ported = true, status = "decided" }
-"functions/invalid-callable-call" = { preset = "essential", status = "decided" }
+"functions/invalid-callable-call" = { preset = "essential", ported = true, status = "decided" }
 "functions/invalid-closure-use" = { preset = "basic", ported = true, status = "decided" }
 "functions/invalid-first-class-callable" = { preset = "basic", status = "decided" }
 "functions/invalid-parameter-name" = { preset = "basic", ported = true, status = "decided" }
@@ -1214,7 +1214,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/arrow-function-return" = { preset = "essential", ported = true, status = "decided" }
 "types/assign-to-this" = { preset = "basic", ported = true, status = "decided" }
 "types/by-ref-foreach-on-expression" = { preset = "basic", status = "decided" }
-"types/call-user-func-argument" = { preset = "recommended", status = "decided" }
+"types/call-user-func-argument" = { preset = "recommended", ported = true, status = "decided" }
 "types/catch-non-throwable" = { preset = "basic", ported = true, status = "decided" }
 "types/class-constant-value" = { preset = "essential", ported = true, status = "decided" }
 "types/clone-non-object" = { preset = "essential", ported = true, status = "decided" }
@@ -1272,7 +1272,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/missing-method-return-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-method-throws" = { preset = "max", status = "decided" }
 "types/missing-param-type" = { preset = "strict", ported = true, status = "decided" }
-"types/missing-preg-quote-delimiter" = { preset = "recommended", status = "decided" }
+"types/missing-preg-quote-delimiter" = { preset = "recommended", ported = true, status = "decided" }
 "types/missing-property-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-return" = { preset = "basic", ported = true, status = "decided" }
 "types/missing-return-type" = { preset = "strict", ported = true, fixed_by = ["lint/types/add-void-return-type"], status = "decided", note = "level 6; fixed by the Rector-derived return-type rules where the type is inferable" }

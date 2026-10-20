@@ -1699,6 +1699,18 @@
     ],
     [
         null,
+        "array{a: int, ...<stdClass, string>}",
+        "array{a: int, ...<int|string, string>}",
+        "array{a: int, ...<int|string, string>}",
+        "array<int|string, int|string>",
+        null,
+        [
+            "int|string",
+            "int|string"
+        ]
+    ],
+    [
+        null,
         "array{a: int, ...<'a'|'b', string>}",
         "array{a: int, b?: string}",
         "array{a: int, b?: string}",

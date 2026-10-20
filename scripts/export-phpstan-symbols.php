@@ -218,6 +218,12 @@ function dump(int $phpVersion, array &$typeStrings): array
             'constants' => [],
             'methods' => [],
         ];
+        // the templates' variance, when not invariant (TemplateTypeVariance::describe())
+        foreach ($class->getTemplateTypeMap()->getTypes() as $name => $t) {
+            if ($t instanceof PHPStan\Type\Generic\TemplateType && !$t->getVariance()->invariant()) {
+                $entry['variances'][$name] = $t->getVariance()->describe();
+            }
+        }
         // getIterableKeyType() / getIterableValueType() over the class's own templates (for foreach and iterable<>)
         if ($class->implementsInterface(Traversable::class) || $class->getName() === Traversable::class) {
             $own = array_values($class->getTemplateTypeMap()->getTypes());
@@ -322,7 +328,7 @@ const PROBES = [
     'array{a: int, a: string}', 'array{a: int, a?: string}', 'array{a?: int, a?: string}', 'array{int, a: string, int}',
     'object{a: int, b?: string}', "object{'a': int}", 'array{}', 'list{}', 'array{0?: int}', 'array{a?: int}',
     'array{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}', 'array{1, 2, 3, 4, 5, 6, 7, 8, 9}',
-    'array{a: int, ...<1|2, string>}', 'array{a: int, ...<\'a\'|\'b\', string>}', 'array{"x": int}', 'array{1.5: int}', 'array{_a1: int, a-b: int, \\a: int, 1a: int}',
+    'array{a: int, ...<1|2, string>}', 'array{a: int, ...<stdClass, string>}', 'array{a: int, ...<\'a\'|\'b\', string>}', 'array{"x": int}', 'array{1.5: int}', 'array{_a1: int, a-b: int, \\a: int, 1a: int}',
     'int|string[]', 'Traversable|string[]', 'array|int[]', 'iterable|int[]', 'list<int>|string[]', 'array{a: int}|int[]',
     'ArrayIterator<int>|int[]', 'Countable|int[]', '(int|string)[]', 'int[]|string[]', '?int', 'int|null|false', '1|2|3', '1.5|2.0|1',
     "'a'|'b'|string", 'true|false', 'true|bool', 'int<1, 3>|int<2, 5>', 'int<1, 3>|int<5, 7>', 'int<1, 3>|int<4, 7>', 'int<1, 3>|4',
@@ -479,7 +485,9 @@ if (($argv[1] ?? '') === 'accepts') {
         'class-string<stdClass>', "'Countable'", "'Nope'", '__stringAndStringable', '__stringNotStringable', 'DateTimeInterface', 'DateTime|DateTimeImmutable',
         'Throwable', 'Error|Exception', 'array<int>', 'callable&array', '(T&Countable)', 'array{a: lowercase-string, b: int}', "1|array{}",
         'array{ArrayIterator<int, string>, ArrayIterator<int, int>}', 'array{a?: int}', 'array<int, int>',
-        "'strlen'", "'ArrayIterator::count'", "'ArrayIterator::nope'", "'Closure::nope'", "'Nope::nope'", "''", "'1a::b'"];
+        "'strlen'", "'ArrayIterator::count'", "'ArrayIterator::nope'", "'Closure::nope'", "'Nope::nope'", "''", "'1a::b'",
+        "array{'ArrayIterator', 'count'}", "array{'ArrayIterator', 'nope'}", "array{'Closure', 'nope'}", "array{'Closure', 'bind'|'nope'}",
+        "array{'Nope', 'x'}", "array{0: 'ArrayIterator', 1?: 'count'}", "array{'ArrayIterator', string}", "array{ArrayIterator, 'count'}", "array{1, 'count'}"];
     $sets = [[$atoms, 'ArrayIterator'], [['static', '$this', 'ArrayIterator', 'ArrayIterator<int, string>', 'Iterator', 'object', 'stdClass', 'Nope', 'Countable'], 'ArrayIterator'],
         [['static', '$this', 'Nope'], 'Nope']];
     $rows = [];

@@ -3,7 +3,7 @@
 //! MethodTagTemplateTypeTraitRule), EnumTemplateTypeRule, and GenericAncestorsCheck (ClassAncestorsRule,
 //! InterfaceAncestorsRule, EnumAncestorsRule, UsedTraitsRule), both through GenericObjectTypeCheck.
 //!
-//! ponytail: template variance (VarianceCheck), unresolvable ancestor types and CrossCheckInterfacesHelper are not
+//! ponytail: unresolvable ancestor types and CrossCheckInterfacesHelper are not
 //! ported yet.
 
 use std::cell::RefCell;
@@ -878,6 +878,8 @@ struct AncestorMessages<'s> {
     no_related: String,
     /// `checkMissingTypehints`: `%s` a generic name without a tag, `%s` its templates
     missing: Option<String>,
+    /// VarianceCheck's context: `%s` the ancestor type
+    variance: String,
 }
 
 /// `resolveExtendsTags()` & co.: each tag's type keyed by its class name, a later tag replacing an earlier one.
@@ -898,7 +900,7 @@ fn ancestor_types(nodes: &[pun_phpstan::phpdoc::Node], scope: &NameScope) -> Vec
     out.into_iter().map(|(_, t)| t).collect()
 }
 
-/// GenericAncestorsCheck::check() without VarianceCheck and the `missingType.generics` of unused names
+/// GenericAncestorsCheck::check() without the `missingType.generics` of unused names
 /// (MissingTypehintCheck's rules report those).
 fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: &mut Found) {
     let tag = m.tag;
@@ -950,6 +952,10 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
                 Some(_) => {}
             }
         }
+        let mut variance = Vec::new();
+        let context = sprintf(&m.variance, &[ty.describe(Level::TypeOnly)]);
+        super::variance::check(super::variance::Variance::Static, ty, &context, None, &mut variance);
+        variance.into_iter().for_each(|v| out.push("generics.variance", v));
         for arg in args.iter().filter(|a| matches!(a, Type::Projection(..) | Type::Wildcard)) {
             let message = format!(
                 "Call-site variance annotation of {} in generic type {} in PHPDoc tag {tag} is not allowed.",
@@ -1078,6 +1084,7 @@ pub fn class(c: &mut Checker, class: &Class) {
                         "The @extends tag of class {n} describes %s but the class extends %s."
                     ),
                     missing: None,
+                    variance: format!("in extended type %s of class {n}"),
                 },
             ),
             (
@@ -1095,6 +1102,7 @@ pub fn class(c: &mut Checker, class: &Class) {
                         "The @implements tag of class {n} describes %s but the class implements: %s"
                     ),
                     missing: None,
+                    variance: format!("in implemented type %s of class {n}"),
                 },
             ),
         ],
@@ -1143,6 +1151,7 @@ pub fn interface(c: &mut Checker, i: &Interface) {
                         "The @extends tag of interface {n} describes %s but the interface extends: %s"
                     ),
                     missing: None,
+                    variance: format!("in extended type %s of interface {n}"),
                 },
             ),
             (
@@ -1158,6 +1167,7 @@ pub fn interface(c: &mut Checker, i: &Interface) {
                     ),
                     no_related: String::new(),
                     missing: None,
+                    variance: String::new(),
                 },
             ),
         ],
@@ -1200,6 +1210,7 @@ pub fn enum_(c: &mut Checker, e: &Enum) {
                     no_names: format!("Enum {name} has @extends tag, but cannot extend anything."),
                     no_related: String::new(),
                     missing: None,
+                    variance: String::new(),
                 },
             ),
             (
@@ -1217,6 +1228,7 @@ pub fn enum_(c: &mut Checker, e: &Enum) {
                         "The @implements tag of enum {n} describes %s but the enum implements: %s"
                     ),
                     missing: None,
+                    variance: format!("in implemented type %s of enum {n}"),
                 },
             ),
         ],
@@ -1454,6 +1466,7 @@ pub fn trait_use(c: &mut Checker, u: &TraitUse) {
                 missing: (c.level >= 6).then(|| {
                     format!("{upper} uses generic trait %s but does not specify its types: %s")
                 }),
+                variance: format!("in used type %s of {description}"),
             },
         )],
         &mut found,

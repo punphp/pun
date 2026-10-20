@@ -386,7 +386,11 @@ impl Doc {
                     closure_this.push((rank, (tag.clone(), name, node)));
                 }
             } else if let Some(rank) = order(&RETURN_TAGS, tag) {
-                if let Some((node, _)) = type_value(value) {
+                // PhpDocParser expects whitespace or the end after the type: `@return Foo(` is invalid
+                // ponytail: for `@return` only; the other tags still take the type prefix
+                if let Ok((node, offset)) = phpdoc::parse_prefix(value)
+                    && !value[offset..].starts_with(|ch: char| !ch.is_whitespace())
+                {
                     returns.push((rank, (tag.clone(), node)));
                 }
             } else if let Some(rank) = order(&VAR_TAGS, tag) {
