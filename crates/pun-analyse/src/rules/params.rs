@@ -129,7 +129,6 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
         builtin: variants.iter().any(|v| v.builtin),
     };
     for v in &variants {
-        // `$isVariadic` is the acceptors' until a merged parameter sets it (as upstream does)
         combined.variadic |= v.variadic;
         for i in 0..v.names.len() {
             if i == combined.names.len() {
@@ -146,9 +145,20 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
             if combined.types[i] != v.types[i] {
                 combined.types[i] = format!("{}|{}", combined.types[i], v.types[i]);
             }
-            combined.variadic = combined.variadics[i] || v.variadics[i];
-            combined.variadics[i] = combined.variadic;
-            if combined.variadic {
+            let variadic = combined.variadics[i] || v.variadics[i];
+            combined.variadics[i] = variadic;
+            if variadic {
+                // the variadic parameter swallows every parameter behind it, and their types
+                let dropped: Vec<String> = combined.types[i + 1..]
+                    .iter()
+                    .chain(&v.types[i + 1..])
+                    .cloned()
+                    .collect();
+                for t in dropped {
+                    if !combined.types[i].split('|').any(|m| m == t) {
+                        combined.types[i] = format!("{}|{}", combined.types[i], t);
+                    }
+                }
                 combined.names.truncate(i + 1);
                 combined.types.truncate(i + 1);
                 combined.variadics.truncate(i + 1);
@@ -158,6 +168,41 @@ pub fn select(variants: Variants, counts: &Counts) -> Acceptor {
         }
     }
     combined
+}
+
+/// `CallToFunctionParametersRule::getVariantForArgumentsCount()`: when no variant accepts the argument count but
+/// their combination does, the count is checked against the variant closest to it.
+pub fn closest_variant(
+    variants: &[Acceptor],
+    counts: &Counts,
+    selected: &Acceptor,
+) -> Option<Acceptor> {
+    if variants.len() < 2
+        || counts
+            .args
+            .iter()
+            .any(|a| a.unpack.is_some() || a.name.is_some())
+    {
+        return None;
+    }
+    let n = counts.args.len();
+    if !selected.accepts(n) || variants.iter().any(|v| v.accepts(n)) {
+        return None;
+    }
+    let mut closest: Option<(&Acceptor, usize)> = None;
+    for v in variants {
+        let insufficient = n < v.min();
+        let distance = if insufficient {
+            v.min() - n
+        } else {
+            n - v.optional.len()
+        };
+        if closest.is_some_and(|(_, d)| distance > d || (distance == d && !insufficient)) {
+            continue;
+        }
+        closest = Some((v, distance));
+    }
+    closest.map(|(v, _)| v.clone())
 }
 
 /// One argument as written.

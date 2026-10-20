@@ -102,7 +102,9 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
-        let acceptor = params::select(variants, &counts);
+        let all = variants.all.clone();
+        let selected = params::select(variants, &counts);
+        let acceptor = params::closest_variant(&all, &counts, &selected).unwrap_or(selected);
         params::check(
             c,
             &acceptor,
