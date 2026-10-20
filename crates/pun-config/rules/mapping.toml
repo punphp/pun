@@ -1070,10 +1070,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/impossible-type-check" = { preset = "recommended", status = "decided" }
 "dead-code/loose-comparison-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/number-comparison-always-constant" = { preset = "recommended", status = "decided" }
-"dead-code/pure-function-result-unused" = { preset = "recommended", status = "decided" }
-"dead-code/pure-method-result-unused" = { preset = "recommended", status = "decided" }
-"dead-code/pure-new-result-unused" = { preset = "recommended", status = "decided" }
-"dead-code/pure-static-method-result-unused" = { preset = "recommended", status = "decided" }
+"dead-code/pure-function-result-unused" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/pure-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/pure-new-result-unused" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/pure-static-method-result-unused" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/redundant-null-coalesce" = { preset = "basic", status = "decided" }
 "dead-code/strict-comparison-always-constant" = { preset = "recommended", status = "decided" }
 "dead-code/ternary-always-constant" = { preset = "recommended", status = "decided" }
@@ -1089,7 +1089,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/unused-private-constant" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-constant"], ported = true, status = "decided" }
 "dead-code/unused-private-method" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-method"], ported = true, status = "decided" }
 "dead-code/unused-private-property" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-private-property"], ported = true, status = "decided" }
-"dead-code/unused-result" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-expression"], status = "decided" }
+"dead-code/unused-result" = { preset = "recommended", fixed_by = ["lint/dead-code/no-unused-expression"], ported = true, status = "decided" }
 "dead-code/unused-static-method-result" = { preset = "recommended", status = "decided" }
 "dead-code/unused-trait" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/useless-return-value" = { preset = "recommended", ported = true, status = "decided" }

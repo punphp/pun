@@ -142,6 +142,699 @@
    "tip": null
   },
   {
+   "file": "src/noop.php",
+   "line": 20,
+   "identifier": "impureFunction.pure",
+   "message": "Function NoopFixture\\impure() is marked as impure but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 29,
+   "identifier": "throws.unusedType",
+   "message": "Function NoopFixture\\pureThrows() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 95,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 97,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$list[0]\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 98,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->value\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 99,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$maybe?->value\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 101,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box::$shared\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 102,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"\\NoopFixture\\Box::LIMIT\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 103,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box::LIMIT\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 104,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"ANSWER\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 105,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"__LINE__\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 106,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"1.5\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 107,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"null\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 108,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"@$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 109,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"+$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 110,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"-$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 111,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"!$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 112,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"~$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 113,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(string) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 114,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(int) $s\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 115,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(bool) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 116,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(float) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 117,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(array) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 118,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(object) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 119,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($a, $list[1])\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 119,
+   "identifier": "isset.variable",
+   "message": "Variable $a in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 120,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($a)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 121,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"\"value {$a} and {$box->value}\"\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 122,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"[1, 'k' => 2, ...$list]\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 123,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"clone $box\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 124,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a + 1\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 125,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a . 'x'\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 126,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a instanceof \\NoopFixture\\Box\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 126,
+   "identifier": "instanceof.alwaysFalse",
+   "message": "Instanceof between int and NoopFixture\\Box will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 127,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->value\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 128,
+   "identifier": "logicalXor.resultUnused",
+   "message": "Unused result of \"xor\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 129,
+   "identifier": "logicalAnd.resultUnused",
+   "message": "Unused result of \"and\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 130,
+   "identifier": "logicalOr.resultUnused",
+   "message": "Unused result of \"or\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 131,
+   "identifier": "logicalAnd.resultUnused",
+   "message": "Unused result of \"and\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 132,
+   "identifier": "booleanAnd.resultUnused",
+   "message": "Unused result of \"&&\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 133,
+   "identifier": "booleanOr.resultUnused",
+   "message": "Unused result of \"||\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 134,
+   "identifier": "ternary.resultUnused",
+   "message": "Unused result of ternary operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 135,
+   "identifier": "ternary.resultUnused",
+   "message": "Unused result of ternary operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 136,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"match ($a) {\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 140,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"fn() => 1\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 148,
+   "identifier": "function.resultUnused",
+   "message": "Call to function strlen() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 149,
+   "identifier": "function.resultUnused",
+   "message": "Call to function strlen() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 151,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 152,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\sideEffectFree() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 156,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 157,
+   "identifier": "function.resultUnused",
+   "message": "Call to function strlen() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 158,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_map() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 159,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_map() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 166,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_map() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 168,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_filter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 169,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_filter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 170,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_filter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 171,
+   "identifier": "function.resultUnused",
+   "message": "Call to function var_export() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 173,
+   "identifier": "function.resultUnused",
+   "message": "Call to function print_r() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 174,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"('strlen')($s)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 175,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke 'nothing' but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 176,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 178,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 179,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 180,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 181,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 182,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 184,
+   "identifier": "new.resultUnused",
+   "message": "Call to NoopFixture\\Box::__construct() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 185,
+   "identifier": "new.resultUnused",
+   "message": "Call to new NoopFixture\\Plain() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 187,
+   "identifier": "new.resultUnused",
+   "message": "Call to new stdClass() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 189,
+   "identifier": "class.notFound",
+   "message": "Instantiated class NoopFixture\\Missing not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/noop.php",
+   "line": 190,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"new class\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 192,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"new class(1) extends \\NoopFixture\\Plain\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 193,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of an anonymous class has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 197,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 198,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"'NoopFixture\\pure'\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 199,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"|>\" between 5 and 'nothing' results in an error.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 199,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"'nothing'\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 199,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke 'nothing' but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 201,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 202,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 206,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"${$s}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 207,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"${'a' . 'b'}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 207,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $ab",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 213,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 216,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"\\NoopFixture\\Box::LIMIT\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 217,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"new class(i: 1) extends \\NoopFixture\\Plain\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 218,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of an anonymous class has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 223,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"($a + 1) * 2\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 224,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(int) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 224,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 225,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(bool) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 225,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (boolean) cast is deprecated in PHP 8.5. Use (bool) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 226,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(double) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 226,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (double) cast is deprecated in PHP 8.5. Use (float) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 227,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(string) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 227,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (binary) cast is deprecated in PHP 8.5. Use (string) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 228,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->{$s}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 229,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->{$s . 'x'}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
    "file": "src/toggles.php",
    "line": 16,
    "identifier": "constructor.unusedParameter",
@@ -160,13 +853,6 @@
    "line": 22,
    "identifier": "closure.unusedUse",
    "message": "Anonymous function has an unused use $a.",
-   "tip": null
-  },
-  {
-   "file": "src/toggles.php",
-   "line": 26,
-   "identifier": "expr.resultUnused",
-   "message": "Expression \"$f()\" on a separate line does not do anything.",
    "tip": null
   },
   {

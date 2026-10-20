@@ -3,6 +3,7 @@
 mod finally;
 mod function_discard;
 mod no_discard;
+mod noop;
 mod unreachable;
 mod unused_private;
 
@@ -36,6 +37,7 @@ pub(super) use unused_private::class as unused_private;
 pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);
     function_discard::statement(c, s);
+    noop::statement(c, s);
 }
 
 pub(super) fn typed_statement(
@@ -49,6 +51,7 @@ pub(super) fn typed_statement(
     ]
     .into_iter()
     .flatten()
+    .chain(if level >= 4 { noop::typed(s) } else { Vec::new() })
 }
 
 /// PHP-Parser replaces imported function aliases, but preserves names with namespace fallback.
