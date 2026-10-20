@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use mago_allocator::{Arena, LocalArena};
 use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
-use mago_analyzer::plugin::PluginRegistry;
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::reference::SymbolReferences;
@@ -125,7 +124,7 @@ pub(super) fn analyse<'arena>(
     if wanted.is_empty() {
         return HashMap::new();
     }
-    let registry = PluginRegistry::new();
+    let registry = super::return_types::registry(&file.contents);
     let settings = Settings::new(crate::codebase::php_version(php_version));
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());

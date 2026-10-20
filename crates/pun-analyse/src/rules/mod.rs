@@ -63,6 +63,8 @@ mod assert_tags;
 mod phpdoc_types;
 mod var_names;
 mod variance;
+mod bind_scope;
+mod return_types;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -753,7 +755,7 @@ pub struct Checker<'a, 'arena> {
     piped: HashSet<Span>,
     /// Closures whose `$this` is rebound: `(function () {...})->call($o)` (MethodCallHandler) and `Closure::bind()`
     /// (StaticCallHandler); `->bindTo()` keeps the scope's `$this` (oracle-checked).
-    rebound: HashSet<Span>,
+    rebound: HashMap<Span, Option<String>>,
     /// `Error::file`: the path, or `T.php (in context of class C)` inside a trait analysed for class C.
     label: String,
     /// Set when walking a trait in a class's context (`$scope->isInTrait()`).
@@ -928,12 +930,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             if self.resolved(id).eq_ignore_ascii_case("Closure") && m.value.eq_ignore_ascii_case(b"bind"))
     }
 
-    fn rebind(&mut self, mut e: &Expression) {
+    /// A rebound closure literal and the class of its bound `$this` (see [`Checker::bind_class()`]).
+    fn rebind(&mut self, mut e: &Expression, class: Option<String>) {
         while let Expression::Parenthesized(p) = e {
             e = p.expression;
         }
         if matches!(e, Expression::Closure(_) | Expression::ArrowFunction(_)) {
-            self.rebound.insert(e.span());
+            self.rebound.insert(e.span(), class);
         }
     }
 
@@ -1897,7 +1900,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let ClassLikeMemberSelector::Identifier(m) = &call.method
             && m.value.eq_ignore_ascii_case(b"call")
         {
-            self.rebind(call.object);
+            let class = self.call_class(&call.argument_list);
+            self.rebind(call.object, class);
         }
         calls::method_call(self, call);
         types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
@@ -1949,7 +1953,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if self.is_closure_bind(call) {
             self.closure_bind += 1;
             if let Some(Argument::Positional(a)) = call.argument_list.arguments.first() {
-                self.rebind(a.value);
+                let class = self.bind_class(&call.argument_list);
+                self.rebind(a.value, class);
             }
         }
         calls::static_method_call(self, call);
@@ -1961,21 +1966,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.closure_bind -= 1;
         }
     }
-    // ponytail: a rebound closure gets no class scope (PHPStan checks it against the bound object's class)
+    // a rebound closure is checked in its bound `$this`'s class (none when Pun cannot tell it)
     fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         self.leave_this();
         self.larastan_leave_function();
         self.syntax.parents.pop();
         self.syntax.by_ref.pop();
         self.pop_frame();
-        if self.rebound.contains(&f.span()) {
+        if self.rebound.contains_key(&f.span()) {
             self.classes.pop();
         }
     }
     fn walk_out_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
         self.leave_this();
         self.pop_frame();
-        if self.rebound.contains(&f.span()) {
+        if self.rebound.contains_key(&f.span()) {
             self.classes.pop();
         }
     }
@@ -2104,9 +2109,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                     .chain(f.use_clause.iter().flat_map(|u| u.variables.iter()).map(|u| u.variable.name)),
                 &f.body,
             ));
-        if self.rebound.contains(&f.span()) {
+        if let Some(name) = self.rebound.get(&f.span()) {
             self.classes.push(ClassScope {
-                name: None,
+                name: name.clone(),
                 constructor_guards: Vec::new(),
             });
         }
@@ -2169,9 +2174,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         syntax::arrow_function(self, f);
         signatures::arrow_never(self, f);
         self.push_frame(FrameKind::Anonymous);
-        if self.rebound.contains(&f.span()) {
+        if let Some(name) = self.rebound.get(&f.span()) {
             self.classes.push(ClassScope {
-                name: None,
+                name: name.clone(),
                 constructor_guards: Vec::new(),
             });
         }
