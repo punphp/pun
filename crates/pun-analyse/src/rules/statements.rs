@@ -281,7 +281,7 @@ pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
     };
     if let Some((written, standard)) = deprecated {
         // PhpVersion::deprecatesNonStandardCasts()
-        if c.php_version >= 80500 {
+        if c.surely_at_least(80500) {
             c.report(
                 u,
                 "cast.deprecated",
@@ -293,7 +293,7 @@ pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
         }
     } else if matches!(u.operator, UnaryPrefixOperator::UnsetCast(..)) {
         // PhpVersion::supportsUnsetCast()
-        if c.php_version >= 80000 {
+        if !c.surely_below(80000) {
             c.report_non_ignorable(
                 u,
                 "cast.unset",
@@ -303,7 +303,7 @@ pub fn cast(c: &mut Checker, u: &UnaryPrefix) {
         }
     } else if matches!(u.operator, UnaryPrefixOperator::VoidCast(..)) {
         // PhpVersion::supportsVoidCast()
-        if c.php_version < 80500 {
+        if !c.surely_at_least(80500) {
             c.report_non_ignorable(
                 u,
                 "cast.voidNotSupported",
@@ -340,22 +340,6 @@ pub fn backtick(c: &mut Checker, s: &ShellExecuteString) {
     );
 }
 
-impl Checker<'_, '_> {
-    /// `$scope->getPhpVersion()->...->yes()` for `version >= at_least`: the configured version, or the range a
-    /// `PHP_VERSION_ID` guard leaves (see `may_be_at_least()`).
-    fn surely_at_least(&self, at_least: i64) -> bool {
-        const MIN: i64 = 50207;
-        match super::scope::version_range(&self.guards) {
-            Some((lo, hi)) if lo.is_some_and(|l| l > MIN) || hi.is_some() => {
-                let lo = lo.unwrap_or(MIN).max(MIN);
-                // an empty range is never, which every version range contains
-                lo >= at_least || hi.is_some_and(|h| h < lo)
-            }
-            _ => i64::from(self.php_version) >= at_least,
-        }
-    }
-}
-
 /// NoncapturingCatchRule.
 pub fn noncapturing_catch(c: &mut Checker, clause: &TryCatchClause) {
     if clause.variable.is_some() || c.surely_at_least(80000) {
@@ -383,7 +367,7 @@ pub fn standalone_throw(c: &mut Checker, s: &ExpressionStatement) {
 /// ThrowExpressionRule.
 pub fn throw_expression(c: &mut Checker, t: &Throw) {
     // PhpVersion::supportsThrowExpression()
-    if c.php_version >= 80000 || c.standalone_throws.contains(&t.span()) {
+    if c.surely_at_least(80000) || c.standalone_throws.contains(&t.span()) {
         return;
     }
     c.report_non_ignorable(
@@ -398,7 +382,7 @@ pub fn throw_expression(c: &mut Checker, t: &Throw) {
 /// `at`: whether it reported (the rest of the rule is then skipped).
 pub fn first_class_callable(c: &mut Checker, at: Span, args: &PartialArgumentList) -> bool {
     // PhpVersion::supportsFirstClassCallables(); `x |> f(...)` is the call `f(x)`
-    if c.php_version >= 80100
+    if c.surely_at_least(80100)
         || c.piped.contains(&at)
         || !matches!(
             args.arguments.iter().collect::<Vec<_>>().as_slice(),

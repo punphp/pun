@@ -984,6 +984,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     class: class.to_string(),
                     trait_name,
                     renames,
+                    php_versions: self.guards.iter().filter(|g| matches!(g, Guard::PhpVersion(..))).cloned().collect(),
                 });
             }
         }
@@ -1895,7 +1896,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         strict::dynamic_call(self, call.span(), call.object, &call.method);
         types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
         if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.object, "method.nameNotString");
+            types::dynamic_names::check(self, name, false, "Method", call.object, true, "method.nameNotString");
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
@@ -1911,7 +1912,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         calls::method_call(self, call);
         types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
         if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.object, "method.nameNotString");
+            types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
         }
         assign::arguments(self, assign::Callee::Method(call));
     }
@@ -1967,7 +1968,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         calls::static_method_call(self, call);
         types::static_call(self, call);
         if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.class, "staticMethod.nameNotString");
+            types::dynamic_names::check(self, name, false, "Method", call.class, false, "staticMethod.nameNotString");
         }
         assign::arguments(self, assign::Callee::StaticMethod(call));
     }
@@ -2164,7 +2165,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         through_static::constant(self, a);
         names::class_constant(self, a);
         if let Some(name) = types::dynamic_names::constant(&a.constant) {
-            types::dynamic_names::check(self, name, false, "Class constant", a.class, "classConstant.nameNotString");
+            types::dynamic_names::check(self, name, false, "Class constant", a.class, false, "classConstant.nameNotString");
         }
         dynamic_fetch::class_constant(self, a);
         internal_usage::class_constant(self, a);

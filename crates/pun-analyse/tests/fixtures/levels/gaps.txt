@@ -715,8 +715,6 @@
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug4548
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11510
 2 PhpDoc/IncompatiblePropertyPhpDocTypeRuleTest::testBug4548
-# PHPStan 2.3 narrows the scope's PHP version by `PHP_VERSION_ID` conditions (rules/gaps.txt)
-3 Arrays/ArrayUnpackingRuleTest::testPhpVersionNarrowedScope
 # PHPStan 2.3's inferred types in return.type: template arguments (`Foo<non-empty-array<non-falsy-string, ...>>`,
 # `static(Value)`, `*NEVER*` printed as `never`), callable arrays, iterator template defaults, and the template
 # covariance tip on generic returns

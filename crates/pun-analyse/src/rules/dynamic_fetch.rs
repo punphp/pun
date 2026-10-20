@@ -11,7 +11,7 @@ pub fn class_constant(c: &mut Checker, a: &ClassConstantAccess) {
         return;
     };
     // PhpVersion::supportsDynamicClassConstantFetch()
-    if c.php_version < 80300 {
+    if !c.surely_at_least(80300) {
         let message = "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.";
         c.report_non_ignorable(a, "classConstant.dynamicFetch", message.to_string(), None);
         return;

@@ -448,6 +448,62 @@
    "identifier": "nullsafe.neverNull",
    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
    "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 15,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for DynamicNameHolders\\Holder must be a string, but object was given.",
+   "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 15,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, object given.",
+   "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 16,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for DynamicNameHolders\\Holder must be a string, but object was given.",
+   "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 16,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, object given.",
+   "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 17,
+   "identifier": "classConstant.nameNotString",
+   "message": "Class constant name for DynamicNameHolders\\ParentHolder must be a string, but object was given.",
+   "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 17,
+   "identifier": "classConstant.nameType",
+   "message": "Class constant name in dynamic fetch can only be a string, object given.",
+   "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 18,
+   "identifier": "method.nameNotString",
+   "message": "Method name for DynamicNameHolders\\Holder must be a string, but object was given.",
+   "tip": null
+  },
+  {
+   "file": "holders.php",
+   "line": 19,
+   "identifier": "property.nameNotString",
+   "message": "Property name for DynamicNameHolders\\Holder must be a string, but object was given.",
+   "tip": null
   }
  ]
 }

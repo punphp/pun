@@ -119,6 +119,8 @@ pub(super) struct TraitUse {
     pub(super) class: String,
     pub(super) trait_name: String,
     pub(super) renames: HashMap<String, String>,
+    /// The `PHP_VERSION_ID` guards at the `use`: the trait is analysed in that scope.
+    pub(super) php_versions: Vec<super::scope::Guard>,
 }
 
 /// A checker for one walk of `file`.
@@ -318,6 +320,7 @@ fn in_trait_context(
         format!("class {display}")
     };
     checker.label = format!("{} (in context of {context})", checker.file_name());
+    checker.guards = u.php_versions.clone();
     checker.trait_context = Some(super::TraitContext {
         class_file: class_file.to_string(),
         class: class.to_string(),

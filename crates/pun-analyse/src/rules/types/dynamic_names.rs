@@ -93,6 +93,7 @@ pub(in super::super) fn check(
     castable: bool,
     what: &str,
     holder: &Expression,
+    nullsafe: bool,
     identifier: &str,
 ) {
     if !c.non_stringable_names {
@@ -116,11 +117,12 @@ pub(in super::super) fn check(
         Expression::Self_(_) => keyword("self"),
         Expression::Static(_) => keyword("static"),
         Expression::Parent(_) => keyword("parent"),
-        e => type_at(c, e.span()).map(|t| declared::with_classes(c, || t.describe(Level::TypeOnly))),
+        // a nullsafe access is checked as a plain one on the holder without `null`
+        e => type_at(c, e.span())
+            .map(|t| if nullsafe { t.remove_null() } else { t })
+            .map(|t| declared::with_classes(c, || t.describe(Level::TypeOnly))),
     };
-    let Some(holder) = holder else {
-        return;
-    };
+    let Some(holder) = holder else { return };
     // the castable check prints the expression's own type, the other the type it checked
     let given = if castable { ty } else { found };
     let given = declared::with_classes(c, || given.describe(Level::Precise));

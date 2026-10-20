@@ -45,7 +45,9 @@
     [71, "argument.vsprintf", "Call to vsprintf contains 1-3 placeholders, 0 values given.", null],
     [72, "argument.vsprintf", "Call to vsprintf contains 4 placeholders, 1-2 values given.", null],
     [75, "argument.printf", "Call to printf contains 3 placeholders, 1 value given.", null],
-    [81, "argument.vsprintf", "Call to vsprintf contains 1 placeholder, 1-2 values given.", null]
+    [81, "argument.vsprintf", "Call to vsprintf contains 1 placeholder, 1-2 values given.", null],
+    [100, "argument.printf", "Call to printf contains an invalid placeholder.", null],
+    [101, "argument.printf", "Call to printf contains an invalid placeholder.", null]
   ],
   "80511": [
     [9, "argument.sprintf", "Call to sprintf contains 3 placeholders, 2 values given.", null],
@@ -92,6 +94,8 @@
     [71, "argument.vsprintf", "Call to vsprintf contains 1-3 placeholders, 0 values given.", null],
     [72, "argument.vsprintf", "Call to vsprintf contains 4 placeholders, 1-2 values given.", null],
     [75, "argument.printf", "Call to printf contains 3 placeholders, 1 value given.", null],
-    [81, "argument.vsprintf", "Call to vsprintf contains 1 placeholder, 1-2 values given.", null]
+    [81, "argument.vsprintf", "Call to vsprintf contains 1 placeholder, 1-2 values given.", null],
+    [100, "argument.printf", "Call to printf contains an invalid placeholder.", null],
+    [101, "argument.printf", "Call to printf contains an invalid placeholder.", null]
   ]
 }

@@ -39,7 +39,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant
     class_as_class_constant(c, k);
     let modifiers = k.modifiers.as_slice();
     // ConstantsInTraitsRule (`$scope->isInTrait()`), PhpVersion::supportsConstantsInTraits()
-    if c.php_version < 80200 && c.in_target {
+    if !c.surely_at_least(80200) && c.in_target {
         c.report_non_ignorable(
             k,
             "classConstant.inTrait",
@@ -49,7 +49,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant
         );
     }
     // FinalConstantRule, PhpVersion::supportsFinalConstants()
-    if is_final(modifiers) && c.php_version < 80100 {
+    if is_final(modifiers) && !c.surely_at_least(80100) {
         c.report_non_ignorable(
             k,
             "classConstant.finalNotSupported",
@@ -58,7 +58,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant
         );
     }
     // NativeTypedClassConstantRule, PhpVersion::supportsNativeTypesInClassConstants()
-    if k.hint.is_some() && c.php_version < 80300 {
+    if k.hint.is_some() && !c.surely_at_least(80300) {
         c.report_non_ignorable(
             k,
             "classConstant.nativeTypeNotSupported",
@@ -99,13 +99,13 @@ pub fn read_only_class(c: &mut Checker, at: Span, modifiers: &[Modifier], anonym
     }
     let message = if anonymous {
         // PhpVersion::supportsReadOnlyAnonymousClasses()
-        if c.php_version >= 80300 {
+        if c.surely_at_least(80300) {
             return;
         }
         "Anonymous readonly classes are supported only on PHP 8.3 and later."
     } else {
         // PhpVersion::supportsReadOnlyClasses()
-        if c.php_version >= 80200 {
+        if c.surely_at_least(80200) {
             return;
         }
         "Readonly classes are supported only on PHP 8.2 and later."

@@ -144,8 +144,8 @@ fn filter_var(c: &mut Checker, call: &FunctionCall, position: usize, per_key: bo
 }
 
 /// The constant integer values of `getFlagsValue()` of a flags argument: Mago's inferred integers, else (for the
-/// constants Mago's prelude lacks, like PHP 8.5's FILTER_THROW_ON_FAILURE) the literals, built-in constants and `|`
-/// written, or an array's `flags` item (0 without one).
+/// constants Mago's prelude lacks) the built-in constants and `|` written, or an array's `flags` item (0 without
+/// one).
 fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
     let inferred = c.type_of(e).and_then(|t| {
         t.types
@@ -160,8 +160,6 @@ fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
         return inferred;
     }
     match e {
-        Expression::Parenthesized(p) => flag_values(c, p.expression),
-        Expression::Literal(Literal::Integer(i)) => Some(vec![i64::try_from(i.value?).ok()?]),
         Expression::ConstantAccess(a) => {
             let name = String::from_utf8_lossy(a.name.value()).trim_start_matches('\\').to_string();
             Some(vec![c.builtins.constants.get(&name)?.parse().ok()?])
@@ -253,7 +251,7 @@ fn check_printf(c: &mut Checker, at: impl HasSpan, format: &Expression, name: &s
             if scanf {
                 printf_helper::scanf_count(format)
             } else {
-                printf_helper::printf_count(format, c.php_version)
+                printf_helper::printf_count(format, c.surely_at_least(80000))
             }
         })
         .collect();
@@ -323,7 +321,7 @@ fn vprintf(
         return;
     };
     let counts: Option<Vec<_>> = strings(ty)
-        .map(|format| printf_helper::printf_count(format, c.php_version))
+        .map(|format| printf_helper::printf_count(format, c.surely_at_least(80000)))
         .collect();
     let Some(counts) = counts else {
         invalid_placeholder(c, at, name);

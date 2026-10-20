@@ -7,7 +7,7 @@ const INT_MAX: u64 = 2147483647;
 
 /// `PrintfFormatParser::parse()` then `getRequiredArgumentsCount()`: how many arguments the format consumes, `None`
 /// when it throws ValueError. `h`/`H` are specifiers from PHP 8.0 (`supportsHhPrintfSpecifier()`).
-pub(super) fn printf_count(format: &[u8], php_version: u32) -> Option<usize> {
+pub(super) fn printf_count(format: &[u8], hh: bool) -> Option<usize> {
     let length = format.len();
     let (mut i, mut next, mut count) = (0, 0, 0);
     let mut use_index = |index: usize| count = count.max(index + 1);
@@ -64,7 +64,7 @@ pub(super) fn printf_count(format: &[u8], php_version: u32) -> Option<usize> {
             next - 1
         });
         let specifier = *format.get(i)?;
-        if !b"sdueEfFgGcoxXb%".contains(&specifier) && !(php_version >= 80000 && b"hH".contains(&specifier)) {
+        if !b"sdueEfFgGcoxXb%".contains(&specifier) && !(hh && b"hH".contains(&specifier)) {
             return None;
         }
         use_index(argument);

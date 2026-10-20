@@ -432,7 +432,7 @@ fn remember(c: &mut Checker, e: &Expression) {
 pub fn read(c: &mut Checker, p: &PropertyAccess) {
     // checkStringCastableName() runs on every fetch, the assigned one too
     if let Some(name) = super::types::dynamic_names::member(&p.property) {
-        super::types::dynamic_names::check(c, name, true, "Property", p.object, "property.nameNotString");
+        super::types::dynamic_names::check(c, name, true, "Property", p.object, false, "property.nameNotString");
     }
     if c.property_access.assigned.contains(&key(p.span())) {
         return;
@@ -645,7 +645,7 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
 /// AccessPropertiesRule on a nullsafe fetch, which it sees as a fetch on the object without `null`.
 pub fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
     if let Some(name) = super::types::dynamic_names::member(&p.property) {
-        super::types::dynamic_names::check(c, name, true, "Property", p.object, "property.nameNotString");
+        super::types::dynamic_names::check(c, name, true, "Property", p.object, true, "property.nameNotString");
     }
     let allowed = c.property_access.allowed.contains(&key(p.span()));
     super::types::property_fetch(c, p.span(), p.object, &p.property, true, allowed);
@@ -654,7 +654,7 @@ pub fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
 /// AccessStaticPropertiesRule on one static property fetch.
 pub fn static_read(c: &mut Checker, p: &StaticPropertyAccess) {
     if let Some(name) = super::types::dynamic_names::static_property(&p.property) {
-        super::types::dynamic_names::check(c, name, true, "Static property", p.class, "staticProperty.nameNotString");
+        super::types::dynamic_names::check(c, name, true, "Static property", p.class, false, "staticProperty.nameNotString");
     }
     if c.property_access.assigned.contains(&key(p.span())) {
         return;
