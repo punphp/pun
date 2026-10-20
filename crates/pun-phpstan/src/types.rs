@@ -3001,17 +3001,11 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
             }
         }
     }
+    // (`reduceArrays($arrayTypes, false)` hands a union with a general array back unchanged, never as one array)
     if general {
-        let reduced = reduce_arrays(&arrays, false);
-        if reduced.len() == 1 {
-            return vec![with(
-                reduced.into_iter().next().expect("one array"),
-                &accessories,
-            )];
-        }
         return vec![with(Type::array(union(keys), union(values)), &accessories)];
     }
-    reduce_arrays(&arrays, true)
+    reduce_arrays(&arrays)
         .into_iter()
         .map(|a| {
             let applied: Vec<Type> = if a.is_iterable_at_least_once().no() {
@@ -3029,26 +3023,21 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
 }
 
 /// `TypeCombinator::reduceArrays()` for shapes without unsealed extras (PHPDoc shapes outside bleeding edge).
-fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
-    let mut new_arrays = Vec::new();
+fn reduce_arrays(arrays: &[Type]) -> Vec<Type> {
     let mut to_process: Vec<Option<ConstArray>> = Vec::new();
     let mut empty = None;
+    // (processArrayTypes() calls it with constant arrays only)
     for a in arrays {
-        // only a general union (`preserve_tagged_unions` false) has arrays that are not constant
-        if !a.is_constant_array().yes() {
-            return arrays.to_vec();
-        }
         if a.is_iterable_at_least_once().no() {
             empty = Some(a.clone());
             continue;
         }
         to_process.extend(a.constant_arrays().into_iter().map(Some));
     }
-    if let Some(empty) = empty {
-        match empty {
-            Type::ConstArray(c) if preserve_tagged_unions => to_process.push(Some(*c)),
-            e => new_arrays.push(e),
-        }
+    // the empty array takes part in the merging (an empty constant array is a plain `array{}`: intersect() folds an
+    // accessory into it)
+    if let Some(Type::ConstArray(c)) = empty {
+        to_process.push(Some(*c));
     }
     let mut per_key: Vec<(Type, Vec<usize>)> = Vec::new();
     for (i, a) in to_process.iter().enumerate() {
@@ -3085,8 +3074,7 @@ fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
                 }
                 continue;
             };
-            if preserve_tagged_unions
-                && overlap == 1
+            if overlap == 1
                 && a.keys.len() == 1
                 && b.keys.len() == 1
                 && !matches!(
@@ -3098,32 +3086,25 @@ fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
                 to_process[*i] = None;
                 break;
             }
-            if preserve_tagged_unions && overlap == a.keys.len() && b.is_keys_superset_of(a) {
+            if overlap == a.keys.len() && b.is_keys_superset_of(a) {
                 to_process[j] = Some(b.merge_with(a));
                 to_process[*i] = None;
                 break;
             }
-            if preserve_tagged_unions && overlap == b.keys.len() && a.is_keys_superset_of(b) {
+            if overlap == b.keys.len() && a.is_keys_superset_of(b) {
                 to_process[*i] = Some(a.merge_with(b));
                 to_process[j] = None;
                 continue;
-            }
-            if !preserve_tagged_unions && overlap == a.keys.len() && overlap == b.keys.len() {
-                to_process[j] = Some(b.merge_with(a));
-                to_process[*i] = None;
-                break;
             }
         }
     }
     // ponytail: reduceArrays' second pass and final collapses only apply to shapes with unsealed extras
     // (bleeding edge) or past ConstantArrayTypeBuilder::ARRAY_COUNT_LIMIT, neither of which signatures reach.
-    new_arrays.extend(
-        to_process
-            .into_iter()
-            .flatten()
-            .map(|a| Type::ConstArray(Box::new(a))),
-    );
-    new_arrays
+    to_process
+        .into_iter()
+        .flatten()
+        .map(|a| Type::ConstArray(Box::new(a)))
+        .collect()
 }
 
 impl ConstArray {
