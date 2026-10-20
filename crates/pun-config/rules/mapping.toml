@@ -1185,7 +1185,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/invalid-trait-use-property-tag" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/invalid-trait-use-type-alias" = { preset = "basic", ported = true, status = "decided" }
 "phpdoc/invalid-type-alias" = { preset = "basic", ported = true, status = "decided" }
-"phpdoc/invalid-var-tag" = { preset = "essential", fixed_by = ["lint/dead-code/no-invalid-var-tag"], status = "decided" }
+"phpdoc/invalid-var-tag" = { preset = "essential", fixed_by = ["lint/dead-code/no-invalid-var-tag"], ported = true, status = "decided" }
 "phpdoc/invalid-var-tag-type" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/misplaced-require-implements" = { preset = "essential", ported = true, status = "decided" }
 "phpdoc/property-type-mismatch" = { preset = "essential", ported = true, status = "decided" }

@@ -76,6 +76,8 @@ pub struct Class {
     pub ancestors: Vec<String>,
     pub templates: Vec<Template>,
     pub cases: Vec<String>,
+    /// a backed enum's case values (case name, type string)
+    pub case_values: Vec<(String, String)>,
     pub is_interface: bool,
     pub is_trait: bool,
     pub is_enum: bool,
@@ -262,6 +264,7 @@ fn read_class(v: RawClass) -> Class {
             .collect(),
         is_enum: !v.cases.is_empty(),
         cases: v.cases,
+        case_values: Vec::new(),
         is_interface: v.interface,
         is_trait: false,
         is_final: v.is_final,

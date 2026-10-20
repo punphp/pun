@@ -388,45 +388,59 @@ struct TemplateSubject<'s> {
     method_tag: bool,
 }
 
+/// TemplateTypeCheck::check()'s message formats (`%s` placeholders): the name is an existing class, an existing
+/// type alias; the bound has an invalid class, is not supported; the default has an invalid class, is not in the
+/// bound; a required template follows an optional one.
+pub(super) struct TemplateMessages {
+    pub(super) existing_class: String,
+    pub(super) existing_alias: String,
+    pub(super) invalid_bound: String,
+    pub(super) not_supported: String,
+    pub(super) invalid_default: String,
+    pub(super) default_not_subtype: String,
+    pub(super) required_after_optional: String,
+}
+
+impl TemplateSubject<'_> {
+    fn messages(&self) -> TemplateMessages {
+        let subject = escape(self.subject);
+        let tag = if self.method_tag { "@method template" } else { "@template" };
+        let end = if self.method_tag { "" } else { "." };
+        TemplateMessages {
+            existing_class: format!("PHPDoc tag {tag} for {subject} cannot have existing class %s as its name."),
+            existing_alias: format!("PHPDoc tag {tag} for {subject} cannot have existing type alias %s as its name."),
+            invalid_bound: format!("PHPDoc tag {tag} %s for {subject} has invalid bound type %s."),
+            not_supported: format!("PHPDoc tag {tag} %s for {subject} with bound type %s is not supported."),
+            invalid_default: format!("PHPDoc tag {tag} %s for {subject} has invalid default type %s{end}"),
+            default_not_subtype: format!("Default type %s in PHPDoc tag {tag} %s for {subject} is not subtype of bound type %s{end}"),
+            required_after_optional: format!(
+                "PHPDoc tag @template %s for {subject} does not have a default type but follows an optional @template %s."
+            ),
+        }
+    }
+}
+
 /// TemplateTypeCheck::check(). `resolve_name` is `$scope->resolveName()`, `has_alias` `hasTypeAlias()` in the
 /// template type scope's class.
 fn template_check(
     tags: &[TemplateInput],
-    s: &TemplateSubject,
+    m: &TemplateMessages,
     resolve_name: &dyn Fn(&str) -> String,
     has_alias: &dyn Fn(&str) -> bool,
     out: &mut Found,
 ) {
-    let subject = s.subject;
-    let tag = if s.method_tag {
-        "@method template"
-    } else {
-        "@template"
-    };
-    let end = if s.method_tag { "" } else { "." };
     let mut with_default: Option<String> = None;
     for t in tags {
         let name = resolve_name(&t.name);
         if symbols::lookup(&name).is_some() {
-            out.push(
-                "generics.existingClass",
-                format!(
-                    "PHPDoc tag {tag} for {subject} cannot have existing class {name} as its name."
-                ),
-            );
+            out.push("generics.existingClass", sprintf(&m.existing_class, &[name.clone()]));
         }
         if has_alias(&name) {
-            out.push(
-                "generics.existingTypeAlias",
-                format!(
-                    "PHPDoc tag {tag} for {subject} cannot have existing type alias {name} as its name."
-                ),
-            );
+            out.push("generics.existingTypeAlias", sprintf(&m.existing_alias, &[name.clone()]));
         }
         let referenced = referenced_classes(&t.bound);
         for class in &referenced {
-            let message =
-                format!("PHPDoc tag {tag} {name} for {subject} has invalid bound type {class}.");
+            let message = sprintf(&m.invalid_bound, &[name.clone(), class.clone()]);
             match symbols::lookup(class) {
                 None => out.push("class.notFound", message),
                 Some(k) if k.is_trait => out.push("generics.traitBound", message),
@@ -437,10 +451,7 @@ fn template_check(
         if !supported_bound(&t.bound) {
             out.push(
                 "generics.notSupportedBound",
-                format!(
-                    "PHPDoc tag {tag} {name} for {subject} with bound type {} is not supported.",
-                    t.bound.describe(Level::TypeOnly)
-                ),
+                sprintf(&m.not_supported, &[name.clone(), t.bound.describe(Level::TypeOnly)]),
             );
         }
         let escaped = escape(&name);
@@ -463,9 +474,7 @@ fn template_check(
             if let Some(optional) = &with_default {
                 out.push(
                     "generics.requiredTypeAfterOptional",
-                    format!(
-                        "PHPDoc tag @template {name} for {subject} does not have a default type but follows an optional @template {optional}."
-                    ),
+                    sprintf(&m.required_after_optional, &[name.clone(), optional.clone()]),
                 );
             }
             continue;
@@ -473,9 +482,7 @@ fn template_check(
         with_default = Some(name.clone());
         let referenced = referenced_classes(default);
         for class in &referenced {
-            let message = format!(
-                "PHPDoc tag {tag} {name} for {subject} has invalid default type {class}{end}"
-            );
+            let message = sprintf(&m.invalid_default, &[name.clone(), class.clone()]);
             match symbols::lookup(class) {
                 None => out.push("class.notFound", message),
                 Some(k) if k.is_trait => out.push("generics.traitBound", message),
@@ -504,13 +511,86 @@ fn template_check(
         }
         out.push(
             "generics.templateDefaultOutOfBounds",
-            format!(
-                "Default type {} in PHPDoc tag {tag} {name} for {subject} is not subtype of bound type {}{end}",
-                default.describe(Level::TypeOnly),
-                t.bound.describe(Level::TypeOnly)
+            sprintf(
+                &m.default_not_subtype,
+                &[default.describe(Level::TypeOnly), name.clone(), t.bound.describe(Level::TypeOnly)],
             ),
         );
     }
+}
+
+/// Where a PHPDoc type with callables is: the function-like (`function Foo\\bar` / `method Foo::bar`) and its
+/// `@template` names, and the class (name, parent, display name, `@template` names).
+#[derive(Default)]
+pub(super) struct CallableContext {
+    pub(super) function: Option<(String, Vec<String>)>,
+    pub(super) class: Option<(String, Option<String>, String, Vec<String>)>,
+}
+
+/// GenericCallableRuleHelper::check(): each callable's own templates in `ty` (at `location`, e.g. `@param for
+/// parameter $x`) through TemplateTypeCheck, and the ones shadowing the function's or the class's.
+pub(super) fn generic_callables(ty: &Type, location: &str, cx: &CallableContext, out: &mut Found) {
+    let cell = RefCell::new(std::mem::take(out));
+    walk_callables(ty, location, cx, &cell);
+    *out = cell.into_inner();
+}
+
+fn walk_callables(ty: &Type, location: &str, cx: &CallableContext, out: &RefCell<Found>) {
+    let sig = match ty {
+        Type::Callable(Some(sig)) | Type::Closure(sig) => Some(sig),
+        _ => None,
+    };
+    if let Some(sig) = sig {
+        let description = ty.describe(Level::Precise);
+        let (loc, desc) = (escape(location), escape(&description));
+        let messages = TemplateMessages {
+            existing_class: format!("PHPDoc tag {loc} template of {desc} cannot have existing class %s as its name."),
+            existing_alias: format!("PHPDoc tag {loc} template of {desc} cannot have existing type alias %s as its name."),
+            invalid_bound: format!("PHPDoc tag {loc} template %s of {desc} has invalid bound type %s."),
+            not_supported: format!("PHPDoc tag {loc} template %s of {desc} with bound type %s is not supported."),
+            invalid_default: format!("PHPDoc tag {loc} template %s of {desc} has invalid default type %s."),
+            default_not_subtype: format!("Default type %s in PHPDoc tag {loc} template %s of {desc} is not subtype of bound type %s."),
+            required_after_optional: format!(
+                "PHPDoc tag {loc} template %s of {desc} does not have a default type but follows an optional template %s."
+            ),
+        };
+        let inputs: Vec<TemplateInput> = sig
+            .templates
+            .iter()
+            .map(|t| TemplateInput {
+                name: t.name.clone(),
+                bound: t.bound.clone(),
+                default: t.default.clone(),
+            })
+            .collect();
+        let resolve_name = |name: &str| match &cx.class {
+            Some((class, parent, ..)) => class_resolve_name(class, parent.as_deref())(name),
+            None => name.to_string(),
+        };
+        let out = &mut *out.borrow_mut();
+        template_check(&inputs, &messages, &resolve_name, &|name| has_global_alias(name), out);
+        let own = |name: &str| sig.templates.iter().any(|t| t.name == name);
+        if let Some((function, templates)) = &cx.function {
+            for name in templates.iter().filter(|n| own(n)) {
+                out.push(
+                    "callable.shadowTemplate",
+                    format!("PHPDoc tag {location} template {name} of {description} shadows @template {name} for {function}."),
+                );
+            }
+        }
+        if let Some((.., display, templates)) = &cx.class {
+            for name in templates.iter().filter(|n| own(n)) {
+                out.push(
+                    "callable.shadowTemplate",
+                    format!("PHPDoc tag {location} template {name} of {description} shadows @template {name} for class {display}."),
+                );
+            }
+        }
+    }
+    ty.traverse(&|inner| {
+        walk_callables(inner, location, cx, out);
+        inner.clone()
+    });
 }
 
 /// `$scope->resolveName()` in a class: `self` and `static` are the class, `parent` its parent.
@@ -620,7 +700,7 @@ fn class_like(c: &Checker, l: &ClassLike) -> Found {
                 &TemplateSubject {
                     subject,
                     method_tag: false,
-                },
+                }.messages(),
                 &resolve_name,
                 &has_alias,
                 &mut found,
@@ -682,7 +762,7 @@ fn method_tags(
             &TemplateSubject {
                 subject: &subject,
                 method_tag: true,
-            },
+            }.messages(),
             resolve_name,
             has_alias,
             found,
@@ -1104,7 +1184,7 @@ pub fn trait_(c: &mut Checker, t: &Trait) {
             &TemplateSubject {
                 subject: &subject,
                 method_tag: false,
-            },
+            }.messages(),
             &resolve_name,
             &has_alias,
             &mut found,
@@ -1143,7 +1223,7 @@ pub fn function(c: &mut Checker, f: &Function) {
             &TemplateSubject {
                 subject: &subject,
                 method_tag: false,
-            },
+            }.messages(),
             &|n: &str| n.to_string(),
             &|n: &str| has_global_alias(n),
             &mut found,
@@ -1201,7 +1281,7 @@ pub fn method(c: &mut Checker, m: &Method, method: &str) {
             &TemplateSubject {
                 subject: &subject,
                 method_tag: false,
-            },
+            }.messages(),
             &resolve_name,
             &has_alias,
             &mut found,

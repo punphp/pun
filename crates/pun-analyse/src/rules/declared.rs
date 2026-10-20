@@ -72,7 +72,7 @@ pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> N
     scope
 }
 
-fn parent_name(codebase: &CodebaseMetadata, k: &ClassLikeMetadata) -> Option<String> {
+pub(super) fn parent_name(codebase: &CodebaseMetadata, k: &ClassLikeMetadata) -> Option<String> {
     let parent = k.direct_parent_class.as_ref()?;
     Some(
         codebase
@@ -325,6 +325,8 @@ pub struct Signature {
     pub ret: Type,
     /// `getSelfOutType()`
     pub self_out: Option<Type>,
+    /// the parameters of `getAsserts()`, its own or inherited ones (without `$`)
+    pub asserts: Vec<String>,
 }
 
 /// The PHPDoc of a method as PHPStan resolves it, with what it inherits: parameter types by name, the return type.
@@ -337,6 +339,8 @@ struct Resolved {
     closure_this: HashMap<String, Type>,
     /// `@phpstan-self-out`
     self_out: Option<Type>,
+    /// the asserted parameters (without `$`)
+    asserts: Vec<String>,
 }
 
 /// The own PHPDoc of method `m` declared in `class`, `self` being `context`.
@@ -346,8 +350,8 @@ fn resolved_own(
     class: &ClassLikeMetadata,
     context: &ClassLikeMetadata,
 ) -> Option<Resolved> {
-    let (doc, _) = doc_at(c, m.span)?;
-    let doc = Doc::parse(&doc);
+    let (raw, _) = doc_at(c, m.span)?;
+    let doc = Doc::parse(&raw);
     let mut scope = scope_at(c, m.span, Some(context));
     if class.kind == SymbolKind::Trait && !std::ptr::eq(class, context) {
         scope.templates.extend(trait_templates(c, class, context));
@@ -372,6 +376,7 @@ fn resolved_own(
         outs: Doc::named_types(&doc.outs, &scope),
         closure_this: Doc::named_types(&doc.closure_this, &scope),
         self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
+        asserts: super::assert_tags::parameters(&raw),
     })
 }
 
@@ -562,6 +567,10 @@ fn merge(
     if out.self_out.is_none() {
         out.self_out = parent.self_out;
     }
+    // `mergeAssertTags()`
+    if out.asserts.is_empty() {
+        out.asserts = parent.asserts.into_iter().map(rename).collect();
+    }
     for (name, ty) in parent.outs {
         out.outs.entry(rename(name)).or_insert(ty);
     }
@@ -641,8 +650,8 @@ pub fn method(
     k: &ClassLikeMetadata,
     context: &ClassLikeMetadata,
 ) -> Signature {
-    let own = doc_before(&c.file.contents, m.span().start.offset as usize).map(|doc| {
-        let doc = Doc::parse(doc);
+    let own = doc_before(&c.file.contents, m.span().start.offset as usize).map(|raw| {
+        let doc = Doc::parse(raw);
         let scope = method_scope(c, m, &doc, k, context);
         Resolved {
             params: doc
@@ -654,6 +663,7 @@ pub fn method(
             outs: Doc::named_types(&doc.outs, &scope),
             closure_this: Doc::named_types(&doc.closure_this, &scope),
             self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
+            asserts: super::assert_tags::parameters(raw),
         }
     });
     let positional: Vec<String> = m
@@ -689,6 +699,7 @@ pub fn function(c: &Checker, f: &Function) -> Signature {
                 outs: Doc::named_types(&doc.outs, &scope),
                 closure_this: Doc::named_types(&doc.closure_this, &scope),
                 self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
+                asserts: Vec::new(),
             }
         })
         .unwrap_or_default();
@@ -748,6 +759,7 @@ fn signature(
         params,
         ret,
         self_out: doc.self_out,
+        asserts: doc.asserts,
     }
 }
 
@@ -1114,6 +1126,14 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             ancestors,
             templates,
             cases: k.enum_cases.keys().map(|w| text(w.as_bytes())).collect(),
+            case_values: k
+                .enum_cases
+                .values()
+                .filter_map(|m| {
+                    let value = super::enums::constant_value(c, m.value_type.as_ref()?)?;
+                    Some((text(m.name.as_bytes()), to_phpdoc(&value)))
+                })
+                .collect(),
             is_interface: k.kind == SymbolKind::Interface,
             is_trait: k.kind == SymbolKind::Trait,
             is_enum: k.kind == SymbolKind::Enum,

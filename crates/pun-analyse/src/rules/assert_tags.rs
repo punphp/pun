@@ -1,8 +1,7 @@
 //! FunctionAssertRule and MethodAssertRule (level 2, over AssertRuleHelper): a function's or method's
 //! `@phpstan-assert*` tags must name a parameter (or `$this`, its property or method) and assert a type that is
 //! resolvable, known, and neither impossible nor already certain for it.
-//! ponytail: the asserts a method inherits (implicit ones, only checked for their parameter) and
-//! `missingType.callable` are not ported.
+//! ponytail: `missingType.callable` (`checkMissingCallableSignature`, off by default) is not ported.
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::{Function, Method, Modifier};
@@ -38,15 +37,24 @@ pub fn method(c: &mut Checker, m: &Method) {
     if c.level < 2 {
         return;
     }
-    let Some(doc) = doc_before(&c.file.contents, m.span().start.offset as usize) else {
-        return;
-    };
     let Some(context) = c.class_scope() else { return };
     let declaring = missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
-    let scope = declared::method_scope(c, m, &Doc::parse(doc), declaring, context);
     let this = (!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))))
         .then(|| Type::Object(declared::original_name(context), vec![]));
-    let errors = declared::with_classes(c, || check(c, doc, &scope, &declared::method(c, m, declaring, context), this));
+    let own = doc_before(&c.file.contents, m.span().start.offset as usize).filter(|doc| !asserts(doc).is_empty());
+    let errors = declared::with_classes(c, || {
+        let sig = declared::method(c, m, declaring, context);
+        match own {
+            Some(doc) => check(c, doc, &declared::method_scope(c, m, &Doc::parse(doc), declaring, context), &sig, this),
+            // the inherited (implicit) asserts: only their parameter is checked
+            None => sig
+                .asserts
+                .iter()
+                .filter(|name| !sig.params.iter().any(|p| p.0 == **name) && !(this.is_some() && *name == "this"))
+                .map(|name| ("parameter.notFound", format!("Assert references unknown parameter ${name}."), None, None))
+                .collect(),
+        }
+    });
     report(c, m.span(), errors);
 }
 
@@ -66,6 +74,11 @@ fn report(c: &mut Checker, at: Span, errors: Errors) {
 
 /// An assert tag: its tag name, type, parameter, `->member` (a method with `()`) and negation.
 type Assert = (&'static str, phpdoc::Node, String, Option<(String, bool)>, bool);
+
+/// The parameters (without `$`) the asserts of PHPDoc `doc` name.
+pub(super) fn parameters(doc: &[u8]) -> Vec<String> {
+    asserts(doc).into_iter().map(|a| a.2[1..].to_string()).collect()
+}
 
 /// `resolveAssertTags()`: the first of the `@phpstan-`, `@psalm-` and `@phan-` prefixes with any assert.
 fn asserts(doc: &[u8]) -> Vec<Assert> {

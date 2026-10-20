@@ -95,6 +95,61 @@
         "PunProbe\\Defaults<string, string, string, string>"
     ],
     [
+        "PunProbe\\Child",
+        "value-of<Backed>",
+        "'a'|'b'"
+    ],
+    [
+        "PunProbe\\Child",
+        "value-of<One>",
+        "1"
+    ],
+    [
+        "PunProbe\\Child",
+        "value-of<Suit>",
+        "*NEVER*"
+    ],
+    [
+        "PunProbe\\Child",
+        "value-of<Backed::A>",
+        "'a'"
+    ],
+    [
+        "PunProbe\\Child",
+        "key-of<Backed>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "key-of<array<int, string>>",
+        "int"
+    ],
+    [
+        "PunProbe\\Child",
+        "value-of<list<string>>",
+        "string"
+    ],
+    [
+        "PunProbe\\Child",
+        "value-of<int>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "value-of<int, int>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "pure-callable(): void",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Child",
+        "callable<X of self>(X, parent, SORT_REGULAR): static",
+        "callable<X of PunProbe\\Child>(X, PunProbe\\Coll, 0): static"
+    ],
+    [
         "PunProbe\\Coll",
         "static",
         "static(PunProbe\\Coll<TKey (class PunProbe\\Coll, argument), TValue (class PunProbe\\Coll, argument)>)"
@@ -188,6 +243,61 @@
         "PunProbe\\Coll",
         "Defaults<string, string, string, string>",
         "PunProbe\\Defaults<string, string, string, string>"
+    ],
+    [
+        "PunProbe\\Coll",
+        "value-of<Backed>",
+        "'a'|'b'"
+    ],
+    [
+        "PunProbe\\Coll",
+        "value-of<One>",
+        "1"
+    ],
+    [
+        "PunProbe\\Coll",
+        "value-of<Suit>",
+        "*NEVER*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "value-of<Backed::A>",
+        "'a'"
+    ],
+    [
+        "PunProbe\\Coll",
+        "key-of<Backed>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "key-of<array<int, string>>",
+        "int"
+    ],
+    [
+        "PunProbe\\Coll",
+        "value-of<list<string>>",
+        "string"
+    ],
+    [
+        "PunProbe\\Coll",
+        "value-of<int>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "value-of<int, int>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "pure-callable(): void",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Coll",
+        "callable<X of self>(X, parent, SORT_REGULAR): static",
+        "callable<X of PunProbe\\Coll>(X, parent, 0): static"
     ],
     [
         "PunProbe\\Missing",
@@ -285,6 +395,61 @@
         "PunProbe\\Defaults<string, string, string, string>"
     ],
     [
+        "PunProbe\\Missing",
+        "value-of<Backed>",
+        "'a'|'b'"
+    ],
+    [
+        "PunProbe\\Missing",
+        "value-of<One>",
+        "1"
+    ],
+    [
+        "PunProbe\\Missing",
+        "value-of<Suit>",
+        "*NEVER*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "value-of<Backed::A>",
+        "'a'"
+    ],
+    [
+        "PunProbe\\Missing",
+        "key-of<Backed>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "key-of<array<int, string>>",
+        "int"
+    ],
+    [
+        "PunProbe\\Missing",
+        "value-of<list<string>>",
+        "string"
+    ],
+    [
+        "PunProbe\\Missing",
+        "value-of<int>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "value-of<int, int>",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "pure-callable(): void",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
+        "callable<X of self>(X, parent, SORT_REGULAR): static",
+        "callable<X of PunProbe\\Missing>(X, parent, 0): mixed"
+    ],
+    [
         null,
         "static",
         "PunProbe\\static"
@@ -380,6 +545,61 @@
         "PunProbe\\Defaults<string, string, string, string>"
     ],
     [
+        null,
+        "value-of<Backed>",
+        "'a'|'b'"
+    ],
+    [
+        null,
+        "value-of<One>",
+        "1"
+    ],
+    [
+        null,
+        "value-of<Suit>",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "value-of<Backed::A>",
+        "'a'"
+    ],
+    [
+        null,
+        "key-of<Backed>",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "key-of<array<int, string>>",
+        "int"
+    ],
+    [
+        null,
+        "value-of<list<string>>",
+        "string"
+    ],
+    [
+        null,
+        "value-of<int>",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "value-of<int, int>",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "pure-callable(): void",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "callable<X of self>(X, parent, SORT_REGULAR): static",
+        "callable<X of PunProbe\\self>(X, PunProbe\\parent, 0): PunProbe\\static"
+    ],
+    [
         "templates",
         "T",
         "T (function probe(), parameter)"
@@ -393,5 +613,55 @@
         "templates",
         "Coll<T, V>",
         "PunProbe\\Coll<T (function probe(), parameter), V of Countable (function probe(), parameter)>"
+    ],
+    [
+        "templates",
+        "V<int>",
+        "Countable<int>"
+    ],
+    [
+        "templates",
+        "U<int>",
+        "*ERROR*"
+    ],
+    [
+        "templates",
+        "value-of<T>",
+        "value-of<T (function probe(), parameter)>"
+    ],
+    [
+        "templates",
+        "callable<X>(X, T): U",
+        "callable<X of mixed>(X, T): U"
+    ],
+    [
+        "templates",
+        "callable<X of Coll = Child<int>, Y>(X): Y",
+        "callable<X of PunProbe\\Coll, Y of mixed>(X): Y"
+    ],
+    [
+        "late",
+        "value-of<E>",
+        "int|string"
+    ],
+    [
+        "late",
+        "key-of<E>",
+        "*ERROR*"
+    ],
+    [
+        "late",
+        "value-of<F>",
+        "'a'|'b'"
+    ],
+    [
+        "late",
+        "key-of<G>",
+        "int"
+    ],
+    [
+        "late",
+        "value-of<G>",
+        "string"
     ]
 ]
