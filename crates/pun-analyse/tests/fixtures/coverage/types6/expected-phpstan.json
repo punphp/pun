@@ -1,0 +1,40 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "types6.php",
+   "line": 22,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "types6.php",
+   "line": 43,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type Closure. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "types6.php",
+   "line": 47,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $closure of static method Closure::bind() expects Closure, (Closure(): int)|null given.",
+   "tip": null
+  },
+  {
+   "file": "types6.php",
+   "line": 48,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $closure of static method Closure::bind() expects Closure, callable(): int given.",
+   "tip": null
+  },
+  {
+   "file": "types6.php",
+   "line": 49,
+   "identifier": "arguments.count",
+   "message": "Method Closure::bindTo() invoked with 0 parameters, 1-2 required.",
+   "tip": null
+  }
+ ]
+}

@@ -177,7 +177,7 @@ fn checker<'a, 'arena>(
         in_exists_call: 0,
         top_level: HashSet::new(),
         piped: HashSet::new(),
-        rebound: HashSet::new(),
+        rebound: HashMap::new(),
         label: String::from_utf8_lossy(&file.name).into_owned(),
         trait_context: None,
         in_target: false,

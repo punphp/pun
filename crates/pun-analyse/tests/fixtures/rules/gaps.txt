@@ -12,7 +12,6 @@ Properties/PropertyInClassRuleTest::testPhp84AndAbstractFinalHookedPropertiesPar
 Properties/PropertyInClassRuleTest::testPhp84FinalPropertyHooks
 # exported after the first port (Methods, Properties, Namespaces, Variables...): triage in progress
 Methods/CallMethodsRuleTest::testClosureBind
-Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 Methods/CallMethodsRuleTest::testBug3534
 Methods/CallMethodsRuleTest::testRequireExtends
 Methods/CallMethodsRuleTest::testDynamicCall

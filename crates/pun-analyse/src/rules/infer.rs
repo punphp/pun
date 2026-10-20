@@ -144,6 +144,7 @@ pub(super) fn analyse<'arena>(
             .collect();
         registry.register_expression_hook(Definedness { ids, found: Arc::clone(&found) });
     }
+    let registry = super::return_types::registry(&file.contents);
     let settings = Settings::new(crate::codebase::php_version(php_version));
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());

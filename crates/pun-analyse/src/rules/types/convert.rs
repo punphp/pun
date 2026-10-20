@@ -42,7 +42,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// A Mago type as PHPStan's.
     pub(in super::super) fn to_phpstan(&self, t: &TUnion) -> Type {
-        union(t.types.iter().map(|a| self.atom(a)).collect())
+        let types = union(t.types.iter().map(|a| self.atom(a)).collect());
+        if super::super::return_types::is_benevolent(t) {
+            return pun_phpstan::types::to_benevolent(types);
+        }
+        types
     }
 
     fn signature(&self, s: &mago_codex::ttype::atomic::callable::TCallableSignature) -> Box<Signature> {

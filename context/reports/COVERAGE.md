@@ -4,7 +4,7 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5290 | 5290 | 100.00% | ok |
-| punphp-analyse | 31580 | 31580 | 100.00% | FAILED |
+| punphp-analyse | 30989 | 30989 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
@@ -36,13 +36,15 @@ Uncovered lines:
 - `crates/pun-phpstan/src/resolve.rs:962` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
 - `crates/pun-cli/src/migrate.rs:557` closest_preset's "nothing to switch" return: every PHPStan level leaves some rules of its closest Pun preset off (level 0: the basic preset's 11-12 non-level-0 rules, with or without bleedingEdge), so a migrated `[analyse]` always has on/off lines.
 - `crates/pun-analyse/src/laravel/mod.rs:464-471` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
+- `crates/pun-analyse/src/rules/return_types.rs:41-43` `Provider::meta()` of the rules' benevolent-return provider: as for the Laravel hook, `PluginRegistry` reads `meta()` only for its own library plugins.
+- `crates/pun-analyse/src/rules/return_types.rs:82-84` the same for the Closure::bind()/bindTo() provider.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/infer.rs:191-194` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
 - `crates/pun-analyse/src/rules/infer.rs:134` the `catch_unwind` fallback that drops a file's inferred types when Mago's analyser panics: as for mago.rs:74 below.
 - `crates/pun-analyse/src/mago.rs:74` the `catch_unwind` fallback that skips a file when Mago's analyser panics: tests/fixtures/mago/debug-panic.php (`int&mixed`) was written to trip Mago's debug assertion (`TUnion::from_vec()` with an empty Vec), but the analyser no longer reaches it and no known input panics it now, and the guard stays so a future panic costs one file, not the run.
-- `crates/pun-analyse/src/rules/types/convert.rs:101-103` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
-- `crates/pun-analyse/src/rules/types/convert.rs:280` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
+- `crates/pun-analyse/src/rules/types/convert.rs:105-107` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
+- `crates/pun-analyse/src/rules/types/convert.rs:284` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
 - `crates/pun-phpstan/src/symbols.rs:115-117` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
