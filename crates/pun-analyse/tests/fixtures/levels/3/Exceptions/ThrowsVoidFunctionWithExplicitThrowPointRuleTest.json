@@ -1,0 +1,124 @@
+{
+    "test": "Exceptions/ThrowsVoidFunctionWithExplicitThrowPointRuleTest",
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Exceptions/data/throws-void-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-function.php",
+                    "line": 15,
+                    "identifier": "throws.void",
+                    "message": "Function ThrowsVoidFunction\\foo() throws exception ThrowsVoidFunction\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Exceptions/data/throws-void-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-function.php",
+                    "line": 15,
+                    "identifier": "throws.void",
+                    "message": "Function ThrowsVoidFunction\\foo() throws exception ThrowsVoidFunction\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#2",
+            "files": [
+                "Exceptions/data/throws-void-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-function.php",
+                    "line": 15,
+                    "identifier": "throws.void",
+                    "message": "Function ThrowsVoidFunction\\foo() throws exception ThrowsVoidFunction\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#3",
+            "files": [
+                "Exceptions/data/throws-void-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-function.php",
+                    "line": 15,
+                    "identifier": "throws.void",
+                    "message": "Function ThrowsVoidFunction\\foo() throws exception ThrowsVoidFunction\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#4",
+            "files": [
+                "Exceptions/data/throws-void-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-function.php",
+                    "line": 15,
+                    "identifier": "throws.void",
+                    "message": "Function ThrowsVoidFunction\\foo() throws exception ThrowsVoidFunction\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#5",
+            "files": [
+                "Exceptions/data/throws-void-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-function.php",
+                    "line": 15,
+                    "identifier": "throws.void",
+                    "message": "Function ThrowsVoidFunction\\foo() throws exception ThrowsVoidFunction\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13515",
+            "files": [
+                "Exceptions/data/bug-13515.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-13515.php",
+                    "line": 6,
+                    "identifier": "void.pure",
+                    "message": "Function Bug13515\\fromArray() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

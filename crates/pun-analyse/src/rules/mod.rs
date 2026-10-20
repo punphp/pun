@@ -1438,6 +1438,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::function_defaults(self, f);
         types::function_returns(self, f);
         types::too_wide_function(self, f);
+        types::throws_void_function(self, f);
         generics::function(self, f);
         variance::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
@@ -1542,6 +1543,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 signatures::hook_phpdoc_classes(self, p.variable.name, hooks, p.span());
                 types::get_hooks(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
                 types::hook_returns(self, p.variable.name, p.hint.as_ref(), p.span(), hooks);
+                types::throws_void_hooks(self, p.variable.name, hooks);
                 set_hook::hooks(self, p.variable.name, p.hint.as_ref(), hooks);
                 set_hook::missing_types(self, p.variable.name, p.hint.as_ref(), hooks, p.span());
             }
@@ -1563,6 +1565,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::method_defaults(self, m);
         types::method_returns(self, m);
         types::too_wide_method(self, m);
+        types::throws_void_method(self, m);
         generics::method(self, m, &method);
         variance::method(self, m, &method);
         declarations::promoted(
@@ -1867,6 +1870,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
         property_access::null_safe_read(self, p);
         write_only::null_safe(self, p);
+        types::nullsafe_property(self, p);
     }
     fn walk_in_static_property_access(
         &mut self,
@@ -1925,6 +1929,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some(name) = types::dynamic_names::member(&call.method) {
             types::dynamic_names::check(self, name, false, "Method", call.object, true, "method.nameNotString");
         }
+        types::nullsafe_method(self, call);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         dead_code::method_check(self, call);
@@ -2075,6 +2080,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             set_hook::missing_types(self, h.item.variable().name, p.hint(), &h.hook_list, p.span());
             types::get_hooks(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
             types::hook_returns(self, h.item.variable().name, p.hint(), p.span(), &h.hook_list);
+            types::throws_void_hooks(self, h.item.variable().name, &h.hook_list);
             for hook in h.hook_list.hooks.iter() {
                 phpdoc_types::hook(self, hook, h.item.variable().name, p.hint());
             }
@@ -2202,6 +2208,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_try(&mut self, t: &'ast Try<'arena>, _: &mut ()) {
         dead_code::try_statement(self, t);
+        types::dead_catches(self, t);
     }
     fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {
         phpdoc_tags::clause(self, clause.span());

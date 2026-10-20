@@ -1244,7 +1244,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-function-signature" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-function-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-hook-signature" = { preset = "basic", ported = true, status = "decided" }
-"types/invalid-inc-dec" = { preset = "basic", status = "decided" }
+"types/invalid-inc-dec" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-interface-generics" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-interface-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-method-signature" = { preset = "basic", ported = true, status = "decided" }
@@ -1296,8 +1296,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/readonly-property-by-ref" = { preset = "essential", ported = true, status = "decided" }
 "types/readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/redundant-array-values" = { preset = "recommended", ported = true, status = "decided" }
-"types/redundant-nullsafe" = { preset = "recommended", fixed_by = ["lint/complexity/no-redundant-nullsafe"], status = "decided" }
-"types/redundant-nullsafe-method-call" = { preset = "recommended", status = "decided" }
+"types/redundant-nullsafe" = { preset = "recommended", ported = true, fixed_by = ["lint/complexity/no-redundant-nullsafe"], status = "decided" }
+"types/redundant-nullsafe-method-call" = { preset = "recommended", ported = true, status = "decided" }
 "types/renamed-parameter-in-subtype" = { preset = "basic", status = "decided" }
 "types/return" = { preset = "essential", ported = true, status = "decided" }
 "types/return-by-ref-finally" = { preset = "essential", status = "decided" }
@@ -1306,9 +1306,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/this-in-static" = { preset = "basic", ported = true, status = "decided" }
 "types/throw-non-throwable" = { preset = "essential", ported = true, status = "decided" }
 "types/throws-not-covariant" = { preset = "basic", status = "decided" }
-"types/throws-void-function" = { preset = "essential", status = "decided" }
-"types/throws-void-hook" = { preset = "essential", status = "decided" }
-"types/throws-void-method" = { preset = "essential", status = "decided" }
+"types/throws-void-function" = { preset = "essential", ported = true, status = "decided" }
+"types/throws-void-hook" = { preset = "essential", ported = true, status = "decided" }
+"types/throws-void-method" = { preset = "essential", ported = true, status = "decided" }
 "types/too-wide-arrow-function-return" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-unused-return-type"], status = "decided" }
 "types/too-wide-closure-return" = { preset = "recommended", ported = true, status = "decided" }
 "types/too-wide-function-param-out" = { preset = "recommended", status = "decided" }

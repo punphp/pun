@@ -13,6 +13,13 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "catch.alreadyCaught",
+    "postDec.type",
+    "preDec.type",
+    "postInc.type",
+    "preInc.type",
+    "throws.void",
+    "nullsafe.neverNull",
     "property.unusedType",
     "return.unusedType",
     "binaryOp.invalid",

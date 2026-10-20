@@ -32,6 +32,11 @@ pub struct State {
     this: Vec<bool>,
 }
 
+/// `isUndefinedExpressionAllowed()` of the expression at `span`.
+pub fn undefined_allowed(c: &Checker, span: Span) -> bool {
+    c.property_access.allowed.contains(&key(span))
+}
+
 fn key(s: Span) -> (u32, u32) {
     (s.start.offset, s.end.offset)
 }

@@ -1,0 +1,149 @@
+{
+    "test": "Exceptions/ThrowsVoidPropertyHookWithExplicitThrowPointRuleTest",
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Exceptions/data/throws-void-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$i throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 26,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$j throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Exceptions/data/throws-void-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$i throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 26,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$j throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#2",
+            "files": [
+                "Exceptions/data/throws-void-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$i throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 26,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$j throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#3",
+            "files": [
+                "Exceptions/data/throws-void-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$i throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 26,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$j throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#4",
+            "files": [
+                "Exceptions/data/throws-void-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$i throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 26,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$j throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#5",
+            "files": [
+                "Exceptions/data/throws-void-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$i throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/throws-void-property-hook.php",
+                    "line": 26,
+                    "identifier": "throws.void",
+                    "message": "Get hook for property ThrowsVoidPropertyHook\\Foo::$j throws exception ThrowsVoidPropertyHook\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

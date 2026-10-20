@@ -295,6 +295,17 @@ const VERBOSITY_GAPS: &[&str] = &["Traversable<int>"];
 /// plain array's
 const ACCEPT_GAPS: &[(&str, &str)] = &[("array{ArrayIterator<int, string>, ArrayIterator<int, int>}", "callable&array")];
 
+/// TemplateStrictMixedType::isAcceptedBy() (`isSubTypeOf()`): the same template of mixed accepts it, another maybe.
+#[test]
+fn template_strict_mixed() {
+    use pun_phpstan::types::{StrictMixed, Tri, accepts_with};
+    let t = resolve_str("__template<T, 'function probe()', mixed>", None);
+    let u = resolve_str("__template<U, 'function probe()', mixed>", None);
+    let sm = StrictMixed { explicit: true, implicit: true };
+    assert_eq!(accepts_with(&t, &t, true, sm), Tri::Yes);
+    assert_eq!(accepts_with(&u, &t, true, sm), Tri::Maybe);
+}
+
 /// `$a->accepts($b, $strictTypes)` (strict and not) and `VerbosityLevel::getRecommendedLevelByType($a, $b)` for every
 /// ordered pair of the accept atoms; `strict-mixed` is RuleLevelHelper's StrictMixedType, an explicit `mixed` (or a
 /// template of mixed) under `StrictMixed`.
@@ -317,7 +328,7 @@ fn accepts() {
         if let Some(b) = b {
             let (bts, sm) = if b == "strict-mixed" {
                 let all = StrictMixed { explicit: true, implicit: true };
-                (vec![resolve_str("mixed", None), resolve_str("__template<T, 'function probe()', mixed>", None)], all)
+                (vec![resolve_str("mixed", None), resolve_str("__template<T, 'function strictProbe()', mixed>", None)], all)
             } else {
                 (vec![resolve_str(b, ctx)], StrictMixed::default())
             };

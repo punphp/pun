@@ -1,0 +1,2704 @@
+{
+    "test": "Exceptions/CatchWithUnthrownExceptionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Exceptions/data/unthrown-exception.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 12,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 21,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 38,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 49,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - RuntimeException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 71,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 80,
+                    "identifier": "function.notFound",
+                    "message": "Function ThrowPoints\\Helpers\\maybeThrows not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 84,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 117,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DomainException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 119,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 127,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 171,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 180,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 224,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 258,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 259,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 260,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArithmeticError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 278,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 279,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArithmeticError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 311,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to SimpleXMLElement::__construct() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 312,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 344,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 375,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 380,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 398,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 432,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 437,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 485,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 532,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 554,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to SimpleXMLElement::__construct() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 555,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 629,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 647,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 741,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 758,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 759,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 760,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 761,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 762,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArithmeticError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 802,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithoutReportingUncheckedException",
+            "files": [
+                "Exceptions/data/unthrown-exception.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 12,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 21,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 38,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 49,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - RuntimeException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 71,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 80,
+                    "identifier": "function.notFound",
+                    "message": "Function ThrowPoints\\Helpers\\maybeThrows not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 84,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 117,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DomainException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 119,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 127,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 171,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 180,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 224,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 258,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 259,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 260,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArithmeticError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 278,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 279,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArithmeticError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 311,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to SimpleXMLElement::__construct() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 312,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 344,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 375,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 380,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 398,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 432,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 437,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 485,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 532,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 554,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to SimpleXMLElement::__construct() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 555,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 629,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 647,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 741,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 758,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 759,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 760,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 761,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function intdiv() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 762,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArithmeticError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception.php",
+                    "line": 802,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMultiCatch",
+            "files": [
+                "Exceptions/data/unthrown-exception-multi.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 12,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - LogicException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 36,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - OverflowException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 58,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - JsonException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 90,
+                    "identifier": "function.notFound",
+                    "message": "Function ThrowPoints\\Helpers\\maybeThrows not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 99,
+                    "identifier": "function.notFound",
+                    "message": "Function ThrowPoints\\Helpers\\maybeThrows not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 120,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - RuntimeException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 145,
+                    "identifier": "catch.alreadyCaught",
+                    "message": "Dead catch - InvalidArgumentException is already caught above.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 156,
+                    "identifier": "catch.alreadyCaught",
+                    "message": "Dead catch - InvalidArgumentException is already caught above.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 175,
+                    "identifier": "throws.unusedType",
+                    "message": "Method UnthrownExceptionMulti\\TestMultiCatchContainingDeadExceptions::throwLogicRangeJsonExceptions() has JsonException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 175,
+                    "identifier": "throws.unusedType",
+                    "message": "Method UnthrownExceptionMulti\\TestMultiCatchContainingDeadExceptions::throwLogicRangeJsonExceptions() has LogicException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-multi.php",
+                    "line": 175,
+                    "identifier": "throws.unusedType",
+                    "message": "Method UnthrownExceptionMulti\\TestMultiCatchContainingDeadExceptions::throwLogicRangeJsonExceptions() has RangeException in PHPDoc @throws tag but it's not thrown.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4806",
+            "files": [
+                "Exceptions/data/bug-4806.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-4806.php",
+                    "line": 55,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $object might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4806.php",
+                    "line": 65,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4806.php",
+                    "line": 83,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $object might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4806.php",
+                    "line": 97,
+                    "identifier": "variable.undefined",
+                    "message": "Variable $object might not be defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4806.php",
+                    "line": 119,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4805",
+            "files": [
+                "Exceptions/data/bug-4805.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-4805.php",
+                    "line": 44,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - OutOfBoundsException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4805.php",
+                    "line": 66,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - OutOfBoundsException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4863",
+            "files": [
+                "Exceptions/data/bug-4863.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFilterVarThrowOnFailure",
+            "files": [
+                "Exceptions/data/filter-var-throw-on-failure.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 7,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateMac() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 15,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateMacWithFlagsArray() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 23,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateInt() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 31,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateWithNamedArguments() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 39,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateInput() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 47,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateInputWithNamedArguments() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 58,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateVarArray() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/filter-var-throw-on-failure.php",
+                    "line": 66,
+                    "identifier": "void.pure",
+                    "message": "Function FilterVarThrowOnFailure\\validateInputArray() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5866",
+            "files": [
+                "Exceptions/data/bug-5866.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4814",
+            "files": [
+                "Exceptions/data/bug-4814.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-4814.php",
+                    "line": 16,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - JsonException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testJsonMaybeThrowWithDynamicFlags",
+            "files": [
+                "Exceptions/data/json-maybe-throw-dynamic-flags.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/json-maybe-throw-dynamic-flags.php",
+                    "line": 35,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - JsonException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9066",
+            "files": [
+                "Exceptions/data/bug-9066.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-9066.php",
+                    "line": 28,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - OutOfBoundsException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testThrowExpression",
+            "files": [
+                "Exceptions/data/dead-catch-throw-expr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/dead-catch-throw-expr.php",
+                    "line": 17,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeadCatch",
+            "files": [
+                "Exceptions/data/dead-catch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/dead-catch.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/dead-catch.php",
+                    "line": 24,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/dead-catch.php",
+                    "line": 27,
+                    "identifier": "catch.alreadyCaught",
+                    "message": "Dead catch - TypeError is already caught above.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallables",
+            "files": [
+                "Exceptions/data/dead-catch-first-class-callables.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/dead-catch-first-class-callables.php",
+                    "line": 28,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method DeadCatchFirstClassCallables\\Foo::doBar() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/dead-catch-first-class-callables.php",
+                    "line": 29,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - InvalidArgumentException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4852",
+            "files": [
+                "Exceptions/data/bug-4852.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 10,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyThrows::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Method Bug4852\\DefinitelyThrows::offsetExists() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 11,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyThrows::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 16,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyThrows::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 19,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyThrows::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 24,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\MaybeThrows1::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 24,
+                    "identifier": "return.missing",
+                    "message": "Method Bug4852\\MaybeThrows1::offsetExists() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 25,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\MaybeThrows1::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 26,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\MaybeThrows1::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 29,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\MaybeThrows1::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 36,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyNoThrows::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<mixed,mixed>::offsetExists().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method Bug4852\\DefinitelyNoThrows::offsetExists() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 37,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyNoThrows::offsetGet() is not covariant with tentative return type mixed of method ArrayAccess<mixed,mixed>::offsetGet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 42,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyNoThrows::offsetSet() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetSet().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 43,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug4852\\DefinitelyNoThrows::offsetUnset() is not covariant with tentative return type void of method ArrayAccess<mixed,mixed>::offsetUnset().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 62,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access an offset on Bug4852\\MaybeThrows2.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 63,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 78,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-4852.php",
+                    "line": 85,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5903",
+            "files": [
+                "Exceptions/data/bug-5903.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-5903.php",
+                    "line": 47,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5903.php",
+                    "line": 54,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6115",
+            "files": [
+                "Exceptions/data/bug-6115.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-6115.php",
+                    "line": 8,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 5 and 1 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6115.php",
+                    "line": 9,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 5 and 2 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6115.php",
+                    "line": 10,
+                    "identifier": "match.alwaysFalse",
+                    "message": "Match arm comparison between 5 and 3 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6115.php",
+                    "line": 20,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnhandledMatchError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6115.php",
+                    "line": 28,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnhandledMatchError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6262",
+            "files": [
+                "Exceptions/data/bug-6262.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6256",
+            "files": [
+                "Exceptions/data/bug-6256.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 18,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6256\\A::$integerType (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 25,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 31,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 45,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 50,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6256\\A::$integerType (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 56,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6256\\A::$integerType (int) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 57,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 62,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug6256\\A::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 63,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 82,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug6256\\B::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 99,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug6256\\C::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 100,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6256.php",
+                    "line": 110,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug6256\\D::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6791",
+            "files": [
+                "Exceptions/data/bug-6791.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-6791.php",
+                    "line": 21,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6791\\Foo::$intArray (array<int>) does not accept array<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6791.php",
+                    "line": 22,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6791.php",
+                    "line": 25,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6791\\Foo::$set (Ds\\Set<int>) does not accept array{'a'}.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6791.php",
+                    "line": 33,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6791\\Foo::$array (array<int>) does not accept array<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6791.php",
+                    "line": 34,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6791.php",
+                    "line": 37,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug6791\\Foo::$array (array<int>) does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6791.php",
+                    "line": 38,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6786",
+            "files": [
+                "Exceptions/data/bug-6786.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnionTypeError",
+            "files": [
+                "Exceptions/data/union-type-error.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/union-type-error.php",
+                    "line": 14,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/union-type-error.php",
+                    "line": 17,
+                    "identifier": "assign.propertyType",
+                    "message": "Property UnionTypeError\\Foo::$stringOrInt (int|string) does not accept true.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/union-type-error.php",
+                    "line": 22,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/union-type-error.php",
+                    "line": 25,
+                    "identifier": "assign.propertyType",
+                    "message": "Property UnionTypeError\\Foo::$stringOrInt (int|string) does not accept array.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6349",
+            "files": [
+                "Exceptions/data/bug-6349.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 28,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 / $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 29,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 % $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 33,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 43,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 / $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 44,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 % $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 48,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 77,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 90,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between 99 and '0' results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 94,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"%\" between 99 and '0' results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 105,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 / $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 106,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 109,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 % $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 110,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 120,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 / $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 121,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 124,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 % $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 125,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 138,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 / $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 139,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 142,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"99 % $value\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 143,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 172,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 176,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 187,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 191,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 220,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 249,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 253,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 264,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 268,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 282,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6349.php",
+                    "line": 286,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - DivisionByZeroError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMagicMethods",
+            "files": [
+                "Exceptions/data/dead-catch-magic-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/dead-catch-magic-methods.php",
+                    "line": 22,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/dead-catch-magic-methods.php",
+                    "line": 65,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9406",
+            "files": [
+                "Exceptions/data/bug-9406.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5650",
+            "files": [
+                "Exceptions/data/bug-5650.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 7,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug5650\\RuntimeException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 7,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function assert() with false and Bug5650\\RuntimeException will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug5650\\RuntimeException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 15,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function assert() with true and Bug5650\\RuntimeException will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 23,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function assert() with false will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 24,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - RuntimeException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 31,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function assert() with true will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5650.php",
+                    "line": 32,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - RuntimeException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9568",
+            "files": [
+                "Exceptions/data/bug-9568.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-9568.php",
+                    "line": 11,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #4 $onDecodeFail (callable) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7719",
+            "files": [
+                "Exceptions/data/bug-7719.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9267",
+            "files": [
+                "Exceptions/data/bug-9267.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11427",
+            "files": [
+                "Exceptions/data/bug-11427.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 93,
+                    "identifier": "throws.void",
+                    "message": "Method Bug11427\\D::offsetExists() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 101,
+                    "identifier": "throws.void",
+                    "message": "Method Bug11427\\D::offsetGet() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 109,
+                    "identifier": "throws.void",
+                    "message": "Method Bug11427\\D::offsetSet() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 117,
+                    "identifier": "throws.void",
+                    "message": "Method Bug11427\\D::offsetUnset() throws exception Exception but the PHPDoc contains @throws void.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 121,
+                    "identifier": "void.pure",
+                    "message": "Function Bug11427\\test2() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 124,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 130,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 136,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 142,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 180,
+                    "identifier": "void.pure",
+                    "message": "Function Bug11427\\test4() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 183,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 189,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 194,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @var for variable $newC contains generic type Bug11427\\C<int, int> but class Bug11427\\C is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 197,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-11427.php",
+                    "line": 203,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Exceptions/data/unthrown-exception-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 27,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\MyCustomException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 39,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\SomeException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 53,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\MyCustomException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 65,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\SomeException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 85,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property UnthrownExceptionPropertyHooks\\Foo::$k is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 107,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\MyCustomException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 128,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\MyCustomException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 154,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\MyCustomException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unthrown-exception-property-hooks.php",
+                    "line": 175,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - UnthrownExceptionPropertyHooks\\MyCustomException is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9146",
+            "files": [
+                "Exceptions/data/bug-9146.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-9146.php",
+                    "line": 52,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-9146.php",
+                    "line": 80,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-9146.php",
+                    "line": 92,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug9146\\IntDoesNotAcceptFloat::$amount (int) does not accept float.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPr5105",
+            "files": [
+                "Exceptions/data/pr-5105.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/pr-5105.php",
+                    "line": 15,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - RuntimeException is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/pr-5105.php",
+                    "line": 28,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Error is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9146NonStrict",
+            "files": [
+                "Exceptions/data/bug-9146-non-strict.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-9146-non-strict.php",
+                    "line": 52,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-9146-non-strict.php",
+                    "line": 80,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-9146-non-strict.php",
+                    "line": 92,
+                    "identifier": "assign.propertyType",
+                    "message": "Property Bug9146NonStrict\\IntJustWarnsOnFloat::$amount (int) does not accept float.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13806",
+            "files": [
+                "Exceptions/data/bug-13806.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-13806.php",
+                    "line": 53,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-13806.php",
+                    "line": 64,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14479",
+            "files": [
+                "Exceptions/data/bug-14479.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5952",
+            "files": [
+                "Exceptions/data/bug-5952.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 51,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 57,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 62,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 71,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 80,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 84,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 97,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 110,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 125,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 138,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-5952.php",
+                    "line": 151,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14569",
+            "files": [
+                "Exceptions/data/bug-14569.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6574",
+            "files": [
+                "Exceptions/data/bug-6574.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-6574.php",
+                    "line": 97,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6574.php",
+                    "line": 106,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6574.php",
+                    "line": 111,
+                    "identifier": "void.pure",
+                    "message": "Function Bug6574\\finalClassWithoutConstructor() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6574.php",
+                    "line": 114,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"new $class()\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-6574.php",
+                    "line": 115,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7799",
+            "files": [
+                "Exceptions/data/bug-7799.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-7799.php",
+                    "line": 8,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9826",
+            "files": [
+                "Exceptions/data/bug-9826.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-9826.php",
+                    "line": 38,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug9826\\Foo::staticReturnThrowable() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-9826.php",
+                    "line": 44,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function Bug9826\\returnThrowable() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/bug-9826.php",
+                    "line": 50,
+                    "identifier": "new.resultUnused",
+                    "message": "Call to Exception::__construct() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTriggerErrorThrowType",
+            "files": [
+                "Exceptions/data/trigger-error-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/trigger-error-throw-type.php",
+                    "line": 39,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Exception is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15249",
+            "files": [
+                "Exceptions/data/bug-15249.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMinMaxThrowType",
+            "files": [
+                "Exceptions/data/min-max-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/min-max-throw-type.php",
+                    "line": 18,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/min-max-throw-type.php",
+                    "line": 23,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/min-max-throw-type.php",
+                    "line": 28,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/min-max-throw-type.php",
+                    "line": 33,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/min-max-throw-type.php",
+                    "line": 38,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/min-max-throw-type.php",
+                    "line": 81,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testArrayChunkThrowType",
+            "files": [
+                "Exceptions/data/array-chunk-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/array-chunk-throw-type.php",
+                    "line": 15,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/array-chunk-throw-type.php",
+                    "line": 21,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/array-chunk-throw-type.php",
+                    "line": 46,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPrintfThrowType",
+            "files": [
+                "Exceptions/data/printf-throw-type.php",
+                "Exceptions/data/printf-throw-type-named-args.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 17,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 19,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 24,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 1 placeholder, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 25,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 32,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 49,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 57,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 59,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 67,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 73,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 75,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 83,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 91,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 97,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 99,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 105,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 106,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 114,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 116,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 122,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 124,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ArgumentCountError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 130,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/printf-throw-type.php",
+                    "line": 142,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGetClassThrowType",
+            "files": [
+                "Exceptions/data/get-class-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/get-class-throw-type.php",
+                    "line": 16,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/get-class-throw-type.php",
+                    "line": 22,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/get-class-throw-type.php",
+                    "line": 28,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Error is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/get-class-throw-type.php",
+                    "line": 35,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Error is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/get-class-throw-type.php",
+                    "line": 55,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/get-class-throw-type.php",
+                    "line": 63,
+                    "identifier": "void.pure",
+                    "message": "Function GetClassThrowType\\doBar() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRoundThrowType",
+            "files": [
+                "Exceptions/data/round-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/round-throw-type.php",
+                    "line": 15,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/round-throw-type.php",
+                    "line": 21,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/round-throw-type.php",
+                    "line": 27,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/round-throw-type.php",
+                    "line": 33,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/round-throw-type.php",
+                    "line": 39,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStrSplitThrowType",
+            "files": [
+                "Exceptions/data/str-split-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/str-split-throw-type.php",
+                    "line": 15,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/str-split-throw-type.php",
+                    "line": 21,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/str-split-throw-type.php",
+                    "line": 46,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDsMapVoidThrowType",
+            "files": [
+                "Exceptions/data/ds-map-void-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/ds-map-void-throw-type.php",
+                    "line": 12,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - Throwable is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnserializeThrowType",
+            "files": [
+                "Exceptions/data/unserialize-throw-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/unserialize-throw-type.php",
+                    "line": 15,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unserialize-throw-type.php",
+                    "line": 27,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unserialize-throw-type.php",
+                    "line": 33,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - TypeError is never thrown in the try block.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/unserialize-throw-type.php",
+                    "line": 39,
+                    "identifier": "catch.neverThrown",
+                    "message": "Dead catch - ValueError is never thrown in the try block.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,270 @@
+{
+    "test": "Operators/InvalidIncDecOperationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/invalid-inc-dec.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 11,
+                    "identifier": "postInc.expr",
+                    "message": "Cannot use ++ on a non-variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 12,
+                    "identifier": "postDec.expr",
+                    "message": "Cannot use -- on a non-variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 17,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 19,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on InvalidIncDec\\ClassWithToString.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 21,
+                    "identifier": "preDec.type",
+                    "message": "Cannot use -- on InvalidIncDec\\ClassWithToString.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 23,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on array{}.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 25,
+                    "identifier": "preDec.type",
+                    "message": "Cannot use -- on array{}.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 28,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 32,
+                    "identifier": "preDec.type",
+                    "message": "Cannot use -- on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 36,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on true.",
+                    "tip": "Operator ++ is deprecated for true."
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 38,
+                    "identifier": "preDec.type",
+                    "message": "Cannot use -- on false.",
+                    "tip": "Operator -- is deprecated for false."
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 42,
+                    "identifier": "preDec.type",
+                    "message": "Cannot use -- on null.",
+                    "tip": "Operator -- is deprecated for null."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixed",
+            "files": [
+                "Operators/data/invalid-inc-dec-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnion",
+            "files": [
+                "Operators/data/invalid-inc-dec-union.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-inc-dec-union.php",
+                    "line": 11,
+                    "identifier": "void.pure",
+                    "message": "Function InvalidIncDecUnion\\foo() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDecNonNumericString",
+            "files": [
+                "Operators/data/dec-non-numeric-string.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/dec-non-numeric-string.php",
+                    "line": 21,
+                    "identifier": "postDec.type",
+                    "message": "Cannot use -- on 'a'.",
+                    "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+                },
+                {
+                    "file": "Operators/data/dec-non-numeric-string.php",
+                    "line": 23,
+                    "identifier": "postDec.type",
+                    "message": "Cannot use -- on string.",
+                    "tip": "Operator -- is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_decrement()."
+                },
+                {
+                    "file": "Operators/data/dec-non-numeric-string.php",
+                    "line": 30,
+                    "identifier": "postDec.type",
+                    "message": "Cannot use -- on null.",
+                    "tip": "Operator -- is deprecated for null."
+                },
+                {
+                    "file": "Operators/data/dec-non-numeric-string.php",
+                    "line": 32,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on bool.",
+                    "tip": "Operator ++ is deprecated for bool."
+                },
+                {
+                    "file": "Operators/data/dec-non-numeric-string.php",
+                    "line": 40,
+                    "identifier": "postDec.type",
+                    "message": "Cannot use -- on bool.",
+                    "tip": "Operator -- is deprecated for bool."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIncNonNumericString",
+            "files": [
+                "Operators/data/inc-non-numeric-string.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/inc-non-numeric-string.php",
+                    "line": 21,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on 'a'.",
+                    "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+                },
+                {
+                    "file": "Operators/data/inc-non-numeric-string.php",
+                    "line": 23,
+                    "identifier": "postInc.type",
+                    "message": "Cannot use ++ on string.",
+                    "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBcMathNumber",
+            "files": [
+                "Operators/data/inc-dec-bcmath-number.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/inc-dec-bcmath-number.php",
+                    "line": 7,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecBcMathNumber\\testPreInc() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/inc-dec-bcmath-number.php",
+                    "line": 11,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecBcMathNumber\\testPostInc() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/inc-dec-bcmath-number.php",
+                    "line": 15,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecBcMathNumber\\testPreDec() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/inc-dec-bcmath-number.php",
+                    "line": 19,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecBcMathNumber\\testPostDec() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGmp",
+            "files": [
+                "Operators/data/inc-dec-gmp.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/inc-dec-gmp.php",
+                    "line": 7,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecGmp\\testPreInc() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/inc-dec-gmp.php",
+                    "line": 11,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecGmp\\testPostInc() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/inc-dec-gmp.php",
+                    "line": 15,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecGmp\\testPreDec() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/inc-dec-gmp.php",
+                    "line": 19,
+                    "identifier": "void.pure",
+                    "message": "Function IncDecGmp\\testPostDec() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
