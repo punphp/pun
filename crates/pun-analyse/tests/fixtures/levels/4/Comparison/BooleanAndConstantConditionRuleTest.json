@@ -1,0 +1,1222 @@
+{
+    "test": "Comparison/BooleanAndConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/boolean-and.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 15,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 19,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 24,
+                    "identifier": "booleanAnd.leftAlwaysFalse",
+                    "message": "Left side of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 27,
+                    "identifier": "booleanAnd.rightAlwaysFalse",
+                    "message": "Right side of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 30,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 30,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 0 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 33,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 33,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 36,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 39,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 50,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 50,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ConstantConditionBooleanAnd\\Foo and ConstantConditionBooleanAnd\\Bar will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 54,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionBooleanAnd\\Ipsum&ConstantConditionBooleanAnd\\Lorem and ConstantConditionBooleanAnd\\Ipsum will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionBooleanAnd\\Ipsum&ConstantConditionBooleanAnd\\Lorem and ConstantConditionBooleanAnd\\Lorem will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 58,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 58,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionBooleanAnd\\Bar and ConstantConditionBooleanAnd\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 60,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 60,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 60,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionBooleanAnd\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 64,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 64,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionBooleanAnd\\Ipsum&ConstantConditionBooleanAnd\\Lorem and ConstantConditionBooleanAnd\\Ipsum will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 64,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionBooleanAnd\\Ipsum&ConstantConditionBooleanAnd\\Lorem and ConstantConditionBooleanAnd\\Lorem will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 66,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 66,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 66,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionBooleanAnd\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 77,
+                    "identifier": "property.onlyRead",
+                    "message": "Property ConstantConditionBooleanAnd\\NonNullablePropertiesShouldNotReportError::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 80,
+                    "identifier": "property.onlyRead",
+                    "message": "Property ConstantConditionBooleanAnd\\NonNullablePropertiesShouldNotReportError::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 125,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 125,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between int<min, 2> and 5 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 139,
+                    "identifier": "booleanAnd.leftAlwaysFalse",
+                    "message": "Left side of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 141,
+                    "identifier": "booleanAnd.rightAlwaysFalse",
+                    "message": "Right side of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 145,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 147,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 178,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-and.php",
+                    "line": 178,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleLogicalAnd",
+            "files": [
+                "Comparison/data/boolean-logical-and.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 15,
+                    "identifier": "logicalAnd.leftAlwaysTrue",
+                    "message": "Left side of and is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 19,
+                    "identifier": "logicalAnd.rightAlwaysTrue",
+                    "message": "Right side of and is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 24,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 24,
+                    "identifier": "logicalAnd.leftAlwaysFalse",
+                    "message": "Left side of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 27,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 27,
+                    "identifier": "logicalAnd.rightAlwaysFalse",
+                    "message": "Right side of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 30,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between 1 and 0 will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 30,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 30,
+                    "identifier": "logicalAnd.alwaysFalse",
+                    "message": "Result of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 33,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 33,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 33,
+                    "identifier": "logicalAnd.rightAlwaysTrue",
+                    "message": "Right side of and is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 36,
+                    "identifier": "logicalAnd.rightAlwaysTrue",
+                    "message": "Right side of and is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 39,
+                    "identifier": "logicalAnd.rightAlwaysTrue",
+                    "message": "Right side of and is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 50,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 50,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ConstantConditionLogicalAnd\\Foo and ConstantConditionLogicalAnd\\Bar will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 50,
+                    "identifier": "logicalAnd.alwaysFalse",
+                    "message": "Result of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 54,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionLogicalAnd\\Ipsum&ConstantConditionLogicalAnd\\Lorem and ConstantConditionLogicalAnd\\Ipsum will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 54,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionLogicalAnd\\Ipsum&ConstantConditionLogicalAnd\\Lorem and ConstantConditionLogicalAnd\\Lorem will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 54,
+                    "identifier": "logicalAnd.alwaysTrue",
+                    "message": "Result of and is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 58,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 58,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionLogicalAnd\\Bar and ConstantConditionLogicalAnd\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 60,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 60,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 60,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionLogicalAnd\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 60,
+                    "identifier": "logicalAnd.alwaysFalse",
+                    "message": "Result of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 64,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 64,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionLogicalAnd\\Ipsum&ConstantConditionLogicalAnd\\Lorem and ConstantConditionLogicalAnd\\Ipsum will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 64,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionLogicalAnd\\Ipsum&ConstantConditionLogicalAnd\\Lorem and ConstantConditionLogicalAnd\\Lorem will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 64,
+                    "identifier": "logicalAnd.alwaysTrue",
+                    "message": "Result of and is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 66,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 66,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 66,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionLogicalAnd\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 66,
+                    "identifier": "logicalAnd.alwaysFalse",
+                    "message": "Result of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 77,
+                    "identifier": "property.onlyRead",
+                    "message": "Property ConstantConditionLogicalAnd\\NonNullablePropertiesShouldNotReportError::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 80,
+                    "identifier": "property.onlyRead",
+                    "message": "Property ConstantConditionLogicalAnd\\NonNullablePropertiesShouldNotReportError::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 125,
+                    "identifier": "greater.alwaysFalse",
+                    "message": "Comparison operation \">\" between int<min, 2> and 5 is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 125,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 125,
+                    "identifier": "logicalAnd.alwaysFalse",
+                    "message": "Result of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 139,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 139,
+                    "identifier": "logicalAnd.leftAlwaysFalse",
+                    "message": "Left side of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 141,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 141,
+                    "identifier": "logicalAnd.rightAlwaysFalse",
+                    "message": "Right side of and is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 145,
+                    "identifier": "logicalAnd.leftAlwaysTrue",
+                    "message": "Left side of and is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-logical-and.php",
+                    "line": 147,
+                    "identifier": "logicalAnd.rightAlwaysTrue",
+                    "message": "Right side of and is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/boolean-and-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 12,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type string is incompatible with native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeInterface and DateTimeInterface will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 24,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 27,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 30,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 33,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDoc",
+            "files": [
+                "Comparison/data/boolean-and-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 12,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type string is incompatible with native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 14,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeInterface and DateTimeInterface will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 24,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 27,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 30,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-not-phpdoc.php",
+                    "line": 33,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertainRegression#0",
+            "files": [
+                "Comparison/data/boolean-and-treat-phpdoc-types-regression.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTreatPhpDocTypesAsCertainRegression#1",
+            "files": [
+                "Comparison/data/boolean-and-treat-phpdoc-types-regression.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugComposerDependentVariables",
+            "files": [
+                "Comparison/data/bug-composer-dependent-variables.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-composer-dependent-variables.php",
+                    "line": 8,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1746",
+            "files": [
+                "Comparison/data/bug-1746.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-1746.php",
+                    "line": 18,
+                    "identifier": "isset.variable",
+                    "message": "Variable $data in isset() is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-1746.php",
+                    "line": 20,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-1746.php",
+                    "line": 20,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $data",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4666",
+            "files": [
+                "Comparison/data/bug-4666.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4666.php",
+                    "line": 25,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug4666\\MyObject::$type is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2870",
+            "files": [
+                "Comparison/data/bug-2870.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2741",
+            "files": [
+                "Comparison/data/bug-2741.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-2741.php",
+                    "line": 21,
+                    "identifier": "booleanAnd.rightAlwaysFalse",
+                    "message": "Right side of && is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7270",
+            "files": [
+                "Comparison/data/bug-7270.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5743",
+            "files": [
+                "Comparison/data/bug-5743.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5743.php",
+                    "line": 10,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 1|int<3, max> does not exist on array{}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4969#0",
+            "files": [
+                "Comparison/data/bug-4969.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4969.php",
+                    "line": 12,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_string() with string will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-4969.php",
+                    "line": 15,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-4969.php",
+                    "line": 15,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4969#1",
+            "files": [
+                "Comparison/data/bug-4969.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4969.php",
+                    "line": 12,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_string() with string will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-4969.php",
+                    "line": 15,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-4969.php",
+                    "line": 15,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#0",
+            "files": [
+                "Comparison/data/boolean-and-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 50,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 69,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Throwable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 69,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Throwable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#1",
+            "files": [
+                "Comparison/data/boolean-and-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 50,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 69,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Throwable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 69,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Throwable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/boolean-and-report-always-true-last-condition.php",
+                    "line": 81,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Throwable&Traversable and Traversable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5365",
+            "files": [
+                "Comparison/data/bug-5365.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-5365.php",
+                    "line": 12,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'productId' on array{0: non-falsy-string, productId: numeric-string, 1: numeric-string} in isset() always exists and is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-5365.php",
+                    "line": 21,
+                    "identifier": "isset.offset",
+                    "message": "Offset 'productId' on array{0: non-falsy-string, productId: numeric-string, 1: numeric-string} in isset() always exists and is not nullable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11908",
+            "files": [
+                "Comparison/data/bug-11908.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8555",
+            "files": [
+                "Comparison/data/bug-8555.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSelfContradiction",
+            "files": [
+                "Comparison/data/self-contradiction.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 23,
+                    "identifier": "method.unused",
+                    "message": "Method SelfContradiction\\AssertStaticCall::getSubjectAndValue() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 25,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 25,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "If SelfContradiction\\AssertStaticCall::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 49,
+                    "identifier": "method.unused",
+                    "message": "Method SelfContradiction\\AssertMethodCall::getSubjectAndValue() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 51,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 51,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "If SelfContradiction\\AssertMethodCall::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 75,
+                    "identifier": "method.unused",
+                    "message": "Method SelfContradiction\\AssertStaticConditionalReturn::getSubjectAndValue() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 77,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 77,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If SelfContradiction\\AssertStaticConditionalReturn::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 101,
+                    "identifier": "method.unused",
+                    "message": "Method SelfContradiction\\AssertInstanceConditionalReturn::getSubjectAndValue() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 103,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/self-contradiction.php",
+                    "line": 103,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If SelfContradiction\\AssertInstanceConditionalReturn::isSubjectNode() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14807",
+            "files": [
+                "Comparison/data/bug-14807.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/boolean-and-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/boolean-and-in-trait.php",
+                    "line": 19,
+                    "identifier": "booleanAnd.leftAlwaysTrue",
+                    "message": "Left side of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-in-trait.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanAndInTrait\\Foo::doBar() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-in-trait.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanAndInTrait\\Foo::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-in-trait.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanAndInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/boolean-and-in-trait.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method BooleanAndInTrait\\FooAnother::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

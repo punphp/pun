@@ -1,5 +1,6 @@
 //! PHPStan's dead-code rules. Expected diagnostics come from the pinned PHPStan rule fixtures.
 
+mod conditions;
 mod finally;
 mod function_discard;
 mod no_discard;
@@ -7,6 +8,10 @@ mod noop;
 mod unreachable;
 mod unused_private;
 
+pub(super) use conditions::{
+    Facts as ConditionFacts, binary, boolean_not, do_while, facts as condition_facts, if_statement,
+    ternary, while_loop,
+};
 pub(super) use unreachable::find as unreachable_statements;
 
 use std::collections::HashSet;
@@ -29,6 +34,7 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
     }
     let mut spans = finally::typed(program);
     spans.extend(unused_private::typed(program));
+    spans.extend(conditions::typed(program));
     spans
 }
 

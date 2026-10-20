@@ -1,0 +1,502 @@
+{
+    "test": "Comparison/ElseIfConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Comparison/data/elseif-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Lorem.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 24,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionElseIf\\Bar and ConstantConditionElseIf\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 30,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 30,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionElseIf\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Ipsum not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Lorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionElseIf\\Ipsum&ConstantConditionElseIf\\Lorem and ConstantConditionElseIf\\Ipsum will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionElseIf\\Ipsum&ConstantConditionElseIf\\Lorem and ConstantConditionElseIf\\Lorem will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 36,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Lorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionElseIf\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 56,
+                    "identifier": "elseif.alwaysTrue",
+                    "message": "Elseif condition is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 69,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $std",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 73,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 77,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Comparison/data/elseif-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $intersection of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Lorem.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $union of method ConstantConditionElseIf\\ElseIfCondition::doFoo() has invalid type ConstantConditionElseIf\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 24,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 28,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionElseIf\\Bar and ConstantConditionElseIf\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 30,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 30,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionElseIf\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Ipsum not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Lorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionElseIf\\Ipsum&ConstantConditionElseIf\\Lorem and ConstantConditionElseIf\\Ipsum will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 34,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionElseIf\\Ipsum&ConstantConditionElseIf\\Lorem and ConstantConditionElseIf\\Lorem will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 36,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Class ConstantConditionElseIf\\Lorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionElseIf\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 56,
+                    "identifier": "elseif.alwaysTrue",
+                    "message": "Elseif condition is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 69,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $std",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 73,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition.php",
+                    "line": 77,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/elseif-condition-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/elseif-condition-not-phpdoc.php",
+                    "line": 46,
+                    "identifier": "elseif.alwaysTrue",
+                    "message": "Elseif condition is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition-not-phpdoc.php",
+                    "line": 56,
+                    "identifier": "elseif.alwaysTrue",
+                    "message": "Elseif condition is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDoc",
+            "files": [
+                "Comparison/data/elseif-condition-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/elseif-condition-not-phpdoc.php",
+                    "line": 46,
+                    "identifier": "elseif.alwaysTrue",
+                    "message": "Elseif condition is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/elseif-condition-not-phpdoc.php",
+                    "line": 56,
+                    "identifier": "elseif.alwaysTrue",
+                    "message": "Elseif condition is always true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11674",
+            "files": [
+                "Comparison/data/bug-11674.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11674.php",
+                    "line": 7,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug11674\\Test::$param is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Comparison/data/bug-11674.php",
+                    "line": 28,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-11674.php",
+                    "line": 36,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6947",
+            "files": [
+                "Comparison/data/bug-6947.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6947.php",
+                    "line": 13,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": "• Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.\n• If Bug6947\\HelloWorld::getValue() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/elseif-condition-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/elseif-condition-in-trait.php",
+                    "line": 23,
+                    "identifier": "elseif.alwaysFalse",
+                    "message": "Elseif condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition-in-trait.php",
+                    "line": 35,
+                    "identifier": "return.missing",
+                    "message": "Method ElseIfConditionInTrait\\Foo::doBar() should return null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition-in-trait.php",
+                    "line": 40,
+                    "identifier": "return.missing",
+                    "message": "Method ElseIfConditionInTrait\\Foo::doBar2() should return null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition-in-trait.php",
+                    "line": 52,
+                    "identifier": "return.missing",
+                    "message": "Method ElseIfConditionInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/elseif-condition-in-trait.php",
+                    "line": 57,
+                    "identifier": "return.missing",
+                    "message": "Method ElseIfConditionInTrait\\FooAnother::doBar2() should return null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

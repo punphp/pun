@@ -1,0 +1,739 @@
+{
+    "test": "Comparison/IfConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/if-condition.php"
+            ],
+            "scan": [
+                "Comparison/data/function-definition.php"
+            ],
+            "errors": [
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 40,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 45,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 49,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 49,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionIf\\Bar and ConstantConditionIf\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 53,
+                    "identifier": "booleanAnd.alwaysFalse",
+                    "message": "Result of && is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 53,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ConstantConditionIf\\Foo and ConstantConditionIf\\Bar will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 57,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 57,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionIf\\Ipsum&ConstantConditionIf\\Lorem and ConstantConditionIf\\Ipsum will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 57,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionIf\\Ipsum&ConstantConditionIf\\Lorem and ConstantConditionIf\\Lorem will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 61,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 61,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ConstantConditionIf\\Ipsum will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 61,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ConstantConditionIf\\Ipsum&ConstantConditionIf\\Lorem and ConstantConditionIf\\Lorem will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 70,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 81,
+                    "identifier": "booleanNot.alwaysTrue",
+                    "message": "Negated boolean expression is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 84,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 93,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_object() with object will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 96,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 110,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 113,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 127,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 287,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 291,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 303,
+                    "identifier": "empty.variable",
+                    "message": "Variable $a in empty() always exists and is not falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition.php",
+                    "line": 307,
+                    "identifier": "empty.variable",
+                    "message": "Variable $b in empty() is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/if-condition-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/if-condition-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDoc",
+            "files": [
+                "Comparison/data/if-condition-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/if-condition-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4043",
+            "files": [
+                "Comparison/data/bug-4043.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4043.php",
+                    "line": 5,
+                    "identifier": "return.missing",
+                    "message": "Function Bug4043\\number() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-4043.php",
+                    "line": 13,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function assert() with true will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-4043.php",
+                    "line": 13,
+                    "identifier": "notIdentical.alwaysTrue",
+                    "message": "Strict comparison using !== between DateInterval&object{days: int} and false will always evaluate to true.",
+                    "tip": "false does not have property $days."
+                },
+                {
+                    "file": "Comparison/data/bug-4043.php",
+                    "line": 43,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-4043.php",
+                    "line": 50,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5370",
+            "files": [
+                "Comparison/data/bug-5370.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6902",
+            "files": [
+                "Comparison/data/bug-6902.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8485",
+            "files": [
+                "Comparison/data/bug-8485.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 15,
+                    "identifier": "void.pure",
+                    "message": "Function Bug8485\\shouldError() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 19,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\E::c and Bug8485\\E::c will always evaluate to true.",
+                    "tip": "Use match expression instead. PHPStan will report unhandled enum cases."
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 21,
+                    "identifier": "equal.alwaysTrue",
+                    "message": "Loose comparison using == between Bug8485\\E::c and Bug8485\\E::c will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 24,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 26,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 29,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 31,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F::c and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 35,
+                    "identifier": "void.pure",
+                    "message": "Function Bug8485\\allGood() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 36,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F and Bug8485\\E will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 38,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F and Bug8485\\E will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 41,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between Bug8485\\F and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 43,
+                    "identifier": "equal.alwaysFalse",
+                    "message": "Loose comparison using == between Bug8485\\F and Bug8485\\E::c will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 67,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\FooEnum::C and Bug8485\\FooEnum::C will always evaluate to true.",
+                    "tip": "• Remove remaining cases below this one and this error will disappear too.\n• Use match expression instead. PHPStan will report unhandled enum cases."
+                },
+                {
+                    "file": "Comparison/data/bug-8485.php",
+                    "line": 74,
+                    "identifier": "identical.alwaysTrue",
+                    "message": "Strict comparison using === between Bug8485\\FooEnum::C and Bug8485\\FooEnum::C will always evaluate to true.",
+                    "tip": "• Remove remaining cases below this one and this error will disappear too.\n• Use match expression instead. PHPStan will report unhandled enum cases."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4302",
+            "files": [
+                "Comparison/data/bug-4302.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7491",
+            "files": [
+                "Comparison/data/bug-7491.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2499",
+            "files": [
+                "Comparison/data/bug-2499.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10561",
+            "files": [
+                "Comparison/data/bug-10561.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4912",
+            "files": [
+                "Comparison/data/bug-4912.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4864",
+            "files": [
+                "Comparison/data/bug-4864.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8926",
+            "files": [
+                "Comparison/data/bug-8926.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11417",
+            "files": [
+                "Comparison/data/bug-11417.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-11417.php",
+                    "line": 66,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-11417.php",
+                    "line": 70,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10903",
+            "files": [
+                "Comparison/data/bug-10903.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13384b",
+            "files": [
+                "TooWideTypehints/data/bug-13384b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "TooWideTypehints/data/bug-13384b.php",
+                    "line": 23,
+                    "identifier": "if.alwaysFalse",
+                    "message": "If condition is always false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7699",
+            "files": [
+                "Comparison/data/bug-7699.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4284",
+            "files": [
+                "Comparison/data/bug-4284.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-4284.php",
+                    "line": 21,
+                    "identifier": "booleanAnd.rightAlwaysTrue",
+                    "message": "Right side of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-4284.php",
+                    "line": 25,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/if-condition-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/if-condition-in-trait.php",
+                    "line": 19,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition-in-trait.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method IfConditionInTrait\\Foo::doBar() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition-in-trait.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method IfConditionInTrait\\Foo::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition-in-trait.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method IfConditionInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/if-condition-in-trait.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method IfConditionInTrait\\FooAnother::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6211",
+            "files": [
+                "Comparison/data/bug-6211.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 34,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function method_exists() with Bug6211\\Hell and 'test' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 39,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function method_exists() with 'Bug6211\\\\Hell' and 'test' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 62,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function method_exists() with Bug6211\\Bar and 'realMethod' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 87,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function property_exists() with Bug6211\\Baz and 'realProp' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 93,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 100,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 106,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function method_exists() with Bug6211\\Hell and 'test' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 107,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function method_exists() with Bug6211\\Hell and 'test' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 114,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 120,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function property_exists() with Bug6211\\Baz and 'realProp' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 121,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function property_exists() with Bug6211\\Baz and 'realProp' will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-6211.php",
+                    "line": 136,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function method_exists() with class-string<Bug6211\\Foo> and 'test' will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5020",
+            "files": [
+                "Comparison/data/bug-5020.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8980",
+            "files": [
+                "Comparison/data/bug-8980.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-8980.php",
+                    "line": 23,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConstantConditionFunctionCall",
+            "files": [
+                "Comparison/data/constant-condition-function-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/constant-condition-function-call.php",
+                    "line": 13,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_int() with int will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/constant-condition-function-call.php",
+                    "line": 19,
+                    "identifier": "if.alwaysTrue",
+                    "message": "If condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

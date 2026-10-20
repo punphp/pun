@@ -1,0 +1,283 @@
+{
+    "test": "Comparison/TernaryOperatorConstantConditionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/ternary.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 10,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 11,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 11,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 12,
+                    "identifier": "booleanNot.alwaysFalse",
+                    "message": "Negated boolean expression is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 12,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 15,
+                    "identifier": "ternary.alwaysFalse",
+                    "message": "Ternary operator condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 15,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 20,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 21,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 66,
+                    "identifier": "ternary.alwaysFalse",
+                    "message": "Ternary operator condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 67,
+                    "identifier": "ternary.alwaysFalse",
+                    "message": "Ternary operator condition is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 70,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary.php",
+                    "line": 71,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/ternary-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDoc",
+            "files": [
+                "Comparison/data/ternary-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/ternary-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7580",
+            "files": [
+                "Comparison/data/bug-7580.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-7580.php",
+                    "line": 6,
+                    "identifier": "ternary.alwaysFalse",
+                    "message": "Ternary operator condition is always false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-7580.php",
+                    "line": 9,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-7580.php",
+                    "line": 12,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: ''|'x'",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-7580.php",
+                    "line": 18,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: string",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11949",
+            "files": [
+                "Comparison/data/bug-11949.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3370",
+            "files": [
+                "Comparison/data/bug-3370.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/ternary-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/ternary-in-trait.php",
+                    "line": 17,
+                    "identifier": "ternary.alwaysTrue",
+                    "message": "Ternary operator condition is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-in-trait.php",
+                    "line": 27,
+                    "identifier": "return.missing",
+                    "message": "Method TernaryInTrait\\Foo::doBar() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-in-trait.php",
+                    "line": 32,
+                    "identifier": "return.missing",
+                    "message": "Method TernaryInTrait\\Foo::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-in-trait.php",
+                    "line": 44,
+                    "identifier": "return.missing",
+                    "message": "Method TernaryInTrait\\FooAnother::doBar() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/ternary-in-trait.php",
+                    "line": 49,
+                    "identifier": "return.missing",
+                    "message": "Method TernaryInTrait\\FooAnother::doBar2() should return stdClass but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
