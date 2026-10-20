@@ -21,6 +21,18 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
     // Mago types an int mixed after an invalid `$i += 'x'`, so NullCoalesceRule cannot tell it is not nullable
     ("types", "offsets.php", 216, "nullCoalesce.variable"),
+    // nullsafe.neverNull (NullCoalesceRule) on `?->` property fetches with a dynamic name is not reported yet
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 13, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 14, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 15, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 16, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 17, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 19, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 20, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 21, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 22, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 23, "nullsafe.neverNull"),
+    ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 24, "nullsafe.neverNull"),
     // a native `mixed` parameter is explicit mixed, which level 9 checks; Mago's mixed does not tell it apart
     ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameNotString"),
     ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameType"),

@@ -42,29 +42,10 @@ Api/ApiClassImplementsRuleTest::testRuleOutOfPhpStan
 # argument.missing on built-ins called with named arguments: PHPStan's named-argument variant selection (and
 # combined parameter types) differ from Pun's for DatePeriod's constructor and implode()/join()
 # argument.namedNotSupported in a `PHP_VERSION_ID < 80000` branch needs the scope's narrowed PHP version
-Methods/CallMethodsRuleTest::testDisallowNamedArgumentsInPhpVersionScope
 # PHPStan 2.3 narrows the scope's PHP version by `PHP_VERSION_ID` conditions (`$scope->getPhpVersion()`), which
 # version-gated rules read; Pun checks against the one configured version
-Cast/DeprecatedCastRuleTest::testConditionallyExecutedCode
-Cast/UnsetCastRuleTest::testPhpVersionNarrowedScope
-Cast/VoidCastRuleTest::testConditionallyExecutedCode
-Classes/InvalidPromotedPropertiesRuleTest::testConditionallyDeclaredClass
-Classes/ReadOnlyClassRuleTest::testConditionallyDeclaredClass
-Constants/DynamicClassConstantFetchRuleTest::testConditionallyExecutedCode
-Constants/FinalConstantRuleTest::testConditionallyDeclaredClass
-Exceptions/ThrowExpressionRuleTest::testConditionallyExecutedCode
-Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testNeverPhpVersionNarrowedScope
-Functions/ExistingClassesInTypehintsRuleTest::testConditionallyDeclaredFunction
-Functions/FunctionCallableRuleTest::testConditionallyExecutedCode
-Methods/MethodCallableRuleTest::testConditionallyExecutedCode
-Methods/StaticMethodCallableRuleTest::testConditionallyExecutedCode
-Properties/PropertiesInInterfaceRuleTest::testPhpVersionNarrowedScope
-Properties/PropertyInClassRuleTest::testPhpVersionNarrowedScope
-Traits/ConstantsInTraitsRuleTest::testPhpVersionNarrowedScope
 # PHPStan 2.3 replaced PrintfHelper with PrintfFormatParser (`%5%`, `%ls`, `%*2$d` and positional width/precision
 # arguments, sscanf() counted by PHP itself); not ported
-Functions/PrintfParametersRuleTest::testFormatParser
-Functions/CallToFunctionParametersRuleTest::testImplodeNamedParameters
 # PHPStan 2.3's template types in return.missing descriptions: an array shape with a template key of a non-key bound
 # is no shape, a template key prints as `T|TKey of (int|string)`, and an inherited template argument resolves to its
 # bound (`RecursiveIterator<mixed, mixed>`)
