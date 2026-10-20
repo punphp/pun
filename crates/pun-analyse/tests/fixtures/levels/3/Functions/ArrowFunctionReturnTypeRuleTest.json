@@ -77,6 +77,15 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug14914",
+            "files": [
+                "Functions/data/bug-14914.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

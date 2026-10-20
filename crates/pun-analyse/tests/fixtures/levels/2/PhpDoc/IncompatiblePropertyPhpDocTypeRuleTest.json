@@ -431,6 +431,15 @@
             "scan": [],
             "errors": [],
             "general": []
+        },
+        {
+            "method": "testBug4548",
+            "files": [
+                "PhpDoc/data/bug-4548.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
         }
     ]
 }

@@ -73,12 +73,9 @@
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug13652
 2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug9708
 # Anonymous class names print the fixture path relative to the exporter's working directory.
-2 PhpDoc/RequireExtendsDefinitionClassRuleTest::testRule
-2 PhpDoc/RequireExtendsDefinitionTraitRuleTest::testRule
 2 PhpDoc/RequireImplementsDefinitionClassRuleTest::testRule
 2 PhpDoc/RequireImplementsDefinitionTraitRuleTest::testRule
 4 DeadCode/NoopRuleTest::testRuleImpurePoints
-4 DeadCode/UnusedPrivatePropertyRuleTest::testRule/0
 # PHPStan remembers `$dt->getTimestamp() === 1000` from assert(), so the while loop never ends; Mago does not.
 4 DeadCode/UnreachableStatementRuleTest::testRule
 # `$y !== 'doBar'` leaves mixed~'doBar', which Mago's types cannot express (a dynamic name may be any member).
@@ -102,7 +99,6 @@
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
-4 DeadCode/UnreachableStatementRuleTest::testBug13232a
 4 DeadCode/UnusedPrivateMethodRuleTest::testRule
 4 Exceptions/OverwrittenExitPointByFinallyRuleTest::testBug5627
 4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
@@ -145,7 +141,6 @@
 4 Comparison/BooleanNotConstantConditionRuleTest::testBug11903
 4 Comparison/BooleanOrConstantConditionRuleTest::testRule
 4 Comparison/BooleanOrConstantConditionRuleTest::testRuleLogicalOr
-4 Comparison/BooleanOrConstantConditionRuleTest::testDoNotReportPhpDoc
 4 Comparison/BooleanOrConstantConditionRuleTest::testReportPhpDoc
 4 Comparison/ElseIfConstantConditionRuleTest::testRule#0
 4 Comparison/ElseIfConstantConditionRuleTest::testRule#1
@@ -163,8 +158,6 @@
 4 Comparison/TernaryOperatorConstantConditionRuleTest::testBug7580
 4 Comparison/WhileLoopAlwaysFalseConditionRuleTest::testRule
 4 Comparison/WhileLoopAlwaysTrueConditionRuleTest::testRule
-4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1#0
-4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1#1
 # an-dead: NoopRule on match: exhaustiveness through get_class()/get_debug_type()/class-string/int-range subjects, and constant-condition types in arms
 4 Comparison/MatchExpressionRuleTest::testRule
 4 Comparison/MatchExpressionRuleTest::testBug8900
@@ -252,6 +245,52 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testInTrait
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11054
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14847
-4 DeadCode/UnreachableStatementRuleTest::testBug7531
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
 4 DeadCode/UnusedPrivateConstantRuleTest::testRule
+# PHPStan 2.3: UnusedClosureUsesRule and UnusedConstructorParametersRule follow VariableWritesNode dataflow (a use or
+# parameter overwritten before any read is unused, compact() of a resolved name reads it); Pun keeps the 2.2 name check
+1 Classes/UnusedConstructorParametersRuleTest::testResolvedDynamicUsages
+1 Classes/UnusedConstructorParametersRuleTest::testValueFlow
+1 Classes/UnusedConstructorParametersRuleTest::testValueFlowWithoutBleedingEdge
+1 Functions/HelperDeadCode::testRule
+1 Functions/UnusedClosureUsesRuleTest::testResolvedDynamicUsages
+1 Functions/UnusedClosureUsesRuleTest::testValueFlow
+1 Functions/UnusedClosureUsesRuleTest::testValueFlowWithoutBleedingEdge
+# PHPStan 2.3's ClassConstantAccessType: a deferred `T::CONFIG_*` or `static::FOO_*` PHPDoc type is no unresolvable type
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testClassConstantWildcardUnresolvable
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug4548
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11510
+2 PhpDoc/IncompatiblePropertyPhpDocTypeRuleTest::testBug4548
+# PHPStan 2.3 narrows the scope's PHP version by `PHP_VERSION_ID` conditions (rules/gaps.txt)
+3 Arrays/ArrayUnpackingRuleTest::testPhpVersionNarrowedScope
+# PHPStan 2.3's inferred types in return.type: template arguments (`Foo<non-empty-array<non-falsy-string, ...>>`,
+# `static(Value)`, `*NEVER*` printed as `never`), callable arrays, iterator template defaults, and the template
+# covariance tip on generic returns
+3 Functions/ReturnTypeRuleTest::testBug13114
+3 Functions/ReturnTypeRuleTest::testBug10419
+3 Functions/ReturnTypeRuleTest::testBug10290
+3 Functions/ReturnTypeRuleTest::testBug5741
+3 Methods/ReturnTypeRuleTest::testBug14647
+3 Methods/ReturnTypeRuleTest::testBug12601
+3 Methods/ReturnTypeRuleTest::testBug12490
+3 Methods/ReturnTypeRuleTest::testBug12420
+3 Methods/ReturnTypeRuleTest::testBug11835
+3 Methods/ReturnTypeRuleTest::testBug10289
+3 Methods/ReturnTypeRuleTest::testBug12984
+3 Methods/ReturnTypeRuleTest::testBug13325
+# PHPStan 2.3's scope: a PHPDoc-certain condition's tip, an empty array after a loop that empties it, a `for` loop
+# that runs once, nullsafe short-circuits that terminate
+4 Arrays/DeadForeachRuleTest::testBug15147
+4 Comparison/BooleanOrConstantConditionRuleTest::testBug15169TreatPhpDocTypesAsCertain
+4 Comparison/IfConstantConditionRuleTest::testDeferredErrorsAreNotCollapsedAcrossFiles
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14248
+4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1
+4 DeadCode/UnreachableStatementRuleTest::testBug15169TreatPhpDocTypesAsCertain
+4 DeadCode/UnreachableStatementRuleTest::testNullsafeShortCircuitTerminating
+# PHPStan 2.3 counts an expression that can throw an Error (`/` and `%` by a non-constant, sprintf(), strpos() and
+# array_combine() with a ValueError) as an impure point, so it is no noop
+4 DeadCode/NoopRuleTest::testErrorThrows
+4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testErrorThrows
+# missingType.iterableValue and missingType.generics on a class's `@phpstan-type` aliases (LocalTypeAliasesRule) are not
+# ported
+6 Methods/MissingMethodParameterTypehintRuleTest::testRepeatedIterableTypeReportedOnce
