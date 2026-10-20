@@ -1,0 +1,3934 @@
+{
+    "test": "Properties/AccessPropertiesRuleTest",
+    "cases": [
+        {
+            "method": "testAccessProperties",
+            "files": [
+                "Properties/data/access-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 9,
+                    "identifier": "property.unused",
+                    "message": "Property TestAccessProperties\\FooAccessProperties::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 20,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\BarAccessProperties::$foobar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 24,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->loremipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 24,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\BarAccessProperties::$loremipsum.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 25,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 25,
+                    "identifier": "property.private",
+                    "message": "Access to private property $foo of parent class TestAccessProperties\\FooAccessProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 26,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 27,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 28,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foobar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Class TestAccessProperties\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 29,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\TestAccessProperties\\Foo::class\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$string->propertyOnString\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 32,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $propertyOnString on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 43,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 43,
+                    "identifier": "property.private",
+                    "message": "Access to private property TestAccessProperties\\FooAccessProperties::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 44,
+                    "identifier": "property.protected",
+                    "message": "Access to protected property TestAccessProperties\\FooAccessProperties::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 45,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->baz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 49,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($foo->baz)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 50,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->baz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 50,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$baz.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 51,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$stdClass->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 53,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 53,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$nonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 56,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 58,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestAccessProperties\\FooAccessPropertiesAlias not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 59,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $foo on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 59,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 60,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $bar on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 60,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 61,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $ipsum on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 61,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 63,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestAccessProperties\\UnknownClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 64,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $foo on an unknown class TestAccessProperties\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 64,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 67,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyBaz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 69,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyBaz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 69,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$emptyBaz.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 71,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyNonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 71,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$emptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 74,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyNonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 76,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 77,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 77,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 78,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 78,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 79,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 81,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherEmptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 81,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 82,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 83,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 84,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherEmptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 84,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 87,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$doc->firstChild\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 88,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$doc->childNodes[0]\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 91,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 92,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$el->textContent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 109,
+                    "identifier": "function.notFound",
+                    "message": "Function doSomething not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 115,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->fooOrNull->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 127,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo has unknown class TestAccessProperties\\FirstUnknownClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo has unknown class TestAccessProperties\\SecondUnknownClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo (TestAccessProperties\\FirstUnknownClass|TestAccessProperties\\SecondUnknownClass) is never assigned TestAccessProperties\\FirstUnknownClass so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo (TestAccessProperties\\FirstUnknownClass|TestAccessProperties\\SecondUnknownClass) is never assigned TestAccessProperties\\SecondUnknownClass so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $test on an unknown class TestAccessProperties\\FirstUnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $test on an unknown class TestAccessProperties\\SecondUnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->test\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object (TestAccessProperties\\WithFooAndBarProperty|TestAccessProperties\\WithFooProperty) is never assigned TestAccessProperties\\WithFooAndBarProperty so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object (TestAccessProperties\\WithFooAndBarProperty|TestAccessProperties\\WithFooProperty) is never assigned TestAccessProperties\\WithFooProperty so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 176,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->object->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 177,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->object->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 193,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 194,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 194,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\SomeInterface&TestAccessProperties\\WithFooProperty::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 204,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\IgnoreNullableUnionProperty::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 204,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\IgnoreNullableUnionProperty::$foo (TestAccessProperties\\FooAccessProperties|null) is never assigned TestAccessProperties\\FooAccessProperties so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 208,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 217,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\AccessNullProperty::$test is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 221,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->test->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 221,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $foo on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 233,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between null and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 235,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between null and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 248,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->lorem\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 248,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$lorem.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 250,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->lorem\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 251,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->dolor\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 251,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$dolor.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 262,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\NullCoalesce::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 262,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\NullCoalesce::$foo (TestAccessProperties\\NullCoalesce|null) is never assigned TestAccessProperties\\NullCoalesce so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 266,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->bar ?? 'bar'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 272,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 274,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->foo->foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 274,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\NullCoalesce::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 301,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->fooProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 302,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->barProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 302,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property class@anonymous/access-properties.php:297::$barProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 312,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertyIssetOnPossibleFalse::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 330,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$var is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 333,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$closure is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 336,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$context is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 368,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 373,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 402,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\RevertNonNullabilityForIsset::$selfOrNull is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 402,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\RevertNonNullabilityForIsset::$selfOrNull (TestAccessProperties\\RevertNonNullabilityForIsset|null) is never assigned TestAccessProperties\\RevertNonNullabilityForIsset so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 406,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->selfOrNull->selfOrNull)\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAccessPropertiesWithoutUnionTypes",
+            "files": [
+                "Properties/data/access-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 9,
+                    "identifier": "property.unused",
+                    "message": "Property TestAccessProperties\\FooAccessProperties::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 20,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\BarAccessProperties::$foobar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 24,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->loremipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 24,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\BarAccessProperties::$loremipsum.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 25,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 25,
+                    "identifier": "property.private",
+                    "message": "Access to private property $foo of parent class TestAccessProperties\\FooAccessProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 26,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 27,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 28,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foobar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Class TestAccessProperties\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 29,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\TestAccessProperties\\Foo::class\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$string->propertyOnString\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 32,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $propertyOnString on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 43,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 43,
+                    "identifier": "property.private",
+                    "message": "Access to private property TestAccessProperties\\FooAccessProperties::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 44,
+                    "identifier": "property.protected",
+                    "message": "Access to protected property TestAccessProperties\\FooAccessProperties::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 45,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->baz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 49,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($foo->baz)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 50,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->baz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 50,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$baz.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 51,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$stdClass->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 53,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 53,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$nonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 56,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 58,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestAccessProperties\\FooAccessPropertiesAlias not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 59,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $foo on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 59,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 60,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $bar on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 60,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 61,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $ipsum on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 61,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 63,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestAccessProperties\\UnknownClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 64,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $foo on an unknown class TestAccessProperties\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 64,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 67,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyBaz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 69,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyBaz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 69,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$emptyBaz.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 71,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyNonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 71,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$emptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 74,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyNonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 76,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 77,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 77,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 78,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 78,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 79,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 81,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherEmptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 81,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 82,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 83,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 84,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherEmptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 84,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 87,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$doc->firstChild\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 88,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$doc->childNodes[0]\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 91,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 92,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$el->textContent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 109,
+                    "identifier": "function.notFound",
+                    "message": "Function doSomething not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 115,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->fooOrNull->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 127,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo has unknown class TestAccessProperties\\FirstUnknownClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo has unknown class TestAccessProperties\\SecondUnknownClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo (TestAccessProperties\\FirstUnknownClass|TestAccessProperties\\SecondUnknownClass) is never assigned TestAccessProperties\\FirstUnknownClass so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo (TestAccessProperties\\FirstUnknownClass|TestAccessProperties\\SecondUnknownClass) is never assigned TestAccessProperties\\SecondUnknownClass so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $test on an unknown class TestAccessProperties\\FirstUnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $test on an unknown class TestAccessProperties\\SecondUnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->test\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object (TestAccessProperties\\WithFooAndBarProperty|TestAccessProperties\\WithFooProperty) is never assigned TestAccessProperties\\WithFooAndBarProperty so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object (TestAccessProperties\\WithFooAndBarProperty|TestAccessProperties\\WithFooProperty) is never assigned TestAccessProperties\\WithFooProperty so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 176,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->object->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 177,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->object->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 193,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 194,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 194,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\SomeInterface&TestAccessProperties\\WithFooProperty::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 204,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\IgnoreNullableUnionProperty::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 204,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\IgnoreNullableUnionProperty::$foo (TestAccessProperties\\FooAccessProperties|null) is never assigned TestAccessProperties\\FooAccessProperties so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 208,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 217,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\AccessNullProperty::$test is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 221,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->test->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 221,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $foo on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 233,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between null and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 235,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between null and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 248,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->lorem\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 248,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$lorem.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 250,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->lorem\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 251,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->dolor\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 251,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$dolor.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 262,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\NullCoalesce::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 262,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\NullCoalesce::$foo (TestAccessProperties\\NullCoalesce|null) is never assigned TestAccessProperties\\NullCoalesce so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 266,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->bar ?? 'bar'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 272,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 274,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->foo->foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 274,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\NullCoalesce::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 301,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->fooProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 302,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->barProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 302,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property class@anonymous/access-properties.php:297::$barProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 312,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertyIssetOnPossibleFalse::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 330,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$var is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 333,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$closure is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 336,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$context is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 368,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 373,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 402,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\RevertNonNullabilityForIsset::$selfOrNull is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 402,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\RevertNonNullabilityForIsset::$selfOrNull (TestAccessProperties\\RevertNonNullabilityForIsset|null) is never assigned TestAccessProperties\\RevertNonNullabilityForIsset so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 406,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->selfOrNull->selfOrNull)\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleAssignOp",
+            "files": [
+                "Properties/data/access-properties-assign-op.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties-assign-op.php",
+                    "line": 10,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties-assign-op.php",
+                    "line": 15,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAccessPropertiesOnThisOnly",
+            "files": [
+                "Properties/data/access-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 9,
+                    "identifier": "property.unused",
+                    "message": "Property TestAccessProperties\\FooAccessProperties::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 20,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\BarAccessProperties::$foobar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 24,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->loremipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 24,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\BarAccessProperties::$loremipsum.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 25,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 25,
+                    "identifier": "property.private",
+                    "message": "Access to private property $foo of parent class TestAccessProperties\\FooAccessProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 26,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 27,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 28,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foobar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Class TestAccessProperties\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 29,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\TestAccessProperties\\Foo::class\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$string->propertyOnString\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 32,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $propertyOnString on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 43,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 43,
+                    "identifier": "property.private",
+                    "message": "Access to private property TestAccessProperties\\FooAccessProperties::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 44,
+                    "identifier": "property.protected",
+                    "message": "Access to protected property TestAccessProperties\\FooAccessProperties::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 45,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->baz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 49,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($foo->baz)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 50,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->baz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 50,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$baz.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 51,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$stdClass->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 53,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 53,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$nonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 56,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 58,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestAccessProperties\\FooAccessPropertiesAlias not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 59,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $foo on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 59,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 60,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $bar on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 60,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 61,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $ipsum on an unknown class TestAccessProperties\\FooAccessPropertiesAlias.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 61,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$fooAlias->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 63,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestAccessProperties\\UnknownClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 64,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $foo on an unknown class TestAccessProperties\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 64,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 67,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyBaz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 69,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyBaz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 69,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$emptyBaz.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 71,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyNonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 71,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$emptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 74,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->emptyNonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 76,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 77,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 77,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 78,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 78,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 79,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 81,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherEmptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 81,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 82,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 83,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 84,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$anotherEmptyNonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 84,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 87,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$doc->firstChild\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 88,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$doc->childNodes[0]\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 91,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 92,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$el->textContent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 109,
+                    "identifier": "function.notFound",
+                    "message": "Function doSomething not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 115,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->fooOrNull->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 127,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo has unknown class TestAccessProperties\\FirstUnknownClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "class.notFound",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo has unknown class TestAccessProperties\\SecondUnknownClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo (TestAccessProperties\\FirstUnknownClass|TestAccessProperties\\SecondUnknownClass) is never assigned TestAccessProperties\\FirstUnknownClass so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 143,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesWithUnknownClasses::$foo (TestAccessProperties\\FirstUnknownClass|TestAccessProperties\\SecondUnknownClass) is never assigned TestAccessProperties\\SecondUnknownClass so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $test on an unknown class TestAccessProperties\\FirstUnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $test on an unknown class TestAccessProperties\\SecondUnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 147,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->test\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object (TestAccessProperties\\WithFooAndBarProperty|TestAccessProperties\\WithFooProperty) is never assigned TestAccessProperties\\WithFooAndBarProperty so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 172,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\PropertiesOnUnionType::$object (TestAccessProperties\\WithFooAndBarProperty|TestAccessProperties\\WithFooProperty) is never assigned TestAccessProperties\\WithFooProperty so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 176,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->object->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 177,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->object->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 193,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 194,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 194,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\SomeInterface&TestAccessProperties\\WithFooProperty::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 204,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\IgnoreNullableUnionProperty::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 204,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\IgnoreNullableUnionProperty::$foo (TestAccessProperties\\FooAccessProperties|null) is never assigned TestAccessProperties\\FooAccessProperties so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 208,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->ipsum\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 217,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\AccessNullProperty::$test is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 221,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->test->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 221,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $foo on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 233,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between null and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 235,
+                    "identifier": "notIdentical.alwaysFalse",
+                    "message": "Strict comparison using !== between null and null will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 248,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->lorem\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 248,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$lorem.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 250,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->lorem\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 251,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->dolor\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 251,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\FooAccessProperties::$dolor.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 262,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\NullCoalesce::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 262,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\NullCoalesce::$foo (TestAccessProperties\\NullCoalesce|null) is never assigned TestAccessProperties\\NullCoalesce so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 266,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->bar ?? 'bar'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 272,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 274,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->foo->foo->foo->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 274,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\NullCoalesce::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 301,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->fooProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 302,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo->barProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 302,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property class@anonymous/access-properties.php:297::$barProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 312,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\PropertyIssetOnPossibleFalse::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 330,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$var is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 333,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$closure is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 336,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\WeirdErrorWithCall::$context is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 368,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 373,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 402,
+                    "identifier": "property.onlyRead",
+                    "message": "Property TestAccessProperties\\RevertNonNullabilityForIsset::$selfOrNull is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 402,
+                    "identifier": "property.unusedType",
+                    "message": "Property TestAccessProperties\\RevertNonNullabilityForIsset::$selfOrNull (TestAccessProperties\\RevertNonNullabilityForIsset|null) is never assigned TestAccessProperties\\RevertNonNullabilityForIsset so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties.php",
+                    "line": 406,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->selfOrNull->selfOrNull)\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12692",
+            "files": [
+                "Properties/data/bug-12692.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12692.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->static\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12692.php",
+                    "line": 14,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property Bug12692\\Foo::$static.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAccessPropertiesAfterIsNullInBooleanOr",
+            "files": [
+                "Properties/data/access-properties-after-isnull.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 9,
+                    "identifier": "property.onlyRead",
+                    "message": "Property AccessPropertiesAfterIsNull\\Foo::$fooProperty is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 9,
+                    "identifier": "property.unusedType",
+                    "message": "Property AccessPropertiesAfterIsNull\\Foo::$fooProperty (AccessPropertiesAfterIsNull\\Foo|null) is never assigned AccessPropertiesAfterIsNull\\Foo so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 16,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $fooProperty on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 25,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $fooProperty on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 28,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property AccessPropertiesAfterIsNull\\Foo::$barProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 31,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property AccessPropertiesAfterIsNull\\Foo::$barProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 35,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $fooProperty on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 44,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $fooProperty on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 47,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property AccessPropertiesAfterIsNull\\Foo::$barProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties-after-isnull.php",
+                    "line": 50,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property AccessPropertiesAfterIsNull\\Foo::$barProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDateIntervalChildProperties",
+            "files": [
+                "Properties/data/date-interval-child-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/date-interval-child-properties.php",
+                    "line": 14,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property AccessPropertiesDateIntervalChild\\DateIntervalChild::$nonexistent.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Properties/data/access-properties-class-exists.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 11,
+                    "identifier": "class.notFound",
+                    "message": "Property AccessPropertiesClassExists\\Foo::$union has unknown class AccessPropertiesClassExists\\Bar as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 11,
+                    "identifier": "class.notFound",
+                    "message": "Property AccessPropertiesClassExists\\Foo::$union has unknown class AccessPropertiesClassExists\\Baz as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 11,
+                    "identifier": "property.onlyRead",
+                    "message": "Property AccessPropertiesClassExists\\Foo::$union is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 11,
+                    "identifier": "property.unusedType",
+                    "message": "Property AccessPropertiesClassExists\\Foo::$union (AccessPropertiesClassExists\\Bar|AccessPropertiesClassExists\\Baz) is never assigned AccessPropertiesClassExists\\Bar so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 11,
+                    "identifier": "property.unusedType",
+                    "message": "Property AccessPropertiesClassExists\\Foo::$union (AccessPropertiesClassExists\\Bar|AccessPropertiesClassExists\\Baz) is never assigned AccessPropertiesClassExists\\Baz so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $lorem on an unknown class AccessPropertiesClassExists\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $lorem on an unknown class AccessPropertiesClassExists\\Baz.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $lorem on an unknown class AccessPropertiesClassExists\\Baz.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-properties-class-exists.php",
+                    "line": 22,
+                    "identifier": "class.notFound",
+                    "message": "Access to property $lorem on an unknown class AccessPropertiesClassExists\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixin",
+            "files": [
+                "Properties/data/mixin.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/mixin.php",
+                    "line": 24,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->fooProp\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/mixin.php",
+                    "line": 33,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$baz->fooProp\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/mixin.php",
+                    "line": 55,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property MixinProperties\\GenericFoo<ReflectionClass>::$namee.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3947",
+            "files": [
+                "Properties/data/bug-3947.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNullSafe",
+            "files": [
+                "Properties/data/nullsafe-property-fetch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 8,
+                    "identifier": "property.onlyRead",
+                    "message": "Property NullsafePropertyFetch\\Foo::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 12,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$selfOrNull?->bar\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 13,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$selfOrNull?->baz\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 13,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property NullsafePropertyFetch\\Foo::$baz.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 18,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $bar on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 19,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $bar on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 21,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->bar\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 21,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $bar on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 22,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access \"?->bar\" on left side of ?? is unnecessary. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 22,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $bar on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 28,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$null->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 28,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $foo on null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 29,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$null?->foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/nullsafe-property-fetch.php",
+                    "line": 29,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $foo on null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3371",
+            "files": [
+                "Properties/data/bug-3371.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4527",
+            "files": [
+                "Properties/data/bug-4527.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-4527.php",
+                    "line": 13,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"($bars['randomKey'] ?? null)?->bar\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4808",
+            "files": [
+                "Properties/data/bug-4808.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5868",
+            "files": [
+                "Properties/data/bug-5868.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-5868.php",
+                    "line": 34,
+                    "identifier": "return.missing",
+                    "message": "Method Bug5868PropertyFetch\\HelloWorld::getAttributeInNode() should return Bug5868PropertyFetch\\Child|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6385",
+            "files": [
+                "Properties/data/bug-6385.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6385.php",
+                    "line": 43,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property UnitEnum::$value.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/bug-6385.php",
+                    "line": 47,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug6385\\ActualUnitEnum::$value.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6566",
+            "files": [
+                "Properties/data/bug-6566.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6899",
+            "files": [
+                "Properties/data/bug-6899.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 13,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($string->prop)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 13,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $prop on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$string->prop ?? \"\"\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 14,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $prop on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 15,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($string->prop)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 15,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $prop on string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 24,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($maybeString->prop)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 25,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$maybeString->prop ?? \"\"\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-6899.php",
+                    "line": 26,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($maybeString->prop)\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6026",
+            "files": [
+                "Properties/data/bug-6026.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3659",
+            "files": [
+                "Properties/data/bug-3659.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDynamicProperties#0",
+            "files": [
+                "Properties/data/dynamic-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 9,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 10,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 11,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 14,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Bar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 15,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 15,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Bar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 16,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 16,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Bar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 20,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 21,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 22,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 29,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Baz::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 33,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 34,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 42,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 42,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalFoo::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 43,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 43,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalFoo::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 44,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalFoo::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 47,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalBar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 48,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 48,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalBar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 49,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 49,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalBar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDynamicProperties#1",
+            "files": [
+                "Properties/data/dynamic-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 9,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 10,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 11,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 14,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 14,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Bar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 15,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 15,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Bar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 16,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 16,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Bar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 20,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 21,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 22,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 29,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\Baz::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 32,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 33,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 34,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 42,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 42,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalFoo::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 43,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($this->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 43,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalFoo::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 44,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$this->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 44,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalFoo::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 47,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"isset($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 47,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalBar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 48,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"empty($bar->dynamicProperty)\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 48,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalBar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 49,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar->dynamicProperty ?? 'test'\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-properties.php",
+                    "line": 49,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property DynamicProperties\\FinalBar::$dynamicProperty.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4559",
+            "files": [
+                "Properties/data/bug-4559.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3171",
+            "files": [
+                "Properties/data/bug-3171.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-3171.php",
+                    "line": 13,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug3171\\Foo::$property is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/bug-3171.php",
+                    "line": 13,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug3171\\Foo::$property (Bug3171\\PropertyClass|null) is never assigned Bug3171\\PropertyClass so it can be removed from the property type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3171OnDynamicProperties",
+            "files": [
+                "Properties/data/bug-3171.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-3171.php",
+                    "line": 13,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug3171\\Foo::$property is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/bug-3171.php",
+                    "line": 13,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug3171\\Foo::$property (Bug3171\\PropertyClass|null) is never assigned Bug3171\\PropertyClass so it can be removed from the property type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp82AndDynamicProperties#0",
+            "files": [
+                "Properties/data/php-82-dynamic-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/php-82-dynamic-properties.php",
+                    "line": 34,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Php82DynamicProperties\\ClassA::$properties.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp82AndDynamicProperties#1",
+            "files": [
+                "Properties/data/php-82-dynamic-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/php-82-dynamic-properties.php",
+                    "line": 34,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Php82DynamicProperties\\ClassA::$properties.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp82AndDynamicPropertiesAllow#0",
+            "files": [
+                "Properties/data/php-82-dynamic-properties-allow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPhp82AndDynamicPropertiesAllow#1",
+            "files": [
+                "Properties/data/php-82-dynamic-properties-allow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2435",
+            "files": [
+                "Properties/data/bug-2435.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-2435.php",
+                    "line": 7,
+                    "identifier": "property.onlyRead",
+                    "message": "Property Bug2435\\Foo::$root is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7640",
+            "files": [
+                "Properties/data/bug-7640.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7640.php",
+                    "line": 39,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"new class extends \\Bug7640\\P…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3572",
+            "files": [
+                "Properties/data/bug-3572.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug393",
+            "files": [
+                "Properties/data/bug-393.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-393.php",
+                    "line": 7,
+                    "identifier": "property.unused",
+                    "message": "Property Bug393\\Foo::$privateProperty is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testObjectShapes",
+            "files": [
+                "Properties/data/properties-object-shapes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-object-shapes.php",
+                    "line": 18,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property object{foo: int, bar?: string}::$foo is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-object-shapes.php",
+                    "line": 42,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property object{foo: int}|stdClass::$foo is not writable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConflictingAnnotationProperty",
+            "files": [
+                "Properties/data/conflicting-annotation-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/conflicting-annotation-property.php",
+                    "line": 26,
+                    "identifier": "property.private",
+                    "message": "Access to private property ConflictingAnnotationProperty\\PropertyWithAnnotation::$test.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/conflicting-annotation-property.php",
+                    "line": 27,
+                    "identifier": "property.private",
+                    "message": "Access to private property ConflictingAnnotationProperty\\PropertyWithAnnotation::$test.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8536",
+            "files": [
+                "Comparison/data/bug-8536.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRequireExtends",
+            "files": [
+                "Properties/data/require-extends.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/require-extends.php",
+                    "line": 36,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property RequireExtends\\MyInterface::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/require-extends.php",
+                    "line": 43,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method RequireExtends\\MyInterface::doesNotExist().",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/require-extends.php",
+                    "line": 44,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method RequireExtends\\MyInterface::doesNotExistStatic().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8629",
+            "files": [
+                "Properties/data/bug-8629.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDynamicStringableAccess",
+            "files": [
+                "Properties/data/dynamic-stringable-access.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDynamicStringableNullsafeAccess",
+            "files": [
+                "Properties/data/dynamic-stringable-nullsafe-access.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 13,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 14,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 14,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type DynamicStringableNullsafeAccess\\Foo. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 15,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 16,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 17,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 19,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 20,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 21,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 22,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 23,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/dynamic-stringable-nullsafe-access.php",
+                    "line": 24,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe property access on non-nullable type $this(DynamicStringableNullsafeAccess\\Foo). Use -> instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9694",
+            "files": [
+                "Properties/data/bug-9694.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTraitMixin",
+            "files": [
+                "Properties/data/trait-mixin.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9706",
+            "files": [
+                "Properties/data/bug-9706.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAsymmetricVisibility",
+            "files": [
+                "Properties/data/read-asymmetric-visibility.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNewIsAlwaysFinalClass",
+            "files": [
+                "Properties/data/null-coalesce-new-is-always-final.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/null-coalesce-new-is-always-final.php",
+                    "line": 12,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property NullCoalesceIsAlwaysFinal\\Foo::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyExists",
+            "files": [
+                "Properties/data/property-exists.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDiscussion13274",
+            "files": [
+                "Properties/data/discussion-13274.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13271",
+            "files": [
+                "Properties/data/bug-13271.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11424",
+            "files": [
+                "Properties/data/bug-11424.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12645",
+            "files": [
+                "Properties/data/bug-12645.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12645.php",
+                    "line": 18,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug12645\\Foo::$id (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12645.php",
+                    "line": 18,
+                    "identifier": "property.private",
+                    "message": "Access to private property Bug12645\\Foo::$id.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12645.php",
+                    "line": 19,
+                    "identifier": "property.private",
+                    "message": "Access to private property Bug12645\\Foo::$id.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12645.php",
+                    "line": 23,
+                    "identifier": "nullCoalesce.property",
+                    "message": "Property Bug12645\\Foo::$id (int) on left side of ?? is not nullable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12645.php",
+                    "line": 24,
+                    "identifier": "property.private",
+                    "message": "Access to private property Bug12645\\Foo::$id.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11289",
+            "files": [
+                "Properties/data/bug-11289.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9120",
+            "files": [
+                "Properties/data/bug-9120.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8668",
+            "files": [
+                "Properties/data/bug-8668.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-8668.php",
+                    "line": 9,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property Bug8668\\Sample::$sample.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8668.php",
+                    "line": 10,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property Bug8668\\Sample::$sample.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8668.php",
+                    "line": 20,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property Bug8668\\Sample2::$sample.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8668.php",
+                    "line": 21,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property Bug8668\\Sample2::$sample.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPrivatePropertyWithAllowedPropertyTagIsPublic",
+            "files": [
+                "Properties/data/private-property-with-allowed-property-tag-is-public.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/private-property-with-allowed-property-tag-is-public.php",
+                    "line": 14,
+                    "identifier": "property.unused",
+                    "message": "Property PrivatePropertyWithAllowedPropertyTagIsPublic\\Foo::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDomExtensionLegacyTemplateNodes",
+            "files": [
+                "Properties/data/dom-legacy-ext-template-nodes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/dom-legacy-ext-template-nodes.php",
+                    "line": 29,
+                    "identifier": "identical.alwaysFalse",
+                    "message": "Strict comparison using === between (DOMAttr|false) and null will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13537",
+            "files": [
+                "Properties/data/bug-13537.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-13537.php",
+                    "line": 26,
+                    "identifier": "property.nonObject",
+                    "message": "Cannot access property $bob on array<string, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-13537.php",
+                    "line": 26,
+                    "identifier": "property.protected",
+                    "message": "Access to protected property Bug13537\\Bar::$test.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12390",
+            "files": [
+                "Properties/data/bug-12390.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12390.php",
+                    "line": 3,
+                    "identifier": "void.pure",
+                    "message": "Function testIssetOnGenericObject() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12390.php",
+                    "line": 9,
+                    "identifier": "void.pure",
+                    "message": "Function testChainedIssetOnGenericObject() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13539",
+            "files": [
+                "Properties/data/bug-13539.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2861",
+            "files": [
+                "Properties/data/bug-2861.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4905",
+            "files": [
+                "Properties/data/bug-4905.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15002",
+            "files": [
+                "Properties/data/bug-15002.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -13,6 +13,22 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "binaryOp.invalid",
+    "assignOp.invalid",
+    "offsetAssign.dimType",
+    "offsetAssign.valueType",
+    "assign.propertyType",
+    "property.readOnlyAssignOutOfClass",
+    "property.readOnlyAssignNotOnThis",
+    "property.readOnlyAssignNotInConstructor",
+    "property.readOnlyAssignByRef",
+    "property.readOnlyByPhpDocAssignOutOfClass",
+    "property.readOnlyByPhpDocAssignNotOnThis",
+    "property.readOnlyByPhpDocAssignNotInConstructor",
+    "property.readOnlyByPhpDocAssignByRef",
+    "classConstant.value",
+    "classConstant.phpDocType",
+    "assign.propertyReadOnly",
     "property.defaultValue",
     "generator.outOfFunction",
     "generator.returnType",
@@ -180,6 +196,15 @@ const PORTED: &[&str] = &[
     "paramClosureThis.nonClosure",
     "return.unresolvableType",
     "return.phpDocType",
+    "varTag.differentVariable",
+    "varTag.misplaced",
+    "varTag.multipleTags",
+    "varTag.noVariable",
+    "varTag.variableNotFound",
+    "callable.shadowTemplate",
+    "generics.callSiteVarianceConflict",
+    "generics.callSiteVarianceRedundant",
+    "generics.callSiteVarianceNotAllowed",
     "property.unresolvableType",
     "property.phpDocType",
     "classConstant.unresolvableType",
@@ -277,9 +302,43 @@ const PORTED: &[&str] = &[
     "smallerOrEqual.alwaysFalse",
     "instanceof.alwaysTrue",
     "instanceof.alwaysFalse",
+    "function.alreadyNarrowedType",
+    "function.impossibleType",
+    "method.alreadyNarrowedType",
+    "method.impossibleType",
+    "staticMethod.alreadyNarrowedType",
+    "staticMethod.impossibleType",
     "constant.notFound",
     "class.missingExtends",
     "class.missingImplements",
+    // analyse types, levels 2-9 (an-types2)
+    "argument.type",
+    "argument.byRef",
+    "argument.unpackNonIterable",
+    "method.nonObject",
+    "method.notFound",
+    "staticMethod.nonObject",
+    "staticMethod.notFound",
+    "arrayFilter.empty",
+    "arrayFilter.same",
+    "arrayFilter.alwaysEmpty",
+    "arrayValues.empty",
+    "arrayValues.list",
+    "property.notFound",
+    "property.nonObject",
+    "property.private",
+    "property.protected",
+    "property.staticAccess",
+    "staticProperty.nonStaticAccess",
+    "staticProperty.nonObject",
+    "staticProperty.notFound",
+    "staticProperty.private",
+    "staticProperty.protected",
+    "method.private",
+    "method.protected",
+    "staticMethod.private",
+    "staticMethod.protected",
+    "method.staticCall",
 ];
 
 /// The `class.notFound` messages of the level-2 Generics and PHPDoc tag rules (other rules report the identifier at every level).
@@ -340,10 +399,12 @@ fn phpstan_level_fixtures() {
     let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let root = tests.join("levels");
     let data = tests.join("rules/data");
+    // PUN_LEVELS_FILTER=Properties/ runs only the fixtures (and checks only the gaps) whose name contains it
+    let filter = std::env::var("PUN_LEVELS_FILTER").unwrap_or_default();
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
-        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .filter(|l| !l.is_empty() && !l.starts_with('#') && l.contains(&filter))
         .map(str::to_string)
         .collect();
     let prefix = format!("{}/", data.display());
@@ -361,7 +422,7 @@ fn phpstan_level_fixtures() {
         let mut files = Vec::new();
         fixtures(&dir, &mut files);
         files.sort();
-        for f in files {
+        for f in files.into_iter().filter(|f| f.to_string_lossy().contains(&filter)) {
             let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
             for case in test["cases"].as_array().unwrap() {
                 let paths = |k: &str| -> Vec<PathBuf> {
@@ -374,6 +435,8 @@ fn phpstan_level_fixtures() {
                 };
                 let ported = |id: &str, message: &str| {
                     PORTED.contains(&id)
+                        // CallCallablesRule's are not ported yet
+                        || (id == "arguments.count" && !message.starts_with("Callable "))
                         || (id == "class.notFound"
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         || (id == "parameter.notFound"

@@ -52,6 +52,7 @@ function container(int $phpVersion): PHPStan\DependencyInjection\Container
  *   __benevolent<A|B>                                   (PHPStan's own syntax)
  *   __template<T, 'function f()', BOUND[, DEFAULT]>     a template parameter of that scope
  *   *ERROR*, *NEVER*                                     ErrorType, NeverType (`never` is NonAcceptingNeverType)
+ *   __stringAndStringable, __stringNotStringable         the string types around objects with __toString()
  *   "..."                                                constant string with control characters (PHP escapes)
  */
 function t(Type $type): string
@@ -85,6 +86,12 @@ function t(Type $type): string
         }
         if ($t instanceof PHPStan\Type\IntersectionType && array_filter($t->getTypes(), fn ($m) => $m instanceof PHPStan\Type\Generic\TemplateType) !== []) {
             return $hole('('.implode(' & ', array_map('t', (fn () => $this->getSortedTypes())->call($t))).')');
+        }
+        if ($t instanceof PHPStan\Type\StringAlwaysAcceptingObjectWithToStringType) {
+            return $hole('__stringAndStringable');
+        }
+        if ($t instanceof PHPStan\Type\StringNeverAcceptingObjectWithToStringType) {
+            return $hole('__stringNotStringable');
         }
         if ($t instanceof PHPStan\Type\ErrorType) {
             return $hole('*ERROR*');
@@ -471,7 +478,8 @@ if (($argv[1] ?? '') === 'accepts') {
         '__benevolent<int|string>', 'Countable&Traversable', '(int is int ? 1 : 2)', 'T', 'U', 'V', '*NEVER*', 'class-string<Countable>',
         'class-string<stdClass>', "'Countable'", "'Nope'", '__stringAndStringable', '__stringNotStringable', 'DateTimeInterface', 'DateTime|DateTimeImmutable',
         'Throwable', 'Error|Exception', 'array<int>', 'callable&array', '(T&Countable)', 'array{a: lowercase-string, b: int}', "1|array{}",
-        'array{ArrayIterator<int, string>, ArrayIterator<int, int>}', 'array{a?: int}', 'array<int, int>'];
+        'array{ArrayIterator<int, string>, ArrayIterator<int, int>}', 'array{a?: int}', 'array<int, int>',
+        "'strlen'", "'ArrayIterator::count'", "'ArrayIterator::nope'", "'Closure::nope'", "'Nope::nope'", "''", "'1a::b'"];
     $sets = [[$atoms, 'ArrayIterator'], [['static', '$this', 'ArrayIterator', 'ArrayIterator<int, string>', 'Iterator', 'object', 'stdClass', 'Nope', 'Countable'], 'ArrayIterator'],
         [['static', '$this', 'Nope'], 'Nope']];
     $rows = [];
@@ -618,13 +626,44 @@ if (($argv[1] ?? '') === 'probes') {
         $scope = new NameScope('PunProbe', [], $class);
         foreach (['static', 'static<string>', 'self', 'parent', 'Coll', 'Coll<int, string>', 'Child<string>', 'SORT_REGULAR',
             'int-mask-of<SORT_REGULAR|SORT_NUMERIC>', '\\SORT_NUMERIC', 'self::A', 'self::*', 'Child::C', 'Coll::*', 'class-string<static>',
-            'Nope::A', 'Coll::NOPE', 'Defaults<string>', 'Defaults<string, string, string, string>'] as $s) {
+            'Nope::A', 'Coll::NOPE', 'Defaults<string>', 'Defaults<string, string, string, string>', 'value-of<Backed>',
+            'value-of<One>', 'value-of<Suit>', 'value-of<Backed::A>', 'key-of<Backed>', 'key-of<array<int, string>>',
+            'value-of<list<string>>', 'value-of<int>', 'value-of<int, int>', 'pure-callable(): void',
+            'callable<X of self>(X, parent, SORT_REGULAR): static', 'Coll<covariant int, contravariant string>', 'Coll<*, int>',
+            'static<covariant string>', 'array<int, covariant string>', 'list<contravariant int>', "array{a: int, b?: string}['a']",
+            "array{a: int, b?: string}['b']", "array{a: int}['z']", "array<string, int>['k']", "array<int, string>['k']", 'list<string>[0]',
+            "int['k']", 'string[0]', "string['k']", "mixed['k']", "(array{a: int}|array{a: string})['a']", "(array{a: int}|int)['a']",
+            "array{a: int, ...<string, bool>}['z']", "non-empty-array<string, int>['k']", "Coll['k']", "\\ArrayObject['k']",
+            "array{a: int}[string]", 'non-empty-list<string>[0]', "Coll<covariant int, string>['k']"] as $s) {
             $scoped[] = [$class, $s, $resolver->resolve($s, $scope)->describe(VerbosityLevel::precise())];
         }
     }
     $scope = new NameScope('PunProbe', [], 'PunProbe\\Child', null, $templates);
-    foreach (['T', 'list<U>', 'Coll<T, V>'] as $s) {
+    foreach (['T', 'list<U>', 'Coll<T, V>', 'V<int>', 'U<int>', 'value-of<T>', 'callable<X>(X, T): U',
+        'callable<X of Coll = Child<int>, Y>(X): Y', "T['k']", 'list<U>[0]', "(T|U)['k']"] as $s) {
         $scoped[] = ['templates', $s, $resolver->resolve($s, $scope)->describe(VerbosityLevel::precise())];
+    }
+    // a KeyOfType / ValueOfType of a template resolved late (`resolve()`), over templates E of BackedEnum, F of
+    // PunProbe\Backed and G of array<int, string>
+    $lateScope = PHPStan\Type\Generic\TemplateTypeScope::createWithFunction('probe');
+    $late = [];
+    foreach (['E' => 'BackedEnum', 'F' => 'PunProbe\\Backed', 'G' => 'array<int, string>'] as $name => $bound) {
+        $late[$name] = PHPStan\Type\Generic\TemplateTypeFactory::create($lateScope, $name, $resolver->resolve($bound, new NameScope(null, [])), PHPStan\Type\Generic\TemplateTypeVariance::createInvariant());
+    }
+    $scope = new NameScope('PunProbe', [], null, null, new PHPStan\Type\Generic\TemplateTypeMap($late));
+    foreach (['value-of<E>', 'key-of<E>', 'value-of<F>', 'key-of<G>', 'value-of<G>'] as $s) {
+        $t = $resolver->resolve($s, $scope);
+        if ($t instanceof PHPStan\Type\LateResolvableType) {
+            $t = $t->resolve();
+        }
+        $scoped[] = ['late', $s, $t->describe(VerbosityLevel::precise())];
+    }
+    // OffsetAccessTypes resolved late (`TypeUtils::resolveLateResolvableTypes()`)
+    $scope = new NameScope('PunProbe', []);
+    foreach (["array{a: int, b?: string}['a']", "array{a: int, b?: string}['b']", "array<string, int>['k']", 'list<string>[0]', 'string[0]',
+        "mixed['k']", "(array{a: int}|array{a: string})['a']", "(array{a: int}|int)['a']", "array{a: int, ...<string, bool>}['z']",
+        "non-empty-array<string, int>['k']", "array{a: list<int>}['a'][0]"] as $s) {
+        $scoped[] = ['resolved', $s, PHPStan\Type\TypeUtils::resolveLateResolvableTypes($resolver->resolve($s, $scope))->describe(VerbosityLevel::precise())];
     }
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-scope.json', json_encode($scoped, $flags | JSON_PRETTY_PRINT)."\n");
     // isSuperTypeOf() between the project classes: [a, b, result]
@@ -632,7 +671,11 @@ if (($argv[1] ?? '') === 'probes') {
     $projectSuper = [];
     foreach ([['Coll<int, string>', 'Child<string>'], ['Coll<int, string>', 'Child<int>'], ['Coll', 'Child<string>'], ['Child<string>', 'Coll<int, string>'],
         ['Coll<string, string>', 'Child<string>'], ['Child', 'Child<int>'], ['Coll<int, string>', 'Plain'], ['Coll', 'Plain'], ['Coll', 'Tr'],
-        ['Tr', 'Coll'], ['Tr', 'Tr'], ['Tr&\\stdClass', 'Tr']] as [$a, $b]) {
+        ['Tr', 'Coll'], ['Tr', 'Tr'], ['Tr&\\stdClass', 'Tr'], ['Coll<covariant \\Countable, int>', 'Coll<\\ArrayIterator, int>'],
+        ['Coll<covariant \\Countable, int>', 'Coll<int, int>'], ['Coll<contravariant \\ArrayIterator, int>', 'Coll<\\Countable, int>'],
+        ['Coll<contravariant \\Countable, int>', 'Coll<\\ArrayIterator, int>'], ['Coll<int, int>', 'Coll<covariant int, int>'],
+        ['Coll<covariant int, int>', 'Coll<covariant int, int>'], ['Coll<covariant int, int>', 'Coll<contravariant int, int>'],
+        ['Coll<covariant mixed, int>', 'Coll<string, int>'], ['Coll<covariant int, int>', 'Coll<never, int>'], ['Coll<covariant int, int>', 'Coll<*, int>']] as [$a, $b]) {
         $projectSuper[] = [$a, $b, $resolver->resolve($a, $scope)->isSuperTypeOf($resolver->resolve($b, $scope))->result->describe()];
     }
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-project-super.json', json_encode($projectSuper, $flags | JSON_PRETTY_PRINT)."\n");
@@ -668,7 +711,7 @@ if (($argv[1] ?? '') === 'probes') {
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-object-class-names.json', json_encode($names, $flags | JSON_PRETTY_PRINT)."\n");
     // getIterableKeyType() / getIterableValueType() and getAncestorWithClassName(): [type, key, value, Coll ancestor]
     $project = [];
-    foreach (['Child<string>', 'Nope<int>', 'Coll<int, string>'] as $t) {
+    foreach (['Child<string>', 'Nope<int>', 'Coll<int, string>', '\\ArrayIterator<int, covariant string>'] as $t) {
         $type = $resolver->resolve($t, $scope);
         $ancestor = $type->getAncestorWithClassName('PunProbe\\Coll');
         $project[] = [$t, $type->getIterableKeyType()->describe(VerbosityLevel::precise()), $type->getIterableValueType()->describe(VerbosityLevel::precise()), $ancestor?->describe(VerbosityLevel::precise())];
@@ -676,7 +719,8 @@ if (($argv[1] ?? '') === 'probes') {
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-project.json', json_encode($project, $flags | JSON_PRETTY_PRINT)."\n");
     // TypeTraverser::map() replacing int with string: [type, mapped]
     $traversed = [];
-    foreach (['array{a: int, b?: list<int>}', 'array{int, ...<int, int>}', 'list<int>|int', 'Coll<int, string>', 'class-string<Coll<int, int>>', '(T is int ? int : string)', 'static<int>'] as $t) {
+    foreach (['array{a: int, b?: list<int>}', 'array{int, ...<int, int>}', 'list<int>|int', 'Coll<int, string>', 'class-string<Coll<int, int>>', '(T is int ? int : string)', 'static<int>',
+        'Coll<covariant int, string>', "array{a: int}['a']"] as $t) {
         $type = $resolver->resolve($t, new NameScope('PunProbe', [], 'PunProbe\\Child', null, $templates));
         $mapped = PHPStan\Type\TypeTraverser::map($type, function (PHPStan\Type\Type $t, callable $traverse) {
             return $t instanceof PHPStan\Type\IntegerType ? new PHPStan\Type\StringType() : $traverse($t);

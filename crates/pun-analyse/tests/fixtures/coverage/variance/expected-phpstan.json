@@ -1,0 +1,250 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "variance.php",
+   "line": 41,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\Bounded<covariant int> in PHPDoc tag @param for parameter $c is redundant, template type T of int of interface CovVariance\\Bounded has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 41,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant mixed in generic type CovVariance\\Out<covariant mixed> in PHPDoc tag @param for parameter $b is redundant, template type T of interface CovVariance\\Out has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 41,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant string in generic type CovVariance\\Bounded<covariant string> in PHPDoc tag @param for parameter $a is redundant, template type T of int of interface CovVariance\\Bounded has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 41,
+   "identifier": "generics.notSubtype",
+   "message": "Type string in generic type CovVariance\\Bounded<covariant string> in PHPDoc tag @param for parameter $a is not subtype of template type T of int of interface CovVariance\\Bounded.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 54,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of contravariant int in generic type CovVariance\\In<contravariant int> in PHPDoc tag @param for parameter $f is redundant, template type T of interface CovVariance\\In has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 54,
+   "identifier": "generics.callSiteVarianceConflict",
+   "message": "Call-site variance of contravariant int in generic type CovVariance\\Out<contravariant int> in PHPDoc tag @param for parameter $b is in conflict with covariant template type T of interface CovVariance\\Out.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 54,
+   "identifier": "generics.callSiteVarianceConflict",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\In<covariant int> in PHPDoc tag @param for parameter $c is in conflict with contravariant template type T of interface CovVariance\\In.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 54,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\Out<covariant int> in PHPDoc tag @param for parameter $a is redundant, template type T of interface CovVariance\\Out has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 54,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\Out<covariant int> in PHPDoc tag @return is redundant, template type T of interface CovVariance\\Out has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 54,
+   "identifier": "return.missing",
+   "message": "Function CovVariance\\variances() should return CovVariance\\Out<covariant int> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 62,
+   "identifier": "generics.callSiteVarianceConflict",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\In<covariant int> in PHPDoc tag @template V default is in conflict with contravariant template type T of interface CovVariance\\In.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 62,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\Out<covariant int> in PHPDoc tag @template U is redundant, template type T of interface CovVariance\\Out has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 62,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type U of function CovVariance\\templates() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 62,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type V of function CovVariance\\templates() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 70,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 70,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of * in generic type CovVariance\\Inv<*> in PHPDoc tag @implements is not allowed.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 70,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of covariant int in generic type CovVariance\\Out<covariant int> in PHPDoc tag @implements is not allowed.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 77,
+   "identifier": "generics.callSiteVarianceConflict",
+   "message": "",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 77,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of contravariant int in generic type CovVariance\\Base<contravariant int> in PHPDoc tag @extends is not allowed.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 80,
+   "identifier": "generics.callSiteVarianceNotAllowed",
+   "message": "Call-site variance annotation of covariant int in generic type CovVariance\\Tr<covariant int> in PHPDoc tag @use is not allowed.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 83,
+   "identifier": "generics.callSiteVarianceConflict",
+   "message": "Call-site variance of contravariant int in generic type CovVariance\\Out<contravariant int> in PHPDoc tag @var for property CovVariance\\Child::$p is in conflict with covariant template type T of interface CovVariance\\Out.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 88,
+   "identifier": "generics.callSiteVarianceRedundant",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\Out<covariant int> in PHPDoc tag @phpstan-assert for $a is redundant, template type T of interface CovVariance\\Out has the same variance.",
+   "tip": "You can safely remove the call-site variance annotation."
+  },
+  {
+   "file": "variance.php",
+   "line": 91,
+   "identifier": "generics.callSiteVarianceConflict",
+   "message": "Call-site variance of covariant int in generic type CovVariance\\In<covariant int> in PHPDoc tag @var for variable $x is in conflict with contravariant template type T of interface CovVariance\\In.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 98,
+   "identifier": "generics.callSiteVarianceConflict",
+   "message": "Call-site variance of contravariant int in generic type CovVariance\\Out<contravariant int> in PHPDoc tag @mixin is in conflict with covariant template type T of interface CovVariance\\Out.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 110,
+   "identifier": "parameter.phpDocType",
+   "message": "PHPDoc tag @param for parameter $h with type array{a: int}['a'] is incompatible with native type string.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 110,
+   "identifier": "parameter.unresolvableType",
+   "message": "PHPDoc tag @param for parameter $i contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 110,
+   "identifier": "parameter.phpDocType",
+   "message": "PHPDoc tag @param for parameter $k with type string[0] is incompatible with native type int.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 110,
+   "identifier": "return.phpDocType",
+   "message": "PHPDoc tag @return with type list<int>[0] is incompatible with native type string.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 120,
+   "identifier": "conditionalType.alwaysTrue",
+   "message": "Condition \"T['k'] is int\" in conditional return type is always true.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 130,
+   "identifier": "class.notFound",
+   "message": "Method CovVariance\\SelfOut::out() has invalid @phpstan-self-out type CovVariance\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 130,
+   "identifier": "selfOut.type",
+   "message": "Self-out type array{a: CovVariance\\Missing}['a'] of method CovVariance\\SelfOut::out is not subtype of CovVariance\\SelfOut.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 140,
+   "identifier": "class.notFound",
+   "message": "Method CovVariance\\SelfOut2::out() has invalid @phpstan-self-out type CovVariance\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 140,
+   "identifier": "selfOut.type",
+   "message": "Self-out type CovVariance\\Inv<covariant CovVariance\\Missing> of method CovVariance\\SelfOut2::out is not subtype of CovVariance\\SelfOut2.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 159,
+   "identifier": "conditionalType.subjectNotFound",
+   "message": "Conditional return type uses subject type mixed which is not part of PHPDoc @template tags.",
+   "tip": null
+  },
+  {
+   "file": "variance.php",
+   "line": 159,
+   "identifier": "return.unresolvableType",
+   "message": "PHPDoc tag @return contains unresolvable type.",
+   "tip": null
+  }
+ ]
+}

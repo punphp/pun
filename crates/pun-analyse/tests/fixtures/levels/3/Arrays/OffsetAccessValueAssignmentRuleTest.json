@@ -1,0 +1,137 @@
+{
+    "test": "Arrays/OffsetAccessValueAssignmentRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Arrays/data/offset-access-value-assignment.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 13,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, int> does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 15,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, int> does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 20,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, int> does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 21,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, int> does not accept array<int, string>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 24,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, int> does not accept string.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 29,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 2 on int.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 38,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, int> does not accept float.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment.php",
+                    "line": 58,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, string> does not accept int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Arrays/data/offset-access-value-assignment-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-value-assignment-nullsafe.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type ArrayAccess<int, int> is not subtype of native type array{a: 123}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment-nullsafe.php",
+                    "line": 18,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 'a' to ArrayAccess<int, int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-value-assignment-nullsafe.php",
+                    "line": 18,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayAccess<int, int> does not accept int|null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8236",
+            "files": [
+                "Arrays/data/bug-8236.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5655b",
+            "files": [
+                "Arrays/data/bug-5655b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10783",
+            "files": [
+                "Variables/data/bug-10783.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-10783.php",
+                    "line": 12,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<*NEVER*, *NEVER*> does not accept string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

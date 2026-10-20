@@ -1,0 +1,263 @@
+{
+    "test": "Regexp/RegularExpressionQuotingRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Regexp/data/preg-quote.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 6,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() is missing delimiter & to be effective.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 7,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 11,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 12,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() is missing delimiter & to be effective.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 18,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 20,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 20,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_filter invoked with 2 parameters, 3-5 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 21,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 21,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function preg_grep expects array, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 21,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_grep() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 22,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 22,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace invoked with 2 parameters, 3-5 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 23,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 24,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 24,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_split() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 37,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending delimiter '/' found in pattern: /\\d*(?:.*)pattern}",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 37,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending matching delimiter '}' found in pattern: {\\d*(?:.*)pattern/",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 51,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending delimiter '/' found in pattern: /\\d*(?:.*)pattern}",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 51,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending matching delimiter '}' found in pattern: {\\d*(?:.*)pattern/",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 65,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending delimiter '/' found in pattern: /\\d*(?:.*)pattern@",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 65,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending delimiter '@' found in pattern: @\\d*(?:.*)pattern/",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 77,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() is missing delimiter parameter to be effective.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 77,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending delimiter '/' found in pattern: /\\d*(?:.*)pattern@",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 77,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: No ending delimiter '@' found in pattern: @\\d*(?:.*)pattern/",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 102,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 103,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 104,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote.php",
+                    "line": 105,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRulePhp8",
+            "files": [
+                "Regexp/data/preg-quote-php8.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Regexp/data/preg-quote-php8.php",
+                    "line": 6,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote-php8.php",
+                    "line": 6,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_split() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote-php8.php",
+                    "line": 7,
+                    "identifier": "argument.invalidPregQuote",
+                    "message": "Call to preg_quote() uses invalid delimiter / while pattern uses &.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote-php8.php",
+                    "line": 7,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_split() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote-php8.php",
+                    "line": 11,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_split() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/preg-quote-php8.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function preg_split() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

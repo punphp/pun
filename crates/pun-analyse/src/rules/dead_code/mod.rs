@@ -9,8 +9,8 @@ mod unreachable;
 mod unused_private;
 
 pub(super) use conditions::{
-    Facts as ConditionFacts, binary, boolean_not, do_while, facts as condition_facts, if_statement,
-    ternary, while_loop,
+    Facts as ConditionFacts, binary, boolean_not, do_while, facts as condition_facts, function_check,
+    if_statement, method_check, static_method_check, ternary, while_loop,
 };
 pub(super) use unreachable::find as unreachable_statements;
 

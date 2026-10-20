@@ -19654,7 +19654,7 @@
         "FunctionCallConstantConditionRule",
         "PHPStan\\Rules\\Comparison\\FunctionCallConstantConditionRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/discarded-function-result",
@@ -19885,7 +19885,7 @@
         "method.alreadyNarrowedType",
         "method.impossibleType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/impossible-static-type-check",
@@ -19908,7 +19908,7 @@
         "staticMethod.alreadyNarrowedType",
         "staticMethod.impossibleType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/impossible-type-check",
@@ -19938,7 +19938,7 @@
         "function.alreadyNarrowedType",
         "function.impossibleType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/loose-comparison-always-constant",
@@ -22997,7 +22997,7 @@
         "varTag.noVariable",
         "varTag.variableNotFound"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/phpdoc/invalid-var-tag-type",
@@ -23436,7 +23436,7 @@
         "staticMethod.void",
         "unionType.void"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/argument-not-numeric",
@@ -23478,7 +23478,7 @@
         "PHPStan\\Rules\\Functions\\ParameterCastableToStringRule",
         "ParameterCastableToStringRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/arrow-function-nullsafe-by-ref",
@@ -23671,7 +23671,7 @@
         "classConstant.phpDocType",
         "classConstant.value"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/clone-non-object",
@@ -24010,7 +24010,7 @@
         "ImplodeParameterCastableToStringRule",
         "PHPStan\\Rules\\Functions\\ImplodeParameterCastableToStringRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/interpolated-non-string",
@@ -24109,7 +24109,7 @@
         "InvalidBinaryOperationRule",
         "PHPStan\\Rules\\Operators\\InvalidBinaryOperationRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-cast",
@@ -25227,7 +25227,7 @@
         "PHPStan\\Rules\\Arrays\\OffsetAccessAssignmentRule",
         "offsetAssign.dimType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/offset-assign-op",
@@ -25249,7 +25249,7 @@
         "OffsetAccessAssignOpRule",
         "PHPStan\\Rules\\Arrays\\OffsetAccessAssignOpRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/offset-assign-value",
@@ -25272,7 +25272,7 @@
         "PHPStan\\Rules\\Arrays\\OffsetAccessValueAssignmentRule",
         "offsetAssign.valueType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/param-default",
@@ -25366,7 +25366,7 @@
         "ReadOnlyByPhpDocPropertyAssignRefRule",
         "property.readOnlyByPhpDocAssignByRef"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/phpdoc-readonly-property-write",
@@ -25391,7 +25391,7 @@
         "property.readOnlyByPhpDocAssignNotOnThis",
         "property.readOnlyByPhpDocAssignOutOfClass"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/print-non-string",
@@ -25464,7 +25464,7 @@
         "TypesAssignedToPropertiesRule",
         "assign.propertyType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/property-default",
@@ -25533,7 +25533,7 @@
         "PHPStan\\Rules\\Functions\\RandomIntParametersRule",
         "RandomIntParametersRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/readonly-property-by-ref",
@@ -25556,7 +25556,7 @@
         "ReadOnlyPropertyAssignRefRule",
         "property.readOnlyAssignByRef"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/readonly-property-write",
@@ -25584,7 +25584,7 @@
         "property.readOnlyAssignNotOnThis",
         "property.readOnlyAssignOutOfClass"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/redundant-array-values",
@@ -25607,7 +25607,7 @@
         "arrayValues.empty",
         "arrayValues.list"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/redundant-nullsafe",
@@ -25752,7 +25752,7 @@
         "PHPStan\\Rules\\Functions\\SortParameterCastableToStringRule",
         "SortParameterCastableToStringRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/this-in-global",
@@ -26216,7 +26216,7 @@
         "arrayFilter.empty",
         "arrayFilter.same"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/void-match-used",
@@ -26265,7 +26265,7 @@
         "WritingToReadOnlyPropertiesRule",
         "assign.propertyReadOnly"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/yield-from-non-iterable",
@@ -26668,7 +26668,7 @@
         "method.notFound",
         "reportMagicMethods"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/offset",
@@ -26763,7 +26763,7 @@
         "staticMethod.private",
         "staticMethod.protected"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/undefined/static-property",

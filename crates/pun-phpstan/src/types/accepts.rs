@@ -45,7 +45,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     let accessory = |r: Tri| if r.yes() { Tri::Yes } else if compound { by() } else { r };
     match a {
         // MixedType (ErrorType extends it) accepts anything
-        T::Mixed { .. } | T::Error | T::Wildcard => Tri::Yes,
+        T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
         T::Never(NeverKind::NonAccepting) => Tri::from(matches!(b, T::Never(_))),
         T::Never(_) => Tri::Yes,
         T::Union(types) | T::Benevolent(types) => union(a, types, b, strict, sm),

@@ -2955,7 +2955,7 @@
     ],
     [
         null,
-        "(array | bool | float | GMP | int | resource | SimpleXMLElement | string | null)",
+        "(array | bool | float | GMP | int | resource | SimpleXMLElement | __stringNotStringable | null)",
         "array|bool|float|GMP|int|resource|SimpleXMLElement|string|null",
         "array|bool|float|GMP|int|resource|SimpleXMLElement|string|null",
         "array|bool|float|GMP|int|resource|SimpleXMLElement|string|null"
@@ -3529,10 +3529,17 @@
     ],
     [
         null,
-        "(bool | float | GMP | int | resource | string | null)",
+        "(bool | float | GMP | int | resource | __stringAndStringable | null)",
         "bool|float|GMP|int|resource|string|null",
         "bool|float|GMP|int|resource|string|null",
         "bool|float|GMP|int|resource|string|null"
+    ],
+    [
+        null,
+        "(bool | float | int | __stringAndStringable | null)",
+        "bool|float|int|string|null",
+        "bool|float|int|string|null",
+        "bool|float|int|string|null"
     ],
     [
         null,
@@ -19461,6 +19468,20 @@
     ],
     [
         null,
+        "__stringAndStringable",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "__stringNotStringable",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
         "__template<T, 'function mysqli_fetch_object()', object>",
         "T of object (function mysqli_fetch_object(), parameter)",
         "T of object",
@@ -19587,7 +19608,7 @@
     ],
     [
         null,
-        "array<(bool | float | int | string | null)>",
+        "array<(bool | float | int | __stringAndStringable | null)>",
         "array<bool|float|int|string|null>",
         "array<bool|float|int|string|null>",
         "array<bool|float|int|string|null>"
@@ -19615,7 +19636,7 @@
     ],
     [
         null,
-        "array<(int | string), (bool | float | int | string | null)>",
+        "array<(int | string), (bool | float | int | __stringAndStringable | null)>",
         "array<int|string, bool|float|int|string|null>",
         "array<int|string, bool|float|int|string|null>",
         "array<int|string, bool|float|int|string|null>"

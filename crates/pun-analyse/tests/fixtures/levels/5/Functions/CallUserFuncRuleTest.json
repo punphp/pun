@@ -1,0 +1,351 @@
+{
+    "test": "Functions/CallUserFuncRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/call-user-func.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 15,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 17,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of callable passed to call_user_func() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 18,
+                    "identifier": "argument.type",
+                    "message": "Parameter $i of callable passed to call_user_func() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 18,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 19,
+                    "identifier": "argument.type",
+                    "message": "Parameter $i of callable passed to call_user_func() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 19,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 20,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 21,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 22,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $i (int) in call to callable passed to call_user_func().",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 22,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $j in call to callable passed to call_user_func().",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 22,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $j in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 30,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func() invoked with 0 parameters, 2-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 31,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func() invoked with 1 parameter, 2-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 40,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func() invoked with 0 parameters, at least 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 41,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func() invoked with 1 parameter, at least 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 43,
+                    "identifier": "function.void",
+                    "message": "Result of callable passed to call_user_func() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func.php",
+                    "line": 43,
+                    "identifier": "function.void",
+                    "message": "Result of function call_user_func (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleCallUserFuncArray",
+            "files": [
+                "Functions/data/call-user-func-array.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 15,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func_array() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 17,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of callable passed to call_user_func_array() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 18,
+                    "identifier": "argument.type",
+                    "message": "Parameter $i of callable passed to call_user_func_array() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 19,
+                    "identifier": "argument.type",
+                    "message": "Parameter $i of callable passed to call_user_func_array() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 22,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $i (int) in call to callable passed to call_user_func_array().",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 22,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $j in call to callable passed to call_user_func_array().",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 30,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func_array() invoked with 0 parameters, 2-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 31,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func_array() invoked with 1 parameter, 2-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 40,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func_array() invoked with 0 parameters, at least 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 41,
+                    "identifier": "arguments.count",
+                    "message": "Callable passed to call_user_func_array() invoked with 1 parameter, at least 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 43,
+                    "identifier": "function.void",
+                    "message": "Result of callable passed to call_user_func_array() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 43,
+                    "identifier": "function.void",
+                    "message": "Result of function call_user_func_array (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 52,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of callable passed to call_user_func_array() expects int|null, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-user-func-array.php",
+                    "line": 53,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of callable passed to call_user_func_array() expects int|null, string given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7057",
+            "files": [
+                "Functions/data/bug-7057.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNoNamedArguments",
+            "files": [
+                "Functions/data/no-named-arguments-call-user-func.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 29,
+                    "identifier": "argument.named",
+                    "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 29,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 30,
+                    "identifier": "argument.named",
+                    "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 30,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 31,
+                    "identifier": "argument.named",
+                    "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 31,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 32,
+                    "identifier": "argument.named",
+                    "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/no-named-arguments-call-user-func.php",
+                    "line": 32,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $i in call to function call_user_func.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15251.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug15251\\A::sfoo() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConstantParameterCheckCallUserFunc",
+            "files": [
+                "Functions/data/constant-parameter-check-call-user-func.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/constant-parameter-check-call-user-func.php",
+                    "line": 9,
+                    "identifier": "argument.invalidConstant",
+                    "message": "Constant SORT_REGULAR is not allowed for parameter #2 $flags of callable passed to call_user_func().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

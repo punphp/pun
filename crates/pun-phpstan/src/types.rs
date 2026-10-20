@@ -149,6 +149,8 @@ pub struct Param {
 pub struct Signature {
     pub params: Vec<Param>,
     pub ret: Type,
+    /// a generic callable's own templates (`callable<T>(T): T`)
+    pub templates: Vec<Template>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -225,6 +227,17 @@ pub enum Type {
     EnumCase(String, String),
     /// a bivariant `*` generic argument (explicit `mixed`)
     Wildcard,
+    /// a generic argument's call-site variance (`GenericObjectType::getVariances()`): `covariant T` (true) or
+    /// `contravariant T` (false)
+    Projection(bool, Box<Type>),
+    /// `OffsetAccessType` (`T['k']`) of a template, resolved late; ponytail: used as an error type (accepting
+    /// anything) until the scope resolves it
+    OffsetAccess(Box<Type>, Box<Type>),
+}
+
+/// `TemplateTypeVariance::describe()` of a call-site variance
+pub fn variance_name(covariant: bool) -> &'static str {
+    if covariant { "covariant" } else { "contravariant" }
 }
 
 pub fn mixed() -> Type {
@@ -637,7 +650,7 @@ impl Type {
             | Type::Iterable(..)
             | Type::ObjectWithoutClass
             | Type::ObjectShape(_) => Tri::Maybe,
-            Type::ConstString(s) => Tri::from(symbols::function(s).is_some()),
+            Type::ConstString(s) => string_is_callable(s),
             Type::Array(_, item) => Tri::Maybe.and(item.is_string()),
             Type::ConstArray(a) => a.is_callable(),
             Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
@@ -802,6 +815,10 @@ impl Type {
             Type::This(class) => format!("$this({})", static_object(class).describe(level)),
             Type::EnumCase(class, case) => format!("{class}::{case}"),
             Type::Wildcard => "*".to_string(),
+            // `TypeProjectionHelper::describe()`
+            Type::Projection(c, t) => format!("{} {}", variance_name(*c), t.describe(level)),
+            // (`Printer::print($this->toPhpDocNode())`)
+            Type::OffsetAccess(..) => to_phpdoc(self),
             Type::Array(key, item) => {
                 let mixed_key = key.is_plain_implicit_mixed();
                 let mixed_item = item.is_plain_implicit_mixed();
@@ -835,6 +852,7 @@ impl Type {
                         sig.as_deref().unwrap_or(&Signature {
                             params: vec![],
                             ret: mixed(),
+                            templates: vec![],
                         }),
                     )
                 },
@@ -930,6 +948,7 @@ impl Type {
                 })
                 .collect(),
             ret: f(&s.ret),
+            templates: s.templates.clone(),
         };
         match self {
             Type::Array(k, v) => Type::array(f(k), f(v)),
@@ -949,6 +968,8 @@ impl Type {
             Type::Object(class, args) if !args.is_empty() => {
                 Type::Object(class.clone(), args.iter().map(f).collect())
             }
+            Type::Projection(c, t) => Type::Projection(*c, bx(f(t))),
+            Type::OffsetAccess(t, o) => Type::OffsetAccess(bx(f(t)), bx(f(o))),
             Type::ClassString(Some(g)) => Type::ClassString(Some(bx(f(g)))),
             Type::Static(class, args) if !args.is_empty() => {
                 Type::Static(class.clone(), args.iter().map(f).collect())
@@ -1076,6 +1097,9 @@ fn with_class_args(t: &Type, c: &symbols::Class, args: &[Type]) -> Type {
             // the bound (a `mixed` one implicit, as `ObjectType::getIterableKeyType()` resolves it)
             Some(Type::Wildcard) | None if matches!(tpl.bound, Type::Mixed { .. }) => mixed(),
             Some(Type::Wildcard) | None => tpl.bound.clone(),
+            // ponytail: a call-site variance is not applied to the position (`resolveTemplateTypes()`'s
+            // call-site variance map); the argument stands for its template
+            Some(Type::Projection(_, arg)) => (**arg).clone(),
             Some(arg) => arg.clone(),
         };
     }
@@ -1089,6 +1113,33 @@ fn is_instance_of(class: &str, target: &str) -> Tri {
         Some(c) if c.is_interface => Tri::Maybe,
         Some(_) => Tri::No,
         None => Tri::Maybe,
+    }
+}
+
+/// `ConstantStringType::isCallable()`: a function's name, or `Class::method`.
+fn string_is_callable(s: &str) -> Tri {
+    if s.is_empty() {
+        return Tri::No;
+    }
+    if symbols::has_function(s) {
+        return Tri::Yes;
+    }
+    let Some((class, method)) = s.split_once("::") else {
+        return Tri::No;
+    };
+    // `#^([a-zA-Z_\x7f-\xff\\][a-zA-Z0-9_\x7f-\xff\\]*)::([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\z#`
+    let word = |w: &str, backslash: bool| {
+        let ok = |ch: char| ch == '_' || !ch.is_ascii() || ch.is_ascii_alphanumeric() || (backslash && ch == '\\');
+        w.chars().next().is_some_and(|ch| ok(ch) && !ch.is_ascii_digit()) && w.chars().all(ok)
+    };
+    if !word(class, true) || !word(method, false) {
+        return Tri::No;
+    }
+    match symbols::lookup(class) {
+        None => Tri::Maybe,
+        Some(c) if has_method(&c, &method.to_ascii_lowercase()) => Tri::Yes,
+        Some(c) if !c.is_final => Tri::Maybe,
+        Some(_) => Tri::No,
     }
 }
 
@@ -1467,7 +1518,21 @@ fn print_callable(ident: &str, sig: &Signature) -> String {
     } else {
         ret
     };
-    format!("{ident}({}): {ret}", params.join(", "))
+    format!("{ident}{}({}): {ret}", print_templates(sig), params.join(", "))
+}
+
+/// A callable's `<T of Bound = Default, ...>` (its TemplateTagValueNodes, the bound always printed).
+fn print_templates(sig: &Signature) -> String {
+    if sig.templates.is_empty() {
+        return String::new();
+    }
+    let tags: Vec<String> = sig
+        .templates
+        .iter()
+        // (a TemplateTagValueNode of the bound only)
+        .map(|t| format!("{} of {}", t.name, to_phpdoc(&t.bound)))
+        .collect();
+    format!("<{}>", tags.join(", "))
 }
 
 /// `Printer::print($type->toPhpDocNode())`
@@ -1512,11 +1577,31 @@ pub fn to_phpdoc(t: &Type) -> String {
             format!("iterable<{}, {}>", to_phpdoc(key), to_phpdoc(item))
         }
         Type::Union(types) | Type::Benevolent(types) => join_phpdoc(&sort_types(types), "|"),
+        // `list<T>`, `non-empty-list<T>`, `non-empty-array<K, T>`
+        Type::Intersection(types) if let Some(Type::Array(key, item)) = types.iter().find(|t| matches!(t, Type::Array(..))) => {
+            let has = |a: Accessory| types.contains(&Type::Accessory(a));
+            match (types.len(), has(Accessory::List), has(Accessory::NonEmptyArray)) {
+                (2, true, false) if !item.is_plain_implicit_mixed() => format!("list<{}>", to_phpdoc(item)),
+                (3, true, true) if !item.is_plain_implicit_mixed() => format!("non-empty-list<{}>", to_phpdoc(item)),
+                (2, false, true) if !key.is_plain_implicit_mixed() && !item.is_plain_implicit_mixed() => {
+                    format!("non-empty-array<{}, {}>", to_phpdoc(key), to_phpdoc(item))
+                }
+                _ => t.describe(Level::Precise),
+            }
+        }
         Type::Intersection(_) => t.describe(Level::Precise),
         Type::Template(tpl) => tpl.name.clone(),
         Type::Callable(None) => "callable".to_string(),
         Type::Callable(Some(sig)) => print_callable_named("callable", sig),
         Type::Closure(sig) => print_callable_named("Closure", sig),
+        Type::Projection(c, inner) => format!("{} {}", variance_name(*c), to_phpdoc(inner)),
+        Type::OffsetAccess(t, o) => {
+            let on = to_phpdoc(t);
+            // (Printer's parentheses around a union, intersection or callable)
+            let wrap = matches!(**t, Type::Union(_) | Type::Benevolent(_) | Type::Callable(Some(_)) | Type::Closure(_))
+                || (matches!(**t, Type::Intersection(_)) && on.contains('&'));
+            if wrap { format!("({on})[{}]", to_phpdoc(o)) } else { format!("{on}[{}]", to_phpdoc(o)) }
+        }
         _ => t.describe(Level::Precise),
     }
 }
@@ -1568,7 +1653,7 @@ fn print_callable_named(ident: &str, sig: &Signature) -> String {
         | Type::Closure(_)) => format!("({})", to_phpdoc(r)),
         r => to_phpdoc(r),
     };
-    format!("{ident}({}): {ret}", params.join(", "))
+    format!("{ident}{}({}): {ret}", print_templates(sig), params.join(", "))
 }
 
 impl ConstArray {
@@ -1903,11 +1988,13 @@ impl ShapeBuilder {
                 } else {
                     a.is_list = Tri::No;
                 }
+                // (past PHP_INT_MAX there is no next index)
                 if offset >= max {
+                    let next = offset.checked_add(1);
                     if !optional {
-                        a.next_auto_indexes = vec![offset + 1];
+                        a.next_auto_indexes = next.into_iter().collect();
                     } else {
-                        a.next_auto_indexes.push(offset + 1);
+                        a.next_auto_indexes.extend(next);
                     }
                 }
             }
@@ -1947,7 +2034,8 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
     match a {
         // `*` is a bivariant `mixed`
-        T::Mixed { .. } | T::Error | T::Wildcard => Tri::Yes,
+        // (a call-site variance is a generic argument's only, compared in `valid_variance()`)
+        T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
         T::Never(_) => match b {
             T::Never(_) => Tri::Yes,
             T::Template(_) => Tri::Maybe,
@@ -2230,7 +2318,7 @@ impl Conditional {
     }
 }
 
-fn contains_template(t: &Type) -> bool {
+pub(crate) fn contains_template(t: &Type) -> bool {
     let found = std::cell::Cell::new(matches!(t, Type::Template(_)));
     t.traverse(&|x| {
         found.set(found.get() || contains_template(x));
@@ -2262,16 +2350,12 @@ fn conditional_super(c: &Conditional, b: &Type) -> Tri {
     }
 }
 
-/// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` against `$b`'s callable variant (a callable without
-/// a signature is the trivial `(...): mixed` one).
-/// A function name's variants are its signatures (`'Class::method'` strings are taken as trivial).
-/// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` over `b`'s variants; `accept` is `Some(strictTypes)` for
+/// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` over `b`'s variants (a callable without a signature, or a
+/// method Pun knows no signature of, is the trivial `(...): mixed` one); `accept` is `Some(strictTypes)` for
 /// `$treatMixedAsAny` (accepts() compares parameters and return with accepts()).
 fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
-    let variants = match b {
-        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
-        Type::ConstString(name) if let Some(f) = symbols::function(name) => f
-            .variants
+    let of = |f: &symbols::Function| -> Vec<Signature> {
+        f.variants
             .iter()
             .map(|v| Signature {
                 params: v
@@ -2286,13 +2370,32 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
                     })
                     .collect(),
                 ret: crate::resolve::resolve_str(&v.ret, None),
+                templates: vec![],
             })
-            .collect(),
-        _ => vec![Signature {
+            .collect()
+    };
+    let mut variants = match b {
+        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
+        Type::ConstString(name) if let Some(f) = symbols::function(name) => of(f),
+        // `'Class::method'`
+        Type::ConstString(name) => name
+            .split_once("::")
+            .and_then(|(class, method)| {
+                let c = symbols::lookup(class)?;
+                std::iter::once(c.name.clone())
+                    .chain(c.ancestors.iter().cloned())
+                    .find_map(|n| symbols::lookup(&n)?.methods.get(&method.to_ascii_lowercase()).map(of))
+            })
+            .unwrap_or_default(),
+        _ => Vec::new(),
+    };
+    if variants.is_empty() {
+        variants.push(Signature {
             params: vec![],
             ret: mixed(),
-        }],
-    };
+            templates: vec![],
+        });
+    }
     variants
         .iter()
         .map(|theirs| variant_super(ours, theirs, accept))
@@ -2458,12 +2561,25 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
         .fold(Tri::Yes, Tri::and)
 }
 
-/// `TemplateTypeVariance::isValidVariance()` + `validPosition()` of an invariant template, `*` being bivariant.
-/// ponytail: `covariant`/`contravariant` call-site variance is not modelled.
+/// `TemplateTypeVariance::isValidVariance()` + `validPosition()` of an invariant template, `*` being bivariant and
+/// a `covariant` / `contravariant` argument its call-site variance.
 fn valid_variance(a: &Type, b: &Type) -> Tri {
     match (a, b) {
         (Type::Wildcard, _) => Tri::Yes,
         (_, Type::Wildcard) => Tri::No,
+        (Type::Projection(c, a), b) => {
+            // (`b`'s own call-site variance must be in the same direction)
+            let b = match b {
+                Type::Projection(d, _) if d != c => return Tri::No,
+                Type::Projection(_, b) => &**b,
+                b => b,
+            };
+            if matches!(b, Type::Never(_)) || matches!(**a, Type::Mixed { .. }) || matches!(b, Type::Mixed { .. }) {
+                return Tri::Yes;
+            }
+            if *c { is_super_type_of(a, b) } else { is_super_type_of(b, a) }
+        }
+        (_, Type::Projection(..)) => Tri::No,
         (_, Type::Never(_)) | (Type::Mixed { .. }, _) | (_, Type::Mixed { .. }) => Tri::Yes,
         (Type::Benevolent(_), _) if !is_super_type_of(a, b).no() => Tri::Yes,
         (_, Type::Benevolent(_)) if !is_super_type_of(b, a).no() => Tri::Yes,

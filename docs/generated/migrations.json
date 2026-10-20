@@ -15565,7 +15565,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.byRef, argument.duplicate, argument.exclusiveConstants and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.byRef, argument.duplicate, argument.exclusiveConstants and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15575,7 +15575,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.duplicate, argument.exclusiveConstants and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.duplicate, argument.exclusiveConstants and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15585,7 +15585,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.exclusiveConstants and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.exclusiveConstants and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15595,7 +15595,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15605,7 +15605,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s.",
         "unsupported": false
       },
       {
@@ -15615,7 +15615,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15635,7 +15635,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15645,7 +15645,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15655,7 +15655,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15665,7 +15665,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15685,7 +15685,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15695,7 +15695,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s.",
         "unsupported": false
       },
       {
@@ -15705,7 +15705,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s.",
         "unsupported": false
       },
       {
@@ -15715,7 +15715,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s.",
         "unsupported": false
       },
       {
@@ -15725,7 +15725,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15735,7 +15735,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15745,7 +15745,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15755,7 +15755,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15765,7 +15765,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15775,7 +15775,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15785,7 +15785,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15805,7 +15805,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s.",
         "unsupported": false
       },
       {
@@ -15815,7 +15815,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from argument.%s.",
         "unsupported": false
       },
       {
@@ -15825,7 +15825,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -15855,7 +15855,7 @@
         "rules": [
           "analyse/types/useless-array-filter"
         ],
-        "note": "Merged with arrayFilter.empty, arrayFilter.same. Planned: not ported yet.",
+        "note": "Merged with arrayFilter.empty, arrayFilter.same.",
         "unsupported": false
       },
       {
@@ -15865,7 +15865,7 @@
         "rules": [
           "analyse/types/useless-array-filter"
         ],
-        "note": "Merged with arrayFilter.alwaysEmpty, arrayFilter.same. Planned: not ported yet.",
+        "note": "Merged with arrayFilter.alwaysEmpty, arrayFilter.same.",
         "unsupported": false
       },
       {
@@ -15875,7 +15875,7 @@
         "rules": [
           "analyse/types/useless-array-filter"
         ],
-        "note": "Merged with arrayFilter.alwaysEmpty, arrayFilter.empty. Planned: not ported yet.",
+        "note": "Merged with arrayFilter.alwaysEmpty, arrayFilter.empty.",
         "unsupported": false
       },
       {
@@ -15915,7 +15915,7 @@
         "rules": [
           "analyse/types/redundant-array-values"
         ],
-        "note": "Merged with arrayValues.list. Planned: not ported yet.",
+        "note": "Merged with arrayValues.list.",
         "unsupported": false
       },
       {
@@ -15925,7 +15925,7 @@
         "rules": [
           "analyse/types/redundant-array-values"
         ],
-        "note": "Merged with arrayValues.empty. Planned: not ported yet.",
+        "note": "Merged with arrayValues.empty.",
         "unsupported": false
       },
       {
@@ -16025,7 +16025,7 @@
         "rules": [
           "analyse/types/write-to-readonly-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -16035,7 +16035,7 @@
         "rules": [
           "analyse/types/property-assign"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -16045,7 +16045,7 @@
         "rules": [
           "analyse/types/readonly-property-write"
         ],
-        "note": "Merged with property.readOnlyAssignNotInConstructor, property.readOnlyAssignNotOnThis, property.readOnlyAssignOutOfClass. Planned: not ported yet.",
+        "note": "Merged with property.readOnlyAssignNotInConstructor, property.readOnlyAssignNotOnThis, property.readOnlyAssignOutOfClass.",
         "unsupported": false
       },
       {
@@ -16235,7 +16235,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType.",
         "unsupported": false
       },
       {
@@ -16245,7 +16245,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -16565,7 +16565,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType.",
         "unsupported": false
       },
       {
@@ -16575,7 +16575,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -17235,7 +17235,7 @@
         "rules": [
           "analyse/types/class-constant-value"
         ],
-        "note": "Merged with classConstant.value. Planned: not ported yet.",
+        "note": "Merged with classConstant.value.",
         "unsupported": false
       },
       {
@@ -17295,7 +17295,7 @@
         "rules": [
           "analyse/types/class-constant-value"
         ],
-        "note": "Merged with classConstant.phpDocType. Planned: not ported yet.",
+        "note": "Merged with classConstant.phpDocType.",
         "unsupported": false
       },
       {
@@ -18135,7 +18135,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with function.impossibleType. Planned: not ported yet.",
+        "note": "Merged with function.impossibleType.",
         "unsupported": false
       },
       {
@@ -18175,7 +18175,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with function.alreadyNarrowedType. Planned: not ported yet.",
+        "note": "Merged with function.alreadyNarrowedType.",
         "unsupported": false
       },
       {
@@ -18265,7 +18265,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType.",
         "unsupported": false
       },
       {
@@ -18315,7 +18315,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -19575,7 +19575,7 @@
         "rules": [
           "analyse/dead-code/impossible-method-type-check"
         ],
-        "note": "Merged with method.impossibleType. Planned: not ported yet.",
+        "note": "Merged with method.impossibleType.",
         "unsupported": false
       },
       {
@@ -19685,7 +19685,7 @@
         "rules": [
           "analyse/dead-code/impossible-method-type-check"
         ],
-        "note": "Merged with method.alreadyNarrowedType. Planned: not ported yet.",
+        "note": "Merged with method.alreadyNarrowedType.",
         "unsupported": false
       },
       {
@@ -19805,7 +19805,7 @@
         "rules": [
           "analyse/undefined/method"
         ],
-        "note": "Merged with method.notFound. Planned: not ported yet.",
+        "note": "Merged with method.notFound.",
         "unsupported": false
       },
       {
@@ -19845,7 +19845,7 @@
         "rules": [
           "analyse/undefined/method"
         ],
-        "note": "Merged with method.nameNotString. Planned: not ported yet.",
+        "note": "Merged with method.nameNotString.",
         "unsupported": false
       },
       {
@@ -19975,7 +19975,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType.",
         "unsupported": false
       },
       {
@@ -20035,7 +20035,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -20375,7 +20375,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType.",
         "unsupported": false
       },
       {
@@ -20385,7 +20385,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -20535,7 +20535,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -20625,7 +20625,7 @@
         "rules": [
           "analyse/types/offset-assign"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20635,7 +20635,7 @@
         "rules": [
           "analyse/types/offset-assign-value"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -22241,7 +22241,7 @@
         "rules": [
           "analyse/types/readonly-property-by-ref"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -22251,7 +22251,7 @@
         "rules": [
           "analyse/types/readonly-property-write"
         ],
-        "note": "Merged with assign.readOnlyProperty, property.readOnlyAssignNotOnThis, property.readOnlyAssignOutOfClass. Planned: not ported yet.",
+        "note": "Merged with assign.readOnlyProperty, property.readOnlyAssignNotOnThis, property.readOnlyAssignOutOfClass.",
         "unsupported": false
       },
       {
@@ -22261,7 +22261,7 @@
         "rules": [
           "analyse/types/readonly-property-write"
         ],
-        "note": "Merged with assign.readOnlyProperty, property.readOnlyAssignNotInConstructor, property.readOnlyAssignOutOfClass. Planned: not ported yet.",
+        "note": "Merged with assign.readOnlyProperty, property.readOnlyAssignNotInConstructor, property.readOnlyAssignOutOfClass.",
         "unsupported": false
       },
       {
@@ -22271,7 +22271,7 @@
         "rules": [
           "analyse/types/readonly-property-write"
         ],
-        "note": "Merged with assign.readOnlyProperty, property.readOnlyAssignNotInConstructor, property.readOnlyAssignNotOnThis. Planned: not ported yet.",
+        "note": "Merged with assign.readOnlyProperty, property.readOnlyAssignNotInConstructor, property.readOnlyAssignNotOnThis.",
         "unsupported": false
       },
       {
@@ -22281,7 +22281,7 @@
         "rules": [
           "analyse/types/phpdoc-readonly-by-ref"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -22291,7 +22291,7 @@
         "rules": [
           "analyse/types/phpdoc-readonly-property-write"
         ],
-        "note": "Merged with property.readOnlyByPhpDocAssignNotOnThis, property.readOnlyByPhpDocAssignOutOfClass. Planned: not ported yet.",
+        "note": "Merged with property.readOnlyByPhpDocAssignNotOnThis, property.readOnlyByPhpDocAssignOutOfClass.",
         "unsupported": false
       },
       {
@@ -22301,7 +22301,7 @@
         "rules": [
           "analyse/types/phpdoc-readonly-property-write"
         ],
-        "note": "Merged with property.readOnlyByPhpDocAssignNotInConstructor, property.readOnlyByPhpDocAssignOutOfClass. Planned: not ported yet.",
+        "note": "Merged with property.readOnlyByPhpDocAssignNotInConstructor, property.readOnlyByPhpDocAssignOutOfClass.",
         "unsupported": false
       },
       {
@@ -22311,7 +22311,7 @@
         "rules": [
           "analyse/types/phpdoc-readonly-property-write"
         ],
-        "note": "Merged with property.readOnlyByPhpDocAssignNotInConstructor, property.readOnlyByPhpDocAssignNotOnThis. Planned: not ported yet.",
+        "note": "Merged with property.readOnlyByPhpDocAssignNotInConstructor, property.readOnlyByPhpDocAssignNotOnThis.",
         "unsupported": false
       },
       {
@@ -22641,7 +22641,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -22691,7 +22691,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -22741,7 +22741,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -23351,7 +23351,7 @@
         "rules": [
           "analyse/dead-code/impossible-static-type-check"
         ],
-        "note": "Merged with staticMethod.impossibleType. Planned: not ported yet.",
+        "note": "Merged with staticMethod.impossibleType.",
         "unsupported": false
       },
       {
@@ -23381,7 +23381,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedEnum, staticMethod.deprecatedInterface, staticMethod.deprecatedTrait and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedEnum, staticMethod.deprecatedInterface, staticMethod.deprecatedTrait and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23391,7 +23391,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedInterface, staticMethod.deprecatedTrait and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedInterface, staticMethod.deprecatedTrait and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23401,7 +23401,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedTrait and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedTrait and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23411,7 +23411,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23441,7 +23441,7 @@
         "rules": [
           "analyse/dead-code/impossible-static-type-check"
         ],
-        "note": "Merged with staticMethod.alreadyNarrowedType. Planned: not ported yet.",
+        "note": "Merged with staticMethod.alreadyNarrowedType.",
         "unsupported": false
       },
       {
@@ -23461,7 +23461,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23471,7 +23471,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23481,7 +23481,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23491,7 +23491,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23501,7 +23501,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23521,7 +23521,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23541,7 +23541,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23551,7 +23551,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23561,7 +23561,7 @@
         "rules": [
           "analyse/undefined/static-method"
         ],
-        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s. Planned: not ported yet.",
+        "note": "Merged with staticMethod.deprecatedClass, staticMethod.deprecatedEnum, staticMethod.deprecatedInterface and 9 others (see the rule's Replaces section). Expanded from staticMethod.%s.",
         "unsupported": false
       },
       {
@@ -23591,7 +23591,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.unresolvableReturnType.",
         "unsupported": false
       },
       {
@@ -23601,7 +23601,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -24221,7 +24221,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void. Planned: not ported yet.",
+        "note": "Merged with argument.bitmaskNotAllowed, argument.byRef, argument.duplicate and 37 others (see the rule's Replaces section). Expanded from %s.void.",
         "unsupported": false
       },
       {
@@ -24301,7 +24301,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.misplaced, varTag.multipleTags, varTag.noVariable and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with varTag.misplaced, varTag.multipleTags, varTag.noVariable and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24311,7 +24311,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.multipleTags, varTag.noVariable and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with varTag.differentVariable, varTag.multipleTags, varTag.noVariable and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24321,7 +24321,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.noVariable and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.noVariable and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24341,7 +24341,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.multipleTags and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.multipleTags and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -24381,7 +24381,7 @@
         "rules": [
           "analyse/phpdoc/invalid-var-tag"
         ],
-        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.multipleTags and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with varTag.differentVariable, varTag.misplaced, varTag.multipleTags and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27083,7 +27083,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with FalseArgument, InvalidArgument, InvalidNamedArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with FalseArgument, InvalidArgument, InvalidNamedArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27181,7 +27181,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, InvalidArgument, InvalidNamedArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, InvalidArgument, InvalidNamedArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27275,7 +27275,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with ImpossibleNullTypeComparison, ImpossibleTypeComparison, RedundantCondition and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with ImpossibleNullTypeComparison, ImpossibleTypeComparison, RedundantCondition and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27301,7 +27301,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with ImpossibleCondition, ImpossibleTypeComparison, RedundantCondition and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with ImpossibleCondition, ImpossibleTypeComparison, RedundantCondition and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27311,7 +27311,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, RedundantCondition and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, RedundantCondition and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27593,7 +27593,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidNamedArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidNamedArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27889,7 +27889,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27935,7 +27935,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27955,7 +27955,7 @@
         "rules": [
           "analyse/types/property-assign"
         ],
-        "note": "Merged with InvalidPropertyWrite, MixedPropertyTypeCoercion, PossiblyInvalidPropertyWrite and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with InvalidPropertyWrite, MixedPropertyTypeCoercion, PossiblyInvalidPropertyWrite and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -27987,7 +27987,7 @@
           "analyse/types/readonly-property-write",
           "analyse/classes/uninitialized-phpdoc-readonly"
         ],
-        "note": "Merged with InvalidPropertyAssignmentValue, MixedPropertyTypeCoercion, PossiblyInvalidPropertyWrite and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with InvalidPropertyAssignmentValue, MixedPropertyTypeCoercion, PossiblyInvalidPropertyWrite and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28119,7 +28119,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28353,7 +28353,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28443,7 +28443,7 @@
         "rules": [
           "analyse/types/property-assign"
         ],
-        "note": "Merged with InvalidPropertyAssignmentValue, InvalidPropertyWrite, PossiblyInvalidPropertyWrite and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with InvalidPropertyAssignmentValue, InvalidPropertyWrite, PossiblyInvalidPropertyWrite and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28481,7 +28481,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28491,7 +28491,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28640,7 +28640,7 @@
         "rules": [
           "analyse/undefined/method"
         ],
-        "note": "Merged with PossiblyNonExistentMethod. Planned: not ported yet.",
+        "note": "Merged with PossiblyNonExistentMethod.",
         "unsupported": false
       },
       {
@@ -28689,7 +28689,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28850,7 +28850,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28888,7 +28888,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28934,7 +28934,7 @@
         "rules": [
           "analyse/types/property-assign"
         ],
-        "note": "Merged with InvalidPropertyAssignmentValue, InvalidPropertyWrite, MixedPropertyTypeCoercion and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with InvalidPropertyAssignmentValue, InvalidPropertyWrite, MixedPropertyTypeCoercion and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28944,7 +28944,7 @@
         "rules": [
           "analyse/undefined/method"
         ],
-        "note": "Merged with NonExistentMethod. Planned: not ported yet.",
+        "note": "Merged with NonExistentMethod.",
         "unsupported": false
       },
       {
@@ -28964,7 +28964,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29078,7 +29078,7 @@
         "rules": [
           "analyse/types/property-assign"
         ],
-        "note": "Merged with InvalidPropertyAssignmentValue, InvalidPropertyWrite, MixedPropertyTypeCoercion and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with InvalidPropertyAssignmentValue, InvalidPropertyWrite, MixedPropertyTypeCoercion and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29116,7 +29116,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, ImpossibleTypeComparison and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, ImpossibleTypeComparison and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29168,7 +29168,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, ImpossibleTypeComparison and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, ImpossibleTypeComparison and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29198,7 +29198,7 @@
         "rules": [
           "analyse/dead-code/impossible-type-check"
         ],
-        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, ImpossibleTypeComparison and 2 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with ImpossibleCondition, ImpossibleNullTypeComparison, ImpossibleTypeComparison and 2 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29310,7 +29310,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -29320,7 +29320,7 @@
         "rules": [
           "analyse/types/argument"
         ],
-        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with DuplicateNamedArgument, FalseArgument, InvalidArgument and 11 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {

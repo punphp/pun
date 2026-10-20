@@ -2,13 +2,13 @@
 //! IncompatiblePropertyHookPhpDocTypeRule over IncompatiblePhpDocTypeCheck, IncompatiblePropertyPhpDocTypeRule and
 //! IncompatibleClassConstantPhpDocTypeRule: a PHPDoc type must resolve, fit its native type and name generic
 //! classes correctly; `@param` tags must name a parameter, `@param-out` a by-reference one.
-//! ponytail: GenericCallableRuleHelper (`callable.shadowTemplate` and the template checks of a callable's own
-//! `<T>`) is not ported: Pun's callable types do not keep their templates.
+//! GenericCallableRuleHelper checks the templates of the PHPDoc types' callables.
 
 use std::collections::HashMap;
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use pun_phpstan::resolve::resolve_late;
 use pun_phpstan::types::{Level, NeverKind, Type, is_super_type_of, mixed};
 
 use super::doc::{Doc, NameScope, doc_before};
@@ -26,6 +26,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "property.phpDocType",
     "classConstant.unresolvableType",
     "classConstant.phpDocType",
+    "callable.shadowTemplate",
 ];
 
 type Errors = Vec<(&'static str, String, Option<String>)>;
@@ -48,15 +49,10 @@ fn unresolvable(t: &Type) -> bool {
 /// GenericObjectTypeCheck with the messages of `what` (e.g. `PHPDoc tag @return`).
 fn generic(t: &Type, what: &str, errors: &mut Errors) {
     let s = generics::escape(what);
-    let messages = generics::GenericMessages {
-        not_generic: format!("{s} contains generic type %s but %s %s is not generic."),
-        less: format!("Generic type %s in {s} does not specify all template types of %s %s: %s"),
-        more: format!("Generic type %s in {s} specifies %d template types, but %s %s supports only %d: %s"),
-        not_subtype: format!("Type %s in generic type %s in {s} is not subtype of template type %s of %s %s."),
-    };
+    let messages = generics::GenericMessages::at(&s);
     let mut found = generics::Found::default();
     generics::generic_object_check(t, &messages, &mut found);
-    errors.extend(found.errors.into_iter().map(|(id, m)| (id, m, None)));
+    errors.extend(found.errors.into_iter().map(|(id, m, tip)| (id, m, tip.map(String::from))));
 }
 
 /// The `is incompatible with` / `is not subtype of` error of a PHPDoc type against its native type.
@@ -68,7 +64,8 @@ fn native_check(
     tip: bool,
     errors: &mut Errors,
 ) {
-    let is = is_super_type_of(native, phpdoc);
+    // (a late-resolvable type compares as what it resolves to, and describes as itself)
+    let is = is_super_type_of(native, &resolve_late(phpdoc));
     let (described, native_described) = (phpdoc.describe(Level::TypeOnly), native.describe(Level::TypeOnly));
     if is.no() {
         errors.push((
@@ -89,28 +86,44 @@ fn native_check(
     }
 }
 
-/// A function-like's native parameters (name, type, by reference) and native return type.
+/// A function-like's native parameters (name, type, by reference) and native return type, and where it is for
+/// GenericCallableRuleHelper.
 struct Native {
     params: Vec<(String, Type, bool)>,
     ret: Type,
+    cx: generics::CallableContext,
 }
 
-/// A PHPDoc type Pun's resolver does not model yet and resolves to an error type: OffsetAccessType (`T['k']`),
-/// `key-of` / `value-of`, the pure and static callables.
-// ponytail: matched on the parsed node's debug text; drop once pun_phpstan::resolve models them (PLAN.md)
-fn unmodelled(node: &pun_phpstan::phpdoc::Node) -> bool {
-    let text = format!("{node:?}").to_ascii_lowercase();
-    ["offsetaccess", "\"key-of\"", "\"value-of\"", "\"pure-c", "\"static-closure\"", "\"static-pure-closure\""]
-        .iter()
-        .any(|n| text.contains(n))
+/// GenericCallableRuleHelper::check() at `location`.
+fn callables(t: &Type, location: &str, cx: &generics::CallableContext, errors: &mut Errors) {
+    let mut found = generics::Found::default();
+    generics::generic_callables(t, location, cx, &mut found);
+    errors.extend(found.errors.into_iter().map(|(id, m, tip)| (id, m, tip.map(String::from))));
+}
+
+/// The class part of a [`generics::CallableContext`]: name, parent, display name and `@template` names.
+fn class_context(c: &Checker, k: &mago_codex::metadata::class_like::ClassLikeMetadata, display: String) -> (String, Option<String>, String, Vec<String>) {
+    let templates = declared::class_templates(c, k).into_iter().map(|t| t.name).collect();
+    (declared::original_name(k), declared::parent_name(c.codebase, k), display, templates)
+}
+
+/// A late-resolvable type Pun keeps unresolved: a `key-of` / `value-of` of a template (kept as a class name) or an
+/// OffsetAccessType [`resolve_late()`] leaves.
+// ponytail: PHPStan checks these too (e.g. a `T['k']` against the native type); Pun skips the PHPDoc type
+fn late(t: &Type) -> bool {
+    let found = std::cell::Cell::new(
+        matches!(t, Type::Object(n, _) if n == "key-of" || n == "value-of") || matches!(t, Type::OffsetAccess(..)),
+    );
+    t.traverse(&|i| {
+        found.set(found.get() || late(i));
+        i.clone()
+    });
+    found.get()
 }
 
 /// IncompatiblePhpDocTypeCheck::check() on the PHPDoc `doc` resolved in `scope`.
 fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
     let mut errors = Errors::new();
-    let skipped = |tags: &[(String, String, pun_phpstan::phpdoc::Node)], name: &str| {
-        tags.iter().any(|(_, n, node)| n == name && unmodelled(node))
-    };
     let params: HashMap<String, (Type, bool)> = doc.param_types(scope);
     let outs = Doc::named_types(&doc.outs, scope);
     let closure_this = Doc::named_types(&doc.closure_this, scope);
@@ -119,15 +132,16 @@ fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
     tags.extend(outs.into_iter().map(|(n, t)| ("@param-out", n, t, false)));
     tags.extend(closure_this.into_iter().map(|(n, t)| ("@param-closure-this", n, t, false)));
     for (tag, name, mut ty, variadic) in tags {
-        let unmodelled_param = doc.params.iter().any(|(_, n, node, _)| *n == name && unmodelled(node));
-        if unmodelled_param || skipped(&doc.outs, &name) || skipped(&doc.closure_this, &name) {
+        if late(&resolve_late(&ty)) {
             continue;
         }
         let Some((_, native_type, by_ref)) = native.params.iter().find(|p| p.0 == name) else {
             errors.push(("parameter.notFound", format!("PHPDoc tag {tag} references unknown parameter: ${name}"), None));
             continue;
         };
-        if unresolvable(&ty) {
+        // (the tag's type is intersected with `object`, so a non-object one is never)
+        let non_object = tag == "@param-closure-this" && is_super_type_of(&Type::ObjectWithoutClass, &ty).no();
+        if non_object || unresolvable(&ty) {
             errors.push((
                 "parameter.unresolvableType",
                 format!("PHPDoc tag {tag} for parameter ${name} contains unresolvable type."),
@@ -140,6 +154,7 @@ fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
         }
         let what = format!("PHPDoc tag {tag} for parameter ${name}");
         generic(&ty, &what, &mut errors);
+        callables(&ty, &format!("{tag} for parameter ${name}"), &native.cx, &mut errors);
         match tag {
             "@param-out" => {
                 if !by_ref {
@@ -171,12 +186,12 @@ fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
         .unwrap_or_default()
         .iter()
         .any(|t| t.name.ends_with("return") && matches!(t.value, pun_phpstan::phpdoc::TagValue::Invalid(..)));
-    let returns_modelled = !invalid_return && !doc.returns.iter().any(|(_, node)| unmodelled(node));
-    if let Some(ret) = doc.return_type(scope).filter(|_| returns_modelled) {
+    if let Some(ret) = doc.return_type(scope).filter(|t| !invalid_return && !late(&resolve_late(t))) {
         if unresolvable(&ret) {
             errors.push(("return.unresolvableType", "PHPDoc tag @return contains unresolvable type.".into(), None));
         } else {
             generic(&ret, "PHPDoc tag @return", &mut errors);
+            callables(&ret, "@return", &native.cx, &mut errors);
             native_check("return.phpDocType", "PHPDoc tag @return", &ret, &native.ret, true, &mut errors);
         }
     }
@@ -211,9 +226,14 @@ pub fn function(c: &mut Checker, f: &Function) {
     let doc = Doc::parse(raw);
     let errors = declared::with_classes(c, || {
         let scope = declared::function_scope(c, f, &doc);
+        let templates = doc.templates.iter().map(|t| t.name.clone()).collect();
         let native = Native {
             params: native_params(c, &f.parameter_list, None),
             ret: native_ret(c, f.return_type_hint.as_ref(), None),
+            cx: generics::CallableContext {
+                function: Some((format!("function {}", c.resolved_span(f.name.span)), templates)),
+                class: None,
+            },
         };
         check(raw, &doc, &scope, &native)
     });
@@ -230,11 +250,17 @@ pub fn method(c: &mut Checker, m: &Method) {
     let doc = Doc::parse(raw);
     let Some(context) = c.class_scope() else { return };
     let declaring = super::missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+    let display = c.member_scope().1;
     let errors = declared::with_classes(c, || {
         let scope = declared::method_scope(c, m, &doc, declaring, context);
+        let templates = doc.templates.iter().map(|t| t.name.clone()).collect();
         let native = Native {
             params: native_params(c, &m.parameter_list, Some(context)),
             ret: native_ret(c, m.return_type_hint.as_ref(), Some(context)),
+            cx: generics::CallableContext {
+                function: Some((format!("method {display}::{}", String::from_utf8_lossy(m.name.value)), templates)),
+                class: Some(class_context(c, context, display.clone())),
+            },
         };
         check(raw, &doc, &scope, &native)
     });
@@ -243,7 +269,7 @@ pub fn method(c: &mut Checker, m: &Method) {
 
 /// IncompatiblePropertyHookPhpDocTypeRule: a hook's parameters are never by reference; a `get` hook returns the
 /// property's native type, a `set` hook `void`.
-pub fn hook(c: &mut Checker, h: &PropertyHook, hint: Option<&Hint>) {
+pub fn hook(c: &mut Checker, h: &PropertyHook, hooked: &[u8], hint: Option<&Hint>) {
     if c.level < 2 {
         return;
     }
@@ -252,6 +278,7 @@ pub fn hook(c: &mut Checker, h: &PropertyHook, hint: Option<&Hint>) {
     };
     let doc = Doc::parse(raw);
     let Some(context) = c.class_scope() else { return };
+    let display = c.member_scope().1;
     let errors = declared::with_classes(c, || {
         let scope = declared::scope_at(c, h.span(), Some(context));
         let property = hint.map_or_else(mixed, |h| declared::native(c, h, Some(context)));
@@ -265,9 +292,15 @@ pub fn hook(c: &mut Checker, h: &PropertyHook, hint: Option<&Hint>) {
             None if get => Vec::new(),
             None => vec![("value".to_string(), property.clone(), false)],
         };
+        let templates = doc.templates.iter().map(|t| t.name.clone()).collect();
+        let function = format!("method {display}::{}::{}", String::from_utf8_lossy(hooked), String::from_utf8_lossy(h.name.value));
         let native = Native {
             params,
             ret: if get { property } else { Type::Void },
+            cx: generics::CallableContext {
+                function: Some((function, templates)),
+                class: Some(class_context(c, context, display.clone())),
+            },
         };
         check(raw, &doc, &scope, &native)
     });
@@ -284,9 +317,6 @@ pub fn property(c: &mut Checker, p: &Property) {
         return;
     };
     let doc = Doc::parse(doc);
-    if doc.vars.iter().any(|(_, _, node)| unmodelled(node)) {
-        return;
-    }
     let (context, display) = c.member_scope();
     let hint = p.hint();
     for v in p.variables() {
@@ -299,7 +329,13 @@ pub fn property(c: &mut Checker, p: &Property) {
                 _ => vars.into_iter().find(|(n, _)| *n == name).map(|(_, t)| t),
             };
             let native = hint.map(|h| declared::native(c, h, Some(context)));
-            phpdoc.map(|t| property_check(&t, native.as_ref(), "PHPDoc tag @var", &display, &name))
+            phpdoc.filter(|t| !late(&resolve_late(t))).map(|t| {
+                let mut errors = Errors::new();
+                let cx = generics::CallableContext { function: None, class: Some(class_context(c, context, display.clone())) };
+                callables(&t, "@var", &cx, &mut errors);
+                errors.extend(property_check(&t, native.as_ref(), "PHPDoc tag @var", &display, &name));
+                errors
+            })
         });
         report(c, v.span(), errors.unwrap_or_default());
     }
@@ -317,9 +353,6 @@ pub fn promoted(c: &mut Checker, m: &Method) {
         let errors = declared::with_classes(c, || {
             let own = doc_before(&c.file.contents, p.span().start.offset as usize).and_then(|doc| {
                 let doc = Doc::parse(doc);
-                if doc.vars.iter().any(|(_, _, node)| unmodelled(node)) {
-                    return Some(None);
-                }
                 let vars = doc.var_types(&declared::scope_at(c, p.span(), Some(context)));
                 match vars.as_slice() {
                     [(n, t)] if n.is_empty() => Some(Some(t.clone())),
@@ -328,14 +361,11 @@ pub fn promoted(c: &mut Checker, m: &Method) {
             });
             let phpdoc = own.unwrap_or_else(|| {
                 let doc = Doc::parse(doc_before(&c.file.contents, m.span().start.offset as usize)?);
-                if doc.params.iter().any(|(_, n, node, _)| *n == name && unmodelled(node)) {
-                    return None;
-                }
                 let scope = declared::method_scope(c, m, &doc, declaring, context);
                 doc.param_types(&scope).remove(&name).map(|(t, _)| t)
             });
             let native = p.hint.as_ref().map(|h| declared::native(c, h, Some(context)));
-            phpdoc.map(|t| property_check(&t, native.as_ref(), "PHPDoc type", &display, &name))
+            phpdoc.filter(|t| !late(&resolve_late(t))).map(|t| property_check(&t, native.as_ref(), "PHPDoc type", &display, &name))
         });
         report(c, p.span(), errors.unwrap_or_default());
     }

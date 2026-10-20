@@ -3,8 +3,8 @@
 //! MethodTagTemplateTypeTraitRule), EnumTemplateTypeRule, and GenericAncestorsCheck (ClassAncestorsRule,
 //! InterfaceAncestorsRule, EnumAncestorsRule, UsedTraitsRule), both through GenericObjectTypeCheck.
 //!
-//! ponytail: call-site variance (`Foo<covariant T>`), template variance (VarianceCheck), unresolvable ancestor
-//! types and CrossCheckInterfacesHelper are not ported yet.
+//! ponytail: template variance (VarianceCheck), unresolvable ancestor types and CrossCheckInterfacesHelper are not
+//! ported yet.
 
 use std::cell::RefCell;
 
@@ -39,18 +39,25 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.shadowTemplate",
     "methodTag.shadowTemplate",
     "enum.generic",
+    "generics.callSiteVarianceConflict",
+    "generics.callSiteVarianceRedundant",
+    "generics.callSiteVarianceNotAllowed",
 ];
 
-/// What a check found: (identifier, message); and the class names ClassNameCheck reads.
+/// What a check found: (identifier, message, tip); and the class names ClassNameCheck reads.
 #[derive(Default)]
 pub(super) struct Found {
-    pub(super) errors: Vec<(&'static str, String)>,
+    /// (identifier, message, tip)
+    pub(super) errors: Vec<(&'static str, String, Option<&'static str>)>,
     names: Vec<String>,
 }
 
 impl Found {
     fn push(&mut self, identifier: &'static str, message: String) {
-        self.errors.push((identifier, message));
+        self.errors.push((identifier, message, None));
+    }
+    fn push_tip(&mut self, identifier: &'static str, message: String, tip: &'static str) {
+        self.errors.push((identifier, message, Some(tip)));
     }
 }
 
@@ -183,12 +190,33 @@ fn infer(pattern: &Type, received: &Type, out: &mut TemplateMap) {
     }
 }
 
-/// GenericObjectTypeCheck's messages (the call-site variance ones are not ported).
+/// GenericObjectTypeCheck's messages.
 pub(super) struct GenericMessages {
     pub(super) not_generic: String,
     pub(super) less: String,
     pub(super) more: String,
     pub(super) not_subtype: String,
+    /// a call-site variance in conflict with the template's, the same as the template's
+    pub(super) conflict: String,
+    pub(super) redundant: String,
+}
+
+impl GenericMessages {
+    /// The messages of a PHPDoc type at `s` (escaped, e.g. `PHPDoc tag @var`).
+    pub(super) fn at(s: &str) -> GenericMessages {
+        GenericMessages {
+            not_generic: format!("{s} contains generic type %s but %s %s is not generic."),
+            less: format!("Generic type %s in {s} does not specify all template types of %s %s: %s"),
+            more: format!("Generic type %s in {s} specifies %d template types, but %s %s supports only %d: %s"),
+            not_subtype: format!("Type %s in generic type %s in {s} is not subtype of template type %s of %s %s."),
+            conflict: format!(
+                "Call-site variance of %s in generic type %s in {s} is in conflict with %s template type %s of %s %s."
+            ),
+            redundant: format!(
+                "Call-site variance of %s in generic type %s in {s} is redundant, template type %s of %s %s has the same variance."
+            ),
+        }
+    }
 }
 
 /// `getGenericTypes()`: each generic object or `static` type, resolved to its bounds, outermost first: the type,
@@ -277,6 +305,49 @@ pub(super) fn generic_object_check(ty: &Type, m: &GenericMessages, out: &mut Fou
                 continue;
             };
             let template = templates[i].clone();
+            if let Type::Projection(covariant, inner) = arg {
+                let projection = arg.describe(Level::TypeOnly);
+                let variance = class.templates[i].variance;
+                if variance == pun_phpstan::types::variance_name(*covariant) {
+                    if class.name != "ReflectionClass" || class.templates[i].name != "T" {
+                        let args = [projection, described.clone(), template.describe(Level::TypeOnly), kind.clone(), class.name.clone()];
+                        out.push_tip(
+                            "generics.callSiteVarianceRedundant",
+                            sprintf(&m.redundant, &args),
+                            "You can safely remove the call-site variance annotation.",
+                        );
+                    }
+                } else if variance != "invariant" {
+                    let args = [
+                        projection,
+                        described.clone(),
+                        variance.to_string(),
+                        template.describe(Level::TypeOnly),
+                        kind.clone(),
+                        class.name.clone(),
+                    ];
+                    out.push("generics.callSiteVarianceConflict", sprintf(&m.conflict, &args));
+                }
+                let arg = &**inner;
+                if is_super_type_of(&template.resolve_to_bounds(), arg).yes() {
+                    let mut map = Vec::new();
+                    infer(&template, arg, &mut map);
+                    for (j, other) in templates.iter_mut().enumerate() {
+                        if j != i {
+                            *other = apply(other, &map);
+                        }
+                    }
+                    continue;
+                }
+                out.push(
+                    "generics.notSubtype",
+                    sprintf(
+                        &m.not_subtype,
+                        &[arg.describe(Level::TypeOnly), described.clone(), template.describe(Level::TypeOnly), kind.clone(), class.name.clone()],
+                    ),
+                );
+                continue;
+            }
             if is_super_type_of(&template.resolve_to_bounds(), arg).yes() {
                 let mut map = Vec::new();
                 infer(&template, arg, &mut map);
@@ -388,45 +459,59 @@ struct TemplateSubject<'s> {
     method_tag: bool,
 }
 
+/// TemplateTypeCheck::check()'s message formats (`%s` placeholders): the name is an existing class, an existing
+/// type alias; the bound has an invalid class, is not supported; the default has an invalid class, is not in the
+/// bound; a required template follows an optional one.
+pub(super) struct TemplateMessages {
+    pub(super) existing_class: String,
+    pub(super) existing_alias: String,
+    pub(super) invalid_bound: String,
+    pub(super) not_supported: String,
+    pub(super) invalid_default: String,
+    pub(super) default_not_subtype: String,
+    pub(super) required_after_optional: String,
+}
+
+impl TemplateSubject<'_> {
+    fn messages(&self) -> TemplateMessages {
+        let subject = escape(self.subject);
+        let tag = if self.method_tag { "@method template" } else { "@template" };
+        let end = if self.method_tag { "" } else { "." };
+        TemplateMessages {
+            existing_class: format!("PHPDoc tag {tag} for {subject} cannot have existing class %s as its name."),
+            existing_alias: format!("PHPDoc tag {tag} for {subject} cannot have existing type alias %s as its name."),
+            invalid_bound: format!("PHPDoc tag {tag} %s for {subject} has invalid bound type %s."),
+            not_supported: format!("PHPDoc tag {tag} %s for {subject} with bound type %s is not supported."),
+            invalid_default: format!("PHPDoc tag {tag} %s for {subject} has invalid default type %s{end}"),
+            default_not_subtype: format!("Default type %s in PHPDoc tag {tag} %s for {subject} is not subtype of bound type %s{end}"),
+            required_after_optional: format!(
+                "PHPDoc tag @template %s for {subject} does not have a default type but follows an optional @template %s."
+            ),
+        }
+    }
+}
+
 /// TemplateTypeCheck::check(). `resolve_name` is `$scope->resolveName()`, `has_alias` `hasTypeAlias()` in the
 /// template type scope's class.
 fn template_check(
     tags: &[TemplateInput],
-    s: &TemplateSubject,
+    m: &TemplateMessages,
     resolve_name: &dyn Fn(&str) -> String,
     has_alias: &dyn Fn(&str) -> bool,
     out: &mut Found,
 ) {
-    let subject = s.subject;
-    let tag = if s.method_tag {
-        "@method template"
-    } else {
-        "@template"
-    };
-    let end = if s.method_tag { "" } else { "." };
     let mut with_default: Option<String> = None;
     for t in tags {
         let name = resolve_name(&t.name);
         if symbols::lookup(&name).is_some() {
-            out.push(
-                "generics.existingClass",
-                format!(
-                    "PHPDoc tag {tag} for {subject} cannot have existing class {name} as its name."
-                ),
-            );
+            out.push("generics.existingClass", sprintf(&m.existing_class, &[name.clone()]));
         }
         if has_alias(&name) {
-            out.push(
-                "generics.existingTypeAlias",
-                format!(
-                    "PHPDoc tag {tag} for {subject} cannot have existing type alias {name} as its name."
-                ),
-            );
+            out.push("generics.existingTypeAlias", sprintf(&m.existing_alias, &[name.clone()]));
         }
         let referenced = referenced_classes(&t.bound);
         for class in &referenced {
-            let message =
-                format!("PHPDoc tag {tag} {name} for {subject} has invalid bound type {class}.");
+            let message = sprintf(&m.invalid_bound, &[name.clone(), class.clone()]);
             match symbols::lookup(class) {
                 None => out.push("class.notFound", message),
                 Some(k) if k.is_trait => out.push("generics.traitBound", message),
@@ -437,10 +522,7 @@ fn template_check(
         if !supported_bound(&t.bound) {
             out.push(
                 "generics.notSupportedBound",
-                format!(
-                    "PHPDoc tag {tag} {name} for {subject} with bound type {} is not supported.",
-                    t.bound.describe(Level::TypeOnly)
-                ),
+                sprintf(&m.not_supported, &[name.clone(), t.bound.describe(Level::TypeOnly)]),
             );
         }
         let escaped = escape(&name);
@@ -457,15 +539,19 @@ fn template_check(
             not_subtype: format!(
                 "Type %s in generic type %s in PHPDoc tag @template {escaped} is not subtype of template type %s of %s %s."
             ),
+            conflict: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} is in conflict with %s template type %s of %s %s."
+            ),
+            redundant: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} is redundant, template type %s of %s %s has the same variance."
+            ),
         };
         generic_object_check(&t.bound, &bound_messages, out);
         let Some(default) = &t.default else {
             if let Some(optional) = &with_default {
                 out.push(
                     "generics.requiredTypeAfterOptional",
-                    format!(
-                        "PHPDoc tag @template {name} for {subject} does not have a default type but follows an optional @template {optional}."
-                    ),
+                    sprintf(&m.required_after_optional, &[name.clone(), optional.clone()]),
                 );
             }
             continue;
@@ -473,9 +559,7 @@ fn template_check(
         with_default = Some(name.clone());
         let referenced = referenced_classes(default);
         for class in &referenced {
-            let message = format!(
-                "PHPDoc tag {tag} {name} for {subject} has invalid default type {class}{end}"
-            );
+            let message = sprintf(&m.invalid_default, &[name.clone(), class.clone()]);
             match symbols::lookup(class) {
                 None => out.push("class.notFound", message),
                 Some(k) if k.is_trait => out.push("generics.traitBound", message),
@@ -497,6 +581,12 @@ fn template_check(
             not_subtype: format!(
                 "Type %s in generic type %s in PHPDoc tag @template {escaped} default is not subtype of template type %s of class %s."
             ),
+            conflict: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} default is in conflict with %s template type %s of %s %s."
+            ),
+            redundant: format!(
+                "Call-site variance of %s in generic type %s in PHPDoc tag @template {escaped} default is redundant, template type %s of %s %s has the same variance."
+            ),
         };
         generic_object_check(default, &default_messages, out);
         if !is_super_type_of(&t.bound, default).no() {
@@ -504,13 +594,86 @@ fn template_check(
         }
         out.push(
             "generics.templateDefaultOutOfBounds",
-            format!(
-                "Default type {} in PHPDoc tag {tag} {name} for {subject} is not subtype of bound type {}{end}",
-                default.describe(Level::TypeOnly),
-                t.bound.describe(Level::TypeOnly)
+            sprintf(
+                &m.default_not_subtype,
+                &[default.describe(Level::TypeOnly), name.clone(), t.bound.describe(Level::TypeOnly)],
             ),
         );
     }
+}
+
+/// Where a PHPDoc type with callables is: the function-like (`function Foo\\bar` / `method Foo::bar`) and its
+/// `@template` names, and the class (name, parent, display name, `@template` names).
+#[derive(Default)]
+pub(super) struct CallableContext {
+    pub(super) function: Option<(String, Vec<String>)>,
+    pub(super) class: Option<(String, Option<String>, String, Vec<String>)>,
+}
+
+/// GenericCallableRuleHelper::check(): each callable's own templates in `ty` (at `location`, e.g. `@param for
+/// parameter $x`) through TemplateTypeCheck, and the ones shadowing the function's or the class's.
+pub(super) fn generic_callables(ty: &Type, location: &str, cx: &CallableContext, out: &mut Found) {
+    let cell = RefCell::new(std::mem::take(out));
+    walk_callables(ty, location, cx, &cell);
+    *out = cell.into_inner();
+}
+
+fn walk_callables(ty: &Type, location: &str, cx: &CallableContext, out: &RefCell<Found>) {
+    let sig = match ty {
+        Type::Callable(Some(sig)) | Type::Closure(sig) => Some(sig),
+        _ => None,
+    };
+    if let Some(sig) = sig {
+        let description = ty.describe(Level::Precise);
+        let (loc, desc) = (escape(location), escape(&description));
+        let messages = TemplateMessages {
+            existing_class: format!("PHPDoc tag {loc} template of {desc} cannot have existing class %s as its name."),
+            existing_alias: format!("PHPDoc tag {loc} template of {desc} cannot have existing type alias %s as its name."),
+            invalid_bound: format!("PHPDoc tag {loc} template %s of {desc} has invalid bound type %s."),
+            not_supported: format!("PHPDoc tag {loc} template %s of {desc} with bound type %s is not supported."),
+            invalid_default: format!("PHPDoc tag {loc} template %s of {desc} has invalid default type %s."),
+            default_not_subtype: format!("Default type %s in PHPDoc tag {loc} template %s of {desc} is not subtype of bound type %s."),
+            required_after_optional: format!(
+                "PHPDoc tag {loc} template %s of {desc} does not have a default type but follows an optional template %s."
+            ),
+        };
+        let inputs: Vec<TemplateInput> = sig
+            .templates
+            .iter()
+            .map(|t| TemplateInput {
+                name: t.name.clone(),
+                bound: t.bound.clone(),
+                default: t.default.clone(),
+            })
+            .collect();
+        let resolve_name = |name: &str| match &cx.class {
+            Some((class, parent, ..)) => class_resolve_name(class, parent.as_deref())(name),
+            None => name.to_string(),
+        };
+        let out = &mut *out.borrow_mut();
+        template_check(&inputs, &messages, &resolve_name, &|name| has_global_alias(name), out);
+        let own = |name: &str| sig.templates.iter().any(|t| t.name == name);
+        if let Some((function, templates)) = &cx.function {
+            for name in templates.iter().filter(|n| own(n)) {
+                out.push(
+                    "callable.shadowTemplate",
+                    format!("PHPDoc tag {location} template {name} of {description} shadows @template {name} for {function}."),
+                );
+            }
+        }
+        if let Some((.., display, templates)) = &cx.class {
+            for name in templates.iter().filter(|n| own(n)) {
+                out.push(
+                    "callable.shadowTemplate",
+                    format!("PHPDoc tag {location} template {name} of {description} shadows @template {name} for class {display}."),
+                );
+            }
+        }
+    }
+    ty.traverse(&|inner| {
+        walk_callables(inner, location, cx, out);
+        inner.clone()
+    });
 }
 
 /// `$scope->resolveName()` in a class: `self` and `static` are the class, `parent` its parent.
@@ -558,8 +721,8 @@ fn report(c: &mut Checker, at: Span, found: Found) {
         .collect();
     let case = c.case_sensitivity;
     class_names::check(c, &pairs, case);
-    for (identifier, message) in found.errors {
-        c.report(at, identifier, message, None);
+    for (identifier, message, tip) in found.errors {
+        c.report(at, identifier, message, tip);
     }
 }
 
@@ -620,7 +783,7 @@ fn class_like(c: &Checker, l: &ClassLike) -> Found {
                 &TemplateSubject {
                     subject,
                     method_tag: false,
-                },
+                }.messages(),
                 &resolve_name,
                 &has_alias,
                 &mut found,
@@ -682,7 +845,7 @@ fn method_tags(
             &TemplateSubject {
                 subject: &subject,
                 method_tag: true,
-            },
+            }.messages(),
             resolve_name,
             has_alias,
             found,
@@ -735,13 +898,13 @@ fn ancestor_types(nodes: &[pun_phpstan::phpdoc::Node], scope: &NameScope) -> Vec
     out.into_iter().map(|(_, t)| t).collect()
 }
 
-/// GenericAncestorsCheck::check() without the variance checks and the `missingType.generics` of unused names
+/// GenericAncestorsCheck::check() without VarianceCheck and the `missingType.generics` of unused names
 /// (MissingTypehintCheck's rules report those).
 fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: &mut Found) {
     let tag = m.tag;
     let mut unused: Vec<&String> = names.iter().collect();
     for ty in types {
-        let Type::Object(class, _) = ty else {
+        let Type::Object(class, args) = ty else {
             out.push(
                 "generics.notCompatible",
                 sprintf(&m.incompatible, &[ty.describe(Level::TypeOnly)]),
@@ -773,6 +936,9 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
             not_subtype: format!(
                 "Type %s in generic type %s in PHPDoc tag {tag} is not subtype of template type %s of %s %s."
             ),
+            // (GenericAncestorsCheck passes empty ones)
+            conflict: String::new(),
+            redundant: String::new(),
         };
         generic_object_check(ty, &messages, out);
         for referenced in referenced_classes(ty) {
@@ -783,6 +949,14 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
                 Some(k) if k.is_trait => out.push("generics.trait", message),
                 Some(_) => {}
             }
+        }
+        for arg in args.iter().filter(|a| matches!(a, Type::Projection(..) | Type::Wildcard)) {
+            let message = format!(
+                "Call-site variance annotation of {} in generic type {} in PHPDoc tag {tag} is not allowed.",
+                arg.describe(Level::TypeOnly),
+                ty.describe(Level::TypeOnly)
+            );
+            out.push("generics.callSiteVarianceNotAllowed", message);
         }
     }
     let Some(missing) = &m.missing else {
@@ -1104,7 +1278,7 @@ pub fn trait_(c: &mut Checker, t: &Trait) {
             &TemplateSubject {
                 subject: &subject,
                 method_tag: false,
-            },
+            }.messages(),
             &resolve_name,
             &has_alias,
             &mut found,
@@ -1143,7 +1317,7 @@ pub fn function(c: &mut Checker, f: &Function) {
             &TemplateSubject {
                 subject: &subject,
                 method_tag: false,
-            },
+            }.messages(),
             &|n: &str| n.to_string(),
             &|n: &str| has_global_alias(n),
             &mut found,
@@ -1201,7 +1375,7 @@ pub fn method(c: &mut Checker, m: &Method, method: &str) {
             &TemplateSubject {
                 subject: &subject,
                 method_tag: false,
-            },
+            }.messages(),
             &resolve_name,
             &has_alias,
             &mut found,

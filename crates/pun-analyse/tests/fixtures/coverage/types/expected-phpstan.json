@@ -86,6 +86,552 @@
    "tip": null
   },
   {
+   "file": "offsets.php",
+   "line": 31,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign offset 1 to $this(CoverageOffsets\\Access).",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 99,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign offset 'x' to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 100,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign new offset to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 106,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign offset 1 to CoverageOffsets\\Access.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 107,
+   "identifier": "offsetAssign.valueType",
+   "message": "CoverageOffsets\\Access does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 108,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign new offset to CoverageOffsets\\Access.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 109,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'x' on CoverageOffsets\\Closed.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 113,
+   "identifier": "offsetAssign.valueType",
+   "message": "CoverageOffsets\\Box<int> does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 114,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign offset 'k' to CoverageOffsets\\Box<int>.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 117,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign offset 'k' to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 119,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'k' on int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 120,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'k' does not exist on string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 121,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign new offset to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 121,
+   "identifier": "offsetAccess.noDim",
+   "message": "Cannot use [] for reading.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 122,
+   "identifier": "offsetAssign.valueType",
+   "message": "CoverageOffsets\\Access does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 123,
+   "identifier": "offsetAssign.valueType",
+   "message": "CoverageOffsets\\Access does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 128,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign offset 'b' to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 130,
+   "identifier": "offsetAssign.dimType",
+   "message": "Cannot assign new offset to array<int, int>.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 132,
+   "identifier": "offsetAssign.valueType",
+   "message": "CoverageOffsets\\Access does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 143,
+   "identifier": "offsetAccess.nonOffsetAccessible",
+   "message": "Cannot access offset 'k' on float|int.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 166,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"**\" between resource and 2 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 167,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"**\" between Closure(): int and 2 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 168,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"**\" between callable(): int and 2 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 169,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"**\" between iterable<int> and 2 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 170,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"**\" between stdClass and 2 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 173,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"/\" between 1 and null results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 174,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (array) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 180,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \".\" between string and array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 182,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"&\" between string and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 183,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"|\" between int and array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 185,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"^\" between 'a' and 1 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 187,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between string and 1 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 188,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (array) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 189,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between array and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 190,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between int and array{1} results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 192,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"/\" between 1 and 0 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 193,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"/\" between int and 0 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 195,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"%\" between 5 and 0 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 196,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"%\" between int and 0 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 197,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"%\" between int and array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 199,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"<<\" between 1 and -1 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 200,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"<<\" between int and array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 203,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"**\" between int and array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 207,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"-\" between array and array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 212,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"+\" between 1|array and 1 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 213,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (array) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 214,
+   "identifier": "assignOp.invalid",
+   "message": "Binary operation \"+=\" between int and 'x' results in an error.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 216,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ??= always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "offsets.php",
+   "line": 217,
+   "identifier": "assignOp.invalid",
+   "message": "Binary operation \".=\" between string and array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 19,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 34,
+   "identifier": "property.readOnlyAssignNotOnThis",
+   "message": "Readonly property CoverageProperties\\Holder::$r is not assigned on $this.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 40,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 41,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 43,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 44,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 49,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 50,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 51,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 52,
+   "identifier": "property.readOnlyAssignByRef",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned by reference.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 55,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$magic (string) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 56,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 70,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder|CoverageProperties\\Other::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 76,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 83,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Frozen::$a is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 96,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 97,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 103,
+   "identifier": "assign.propertyProtectedSet",
+   "message": "Assign to protected(set) property CoverageProperties\\Holder::$r.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 104,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 105,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 106,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 107,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Suit::$value is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 108,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Frozen::$a is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 109,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 115,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class CoverageProperties\\Hooked has an uninitialized @readonly property $h. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 124,
+   "identifier": "classConstant.value",
+   "message": "Constant CoverageProperties\\Constants::NATIVE (int) does not accept value 'a'.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 127,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant CoverageProperties\\Constants::DOC with type string is incompatible with value 1.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 130,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant CoverageProperties\\Constants::MAYBE2 with type true is not subtype of value bool.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 133,
+   "identifier": "classConstant.value",
+   "message": "Constant CoverageProperties\\Constants::BOTH (int<1, 5>) does not accept value 9.",
+   "tip": null
+  },
+  {
    "file": "types.php",
    "line": 20,
    "identifier": "void.pure",

@@ -1,0 +1,388 @@
+{
+    "test": "Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/impossible-static-method-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 22,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\Tests\\AssertionClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 31,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 32,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 33,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertSame() on an unknown class PHPUnit\\Framework\\Assert.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 40,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertSame() on an unknown class PHPUnit\\Framework\\Assert.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 41,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertSame() on an unknown class PHPUnit\\Framework\\Assert.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 46,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertSame() on an unknown class PHPUnit\\Framework\\Assert.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 47,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertNotSame() on an unknown class PHPUnit\\Framework\\Assert.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleStaticMethodCall\\Foo::nullableInt() should return int|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 66,
+                    "identifier": "staticMethod.alreadyNarrowedType",
+                    "message": "Call to static method ImpossibleStaticMethodCall\\ConditionalAlwaysTrue::isInt() with int will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call.php",
+                    "line": 74,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleStaticMethodCall\\ConditionalAlwaysTrue::isInt() should return bool but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportPhpDocs",
+            "files": [
+                "Comparison/data/impossible-static-method-call-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-static-method-call-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-not-phpdoc.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportPhpDocs",
+            "files": [
+                "Comparison/data/impossible-static-method-call-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-static-method-call-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-not-phpdoc.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15223",
+            "files": [
+                "Comparison/data/bug-15223-static.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15223TreatPhpDocTypesAsCertain",
+            "files": [
+                "Comparison/data/bug-15223-static.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15328",
+            "files": [
+                "Comparison/data/bug-15328-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-15328-method.php",
+                    "line": 69,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method Bug15328Method\\Assert::assertSame() with int and int will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-15328-method.php",
+                    "line": 75,
+                    "identifier": "staticMethod.alreadyNarrowedType",
+                    "message": "Call to static method Bug15328Method\\Assert::assertSame() with int and int will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAssertUnresolvedGeneric",
+            "files": [
+                "Comparison/data/assert-unresolved-generic.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#0",
+            "files": [
+                "Comparison/data/impossible-static-method-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-static-method-report-always-true-last-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#1",
+            "files": [
+                "Comparison/data/impossible-static-method-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-static-method-report-always-true-last-condition.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-report-always-true-last-condition.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method assertInt() on an unknown class PHPStan\\Tests\\AssertionClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12087b",
+            "files": [
+                "Comparison/data/bug-12087b.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-12087b.php",
+                    "line": 31,
+                    "identifier": "staticMethod.alreadyNarrowedType",
+                    "message": "Call to static method Bug12087b\\MyAssert::static_is_null() with null will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/bug-12087b.php",
+                    "line": 31,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug12087b\\MyAssert::static_is_null() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-12087b.php",
+                    "line": 37,
+                    "identifier": "method.alreadyNarrowedType",
+                    "message": "Call to method Bug12087b\\MyAssert::is_null() with null will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13566",
+            "files": [
+                "Comparison/data/bug-13566.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/bug-13566.php",
+                    "line": 199,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function is_numeric() with 123 will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/bug-13566.php",
+                    "line": 204,
+                    "identifier": "function.alreadyNarrowedType",
+                    "message": "Call to function assertIsInt() with int will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Comparison/data/impossible-static-method-call-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/impossible-static-method-call-in-trait.php",
+                    "line": 28,
+                    "identifier": "staticMethod.impossibleType",
+                    "message": "Call to static method ImpossibleStaticMethodCallInTrait\\TypeChecker::isString() with int will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-in-trait.php",
+                    "line": 40,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleStaticMethodCallInTrait\\Foo::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-in-trait.php",
+                    "line": 45,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleStaticMethodCallInTrait\\Foo::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-in-trait.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleStaticMethodCallInTrait\\FooAnother::doBar() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/impossible-static-method-call-in-trait.php",
+                    "line": 63,
+                    "identifier": "return.missing",
+                    "message": "Method ImpossibleStaticMethodCallInTrait\\FooAnother::doBar2() should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

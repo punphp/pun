@@ -16,6 +16,9 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     // UnusedConstructorParametersRule follows VariableWritesNode dataflow: a constructor that never ends (`for (;;)`)
     // reads no parameter
     ("strict-rules", "construct-global.php", 61, "constructor.unusedParameter"),
+    // PHPStan 2.3.1's loop scope: `while (true) { ...; $x = 1; if ($x) break; }` never reaches a second iteration, so
+    // $x is undefined at the loop start; Pun merges the end-of-body scope back in
+    ("var_names", "vars.php", 84, "varTag.variableNotFound"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {

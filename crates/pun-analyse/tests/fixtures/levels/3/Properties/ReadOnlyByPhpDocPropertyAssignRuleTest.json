@@ -1,0 +1,418 @@
+{
+    "test": "Properties/ReadOnlyByPhpDocPropertyAssignRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/readonly-assign-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 47,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 49,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$phan is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 60,
+                    "identifier": "property.private",
+                    "message": "Access to private property $foo of parent class ReadonlyPropertyAssignPhpDoc\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 60,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 61,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$bar is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 62,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$baz is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 62,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $baz",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 63,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$psalm is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 64,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$phan is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 69,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$bar is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 70,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$psalm is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 71,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$phan is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 77,
+                    "identifier": "property.private",
+                    "message": "Access to private property ReadonlyPropertyAssignPhpDoc\\Foo::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 78,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$baz is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 97,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\FooArrays::$details is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 98,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\FooArrays::$details is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 128,
+                    "identifier": "property.readOnlyByPhpDocAssignNotOnThis",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\NotThis::$foo is not assigned on $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 144,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\PostInc::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 145,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\PostInc::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 147,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\PostInc::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 168,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\ListAssign::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 173,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\ListAssign::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 183,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$baz is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 184,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Foo::$baz is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 224,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\TestCase::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 247,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\Immutable::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 279,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\B::$b is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 280,
+                    "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\A::$a is assigned outside of its declaring class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 293,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\C::$c is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 309,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset stdClass to ArrayObject.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 310,
+                    "identifier": "unset.offset",
+                    "message": "Cannot unset offset stdClass on ArrayObject.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 311,
+                    "identifier": "assign.propertyType",
+                    "message": "Property ReadonlyPropertyAssignPhpDoc\\ArrayAccessPropertyFetch::$storage (ArrayObject) does not accept WeakMap<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc.php",
+                    "line": 311,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property ReadonlyPropertyAssignPhpDoc\\ArrayAccessPropertyFetch::$storage is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleIgnoresNativeReadonly",
+            "files": [
+                "Properties/data/readonly-assign-phpdoc-and-native.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc-and-native.php",
+                    "line": 12,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssignPhpDocAndNative\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc-and-native.php",
+                    "line": 15,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssignPhpDocAndNative\\Foo has an uninitialized readonly property $baz. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-phpdoc-and-native.php",
+                    "line": 24,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssignPhpDocAndNative\\Foo::$foo is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7361",
+            "files": [
+                "Properties/data/bug-7361.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7361.php",
+                    "line": 12,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property Bug7361\\Example::$foo is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFeature7648",
+            "files": [
+                "Properties/data/feature-7648.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/feature-7648.php (in context of class Feature7648\\Request)",
+                    "line": 23,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property Feature7648\\Request::$offset is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFeature11775",
+            "files": [
+                "Properties/data/feature-11775.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/feature-11775.php",
+                    "line": 22,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property Feature11775\\FooImmutable::$i is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/feature-11775.php",
+                    "line": 43,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property Feature11775\\FooReadonly::$i is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Properties/data/property-hooks-readonly-by-phpdoc-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-hooks-readonly-by-phpdoc-assign.php",
+                    "line": 9,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class PropertyHooksReadonlyByPhpDocAssign\\Foo has an uninitialized @readonly property $i. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hooks-readonly-by-phpdoc-assign.php",
+                    "line": 15,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property PropertyHooksReadonlyByPhpDocAssign\\Foo::$i is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hooks-readonly-by-phpdoc-assign.php",
+                    "line": 17,
+                    "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+                    "message": "@readonly property PropertyHooksReadonlyByPhpDocAssign\\Foo::$j is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hooks-readonly-by-phpdoc-assign.php",
+                    "line": 23,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class PropertyHooksReadonlyByPhpDocAssign\\Foo has an uninitialized @readonly property $j. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCloneWith",
+            "files": [
+                "Properties/data/readonly-phpdoc-property-assign-clone-with.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-phpdoc-property-assign-clone-with.php",
+                    "line": 9,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class ReadonlyPhpDocPropertyAssignCloneWith\\Foo has an uninitialized @readonly property $priv. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-phpdoc-property-assign-clone-with.php",
+                    "line": 12,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class ReadonlyPhpDocPropertyAssignCloneWith\\Foo has an uninitialized @readonly property $prot. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-phpdoc-property-assign-clone-with.php",
+                    "line": 15,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class ReadonlyPhpDocPropertyAssignCloneWith\\Foo has an uninitialized @readonly property $pub. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-phpdoc-property-assign-clone-with.php",
+                    "line": 29,
+                    "identifier": "property.private",
+                    "message": "Access to private property ReadonlyPhpDocPropertyAssignCloneWith\\Foo::$priv.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-phpdoc-property-assign-clone-with.php",
+                    "line": 29,
+                    "identifier": "property.protected",
+                    "message": "Access to protected property ReadonlyPhpDocPropertyAssignCloneWith\\Foo::$prot.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

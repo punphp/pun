@@ -1,0 +1,145 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "callables.php",
+   "line": 40,
+   "identifier": "parameter.unresolvableType",
+   "message": "PHPDoc tag @param for parameter $c contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 40,
+   "identifier": "parameter.unresolvableType",
+   "message": "PHPDoc tag @param for parameter $g contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 40,
+   "identifier": "parameter.unresolvableType",
+   "message": "PHPDoc tag @param for parameter $h contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 40,
+   "identifier": "parameter.unresolvableType",
+   "message": "PHPDoc tag @param for parameter $i contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 40,
+   "identifier": "return.unresolvableType",
+   "message": "PHPDoc tag @return contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "generics.templateDefaultOutOfBounds",
+   "message": "Default type Cov\\Missing in PHPDoc tag @param for parameter $h template U of callable<U of int>(U): void is not subtype of bound type int.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "generics.templateDefaultOutOfBounds",
+   "message": "Default type string in PHPDoc tag @param for parameter $c template U of callable<U of int>(U): U is not subtype of bound type int.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @param for parameter $b template T of callable<T of mixed>(T): T shadows @template T for function Cov\\templates.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "generics.requiredTypeAfterOptional",
+   "message": "PHPDoc tag @param for parameter $d template V of callable<U of mixed, V of mixed>(U, V): void does not have a default type but follows an optional template U.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "generics.existingTypeAlias",
+   "message": "PHPDoc tag @param for parameter $e template of callable<Money of mixed>(int): void cannot have existing type alias Money as its name.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "generics.notSupportedBound",
+   "message": "PHPDoc tag @param for parameter $f template U of callable<U of resource>(U): void with bound type resource is not supported.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @param for parameter $g template U of callable<U of Cov\\Missing>(): void has invalid bound type Cov\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @param for parameter $h template U of callable<U of int>(U): void has invalid default type Cov\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 70,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @return template T of callable<T of mixed>(T): void shadows @template T for function Cov\\templates.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 81,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @var template T of callable<T of mixed>(T): void shadows @template T for class Cov\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 84,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @var template T of Closure<T of mixed>(T): void shadows @template T for class Cov\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 88,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @param for parameter $value template T of Closure<T of mixed>(T): void shadows @template T for class Cov\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 96,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @param for parameter $d template T of Closure<T of mixed>(T): void shadows @template T for class Cov\\Holder.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 106,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @param for parameter $a template U of callable<U of mixed>(U): void shadows @template U for method Cov\\Holder::method.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 106,
+   "identifier": "callable.shadowTemplate",
+   "message": "PHPDoc tag @param for parameter $b template T of callable<T of mixed>(T): void shadows @template T for class Cov\\Holder.",
+   "tip": null
+  }
+ ]
+}

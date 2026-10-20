@@ -1,0 +1,493 @@
+{
+    "test": "Properties/ReadOnlyPropertyAssignRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/readonly-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 10,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssign\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 12,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssign\\Foo has an uninitialized readonly property $baz. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 21,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\Foo::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 32,
+                    "identifier": "property.private",
+                    "message": "Access to private property $foo of parent class ReadonlyPropertyAssign\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 32,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 34,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $baz",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 39,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\Foo::$bar is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 45,
+                    "identifier": "property.private",
+                    "message": "Access to private property ReadonlyPropertyAssign\\Foo::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 46,
+                    "identifier": "assign.propertyProtectedSet",
+                    "message": "Assign to protected(set) property ReadonlyPropertyAssign\\Foo::$baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 64,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\FooArrays::$details is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 65,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\FooArrays::$details is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 85,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssign\\NotThis has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 90,
+                    "identifier": "property.readOnlyAssignNotOnThis",
+                    "message": "Readonly property ReadonlyPropertyAssign\\NotThis::$foo is not assigned on $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 98,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssign\\PostInc has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 102,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\PostInc::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 103,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\PostInc::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 105,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\PostInc::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 122,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\ListAssign::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 127,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\ListAssign::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 140,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property ReadonlyPropertyAssign\\FooEnum::$name is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 141,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property ReadonlyPropertyAssign\\FooEnum::$value is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 151,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property ReadonlyPropertyAssign\\FooEnum::$name is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 152,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property ReadonlyPropertyAssign\\FooEnum::$value is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 162,
+                    "identifier": "assign.propertyProtectedSet",
+                    "message": "Assign to protected(set) property ReadonlyPropertyAssign\\Foo::$baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 163,
+                    "identifier": "assign.propertyProtectedSet",
+                    "message": "Assign to protected(set) property ReadonlyPropertyAssign\\Foo::$baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 191,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssign\\TestCase has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 195,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\TestCase::$foo is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 210,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset stdClass to ArrayObject<*NEVER*, *NEVER*>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 210,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<*NEVER*, *NEVER*> does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 211,
+                    "identifier": "unset.offset",
+                    "message": "Cannot unset offset stdClass on ArrayObject<*NEVER*, *NEVER*>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 212,
+                    "identifier": "assign.propertyType",
+                    "message": "Property ReadonlyPropertyAssign\\ArrayAccessPropertyFetch::$storage (ArrayObject) does not accept WeakMap<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 212,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyPropertyAssign\\ArrayAccessPropertyFetch::$storage is assigned outside of the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 228,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 'a' to ArrayObject<*NEVER*, *NEVER*>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 228,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<*NEVER*, *NEVER*> does not accept int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 229,
+                    "identifier": "offsetAssign.dimType",
+                    "message": "Cannot assign offset 'a' to ArrayObject<*NEVER*, *NEVER*>.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign.php",
+                    "line": 229,
+                    "identifier": "offsetAssign.valueType",
+                    "message": "ArrayObject<*NEVER*, *NEVER*> does not accept int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFeature7648",
+            "files": [
+                "Properties/data/feature-7648.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/feature-7648.php (in context of class Feature7648\\Request)",
+                    "line": 23,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property Feature7648\\Request::$offset is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReadOnlyClasses",
+            "files": [
+                "Properties/data/readonly-class-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-class-assign.php",
+                    "line": 10,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyClassPropertyAssign\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-class-assign.php",
+                    "line": 12,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyClassPropertyAssign\\Foo has an uninitialized readonly property $baz. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-class-assign.php",
+                    "line": 21,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property ReadonlyClassPropertyAssign\\Foo::$foo is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6773",
+            "files": [
+                "Properties/data/bug-6773.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6773.php",
+                    "line": 16,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property Bug6773\\Repository::$data is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8929",
+            "files": [
+                "Properties/data/bug-8929.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12537",
+            "files": [
+                "Properties/data/bug-12537.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12537.php",
+                    "line": 11,
+                    "identifier": "class.notFound",
+                    "message": "Property Bug12537\\Metadata::$storage has unknown class Bug12537\\stdClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/bug-12537.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $class of method Bug12537\\Metadata::set() has invalid type Bug12537\\stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12537.php",
+                    "line": 21,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $class of method Bug12537\\Metadata::get() has invalid type Bug12537\\stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12537.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug12537\\stdClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCloneWith",
+            "files": [
+                "Properties/data/readonly-property-assign-clone-with.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-property-assign-clone-with.php",
+                    "line": 8,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssignCloneWith\\Foo has an uninitialized readonly property $priv. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-assign-clone-with.php",
+                    "line": 10,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssignCloneWith\\Foo has an uninitialized readonly property $prot. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-assign-clone-with.php",
+                    "line": 12,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssignCloneWith\\Foo has an uninitialized readonly property $pub. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-assign-clone-with.php",
+                    "line": 14,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyAssignCloneWith\\Foo has an uninitialized readonly property $pubSet. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-assign-clone-with.php",
+                    "line": 28,
+                    "identifier": "assign.propertyProtectedSet",
+                    "message": "Assign to protected(set) property ReadonlyPropertyAssignCloneWith\\Foo::$pub.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-assign-clone-with.php",
+                    "line": 28,
+                    "identifier": "property.private",
+                    "message": "Access to private property ReadonlyPropertyAssignCloneWith\\Foo::$priv.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-assign-clone-with.php",
+                    "line": 28,
+                    "identifier": "property.protected",
+                    "message": "Access to protected property ReadonlyPropertyAssignCloneWith\\Foo::$prot.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11495",
+            "files": [
+                "Properties/data/bug-11495.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-11495.php",
+                    "line": 20,
+                    "identifier": "property.readOnlyAssignNotOnThis",
+                    "message": "Readonly property Bug11495\\HelloWorld::$foo is not assigned on $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-11495.php",
+                    "line": 41,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property Bug11495\\DoubleAssign::$foo is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-11495.php",
+                    "line": 78,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property Bug11495\\ConditionalThenAssign::$foo is already assigned.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12871",
+            "files": [
+                "Properties/data/bug-12871.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12871.php",
+                    "line": 44,
+                    "identifier": "assign.propertyPrivateSet",
+                    "message": "Assign to private(set) property $this(Bug12871\\PrivateSetChild)::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12871.php",
+                    "line": 54,
+                    "identifier": "property.readOnlyAssignNotInConstructor",
+                    "message": "Readonly property Bug12871\\A::$foo is assigned outside of the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

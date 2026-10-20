@@ -58,5 +58,55 @@
         "Tr&\\stdClass",
         "Tr",
         "No"
+    ],
+    [
+        "Coll<covariant \\Countable, int>",
+        "Coll<\\ArrayIterator, int>",
+        "Yes"
+    ],
+    [
+        "Coll<covariant \\Countable, int>",
+        "Coll<int, int>",
+        "No"
+    ],
+    [
+        "Coll<contravariant \\ArrayIterator, int>",
+        "Coll<\\Countable, int>",
+        "Yes"
+    ],
+    [
+        "Coll<contravariant \\Countable, int>",
+        "Coll<\\ArrayIterator, int>",
+        "Maybe"
+    ],
+    [
+        "Coll<int, int>",
+        "Coll<covariant int, int>",
+        "No"
+    ],
+    [
+        "Coll<covariant int, int>",
+        "Coll<covariant int, int>",
+        "Yes"
+    ],
+    [
+        "Coll<covariant int, int>",
+        "Coll<contravariant int, int>",
+        "No"
+    ],
+    [
+        "Coll<covariant mixed, int>",
+        "Coll<string, int>",
+        "Yes"
+    ],
+    [
+        "Coll<covariant int, int>",
+        "Coll<never, int>",
+        "Yes"
+    ],
+    [
+        "Coll<covariant int, int>",
+        "Coll<*, int>",
+        "No"
     ]
 ]

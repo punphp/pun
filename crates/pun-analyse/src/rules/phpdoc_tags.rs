@@ -75,6 +75,7 @@ pub fn statement(c: &mut Checker, s: &Statement) {
             | Statement::Inline(_)
     ) {
         super::var_tags::node(c, mago_span::HasSpan::span(s));
+        super::var_names::statement(c, s);
     }
     match s {
         Statement::Expression(e) if !matches!(e.expression, Expression::Assignment(_)) => {}
@@ -101,6 +102,7 @@ pub fn nop(c: &mut Checker, end: Span) {
     let names = Position::new(code as u32);
     node(c, at);
     super::var_tags::check(c, at, Span::new(end.file_id, names, names));
+    super::var_names::clause(c, at);
 }
 
 /// A php-parser statement that is no Mago statement (a catch, else or elseif clause, a trait use, an enum case):
@@ -108,6 +110,7 @@ pub fn nop(c: &mut Checker, end: Span) {
 pub fn clause(c: &mut Checker, at: Span) {
     node(c, at);
     super::var_tags::node(c, at);
+    super::var_names::clause(c, at);
 }
 
 /// The node at `at` (a statement, a class member, a property hook, a catch, else or elseif clause).

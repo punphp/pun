@@ -9,7 +9,7 @@ use std::sync::Arc;
 use common::fixture;
 use pun_phpstan::phpdoc;
 use pun_phpstan::resolve::{
-    Scope, const_expr, has_global_alias, resolve_in, resolve_str, with_type_aliases,
+    Scope, const_expr, has_global_alias, key_or_value_of, resolve_in, resolve_late, resolve_str, with_type_aliases,
 };
 use pun_phpstan::symbols::{self, Class, Template};
 use pun_phpstan::types::{Level, Type, ancestor_args, decide_type, is_super_type_of};
@@ -66,6 +66,7 @@ fn template(name: &str) -> Template {
         name: name.to_string(),
         bound: "mixed".to_string(),
         default: None,
+        variance: "invariant",
     }
 }
 
@@ -77,6 +78,7 @@ fn class(name: &str) -> Option<Arc<Class>> {
             ancestors: ancestors.iter().map(|a| a.to_string()).collect(),
             templates,
             cases: Vec::new(),
+            case_values: Vec::new(),
             is_interface: false,
             is_trait: false,
             is_enum: false,
@@ -126,6 +128,16 @@ fn class(name: &str) -> Option<Arc<Class>> {
             is_final: true,
             ..class(name, &[], Vec::new(), &[("X", "1")], HashMap::new())
         })),
+        "PunProbe\\Backed" | "PunProbe\\One" => {
+            let values: &[(&str, &str)] = if name.ends_with("Backed") { &[("A", "'a'"), ("B", "'b'")] } else { &[("X", "1")] };
+            Some(Arc::new(Class {
+                cases: values.iter().map(|(n, _)| n.to_string()).collect(),
+                case_values: values.iter().map(|(n, v)| (n.to_string(), v.to_string())).collect(),
+                is_enum: true,
+                is_final: true,
+                ..class(name, &["UnitEnum", "BackedEnum"], Vec::new(), &[], HashMap::new())
+            }))
+        }
         "PunProbe\\Tr" => Some(Arc::new(Class {
             is_trait: true,
             ..class(name, &[], Vec::new(), &[], HashMap::new())
@@ -177,6 +189,28 @@ impl Scope for WithTemplates {
     }
 }
 
+/// `new NameScope('PunProbe', [], null, null, $late)`: templates `E` of `BackedEnum`, `F` of `PunProbe\Backed` and `G`
+/// of `array<int, string>` of `function probe()`.
+struct Late;
+
+impl Scope for Late {
+    fn parent(&self) -> Option<String> {
+        None
+    }
+    fn resolve_name(&self, name: &str) -> String {
+        qualify(name)
+    }
+    fn template(&self, name: &str) -> Option<Type> {
+        let bound = match name {
+            "E" => "BackedEnum",
+            "F" => "PunProbe\\Backed",
+            "G" => "array<int, string>",
+            _ => return None,
+        };
+        Some(resolve_str(&format!("__template<{name}, 'function probe()', {bound}>"), None))
+    }
+}
+
 #[test]
 fn project_scope() {
     let f = fixture("type-scope.json");
@@ -188,6 +222,12 @@ fn project_scope() {
             let node = phpdoc::parse(input).unwrap();
             let ty = match row[0].as_str() {
                 Some("templates") => resolve_in(&node, &WithTemplates),
+                Some("resolved") => resolve_late(&resolve_in(&node, &InNamespace)),
+                // `LateResolvableType::resolve()`
+                Some("late") => match resolve_in(&node, &Late) {
+                    Type::Object(name, args) => key_or_value_of(&args[0], name == "value-of"),
+                    t => t,
+                },
                 Some(class) => resolve_in(&node, &InClass(class)),
                 None => resolve_in(&node, &InNamespace),
             };
@@ -333,14 +373,6 @@ fn tag_value_prefix() {
 }
 
 /// `parseGenericTypeArgument()` accepts a call-site variance keyword before an argument.
-#[test]
-fn generic_argument_variance() {
-    assert_eq!(
-        phpdoc::parse("ArrayIterator<int, covariant string>").unwrap(),
-        phpdoc::parse("ArrayIterator<int, string>").unwrap()
-    );
-}
-
 /// `tryResolvePseudoTypeClassType()`: `use Foo as integer;` makes `integer` that class; in a namespace a keyword
 /// that names no class of it stays the keyword.
 #[test]
@@ -430,4 +462,17 @@ fn global_type_aliases() {
         assert_eq!(got, row[2].as_str().unwrap(), "{input}");
     }
     assert!(!has_global_alias("PunAlias"));
+}
+
+/// `ConstantStringType::isCallable()` of a project function's name: `ReflectionProvider::hasFunction()` answers it.
+#[test]
+fn project_function_names_are_callable() {
+    let callable = |s: &str| Type::ConstString(s.to_string()).is_callable();
+    let provider = |name: &str| name == "PunProbe\\f";
+    symbols::with_functions(&provider, || {
+        assert!(callable("PunProbe\\f").yes());
+        assert!(callable("\\PunProbe\\f").yes());
+        assert!(callable("PunProbe\\g").no());
+    });
+    assert!(callable("PunProbe\\f").no());
 }

@@ -1,0 +1,2957 @@
+{
+    "test": "Methods/CallStaticMethodsRuleTest",
+    "cases": [
+        {
+            "method": "testCallStaticMethods",
+            "files": [
+                "Methods/data/call-static-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 8,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Foo::test() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 10,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Bar::protectedMethodFromChild() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 13,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Foo::baz() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 18,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Foo::loremIpsum() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 23,
+                    "identifier": "method.unused",
+                    "message": "Static method CallStaticMethods\\Foo::dolor() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 23,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Foo::dolor() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 33,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Bar::test() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 35,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 36,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::baz() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 37,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 38,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::baz() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 39,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 40,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Bar::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 41,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 42,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CallStaticMethods\\Foo::loremIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 42,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::loremIpsum() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 43,
+                    "identifier": "staticMethod.private",
+                    "message": "Call to private static method dolor() of class CallStaticMethods\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 43,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::dolor() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 46,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Bar::loremIpsum() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 48,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::loremIpsum() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 51,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Bar::protectedMethodFromChild() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 61,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Ipsum::ipsumTest() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 63,
+                    "identifier": "class.noParent",
+                    "message": "CallStaticMethods\\Ipsum::ipsumTest() calls parent::lorem() but CallStaticMethods\\Ipsum does not extend any class.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 64,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 65,
+                    "identifier": "arguments.count",
+                    "message": "Static method CallStaticMethods\\Foo::test() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 65,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 66,
+                    "identifier": "staticMethod.protected",
+                    "message": "Call to protected static method baz() of class CallStaticMethods\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 66,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::baz() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 67,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method loremIpsum() on an unknown class CallStaticMethods\\UnknownStaticMethodClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 75,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class CallStaticMethods\\ClassWithConstructor has an unused parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 75,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethods\\ClassWithConstructor::__construct() has parameter $foo with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 87,
+                    "identifier": "arguments.count",
+                    "message": "Method CallStaticMethods\\ClassWithConstructor::__construct() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 87,
+                    "identifier": "staticMethod.private",
+                    "message": "Call to private method __construct() of class CallStaticMethods\\ClassWithConstructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 93,
+                    "identifier": "outOfClass.self",
+                    "message": "Calling self::someStaticMethod() outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 94,
+                    "identifier": "outOfClass.static",
+                    "message": "Calling static::someStaticMethod() outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 95,
+                    "identifier": "outOfClass.parent",
+                    "message": "Calling parent::someStaticMethod() outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 96,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 97,
+                    "identifier": "staticMethod.protected",
+                    "message": "Call to protected static method baz() of class CallStaticMethods\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 97,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::baz() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 98,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 99,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CallStaticMethods\\Foo::loremIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 99,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::loremIpsum() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 100,
+                    "identifier": "staticMethod.private",
+                    "message": "Call to private static method dolor() of class CallStaticMethods\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 100,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::dolor() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 104,
+                    "identifier": "arguments.count",
+                    "message": "Static method Locale::getDisplayLanguage() invoked with 3 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 115,
+                    "identifier": "arguments.count",
+                    "message": "Static method CallStaticMethods\\Foo::test() invoked with 3 parameters, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 119,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 120,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on int|string.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 123,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallStaticMethods\\Foo referenced with incorrect case: CallStaticMethods\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 127,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallStaticMethods\\Foo referenced with incorrect case: CallStaticMethods\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 127,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::unknownMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 128,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallStaticMethods\\Foo referenced with incorrect case: CallStaticMethods\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 128,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CallStaticMethods\\Foo::loremIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 128,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::loremIpsum() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 129,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallStaticMethods\\Foo referenced with incorrect case: CallStaticMethods\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 129,
+                    "identifier": "staticMethod.private",
+                    "message": "Call to private static method dolor() of class CallStaticMethods\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 129,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::dolor() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 130,
+                    "identifier": "arguments.count",
+                    "message": "Static method CallStaticMethods\\Foo::test() invoked with 3 parameters, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 130,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallStaticMethods\\Foo referenced with incorrect case: CallStaticMethods\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 130,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 131,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallStaticMethods\\Foo referenced with incorrect case: CallStaticMethods\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 131,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 132,
+                    "identifier": "class.nameCase",
+                    "message": "Class CallStaticMethods\\Foo referenced with incorrect case: CallStaticMethods\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 132,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::test() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 144,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 152,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Baz::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 154,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::nonexistent().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 157,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\Baz::doBaz() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 159,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::nonexistent().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 160,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CallStaticMethods\\Foo::loremIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 160,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\Foo::loremIpsum() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 168,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\ClassOrString::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 171,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 173,
+                    "identifier": "arguments.count",
+                    "message": "Static method CallStaticMethods\\ClassOrString::calledMethod() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 174,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\ClassOrString::calledMethod() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 177,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\ClassOrString::calledMethod() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 182,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\ClassOrString::doBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 197,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\InterfaceWithStaticMethod::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 199,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\InterfaceWithStaticMethod::doInstanceFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 206,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\CallStaticMethodOnAnInterface::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 208,
+                    "identifier": "staticMethod.callToAbstract",
+                    "message": "Cannot call abstract static method CallStaticMethods\\InterfaceWithStaticMethod::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 209,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\InterfaceWithStaticMethod::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 212,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CallStaticMethods\\InterfaceWithStaticMethod::doInstanceFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 213,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method CallStaticMethods\\InterfaceWithStaticMethod::doInstanceFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 221,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\CallStaticMethodAfterAssignmentInBooleanAnd::generateDeliverSmDlrForMessage() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 233,
+                    "identifier": "return.missing",
+                    "message": "Method CallStaticMethods\\CallStaticMethodAfterAssignmentInBooleanAnd::getMessageStateByStatusId() should return string|false but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 237,
+                    "identifier": "return.missing",
+                    "message": "Method CallStaticMethods\\CallStaticMethodAfterAssignmentInBooleanAnd::isMessageStateRequested() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 245,
+                    "identifier": "missingType.property",
+                    "message": "Property CallStaticMethods\\PreserveArrayKeys::$p has no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 250,
+                    "identifier": "method.unused",
+                    "message": "Method CallStaticMethods\\PreserveArrayKeys::test() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 250,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\PreserveArrayKeys::test() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 262,
+                    "identifier": "method.unused",
+                    "message": "Method CallStaticMethods\\PreserveArrayKeys::test2() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 262,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\PreserveArrayKeys::test2() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 289,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\ClassStringChecks::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 298,
+                    "identifier": "arguments.count",
+                    "message": "Static method CallStaticMethods\\Foo::test() invoked with 3 parameters, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 299,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method T of CallStaticMethods\\Foo::nonexistentMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 302,
+                    "identifier": "arguments.count",
+                    "message": "Static method CallStaticMethods\\Foo::test() invoked with 3 parameters, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 303,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\Foo::nonexistentMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 326,
+                    "identifier": "parameter.trait",
+                    "message": "Parameter $a of method CallStaticMethods\\MethodCallingTraitWithStaticMethod::doBar() has invalid type CallStaticMethods\\TraitWithStaticMethod.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 328,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method doFoo() on an unknown class CallStaticMethods\\TraitWithStaticMethod.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 336,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\CallWithStatic::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 341,
+                    "identifier": "missingType.return",
+                    "message": "Method CallStaticMethods\\CallWithStatic::doBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 343,
+                    "identifier": "staticClassAccess.privateMethod",
+                    "message": "Unsafe call to private method CallStaticMethods\\CallWithStatic::doFoo() through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 343,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to CallStaticMethods\\CallWithStatic::doFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-methods.php",
+                    "line": 344,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method CallStaticMethods\\CallWithStatic::nonexistent().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallInterfaceMethods",
+            "files": [
+                "Methods/data/call-interface-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 8,
+                    "identifier": "missingType.return",
+                    "message": "Method InterfaceMethods\\Foo::fooMethod() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 10,
+                    "identifier": "missingType.return",
+                    "message": "Method InterfaceMethods\\Foo::fooStaticMethod() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 22,
+                    "identifier": "missingType.return",
+                    "message": "Method InterfaceMethods\\Baz::bazMethod() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 25,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method InterfaceMethods\\Baz::barMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 26,
+                    "identifier": "staticMethod.callToAbstract",
+                    "message": "Cannot call abstract static method InterfaceMethods\\Foo::fooStaticMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 27,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method InterfaceMethods\\Baz::barStaticMethod().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToIncorrectCaseMethodName",
+            "files": [
+                "Methods/data/incorrect-static-method-case.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/incorrect-static-method-case.php",
+                    "line": 8,
+                    "identifier": "missingType.return",
+                    "message": "Method IncorrectStaticMethodCase\\Foo::fooBar() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStaticCallsToInstanceMethods",
+            "files": [
+                "Methods/data/static-calls-to-instance-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 8,
+                    "identifier": "missingType.return",
+                    "message": "Method StaticCallsToInstanceMethods\\Foo::doStaticFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 10,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method StaticCallsToInstanceMethods\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 13,
+                    "identifier": "missingType.return",
+                    "message": "Method StaticCallsToInstanceMethods\\Foo::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 16,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method StaticCallsToInstanceMethods\\Bar::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 19,
+                    "identifier": "missingType.return",
+                    "message": "Method StaticCallsToInstanceMethods\\Foo::doProtectedFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 24,
+                    "identifier": "method.unused",
+                    "message": "Method StaticCallsToInstanceMethods\\Foo::doPrivateFoo() is unused.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 24,
+                    "identifier": "missingType.return",
+                    "message": "Method StaticCallsToInstanceMethods\\Foo::doPrivateFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 34,
+                    "identifier": "missingType.return",
+                    "message": "Method StaticCallsToInstanceMethods\\Bar::doStaticBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 36,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method StaticCallsToInstanceMethods\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 39,
+                    "identifier": "missingType.return",
+                    "message": "Method StaticCallsToInstanceMethods\\Bar::doBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 43,
+                    "identifier": "arguments.count",
+                    "message": "Method StaticCallsToInstanceMethods\\Foo::doFoo() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 44,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to StaticCallsToInstanceMethods\\Foo::doProtectedFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 45,
+                    "identifier": "staticMethod.private",
+                    "message": "Call to private method doPrivateFoo() of class StaticCallsToInstanceMethods\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 45,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to StaticCallsToInstanceMethods\\Foo::doPrivateFoo() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-calls-to-instance-methods.php",
+                    "line": 48,
+                    "identifier": "arguments.count",
+                    "message": "Method StaticCallsToInstanceMethods\\Foo::doFoo() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStaticCallOnExpression",
+            "files": [
+                "Methods/data/static-call-on-expression.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-call-on-expression.php",
+                    "line": 10,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "Methods/data/static-call-on-expression.php",
+                    "line": 16,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method StaticCallOnExpression\\Foo::doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testStaticCallOnExpressionWithCheckDisabled",
+            "files": [
+                "Methods/data/static-call-on-expression.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-call-on-expression.php",
+                    "line": 10,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "Methods/data/static-call-on-expression.php",
+                    "line": 16,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method StaticCallOnExpression\\Foo::doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReturnStatic",
+            "files": [
+                "Methods/data/return-static-static-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/return-static-static-method.php",
+                    "line": 13,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "Methods/data/return-static-static-method.php",
+                    "line": 21,
+                    "identifier": "missingType.return",
+                    "message": "Method ReturnStaticStaticMethod\\Bar::doBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-static-static-method.php",
+                    "line": 24,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method ReturnStaticStaticMethod\\Bar::doBaz().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallParentAbstractMethod",
+            "files": [
+                "Methods/data/call-parent-abstract-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-parent-abstract-method.php",
+                    "line": 21,
+                    "identifier": "method.callToAbstract",
+                    "message": "Cannot call abstract method CallParentAbstractMethod\\Baz::uninstall().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-parent-abstract-method.php",
+                    "line": 38,
+                    "identifier": "method.callToAbstract",
+                    "message": "Cannot call abstract method CallParentAbstractMethod\\Lorem::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-parent-abstract-method.php",
+                    "line": 48,
+                    "identifier": "method.callToAbstract",
+                    "message": "Cannot call abstract method CallParentAbstractMethod\\Lorem::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-parent-abstract-method.php",
+                    "line": 61,
+                    "identifier": "staticMethod.callToAbstract",
+                    "message": "Cannot call abstract static method CallParentAbstractMethod\\SitAmet::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-parent-abstract-method.php",
+                    "line": 67,
+                    "identifier": "missingType.return",
+                    "message": "Method CallParentAbstractMethod\\Consecteur::doFoo() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Methods/data/static-methods-class-exists.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3448",
+            "files": [
+                "Methods/data/bug-3448.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-3448.php",
+                    "line": 21,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $lall of static method Bug3448\\Foo::add() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-3448.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $lall of static method Bug3448\\Foo::add() expects int, string given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3641",
+            "files": [
+                "Methods/data/bug-3641.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-3641.php",
+                    "line": 31,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug3641\\Foo::bar() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-3641.php",
+                    "line": 32,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug3641\\Foo::bar() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-3641.php",
+                    "line": 32,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug3641\\Foo::bar() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2164",
+            "files": [
+                "Methods/data/bug-2164.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-2164.php",
+                    "line": 24,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $arg of static method Bug2164\\A::staticTest() expects static(Bug2164\\B)|string, Bug2164\\B|string given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Methods/data/static-method-named-arguments.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-method-named-arguments.php",
+                    "line": 15,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $j (int) in call to static method StaticMethodNamedArguments\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-named-arguments.php",
+                    "line": 16,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $z in call to static method StaticMethodNamedArguments\\Foo::doFoo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug577",
+            "files": [
+                "Methods/data/bug-577.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4550",
+            "files": [
+                "Methods/data/bug-4550.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-4550.php",
+                    "line": 13,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method values() on T of mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-4550.php",
+                    "line": 24,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method values() on T of mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-4550.php",
+                    "line": 34,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $class of static method Bug4550\\Test::valuesOf() expects class-string<Person>, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-4550.php",
+                    "line": 44,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $class of static method Bug4550\\Test::valuesOf() expects class-string<Person>, string given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1971Php8",
+            "files": [
+                "Methods/data/bug-1971.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-1971.php",
+                    "line": 14,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $callback of static method Closure::fromCallable() expects callable(): mixed, array{'Bug1971\\\\HelloWorld', 'sayHello'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-1971.php",
+                    "line": 15,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $callback of static method Closure::fromCallable() expects callable(): mixed, array{class-string<static(Bug1971\\HelloWorld)>, 'sayHello'} given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-1971.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $callback of static method Closure::fromCallable() expects callable(): mixed, array{class-string<static(Bug1971\\HelloWorld)>, 'sayHello2'} given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5259",
+            "files": [
+                "Methods/data/bug-5259.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-5259.php",
+                    "line": 9,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property Bug5259\\HelloWorld::$date is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5536",
+            "files": [
+                "Methods/data/bug-5536.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-5536.php",
+                    "line": 13,
+                    "identifier": "missingType.return",
+                    "message": "Method Bug5536\\Model::__call() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5536.php",
+                    "line": 21,
+                    "identifier": "missingType.return",
+                    "message": "Method Bug5536\\Model::__callStatic() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5536.php",
+                    "line": 23,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "Methods/data/bug-5536.php",
+                    "line": 44,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug5536\\Builder::all() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5536.php",
+                    "line": 46,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method Bug5536\\Builder::all() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4886",
+            "files": [
+                "Methods/data/bug-4886.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallables",
+            "files": [
+                "Methods/data/first-class-static-method-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/first-class-static-method-callable.php",
+                    "line": 10,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method FirstClassStaticMethodCallable\\Foo::doFoo() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5893",
+            "files": [
+                "Methods/data/bug-5893.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6249",
+            "files": [
+                "Methods/data/bug-6249.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-6249.php",
+                    "line": 45,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug6249N2\\Eii::current() is not covariant with tentative return type mixed of method Iterator<(int|string),Bug6249N1\\EntityInterface>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/bug-6249.php",
+                    "line": 49,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug6249N1\\EntityInterface and Bug6249N1\\EntityInterface will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Methods/data/bug-6249.php",
+                    "line": 59,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug6249N2\\Eii::key() is not covariant with tentative return type mixed of method Iterator<(int|string),Bug6249N1\\EntityInterface>::key().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/bug-6249.php",
+                    "line": 59,
+                    "identifier": "return.unusedType",
+                    "message": "Method Bug6249N2\\Eii::key() never returns int so it can be removed from the return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-6249.php",
+                    "line": 68,
+                    "identifier": "return.type",
+                    "message": "Method Bug6249N2\\Eii::key() should return (int|string) but returns null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-6249.php",
+                    "line": 131,
+                    "identifier": "missingType.return",
+                    "message": "Method Bug6249N3\\Foo::doFoo() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5749",
+            "files": [
+                "Methods/data/bug-5749.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5757",
+            "files": [
+                "Methods/data/bug-5757.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-5757.php",
+                    "line": 23,
+                    "identifier": "missingType.return",
+                    "message": "Method Bug5757\\Foo::doFoo() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDiscussion7004",
+            "files": [
+                "Methods/data/discussion-7004.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/discussion-7004.php",
+                    "line": 45,
+                    "identifier": "phpstan.type",
+                    "message": "Expected type array, actual: array<mixed, mixed>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/discussion-7004.php",
+                    "line": 46,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $data of static method Discussion7004\\Foo::fromArray1() expects array<array{newsletterName: string, subscriberCount: int}>, array<mixed, mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/discussion-7004.php",
+                    "line": 47,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $data of static method Discussion7004\\Foo::fromArray2() expects array{array{newsletterName: string, subscriberCount: int}}, array<mixed, mixed> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/discussion-7004.php",
+                    "line": 48,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $data of static method Discussion7004\\Foo::fromArray3() expects array{newsletterName: string, subscriberCount: int}, array<mixed, mixed> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTemplateTypeInOneBranchOfConditional",
+            "files": [
+                "Methods/data/template-type-in-one-branch-of-conditional.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/template-type-in-one-branch-of-conditional.php",
+                    "line": 27,
+                    "identifier": "argument.templateType",
+                    "message": "Unable to resolve the template type T in call to static method TemplateTypeInOneBranchOfConditional\\DriverManager::getConnection()",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type"
+                },
+                {
+                    "file": "Methods/data/template-type-in-one-branch-of-conditional.php",
+                    "line": 27,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $params of static method TemplateTypeInOneBranchOfConditional\\DriverManager::getConnection() expects array{wrapperClass?: class-string<TemplateTypeInOneBranchOfConditional\\Connection>}, array{wrapperClass: 'stdClass'} given.",
+                    "tip": "Offset 'wrapperClass' (class-string<TemplateTypeInOneBranchOfConditional\\Connection>) does not accept type string."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7489",
+            "files": [
+                "Methods/data/bug-7489.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-7489.php",
+                    "line": 5,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"\\Closure::bind(function () {…\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-7489.php",
+                    "line": 8,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"(function () {…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testHasMethodStaticCall",
+            "files": [
+                "Methods/data/static-has-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-has-method.php",
+                    "line": 6,
+                    "identifier": "missingType.return",
+                    "message": "Method StaticHasMethodCall\\rex_var::aMethod() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-has-method.php",
+                    "line": 38,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method StaticHasMethodCall\\rex_var::doesNotExist().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-has-method.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "Class StaticHasMethodCall\\notExistentClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/static-has-method.php",
+                    "line": 43,
+                    "identifier": "function.impossibleType",
+                    "message": "Call to function method_exists() with 'StaticHasMethodCall\\\\notExistentClass' and 'doesNotExist' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-has-method.php",
+                    "line": 48,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method StaticHasMethodCall\\rex_var::doesNotExist().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1267",
+            "files": [
+                "Methods/data/bug-1267.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-1267.php",
+                    "line": 6,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method Bug1267\\Base::get_type_config() return type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/bug-1267.php",
+                    "line": 14,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method Bug1267\\ObjectType::get_type_config() return type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/bug-1267.php",
+                    "line": 19,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: class-string<static(Bug1267\\ObjectType)>&hasMethod(get_connections)",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6147",
+            "files": [
+                "Methods/data/bug-6147.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5781",
+            "files": [
+                "Methods/data/bug-5781.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-5781.php",
+                    "line": 15,
+                    "identifier": "missingType.return",
+                    "message": "Method Bug5781\\Foo::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-5781.php",
+                    "line": 17,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $param of static method Bug5781\\Foo::bar() expects array{a: bool, b: bool, c: bool, d: bool, e: bool, f: bool, g: bool, h: bool, ...}, array{} given.",
+                    "tip": "Array does not have offset 'a'."
+                },
+                {
+                    "file": "Methods/data/bug-5781.php",
+                    "line": 17,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug5781\\Foo::bar() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8296",
+            "files": [
+                "Methods/data/bug-8296.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-8296.php",
+                    "line": 9,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug8296\\stdClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/bug-8296.php",
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $objects of static method Bug8296\\VerifyLoginTask::continueDump() expects array<string, object>, array<string, Bug8296\\stdClass|true> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-8296.php",
+                    "line": 15,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $string of static method Bug8296\\VerifyLoginTask::stringByRef() expects string, int given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequireExtends",
+            "files": [
+                "Properties/data/require-extends.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/require-extends.php",
+                    "line": 36,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property RequireExtends\\MyInterface::$bar.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/require-extends.php",
+                    "line": 43,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method RequireExtends\\MyInterface::doesNotExist().",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/require-extends.php",
+                    "line": 44,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method RequireExtends\\MyInterface::doesNotExistStatic().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequireImplements",
+            "files": [
+                "Properties/data/require-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/require-implements.php",
+                    "line": 44,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method RequireImplements\\MyBaseClass::doesNotExist().",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/require-implements.php",
+                    "line": 45,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method RequireImplements\\MyBaseClass::doesNotExistStatic().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixed#0",
+            "files": [
+                "Methods/data/call-static-method-mixed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 11,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Foo::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 17,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 26,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on T of mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 37,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 43,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 52,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 60,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::acceptImplicitMixed() has parameter $mixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 81,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, T given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 84,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, T of mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 129,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\CallableMixed::doLorem() has parameter $implicitMixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 134,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callAcceptsExplicitMixed() expects callable(mixed): void, Closure(int): void given.",
+                    "tip": "Type int of parameter #1 $i of passed callable needs to be same or wider than parameter type mixed of accepting callable."
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 161,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 168,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixed#1",
+            "files": [
+                "Methods/data/call-static-method-mixed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 11,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Foo::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 17,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 26,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on T of mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 37,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 43,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 52,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 60,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::acceptImplicitMixed() has parameter $mixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 81,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, T given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 84,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, T of mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 129,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\CallableMixed::doLorem() has parameter $implicitMixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 134,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callAcceptsExplicitMixed() expects callable(mixed): void, Closure(int): void given.",
+                    "tip": "Type int of parameter #1 $i of passed callable needs to be same or wider than parameter type mixed of accepting callable."
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 161,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 168,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixed#2",
+            "files": [
+                "Methods/data/call-static-method-mixed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 11,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Foo::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 17,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 26,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on T of mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 37,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 43,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 52,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 60,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::acceptImplicitMixed() has parameter $mixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 81,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, T given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 84,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, T of mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 129,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\CallableMixed::doLorem() has parameter $implicitMixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 134,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callAcceptsExplicitMixed() expects callable(mixed): void, Closure(int): void given.",
+                    "tip": "Type int of parameter #1 $i of passed callable needs to be same or wider than parameter type mixed of accepting callable."
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 161,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 168,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixed#3",
+            "files": [
+                "Methods/data/call-static-method-mixed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 11,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Foo::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 17,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 26,
+                    "identifier": "staticMethod.nonObject",
+                    "message": "Cannot call static method foo() on T of mixed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 37,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::doFoo() has parameter $implicit with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 43,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 52,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 60,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\Bar::acceptImplicitMixed() has parameter $mixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 81,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method CallStaticMethodMixed\\Bar::doBar() expects int, T given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 84,
+                    "identifier": "argument.unpackNonIterable",
+                    "message": "Only iterables can be unpacked, T of mixed given in argument #1.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 129,
+                    "identifier": "missingType.parameter",
+                    "message": "Method CallStaticMethodMixed\\CallableMixed::doLorem() has parameter $implicitMixed with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 134,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callAcceptsExplicitMixed() expects callable(mixed): void, Closure(int): void given.",
+                    "tip": "Type int of parameter #1 $i of passed callable needs to be same or wider than parameter type mixed of accepting callable."
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 161,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-static-method-mixed.php",
+                    "line": 168,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $cb of static method CallStaticMethodMixed\\CallableMixed::callReturnsInt() expects callable(): int, Closure(): mixed given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBugWrongMethodNameWithTemplateMixed",
+            "files": [
+                "Methods/data/bug-wrong-method-name-with-template-mixed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-wrong-method-name-with-template-mixed.php",
+                    "line": 14,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method T of mixed&UnitEnum::from().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-wrong-method-name-with-template-mixed.php",
+                    "line": 25,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method T of mixed&UnitEnum::from().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-wrong-method-name-with-template-mixed.php",
+                    "line": 36,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method T of object&UnitEnum::from().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-wrong-method-name-with-template-mixed.php",
+                    "line": 43,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method UnitEnum::from().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConditionalParam",
+            "files": [
+                "Methods/data/conditional-param.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/conditional-param.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $demoArg of static method ConditionalParam\\HelloWorld::replaceCallback() expects string, true given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/conditional-param.php",
+                    "line": 20,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $demoArg of static method ConditionalParam\\HelloWorld::replaceCallback() expects bool, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/conditional-param.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $demoArg of static method ConditionalParam\\HelloWorld::replaceCallback() expects string, true given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureBindParamClosureThis",
+            "files": [
+                "Methods/data/closure-bind-param-closure-this.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/closure-bind-param-closure-this.php",
+                    "line": 16,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Closure::bind() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind-param-closure-this.php",
+                    "line": 22,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Closure::bind() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind-param-closure-this.php",
+                    "line": 24,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Closure::bind() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind-param-closure-this.php",
+                    "line": 25,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $newThis of static method Closure::bind() expects stdClass, ClosureBindParamClosureThis\\Foo given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind-param-closure-this.php",
+                    "line": 25,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Closure::bind() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureBind",
+            "files": [
+                "Methods/data/closure-bind.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 8,
+                    "identifier": "class.notFound",
+                    "message": "Method CallClosureBind\\Bar::fooMethod() has invalid return type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 10,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Closure::bind() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 11,
+                    "identifier": "class.notFound",
+                    "message": "Call to method privateMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Call to method nonexistentMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 16,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallClosureBind\\Bar::barMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Call to method privateMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "Call to method nonexistentMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 21,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Closure::bind() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 23,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallClosureBind\\Bar::barMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 24,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $nonexistent",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 26,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to static method Closure::bind() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Call to method privateMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Call to method nonexistentMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 29,
+                    "identifier": "argument.type",
+                    "message": "Parameter #3 $newScope of static method Closure::bind() expects 'static'|class-string|object|null, 'CallClosureBind\\\\Foo' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 31,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 32,
+                    "identifier": "class.notFound",
+                    "message": "Call to method privateMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 33,
+                    "identifier": "class.notFound",
+                    "message": "Call to method nonexistentMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 37,
+                    "identifier": "class.notFound",
+                    "message": "Call to method privateMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 38,
+                    "identifier": "class.notFound",
+                    "message": "Call to method nonexistentMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "Call to method privateMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 44,
+                    "identifier": "class.notFound",
+                    "message": "Call to method nonexistentMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 45,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 47,
+                    "identifier": "return.missing",
+                    "message": "Method CallClosureBind\\Bar::fooMethod() should return CallClosureBind\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Call to method publicMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 49,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 54,
+                    "identifier": "return.type",
+                    "message": "Method CallClosureBind\\Bar::x() should return bool but returns float.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 66,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo2 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 68,
+                    "identifier": "argument.type",
+                    "message": "Parameter #3 $newScope of static method Closure::bind() expects 'static'|class-string|object|null, 'CallClosureBind\\\\Bar3' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 72,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo2 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 74,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $newScope of method Closure::bindTo() expects 'static'|class-string|object|null, 'CallClosureBind\\\\Bar3' given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 76,
+                    "identifier": "return.type",
+                    "message": "Method CallClosureBind\\Bar::testClassString() should return bool but returns float.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10872",
+            "files": [
+                "Methods/data/bug-10872.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12015",
+            "files": [
+                "Methods/data/bug-12015.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDynamicCall",
+            "files": [
+                "Methods/data/dynamic-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 23,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method MethodsDynamicCall\\Foo::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 26,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method MethodsDynamicCall\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 26,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method MethodsDynamicCall\\Foo::doBuz().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 33,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method MethodsDynamicCall\\Foo::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 36,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method MethodsDynamicCall\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 36,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method MethodsDynamicCall\\Foo::doBuz().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 53,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $n of method MethodsDynamicCall\\Foo::doFoo() expects int, int|string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 54,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $s of method MethodsDynamicCall\\Foo::doQux() expects string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 55,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $n of method MethodsDynamicCall\\Foo::doFoo() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 58,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $n of method MethodsDynamicCall\\Foo::doFoo() expects int, int|string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 59,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $s of static method MethodsDynamicCall\\Foo::doQux() expects string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 60,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $n of method MethodsDynamicCall\\Foo::doFoo() expects int, string given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDynamicStaticMethodName",
+            "files": [
+                "Methods/data/dynamic-static-method-name.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13267",
+            "files": [
+                "Methods/data/bug-13267.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRestrictedInternalClassNameUsage",
+            "files": [
+                "InternalTag/data/static-method-call-on-internal-subclass.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14150",
+            "files": [
+                "Methods/data/bug-14150-static.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14150-static.php",
+                    "line": 14,
+                    "identifier": "return.type",
+                    "message": "Method Bug14150MethodStatic\\HelloWorld::x() should return $this(Bug14150MethodStatic\\HelloWorld) but returns Bug14150MethodStatic\\HelloWorld.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14150-static.php",
+                    "line": 21,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method Bug14150MethodStatic\\HelloWorld::y().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13556",
+            "files": [
+                "Methods/data/bug-13556.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-13556.php",
+                    "line": 6,
+                    "identifier": "missingType.parameter",
+                    "message": "Method event::add() has parameter $_event with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-13556.php",
+                    "line": 6,
+                    "identifier": "missingType.parameter",
+                    "message": "Method event::add() has parameter $_option with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-13556.php",
+                    "line": 6,
+                    "identifier": "missingType.return",
+                    "message": "Method event::add() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-13556.php",
+                    "line": 10,
+                    "identifier": "missingType.return",
+                    "message": "Method event::callAdd() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-13556.php",
+                    "line": 11,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to event::add() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9732",
+            "files": [
+                "Methods/data/bug-9732.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12558",
+            "files": [
+                "Methods/data/bug-12558.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12558.php",
+                    "line": 45,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $object of static method Bug12558\\Foo::assertStatic() expects Bug12558\\Foo, Bug12558\\Foo|null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-12558.php",
+                    "line": 46,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $object of static method Bug12558\\Foo::assertStatic() expects Bug12558\\Foo, bool|Bug12558\\Foo given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6486",
+            "files": [
+                "Methods/data/bug-6486.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-6486.php",
+                    "line": 8,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug6486\\HelloWorld::$only (string|null) is never assigned string so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-6486.php",
+                    "line": 10,
+                    "identifier": "property.unusedType",
+                    "message": "Property Bug6486\\HelloWorld::$exclude (non-empty-string|null) is never assigned non-empty-string so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-6486.php",
+                    "line": 17,
+                    "identifier": "method.unused",
+                    "message": "Method Bug6486\\HelloWorld::isAllowed() is unused.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "Methods/data/static-call-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-call-pipe.php",
+                    "line": 20,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticCallPipe\\Foo::doFoo() invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-call-pipe.php",
+                    "line": 24,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method StaticCallPipe\\Foo::doBar() expects int, string given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-call-pipe.php",
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $i of static method StaticCallPipe\\Foo::doBar() expects int, null given.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-call-pipe.php",
+                    "line": 26,
+                    "identifier": "arguments.count",
+                    "message": "Static method StaticCallPipe\\Foo::doFoo() invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-call-pipe.php",
+                    "line": 26,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method StaticCallPipe\\Foo::doFoo() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-call-pipe.php",
+                    "line": 28,
+                    "identifier": "staticMethod.void",
+                    "message": "Result of static method StaticCallPipe\\Foo::doBar() (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConstantParameterCheckStatic",
+            "files": [
+                "Methods/data/constant-parameter-check-static.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/constant-parameter-check-static.php",
+                    "line": 9,
+                    "identifier": "argument.invalidConstant",
+                    "message": "Constant IntlDateFormatter::GREGORIAN is not allowed for parameter #2 $dateType of static method IntlDateFormatter::create().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constant-parameter-check-static.php",
+                    "line": 15,
+                    "identifier": "argument.invalidConstant",
+                    "message": "Constant NumberFormatter::TYPE_INT32 is not allowed for parameter #2 $style of static method NumberFormatter::create().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11894",
+            "files": [
+                "Methods/data/bug-11894.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14596",
+            "files": [
+                "Methods/data/bug-14596.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14596.php",
+                    "line": 11,
+                    "identifier": "argument.positionalAfterNamed",
+                    "message": "Named argument cannot be followed by a positional argument.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14596.php",
+                    "line": 12,
+                    "identifier": "argument.positionalAfterNamed",
+                    "message": "Named argument cannot be followed by a positional argument.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExistOnCall",
+            "files": [
+                "Methods/data/class-exists-on-static-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/class-exists-on-static-call.php",
+                    "line": 7,
+                    "identifier": "missingType.return",
+                    "message": "Function ClassExistsOnStaticCall\\doFoo() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15002",
+            "files": [
+                "Methods/data/bug-15002.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15168",
+            "files": [
+                "Methods/data/bug-15168.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15168.php",
+                    "line": 60,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug15168StaticMethods\\Arrays::removeNull() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-15168.php",
+                    "line": 61,
+                    "identifier": "staticMethod.resultUnused",
+                    "message": "Call to Bug15168StaticMethods\\Arrays::removeNull() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12827",
+            "files": [
+                "Methods/data/bug-12827-static-call.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10698",
+            "files": [
+                "Methods/data/bug-10698.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15251",
+            "files": [
+                "Methods/data/bug-15251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-15251.php",
+                    "line": 42,
+                    "identifier": "arguments.count",
+                    "message": "Static method Bug15251\\A::sfoo() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -26,5 +26,13 @@
     [
         "static<int>",
         "static(PunProbe\\Child<string>)"
+    ],
+    [
+        "Coll<covariant int, string>",
+        "PunProbe\\Coll<covariant string, string>"
+    ],
+    [
+        "array{a: int}['a']",
+        "array{a: string}['a']"
     ]
 ]
