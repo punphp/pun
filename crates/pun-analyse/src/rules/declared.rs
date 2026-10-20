@@ -383,6 +383,9 @@ pub struct Signature {
     /// (name, `getType()`, `getOutType()`, `getClosureThisType()`)
     pub params: Vec<(String, Type, Option<Type>, Option<Type>)>,
     pub ret: Type,
+    /// each parameter's `getPhpDocType()` (`None`: mixed) and `getPhpDocReturnType()`
+    pub phpdoc_params: Vec<Option<Type>>,
+    pub phpdoc_ret: Option<Type>,
     /// `getSelfOutType()`
     pub self_out: Option<Type>,
     /// the parameters of `getAsserts()`, its own or inherited ones (without `$`)
@@ -817,6 +820,7 @@ fn signature(
     doc: Resolved,
     class: Option<&ClassLikeMetadata>,
 ) -> Signature {
+    let mut phpdoc_params = Vec::new();
     let params = params
         .parameters
         .iter()
@@ -841,6 +845,7 @@ fn signature(
             {
                 phpdoc = Some(t.clone().add_null());
             }
+            phpdoc_params.push(phpdoc.clone());
             let ty = decide_type(native.unwrap_or_else(mixed), phpdoc);
             let out = doc.outs.get(&name).cloned();
             let closure_this = doc.closure_this.get(&name).cloned();
@@ -850,10 +855,13 @@ fn signature(
     let native_ret = ret
         .map(|r| native(c, &r.hint, class))
         .or_else(|| method.and_then(magic_return));
+    let phpdoc_ret = doc.ret.clone();
     let ret = decide_type(native_ret.unwrap_or_else(mixed), doc.ret);
     Signature {
         params,
         ret,
+        phpdoc_params,
+        phpdoc_ret,
         self_out: doc.self_out,
         asserts: doc.asserts,
     }

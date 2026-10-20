@@ -208,6 +208,8 @@ const PORTED: &[&str] = &[
     "generics.variance",
     "function.variance",
     "method.variance",
+    "parameter.trait",
+    "return.trait",
     "property.unresolvableType",
     "property.phpDocType",
     "classConstant.unresolvableType",
@@ -366,6 +368,7 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "Cloning object of an unknown class ",
     "Iterating over an object of an unknown class ",
     "PHPDoc tag @phpstan-assert",
+    "Parameter $",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).
@@ -444,7 +447,8 @@ fn phpstan_level_fixtures() {
                         // CallCallablesRule's are not ported yet
                         || (id == "arguments.count" && !message.starts_with("Callable "))
                         || (id == "class.notFound"
-                            && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                            && (GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p))
+                                || message.contains(" has invalid return type ")))
                         || (id == "parameter.notFound"
                             && PARAMETER_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         // (ValueAssignedToClassConstantRule's errors share the identifier and are not ported)

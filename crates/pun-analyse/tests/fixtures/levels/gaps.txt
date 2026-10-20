@@ -14,6 +14,7 @@
 3 Functions/ReturnTypeRuleTest::testBug3801
 3 Functions/ReturnTypeRuleTest::testBug7766
 3 Functions/ReturnTypeRuleTest::testBug3028
+3 Methods/ReturnTypeRuleTest::testBug6353
 3 Methods/ReturnTypeRuleTest::testBug4590
 3 Methods/ReturnTypeRuleTest::testTaggedUnions
 3 Methods/ReturnTypeRuleTest::testBug6358

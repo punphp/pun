@@ -1,0 +1,138 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "phpdoc_classes.php",
+   "line": 22,
+   "identifier": "class.notFound",
+   "message": "Function CovPhpDocClasses\\f() has invalid return type CovPhpDocClasses\\Ret.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 22,
+   "identifier": "return.missing",
+   "message": "Function CovPhpDocClasses\\f() should return CovPhpDocClasses\\Ret but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 22,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of function CovPhpDocClasses\\f() has invalid type CovPhpDocClasses\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 22,
+   "identifier": "parameter.trait",
+   "message": "Parameter $b of function CovPhpDocClasses\\f() has invalid type CovPhpDocClasses\\T.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 22,
+   "identifier": "class.notFound",
+   "message": "Parameter $c of function CovPhpDocClasses\\f() has invalid type CovPhpDocClasses\\Gone.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 22,
+   "identifier": "class.notFound",
+   "message": "Parameter $d of function CovPhpDocClasses\\f() has invalid type CovPhpDocClasses\\Out.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 22,
+   "identifier": "class.notFound",
+   "message": "Parameter $e of function CovPhpDocClasses\\f() has invalid type CovPhpDocClasses\\ThisOne.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 29,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of function CovPhpDocClasses\\both() has invalid type CovPhpDocClasses\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 29,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of function CovPhpDocClasses\\both() has invalid type CovPhpDocClasses\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 34,
+   "identifier": "class.nameCase",
+   "message": "Class CovPhpDocClasses\\Foo referenced with incorrect case: CovPhpDocClasses\\foo.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 39,
+   "identifier": "return.trait",
+   "message": "Function CovPhpDocClasses\\trait_return() has invalid return type CovPhpDocClasses\\T.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 39,
+   "identifier": "return.missing",
+   "message": "Function CovPhpDocClasses\\trait_return() should return CovPhpDocClasses\\T but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 47,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @template U for function CovPhpDocClasses\\bounded() has invalid bound type CovPhpDocClasses\\Bound.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 47,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of function CovPhpDocClasses\\bounded() has invalid type CovPhpDocClasses\\Bound.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 57,
+   "identifier": "class.notFound",
+   "message": "Method CovPhpDocClasses\\C::m() has invalid return type CovPhpDocClasses\\Ret.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 57,
+   "identifier": "return.missing",
+   "message": "Method CovPhpDocClasses\\C::m() should return CovPhpDocClasses\\Ret but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 57,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of method CovPhpDocClasses\\C::m() has invalid type CovPhpDocClasses\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 65,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of method CovPhpDocClasses\\P::m() has invalid type CovPhpDocClasses\\Inherited.",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_classes.php",
+   "line": 70,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of method CovPhpDocClasses\\Q::m() has invalid type CovPhpDocClasses\\Inherited.",
+   "tip": null
+  }
+ ]
+}

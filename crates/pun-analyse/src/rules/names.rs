@@ -338,20 +338,6 @@ pub fn typehints<'arena>(
     let parameter_message = format!("of {}", kind.named());
     let return_message = format!("{} has invalid return type", kind.subject());
     let anonymous = matches!(kind, FunctionKind::Anonymous);
-    let class = c
-        .class_scope()
-        .filter(|k| !k.name.as_bytes().starts_with(b"{anonymous-class:"))
-        .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned());
-    let function = || match kind {
-        FunctionKind::Anonymous => Some(Function::Anonymous),
-        FunctionKind::Function(name) => Some(Function::Named(name.to_string())),
-        FunctionKind::Method(_, method) => Some(Function::Method {
-            name: method.to_string(),
-            class: class.clone(),
-        }),
-        // ponytail: a hook's PhpMethodFromParserNodeReflection location is not built
-        FunctionKind::Hook(..) => None,
-    };
     for p in parameters.parameters.iter() {
         let Some(hint) = &p.hint else {
             continue;
@@ -382,7 +368,7 @@ pub fn typehints<'arena>(
             anonymous && matches!(hint, Hint::Identifier(_)),
         );
         let case = c.case_sensitivity;
-        let location = function().map(|function| Location::ParameterType {
+        let location = location_function(c, kind).map(|function| Location::ParameterType {
             parameter: name[1..].to_string(),
             function,
         });
@@ -413,7 +399,94 @@ pub fn typehints<'arena>(
         matches!(r.hint, Hint::Identifier(_)),
     );
     let case = c.case_sensitivity;
-    let location = function().map(Location::ReturnType);
+    let location = location_function(c, kind).map(Location::ReturnType);
+    class_names::check_at(c, &pairs, location.as_ref(), case);
+}
+
+/// `getReferencedClasses()`, without the `key-of` / `value-of` of a template (kept as a class of that name).
+fn classes_of(t: &pun_phpstan::types::Type) -> Vec<String> {
+    let mut out = super::generics::referenced_classes(t);
+    out.retain(|n| n != "key-of" && n != "value-of");
+    out
+}
+
+/// The function-like a ClassNameUsageLocation names.
+fn location_function(c: &Checker, kind: FunctionKind) -> Option<Function> {
+    match kind {
+        FunctionKind::Anonymous => Some(Function::Anonymous),
+        FunctionKind::Function(name) => Some(Function::Named(name.to_string())),
+        FunctionKind::Method(_, method) => Some(Function::Method {
+            name: method.to_string(),
+            class: c
+                .class_scope()
+                .filter(|k| !k.name.as_bytes().starts_with(b"{anonymous-class:"))
+                .map(|k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned()),
+        }),
+        // ponytail: a hook's PhpMethodFromParserNodeReflection location is not built
+        FunctionKind::Hook(..) => None,
+    }
+}
+
+/// The PHPDoc part of FunctionDefinitionCheck's class checks (`checkThisOnly` off, level 2): the classes of each
+/// parameter's PHPDoc, `@param-out` and `@param-closure-this` types and of the PHPDoc return type, for function or
+/// method `at` (`signature` reads its types).
+pub fn phpdoc_typehints(
+    c: &mut Checker,
+    kind: FunctionKind,
+    at: Span,
+    parameters: &FunctionLikeParameterList,
+    return_type: Option<&FunctionLikeReturnTypeHint>,
+    signature: impl FnOnce(&Checker) -> super::declared::Signature,
+) {
+    if c.level < 2 {
+        return;
+    }
+    let (params, ret) = super::declared::with_classes(c, || {
+        let s = signature(c);
+        let params: Vec<Vec<String>> = s
+            .params
+            .iter()
+            .zip(&s.phpdoc_params)
+            .map(|((_, _, out, closure_this), phpdoc)| {
+                [phpdoc.as_ref(), out.as_ref(), closure_this.as_ref()]
+                    .into_iter()
+                    .flatten()
+                    .flat_map(classes_of)
+                    .collect()
+            })
+            .collect();
+        (params, s.phpdoc_ret.as_ref().map(classes_of).unwrap_or_default())
+    });
+    let case = c.case_sensitivity;
+    for (p, classes) in parameters.parameters.iter().zip(params) {
+        let name = String::from_utf8_lossy(p.variable.name).into_owned();
+        for class in &classes {
+            let identifier = match known(c, class) {
+                None => "class.notFound",
+                Some(k) if k.is_trait() => "parameter.trait",
+                Some(_) => continue,
+            };
+            let message = format!("Parameter {name} of {} has invalid type {class}.", kind.named());
+            c.report(p.span(), identifier, message, None);
+        }
+        let pairs: Vec<Pair> = classes.into_iter().map(|class| Pair::node(class, p.span())).collect();
+        let location = location_function(c, kind).map(|function| Location::ParameterType {
+            parameter: name[1..].to_string(),
+            function,
+        });
+        class_names::check_at(c, &pairs, location.as_ref(), case);
+    }
+    let at = return_type.map_or(at, |r| r.hint.span());
+    for class in &ret {
+        let identifier = match known(c, class) {
+            None => "class.notFound",
+            Some(k) if k.is_trait() => "return.trait",
+            Some(_) => continue,
+        };
+        c.report(at, identifier, format!("{} has invalid return type {class}.", kind.subject()), None);
+    }
+    let pairs: Vec<Pair> = ret.into_iter().map(|class| Pair::node(class, at)).collect();
+    let location = location_function(c, kind).map(Location::ReturnType);
     class_names::check_at(c, &pairs, location.as_ref(), case);
 }
 

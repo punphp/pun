@@ -386,7 +386,10 @@ impl Doc {
                     closure_this.push((rank, (tag.clone(), name, node)));
                 }
             } else if let Some(rank) = order(&RETURN_TAGS, tag) {
-                if let Some((node, _)) = type_value(value) {
+                // `parseOptionalDescription($tokens, true)`: a description after the type starts after whitespace
+                if let Some((node, _)) = type_value(value)
+                    .filter(|(_, rest)| rest.is_empty() || value[..value.len() - rest.len()].ends_with(char::is_whitespace))
+                {
                     returns.push((rank, (tag.clone(), node)));
                 }
             } else if let Some(rank) = order(&VAR_TAGS, tag) {

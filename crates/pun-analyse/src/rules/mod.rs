@@ -1425,6 +1425,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
             f.return_type_hint.as_ref(),
         );
+        names::phpdoc_typehints(self, names::FunctionKind::Function(&name), f.span(), &f.parameter_list, f.return_type_hint.as_ref(), |c| declared::function(c, f));
         signatures::check(
             self,
             names::FunctionKind::Function(&name),
@@ -1567,6 +1568,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let class = self.display(class);
         let kind = names::FunctionKind::Method(&class, &method);
         names::typehints(self, kind, &m.parameter_list, m.return_type_hint.as_ref());
+        names::phpdoc_typehints(self, kind, m.span(), &m.parameter_list, m.return_type_hint.as_ref(), |c| {
+            let (context, _) = c.member_scope();
+            let declaring = missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
+            declared::method(c, m, declaring, context)
+        });
         signatures::check(
             self,
             kind,
