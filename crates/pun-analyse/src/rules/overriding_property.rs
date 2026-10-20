@@ -96,7 +96,7 @@ impl<'a> Checker<'a, '_> {
 
     /// The declared property `name` (with its `$`) of user class `class` (its own, a trait's or an ancestor's): the
     /// class PHP reports declaring it, the class-like whose code declares it, and the property.
-    fn declared_property(
+    pub(super) fn declared_property(
         &self,
         class: &'a ClassLikeMetadata,
         name: &[u8],
@@ -114,7 +114,7 @@ impl<'a> Checker<'a, '_> {
     }
 
     /// BetterReflection's `getHooks()` of the property `name` declared in `class`: its own, else its parent class's.
-    fn property_hooks(&self, class: &ClassLikeMetadata, own: (bool, bool), name: &[u8]) -> (bool, bool) {
+    pub(super) fn property_hooks(&self, class: &ClassLikeMetadata, own: (bool, bool), name: &[u8]) -> (bool, bool) {
         self.property_hooks_at(class, own, name, 0)
     }
 
@@ -247,7 +247,7 @@ impl<'a> Checker<'a, '_> {
 }
 
 /// The hooks a declared property has itself.
-fn hook_names(p: &PropertyMetadata) -> (bool, bool) {
+pub(super) fn hook_names(p: &PropertyMetadata) -> (bool, bool) {
     let has = |h: &[u8]| p.hooks.contains_key(&mago_word::word(h));
     (has(b"get"), has(b"set"))
 }

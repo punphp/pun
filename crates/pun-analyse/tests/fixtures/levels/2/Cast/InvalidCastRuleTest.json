@@ -1,0 +1,136 @@
+{
+    "test": "Cast/InvalidCastRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Cast/data/invalid-cast.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/invalid-cast.php",
+                    "line": 7,
+                    "identifier": "cast.string",
+                    "message": "Cannot cast stdClass to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/invalid-cast.php",
+                    "line": 8,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Test\\ClassWithToString not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Cast/data/invalid-cast.php",
+                    "line": 23,
+                    "identifier": "cast.int",
+                    "message": "Cannot cast stdClass to int.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/invalid-cast.php",
+                    "line": 24,
+                    "identifier": "cast.double",
+                    "message": "Cannot cast stdClass to float.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/invalid-cast.php",
+                    "line": 32,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type Test\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/invalid-cast.php",
+                    "line": 35,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Cast/data/invalid-cast.php",
+                    "line": 48,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5162",
+            "files": [
+                "Cast/data/bug-5162.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Cast/data/invalid-cast-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14136",
+            "files": [
+                "Cast/data/bug-14136.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCastObjectToString",
+            "files": [
+                "Cast/data/cast-object-to-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#0",
+            "files": [
+                "Cast/data/mixed-cast.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#1",
+            "files": [
+                "Cast/data/mixed-cast.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#2",
+            "files": [
+                "Cast/data/mixed-cast.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixed#3",
+            "files": [
+                "Cast/data/mixed-cast.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

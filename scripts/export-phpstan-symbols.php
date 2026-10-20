@@ -453,6 +453,55 @@ function describe_all(TypeStringResolver $resolver, array $strings): array
 }
 
 $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
+// php scripts/export-phpstan-symbols.php accepts: tests/fixtures/type-accepts.json, every ordered pair of the atoms as
+// [context, a, b, accepts(b, strict) result, accepts(b, non-strict) result, getRecommendedLevelByType(a, b)] (b null:
+// getRecommendedLevelByType(a) alone; b `strict-mixed`: RuleLevelHelper's StrictMixedType), and type-casts.json,
+// [context, a, toString, toNumber, toInteger, toFloat, toBitwiseNotType] each true when an ErrorType
+if (($argv[1] ?? '') === 'accepts') {
+    $resolver = container(80400)->getByType(TypeStringResolver::class);
+    $templates = probe_templates($resolver);
+    $pun = fn (string $s) => preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s);
+    $level = fn (VerbosityLevel $v) => $v->isTypeOnly() ? 'TypeOnly' : ($v->isValue() ? 'Value' : 'Precise');
+    $atoms = ['int', '1', 'int<1, 5>', 'float', '1.5', 'bool', 'true', 'string', "'a'", "'12'", 'non-empty-string', 'numeric-string',
+        'lowercase-string', 'uppercase-string', 'non-falsy-string', 'literal-string', 'decimal-int-string', 'class-string', 'null', 'resource', 'object', 'stdClass',
+        'Countable', 'Exception', 'Stringable', 'GMP', 'SimpleXMLElement', 'BcMath\\Number', 'CurlHandle', 'Traversable<int>', 'ArrayIterator<int, string>',
+        'Closure', 'Closure(int): void', 'callable', 'callable(int): void', 'array', 'array{}', 'array{a: int}', 'list<int>', 'non-empty-array<int>',
+        'iterable<int>', 'static', '$this', 'Random\\IntervalBoundary::ClosedOpen', 'object{a: int}', 'mixed', 'never', 'void', 'int|string', 'int|null',
+        '__benevolent<int|string>', 'Countable&Traversable', '(int is int ? 1 : 2)', 'T', 'U', 'V', '*NEVER*', 'class-string<Countable>',
+        'class-string<stdClass>', "'Countable'", "'Nope'", '__stringAndStringable', '__stringNotStringable', 'DateTimeInterface', 'DateTime|DateTimeImmutable',
+        'Throwable', 'Error|Exception', 'array<int>', 'callable&array', '(T&Countable)', 'array{a: lowercase-string, b: int}', "1|array{}",
+        'array{ArrayIterator<int, string>, ArrayIterator<int, int>}', 'array{a?: int}', 'array<int, int>'];
+    $sets = [[$atoms, 'ArrayIterator'], [['static', '$this', 'ArrayIterator', 'ArrayIterator<int, string>', 'Iterator', 'object', 'stdClass', 'Nope', 'Countable'], 'ArrayIterator'],
+        [['static', '$this', 'Nope'], 'Nope']];
+    $rows = [];
+    $casts = [];
+    $error = fn (Type $t) => $t instanceof PHPStan\Type\ErrorType;
+    foreach ($sets as $i => [$set, $ctx]) {
+        $scope = new NameScope(null, [], $ctx, null, $templates);
+        foreach ($set as $a) {
+            // `*NEVER*` is Pun's NeverType (`never` resolves to NonAcceptingNeverType)
+            $resolve = fn (string $t) => $t === '*NEVER*' ? new PHPStan\Type\NeverType() : $resolver->resolve($t, $scope);
+            $at = $resolve($a);
+            if ($i === 0) {
+                $casts[] = json_encode([$ctx, $pun($a), $error($at->toString()), $error($at->toNumber()), $error($at->toInteger()), $error($at->toFloat()), $error($at->toBitwiseNotType())], $flags);
+            }
+            foreach ([...$set, null, 'strict-mixed'] as $b) {
+                $bt = $b === null ? null : ($b === 'strict-mixed' ? new PHPStan\Type\StrictMixedType() : $resolve($b));
+                $rows[] = json_encode([$ctx, $pun($a), $b === null ? null : $pun($b),
+                    $bt === null ? null : $at->accepts($bt, true)->result->describe(),
+                    $bt === null ? null : $at->accepts($bt, false)->result->describe(),
+                    $level(VerbosityLevel::getRecommendedLevelByType($at, $bt))], $flags);
+            }
+        }
+    }
+    $sm = new PHPStan\Type\StrictMixedType();
+    $casts[] = json_encode([null, 'strict-mixed', $error($sm->toString()), $error($sm->toNumber()), $error($sm->toInteger()), $error($sm->toFloat()), $error($sm->toBitwiseNotType())], $flags);
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-accepts.json', "[\n".implode(",\n", $rows)."\n]\n");
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-casts.json', "[\n".implode(",\n", $casts)."\n]\n");
+    echo count($rows), " accepts pairs, ", count($casts), " casts\n";
+    exit;
+}
+
 if (($argv[1] ?? '') === 'probes') {
     $probes = array_map(fn ($s) => [null, $s], PROBES);
     foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'ArrayIterator::STD*LIST', 'ArrayIterator::*_PROP_*', 'ArrayIterator::*X*Y', 'ArrayIterator::S*P*T', 'ArrayIterator::*P*O*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {

@@ -1,0 +1,404 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "flow.php",
+   "line": 22,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\colonForeach() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 29,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\colonFor() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 46,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\dynamicBreak() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 59,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\nsFalse() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 71,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\otherConstant() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 121,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\nonLiteral() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 129,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\callbackExit() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 136,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\inMatch() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 145,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\gen() should return string but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 162,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\objectSwitch() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 170,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\stringSwitch() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "flow.php",
+   "line": 178,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypesFlow\\parenthesized() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 20,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\template() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 22,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\template() with return type void returns T but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 26,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\toFive() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 28,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\toFive() with return type void returns int<min, 5> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 32,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\oneToFive() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 34,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\oneToFive() with return type void returns int<1, 5> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 38,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\literal() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 40,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\literal() with return type void returns string but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 44,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\lower() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 46,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\lower() with return type void returns string but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 50,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\upper() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 52,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\upper() with return type void returns string but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 56,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\callableString() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 58,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\callableString() with return type void returns callable&string but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 63,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\enumFrom() with return type void returns CoverageTypes\\Suit but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 67,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\shape() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 69,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\shape() with return type void returns object{a: int, b?: string} but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 72,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\firstClass() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 74,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\firstClass() with return type void returns Closure but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 78,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\optionalKey() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 80,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\optionalKey() with return type void returns array<string, int|string> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 84,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\optionalElement() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 86,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\optionalElement() with return type void returns array<int, int|string> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 90,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\nonEmptyList() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 92,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\nonEmptyList() with return type void returns list<int> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 107,
+   "identifier": "smaller.invalid",
+   "message": "Comparison operation \"<\" between BcMath\\Number and 1.5 results in an error.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 110,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\deadCode() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 124,
+   "identifier": "echo.nonString",
+   "message": "Parameter #1 (T of array) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 129,
+   "identifier": "cast.string",
+   "message": "Cannot cast array to string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 129,
+   "identifier": "unaryOp.invalid",
+   "message": "Unary operation \"-\" on array results in an error.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 153,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: /(/",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 154,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: /(/",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 193,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypes\\templateMissing() should return T but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 193,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function CoverageTypes\\templateMissing() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 209,
+   "identifier": "return.type",
+   "message": "Get hook for property CoverageTypes\\Hooked::$other should return int but returns string.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 231,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\closureVariable() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 236,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\closureVariable() with return type void returns Closure but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 245,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\constantKey() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 247,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\constantKey() with return type void returns array<string, int> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 250,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\knownList() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 254,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\knownList() with return type void returns array<int, int> but should not return anything.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 264,
+   "identifier": "return.missing",
+   "message": "Function CoverageTypes\\colonIfMissing() should return int but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 275,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function CoverageTypes\\genTemplate() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 281,
+   "identifier": "void.pure",
+   "message": "Function CoverageTypes\\growingList() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "types.php",
+   "line": 287,
+   "identifier": "return.void",
+   "message": "Function CoverageTypes\\growingList() with return type void returns list<int> but should not return anything.",
+   "tip": null
+  }
+ ]
+}

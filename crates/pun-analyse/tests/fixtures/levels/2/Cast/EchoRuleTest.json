@@ -1,0 +1,73 @@
+{
+    "test": "Cast/EchoRuleTest",
+    "cases": [
+        {
+            "method": "testEchoRule",
+            "files": [
+                "Cast/data/echo.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/echo.php",
+                    "line": 7,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/echo.php",
+                    "line": 9,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/echo.php",
+                    "line": 11,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{}) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/echo.php",
+                    "line": 11,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #2 (stdClass) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/echo.php",
+                    "line": 13,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (Closure(): void) of echo cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/echo.php",
+                    "line": 24,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type array.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/echo.php",
+                    "line": 29,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array{}) of echo cannot be converted to string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Cast/data/echo-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

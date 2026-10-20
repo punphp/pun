@@ -1,0 +1,229 @@
+//! The `analyse/types/*` rules: PHPStan's type-checking rules of levels 0 to 9, and what they share (statement
+//! results in [`flow`]).
+
+mod casts;
+mod comparison;
+mod convert;
+pub mod flow;
+mod level;
+mod inc_dec;
+mod missing_return;
+mod param_default;
+mod read_only_write;
+mod regex;
+mod returns;
+mod void_match;
+
+use std::collections::HashMap;
+
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
+
+pub(super) use casts::{echo, interpolated, print, unary};
+pub(super) use comparison::binary;
+pub(super) use param_default::{
+    anonymous as anonymous_defaults, function as function_defaults, method as method_defaults,
+};
+pub(super) use inc_dec::{postfix, prefix};
+pub(super) use missing_return::{closure, function, get_hooks, method};
+pub(super) use read_only_write::assignment;
+pub(super) use regex::function_call;
+pub(super) use returns::{
+    arrow_function as arrow_function_returns, closure as closure_returns, function as function_returns,
+    hooks as hook_returns, method as method_returns,
+};
+pub(super) use void_match::void_match;
+
+/// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
+pub const IDENTIFIERS: &[&[&str]] = &[casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS];
+
+/// The expressions whose type the statement results read, in the function-likes whose missing return could be
+/// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
+/// ever make a body terminate: a `never` call, a condition always true, a non-empty array iterated).
+pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8) -> Vec<Span> {
+    let mut w = Wanted {
+        contents,
+        level,
+        spans: Vec::new(),
+    };
+    w.walk_program(program, &mut ());
+    w.spans
+}
+
+struct Wanted<'c> {
+    contents: &'c [u8],
+    level: u8,
+    spans: Vec<Span>,
+}
+
+impl Wanted<'_> {
+    fn function_like(&mut self, span: Span, ret: Option<&FunctionLikeReturnTypeHint>, b: &Block) {
+        let stmts = b.statements.as_slice();
+        let returns = match ret {
+            Some(r) => !matches!(r.hint, Hint::Void(_)),
+            None => super::doc_before(self.contents, span.start.offset as usize)
+                .is_some_and(|d| d.windows(7).any(|w| w == b"return ")),
+        };
+        if !returns {
+            return;
+        }
+        let stmts = flow::list(stmts);
+        let empty = HashMap::new();
+        let results = flow::Results {
+            types: &empty,
+            contents: self.contents,
+            codebase: None,
+        };
+        let (_, ends) = results.execution_ends(&stmts, span, Some(b.right_brace));
+        if ends.iter().all(|e| e.flow.always) {
+            return;
+        }
+        let mut c = Collect(Vec::new());
+        for s in &stmts {
+            c.walk_statement(s, &mut ());
+        }
+        self.spans.extend(c.0);
+    }
+}
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
+    fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        regex::typed(call, &mut self.spans);
+    }
+    fn walk_in_echo(&mut self, e: &'ast Echo<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            self.spans.extend(e.values.iter().map(|v| v.span()));
+        }
+    }
+    fn walk_in_print_construct(&mut self, p: &'ast PrintConstruct<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            self.spans.push(p.value.span());
+        }
+    }
+    fn walk_in_interpolated_string(&mut self, s: &'ast InterpolatedString<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            self.spans.extend(s.parts.iter().filter_map(casts::part).map(|e| e.span()));
+        }
+    }
+    fn walk_in_document_string(&mut self, s: &'ast DocumentString<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            self.spans.extend(s.parts.iter().filter_map(casts::part).map(|e| e.span()));
+        }
+    }
+    fn walk_in_function_like_parameter_list(&mut self, l: &'ast FunctionLikeParameterList<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            param_default::typed(l, &mut self.spans);
+        }
+    }
+    fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        if self.level >= 3 && f.return_type_hint.is_some() {
+            self.spans.push(f.expression.span());
+        }
+    }
+    fn walk_in_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            void_match::typed(m, &mut self.spans);
+        }
+    }
+    fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
+        if self.level >= 2 && comparison::operator(&b.operator).is_some() {
+            self.spans.extend([b.lhs.span(), b.rhs.span()]);
+        }
+    }
+    fn walk_in_unary_prefix(&mut self, u: &'ast UnaryPrefix<'arena>, _: &mut ()) {
+        if self.level >= 2 && casts::operation(&u.operator).is_some() {
+            self.spans.push(u.operand.span());
+        }
+    }
+    fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+        if self.level >= 3 {
+            returns::typed(&f.body, &mut self.spans);
+        }
+        self.function_like(f.span(), f.return_type_hint.as_ref(), &f.body);
+    }
+    fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+        if let MethodBody::Concrete(b) = &m.body {
+            if self.level >= 3 {
+                returns::typed(b, &mut self.spans);
+            }
+            self.function_like(m.span(), m.return_type_hint.as_ref(), b);
+        }
+    }
+    fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        if self.level >= 3 && f.return_type_hint.is_some() {
+            returns::typed(&f.body, &mut self.spans);
+        }
+        if f.return_type_hint.is_some() {
+            self.function_like(f.span(), f.return_type_hint.as_ref(), &f.body);
+        }
+    }
+    fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+        if self.level >= 3 {
+            match &h.body {
+                PropertyHookBody::Concrete(PropertyHookConcreteBody::Block(b)) => returns::typed(b, &mut self.spans),
+                PropertyHookBody::Concrete(PropertyHookConcreteBody::Expression(e)) => {
+                    self.spans.push(e.expression.span());
+                }
+                PropertyHookBody::Abstract(_) => {}
+            }
+        }
+        if let PropertyHookBody::Concrete(PropertyHookConcreteBody::Block(b)) = &h.body
+            && h.name.value.eq_ignore_ascii_case(b"get")
+        {
+            let stmts = flow::list(b.statements.as_slice());
+            let empty = HashMap::new();
+            let results = flow::Results {
+                types: &empty,
+                contents: self.contents,
+                codebase: None,
+            };
+            let (_, ends) = results.execution_ends(&stmts, h.span(), Some(b.right_brace));
+            if ends.iter().all(|e| e.flow.always) {
+                return;
+            }
+            let mut c = Collect(Vec::new());
+            for s in &stmts {
+                c.walk_statement(s, &mut ());
+            }
+            self.spans.extend(c.0);
+        }
+    }
+}
+
+/// Calls and matches (a `never` type ends the execution), conditions and iterated expressions.
+struct Collect(Vec<Span>);
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Collect {
+    fn walk_in_call(&mut self, c: &'ast Call<'arena>, _: &mut ()) {
+        self.0.push(c.span());
+    }
+    fn walk_in_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {
+        self.0.push(m.span());
+    }
+    fn walk_in_if(&mut self, i: &'ast If<'arena>, _: &mut ()) {
+        self.0.push(i.condition.span());
+        match &i.body {
+            IfBody::Statement(b) => self.0.extend(b.else_if_clauses.iter().map(|e| e.condition.span())),
+            IfBody::ColonDelimited(b) => self.0.extend(b.else_if_clauses.iter().map(|e| e.condition.span())),
+        }
+    }
+    fn walk_in_while(&mut self, w: &'ast While<'arena>, _: &mut ()) {
+        self.0.push(w.condition.span());
+    }
+    fn walk_in_do_while(&mut self, d: &'ast DoWhile<'arena>, _: &mut ()) {
+        self.0.push(d.condition.span());
+    }
+    fn walk_in_for(&mut self, f: &'ast For<'arena>, _: &mut ()) {
+        self.0.extend(f.conditions.iter().last().map(|c| c.span()));
+    }
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+        self.0.push(f.expression.span());
+    }
+    fn walk_in_switch(&mut self, s: &'ast Switch<'arena>, _: &mut ()) {
+        self.0.push(s.expression.span());
+    }
+    fn walk_in_switch_expression_case(&mut self, c: &'ast SwitchExpressionCase<'arena>, _: &mut ()) {
+        self.0.push(c.expression.span());
+    }
+}

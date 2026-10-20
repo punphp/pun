@@ -38,3 +38,6 @@ Classes/DuplicateTraitDeclarationRuleTest::testBug14250
 Properties/AccessStaticPropertiesInAssignRuleTest::testRuleExpressionNames
 # an anonymous class's getName() hashes its path relative to the working directory, which the export ran from elsewhere
 Classes/ExistingClassInClassExtendsRuleTest::testEnums
+# return.missing: a PHPStan API interface method's inherited `@return list<CallableParametersAcceptor>` resolves against
+# data/phpstan-api.php without its namespace's `use` imports (declared.rs scope of the API stub)
+Api/ApiClassImplementsRuleTest::testRuleOutOfPhpStan
