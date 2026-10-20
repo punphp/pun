@@ -145,7 +145,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug5536
 9 Methods/CallStaticMethodsRuleTest::testBug6249
 9 Methods/CallStaticMethodsRuleTest::testBug7489
-9 Methods/CallStaticMethodsRuleTest::testStaticCallsToInstanceMethods
 # an-types2: callbacks: a closure's parameter types are not narrowed by the callable it is passed to (ClosureTypeResolver),
 # Mago's closure return types differ (`<=>` is -1|0|1), accepts-reason tips, curl_setopt()'s option types, conditional
 # parameter types and parameter default values in template inference
@@ -263,14 +262,12 @@
 5 Functions/CallToFunctionParametersRuleTest::testBenevolentSuperglobalKeys
 5 Functions/CallToFunctionParametersRuleTest::testBug12676
 5 Functions/CallToFunctionParametersRuleTest::testBug12847
-5 Functions/CallToFunctionParametersRuleTest::testBug2940
 5 Functions/CallToFunctionParametersRuleTest::testBug4371
 5 Functions/CallToFunctionParametersRuleTest::testBug5986
 5 Functions/CallToFunctionParametersRuleTest::testBug7823
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOpt
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptInvalidShare
-5 Functions/CallToFunctionParametersRuleTest::testGenericFunction
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 5 Functions/CallToFunctionParametersRuleTest::testProcOpen
 5 Functions/CallUserFuncRuleTest::testRule
@@ -315,7 +312,6 @@
 5 Methods/CallStaticMethodsRuleTest::testBug3641
 5 Methods/CallStaticMethodsRuleTest::testBug4550
 5 Methods/CallStaticMethodsRuleTest::testBug5259
-5 Methods/CallStaticMethodsRuleTest::testBug5781
 5 Methods/CallStaticMethodsRuleTest::testBug8296
 5 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 5 Methods/CallStaticMethodsRuleTest::testConditionalParam
@@ -344,7 +340,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug14312
 9 Functions/CallToFunctionParametersRuleTest::testBug14312b
 9 Functions/CallToFunctionParametersRuleTest::testBug2911
-9 Functions/CallToFunctionParametersRuleTest::testBug2940
 9 Functions/CallToFunctionParametersRuleTest::testBug4371
 9 Functions/CallToFunctionParametersRuleTest::testBug5872
 9 Functions/CallToFunctionParametersRuleTest::testBug5986
@@ -429,7 +424,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug3641
 9 Methods/CallStaticMethodsRuleTest::testBug4550
 9 Methods/CallStaticMethodsRuleTest::testBug5259
-9 Methods/CallStaticMethodsRuleTest::testBug5781
 9 Methods/CallStaticMethodsRuleTest::testBug8296
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 9 Methods/CallStaticMethodsRuleTest::testConditionalParam
