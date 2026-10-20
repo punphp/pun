@@ -9,14 +9,14 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for parallel work (AGENTS.md "How work runs"). All earlier
 agents and helper branches are stopped and merged; there is nothing in flight.
 
-- **Counts** (mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 207 of 378.
+- **Counts** (mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 244 of 378.
 - **Rule docs:** steps 1–5 built locally: all 1,249 rule pages, 64 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   Docs pushes are blocked by this runner's GitHub authentication; no docs commit has been published.
 - **Green on main:** `cargo test -p punphp-analyse` (levels included; the generics wiring from salvage/handoff is applied).
 - **Salvage ref on origin:** `salvage/stash-0b0ef5b` (Blade Prettier probe; §3 "perf format" row). Delete it once that row lands.
 - **Paused (Pushpak, 2026-10-19): all lint work and `pun check`; PHPStan compatibility only.** Parked branches with their work: `wt-lint-rules2` (lint batch 2, WIP), `wt-lint-types` (types vs Rector, tested, unmerged), `wt-check` (one-pass check, WIP).
-- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt (999 core identifiers scraped from phpstan.org/error-identifiers, without the doctrine/phpunit/nette/symfony/phpstanApi groups); Pun emits about 334 (2026-10-19).
+- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt (999 core identifiers scraped from phpstan.org/error-identifiers, without the doctrine/phpunit/nette/symfony/phpstanApi groups); Pun emits 628 (2026-10-20).
 - **Priorities, in order:** (1) done; (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) coverage back to 100% in pun-lint (pun-analyse and punphp are at 100%); (4) analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
