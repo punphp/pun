@@ -1,0 +1,1151 @@
+{
+    "test": "Classes/ImpossibleInstanceOfRuleTest",
+    "cases": [
+        {
+            "method": "testInstanceof",
+            "files": [
+                "Classes/data/impossible-instanceof.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 59,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Lorem and ImpossibleInstanceOf\\Lorem will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 65,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Ipsum and ImpossibleInstanceOf\\Lorem will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 68,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Ipsum and ImpossibleInstanceOf\\Ipsum will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 71,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Dolor and ImpossibleInstanceOf\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 74,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\FooImpl and ImpossibleInstanceOf\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 77,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\BarChild and ImpossibleInstanceOf\\Bar will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 82,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 88,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 94,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between string and ImpossibleInstanceOf\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 98,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between string and 'str' will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 107,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Test and ImpossibleInstanceOf\\Test will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 115,
+                    "identifier": "foreach.emptyArray",
+                    "message": "Empty array passed to foreach.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 119,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Test|null and ImpossibleInstanceOf\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 124,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Test and ImpossibleInstanceOf\\Test will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 133,
+                    "identifier": "function.notFound",
+                    "message": "Function fetch not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 137,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Test|null and ImpossibleInstanceOf\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 142,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Test and ImpossibleInstanceOf\\Test will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 155,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Test|null and ImpossibleInstanceOf\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 160,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Test and ImpossibleInstanceOf\\Test will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 204,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between callable and ImpossibleInstanceOf\\FinalClassWithoutInvoke will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 226,
+                    "identifier": "booleanOr.alwaysTrue",
+                    "message": "Result of || is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 226,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Dolor and ImpossibleInstanceOf\\Dolor will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 228,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ImpossibleInstanceOf\\Lorem will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 232,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 232,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Bar&ImpossibleInstanceOf\\Foo and ImpossibleInstanceOf\\Bar will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 232,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Bar&ImpossibleInstanceOf\\Foo and ImpossibleInstanceOf\\Foo will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 234,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ImpossibleInstanceOf\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 238,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Bar&ImpossibleInstanceOf\\Foo and ImpossibleInstanceOf\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 240,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between *NEVER* and ImpossibleInstanceOf\\Bar will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 303,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between object and Exception will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 307,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between object and InvalidArgumentException will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 318,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Bar and ImpossibleInstanceOf\\BarChild will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 322,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Bar and ImpossibleInstanceOf\\BarGrandChild will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 351,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $subject",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 353,
+                    "identifier": "instanceof.invalidExprType",
+                    "message": "Instanceof between mixed and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 362,
+                    "identifier": "instanceof.invalidExprType",
+                    "message": "Instanceof between mixed and ImpossibleInstanceOf\\InvalidTypeTest|int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 388,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between ImpossibleInstanceOf\\Foo and ImpossibleInstanceOf\\Foo will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 418,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between class-string<DateTimeInterface> and DateTimeInterface will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 419,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between class-string<DateTimeInterface> and class-string<DateTimeInterface> will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 432,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between class-string<DateTimeInterface> and 'DateTimeInterface' will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof.php",
+                    "line": 433,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeInterface and 'DateTimeInterface' will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotReportTypesFromPhpDocs",
+            "files": [
+                "Classes/data/impossible-instanceof-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 12,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 15,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between stdClass and Exception will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 27,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeImmutable and DateTimeInterface will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 30,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between DateTimeImmutable and ImpossibleInstanceofNotPhpDoc\\SomeFinalClass will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 33,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeImmutable and DateTimeImmutable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between DateTimeImmutable and DateTime will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportTypesFromPhpDocs",
+            "files": [
+                "Classes/data/impossible-instanceof-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 12,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 15,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between stdClass and Exception will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 27,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeImmutable and DateTimeInterface will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 30,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between DateTimeImmutable and ImpossibleInstanceofNotPhpDoc\\SomeFinalClass will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 33,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between DateTimeImmutable and DateTimeImmutable will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-not-phpdoc.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between DateTimeImmutable and DateTime will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3096",
+            "files": [
+                "Classes/data/bug-3096.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6213",
+            "files": [
+                "Classes/data/bug-6213.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5333",
+            "files": [
+                "Classes/data/bug-5333.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-5333.php",
+                    "line": 25,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug5333\\Route and Bug5333\\Route will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/bug-5333.php",
+                    "line": 113,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug5333\\FinalRoute and Bug5333\\FinalRoute will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8042",
+            "files": [
+                "Classes/data/bug-8042.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-8042.php",
+                    "line": 18,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug8042\\B and Bug8042\\B will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Classes/data/bug-8042.php",
+                    "line": 26,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug8042\\B and Bug8042\\B will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7721",
+            "files": [
+                "Classes/data/bug-7721.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnreachableIfBranches",
+            "files": [
+                "Comparison/data/unreachable-if-branches.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/unreachable-if-branches.php",
+                    "line": 5,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches.php",
+                    "line": 13,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches.php",
+                    "line": 23,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches.php",
+                    "line": 37,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIfBranchesDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/unreachable-if-branches-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 26,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 42,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 52,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 62,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIfBranchesReportPhpDoc",
+            "files": [
+                "Comparison/data/unreachable-if-branches-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 26,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 42,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 52,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Comparison/data/unreachable-if-branches-not-phpdoc.php",
+                    "line": 62,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableIfBranchesNotPhpDoc\\Foo and UnreachableIfBranchesNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnreachableTernaryElse",
+            "files": [
+                "Comparison/data/unreachable-ternary-else-branch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch.php",
+                    "line": 5,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch.php",
+                    "line": 6,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch.php",
+                    "line": 6,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch.php",
+                    "line": 8,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch.php",
+                    "line": 9,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between stdClass and stdClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch.php",
+                    "line": 9,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTernaryElseDoNotReportPhpDoc",
+            "files": [
+                "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 19,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 19,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTernaryElseReportPhpDoc",
+            "files": [
+                "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 16,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 17,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 19,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 19,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between UnreachableTernaryElseBranchNotPhpDoc\\Foo and UnreachableTernaryElseBranchNotPhpDoc\\Foo will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Comparison/data/unreachable-ternary-else-branch-not-phpdoc.php",
+                    "line": 20,
+                    "identifier": "ternary.resultUnused",
+                    "message": "Unused result of ternary operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4689",
+            "files": [
+                "Classes/data/bug-4689.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-4689.php",
+                    "line": 18,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug4689\\KeywordList and Bug4689\\KeywordList will always evaluate to true.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#0",
+            "files": [
+                "Classes/data/impossible-instanceof-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/impossible-instanceof-report-always-true-last-condition.php",
+                    "line": 21,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Exception and Exception will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-report-always-true-last-condition.php",
+                    "line": 38,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportAlwaysTrueInLastCondition#1",
+            "files": [
+                "Classes/data/impossible-instanceof-report-always-true-last-condition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/impossible-instanceof-report-always-true-last-condition.php",
+                    "line": 21,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Exception and Exception will always evaluate to true.",
+                    "tip": "Remove remaining cases below this one and this error will disappear too."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-report-always-true-last-condition.php",
+                    "line": 38,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3632",
+            "files": [
+                "Classes/data/bug-3632.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-3632.php",
+                    "line": 24,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return 'A has been added'|'A has been removed' but returns null.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-3632.php",
+                    "line": 29,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return 'A has been added'|'A has been removed' but returns null.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-3632.php",
+                    "line": 32,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between null and Bug3632\\NiceClass will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/bug-3632.php",
+                    "line": 36,
+                    "identifier": "booleanAnd.alwaysTrue",
+                    "message": "Result of && is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-3632.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between null and Bug3632\\NiceClass will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-3632.php",
+                    "line": 36,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug3632\\NiceClass and Bug3632\\NiceClass will always evaluate to true.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-3632.php",
+                    "line": 40,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10036",
+            "files": [
+                "Classes/data/bug-10036.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-10036.php",
+                    "line": 11,
+                    "identifier": "instanceof.invalidExprType",
+                    "message": "Instanceof between stdClass and string|null results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-10036.php",
+                    "line": 19,
+                    "identifier": "instanceof.invalidExprType",
+                    "message": "Instanceof between stdClass and string|null results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-10036.php",
+                    "line": 39,
+                    "identifier": "instanceof.invalidExprType",
+                    "message": "Instanceof between stdClass and array results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10353",
+            "files": [
+                "Classes/data/bug-10353.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12267",
+            "files": [
+                "Classes/data/bug-12267.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-12267.php (in context of class Bug12267b\\SubmitA11yAuditPhaseForm)",
+                    "line": 35,
+                    "identifier": "deadCode.unreachable",
+                    "message": "Unreachable statement - code above always terminates.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNewIsAlwaysFinalClass",
+            "files": [
+                "Classes/data/impossible-instanceof-new-is-always-final.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/impossible-instanceof-new-is-always-final.php",
+                    "line": 17,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar and ImpossibleInstanceofNewIsAlwaysFinal\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-new-is-always-final.php",
+                    "line": 33,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar and ImpossibleInstanceofNewIsAlwaysFinal\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-new-is-always-final.php",
+                    "line": 43,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar and ImpossibleInstanceofNewIsAlwaysFinal\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-new-is-always-final.php",
+                    "line": 53,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar and ImpossibleInstanceofNewIsAlwaysFinal\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-new-is-always-final.php",
+                    "line": 63,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar and ImpossibleInstanceofNewIsAlwaysFinal\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-new-is-always-final.php",
+                    "line": 73,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar|null and ImpossibleInstanceofNewIsAlwaysFinal\\Foo will always evaluate to false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-new-is-always-final.php",
+                    "line": 88,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofNewIsAlwaysFinal\\Bar|null and ImpossibleInstanceofNewIsAlwaysFinal\\Baz will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13469",
+            "files": [
+                "Classes/data/bug-13469.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-13469.php",
+                    "line": 23,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between Bug13469\\Foo and Stringable will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13975#0",
+            "files": [
+                "Classes/data/bug-13975-a.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13975#1",
+            "files": [
+                "Classes/data/bug-13975-b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPossiblyImpureTip",
+            "files": [
+                "Classes/data/possibly-impure-instanceof-tip.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/possibly-impure-instanceof-tip.php",
+                    "line": 41,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between PossiblyImpureInstanceofTip\\Cat and PossiblyImpureInstanceofTip\\Cat will always evaluate to true.",
+                    "tip": "If PossiblyImpureInstanceofTip\\Holder::maybeImpureMethod() is impure, add @phpstan-impure PHPDoc tag above its declaration. Learn more: https://phpstan.org/blog/remembering-and-forgetting-returned-values"
+                },
+                {
+                    "file": "Classes/data/possibly-impure-instanceof-tip.php",
+                    "line": 50,
+                    "identifier": "method.resultUnused",
+                    "message": "Call to method PossiblyImpureInstanceofTip\\Holder::pureMethod() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/possibly-impure-instanceof-tip.php",
+                    "line": 53,
+                    "identifier": "instanceof.alwaysTrue",
+                    "message": "Instanceof between PossiblyImpureInstanceofTip\\Cat and PossiblyImpureInstanceofTip\\Cat will always evaluate to true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testInTrait",
+            "files": [
+                "Classes/data/impossible-instanceof-in-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/impossible-instanceof-in-trait.php",
+                    "line": 35,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @use has invalid value (FooTrait): Unexpected token \"*/\", expected '<' at offset 18 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-in-trait.php",
+                    "line": 46,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @use has invalid value (FooTrait): Unexpected token \"*/\", expected '<' at offset 18 on line 1",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-in-trait.php (in context of class ImpossibleInstanceofInTrait\\Foo)",
+                    "line": 25,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofInTrait\\Dog and stdClass will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                },
+                {
+                    "file": "Classes/data/impossible-instanceof-in-trait.php (in context of class ImpossibleInstanceofInTrait\\FooAnother)",
+                    "line": 25,
+                    "identifier": "instanceof.alwaysFalse",
+                    "message": "Instanceof between ImpossibleInstanceofInTrait\\Cat and stdClass will always evaluate to false.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

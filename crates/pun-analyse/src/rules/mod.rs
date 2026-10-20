@@ -664,6 +664,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "match.alwaysFalse",
     "match.alwaysTrue",
     "match.unhandled",
+    "instanceof.invalidExprType",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
