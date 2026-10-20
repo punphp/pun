@@ -1,0 +1,24 @@
+---
+title: Why three commands
+description: Why Pun splits formatting, linting, and analysis into separate commands, and why pun check runs analysis last.
+---
+
+Today a PHP project usually runs one tool per job: PHP-CS-Fixer or Pint for style, Rector for refactoring, and PHPStan for types. Each of those tools also does part of the others' jobs, so the same idea can live in three places with three behaviours. Pun is a new tool, so it starts from the jobs instead of the tools. Each command does one job and makes one promise, and [`pun check`](/docs/commands/check) runs them together.
+
+## pun format
+
+`pun format` makes only safe changes: layout, casing, and spelling. It never changes what the code does, so it is safe to run on save.
+
+PHP-CS-Fixer also has risky rules that do change behaviour. Its `strict_comparison` rule rewrites `==` to `===`, and `"1" == 1` is `true` while `"1" === 1` is `false`. In Pun those rules are lint rules, such as [`types/no-loose-comparison`](/docs/rules/lint/types/no-loose-comparison).
+
+## pun lint
+
+Rector is mostly an upgrade tool, but much of what it does overlaps with linting: changing code to follow a set of rules. `pun lint` covers both. Its rules report a problem in one file and many can fix it with `--fix`. Upgrade work, such as moving to newer PHP syntax, comes as lint sets like [`modernize`](/docs/rules/sets/modernize).
+
+## pun analyse
+
+`pun analyse` is the full analyser, like PHPStan. It checks types and how code behaves across files, then reports what it finds. Each finding carries an identifier such as `argument.type`, the same way PHPStan's [error identifiers](https://phpstan.org/error-identifiers) do. It never edits your files.
+
+## Why pun check runs analyse last
+
+Some lint fixes resolve problems that analysis would report. `pun check --fix` applies lint fixes first, formats the result, and then analyses the final code, so it reports only what is left.
