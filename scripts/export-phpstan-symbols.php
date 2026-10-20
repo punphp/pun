@@ -211,6 +211,12 @@ function dump(int $phpVersion, array &$typeStrings): array
             'constants' => [],
             'methods' => [],
         ];
+        // the templates' variance, when not invariant (TemplateTypeVariance::describe())
+        foreach ($class->getTemplateTypeMap()->getTypes() as $name => $t) {
+            if ($t instanceof PHPStan\Type\Generic\TemplateType && !$t->getVariance()->invariant()) {
+                $entry['variances'][$name] = $t->getVariance()->describe();
+            }
+        }
         // getIterableKeyType() / getIterableValueType() over the class's own templates (for foreach and iterable<>)
         if ($class->implementsInterface(Traversable::class) || $class->getName() === Traversable::class) {
             $own = array_values($class->getTemplateTypeMap()->getTypes());

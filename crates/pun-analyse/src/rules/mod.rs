@@ -61,6 +61,7 @@ mod conditional_return;
 mod assert_tags;
 mod phpdoc_types;
 mod var_names;
+mod variance;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -104,6 +105,7 @@ pub fn reports(identifier: &str) -> bool {
         || assert_tags::IDENTIFIERS.contains(&identifier)
         || phpdoc_types::IDENTIFIERS.contains(&identifier)
         || var_names::IDENTIFIERS.contains(&identifier)
+        || variance::IDENTIFIERS.contains(&identifier)
 }
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -1407,6 +1409,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::function_defaults(self, f);
         types::function_returns(self, f);
         generics::function(self, f);
+        variance::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
         self.push_frame(FrameKind::Named);
         self.frames.last_mut().expect("pushed").defined = Some(var_names::defined(self, var_names::params(&f.parameter_list), &f.body));
@@ -1522,6 +1525,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::method_defaults(self, m);
         types::method_returns(self, m);
         generics::method(self, m, &method);
+        variance::method(self, m, &method);
         declarations::promoted(
             self,
             m.span(),
@@ -1536,6 +1540,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             || m.name.value.eq_ignore_ascii_case(b"__construct")
         {
             properties::promoted(self, &m.parameter_list);
+            variance::promoted(self, m);
             for p in m
                 .parameter_list
                 .parameters
