@@ -822,6 +822,37 @@ fn templates(
     }
 }
 
+/// FunctionDefinitionCheck's classes of the PHPDoc parameter and return types once `checkThisOnly` is off (level 2;
+/// the native ones are names.rs's).
+pub fn phpdoc_classes(
+    c: &mut Checker,
+    kind: FunctionKind,
+    at: Span,
+    parameters: &FunctionLikeParameterList,
+    return_type: Option<&FunctionLikeReturnTypeHint>,
+    types: &super::declared::PhpDocTypes,
+) {
+    let (of, subject) = (kind.named(), kind.subject());
+    let report = |c: &mut Checker, at: Span, types: &[Type], trait_id: &str, message: &dyn Fn(&str) -> String| {
+        // (no class name has a `-`: a keyword type the resolver leaves, such as an unresolved `value-of`)
+        for class in types.iter().flat_map(super::generics::referenced_classes).filter(|n| !n.contains('-')) {
+            let identifier = match known(c, &class) {
+                None => "class.notFound",
+                Some(Known::User(k)) if k.kind == mago_codex::symbol::SymbolKind::Trait => trait_id,
+                Some(_) => continue,
+            };
+            c.report(at, identifier, message(&class), None);
+        }
+    };
+    for p in parameters.parameters.iter() {
+        let name = String::from_utf8_lossy(&p.variable.name[1..]).into_owned();
+        let types = types.params.get(&name).map_or(&[][..], Vec::as_slice);
+        report(c, p.span(), types, "parameter.trait", &|class| format!("Parameter ${name} of {of} has invalid type {class}."));
+    }
+    let at = return_type.map_or(at, |r| r.hint.span());
+    report(c, at, types.ret.as_slice(), "return.trait", &|class| format!("{subject} has invalid return type {class}."));
+}
+
 /// checkClassMethod()'s `@phpstan-self-out` classes.
 fn self_out(c: &mut Checker, at: Span, subject: &str, doc: &Doc) {
     let Some(node) = &doc.self_out else {

@@ -1680,9 +1680,68 @@ impl ConstArray {
     }
 
     /// `isCallable()`: only a `[class-string|object, method]` shape (its missing slots possibly in the unsealed
-    /// extras) can be. ponytail: such a shape answers maybe, not yes/no from the class's methods; needs method
-    /// reflection (M2.3).
+    /// extras) can be; a sealed one answers from the class's methods (`doFindTypeAndMethodNames()`).
+    // ponytail: an unsealed shape answers maybe; `supportsCallableInstanceMethods()` (PHP < 8) is not modelled
     fn is_callable(&self) -> Tri {
+        if self.unsealed.is_none() || !self.is_unsealed().yes() {
+            if let Some(t) = self.callable_methods() {
+                return t;
+            }
+        }
+        self.callable_shape()
+    }
+
+    /// The sealed `[class, methods]` shape's certainty; `None` when its class or methods are not constant.
+    /// `[class, 'method']`: the class (and whether it is a class-string) and the constant method names.
+    fn callable_parts(&self) -> Option<(&str, bool, Vec<&str>)> {
+        if self.keys != [Type::ConstInt(0), Type::ConstInt(1)] {
+            return None;
+        }
+        let methods: Vec<&str> = match &self.values[1] {
+            Type::ConstString(m) => vec![m.as_str()],
+            Type::Union(ts) => ts.iter().map(|t| if let Type::ConstString(m) = t { Some(m.as_str()) } else { None }).collect::<Option<_>>()?,
+            _ => return None,
+        };
+        match &self.values[0] {
+            Type::ConstString(n) => Some((n, true, methods)),
+            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => Some((n, false, methods)),
+            _ => None,
+        }
+    }
+
+    fn callable_methods(&self) -> Option<Tri> {
+        let (class, string, methods) = self.callable_parts()?;
+        let class = symbols::lookup(class)?;
+        // ponytail: PHP 8 (`supportsCallableInstanceMethods()` is false): a class-string's instance method is no callable
+        let instance = |m: &str| {
+            std::iter::once(class.name.as_str())
+                .chain(class.ancestors.iter().map(String::as_str))
+                .find_map(|n| symbols::lookup(n)?.methods.get(m).map(|f| !f.is_static))
+                .unwrap_or(false)
+        };
+        let has: Vec<Tri> = methods
+            .iter()
+            .map(|m| m.to_ascii_lowercase())
+            .filter(|m| !(string && has_method(&class, m) && instance(m)))
+            .map(|m| match has_method(&class, &m) {
+                true => Tri::Yes,
+                false if class.is_final => Tri::No,
+                false => Tri::Maybe,
+            })
+            .collect();
+        if has.is_empty() {
+            return Some(Tri::No);
+        }
+        let found: Vec<Tri> = has.iter().copied().filter(|t| !t.no()).collect();
+        if found.is_empty() {
+            return Some(Tri::No);
+        }
+        let optional = if self.optional.is_empty() { Tri::Yes } else { Tri::Maybe };
+        let missing = if found.len() < has.len() { Tri::Maybe } else { Tri::Yes };
+        Some(found.into_iter().fold(Tri::Yes, Tri::and).and(optional).and(missing))
+    }
+
+    fn callable_shape(&self) -> Tri {
         let unsealed = self.unsealed.as_ref().filter(|_| self.is_unsealed().yes());
         if self.keys.len() > 2
             || (unsealed.is_none() && self.keys.len() != 2)
@@ -2325,18 +2384,24 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
             })
             .collect()
     };
-    let mut variants = match b {
-        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
-        Type::ConstString(name) if let Some(f) = symbols::function(name) => of(f),
-        // `'Class::method'`
-        Type::ConstString(name) => name
-            .split_once("::")
-            .and_then(|(class, method)| {
-                let c = symbols::lookup(class)?;
+    let method = |class: &str, method: &str| -> Vec<Signature> {
+        symbols::lookup(class)
+            .and_then(|c| {
                 std::iter::once(c.name.clone())
                     .chain(c.ancestors.iter().cloned())
                     .find_map(|n| symbols::lookup(&n)?.methods.get(&method.to_ascii_lowercase()).map(of))
             })
+            .unwrap_or_default()
+    };
+    let mut variants = match b {
+        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
+        Type::ConstString(name) if let Some(f) = symbols::function(name) => of(f),
+        // `'Class::method'`
+        Type::ConstString(name) => name.split_once("::").map(|(c, m)| method(c, m)).unwrap_or_default(),
+        // `[class, 'method']` (`ConstantArrayType::getCallableParametersAcceptors()`)
+        Type::ConstArray(a) => a
+            .callable_parts()
+            .map(|(class, _, names)| names.into_iter().flat_map(|m| method(class, m)).collect())
             .unwrap_or_default(),
         _ => Vec::new(),
     };

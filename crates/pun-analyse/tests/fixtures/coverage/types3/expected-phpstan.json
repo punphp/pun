@@ -1,0 +1,544 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "types3.php",
+   "line": 12,
+   "identifier": "method.unused",
+   "message": "Method Types3\\Invokable::hidden() is unused.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 27,
+   "identifier": "class.notFound",
+   "message": "Parameter $unknown of function Types3\\callables() has invalid type Nope.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 30,
+   "identifier": "arguments.count",
+   "message": "Callable 'strlen' invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 32,
+   "identifier": "arguments.count",
+   "message": "Closure invoked with 0 parameters, 1-2 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 32,
+   "identifier": "callable.void",
+   "message": "Result of closure (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 33,
+   "identifier": "callable.void",
+   "message": "Result of closure (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 35,
+   "identifier": "arguments.count",
+   "message": "Callable 'Types3\\\\Invokable:\u2026' invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 37,
+   "identifier": "callable.inaccessibleMethod",
+   "message": "Call to private method hidden() of class Types3\\Invokable.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 38,
+   "identifier": "arguments.count",
+   "message": "Callable Types3\\Invokable invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 39,
+   "identifier": "arguments.count",
+   "message": "Callable Types3\\Invokable invoked with 2 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 39,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of callable Types3\\Invokable expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 40,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke Types3\\Plain but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 41,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $ (int) in call to callable callable(int, int): void.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 41,
+   "identifier": "callable.void",
+   "message": "Result of callable callable(int, int): void (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 41,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to callable callable(int, int): void.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 42,
+   "identifier": "arguments.count",
+   "message": "Callable 'strlen'|'trim' invoked with 0 parameters, 1-2 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 43,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke int|Types3\\Invokable but it might not be a callable.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 44,
+   "identifier": "class.notFound",
+   "message": "Invoking callable on an unknown class Nope.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "types3.php",
+   "line": 45,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke mixed but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 47,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $a of callable array{'Types3\\\\Invokable', 'make'} expects int, string given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 49,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke array{Types3\\Invokable, 'strlen'|'trim'} but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 50,
+   "identifier": "arguments.count",
+   "message": "Callable passed to call_user_func() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 51,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $extra in call to callable passed to call_user_func().",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 51,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $extra in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 51,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $string in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 52,
+   "identifier": "argument.type",
+   "message": "Parameter $string of callable passed to call_user_func_array() expects string, int given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 52,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $b in call to callable passed to call_user_func_array().",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 53,
+   "identifier": "arguments.count",
+   "message": "Callable passed to call_user_func_array() invoked with 2 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 54,
+   "identifier": "argument.unpackNonIterable",
+   "message": "Only iterables can be unpacked, string given in argument #1.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 54,
+   "identifier": "arrayUnpacking.nonIterable",
+   "message": "Only iterables can be unpacked, string given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 54,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $string of callable passed to call_user_func_array() expects string, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 56,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $args of function call_user_func_array expects array<int|string, mixed>, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 59,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $callback of function call_user_func expects callable(): mixed, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 61,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $callback of function call_user_func expects callable(): mixed, 'nope_function' given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 62,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $callback (callable) in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 63,
+   "identifier": "arguments.count",
+   "message": "Function call_user_func_array invoked with 1 parameter, 2 required.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 68,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() is missing delimiter / to be effective.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 71,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() uses invalid delimiter ~ while pattern uses /.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 73,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() uses invalid delimiter ab while pattern uses /.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 74,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() uses invalid delimiter ~ while pattern uses /.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 75,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: Unknown modifier '/' in pattern: (?:.*)/a/",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 76,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() is missing delimiter / to be effective.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 77,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: No ending delimiter '/' found in pattern: /a",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 79,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() is missing delimiter parameter to be effective.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 79,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: No ending delimiter '~' found in pattern: ~a(?:.*)/",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 80,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() uses invalid delimiter %.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 80,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: No ending delimiter '~' found in pattern: ~a(?:.*)/",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 82,
+   "identifier": "regexp.pattern",
+   "message": "Regex pattern is invalid: Unknown modifier '/' in pattern:  (?:.*)/",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 83,
+   "identifier": "argument.invalidPregQuote",
+   "message": "Call to preg_quote() uses invalid delimiter ~ while pattern uses /.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 87,
+   "identifier": "trait.unused",
+   "message": "Trait Types3\\SomeTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "conditionalType.alwaysTrue",
+   "message": "Condition \"class-string<T of Types3\\Missing> is string\" in conditional return type is always true.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Function Types3\\phpdoc() has invalid return type Types3\\parent.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Function Types3\\phpdoc() has invalid return type Types3\\self.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Function Types3\\phpdoc() has invalid return type Types3\\static.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "missingType.parameter",
+   "message": "Function Types3\\phpdoc() has parameter $d with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "missingType.parameter",
+   "message": "Function Types3\\phpdoc() has parameter $e with no type specified.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "return.missing",
+   "message": "Function Types3\\phpdoc() should return Types3\\parent|Types3\\self|Types3\\static but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @template T for function Types3\\phpdoc() has invalid bound type Types3\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $a of function Types3\\phpdoc() has invalid type Types3\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $b of function Types3\\phpdoc() has invalid type Types3\\NotAValue.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $c of function Types3\\phpdoc() has invalid type Types3\\InExtras.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $d of function Types3\\phpdoc() has invalid type Types3\\OutClass.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $e of function Types3\\phpdoc() has invalid type Types3\\ThisClass.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "parameter.trait",
+   "message": "Parameter $f of function Types3\\phpdoc() has invalid type Types3\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $g of function Types3\\phpdoc() has invalid type Types3\\CallableParam.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $g of function Types3\\phpdoc() has invalid type Types3\\CallableReturn.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $h of function Types3\\phpdoc() has invalid type Types3\\ShapeProp.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $i of function Types3\\phpdoc() has invalid type Types3\\CondElse.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "class.notFound",
+   "message": "Parameter $i of function Types3\\phpdoc() has invalid type Types3\\CondThen.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 102,
+   "identifier": "paramOut.type",
+   "message": "Parameter &$d @param-out type of function Types3\\phpdoc() expects Types3\\OutClass, mixed given.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 109,
+   "identifier": "class.notFound",
+   "message": "Function Types3\\phpdocReturn() has invalid return type Types3\\ReturnMissing.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 109,
+   "identifier": "return.trait",
+   "message": "Function Types3\\phpdocReturn() has invalid return type Types3\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 109,
+   "identifier": "return.missing",
+   "message": "Function Types3\\phpdocReturn() should return Types3\\ReturnMissing|Types3\\SomeTrait but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 116,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @template C for class Types3\\WithTemplates has invalid bound type Types3\\Missing2.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 124,
+   "identifier": "class.notFound",
+   "message": "Parameter $arr of method Types3\\WithTemplates::method() has invalid type Types3\\Arr.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 124,
+   "identifier": "class.notFound",
+   "message": "Parameter $c of method Types3\\WithTemplates::method() has invalid type Types3\\Missing2.",
+   "tip": null
+  },
+  {
+   "file": "types3.php",
+   "line": 124,
+   "identifier": "class.notFound",
+   "message": "Parameter $n of method Types3\\WithTemplates::method() has invalid type Types3\\Nullable.",
+   "tip": null
+  }
+ ]
+}

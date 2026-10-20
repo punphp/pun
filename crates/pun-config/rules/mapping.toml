@@ -1116,7 +1116,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/duplicate-parameter" = { preset = "basic", ported = true, status = "decided" }
 "functions/internal-function-call" = { preset = "basic", ported = true, status = "decided" }
 "functions/internal-function-callable" = { preset = "basic", ported = true, status = "decided" }
-"functions/invalid-callable-call" = { preset = "essential", status = "decided" }
+"functions/invalid-callable-call" = { preset = "essential", ported = true, status = "decided" }
 "functions/invalid-closure-use" = { preset = "basic", ported = true, status = "decided" }
 "functions/invalid-first-class-callable" = { preset = "basic", status = "decided" }
 "functions/invalid-parameter-name" = { preset = "basic", ported = true, status = "decided" }
@@ -1208,7 +1208,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/arrow-function-return" = { preset = "essential", ported = true, status = "decided" }
 "types/assign-to-this" = { preset = "basic", ported = true, status = "decided" }
 "types/by-ref-foreach-on-expression" = { preset = "basic", status = "decided" }
-"types/call-user-func-argument" = { preset = "recommended", status = "decided" }
+"types/call-user-func-argument" = { preset = "recommended", ported = true, status = "decided" }
 "types/catch-non-throwable" = { preset = "basic", ported = true, status = "decided" }
 "types/class-constant-value" = { preset = "essential", ported = true, status = "decided" }
 "types/clone-non-object" = { preset = "essential", ported = true, status = "decided" }
@@ -1266,7 +1266,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/missing-method-return-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-method-throws" = { preset = "max", status = "decided" }
 "types/missing-param-type" = { preset = "strict", ported = true, status = "decided" }
-"types/missing-preg-quote-delimiter" = { preset = "recommended", status = "decided" }
+"types/missing-preg-quote-delimiter" = { preset = "recommended", ported = true, status = "decided" }
 "types/missing-property-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-return" = { preset = "basic", ported = true, status = "decided" }
 "types/missing-return-type" = { preset = "strict", ported = true, fixed_by = ["lint/types/add-void-return-type"], status = "decided", note = "level 6; fixed by the Rector-derived return-type rules where the type is inferable" }

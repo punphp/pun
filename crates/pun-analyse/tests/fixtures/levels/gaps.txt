@@ -333,8 +333,6 @@
 # an-types2: Mago's inferred types differ (narrowing, list vs array, benevolent superglobal keys, enum cases, built-in
 # stubs such as PDO::prepare(), no types after an undefined member), accepts reasons, NewIsAlwaysFinal object types,
 # explicit vs implicit mixed, mixins, `$this` narrowed by instanceof
-2 Methods/CallToMethodStatementWithNoDiscardRuleTest::testRule
-2 Methods/CallToStaticMethodStatementWithNoDiscardRuleTest::testRule
 2 Operators/InvalidComparisonOperationRuleTest::testBug9386
 2 PhpDoc/WrongVariableNameInVarTagRuleTest::testRule
 4 DeadCode/NoopRuleTest::testBug11001
@@ -375,16 +373,13 @@
 5 Functions/RandomIntParametersRuleTest::testFile
 5 Methods/CallMethodsRuleTest::testAcceptThrowable
 5 Methods/CallMethodsRuleTest::testBug11463
-5 Methods/CallMethodsRuleTest::testBug11978
 5 Methods/CallMethodsRuleTest::testBug13171
 5 Methods/CallMethodsRuleTest::testBug13993
 5 Methods/CallMethodsRuleTest::testBug14732
 5 Methods/CallMethodsRuleTest::testBug1661
-5 Methods/CallMethodsRuleTest::testBug3481
 5 Methods/CallMethodsRuleTest::testBug3555
 5 Methods/CallMethodsRuleTest::testBug4552
 5 Methods/CallMethodsRuleTest::testBug5372
-5 Methods/CallMethodsRuleTest::testBug5642
 5 Methods/CallMethodsRuleTest::testBug6371
 5 Methods/CallMethodsRuleTest::testBug6464
 5 Methods/CallMethodsRuleTest::testBug9487
@@ -478,7 +473,6 @@
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
 9 Methods/CallMethodsRuleTest::testBug10719
 9 Methods/CallMethodsRuleTest::testBug11463
-9 Methods/CallMethodsRuleTest::testBug11978
 9 Methods/CallMethodsRuleTest::testBug12880
 9 Methods/CallMethodsRuleTest::testBug13171
 9 Methods/CallMethodsRuleTest::testBug13272
@@ -498,7 +492,6 @@
 9 Methods/CallMethodsRuleTest::testBug4552
 9 Methods/CallMethodsRuleTest::testBug5372
 9 Methods/CallMethodsRuleTest::testBug5623
-9 Methods/CallMethodsRuleTest::testBug5642
 9 Methods/CallMethodsRuleTest::testBug5868
 9 Methods/CallMethodsRuleTest::testBug6371
 9 Methods/CallMethodsRuleTest::testBug6464
@@ -808,3 +801,15 @@
 9 Methods/CallMethodsRuleTest::testBug3534
 9 Methods/CallStaticMethodsRuleTest::testBug9732
 9 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
+# an-types2: CallCallablesRule: `new Foo()` is an exact (final) object type in PHPStan, a union of constant-array
+# callables is not split into its arrays, pipe calls by expression are not checked, and Pun reports bug-3616's constant PHPDoc
+2 Functions/CallCallablesRuleTest::testBug3616
+2 Functions/CallCallablesRuleTest::testRule
+# an-types2: Pun finds array<NonexistentClass, AnotherNonexistentClass> unresolvable (parameter.unresolvableType)
+2 Methods/ExistingClassesInTypehintsRuleTest::testExistingClassInTypehint
+# an-types2: PHPDoc classes (FunctionDefinitionCheck, level 2): imported type aliases that import each other, and an anonymous
+# class's use of its enclosing method's template are not resolved; Closure::bind() returns ?Closure (no dynamic return type extension)
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463
+2 PhpDoc/IncompatiblePhpDocTypeRuleTest::testBug11463b
+3 Methods/ReturnTypeRuleTest::testBug6353
+9 Methods/CallMethodsRuleTest::testBug4865

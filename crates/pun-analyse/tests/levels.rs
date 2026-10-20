@@ -306,6 +306,10 @@ const PORTED: &[&str] = &[
     "class.missingImplements",
     // analyse types, levels 2-9 (an-types2)
     "argument.type",
+    "argument.invalidPregQuote",
+    "callable.nonCallable",
+    "callable.inaccessibleMethod",
+    "callable.void",
     "argument.byRef",
     "argument.unpackNonIterable",
     "method.nonObject",
@@ -353,6 +357,12 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "Cloning object of an unknown class ",
     "Iterating over an object of an unknown class ",
     "PHPDoc tag @phpstan-assert",
+    "Invoking callable on an unknown class ",
+    // FunctionDefinitionCheck's (native types from level 0, PHPDoc ones from level 2)
+    "Parameter $",
+    "Function ",
+    "Method ",
+    "Anonymous function has invalid return type",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).
@@ -428,8 +438,6 @@ fn phpstan_level_fixtures() {
                 };
                 let ported = |id: &str, message: &str| {
                     PORTED.contains(&id)
-                        // CallCallablesRule's are not ported yet
-                        || (id == "arguments.count" && !message.starts_with("Callable "))
                         || (id == "class.notFound"
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         || (id == "parameter.notFound"

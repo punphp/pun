@@ -1425,6 +1425,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &f.parameter_list,
             f.return_type_hint.as_ref(),
         );
+        if self.level >= 2 {
+            let types = declared::function_phpdoc(self, f);
+            let kind = names::FunctionKind::Function(&name);
+            signatures::phpdoc_classes(self, kind, f.span(), &f.parameter_list, f.return_type_hint.as_ref(), &types);
+        }
         let docblock = self
             .codebase
             .get_function(name.as_bytes())
@@ -1565,6 +1570,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             &m.parameter_list,
             m.return_type_hint.as_ref(),
         );
+        if self.level >= 2
+            && let Some(context) = self.class_scope()
+            && let Some(declaring) = missing_types::declaring(self, m.span())
+        {
+            let types = declared::method_phpdoc(self, m, declaring, context);
+            signatures::phpdoc_classes(self, kind, m.span(), &m.parameter_list, m.return_type_hint.as_ref(), &types);
+        }
         // PhpMethodFromParserNodeReflection's void methods
         let forced_void = m.name.value.eq_ignore_ascii_case(b"__construct")
             || [
@@ -1832,6 +1844,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         restricted_functions::function_call(self, call);
         deprecations::ini_option(self, call);
         calls::function_call(self, call);
+        types::callable_call(self, call);
+        types::call_user_func(self, call);
         dead_code::function_call(self, call);
         assign::arguments(self, assign::Callee::Function(call));
         assign::function_virtual_assign(self, call);
@@ -1877,6 +1891,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
         self.piped.insert(p.callable.span());
         calls::pipe(self, p);
+        types::callable_pipe(self, p);
         function_checks::pipe(self, p);
         restricted_functions::pipe(self, p);
     }
