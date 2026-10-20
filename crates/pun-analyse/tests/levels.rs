@@ -152,6 +152,22 @@ const PORTED: &[&str] = &[
     "mixin.trait",
     "varTag.unresolvableType",
     "varTag.trait",
+    "conditionalType.subjectNotFound",
+    "conditionalType.alwaysTrue",
+    "conditionalType.alwaysFalse",
+    "assert.unknownExpr",
+    "assert.unresolvableType",
+    "assert.impossibleType",
+    "assert.alreadyNarrowedType",
+    "assert.trait",
+    "parameter.unresolvableType",
+    "parameter.phpDocType",
+    "paramClosureThis.nonClosure",
+    "return.unresolvableType",
+    "return.phpDocType",
+    "property.unresolvableType",
+    "property.phpDocType",
+    "classConstant.unresolvableType",
     "paramImmediatelyInvokedCallable.nonCallable",
     "paramLaterInvokedCallable.nonCallable",
     "property.internal",
@@ -208,12 +224,18 @@ const GENERICS_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @property",
     "PHPDoc tag @var for variable ",
     "PHPDoc tag @var contains unknown class",
+    "PHPDoc tag @phpstan-assert",
 ];
 
 /// The `parameter.notFound` messages of the ported rules (the PHPDoc tag rules that report it are not all ported).
 const PARAMETER_NOT_FOUND: &[&str] = &[
     "PHPDoc tag @param-immediately-invoked-callable references unknown parameter",
     "PHPDoc tag @param-later-invoked-callable references unknown parameter",
+    "Conditional return type references unknown parameter",
+    "Assert references unknown parameter",
+    "PHPDoc tag @param references unknown parameter",
+    "PHPDoc tag @param-out references unknown parameter",
+    "PHPDoc tag @param-closure-this references unknown parameter",
 ];
 
 fn fixtures(dir: &Path, out: &mut Vec<PathBuf>) {
@@ -280,6 +302,8 @@ fn phpstan_level_fixtures() {
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         || (id == "parameter.notFound"
                             && PARAMETER_NOT_FOUND.iter().any(|p| message.starts_with(p)))
+                        // (ValueAssignedToClassConstantRule's errors share the identifier and are not ported)
+                        || (id == "classConstant.phpDocType" && message.contains(" native type "))
                 };
                 let want: BTreeSet<Key> = case["errors"]
                     .as_array()

@@ -82,6 +82,10 @@ pub struct StrictRules {
     pub matching_inherited_method_names: bool,
     /// `dynamicCallOnStaticMethod`: DynamicCallOnStaticMethodsRule and DynamicCallOnStaticMethodsCallableRule.
     pub dynamic_call_on_static_method: bool,
+    /// `booleansInConditions`: BooleanInBooleanAndRule, BooleanInBooleanOrRule and BooleanInBooleanNotRule.
+    pub booleans_in_conditions: bool,
+    /// `numericOperandsInArithmeticOperators`: OperandsInArithmetic*Rule and OperandInArithmetic*Rule.
+    pub numeric_operands_in_arithmetic_operators: bool,
 }
 
 impl StrictRules {
@@ -93,6 +97,8 @@ impl StrictRules {
             require_parent_constructor_call: on("requireParentConstructorCall"),
             matching_inherited_method_names: on("matchingInheritedMethodNames"),
             dynamic_call_on_static_method: on("dynamicCallOnStaticMethod"),
+            booleans_in_conditions: on("booleansInConditions"),
+            numeric_operands_in_arithmetic_operators: on("numericOperandsInArithmeticOperators"),
         }
     }
 }

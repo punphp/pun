@@ -350,6 +350,38 @@ impl<'c, 'a, 'arena> Resolver<'c, 'a, 'arena> {
     }
 }
 
+thread_local! {
+    /// [`class_aliases()`] is resolving (a type alias's own NameScope has no aliases of its class but through it).
+    static RESOLVING: Cell<bool> = const { Cell::new(false) };
+}
+
+/// Runs `f` with the NameScopes of class-likes' PHPDocs without their aliases (the rules checking the aliases).
+fn without_aliases<R>(f: impl FnOnce() -> R) -> R {
+    let previous = RESOLVING.with(|r| r.replace(true));
+    let out = f();
+    RESOLVING.with(|r| r.set(previous));
+    out
+}
+
+/// The type aliases class-like `k` defines or imports, resolved (FileTypeMapper's `typeAliasesMap` of its members'
+/// PHPDocs): the NameScope of a member's PHPDoc tries them just before the templates.
+pub(super) fn class_aliases(c: &Checker, k: &ClassLikeMetadata) -> Vec<(String, Type)> {
+    if RESOLVING.with(|r| r.replace(true)) {
+        return Vec::new();
+    }
+    let resolver = Resolver::new(c);
+    let class = original_name(k);
+    let aliases = resolver.doc(&class).map_or_else(Vec::new, |doc| {
+        let names = doc.names();
+        names
+            .iter()
+            .filter_map(|n| Some((n.clone(), resolver.local(n, &doc.alias_class, &names)?)))
+            .collect()
+    });
+    RESOLVING.with(|r| r.set(false));
+    aliases
+}
+
 /// `parent` without a parent class: NonexistentParentClassType, which is no ErrorType and references no class.
 const NO_PARENT: &str = "\0parent";
 
@@ -660,7 +692,7 @@ fn report(c: &mut Checker, at: Span, found: Vec<Found>) {
 /// LocalTypeAliasesRule on a class, interface or enum declaration.
 pub fn class_like(c: &mut Checker, at: Span) {
     let mut found = Vec::new();
-    with_classes(c, || {
+    without_aliases(|| with_classes(c, || {
         let r = Resolver::new(c);
         // (the walk entered the class)
         let k = c.class_scope().expect("a class scope");
@@ -669,19 +701,19 @@ pub fn class_like(c: &mut Checker, at: Span) {
         if let Some(doc) = r.doc(&display) {
             use_context(&r, &doc, &mut found);
         }
-    });
+    }));
     report(c, at, found);
 }
 
 /// LocalTypeTraitAliasesRule on a trait declaration (outside a class's context).
 pub fn trait_definition(c: &mut Checker, at: Span, name: &str) {
     let mut found = Vec::new();
-    with_classes(c, || {
+    without_aliases(|| with_classes(c, || {
         let r = Resolver::new(c);
         if let Some(k) = c.codebase.get_class_like(name.as_bytes()) {
             definition_context(&r, k, &original_name(k), &mut found);
         }
-    });
+    }));
     report(c, at, found);
 }
 
@@ -690,7 +722,7 @@ pub fn trait_definition(c: &mut Checker, at: Span, name: &str) {
 pub fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
     let using = c.codebase.get_class_like(class.as_bytes());
     let mut found = Vec::new();
-    with_classes(c, || {
+    without_aliases(|| with_classes(c, || {
         let r = Resolver::new(c);
         let k = c.codebase.get_class_like(name.as_bytes());
         let doc = k.and_then(|k| {
@@ -708,6 +740,6 @@ pub fn trait_use(c: &mut Checker, at: Span, name: &str, class: &str) {
                 .insert(doc.alias_class.to_ascii_lowercase(), Some(doc.clone()));
             use_context(&r, &doc, &mut found);
         }
-    });
+    }));
     report(c, at, found);
 }

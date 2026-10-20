@@ -378,7 +378,7 @@ impl Type {
         self.query(&|t| Tri::from(matches!(t, Type::Float | Type::ConstFloat(_))))
     }
 
-    fn is_boolean(&self) -> Tri {
+    pub fn is_boolean(&self) -> Tri {
         self.query(&|t| Tri::from(matches!(t, Type::Bool | Type::ConstBool(_))))
     }
 
@@ -1952,7 +1952,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             }
             // a TemplateUnionType or a conditional also answers as a whole
             let whole = matches!(b, T::Conditional(_))
-                || matches!(b, T::Template(tpl) if matches!(tpl.bound, T::Union(_)));
+                || matches!(b, T::Template(tpl) if matches!(tpl.bound, T::Union(_) | T::Benevolent(_)));
             if whole {
                 result = result.or(is_sub_type_of(b, a));
             }
