@@ -1,0 +1,278 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "checks.php",
+   "line": 55,
+   "identifier": "throws.unusedType",
+   "message": "Function CoverageLevel4\\throwing() has CoverageLevel4\\MyException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 62,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidThrows() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 68,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 69,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 70,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 71,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 72,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 74,
+   "identifier": "function.resultUnused",
+   "message": "Call to function strlen() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 83,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception RuntimeException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 86,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 89,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\voidCalls() throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 90,
+   "identifier": "catch.neverThrown",
+   "message": "Dead catch - LogicException is never thrown in the try block.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 92,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"new class\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 101,
+   "identifier": "throws.unusedType",
+   "message": "Function CoverageLevel4\\mixedThrows() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 101,
+   "identifier": "throws.unusedType",
+   "message": "Function CoverageLevel4\\mixedThrows() has void in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 101,
+   "identifier": "throws.notThrowable",
+   "message": "PHPDoc tag @throws with type RuntimeException|void is not subtype of Throwable",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 114,
+   "identifier": "throws.void",
+   "message": "Function CoverageLevel4\\untyped() throws exception mixed but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 121,
+   "identifier": "propertyGetHook.noRead",
+   "message": "Get hook for non-virtual property CoverageLevel4\\Hooks::$a does not read its value.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 122,
+   "identifier": "throws.void",
+   "message": "Get hook for property CoverageLevel4\\Hooks::$a throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 125,
+   "identifier": "throws.void",
+   "message": "Set hook for property CoverageLevel4\\Hooks::$a throws exception CoverageLevel4\\MyException but the PHPDoc contains @throws void.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 136,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 139,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 139,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "checks.php",
+   "line": 140,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+  },
+  {
+   "file": "checks.php",
+   "line": 143,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 144,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 145,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe method call on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 146,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property CoverageLevel4\\Thrower::$x.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "checks.php",
+   "line": 146,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access on non-nullable type CoverageLevel4\\Thrower. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 154,
+   "identifier": "catch.alreadyCaught",
+   "message": "Dead catch - CoverageLevel4\\MyException is already caught above.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 154,
+   "identifier": "catch.alreadyCaught",
+   "message": "Dead catch - LogicException is already caught above.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 160,
+   "identifier": "void.pure",
+   "message": "Function CoverageLevel4\\incDec() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 162,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on array.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 164,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "checks.php",
+   "line": 166,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on bool.",
+   "tip": "Operator ++ is deprecated for bool."
+  },
+  {
+   "file": "checks.php",
+   "line": 170,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 196,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DateTimeImmutable::format() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 203,
+   "identifier": "void.pure",
+   "message": "Function CoverageLevel4\\declares() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 205,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  }
+ ]
+}

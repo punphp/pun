@@ -339,8 +339,16 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     use Type as T;
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
     if sm.applies(b) {
-        // StrictMixedType::isAcceptedBy(): a mixed (not a template of mixed) accepts it, anything else maybe
-        return if matches!(a, T::Mixed { .. } | T::Error) { Tri::Yes } else { Tri::Maybe };
+        // StrictMixedType::isAcceptedBy(): anything but a mixed (accepts_with() answers it) maybe; a
+        // TemplateStrictMixedType's (isSubTypeOf()) is yes for the same template of mixed
+        return match (a, b) {
+            (T::Template(at), T::Template(bt))
+                if matches!(at.bound, T::Mixed { .. }) && at.name == bt.name && at.scope == bt.scope =>
+            {
+                Tri::Yes
+            }
+            _ => Tri::Maybe,
+        };
     }
     match b {
         T::Union(types) => Tri::extreme_identity(types.iter().map(|t| rec(a, t))),

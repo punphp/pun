@@ -7,7 +7,7 @@
 
 use std::path::Path;
 
-use pun_analyse::{IDENTIFIERS, Project, analyse, run};
+use pun_analyse::{Project, analyse, reports, run};
 use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
@@ -44,7 +44,7 @@ fn check_in(fixtures: &str, neon: &str) {
         .as_array()
         .unwrap()
         .iter()
-        .filter(|e| IDENTIFIERS.contains(&e["identifier"].as_str().unwrap_or("")))
+        .filter(|e| reports(e["identifier"].as_str().unwrap_or("")))
         .map(|e| {
             (
                 e["file"].as_str().unwrap().to_string(),

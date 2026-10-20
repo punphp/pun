@@ -1,0 +1,33 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "checks.php",
+   "line": 9,
+   "identifier": "void.pure",
+   "message": "Function CoverageIncDec\\template() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 11,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on T of mixed.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 35,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type U of function CoverageIncDec\\other() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "checks.php",
+   "line": 37,
+   "identifier": "return.type",
+   "message": "Function CoverageIncDec\\other() should return U but returns T.",
+   "tip": null
+  }
+ ]
+}

@@ -26,6 +26,8 @@ mod properties;
 mod offsets;
 mod binary_op;
 mod too_wide;
+mod nullsafe;
+mod throws_void;
 
 use std::collections::HashMap;
 
@@ -58,6 +60,11 @@ pub(super) use property_default::property as property_default;
 pub(super) use constant_value::class_constant;
 pub(super) use offsets::assignment as offset_assignment;
 pub(super) use binary_op::{assignment as assign_operation, binary as binary_operation, pipe as pipe_operation};
+pub(super) use throws_void::{
+    catches as dead_catches, function as throws_void_function, hooks as throws_void_hooks,
+    method as throws_void_method,
+};
+pub(super) use nullsafe::{method as nullsafe_method, property as nullsafe_property};
 pub(super) use too_wide::{
     arrow_function as too_wide_arrow_function, closure as too_wide_closure, function as too_wide_function,
     method as too_wide_method, properties as too_wide_properties,
@@ -65,7 +72,7 @@ pub(super) use too_wide::{
 pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS, too_wide::IDENTIFIERS, nullsafe::IDENTIFIERS, throws_void::IDENTIFIERS, inc_dec::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
@@ -124,12 +131,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
     }
     fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
         values::typed(e, self.level, &mut self.spans);
+        inc_dec::typed(e, &mut self.spans);
         if self.level >= 2 {
             properties::typed(e, &mut self.spans);
             binary_op::typed(e, &mut self.spans);
         }
         if self.level >= 3 {
             offsets::typed(e, &mut self.spans);
+        }
+        if self.level >= 4 {
+            nullsafe::typed(e, &mut self.spans);
         }
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {

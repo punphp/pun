@@ -1,0 +1,133 @@
+{
+    "test": "Exceptions/ThrowsVoidMethodWithExplicitThrowPointRuleTest",
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Exceptions/data/throws-void-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-method.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Method ThrowsVoidMethod\\Foo::doFoo() throws exception ThrowsVoidMethod\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Exceptions/data/throws-void-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-method.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Method ThrowsVoidMethod\\Foo::doFoo() throws exception ThrowsVoidMethod\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#2",
+            "files": [
+                "Exceptions/data/throws-void-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-method.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Method ThrowsVoidMethod\\Foo::doFoo() throws exception ThrowsVoidMethod\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#3",
+            "files": [
+                "Exceptions/data/throws-void-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-method.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Method ThrowsVoidMethod\\Foo::doFoo() throws exception ThrowsVoidMethod\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#4",
+            "files": [
+                "Exceptions/data/throws-void-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-method.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Method ThrowsVoidMethod\\Foo::doFoo() throws exception ThrowsVoidMethod\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule#5",
+            "files": [
+                "Exceptions/data/throws-void-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/throws-void-method.php",
+                    "line": 18,
+                    "identifier": "throws.void",
+                    "message": "Method ThrowsVoidMethod\\Foo::doFoo() throws exception ThrowsVoidMethod\\MyException but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13642",
+            "files": [
+                "Exceptions/data/bug-13642.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/bug-13642.php",
+                    "line": 21,
+                    "identifier": "throws.void",
+                    "message": "Method Bug13642\\HelloWorld::sayHello2() throws exception ValueError but the PHPDoc contains @throws void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6910",
+            "files": [
+                "Exceptions/data/bug-6910.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

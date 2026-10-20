@@ -112,40 +112,28 @@
 5 Methods/CallStaticMethodsRuleTest::testBug6249
 5 Methods/CallStaticMethodsRuleTest::testBug7489
 5 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
-9 Functions/CallToFunctionParametersRuleTest::testBug10297
 9 Functions/CallToFunctionParametersRuleTest::testBug10559
-9 Functions/CallToFunctionParametersRuleTest::testBug10612
 9 Functions/CallToFunctionParametersRuleTest::testBug11386
-9 Functions/CallToFunctionParametersRuleTest::testBug11894
-9 Functions/CallToFunctionParametersRuleTest::testBug11942
-9 Functions/CallToFunctionParametersRuleTest::testBug11982
 9 Functions/CallToFunctionParametersRuleTest::testBug3631
-9 Functions/CallToFunctionParametersRuleTest::testBug7283
 9 Functions/CallToFunctionParametersRuleTest::testBug9580
-9 Functions/CallToFunctionParametersRuleTest::testBug9652
 9 Functions/CallToFunctionParametersRuleTest::testBug9697
 9 Functions/CallToFunctionParametersRuleTest::testCallUserFuncArray
 9 Functions/CallToFunctionParametersRuleTest::testConstantParameterCheck
-9 Methods/CallMethodsRuleTest::testBug11894
 9 Methods/CallMethodsRuleTest::testBug12544
 9 Methods/CallMethodsRuleTest::testBug2837
 9 Methods/CallMethodsRuleTest::testBug3465
 9 Methods/CallMethodsRuleTest::testBug5536
 9 Methods/CallMethodsRuleTest::testBug6828
-9 Methods/CallMethodsRuleTest::testBug6904
 9 Methods/CallMethodsRuleTest::testBug7369
-9 Methods/CallMethodsRuleTest::testBug7600
 9 Methods/CallMethodsRuleTest::testBug8048
 9 Methods/CallMethodsRuleTest::testBug8888
 9 Methods/CallMethodsRuleTest::testCallTraitOverridenMethods
 9 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 9 Methods/CallMethodsRuleTest::testTypedClassConstants
-9 Methods/CallStaticMethodsRuleTest::testBug11894
 9 Methods/CallStaticMethodsRuleTest::testBug14150
 9 Methods/CallStaticMethodsRuleTest::testBug5536
 9 Methods/CallStaticMethodsRuleTest::testBug6249
 9 Methods/CallStaticMethodsRuleTest::testBug7489
-9 Methods/CallStaticMethodsRuleTest::testStaticCallsToInstanceMethods
 # an-types2: callbacks: a closure's parameter types are not narrowed by the callable it is passed to (ClosureTypeResolver),
 # Mago's closure return types differ (`<=>` is -1|0|1), accepts-reason tips, curl_setopt()'s option types, conditional
 # parameter types and parameter default values in template inference
@@ -182,8 +170,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testArrayFindKeyCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUassoc
 9 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUkey
-9 Functions/CallToFunctionParametersRuleTest::testArrayMapMultiple#0
-9 Functions/CallToFunctionParametersRuleTest::testArrayMapMultiple#1
 9 Functions/CallToFunctionParametersRuleTest::testArrayReduceArrowFunctionCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayReduceCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayUdiffAssoc
@@ -263,14 +249,12 @@
 5 Functions/CallToFunctionParametersRuleTest::testBenevolentSuperglobalKeys
 5 Functions/CallToFunctionParametersRuleTest::testBug12676
 5 Functions/CallToFunctionParametersRuleTest::testBug12847
-5 Functions/CallToFunctionParametersRuleTest::testBug2940
 5 Functions/CallToFunctionParametersRuleTest::testBug4371
 5 Functions/CallToFunctionParametersRuleTest::testBug5986
 5 Functions/CallToFunctionParametersRuleTest::testBug7823
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOpt
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptInvalidShare
-5 Functions/CallToFunctionParametersRuleTest::testGenericFunction
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 5 Functions/CallToFunctionParametersRuleTest::testProcOpen
 5 Functions/CallUserFuncRuleTest::testRule
@@ -315,7 +299,6 @@
 5 Methods/CallStaticMethodsRuleTest::testBug3641
 5 Methods/CallStaticMethodsRuleTest::testBug4550
 5 Methods/CallStaticMethodsRuleTest::testBug5259
-5 Methods/CallStaticMethodsRuleTest::testBug5781
 5 Methods/CallStaticMethodsRuleTest::testBug8296
 5 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 5 Methods/CallStaticMethodsRuleTest::testConditionalParam
@@ -344,7 +327,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug14312
 9 Functions/CallToFunctionParametersRuleTest::testBug14312b
 9 Functions/CallToFunctionParametersRuleTest::testBug2911
-9 Functions/CallToFunctionParametersRuleTest::testBug2940
 9 Functions/CallToFunctionParametersRuleTest::testBug4371
 9 Functions/CallToFunctionParametersRuleTest::testBug5872
 9 Functions/CallToFunctionParametersRuleTest::testBug5986
@@ -365,7 +347,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithCheckExplicitMixed
 9 Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithoutCheckExplicitMixed
 9 Functions/CallToFunctionParametersRuleTest::testFunctionWithNumericParameterThatCreatedByAddition
-9 Functions/CallToFunctionParametersRuleTest::testGenericFunction
 9 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 9 Functions/CallToFunctionParametersRuleTest::testProcOpen
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
@@ -429,7 +410,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug3641
 9 Methods/CallStaticMethodsRuleTest::testBug4550
 9 Methods/CallStaticMethodsRuleTest::testBug5259
-9 Methods/CallStaticMethodsRuleTest::testBug5781
 9 Methods/CallStaticMethodsRuleTest::testBug8296
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
 9 Methods/CallStaticMethodsRuleTest::testConditionalParam
@@ -717,7 +697,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug5474
 9 Methods/CallMethodsRuleTest::testBug2298
 9 Methods/CallMethodsRuleTest::testBug3534
-9 Methods/CallStaticMethodsRuleTest::testBug9732
 9 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
 # an-types2: CallCallablesRule: `new Foo()` is an exact (final) object type in PHPStan, a union of constant-array
 # callables is not split into its arrays, pipe calls by expression are not checked, and Pun reports bug-3616's constant PHPDoc
@@ -804,8 +783,6 @@
 9 Methods/CallMethodsRuleTest::testNullSafeOnTemplateTypeNarrowedAgainstNull
 9 Methods/CallMethodsRuleTest::testUnconstrainedCollectionTemplateArguments
 9 Methods/CallMethodsRuleTest::testVoidConditionalReturnType
-9 Methods/CallStaticMethodsRuleTest::testBug10698
-9 Methods/CallStaticMethodsRuleTest::testBug15168
 9 Methods/CallStaticMethodsRuleTest::testBug15251
 # an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
@@ -847,3 +824,27 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug9580
 4 TooWideTypehints/TooWideArrowFunctionReturnTypehintRuleTest::testRule
 4 TooWideTypehints/TooWideMethodReturnTypehintRuleTest::testBug10312b
+# array_combine()'s dynamic throw type extension (ValueError on PHP 8) is not read.
+3 Exceptions/ThrowsVoidMethodWithExplicitThrowPointRuleTest::testBug13642
+# Other rules' identifiers (resultUnused, property.notFound, assign.propertyType, deadCode.unreachable and more).
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testRule
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testRuleWithoutReportingUncheckedException
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug6256
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testUnionTypeError
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug6349
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug9406
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug6574
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug7799
+# Mago keeps a static property's narrowed type across method calls.
+4 Methods/NullsafeMethodCallRuleTest::testBug8523
+4 Methods/NullsafeMethodCallRuleTest::testBug8523b
+4 Methods/NullsafeMethodCallRuleTest::testBug8523c
+# IssetCheck's `?->` on the left of `??` messages are not ported.
+4 Properties/NullsafePropertyFetchRuleTest::testBug7109
+5 Properties/AccessPropertiesRuleTest::testNullSafe
+# Mago loses `$this` after a dynamic `?->$this?->$name` fetch.
+5 Properties/AccessPropertiesRuleTest::testDynamicStringableNullsafeAccess
+# Mago's explicit mixed and benevolent unions describe differently.
+9 Operators/InvalidIncDecOperationRuleTest::testMixed
+9 Operators/InvalidIncDecOperationRuleTest::testUnion
