@@ -1,0 +1,95 @@
+{
+    "test": "Generators/YieldInGeneratorRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Generators/data/yield-in-generator.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generators/data/yield-in-generator.php",
+                    "line": 13,
+                    "identifier": "generator.returnType",
+                    "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-in-generator.php",
+                    "line": 14,
+                    "identifier": "generator.returnType",
+                    "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-in-generator.php",
+                    "line": 37,
+                    "identifier": "generator.returnType",
+                    "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-in-generator.php",
+                    "line": 38,
+                    "identifier": "generator.returnType",
+                    "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-in-generator.php",
+                    "line": 87,
+                    "identifier": "generator.returnType",
+                    "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-in-generator.php",
+                    "line": 88,
+                    "identifier": "generator.returnType",
+                    "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-in-generator.php",
+                    "line": 88,
+                    "identifier": "return.missing",
+                    "message": "Function YieldInGenerator\\doNever() should return *NEVER* but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOutsideFunction",
+            "files": [
+                "Generators/data/yield-outside-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Generators/data/yield-outside-function.php",
+                    "line": 5,
+                    "identifier": "generator.outOfFunction",
+                    "message": "Yield can be used only inside a function.",
+                    "tip": null
+                },
+                {
+                    "file": "Generators/data/yield-outside-function.php",
+                    "line": 6,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Generators/data/yield-outside-function.php",
+                    "line": 6,
+                    "identifier": "generator.outOfFunction",
+                    "message": "Yield can be used only inside a function.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

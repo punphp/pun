@@ -1,0 +1,23 @@
+{
+    "test": "Arrays/ArrayUnpackingRuleTest",
+    "cases": [
+        {
+            "method": "testRuleOnPHP81#0",
+            "files": [
+                "Arrays/data/array-unpacking.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleOnPHP81#1",
+            "files": [
+                "Arrays/data/array-unpacking.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

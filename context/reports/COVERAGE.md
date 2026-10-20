@@ -4,17 +4,16 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5290 | 5290 | 100.00% | ok |
-| punphp-analyse | 22690 | 22690 | 100.00% | ok |
+| punphp-analyse | 25501 | 25501 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 25641 | 25641 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 18425 | 18425 | 100.00% | ok |
-| punphp-phpstan | 8254 | 8254 | 100.00% | ok |
+| punphp-phpstan | 8698 | 8698 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
-
 <!-- coverage:end -->
 
 ## Exclusions
@@ -37,8 +36,8 @@
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/infer.rs:134` the `catch_unwind` fallback that drops a file's inferred types when Mago's analyser panics: as for mago.rs:74 below.
 - `crates/pun-analyse/src/mago.rs:74` the `catch_unwind` fallback that skips a file when Mago's analyser panics: tests/fixtures/mago/debug-panic.php (`int&mixed`) was written to trip Mago's debug assertion (`TUnion::from_vec()` with an empty Vec), but the analyser no longer reaches it and no known input panics it now, and the guard stays so a future panic costs one file, not the run.
-- `crates/pun-analyse/src/rules/types/convert.rs:90-92` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
-- `crates/pun-analyse/src/rules/types/convert.rs:269` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
+- `crates/pun-analyse/src/rules/types/convert.rs:100-102` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
+- `crates/pun-analyse/src/rules/types/convert.rs:279` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
 - `crates/pun-phpstan/src/symbols.rs:111-113` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.

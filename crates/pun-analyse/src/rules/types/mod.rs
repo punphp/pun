@@ -9,9 +9,12 @@ mod level;
 mod inc_dec;
 mod missing_return;
 mod param_default;
+mod property_default;
 mod read_only_write;
 mod regex;
 mod returns;
+mod values;
+mod yields;
 mod void_match;
 
 use std::collections::HashMap;
@@ -34,9 +37,12 @@ pub(super) use returns::{
     hooks as hook_returns, method as method_returns,
 };
 pub(super) use void_match::void_match;
+pub(super) use values::{array, array_access, clone, foreach, throw};
+pub(super) use yields::program as yields_outside;
+pub(super) use property_default::property as property_default;
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
@@ -88,6 +94,19 @@ impl Wanted<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
+    fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
+        if self.level >= 3 {
+            property_default::typed(p, &mut self.spans);
+        }
+    }
+    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+        values::typed(e, self.level, &mut self.spans);
+    }
+    fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
+        if self.level >= 3 {
+            self.spans.push(f.expression.span());
+        }
+    }
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         regex::typed(call, &mut self.spans);
     }
@@ -119,6 +138,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
     fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
         if self.level >= 3 && f.return_type_hint.is_some() {
             self.spans.push(f.expression.span());
+            returns::typed_arrow(f.expression, &mut self.spans);
         }
     }
     fn walk_in_match(&mut self, m: &'ast Match<'arena>, _: &mut ()) {

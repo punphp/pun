@@ -1211,7 +1211,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/call-user-func-argument" = { preset = "recommended", status = "decided" }
 "types/catch-non-throwable" = { preset = "basic", ported = true, status = "decided" }
 "types/class-constant-value" = { preset = "essential", status = "decided" }
-"types/clone-non-object" = { preset = "essential", status = "decided" }
+"types/clone-non-object" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-return" = { preset = "essential", ported = true, status = "decided" }
 "types/constant-value" = { preset = "essential", status = "decided" }
@@ -1219,11 +1219,11 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/define-value" = { preset = "essential", status = "decided" }
 "types/echo-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/enum-template-not-allowed" = { preset = "essential", ported = true, status = "decided" }
-"types/foreach-non-iterable" = { preset = "essential", status = "decided" }
-"types/foreach-on-empty-array" = { preset = "recommended", status = "decided" }
+"types/foreach-non-iterable" = { preset = "essential", ported = true, status = "decided" }
+"types/foreach-on-empty-array" = { preset = "recommended", ported = true, status = "decided" }
 "types/function-return" = { preset = "essential", ported = true, status = "decided" }
 "types/function-variance" = { preset = "essential", status = "decided" }
-"types/generator" = { preset = "essential", status = "decided" }
+"types/generator" = { preset = "essential", ported = true, status = "decided" }
 "types/implode-non-string" = { preset = "recommended", status = "decided" }
 "types/interpolated-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-arrow-function-signature" = { preset = "basic", ported = true, status = "decided" }
@@ -1244,7 +1244,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-method-signature" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-method-tag-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-method-template" = { preset = "essential", ported = true, status = "decided" }
-"types/invalid-offset" = { preset = "essential", status = "decided" }
+"types/invalid-offset" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-pipe" = { preset = "basic", status = "decided" }
 "types/invalid-property-assignment" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-property-type" = { preset = "basic", ported = true, status = "decided" }
@@ -1284,7 +1284,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/print-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/printf-argument" = { preset = "recommended", status = "decided" }
 "types/property-assign" = { preset = "essential", status = "decided" }
-"types/property-default" = { preset = "essential", status = "decided" }
+"types/property-default" = { preset = "essential", ported = true, status = "decided" }
 "types/property-variance" = { preset = "essential", status = "decided" }
 "types/random-int-range" = { preset = "recommended", status = "decided" }
 "types/readonly-property-by-ref" = { preset = "essential", status = "decided" }
@@ -1297,7 +1297,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/sort-non-stringable" = { preset = "recommended", status = "decided" }
 "types/this-in-global" = { preset = "basic", ported = true, status = "decided" }
 "types/this-in-static" = { preset = "basic", ported = true, status = "decided" }
-"types/throw-non-throwable" = { preset = "essential", status = "decided" }
+"types/throw-non-throwable" = { preset = "essential", ported = true, status = "decided" }
 "types/throws-not-covariant" = { preset = "basic", status = "decided" }
 "types/throws-void-function" = { preset = "essential", status = "decided" }
 "types/throws-void-hook" = { preset = "essential", status = "decided" }
@@ -1309,16 +1309,16 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/too-wide-method-param-out" = { preset = "recommended", status = "decided" }
 "types/too-wide-method-return" = { preset = "recommended", status = "decided" }
 "types/too-wide-property" = { preset = "recommended", status = "decided" }
-"types/unpack-non-iterable" = { preset = "essential", status = "decided" }
-"types/unpack-string-key" = { preset = "essential", status = "decided" }
+"types/unpack-non-iterable" = { preset = "essential", ported = true, status = "decided" }
+"types/unpack-string-key" = { preset = "essential", ported = true, status = "decided" }
 "types/unused-hook-throws-type" = { preset = "recommended", status = "decided" }
 "types/unused-method-throws-type" = { preset = "recommended", status = "decided" }
 "types/unused-throws-type" = { preset = "recommended", status = "decided" }
 "types/useless-array-filter" = { preset = "recommended", status = "decided" }
 "types/void-match-used" = { preset = "essential", ported = true, status = "decided" }
 "types/write-to-readonly-property" = { preset = "basic", status = "decided" }
-"types/yield-from-non-iterable" = { preset = "essential", status = "decided" }
-"types/yield-outside-function" = { preset = "essential", status = "decided" }
+"types/yield-from-non-iterable" = { preset = "essential", ported = true, status = "decided" }
+"types/yield-outside-function" = { preset = "essential", ported = true, status = "decided" }
 "undefined/assigned-property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/assigned-static-property" = { preset = "basic", ported = true, status = "decided" }
 "undefined/class-constant" = { preset = "basic", status = "decided" }

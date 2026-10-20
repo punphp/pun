@@ -1,0 +1,19 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "unpacking.php",
+   "line": 13,
+   "identifier": "arrayUnpacking.stringOffset",
+   "message": "Array unpacking cannot be used on an array with string keys: array<string, int>",
+   "tip": null
+  },
+  {
+   "file": "unpacking.php",
+   "line": 16,
+   "identifier": "class.notFound",
+   "message": "Instantiated class CoverageUnpacking\\UnknownUnpacked not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

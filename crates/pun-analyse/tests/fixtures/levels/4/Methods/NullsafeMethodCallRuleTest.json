@@ -1,0 +1,136 @@
+{
+    "test": "Methods/NullsafeMethodCallRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/nullsafe-method-call-rule.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/nullsafe-method-call-rule.php",
+                    "line": 15,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Exception::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/nullsafe-method-call-rule.php",
+                    "line": 16,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Exception::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/nullsafe-method-call-rule.php",
+                    "line": 16,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe method call on non-nullable type Exception. Use -> instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/nullsafe-method-call-rule.php",
+                    "line": 17,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method doFoo() on null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14150",
+            "files": [
+                "Methods/data/bug-14150-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14150-nullsafe.php",
+                    "line": 21,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Bug14150NullsafeMethod\\HelloWorld::y().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14150-nullsafe.php",
+                    "line": 21,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe method call on non-nullable type $this(Bug14150NullsafeMethod\\HelloWorld). Use -> instead.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14150WithoutCertainPhpDocTypes",
+            "files": [
+                "Methods/data/bug-14150-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14150-nullsafe.php",
+                    "line": 21,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Bug14150NullsafeMethod\\HelloWorld::y().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14150-nullsafe.php",
+                    "line": 21,
+                    "identifier": "nullsafe.neverNull",
+                    "message": "Using nullsafe method call on non-nullable type $this(Bug14150NullsafeMethod\\HelloWorld). Use -> instead.",
+                    "tip": "Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6922b",
+            "files": [
+                "Methods/data/bug-6922b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8523",
+            "files": [
+                "Methods/data/bug-8523.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8523b",
+            "files": [
+                "Methods/data/bug-8523b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8523c",
+            "files": [
+                "Methods/data/bug-8523c.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12222",
+            "files": [
+                "Methods/data/bug-12222.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

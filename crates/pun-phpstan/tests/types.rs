@@ -283,7 +283,7 @@ fn accepts() {
 }
 
 /// Whether `toString()`, `toNumber()`, `toInteger()`, `toFloat()` and `toBitwiseNotType()` are an ErrorType
-/// (`toBoolean()` never is).
+/// (`toBoolean()` never is), and `isCloneable()`.
 #[test]
 fn casts() {
     use pun_phpstan::types::{Cast, StrictMixed, cast_is_error};
@@ -301,6 +301,10 @@ fn casts() {
         let want: Vec<bool> = (2..7).map(|i| row[i].as_bool().unwrap()).collect();
         if got != want || cast_is_error(&t, Cast::Boolean, sm) {
             failures.push(format!("{ctx:?} {a}: want {want:?}, got {got:?}"));
+        }
+        let cloneable = format!("{:?}", t.is_cloneable());
+        if row[7].as_str().is_some_and(|want| want != cloneable) {
+            failures.push(format!("{ctx:?} {a}: isCloneable() want {}, got {cloneable}", row[7]));
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));

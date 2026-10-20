@@ -1,0 +1,123 @@
+{
+    "test": "Arrays/DeadForeachRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Arrays/data/dead-foreach.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/dead-foreach.php",
+                    "line": 16,
+                    "identifier": "foreach.emptyArray",
+                    "message": "Empty array passed to foreach.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/dead-foreach.php",
+                    "line": 30,
+                    "identifier": "foreach.emptyArray",
+                    "message": "Empty array passed to foreach.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7913",
+            "files": [
+                "Arrays/data/bug-7913.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-7913.php",
+                    "line": 6,
+                    "identifier": "empty.expr",
+                    "message": "Expression in empty() is always falsy.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/bug-7913.php",
+                    "line": 13,
+                    "identifier": "empty.variable",
+                    "message": "Variable $x in empty() always exists and is always falsy.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14888",
+            "files": [
+                "Arrays/data/bug-14888.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8292",
+            "files": [
+                "Arrays/data/bug-8292.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-8292.php",
+                    "line": 26,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property Bug8292\\ChunkCache::$caches.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13248",
+            "files": [
+                "Arrays/data/bug-13248.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/bug-13248.php",
+                    "line": 23,
+                    "identifier": "return.type",
+                    "message": "Method Bug13248\\Y::getIterator() should return ArrayIterator<int<0, 2>, 'a'|'b'|'c'> but returns ArrayIterator<int, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2560",
+            "files": [
+                "Arrays/data/bug-2560.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2457",
+            "files": [
+                "Arrays/data/bug-2457.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8056",
+            "files": [
+                "Arrays/data/bug-8056.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

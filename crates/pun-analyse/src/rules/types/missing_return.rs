@@ -174,6 +174,7 @@ pub(super) fn generator_return(t: &Type) -> Option<Type> {
         Type::Object(name, args) if name.eq_ignore_ascii_case("Generator") => {
             Some(args.get(3).cloned().unwrap_or_else(pun_phpstan::types::mixed))
         }
+        Type::Never(_) => Some(Type::Never(NeverKind::Implicit)),
         _ => None,
     }
 }
