@@ -201,3 +201,42 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14904
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8060
 4 Comparison/TernaryOperatorConstantConditionRuleTest::testBug3370
+# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
+2 Constants/ValueAssignedToClassConstantRuleTest::testRule
+2 PhpDoc/IncompatibleClassConstantPhpDocTypeRuleTest::testNativeType
+# an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
+3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testRule
+3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testFeature7648
+3 Properties/ReadOnlyPropertyAssignRuleTest::testRule
+3 Properties/ReadOnlyPropertyAssignRuleTest::testFeature7648
+3 Properties/ReadOnlyPropertyAssignRuleTest::testBug11495
+3 Properties/TypesAssignedToPropertiesRuleTest::testTypesAssignedToProperties
+3 Properties/TypesAssignedToPropertiesRuleTest::testTypesAssignedToPropertiesExpressionNames
+3 Properties/TypesAssignedToPropertiesRuleTest::testTypesAssignedToStaticPropertiesExpressionNames
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3777/0
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3777/1
+3 Properties/TypesAssignedToPropertiesRuleTest::testAppendendArrayKey
+3 Properties/TypesAssignedToPropertiesRuleTest::testAppendedArrayItemType
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug6286
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug4910
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3703
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3383
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug6356b
+3 Properties/TypesAssignedToPropertiesRuleTest::testIntegerRangesAndConstants
+3 Properties/TypesAssignedToPropertiesRuleTest::testWritingReadonlyProperty
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug4174
+3 Properties/TypesAssignedToPropertiesRuleTest::testShortBodySetHook
+3 Properties/TypesAssignedToPropertiesRuleTest::testPropertyHooks
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438d
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438e
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438f
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug7912
+3 Properties/TypesAssignedToPropertiesRuleTest::testCloneWith
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug12688
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug10924
+# an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
+3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypes
+3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypesLevel8
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug10749
+# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug10884

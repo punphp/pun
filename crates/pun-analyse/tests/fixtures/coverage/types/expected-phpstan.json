@@ -86,6 +86,209 @@
    "tip": null
   },
   {
+   "file": "properties.php",
+   "line": 19,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 34,
+   "identifier": "property.readOnlyAssignNotOnThis",
+   "message": "Readonly property CoverageProperties\\Holder::$r is not assigned on $this.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 40,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 41,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 43,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 44,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 49,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 50,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 51,
+   "identifier": "property.readOnlyByPhpDocAssignNotInConstructor",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 52,
+   "identifier": "property.readOnlyAssignByRef",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned by reference.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 55,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$magic (string) does not accept int.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 56,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 70,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder|CoverageProperties\\Other::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 76,
+   "identifier": "property.readOnlyByPhpDocDefaultValue",
+   "message": "@readonly property cannot have a default value.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 83,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Frozen::$a is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 96,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 97,
+   "identifier": "property.readOnlyAssignNotInConstructor",
+   "message": "Readonly property CoverageProperties\\Holder::$r is assigned outside of the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 103,
+   "identifier": "assign.propertyProtectedSet",
+   "message": "Assign to protected(set) property CoverageProperties\\Holder::$r.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 104,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Holder::$doc is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 105,
+   "identifier": "assign.propertyType",
+   "message": "Property CoverageProperties\\Holder::$i (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 106,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Holder::$magicRead is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 107,
+   "identifier": "assign.propertyReadOnly",
+   "message": "Property CoverageProperties\\Suit::$value is not writable.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 108,
+   "identifier": "property.readOnlyByPhpDocAssignOutOfClass",
+   "message": "@readonly property CoverageProperties\\Frozen::$a is assigned outside of its declaring class.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 109,
+   "identifier": "assign.propertyType",
+   "message": "Static property CoverageProperties\\Holder::$s (int) does not accept string.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 115,
+   "identifier": "property.uninitializedReadonlyByPhpDoc",
+   "message": "Class CoverageProperties\\Hooked has an uninitialized @readonly property $h. Assign it in the constructor.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 124,
+   "identifier": "classConstant.value",
+   "message": "Constant CoverageProperties\\Constants::NATIVE (int) does not accept value 'a'.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 127,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant CoverageProperties\\Constants::DOC with type string is incompatible with value 1.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 130,
+   "identifier": "classConstant.phpDocType",
+   "message": "PHPDoc tag @var for constant CoverageProperties\\Constants::MAYBE2 with type true is not subtype of value bool.",
+   "tip": null
+  },
+  {
+   "file": "properties.php",
+   "line": 133,
+   "identifier": "classConstant.value",
+   "message": "Constant CoverageProperties\\Constants::BOTH (int<1, 5>) does not accept value 9.",
+   "tip": null
+  },
+  {
    "file": "types.php",
    "line": 20,
    "identifier": "void.pure",

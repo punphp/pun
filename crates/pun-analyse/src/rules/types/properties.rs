@@ -1,0 +1,465 @@
+//! Level 3's property writes, over PropertyReflectionFinder: TypesAssignedToPropertiesRule (`assign.propertyType`),
+//! ReadOnlyPropertyAssignRule and ReadOnlyByPhpDocPropertyAssignRule (`property.readOnly*`, `assign.readOnlyProperty`
+//! is not reported), ReadOnlyPropertyAssignRefRule and ReadOnlyByPhpDocPropertyAssignRefRule (`*AssignByRef`), and
+//! from level 2 WritingToReadOnlyPropertiesRule (`assign.propertyReadOnly`) beyond `$this` (see read_only_write.rs).
+
+use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::property::PropertyMetadata;
+use mago_codex::visibility::Visibility;
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
+use mago_word::{Word, word};
+use pun_phpstan::types::{Type, is_super_type_of, mixed, recommended_level};
+
+use super::super::doc::tags;
+use super::super::overriding_property::hook_names;
+use super::super::property_access::{has_instance_property, has_static_property};
+use super::super::{Checker, declared};
+use super::flow::unparen;
+
+pub const IDENTIFIERS: &[&str] = &[
+    "assign.propertyType",
+    "property.readOnlyAssignOutOfClass",
+    "property.readOnlyAssignNotOnThis",
+    "property.readOnlyAssignNotInConstructor",
+    "property.readOnlyAssignByRef",
+    "property.readOnlyByPhpDocAssignOutOfClass",
+    "property.readOnlyByPhpDocAssignNotOnThis",
+    "property.readOnlyByPhpDocAssignNotInConstructor",
+    "property.readOnlyByPhpDocAssignByRef",
+];
+
+/// A property fetch: the expression holding it (`None`: a class name, resolved), its name with `$`, the name's span.
+struct Fetch<'e, 'arena> {
+    holder: Option<&'e Expression<'arena>>,
+    class: Option<&'e Expression<'arena>>,
+    name: Vec<u8>,
+    at: Span,
+    instance: bool,
+}
+
+fn fetch<'e, 'arena>(e: &'e Expression<'arena>) -> Option<Fetch<'e, 'arena>> {
+    match unparen(e) {
+        Expression::Access(Access::Property(p)) => {
+            let ClassLikeMemberSelector::Identifier(id) = &p.property else { return None };
+            Some(Fetch {
+                holder: Some(p.object),
+                class: None,
+                name: [b"$", id.value].concat(),
+                at: id.span(),
+                instance: true,
+            })
+        }
+        Expression::Access(Access::StaticProperty(p)) => {
+            let Variable::Direct(v) = &p.property else { return None };
+            Some(Fetch { holder: None, class: Some(p.class), name: v.name.to_vec(), at: v.span(), instance: false })
+        }
+        _ => None,
+    }
+}
+
+/// The property fetches a write target writes (offsets of one too, `true`), as PropertyAssignNodes.
+fn targets<'e, 'arena>(e: &'e Expression<'arena>, offset: bool, out: &mut Vec<(Fetch<'e, 'arena>, bool)>) {
+    let e = unparen(e);
+    if let Some(f) = fetch(e) {
+        out.push((f, offset));
+        return;
+    }
+    let elements = match e {
+        Expression::ArrayAccess(a) => return targets(a.array, true, out),
+        Expression::ArrayAppend(a) => return targets(a.array, true, out),
+        Expression::List(l) => l.elements.as_slice(),
+        Expression::Array(l) => l.elements.as_slice(),
+        _ => return,
+    };
+    for el in elements {
+        match el {
+            ArrayElement::KeyValue(kv) => targets(kv.value, offset, out),
+            ArrayElement::Value(v) => targets(v.value, offset, out),
+            _ => {}
+        }
+    }
+}
+
+/// The holders whose types the rules read.
+pub(super) fn typed(e: &Expression, spans: &mut Vec<Span>) {
+    let mut out = Vec::new();
+    match e {
+        Expression::Assignment(a) => {
+            targets(a.lhs, false, &mut out);
+            spans.extend([a.rhs.span(), e.span()]);
+            if let Expression::UnaryPrefix(u) = a.rhs {
+                spans.push(u.operand.span());
+                out.extend(fetch(u.operand).map(|f| (f, false)));
+            }
+        }
+        Expression::UnaryPrefix(u) if u.operator.is_increment_or_decrement() => targets(u.operand, false, &mut out),
+        Expression::UnaryPostfix(u) => targets(u.operand, false, &mut out),
+        _ => {}
+    }
+    spans.extend(out.iter().filter_map(|(f, _)| f.holder.or(f.class)).map(|h| h.span()));
+}
+
+/// A FoundPropertyReflection.
+struct Prop<'a> {
+    declaring: &'a ClassLikeMetadata,
+    meta: &'a PropertyMetadata,
+    name: String,
+    writable: Option<Type>,
+    native_readonly: bool,
+    phpdoc_readonly: bool,
+    private_mutation: bool,
+}
+
+const READONLY: [&str; 6] = [
+    "@readonly",
+    "@phan-read-only",
+    "@psalm-readonly",
+    "@phpstan-readonly",
+    "@phpstan-readonly-allow-private-mutation",
+    "@psalm-readonly-allow-private-mutation",
+];
+const IMMUTABLE: [&str; 5] = ["@immutable", "@phan-immutable", "@psalm-immutable", "@phpstan-immutable", "@readonly"];
+const PRIVATE_MUTATION: [&str; 4] = [
+    "@phpstan-readonly-allow-private-mutation",
+    "@phpstan-allow-private-mutation",
+    "@psalm-readonly-allow-private-mutation",
+    "@psalm-allow-private-mutation",
+];
+
+/// `$scope->getType()` of the fetch's holder (a class name's type for `Foo::$a`).
+fn holder_type(c: &Checker, f: &Fetch) -> Option<Type> {
+    if let Some(h) = f.holder {
+        // (Mago types no `$this` it reads by reference)
+        return c.phpstan_type(h).or_else(|| {
+            let this = matches!(unparen(h), Expression::Variable(Variable::Direct(v)) if v.name == b"$this");
+            c.class_scope().filter(|_| this).map(|k| Type::This(c.reflected_name(k.name.as_bytes())))
+        });
+    }
+    let class = f.class?;
+    let scope = c.class_scope();
+    let name = |k: &ClassLikeMetadata| c.reflected_name(k.name.as_bytes());
+    match unparen(class) {
+        Expression::Identifier(id) => Some(Type::Object(c.reflected_name(c.resolved(id).as_bytes()), vec![])),
+        Expression::Self_(_) => scope.map(|k| Type::Object(name(k), vec![])),
+        Expression::Static(_) => scope.map(|k| Type::Static(name(k), vec![])),
+        Expression::Parent(_) => {
+            let parent = scope?.direct_parent_class.as_ref()?;
+            Some(Type::Object(c.reflected_name(parent.as_bytes()), vec![]))
+        }
+        e => c.phpstan_type(e),
+    }
+}
+
+/// Whether the modifiers before a declaration's name say `readonly` (Mago marks `@readonly` and `@immutable`
+/// properties readonly too).
+fn says_readonly(c: &Checker, name: Option<Span>) -> bool {
+    let Some(name) = name else { return false };
+    c.file_contents(name.file_id).is_some_and(|contents| {
+        let head = contents[..name.start.offset as usize]
+            .iter()
+            .rev()
+            .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
+            .count();
+        let head = &contents[name.start.offset as usize - head..name.start.offset as usize];
+        head.split(|b| !b.is_ascii_alphanumeric() && *b != b'_').any(|w| w.eq_ignore_ascii_case(b"readonly"))
+    })
+}
+
+/// A class template `T` of `scope` as the holder's argument.
+fn with_args(t: &Type, scope: &str, names: &[String], args: &[Type]) -> Type {
+    match t {
+        Type::Template(tpl) if tpl.scope == scope => {
+            names.iter().position(|n| *n == tpl.name).and_then(|i| args.get(i)).cloned().unwrap_or_else(|| t.clone())
+        }
+        _ => t.traverse(&|i| with_args(i, scope, names, args)),
+    }
+}
+
+/// `findPropertyReflectionsFromNode()`: the property when every class of the holder has it.
+fn find<'a>(c: &Checker<'a, '_>, f: &Fetch) -> Option<Prop<'a>> {
+    let holder = holder_type(c, f)?;
+    let names = holder.object_class_names();
+    let classes: Vec<&'a ClassLikeMetadata> =
+        names.iter().map(|n| c.codebase.get_class_like(n.as_bytes())).collect::<Option<_>>()?;
+    let has = |k: &ClassLikeMetadata| {
+        if f.instance { has_instance_property(c, k, &f.name) } else { has_static_property(c, k, &f.name) }
+    };
+    // ponytail: a union of classes reads the first one's property (UnionTypePropertyReflection merges them)
+    let class = *classes.first().filter(|_| classes.iter().all(|k| has(k)))?;
+    let name = String::from_utf8_lossy(&f.name[1..]).into_owned();
+    let magic_property = || {
+        let declaring = class.magic_property_ids.get(&word(&f.name))?;
+        let meta = c.codebase.get_magic_property(declaring.as_bytes(), &f.name)?;
+        Some((c.codebase.get_class_like(declaring.as_bytes())?, meta, true))
+    };
+    // the native property an `@property` replaces
+    let mut shadowed = None;
+    let (declaring, meta, magic) = match c.declared_property(class, &f.name) {
+        // an `@property` at most as far up the hierarchy as the native property replaces it
+        Some((declaring, origin, meta)) => match magic_property() {
+            Some(m)
+                if f.instance
+                    && declaring.kind != mago_codex::symbol::SymbolKind::Enum
+                    && (c.allows_dynamic_properties(class) || can_access(c, declaring, meta.read_visibility))
+                    && (meta.read_visibility == Visibility::Public
+                        || c.class_scope().is_none_or(|k| k.name != declaring.name))
+                    && distance(c, class, &m.0.name) <= distance(c, class, &origin.name) =>
+            {
+                shadowed = Some((declaring, meta));
+                m
+            }
+            _ => (declaring, meta, false),
+        },
+        None => magic_property()?,
+    };
+    // an `@property-read` over a writable native property writes the native type
+    let native_write = shadowed.filter(|_| meta.flags.is_readonly());
+    let ty = if let Some((declaring, meta)) = native_write {
+        declared::property_of(c, declaring, meta, &f.name[1..])
+    } else if magic {
+        meta.type_metadata.as_ref().map_or_else(mixed, |t| c.to_phpstan(&t.type_union))
+    } else {
+        declared::property_of(c, declaring, meta, &f.name[1..])
+    };
+    let ty = match &holder {
+        Type::Object(_, args) if !args.is_empty() => {
+            let names: Vec<String> = declaring.get_template_type_names().iter().map(|n| n.to_string()).collect();
+            with_args(&ty, &format!("class {}", c.reflected_name(declaring.name.as_bytes())), &names, args)
+        }
+        _ => ty,
+    };
+    // an enum's `name` and `value` (EnumPropertyReflection) are neither writable nor readonly properties
+    let enum_ = declaring.kind == mago_codex::symbol::SymbolKind::Enum;
+    let writable = if enum_ {
+        false
+    } else if magic {
+        !meta.flags.is_readonly() || native_write.is_some()
+    } else {
+        meta.flags.is_static()
+            || !c.property_virtual(declaring, meta, &f.name)
+            || c.property_hooks(declaring, hook_names(meta), &f.name).1
+    };
+    let readonly = meta.flags.is_readonly() && !magic && !enum_;
+    let native_readonly = readonly && (says_readonly(c, meta.name_span) || says_readonly(c, declaring.name_span));
+    // `ClassReflection::isImmutable()` (up the parents) or the property's own readonly tag
+    let doc = |span: Option<Span>| span.and_then(|s| declared::doc_at(c, s)).map(|(d, _)| tags(&d)).unwrap_or_default();
+    let tagged = |span, names: &[&str]| doc(span).iter().any(|(t, _)| names.contains(&t.as_str()));
+    let immutable = std::iter::once(&declaring.name)
+        .chain(&declaring.all_parent_classes)
+        .filter_map(|n| c.codebase.get_class_like(n.as_bytes()))
+        .any(|k| tagged(Some(k.span), &IMMUTABLE));
+    let span = declared::property_span(c, meta);
+    let phpdoc_readonly = !magic && !enum_ && !native_readonly && (immutable || tagged(span, &READONLY));
+    Some(Prop {
+        declaring,
+        meta,
+        name,
+        writable: writable.then_some(ty),
+        phpdoc_readonly,
+        private_mutation: tagged(span, &PRIVATE_MUTATION),
+        native_readonly,
+    })
+}
+
+/// A write of `$this->p` in one of `p`'s own hooks (`getHookedPropertyName()`).
+fn in_own_hook(f: &Fetch, p: &Prop) -> bool {
+    let this =
+        f.holder.is_some_and(|h| matches!(unparen(h), Expression::Variable(Variable::Direct(v)) if v.name == b"$this"));
+    this && p.meta.span.is_some_and(|s| s.has_offset(f.at.start.offset))
+}
+
+/// `ClassReflection::getClassHierarchyDistances()`'s distance of `of` from `class` (its traits, then each parent and
+/// its traits).
+fn distance(c: &Checker, class: &ClassLikeMetadata, of: &Word) -> usize {
+    let mut at = 0;
+    let mut current = Some(class);
+    loop {
+        let Some(k) = current else { return usize::MAX };
+        if k.name == *of || k.used_traits.contains(of) {
+            return at + usize::from(k.name != *of);
+        }
+        at += 1 + k.used_traits.len();
+        current = k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes()));
+    }
+}
+
+/// `$scope->canReadProperty()` or `canWriteProperty()` for a member of `declaring` with visibility `v`.
+fn can_access(c: &Checker, declaring: &ClassLikeMetadata, v: Visibility) -> bool {
+    let inside = |k: &ClassLikeMetadata| k.name == declaring.name || k.all_parent_classes.contains(&declaring.name);
+    match (v, c.class_scope()) {
+        (Visibility::Public, _) => true,
+        (_, None) => false,
+        (Visibility::Protected, Some(k)) => inside(k) || declaring.all_parent_classes.contains(&k.name),
+        (Visibility::Private, Some(k)) => k.name == declaring.name,
+    }
+}
+
+/// `$scope->canWriteProperty()`.
+fn can_write(c: &Checker, p: &Prop) -> bool {
+    can_access(c, p.declaring, p.meta.write_visibility)
+}
+
+/// ReadOnlyPropertyAssignRule and ReadOnlyByPhpDocPropertyAssignRule for one write.
+fn read_only(c: &mut Checker, f: &Fetch, p: &Prop, offset: bool) {
+    if !f.instance || !can_write(c, p) || !(p.native_readonly || p.phpdoc_readonly) {
+        return;
+    }
+    if p.phpdoc_readonly && in_own_hook(f, p) {
+        return;
+    }
+    let (kind, id) = if p.native_readonly { ("Readonly", "readOnly") } else { ("@readonly", "readOnlyByPhpDoc") };
+    let what = format!("{kind} property {}::${}", c.display(p.declaring), p.name);
+    let report = |c: &mut Checker, suffix: &str, message: &str| {
+        c.report(f.at, &format!("property.{id}{suffix}"), format!("{what} {message}"), None);
+    };
+    let Some(scope) = c.class_scope() else {
+        return report(c, "AssignOutOfClass", "is assigned outside of its declaring class.");
+    };
+    if scope.name != p.declaring.name {
+        // supportsAsymmetricVisibility(): a subclass may write a readonly property that is not private(set)
+        let subclass = p.native_readonly
+            && c.php_version >= 80400
+            && p.meta.write_visibility != Visibility::Private
+            && scope.all_parent_classes.contains(&p.declaring.name);
+        if !subclass {
+            return report(c, "AssignOutOfClass", "is assigned outside of its declaring class.");
+        }
+    }
+    let method = c.functions.last().map(|m| m.name.to_ascii_lowercase()).unwrap_or_default();
+    let clone = p.native_readonly && c.php_version >= 80300 && method == "__clone";
+    if method == "__construct" || method == "__unserialize" || clone {
+        let on_this = f.holder.and_then(|h| c.phpstan_type(h)).is_some_and(|t| find_this(&t));
+        if !on_this {
+            report(c, "AssignNotOnThis", "is not assigned on $this.");
+        }
+        // ponytail: `is already assigned` (assign.readOnlyProperty) needs the clone's reinitialisation tracking
+        return;
+    }
+    // isAllowedPrivateMutation()
+    let allowed = p.phpdoc_readonly && p.private_mutation;
+    // isArrayAccessOffsetWrite()
+    let array_access = Type::Object("ArrayAccess".into(), vec![]);
+    if !allowed && !(offset && p.writable.as_ref().is_some_and(|t| is_super_type_of(&array_access, t).yes())) {
+        report(c, "AssignNotInConstructor", "is assigned outside of the constructor.");
+    }
+}
+
+/// WritingToReadOnlyPropertiesRule of a fetch not on `$this` (whose writes read_only_write.rs checks at every level).
+fn not_writable(c: &mut Checker, f: &Fetch, p: &Prop) {
+    let this = |h: &Expression| matches!(unparen(h), Expression::Variable(Variable::Direct(v)) if v.name == b"$this");
+    let enum_ = p.declaring.kind == mago_codex::symbol::SymbolKind::Enum;
+    let Some(holder) = f.holder.filter(|h| enum_ || !this(h)) else { return };
+    if p.writable.is_some() || !can_write(c, p) {
+        return;
+    }
+    let Some(on) = c.phpstan_type(holder) else { return };
+    let declaring = Type::Object(c.reflected_name(p.declaring.name.as_bytes()), vec![]);
+    let class = declared::with_classes(c, || {
+        if is_super_type_of(&declaring, &on).yes() {
+            c.display(p.declaring)
+        } else {
+            on.describe(pun_phpstan::types::Level::TypeOnly)
+        }
+    });
+    c.report(f.at, "assign.propertyReadOnly", format!("Property {class}::${} is not writable.", p.name), None);
+}
+
+/// `TypeUtils::findThisType()`.
+// ponytail: Mago's union of `$this` and its class is the class, so only a plain `$this` counts
+fn find_this(t: &Type) -> bool {
+    matches!(t, Type::This(_))
+}
+
+/// TypesAssignedToPropertiesRule for a direct write of `value`.
+fn assigned(c: &mut Checker, f: &Fetch, p: &Prop, value: Option<Type>, at: Span) {
+    let (Some(ty), Some(value)) = (&p.writable, value) else { return };
+    let strict = super::returns::strict_types(c);
+    let levels = c.levels();
+    let kind = if f.instance { "Property" } else { "Static property" };
+    let message = declared::with_classes(c, || {
+        if levels.accepts(ty, &value, strict) {
+            return None;
+        }
+        let level = recommended_level(ty, Some(&value));
+        Some(format!(
+            "{kind} {}::${} ({}) does not accept {}.",
+            c.display(p.declaring),
+            p.name,
+            ty.describe(level),
+            value.describe(level)
+        ))
+    });
+    if let Some(message) = message {
+        c.report(at, "assign.propertyType", message, None);
+    }
+}
+
+pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
+    if c.level < 2 {
+        return;
+    }
+    let mut writes = Vec::new();
+    targets(a.lhs, false, &mut writes);
+    // `= &$x`: the referenced side as written, `.=` and co.: the result
+    let by_ref = match a.rhs {
+        Expression::UnaryPrefix(u) if u.operator.is_reference() => Some(u.operand),
+        _ => None,
+    };
+    let value = match (&a.operator, by_ref) {
+        (AssignmentOperator::Assign(_), Some(r)) => Some(r),
+        (AssignmentOperator::Assign(_), None) => Some(a.rhs),
+        _ => None,
+    };
+    // ponytail: the values a list destructuring gives its properties are not checked
+    let direct = fetch(a.lhs).is_some();
+    for (f, offset) in &writes {
+        let Some(p) = declared::with_classes(c, || find(c, f)) else { continue };
+        not_writable(c, f, &p);
+        if c.level < 3 {
+            continue;
+        }
+        read_only(c, f, &p, *offset);
+        if direct && !offset {
+            let ty = match value {
+                Some(v) => c.phpstan_type(v),
+                None => c.types.get(&a.span()).map(|t| c.to_phpstan(t)),
+            };
+            assigned(c, f, &p, ty, value.unwrap_or(a.rhs).span());
+        }
+    }
+    let Some(f) = by_ref.and_then(fetch).filter(|f| f.instance && c.level >= 3) else { return };
+    let Some(p) = declared::with_classes(c, || find(c, &f)) else { return };
+    if (p.native_readonly || p.phpdoc_readonly) && can_write(c, &p) {
+        let (kind, id) = if p.native_readonly { ("Readonly", "readOnly") } else { ("@readonly", "readOnlyByPhpDoc") };
+        let message = format!("{kind} property {}::${} is assigned by reference.", c.display(p.declaring), p.name);
+        c.report(a, &format!("property.{id}AssignByRef"), message, None);
+    }
+}
+
+/// `++`/`--` of a property (a write, but its type is not checked here).
+pub(in super::super) fn increment(c: &mut Checker, operand: &Expression) {
+    writes(c, operand, false);
+}
+
+/// `unset($this->p[$k])`, a write of `$this->p` (but not `unset($this->p)`).
+pub(in super::super) fn unset(c: &mut Checker, u: &Unset) {
+    for v in u.values.iter() {
+        writes(c, v, true);
+    }
+}
+
+fn writes(c: &mut Checker, e: &Expression, offsets_only: bool) {
+    if c.level < 2 {
+        return;
+    }
+    let mut writes = Vec::new();
+    targets(e, false, &mut writes);
+    for (f, offset) in writes.iter().filter(|(_, offset)| *offset || !offsets_only) {
+        let Some(p) = declared::with_classes(c, || find(c, f)) else { continue };
+        not_writable(c, f, &p);
+        if c.level >= 3 {
+            read_only(c, f, &p, *offset);
+        }
+    }
+}

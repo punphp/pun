@@ -1,0 +1,150 @@
+{
+    "test": "Constants/ValueAssignedToClassConstantRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/value-assigned-to-class-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant.php",
+                    "line": 14,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant ValueAssignedToClassConstant\\Foo::BAZ with type string is incompatible with value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant.php",
+                    "line": 23,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant ValueAssignedToClassConstant\\Foo::DOLOR with type ValueAssignedToClassConstant\\Foo<int> is incompatible with value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant.php",
+                    "line": 23,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @var for constant ValueAssignedToClassConstant\\Foo::DOLOR contains generic type ValueAssignedToClassConstant\\Foo<int> but class ValueAssignedToClassConstant\\Foo is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant.php",
+                    "line": 32,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant ValueAssignedToClassConstant\\Bar::BAZ with type string is incompatible with value 2.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7352",
+            "files": [
+                "Constants/data/bug-7352.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7352WithSubNamespace",
+            "files": [
+                "Constants/data/bug-7352-with-sub-namespace.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7273",
+            "files": [
+                "Constants/data/bug-7273.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7273b",
+            "files": [
+                "Constants/data/bug-7273b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5655",
+            "files": [
+                "Constants/data/bug-5655.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNativeType",
+            "files": [
+                "Constants/data/value-assigned-to-class-constant-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant-native-type.php",
+                    "line": 10,
+                    "identifier": "classConstant.value",
+                    "message": "Constant ValueAssignedToClassConstantNativeType\\Foo::BAR (int) does not accept value 'bar'.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant-native-type.php",
+                    "line": 21,
+                    "identifier": "classConstant.value",
+                    "message": "Constant ValueAssignedToClassConstantNativeType\\Bar::BAR (int<1, max>) does not accept value 0.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant-native-type.php",
+                    "line": 30,
+                    "identifier": "classConstant.value",
+                    "message": "Constant ValueAssignedToClassConstantNativeType\\Floats::BAR (int) does not accept value 1.0.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/value-assigned-to-class-constant-native-type.php",
+                    "line": 33,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant ValueAssignedToClassConstantNativeType\\Floats::BAZ with type float is incompatible with value 1.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10212",
+            "files": [
+                "Constants/data/bug-10212.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/bug-10212.php",
+                    "line": 15,
+                    "identifier": "classConstant.value",
+                    "message": "Constant Bug10212\\HelloWorld::B (Bug10212\\X\\Foo) does not accept value Bug10212\\Foo::Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/bug-10212.php",
+                    "line": 20,
+                    "identifier": "class.notFound",
+                    "message": "Class Bug10212\\X\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

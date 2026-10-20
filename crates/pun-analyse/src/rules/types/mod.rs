@@ -16,6 +16,8 @@ mod returns;
 mod values;
 mod yields;
 mod void_match;
+mod constant_value;
+mod properties;
 
 use std::collections::HashMap;
 
@@ -40,9 +42,11 @@ pub(super) use void_match::void_match;
 pub(super) use values::{array, array_access, clone, foreach, throw};
 pub(super) use yields::program as yields_outside;
 pub(super) use property_default::property as property_default;
+pub(super) use constant_value::class_constant;
+pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
@@ -101,6 +105,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
     }
     fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
         values::typed(e, self.level, &mut self.spans);
+        if self.level >= 2 {
+            properties::typed(e, &mut self.spans);
+        }
+    }
+    fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+        if self.level >= 2 {
+            constant_value::typed(k, &mut self.spans);
+        }
     }
     fn walk_in_foreach(&mut self, f: &'ast Foreach<'arena>, _: &mut ()) {
         if self.level >= 3 {
