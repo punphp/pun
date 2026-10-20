@@ -200,6 +200,11 @@ fn var_guard(var: &[u8], name: &[u8]) -> Guard {
     Guard::Expr(format!("{}->{}", String::from_utf8_lossy(var), String::from_utf8_lossy(name)))
 }
 
+/// The key of a variable an `isset()` of its offset gives a HasOffsetType.
+pub fn offset_guard(var: &[u8]) -> Guard {
+    Guard::Expr(format!("{}[]", String::from_utf8_lossy(var)))
+}
+
 fn this_name<'a>(p: &'a PropertyAccess) -> Option<&'a [u8]> {
     let is_this = matches!(unparenthesized(p.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this");
     match &p.property {
@@ -264,7 +269,13 @@ fn chain(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, out: &mut Vec<
         out.push(g);
     }
     match e {
-        Expression::ArrayAccess(a) => chain(a.array, resolve, out),
+        Expression::ArrayAccess(a) => {
+            // a variable's offset: the variable is an intersection with HasOffsetType
+            if let Expression::Variable(Variable::Direct(v)) = unparenthesized(a.array) {
+                out.push(offset_guard(v.name));
+            }
+            chain(a.array, resolve, out)
+        }
         Expression::Access(Access::Property(p)) => chain(p.object, resolve, out),
         Expression::Access(Access::NullSafeProperty(p)) => chain(p.object, resolve, out),
         _ => {}

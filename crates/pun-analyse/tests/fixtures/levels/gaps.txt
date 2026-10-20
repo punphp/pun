@@ -80,22 +80,17 @@
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testTransitive
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testPipeOperator
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testTransitive
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testBug11011
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
 4 DeadCode/UnreachableStatementRuleTest::testBug13232a
 4 DeadCode/UnusedPrivateMethodRuleTest::testRule
 4 Exceptions/OverwrittenExitPointByFinallyRuleTest::testBug5627
-4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
 4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPhpDoc
-4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPipeOperator
 # an-dead: PHPStan's built-in throw-type extensions (DateTime*::createFromFormat, DateTimeImmutable::sub) make an explicit throw point
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testRule
 4 Methods/CallToMethodStatementWithoutSideEffectsRuleTest::testBug11503
@@ -309,13 +304,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testNamedParametersForMultiVariantFunctions
 9 Methods/CallMethodsRuleTest::testBug11559c
 9 Methods/CallMethodsRuleTest::testBug4608
-# an-types2: pipe calls (`|>`) are not checked as calls
-5 Functions/CallToFunctionParametersRuleTest::testPipeOperator
-5 Methods/CallMethodsRuleTest::testPipeOperator
-5 Methods/CallStaticMethodsRuleTest::testPipeOperator
-9 Functions/CallToFunctionParametersRuleTest::testPipeOperator
-9 Methods/CallMethodsRuleTest::testPipeOperator
-9 Methods/CallStaticMethodsRuleTest::testPipeOperator
 # an-types2: Closure::bind()/bindTo() scopes
 5 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 5 Methods/CallMethodsRuleTest::testClosureBind
@@ -797,14 +785,13 @@
 9 Methods/CallMethodsRuleTest::testBug3534
 9 Methods/CallStaticMethodsRuleTest::testBug9732
 9 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
-# an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value, a pipe `|>` into a string)
+# an-types: binary operations where Mago's types differ (str_replace(), DateInterval::format() and unknown functions' return types, comparisons that narrow a float, a benevolent union plus an array, an array offset's value)
 2 Operators/InvalidBinaryOperationRuleTest::testRule
 2 Operators/InvalidBinaryOperationRuleTest::testBug5309
 2 Operators/InvalidBinaryOperationRuleTest::testBenevolentUnion
 2 Operators/InvalidBinaryOperationRuleTest::testBug1452
 2 PhpDoc/WrongVariableNameInVarTagRuleTest::testAssignOperator
 3 Arrays/OffsetAccessAssignOpRuleTest::testRuleWithNullsafeVariant
-4 DeadCode/NoopRuleTest::testPipeOperator
 # an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook

@@ -216,3 +216,11 @@ function binary(string $s, int $i, array $a, mixed $m, \GMP $gmp, float $f, bool
     $i ??= 1;
     $s .= $a;
 }
+
+/** @param \ArrayAccess<string, string> $a */
+function issetOffset(\ArrayAccess $a): void
+{
+    if (isset($a['k'])) {
+        $a['k'] = 1;
+    }
+}

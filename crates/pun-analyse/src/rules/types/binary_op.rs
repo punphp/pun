@@ -23,6 +23,8 @@ enum Op {
     BitXor,
     ShiftLeft,
     ShiftRight,
+    /// `|>`, a call of its right side
+    Pipe,
 }
 
 fn binary_op(op: &BinaryOperator) -> Option<Op> {
@@ -66,6 +68,7 @@ pub(super) fn typed(e: &Expression, spans: &mut Vec<Span>) {
     match e {
         Expression::Binary(b) if binary_op(&b.operator).is_some() => spans.extend([b.lhs.span(), b.rhs.span()]),
         Expression::Assignment(a) if assign_op(&a.operator).is_some() => spans.extend([a.lhs.span(), a.rhs.span()]),
+        Expression::Pipe(p) => spans.extend([p.input.span(), p.callable.span()]),
         _ => {}
     }
 }
@@ -121,6 +124,10 @@ fn pow_fails(base: &Type, exponent: &Type) -> bool {
 fn fails(op: Op, l: &Type, r: &Type, sm: StrictMixed) -> bool {
     if op == Op::Pow {
         return pow_fails(l, r);
+    }
+    // PipeHandler's FuncCall of the right side: an ErrorType when it is no callable
+    if op == Op::Pipe {
+        return r.is_callable().no();
     }
     let num = |t: &Type| cast_is_error(t, Cast::Number, sm);
     if op == Op::Concat {
@@ -222,3 +229,7 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
     }
 }
 
+
+pub(in super::super) fn pipe(c: &mut Checker, p: &Pipe) {
+    check(c, Op::Pipe, p.input, p.callable, p.operator, "binaryOp.invalid");
+}

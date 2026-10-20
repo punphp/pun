@@ -13,6 +13,7 @@ use mago_codex::identifier::method::MethodIdentifier;
 use mago_word::word;
 
 use super::super::{Checker, declared};
+use super::flow::unparen;
 use super::properties::with_args;
 
 pub const IDENTIFIERS: &[&str] = &["offsetAssign.dimType", "offsetAssign.valueType"];
@@ -184,7 +185,16 @@ fn has_no_offset(c: &Checker, t: &Type, offset: &Type) -> bool {
 
 /// OffsetAccessAssignmentRule (every offset of the written chain, `$a[1][2] = ...`) and OffsetAccessAssignOpRule
 /// (the written offset of `$a[1] .= ...`).
+/// A variable an `isset()` of its offset made an intersection with HasOffsetType, whose writes do not fail.
+fn has_offset(c: &Checker, holder: &Expression) -> bool {
+    let Expression::Variable(Variable::Direct(v)) = unparen(holder) else { return false };
+    c.guards.contains(&super::super::property_access::offset_guard(v.name))
+}
+
 fn dim_type(c: &mut Checker, holder: &Expression, offset: Option<&Expression>, op: bool) {
+    if has_offset(c, holder) {
+        return;
+    }
     let Some(potential) = offset.map_or(Some(None), |o| c.phpstan_type(o).map(Some)) else { return };
     let mixed = mixed();
     let found = declared::with_classes(c, || c.find_type_to_check(holder, &|t| !set_fails(c, t, potential.as_ref(), &mixed)));
@@ -229,6 +239,9 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
         }
     }
     // OffsetAccessValueAssignmentRule
+    if has_offset(c, holder) {
+        return;
+    }
     let Some(original) = c.phpstan_type(holder).map(|t| bounds(c, t)) else { return };
     if declared::with_classes(c, || is_super_type_of(&Type::ObjectWithoutClass, &original).no()) {
         return;
