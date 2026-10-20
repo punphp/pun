@@ -1,7 +1,6 @@
 //! InvalidPhpDocVarTagTypeRule (level 2): the `@var` tags of the doc comment of each php-parser statement but a
 //! property, constant, class-like, function or method: unresolvable types, unknown classes, traits and generic
 //! types (the `checkMissingVarTagTypehint` part is level 6).
-//! ponytail: GenericObjectTypeCheck's call-site variance errors are not ported (generics.rs).
 
 use mago_span::{Position, Span};
 use pun_phpstan::types::{Template, Type};
@@ -97,19 +96,10 @@ pub fn check(c: &mut Checker, at: Span, names: Span) {
                 continue;
             }
             let s = generics::escape(&what);
-            let messages = generics::GenericMessages {
-                not_generic: format!("{s} contains generic type %s but %s %s is not generic."),
-                less: format!("Generic type %s in {s} does not specify all template types of %s %s: %s"),
-                more: format!(
-                    "Generic type %s in {s} specifies %d template types, but %s %s supports only %d: %s"
-                ),
-                not_subtype: format!(
-                    "Type %s in generic type %s in {s} is not subtype of template type %s of %s %s."
-                ),
-            };
+            let messages = generics::GenericMessages::at(&s);
             let mut found = generics::Found::default();
             generics::generic_object_check(&ty, &messages, &mut found);
-            errors.extend(found.errors.into_iter().map(|(id, m)| (at, id, m, None)));
+            errors.extend(found.errors.into_iter().map(|(id, m, tip)| (at, id, m, tip)));
             for class in generics::referenced_classes(&ty) {
                 match pun_phpstan::symbols::lookup(&class) {
                     Some(k) if k.is_trait => errors.push((

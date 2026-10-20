@@ -1,0 +1,608 @@
+{
+    "test": "Operators/InvalidBinaryOperationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/invalid-binary.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 12,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between array and array results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 15,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between 5 and 0 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 16,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"%\" between 5 and 0 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 17,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between int and 0.0 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 20,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between 1 and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 21,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between 1 and 'blabla' results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 28,
+                    "identifier": "assignOp.invalid",
+                    "message": "Binary operation \"+=\" between array and 'foo' results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 34,
+                    "identifier": "assignOp.invalid",
+                    "message": "Binary operation \"-=\" between array and array results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 47,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"<<\" between string and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 48,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \">>\" between string and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 49,
+                    "identifier": "assignOp.invalid",
+                    "message": "Binary operation \">>=\" between string and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 59,
+                    "identifier": "assignOp.invalid",
+                    "message": "Binary operation \"<<=\" between string and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 69,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"&\" between string and 5 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 73,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"|\" between string and 5 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 77,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"^\" between string and 5 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 84,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $classWithToString of anonymous function has invalid type Test\\ClassWithToString.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 87,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \".\" between string and stdClass results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 91,
+                    "identifier": "assignOp.invalid",
+                    "message": "Binary operation \".=\" between string and stdClass results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 113,
+                    "identifier": "function.notFound",
+                    "message": "Function nonexistentFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 118,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 122,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between 5 and 0|1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 127,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \".\" between array<string> and 'xyz' results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 136,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between (array<string>|string) and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 156,
+                    "identifier": "equal.invalid",
+                    "message": "Comparison operation \"==\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 157,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 184,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between non-empty-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 185,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between non-empty-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 186,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between non-empty-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 187,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between non-empty-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 189,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between 10 and non-empty-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 190,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between 10 and non-empty-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 191,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between 10 and non-empty-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 192,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between 10 and non-empty-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 194,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 195,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 196,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 197,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 199,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between 10 and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 200,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between 10 and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 201,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between 10 and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 202,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between 10 and string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 204,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between class-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 205,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between class-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 206,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between class-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 207,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between class-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 209,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between 10 and class-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 210,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between 10 and class-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 211,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between 10 and class-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 212,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between 10 and class-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 214,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between literal-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 215,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between literal-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 216,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between literal-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 217,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between literal-string and 10 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 219,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between 10 and literal-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 220,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"-\" between 10 and literal-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 221,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"*\" between 10 and literal-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 222,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"/\" between 10 and literal-string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 259,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between int and array{} results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 267,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"%\" between array and 3 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-binary.php",
+                    "line": 268,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"%\" between 3 and array results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2964",
+            "files": [
+                "Operators/data/bug2964.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3515",
+            "files": [
+                "Operators/data/bug-3515.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-3515.php",
+                    "line": 6,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3515.php",
+                    "line": 12,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Operators/data/invalid-binary-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-binary-nullsafe.php",
+                    "line": 12,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"+\" between array|null and '2' results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5309",
+            "files": [
+                "Operators/data/bug-5309.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBinaryMixed",
+            "files": [
+                "Operators/data/invalid-binary-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7538",
+            "files": [
+                "Operators/data/bug-7538.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-7538.php",
+                    "line": 7,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"%\" between stdClass and stdClass results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10440",
+            "files": [
+                "Operators/data/bug-10440.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-10440.php",
+                    "line": 8,
+                    "identifier": "binaryOp.invalid",
+                    "message": "Binary operation \"%\" between array{} and array{''} results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBenevolentUnion",
+            "files": [
+                "Operators/data/binary-op-benevolent-union.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/binary-op-benevolent-union.php",
+                    "line": 11,
+                    "identifier": "echo.nonString",
+                    "message": "Parameter #1 (array) of echo cannot be converted to string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12123",
+            "files": [
+                "Operators/data/bug-12123.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7863",
+            "files": [
+                "Operators/data/bug-7863.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10595",
+            "files": [
+                "Operators/data/bug-10595.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14080",
+            "files": [
+                "Operators/data/bug-14080.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10349",
+            "files": [
+                "Operators/data/bug-10349.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1452",
+            "files": [
+                "Operators/data/bug-1452.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

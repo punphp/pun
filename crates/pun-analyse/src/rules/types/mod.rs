@@ -23,6 +23,8 @@ mod yields;
 mod void_match;
 mod constant_value;
 mod properties;
+mod offsets;
+mod binary_op;
 
 use std::collections::HashMap;
 
@@ -53,10 +55,12 @@ pub(super) use values::{array, array_access, clone, foreach, throw};
 pub(super) use yields::program as yields_outside;
 pub(super) use property_default::property as property_default;
 pub(super) use constant_value::class_constant;
+pub(super) use offsets::assignment as offset_assignment;
+pub(super) use binary_op::{assignment as assign_operation, binary as binary_operation, pipe as pipe_operation};
 pub(super) use properties::{assignment as property_assignment, increment as property_increment, unset as property_unset};
 
 /// The identifiers of the rules above level 0 (level-0 ones are in [`super::IDENTIFIERS`]).
-pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS];
+pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS, arguments::IDENTIFIERS, castable::IDENTIFIERS, receivers::IDENTIFIERS, access::IDENTIFIERS, casts::IDENTIFIERS, comparison::IDENTIFIERS, param_default::IDENTIFIERS, void_match::IDENTIFIERS, returns::IDENTIFIERS, values::IDENTIFIERS, yields::IDENTIFIERS, property_default::IDENTIFIERS, properties::IDENTIFIERS, constant_value::IDENTIFIERS, offsets::IDENTIFIERS, binary_op::IDENTIFIERS];
 
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
@@ -117,6 +121,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         values::typed(e, self.level, &mut self.spans);
         if self.level >= 2 {
             properties::typed(e, &mut self.spans);
+            binary_op::typed(e, &mut self.spans);
+        }
+        if self.level >= 3 {
+            offsets::typed(e, &mut self.spans);
         }
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {

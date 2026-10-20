@@ -22,6 +22,8 @@ pub struct PropertyNode<'n, 'arena> {
     pub hooks: &'n [PropertyHook<'arena>],
     pub readonly_by_phpdoc: bool,
     pub allowed_private_mutation: bool,
+    /// where a declared property's PHPDoc is read from (`None` for a promoted one)
+    pub decl: Option<Span>,
 }
 
 const ALLOW_PRIVATE_MUTATION_TAGS: &[&str] = &[
@@ -71,6 +73,7 @@ pub fn property<'arena>(c: &mut Checker<'_, 'arena>, p: &Property<'arena>) {
             hooks,
             readonly_by_phpdoc,
             allowed_private_mutation,
+            decl: Some(p.span()),
         };
         check(c, &node);
     }
@@ -97,6 +100,7 @@ pub fn promoted<'arena>(
             hooks,
             readonly_by_phpdoc: false,
             allowed_private_mutation: false,
+            decl: None,
         };
         check(c, &node);
     }
@@ -115,13 +119,11 @@ fn check<'arena>(c: &mut Checker<'_, 'arena>, node: &PropertyNode<'_, 'arena>) {
     overriding_property::check(c, node, is_readonly);
     super::property_hooks::check(c, node);
     // isReadOnlyByPhpDoc(): a `@readonly` tag, or the class is immutable (its PHPDoc or a parent's)
-    if node.default
-        && !is_readonly
-        && !node.allowed_private_mutation
-        && (node.readonly_by_phpdoc
-            || immutable_doc
-            || parent.is_some_and(|p| c.class_immutable(&p, 0)))
-    {
+    let by_phpdoc = node.readonly_by_phpdoc || immutable_doc || parent.is_some_and(|p| c.class_immutable(&p, 0));
+    if let Some(decl) = node.decl {
+        super::variance::property(c, node, decl, by_phpdoc);
+    }
+    if node.default && !is_readonly && !node.allowed_private_mutation && by_phpdoc {
         c.report(
             node.at,
             "property.readOnlyByPhpDocDefaultValue",

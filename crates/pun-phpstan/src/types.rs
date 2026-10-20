@@ -227,6 +227,17 @@ pub enum Type {
     EnumCase(String, String),
     /// a bivariant `*` generic argument (explicit `mixed`)
     Wildcard,
+    /// a generic argument's call-site variance (`GenericObjectType::getVariances()`): `covariant T` (true) or
+    /// `contravariant T` (false)
+    Projection(bool, Box<Type>),
+    /// `OffsetAccessType` (`T['k']`) of a template, resolved late; ponytail: used as an error type (accepting
+    /// anything) until the scope resolves it
+    OffsetAccess(Box<Type>, Box<Type>),
+}
+
+/// `TemplateTypeVariance::describe()` of a call-site variance
+pub fn variance_name(covariant: bool) -> &'static str {
+    if covariant { "covariant" } else { "contravariant" }
 }
 
 pub fn mixed() -> Type {
@@ -804,6 +815,10 @@ impl Type {
             Type::This(class) => format!("$this({})", static_object(class).describe(level)),
             Type::EnumCase(class, case) => format!("{class}::{case}"),
             Type::Wildcard => "*".to_string(),
+            // `TypeProjectionHelper::describe()`
+            Type::Projection(c, t) => format!("{} {}", variance_name(*c), t.describe(level)),
+            // (`Printer::print($this->toPhpDocNode())`)
+            Type::OffsetAccess(..) => to_phpdoc(self),
             Type::Array(key, item) => {
                 let mixed_key = key.is_plain_implicit_mixed();
                 let mixed_item = item.is_plain_implicit_mixed();
@@ -953,6 +968,8 @@ impl Type {
             Type::Object(class, args) if !args.is_empty() => {
                 Type::Object(class.clone(), args.iter().map(f).collect())
             }
+            Type::Projection(c, t) => Type::Projection(*c, bx(f(t))),
+            Type::OffsetAccess(t, o) => Type::OffsetAccess(bx(f(t)), bx(f(o))),
             Type::ClassString(Some(g)) => Type::ClassString(Some(bx(f(g)))),
             Type::Static(class, args) if !args.is_empty() => {
                 Type::Static(class.clone(), args.iter().map(f).collect())
@@ -1080,6 +1097,9 @@ fn with_class_args(t: &Type, c: &symbols::Class, args: &[Type]) -> Type {
             // the bound (a `mixed` one implicit, as `ObjectType::getIterableKeyType()` resolves it)
             Some(Type::Wildcard) | None if matches!(tpl.bound, Type::Mixed { .. }) => mixed(),
             Some(Type::Wildcard) | None => tpl.bound.clone(),
+            // ponytail: a call-site variance is not applied to the position (`resolveTemplateTypes()`'s
+            // call-site variance map); the argument stands for its template
+            Some(Type::Projection(_, arg)) => (**arg).clone(),
             Some(arg) => arg.clone(),
         };
     }
@@ -1557,11 +1577,31 @@ pub fn to_phpdoc(t: &Type) -> String {
             format!("iterable<{}, {}>", to_phpdoc(key), to_phpdoc(item))
         }
         Type::Union(types) | Type::Benevolent(types) => join_phpdoc(&sort_types(types), "|"),
+        // `list<T>`, `non-empty-list<T>`, `non-empty-array<K, T>`
+        Type::Intersection(types) if let Some(Type::Array(key, item)) = types.iter().find(|t| matches!(t, Type::Array(..))) => {
+            let has = |a: Accessory| types.contains(&Type::Accessory(a));
+            match (types.len(), has(Accessory::List), has(Accessory::NonEmptyArray)) {
+                (2, true, false) if !item.is_plain_implicit_mixed() => format!("list<{}>", to_phpdoc(item)),
+                (3, true, true) if !item.is_plain_implicit_mixed() => format!("non-empty-list<{}>", to_phpdoc(item)),
+                (2, false, true) if !key.is_plain_implicit_mixed() && !item.is_plain_implicit_mixed() => {
+                    format!("non-empty-array<{}, {}>", to_phpdoc(key), to_phpdoc(item))
+                }
+                _ => t.describe(Level::Precise),
+            }
+        }
         Type::Intersection(_) => t.describe(Level::Precise),
         Type::Template(tpl) => tpl.name.clone(),
         Type::Callable(None) => "callable".to_string(),
         Type::Callable(Some(sig)) => print_callable_named("callable", sig),
         Type::Closure(sig) => print_callable_named("Closure", sig),
+        Type::Projection(c, inner) => format!("{} {}", variance_name(*c), to_phpdoc(inner)),
+        Type::OffsetAccess(t, o) => {
+            let on = to_phpdoc(t);
+            // (Printer's parentheses around a union, intersection or callable)
+            let wrap = matches!(**t, Type::Union(_) | Type::Benevolent(_) | Type::Callable(Some(_)) | Type::Closure(_))
+                || (matches!(**t, Type::Intersection(_)) && on.contains('&'));
+            if wrap { format!("({on})[{}]", to_phpdoc(o)) } else { format!("{on}[{}]", to_phpdoc(o)) }
+        }
         _ => t.describe(Level::Precise),
     }
 }
@@ -2007,11 +2047,13 @@ impl ShapeBuilder {
                 } else {
                     a.is_list = Tri::No;
                 }
+                // (past PHP_INT_MAX there is no next index)
                 if offset >= max {
+                    let next = offset.checked_add(1);
                     if !optional {
-                        a.next_auto_indexes = vec![offset + 1];
+                        a.next_auto_indexes = next.into_iter().collect();
                     } else {
-                        a.next_auto_indexes.push(offset + 1);
+                        a.next_auto_indexes.extend(next);
                     }
                 }
             }
@@ -2051,7 +2093,8 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
     match a {
         // `*` is a bivariant `mixed`
-        T::Mixed { .. } | T::Error | T::Wildcard => Tri::Yes,
+        // (a call-site variance is a generic argument's only, compared in `valid_variance()`)
+        T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
         T::Never(_) => match b {
             T::Never(_) => Tri::Yes,
             T::Template(_) => Tri::Maybe,
@@ -2577,12 +2620,25 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
         .fold(Tri::Yes, Tri::and)
 }
 
-/// `TemplateTypeVariance::isValidVariance()` + `validPosition()` of an invariant template, `*` being bivariant.
-/// ponytail: `covariant`/`contravariant` call-site variance is not modelled.
+/// `TemplateTypeVariance::isValidVariance()` + `validPosition()` of an invariant template, `*` being bivariant and
+/// a `covariant` / `contravariant` argument its call-site variance.
 fn valid_variance(a: &Type, b: &Type) -> Tri {
     match (a, b) {
         (Type::Wildcard, _) => Tri::Yes,
         (_, Type::Wildcard) => Tri::No,
+        (Type::Projection(c, a), b) => {
+            // (`b`'s own call-site variance must be in the same direction)
+            let b = match b {
+                Type::Projection(d, _) if d != c => return Tri::No,
+                Type::Projection(_, b) => &**b,
+                b => b,
+            };
+            if matches!(b, Type::Never(_)) || matches!(**a, Type::Mixed { .. }) || matches!(b, Type::Mixed { .. }) {
+                return Tri::Yes;
+            }
+            if *c { is_super_type_of(a, b) } else { is_super_type_of(b, a) }
+        }
+        (_, Type::Projection(..)) => Tri::No,
         (_, Type::Never(_)) | (Type::Mixed { .. }, _) | (_, Type::Mixed { .. }) => Tri::Yes,
         (Type::Benevolent(_), _) if !is_super_type_of(a, b).no() => Tri::Yes,
         (_, Type::Benevolent(_)) if !is_super_type_of(b, a).no() => Tri::Yes,

@@ -306,6 +306,8 @@ pub struct Doc {
     pub extends: Vec<Node>,
     pub implements: Vec<Node>,
     pub templates: Vec<TemplateTag>,
+    /// each template's variance (`invariant`, `covariant` or `contravariant`, from the tag name)
+    pub template_variances: Vec<&'static str>,
     /// `resolveTypeAliasTags()`: the names of `@phpstan-type` & co.
     pub type_aliases: Vec<String>,
     /// `resolveTypeAliasImportTags()`: (imported alias, class as written, `as` name)
@@ -415,6 +417,11 @@ impl Doc {
                     && let Some(t) = template_value(value)
                 {
                     out.templates.push(t);
+                    out.template_variances.push(match &tag[base.len()..] {
+                        "-covariant" => "covariant",
+                        "-contravariant" => "contravariant",
+                        _ => "invariant",
+                    });
                 }
             }
         }

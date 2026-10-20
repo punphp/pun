@@ -13,6 +13,10 @@ type Key = (String, i64, String, String, Option<String>);
 
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
+    "binaryOp.invalid",
+    "assignOp.invalid",
+    "offsetAssign.dimType",
+    "offsetAssign.valueType",
     "assign.propertyType",
     "property.readOnlyAssignOutOfClass",
     "property.readOnlyAssignNotOnThis",
@@ -198,6 +202,12 @@ const PORTED: &[&str] = &[
     "varTag.noVariable",
     "varTag.variableNotFound",
     "callable.shadowTemplate",
+    "generics.callSiteVarianceConflict",
+    "generics.callSiteVarianceRedundant",
+    "generics.callSiteVarianceNotAllowed",
+    "generics.variance",
+    "function.variance",
+    "method.variance",
     "property.unresolvableType",
     "property.phpDocType",
     "classConstant.unresolvableType",
@@ -301,6 +311,9 @@ const PORTED: &[&str] = &[
     "method.impossibleType",
     "staticMethod.alreadyNarrowedType",
     "staticMethod.impossibleType",
+    "match.alwaysFalse",
+    "match.alwaysTrue",
+    "match.unhandled",
     "constant.notFound",
     "class.missingExtends",
     "class.missingImplements",

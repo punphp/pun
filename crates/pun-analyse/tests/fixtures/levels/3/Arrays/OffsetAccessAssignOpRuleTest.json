@@ -1,0 +1,168 @@
+{
+    "test": "Arrays/OffsetAccessAssignOpRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Arrays/data/offset-access-assignop.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 4,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on array{}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 10,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on 'Foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 13,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 16,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on true.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 19,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on false.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 22,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type resource is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 23,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 26,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 4.141.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 33,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 42.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithoutUnions",
+            "files": [
+                "Arrays/data/offset-access-assignop.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 4,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on array{}.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 10,
+                    "identifier": "offsetAccess.notFound",
+                    "message": "Offset 'foo' does not exist on 'Foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 13,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 16,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on true.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 19,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on false.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 22,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type resource is not subtype of native type null.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 23,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 26,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 4.141.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-assignop.php",
+                    "line": 33,
+                    "identifier": "offsetAccess.nonOffsetAccessible",
+                    "message": "Cannot access offset 'foo' on 42.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Arrays/data/offset-access-assignop-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-assignop-nullsafe.php",
+                    "line": 21,
+                    "identifier": "assignOp.invalid",
+                    "message": "Binary operation \"+=\" between int and 'str' results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

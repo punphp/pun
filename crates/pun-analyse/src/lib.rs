@@ -87,6 +87,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();
+    let errors = rules::conditions_in_traits(errors);
     let mut errors = rules::larastan_finish(project.larastan.as_ref(), errors);
     settings.keep_reported(&mut errors);
     let processed = project
