@@ -29,8 +29,6 @@
 3 Methods/ReturnTypeRuleTest::testMergeInheritedPhpDocs
 3 Methods/ReturnTypeRuleTest::testBug3997
 3 Methods/ReturnTypeRuleTest::testBug3118
-3 Methods/ReturnTypeRuleTest::testBug12739
-3 Methods/ReturnTypeRuleTest::testBug10924
 6 Methods/MissingMethodReturnTypehintRuleTest::testIndirectInheritanceBug2740
 # Mago's inference differs from PHPStan's: `static`/`$this` lost on fluent and `new $class` returns, array shapes
 # and lists, SimpleXMLElement and DateTime::format() return types, intersections and narrowing, a trait method
