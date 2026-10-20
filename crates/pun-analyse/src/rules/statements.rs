@@ -28,6 +28,8 @@ pub struct Frame {
     pub kind: FrameKind,
     labels: Vec<(Vec<u8>, Span)>,
     gotos: Vec<(Vec<u8>, Span)>,
+    /// A function-like's variables (WrongVariableNameInVarTagRule's `hasVariableType()`).
+    pub defined: Option<Box<super::var_names::Defined>>,
 }
 
 impl Frame {
@@ -36,6 +38,7 @@ impl Frame {
             kind,
             labels: Vec::new(),
             gotos: Vec::new(),
+            defined: None,
         }
     }
 }

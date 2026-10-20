@@ -13,7 +13,7 @@ use mago_word::word;
 use super::Checker;
 use super::scope::Guard;
 
-const TIP: &str =
+pub(super) const TIP: &str =
     "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property";
 
 /// What the walk needs to know of a file's property fetches before it reaches them.
@@ -183,12 +183,21 @@ pub fn state(program: &Program) -> State {
     state
 }
 
-/// `$this->name` with a written name: the name.
-fn this_fetch<'a>(e: &'a Expression) -> Option<&'a [u8]> {
-    match unparenthesized(e) {
-        Expression::Access(Access::Property(p)) => this_name(p),
-        _ => None,
-    }
+/// The guard of `$variable->name` with a written name (`$this` included).
+fn fetch_guard(e: &Expression) -> Option<Guard> {
+    let Expression::Access(Access::Property(p)) = unparenthesized(e) else {
+        return None;
+    };
+    let (Expression::Variable(Variable::Direct(v)), ClassLikeMemberSelector::Identifier(id)) =
+        (unparenthesized(p.object), &p.property)
+    else {
+        return None;
+    };
+    Some(var_guard(v.name, id.value))
+}
+
+fn var_guard(var: &[u8], name: &[u8]) -> Guard {
+    Guard::Expr(format!("{}->{}", String::from_utf8_lossy(var), String::from_utf8_lossy(name)))
 }
 
 fn this_name<'a>(p: &'a PropertyAccess) -> Option<&'a [u8]> {
@@ -201,7 +210,7 @@ fn this_name<'a>(p: &'a PropertyAccess) -> Option<&'a [u8]> {
 
 /// The expression key of `$this->name` that guards remember.
 fn guard(name: &[u8]) -> Guard {
-    Guard::Expr(format!("$this->{}", String::from_utf8_lossy(name)))
+    var_guard(b"$this", name)
 }
 
 /// The `$this->name` fetches a condition specifies a type for (TypeSpecifier), as guards.
@@ -212,8 +221,8 @@ pub fn narrowed(
     out: &mut Vec<Guard>,
 ) {
     let e = unparenthesized(e);
-    if let Some(name) = this_fetch(e) {
-        out.push(guard(name));
+    if let Some(g) = fetch_guard(e) {
+        out.push(g);
         return;
     }
     if let Some(g) = static_fetch(e, resolve) {
@@ -221,12 +230,13 @@ pub fn narrowed(
         return;
     }
     match e {
-        Expression::Construct(Construct::Isset(i)) => {
+        // a true `isset()` and a false `empty()` give the fetches a type
+        Expression::Construct(Construct::Isset(i)) if truthy => {
             for v in i.values.iter() {
                 chain(v, resolve, out);
             }
         }
-        Expression::Construct(Construct::Empty(x)) => chain(x.value, resolve, out),
+        Expression::Construct(Construct::Empty(x)) if !truthy => chain(x.value, resolve, out),
         Expression::Binary(b) if b.operator.is_comparison() || b.operator.is_instanceof() => {
             narrowed(b.lhs, truthy, resolve, out);
             narrowed(b.rhs, truthy, resolve, out);
@@ -247,8 +257,8 @@ pub fn narrowed(
 /// `isset()` specifies every fetch of the chain.
 fn chain(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, out: &mut Vec<Guard>) {
     let e = unparenthesized(e);
-    if let Some(name) = this_fetch(e) {
-        out.push(guard(name));
+    if let Some(g) = fetch_guard(e) {
+        out.push(g);
     }
     if let Some(g) = static_fetch(e, resolve) {
         out.push(g);
@@ -320,9 +330,7 @@ fn property_exists(f: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) ->
     };
     let name = String::from_utf8_lossy(s.value?).into_owned();
     match unparenthesized(object.value()) {
-        Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
-            Some(guard(name.as_bytes()))
-        }
+        Expression::Variable(Variable::Direct(v)) => Some(var_guard(v.name, name.as_bytes())),
         Expression::Access(Access::ClassConstant(cc)) => match &cc.constant {
             ClassLikeConstantSelector::Identifier(c) if c.value.eq_ignore_ascii_case(b"class") => {
                 Some(exists_key(&class_key(cc.class, resolve)?, &name))
@@ -372,6 +380,14 @@ impl Checker<'_, '_> {
         let g = guard(name);
         self.guards.contains(&g)
     }
+
+    /// `hasExpressionType()` of `$object->name` (a variable's).
+    pub(super) fn has_fetch_type(&self, object: &Expression, name: &str) -> bool {
+        match unparenthesized(object) {
+            Expression::Variable(Variable::Direct(v)) => self.guards.contains(&var_guard(v.name, name.as_bytes())),
+            _ => false,
+        }
+    }
 }
 
 /// `$this->name = ...` (a compound assignment and a destructuring too) leaves `$this->name` an expression type.
@@ -381,8 +397,8 @@ pub fn assigned(c: &mut Checker, a: &Assignment) {
 
 fn remember(c: &mut Checker, e: &Expression) {
     let e = unparenthesized(e);
-    if let Some(name) = this_fetch(e) {
-        c.guards.push(guard(name));
+    if let Some(g) = fetch_guard(e) {
+        c.guards.push(g);
         return;
     }
     let items = match e {
@@ -438,7 +454,7 @@ fn written_item(c: &mut Checker, el: &ArrayElement) {
 }
 
 /// `ClassReflection::allowsDynamicProperties()`.
-fn allows_dynamic_properties(c: &Checker, k: &ClassLikeMetadata) -> bool {
+pub(super) fn allows_dynamic_properties(c: &Checker, k: &ClassLikeMetadata) -> bool {
     if k.kind == SymbolKind::Enum {
         return false;
     }
@@ -478,7 +494,7 @@ fn has_native_method(c: &Checker, k: &ClassLikeMetadata, name: &str) -> bool {
 
 /// A native property of `k` by name (`$` included) as BetterReflection's `hasProperty()` sees it: declared by the
 /// class, its traits or a parent (Mago leaves a parent's private one out of `declaring_property_ids`); `Some(is_static)`.
-fn native_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> Option<bool> {
+pub(super) fn native_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> Option<bool> {
     let p = c
         .codebase
         .get_declaring_property(k.name.as_bytes(), property)?;
@@ -525,7 +541,9 @@ fn is_universal_object_crate(k: &ClassLikeMetadata) -> bool {
 
 fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
     let Some(name) = this_name(p) else {
-        return; // ponytail: checkThisOnly is off from level 2, which needs every expression's type
+        let allowed = !write && c.property_access.allowed.contains(&key(p.span()));
+        super::types::property_fetch(c, p.span(), p.object, &p.property, false, allowed);
+        return;
     };
     if !c.property_access.this.last().copied().unwrap_or(false) {
         return;
@@ -607,6 +625,12 @@ fn check(c: &mut Checker, p: &PropertyAccess, write: bool) {
         format!("Access to an undefined property {described}::${display_name}."),
         Some(TIP),
     );
+}
+
+/// AccessPropertiesRule on a nullsafe fetch, which it sees as a fetch on the object without `null`.
+pub fn null_safe_read(c: &mut Checker, p: &NullSafePropertyAccess) {
+    let allowed = c.property_access.allowed.contains(&key(p.span()));
+    super::types::property_fetch(c, p.span(), p.object, &p.property, true, allowed);
 }
 
 /// AccessStaticPropertiesRule on one static property fetch.
@@ -725,7 +749,7 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                 }
             }
         }
-        _ => return, // ponytail: `$expr::$name` from level 2, which needs the expression's type
+        _ => return super::types::static_property_fetch(c, p, property),
     };
     let Holder::Class(class, is_static) = holder else {
         return;

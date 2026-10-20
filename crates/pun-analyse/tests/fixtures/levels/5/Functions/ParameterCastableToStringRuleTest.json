@@ -1,0 +1,743 @@
+{
+    "test": "Functions/ParameterCastableToStringRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/param-castable-to-string-functions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<int, array> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 16,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 17,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_intersect expects an array of values castable to string, array<int, ParamCastableToStringFunctions\\ClassWithoutToString> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 17,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 18,
+                    "identifier": "argument.type",
+                    "message": "Parameter #3 of function array_intersect expects an array of values castable to string, array<int, ParamCastableToStringFunctions\\ClassWithoutToString> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 18,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 19,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_diff expects an array of values castable to string, array<int, ParamCastableToStringFunctions\\ClassWithoutToString> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 19,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 20,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_diff_assoc expects an array of values castable to string, array<int, ParamCastableToStringFunctions\\ClassWithoutToString> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 20,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff_assoc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_combine expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_combine expects array<int|string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 22,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_combine() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 24,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function natsort expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 25,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function natcasesort expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_count_values expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_count_values expects array<int|string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 26,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_count_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 27,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 27,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 32,
+                    "identifier": "arguments.count",
+                    "message": "Function array_intersect invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 32,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 33,
+                    "identifier": "arguments.count",
+                    "message": "Function array_intersect_assoc invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 33,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect_assoc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 34,
+                    "identifier": "arguments.count",
+                    "message": "Function array_diff invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 34,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 35,
+                    "identifier": "arguments.count",
+                    "message": "Function array_diff_assoc invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 35,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff_assoc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 36,
+                    "identifier": "arguments.count",
+                    "message": "Function array_combine invoked with 0 parameters, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 37,
+                    "identifier": "arguments.count",
+                    "message": "Function natcasesort invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 38,
+                    "identifier": "arguments.count",
+                    "message": "Function natsort invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 39,
+                    "identifier": "arguments.count",
+                    "message": "Function array_count_values invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 39,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_count_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 40,
+                    "identifier": "arguments.count",
+                    "message": "Function array_fill_keys invoked with 0 parameters, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 40,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 45,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 46,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 47,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 48,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 49,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff_assoc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 51,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_combine() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 55,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_count_values expects array<int|string>, array<int, ParamCastableToStringFunctions\\ClassWithToString|string> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 55,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_count_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 56,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 59,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_combine expects array<int|string>, array<int, float|true|null> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 59,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_combine() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 60,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions.php",
+                    "line": 62,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Functions/data/param-castable-to-string-functions-named-args.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 7,
+                    "identifier": "argument.type",
+                    "message": "Parameter $keys of function array_combine expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 7,
+                    "identifier": "argument.type",
+                    "message": "Parameter $keys of function array_combine expects array<int|string>, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 7,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_combine() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 9,
+                    "identifier": "argument.type",
+                    "message": "Parameter $keys of function array_fill_keys expects an array of values castable to string, array<int, array<int, string>> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 9,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 14,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $keys (array<int|string>) in call to function array_combine.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 15,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $keys (array) in call to function array_fill_keys.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 15,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 20,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_combine() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-named-args.php",
+                    "line": 22,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnum",
+            "files": [
+                "Functions/data/param-castable-to-string-functions-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 12,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 12,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 13,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_intersect expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 13,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 14,
+                    "identifier": "argument.type",
+                    "message": "Parameter #3 of function array_intersect expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 14,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_intersect() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 15,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_diff expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 15,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 16,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_diff_assoc expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 16,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_diff_assoc() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 18,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_combine expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 18,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_combine expects array<int|string>, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 18,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_combine() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 20,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function natsort expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 21,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function natcasesort expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_count_values expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_count_values expects array<int|string>, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 22,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_count_values() on a separate line has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 23,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<int, ParamCastableToStringFunctionsEnum\\FooEnum::A> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-castable-to-string-functions-enum.php",
+                    "line": 23,
+                    "identifier": "function.resultUnused",
+                    "message": "Call to function array_fill_keys() on a separate line has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5848",
+            "files": [
+                "Functions/data/bug-5848.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-5848.php",
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_diff expects an array of values castable to string, array<int, stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-5848.php",
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_diff expects an array of values castable to string, array<int, stdClass> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3946",
+            "files": [
+                "Functions/data/bug-3946.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-3946.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug3946\\stdClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-3946.php",
+                    "line": 8,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_combine expects array<int|string>, array<int, Bug3946\\stdClass|float|int|list<string>|string> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11111",
+            "files": [
+                "Functions/data/bug-11111.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11111.php",
+                    "line": 23,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<Bug11111\\Language> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-11111.php",
+                    "line": 26,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<int, Bug11111\\Language::DUT|Bug11111\\Language::ITA> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11141",
+            "files": [
+                "Functions/data/bug-11141.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11141.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_diff expects an array of values castable to string, array<int, Bug11141\\Language::DAN|Bug11141\\Language::ENG|Bug11141\\Language::GER> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-11141.php",
+                    "line": 22,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $arrays of function array_diff expects an array of values castable to string, array<int, Bug11141\\Language::DAN> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12146",
+            "files": [
+                "Functions/data/bug-12146.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 29,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 30,
+                    "identifier": "argument.type",
+                    "message": "Parameter #2 $array of function implode expects array<string>, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 35,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 36,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_intersect expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 41,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 42,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $keys of function array_fill_keys expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 47,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12146.php",
+                    "line": 48,
+                    "identifier": "argument.type",
+                    "message": "Parameter #1 $array of function array_unique expects an array of values castable to string, array<stdClass> given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

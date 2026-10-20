@@ -1,0 +1,57 @@
+{
+    "test": "/DateTimeInstantiationRuleTest",
+    "cases": [
+        {
+            "method": "test",
+            "files": [
+                "data/datetime-instantiation.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "data/datetime-instantiation.php",
+                    "line": 3,
+                    "identifier": "new.dateTime",
+                    "message": "Instantiating DateTime with 2020.11.17 produces an error: Double time specification",
+                    "tip": null
+                },
+                {
+                    "file": "data/datetime-instantiation.php",
+                    "line": 5,
+                    "identifier": "new.dateTimeImmutable",
+                    "message": "Instantiating DateTimeImmutable with asdfasdf produces an error: The timezone could not be found in the database",
+                    "tip": null
+                },
+                {
+                    "file": "data/datetime-instantiation.php",
+                    "line": 10,
+                    "identifier": "new.dateTimeImmutable",
+                    "message": "Instantiating DateTimeImmutable with 2020.11.17 produces an error: Double time specification",
+                    "tip": null
+                },
+                {
+                    "file": "data/datetime-instantiation.php",
+                    "line": 17,
+                    "identifier": "new.dateTimeImmutable",
+                    "message": "Instantiating DateTimeImmutable with 2020.11.18 produces an error: Double time specification",
+                    "tip": null
+                },
+                {
+                    "file": "data/datetime-instantiation.php",
+                    "line": 22,
+                    "identifier": "new.dateTime",
+                    "message": "Instantiating DateTime with 2020.11.17 produces an error: Double time specification",
+                    "tip": null
+                },
+                {
+                    "file": "data/datetime-instantiation.php",
+                    "line": 23,
+                    "identifier": "new.dateTimeImmutable",
+                    "message": "Instantiating DateTimeImmutable with 2020.11.17 produces an error: Double time specification",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

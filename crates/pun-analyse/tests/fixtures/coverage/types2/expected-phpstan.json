@@ -1,0 +1,327 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "types2.php",
+   "line": 7,
+   "identifier": "property.onlyWritten",
+   "message": "Property Types2\\Base::$hidden is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "types2.php",
+   "line": 8,
+   "identifier": "property.onlyWritten",
+   "message": "Static property Types2\\Base::$hiddenStatic is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "types2.php",
+   "line": 10,
+   "identifier": "method.unused",
+   "message": "Static method Types2\\Base::secret() is unused.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 29,
+   "identifier": "property.onlyWritten",
+   "message": "Property Types2\\Holder::$t is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "types2.php",
+   "line": 34,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property T of Types2\\Base::$missing.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 35,
+   "identifier": "property.private",
+   "message": "Access to private property T of Types2\\Base::$hidden.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 36,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method T of Types2\\Base::absent().",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 50,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class Types2\\ByRef has an unused parameter $x.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 52,
+   "identifier": "missingType.iterableValue",
+   "message": "Method Types2\\ByRef::make() return type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "types2.php",
+   "line": 57,
+   "identifier": "missingType.iterableValue",
+   "message": "Method Types2\\ByRef::get() return type has no value type specified in iterable type array.",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+  },
+  {
+   "file": "types2.php",
+   "line": 75,
+   "identifier": "argument.byRef",
+   "message": "Parameter #1 $x of attribute class Types2\\RefAttr constructor is passed by reference, so it expects variables only",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 89,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Closure::$foo.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 90,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property object{a?: int, b: int}::$a.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 90,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property object{a?: int, b: int}::$c.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 91,
+   "identifier": "property.private",
+   "message": "Access to private property $hidden of parent class Types2\\Base.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 92,
+   "identifier": "staticProperty.nonStaticAccess",
+   "message": "Non-static access to static property Types2\\Leaf::$shared.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 93,
+   "identifier": "staticProperty.private",
+   "message": "Access to private static property $hiddenStatic of parent class Types2\\Base.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 94,
+   "identifier": "property.staticAccess",
+   "message": "Static access to instance property Types2\\Leaf::$own.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 95,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Types2\\Leaf::$nope.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 96,
+   "identifier": "staticProperty.protected",
+   "message": "Access to protected property $guarded of class Types2\\Base.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 98,
+   "identifier": "staticMethod.private",
+   "message": "Call to private static method secret() of class Types2\\Base.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 99,
+   "identifier": "staticMethod.protected",
+   "message": "Call to protected static method guardedCall() of class Types2\\Base.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 100,
+   "identifier": "method.staticCall",
+   "message": "Static call to instance method Types2\\Base::instance().",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 106,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $x on mixed.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 107,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method y() on mixed.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 108,
+   "identifier": "staticMethod.nonObject",
+   "message": "Cannot call static method z() on mixed.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 109,
+   "identifier": "argument.byRef",
+   "message": " Parameter #1 $x of class Types2\\ByRef constructor is passed by reference, so it expects variables only",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 110,
+   "identifier": "argument.byRef",
+   "message": "Parameter #1 $var of function settype is passed by reference, so it expects variables only.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 111,
+   "identifier": "argument.byRef",
+   "message": "Parameter #1 $var of function settype is passed by reference, so it expects variables only.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 112,
+   "identifier": "argument.type",
+   "message": "Parameter #1 ...$pairs of function Types2\\variadic expects array{int, string}, 1.5 given.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 114,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $max of function mt_rand expects int, int|string given.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 125,
+   "identifier": "conditionalType.alwaysTrue",
+   "message": "Condition \"int is int\" in conditional return type is always true.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 127,
+   "identifier": "method.nonObject",
+   "message": "Cannot call method instance() on int|Types2\\Leaf.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 128,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $own on int|Types2\\Leaf.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 130,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Types2\\Middle::$zzz.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 132,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_filter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 132,
+   "identifier": "arguments.count",
+   "message": "Function array_filter invoked with 0 parameters, 1-3 required.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 133,
+   "identifier": "argument.type",
+   "message": "Parameter #1 ...$pairs of function Types2\\variadic2 expects int|string, float given.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 135,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Types2\\Mixer::foo().",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 136,
+   "identifier": "staticProperty.notFound",
+   "message": "Access to an undefined static property Types2\\Mixer::$shared.",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 139,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Types2\\Mixer::$none.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 142,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method Countable&Types2\\Base::nothing().",
+   "tip": null
+  },
+  {
+   "file": "types2.php",
+   "line": 143,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Countable&Types2\\Base::$own.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 163,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Types2\\Selfish::$nope.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  },
+  {
+   "file": "types2.php",
+   "line": 169,
+   "identifier": "new.static",
+   "message": "Unsafe usage of new static().",
+   "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+  },
+  {
+   "file": "types2.php",
+   "line": 174,
+   "identifier": "property.notFound",
+   "message": "Access to an undefined property Types2\\Selfish::$nope2.",
+   "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+  }
+ ]
+}

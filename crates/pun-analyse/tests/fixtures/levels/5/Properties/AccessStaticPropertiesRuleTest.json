@@ -1,0 +1,793 @@
+{
+    "test": "Properties/AccessStaticPropertiesRuleTest",
+    "cases": [
+        {
+            "method": "testAccessStaticProperties",
+            "files": [
+                "Properties/data/access-static-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 23,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property FooAccessStaticProperties::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 24,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property BarAccessStaticProperties::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 25,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property FooAccessStaticProperties::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 26,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property FooAccessStaticProperties::$loremIpsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 32,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property FooAccessStaticProperties::$loremIpsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 42,
+                    "identifier": "class.noParent",
+                    "message": "IpsumAccessStaticProperties::ipsum() accesses parent::$lorem but IpsumAccessStaticProperties does not extend any class.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 44,
+                    "identifier": "staticProperty.protected",
+                    "message": "Access to protected property $foo of class FooAccessStaticProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 45,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 46,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$class::$property\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 46,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $class",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 47,
+                    "identifier": "class.notFound",
+                    "message": "Access to static property $test on an unknown class UnknownStaticProperties.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 49,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 52,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 53,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 54,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 55,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 60,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$emptyBaz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 63,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$emptyBaz.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 64,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$emptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 65,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$emptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 70,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 71,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 71,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 72,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 72,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 73,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 75,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherEmptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 75,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherEmptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 76,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherEmptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 77,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherEmptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 78,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherEmptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 78,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(IpsumAccessStaticProperties)::$anotherEmptyNonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 84,
+                    "identifier": "outOfClass.self",
+                    "message": "Accessing self::$staticFooProperty outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 85,
+                    "identifier": "outOfClass.static",
+                    "message": "Accessing static::$staticFooProperty outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 86,
+                    "identifier": "outOfClass.parent",
+                    "message": "Accessing parent::$staticFooProperty outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 89,
+                    "identifier": "staticProperty.protected",
+                    "message": "Access to protected property $foo of class FooAccessStaticProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 90,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property FooAccessStaticProperties::$loremIpsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 93,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo::$test\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 94,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo::$nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 94,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property FooAccessStaticProperties::$nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 96,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class NonexistentClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 97,
+                    "identifier": "class.notFound",
+                    "message": "Access to static property $test on an unknown class NonexistentClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 97,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$bar::$test\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 107,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo::$test\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 108,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo::$nonexistent\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 108,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property FooAccessStaticProperties&SomeInterface::$nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 112,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 113,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$stringOrInt::$foo\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 113,
+                    "identifier": "staticProperty.nonObject",
+                    "message": "Cannot access static property $foo on int|string.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 116,
+                    "identifier": "class.nameCase",
+                    "message": "Class FooAccessStaticProperties referenced with incorrect case: FOOAccessStaticPropertieS.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 117,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$foo::$test\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 119,
+                    "identifier": "class.nameCase",
+                    "message": "Class FooAccessStaticProperties referenced with incorrect case: FOOAccessStaticPropertieS.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 119,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property FooAccessStaticProperties::$unknownProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 120,
+                    "identifier": "class.nameCase",
+                    "message": "Class FooAccessStaticProperties referenced with incorrect case: FOOAccessStaticPropertieS.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 120,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property FooAccessStaticProperties::$loremIpsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 121,
+                    "identifier": "class.nameCase",
+                    "message": "Class FooAccessStaticProperties referenced with incorrect case: FOOAccessStaticPropertieS.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 121,
+                    "identifier": "staticProperty.protected",
+                    "message": "Access to protected property $foo of class FooAccessStaticProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 122,
+                    "identifier": "class.nameCase",
+                    "message": "Class FooAccessStaticProperties referenced with incorrect case: FOOAccessStaticPropertieS.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 126,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$className::$fooProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 132,
+                    "identifier": "property.onlyRead",
+                    "message": "Static property ClassOrString::$accessedProperty is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 134,
+                    "identifier": "property.onlyRead",
+                    "message": "Property ClassOrString::$instanceProperty is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 139,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 140,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$class::$accessedProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 141,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"$class::$unknownProperty\" on a separate line does not do anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 141,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property ClassOrString|string::$unknownProperty.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 149,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 150,
+                    "identifier": "staticProperty.nonObject",
+                    "message": "Cannot access static property $anotherProperty on ClassOrString|false.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 152,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property ClassOrString::$instanceProperty.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 163,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessPropertyWithDimFetch::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 168,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessPropertyWithDimFetch::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 178,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessInIsset::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 185,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessInIsset::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 207,
+                    "identifier": "parameter.trait",
+                    "message": "Parameter $a of method MethodAccessingTraitProperty::doBar() has invalid type TraitWithStaticProperty.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 209,
+                    "identifier": "class.notFound",
+                    "message": "Access to static property $foo on an unknown class TraitWithStaticProperty.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 217,
+                    "identifier": "property.onlyRead",
+                    "message": "Static property AccessWithStatic::$foo is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 218,
+                    "identifier": "property.onlyRead",
+                    "message": "Property AccessWithStatic::$bar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 222,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property AccessWithStatic::$foo through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 223,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property AccessWithStatic::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 224,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(AccessWithStatic)::$nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 234,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property DoesNotAllowDynamicProperties::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 248,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AllowsDynamicProperties::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 267,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property ParentClassWithInstanceProperty::$i.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties.php",
+                    "line": 268,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property ParentClassWithInstanceProperty::$j.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleAssignOp",
+            "files": [
+                "Properties/data/access-static-properties-assign-op.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-static-properties-assign-op.php",
+                    "line": 10,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessStaticProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties-assign-op.php",
+                    "line": 15,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessStaticProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Properties/data/static-properties-class-exists.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5143",
+            "files": [
+                "Properties/data/bug-5143.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6809",
+            "files": [
+                "Properties/data/bug-6809.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6809.php (in context of class Bug6809\\HelloWorld)",
+                    "line": 7,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(Bug6809\\HelloWorld)::$coolClass.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8333",
+            "files": [
+                "Properties/data/bug-8333.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 11,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug8333\\Foo::$root through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 15,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug8333\\Foo::$root through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 18,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug8333\\Foo::$root through static::.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 33,
+                    "identifier": "assign.propertyType",
+                    "message": "Static property Bug8333\\FooSelf::$root (Bug8333\\BarSelf|null) does not accept Bug8333\\FooSelf|null.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 53,
+                    "identifier": "property.unused",
+                    "message": "Static property Bug8333\\FooAccessProperties::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 64,
+                    "identifier": "property.onlyRead",
+                    "message": "Static property Bug8333\\BarAccessProperties::$foobar is never written, only read.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 68,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property static(Bug8333\\BarAccessProperties)::$loremipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 69,
+                    "identifier": "staticProperty.private",
+                    "message": "Access to private static property $foo of parent class Bug8333\\FooAccessProperties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8333.php",
+                    "line": 72,
+                    "identifier": "staticClassAccess.privateProperty",
+                    "message": "Unsafe access to private property Bug8333\\BarAccessProperties::$foobar through static::.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12775",
+            "files": [
+                "Properties/data/bug-12775.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8668Bis",
+            "files": [
+                "Properties/data/bug-8668-bis.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-8668-bis.php",
+                    "line": 9,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property Bug8668Bis\\Sample::$sample.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8668-bis.php",
+                    "line": 10,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property Bug8668Bis\\Sample::$sample.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8668-bis.php",
+                    "line": 20,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property Bug8668Bis\\Sample2::$sample.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-8668-bis.php",
+                    "line": 21,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property Bug8668Bis\\Sample2::$sample.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2861",
+            "files": [
+                "Properties/data/bug-2861.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15002",
+            "files": [
+                "Methods/data/bug-15002.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

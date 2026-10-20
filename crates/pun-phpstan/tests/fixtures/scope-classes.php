@@ -47,3 +47,14 @@ enum Suit
     case Hearts;
     const X = 1;
 }
+
+enum Backed: string
+{
+    case A = 'a';
+    case B = 'b';
+}
+
+enum One: int
+{
+    case X = 1;
+}

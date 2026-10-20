@@ -92,6 +92,39 @@ pub trait Scope {
     }
 }
 
+/// A callable's scope: its own templates over the scope around it (`withTemplateTypeMap()`).
+struct WithTemplates<'a> {
+    outer: &'a dyn Scope,
+    templates: &'a [Template],
+}
+
+impl Scope for WithTemplates<'_> {
+    fn class(&self) -> Option<&str> {
+        self.outer.class()
+    }
+    fn parent(&self) -> Option<String> {
+        self.outer.parent()
+    }
+    fn resolve_name(&self, name: &str) -> String {
+        self.outer.resolve_name(name)
+    }
+    fn constant_names(&self, name: &str) -> Vec<String> {
+        self.outer.constant_names(name)
+    }
+    fn template(&self, name: &str) -> Option<Type> {
+        match self.templates.iter().find(|t| t.name == name) {
+            Some(t) => Some(Type::Template(Box::new(t.clone()))),
+            None => self.outer.template(name),
+        }
+    }
+    fn has_use_alias(&self, name: &str) -> bool {
+        self.outer.has_use_alias(name)
+    }
+    fn in_namespace(&self) -> bool {
+        self.outer.in_namespace()
+    }
+}
+
 /// A scope with only a class (built-in signatures).
 struct ClassOnly<'a>(Option<&'a str>);
 
@@ -125,6 +158,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             Some(c) => Type::This(c.name.clone()),
             None => Type::Error,
         },
+        Node::Projection(covariant, inner) => Type::Projection(*covariant, Box::new(r(inner))),
         Node::Star(s) => match s.as_str() {
             "*" => Type::Wildcard,
             "NEVER" => Type::Never(NeverKind::Explicit),
@@ -203,7 +237,27 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
         })),
         Node::Array(item) => Type::array(mixed(), r(item)),
         Node::Generic { base, args } => generic(base, args, scope),
-        Node::Callable { ident, params, ret } => {
+        Node::Callable {
+            ident,
+            templates,
+            params,
+            ret,
+        } => {
+            let templates: Vec<Template> = templates
+                .iter()
+                .map(|t| Template {
+                    name: t.name.clone(),
+                    scope: "anonymous function".into(),
+                    bound: t.bound.as_ref().map_or_else(mixed, |b| r(b)),
+                    default: t.default.as_ref().map(|d| r(d)),
+                    argument: false,
+                })
+                .collect();
+            let inner = WithTemplates {
+                outer: scope,
+                templates: &templates,
+            };
+            let r = |n: &Node| resolve_in(n, &inner);
             let main = identifier(ident, scope);
             let params: Vec<Param> = params
                 .iter()
@@ -217,10 +271,13 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 .collect();
             // ponytail: a conditional return on the callable's own parameter is a type assertion in PHPStan
             // (`callable(mixed $x): ($x is int ? true : false)`); kept as a plain conditional return here.
-            let sig = Box::new(Signature {
-                params,
-                ret: r(ret),
-            });
+            let ret = r(ret);
+            // ponytail: a pure or static callable keeps no purity or staticness (described as a plain one)
+            let pure = ["pure-callable", "pure-closure", "static-pure-closure"].contains(&ident.to_ascii_lowercase().as_str());
+            if pure && ret == Type::Void {
+                return Type::Error;
+            }
+            let sig = Box::new(Signature { params, ret, templates });
             match main {
                 Type::Callable(_) => Type::Callable(Some(sig)),
                 Type::Object(c, args) if args.is_empty() && c == "Closure" => Type::Closure(sig),
@@ -302,8 +359,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 .collect(),
         ),
         Node::Const(c) => constant(c, scope),
-        // ponytail: PHPStan's OffsetAccessType is not modelled
-        Node::OffsetAccess(..) => Type::Error,
+        Node::OffsetAccess(t, o) => offset_access(r(t), r(o)),
     }
 }
 
@@ -439,7 +495,8 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "array" | "associative-array" => return Type::array(mixed(), mixed()),
         "non-empty-array" => return accessory(Type::array(mixed(), mixed()), &[A::NonEmptyArray]),
         "iterable" => return Type::Iterable(Box::new(mixed()), Box::new(mixed())),
-        "callable" => return Type::Callable(None),
+        "callable" | "pure-callable" => return Type::Callable(None),
+        "pure-closure" | "static-closure" | "static-pure-closure" => return Type::Object("Closure".into(), vec![]),
         "resource" | "open-resource" | "closed-resource" => return Type::Resource,
         "mixed" => return explicit_mixed(),
         "void" => return Type::Void,
@@ -552,7 +609,15 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
             argument: false,
         }));
     }
-    let types: Vec<Type> = args.iter().map(|a| resolve_in(a, scope)).collect();
+    // (the call-site variances are a generic object's or `static`'s only)
+    let projected: Vec<Type> = args.iter().map(|a| resolve_in(a, scope)).collect();
+    let types: Vec<Type> = projected
+        .iter()
+        .map(|t| match t {
+            Type::Projection(_, t) => (**t).clone(),
+            t => t.clone(),
+        })
+        .collect();
     match lower.as_str() {
         "array" | "non-empty-array" => {
             let array = match types.as_slice() {
@@ -624,15 +689,126 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
         },
         // GenericStaticType
         "static" => match scope.class().and_then(symbols::lookup) {
-            Some(c) => Type::Static(c.name.clone(), types),
+            Some(c) => Type::Static(c.name.clone(), projected),
             None => Type::Error,
         },
         "__benevolent" => match types.as_slice() {
             [t] => to_benevolent(t.clone()),
             _ => Type::Error,
         },
-        _ => generic_object(base, types, scope),
+        "key-of" | "value-of" => match types.as_slice() {
+            // ponytail: a KeyOfType/ValueOfType of a template (resolved late) is not modelled; kept as a
+            // `key-of` / `value-of` class the checks skip
+            [t] if crate::types::contains_template(t) => Type::Object(lower.clone(), types),
+            [t] => key_or_value_of(t, lower == "value-of"),
+            _ => Type::Error,
+        },
+        _ => generic_object(base, projected, scope),
     }
+}
+
+/// `resolveOffsetAccessNode()`: an error type when `t` has no `o` offset, else an OffsetAccessType (resolved
+/// late, [`resolve_late()`]).
+// ponytail: a template's offset is not checked against its bound
+fn offset_access(t: Type, o: Type) -> Type {
+    if !crate::types::contains_template(&t) && offset_value(&t, &o) == Some(Type::Error) {
+        return Type::Error;
+    }
+    Type::OffsetAccess(Box::new(t), Box::new(o))
+}
+
+/// `TypeUtils::resolveLateResolvableTypes()` of the OffsetAccessTypes without templates Pun models.
+// ponytail: an object's offset (ArrayAccess) and a non-constant offset of a constant array stay unresolved
+pub fn resolve_late(t: &Type) -> Type {
+    let t = t.traverse(&resolve_late);
+    if let Type::OffsetAccess(on, o) = &t
+        && !crate::types::contains_template(&t)
+        && let Some(value) = offset_value(on, o)
+    {
+        return value;
+    }
+    t
+}
+
+/// `getOffsetValueType()` of the types modelled (`None` for the others), an error type when there is no offset `o`.
+fn offset_value(t: &Type, o: &Type) -> Option<Type> {
+    let key = array_key(o.clone());
+    Some(match t {
+        Type::Mixed { .. } => Type::Mixed { explicit: false },
+        Type::ConstArray(a) => {
+            if !matches!(key, Type::ConstInt(_) | Type::ConstString(_)) {
+                return None;
+            }
+            match a.keys.iter().position(|k| *k == key) {
+                Some(i) => a.values[i].clone(),
+                None => match &a.unsealed {
+                    Some((k, v)) if !is_super_type_of(k, &key).no() => v.clone(),
+                    _ => Type::Error,
+                },
+            }
+        }
+        Type::Array(k, v) => {
+            if is_super_type_of(k, &key).no() {
+                Type::Error
+            } else {
+                (**v).clone()
+            }
+        }
+        // `list<T>`, `non-empty-array<T>`: the array's
+        Type::Intersection(types) => {
+            let array = types.iter().find(|t| matches!(t, Type::Array(..)))?;
+            offset_value(array, o)?
+        }
+        Type::String => match key {
+            Type::ConstInt(_) | Type::Int => intersect(vec![Type::String, Type::Accessory(Accessory::NonEmptyString)]),
+            _ => Type::Error,
+        },
+        Type::Int | Type::ConstInt(_) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_) | Type::Null => {
+            Type::Error
+        }
+        Type::Union(types) => {
+            let found: Vec<Type> = types.iter().map(|m| offset_value(m, o)).collect::<Option<_>>()?;
+            let found: Vec<Type> = found.into_iter().filter(|f| *f != Type::Error).collect();
+            if found.is_empty() { Type::Error } else { union(found) }
+        }
+        _ => return None,
+    })
+}
+
+/// `KeyOfType::getResult()` / `ValueOfType::getResult()`: an enum's case values, else the iterable key or value type.
+pub fn key_or_value_of(t: &Type, value: bool) -> Type {
+    if let Type::Template(tt) = t {
+        // (a template's enum cases are its bound's; one bounded by a backed-enum interface has none)
+        let backed = |c: &symbols::Class| {
+            !c.is_enum && (c.name.eq_ignore_ascii_case("BackedEnum") || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case("BackedEnum")))
+        };
+        if value && matches!(&tt.bound, Type::Object(n, _) if symbols::lookup(n).is_some_and(|c| backed(&c))) {
+            return Type::Union(vec![Type::Int, Type::String]);
+        }
+        return key_or_value_of(&tt.bound, value);
+    }
+    let cases = match t {
+        Type::Object(class, _) => symbols::lookup(class)
+            .filter(|c| c.is_enum)
+            .map(|c| (c.case_values.clone(), c.name.clone())),
+        Type::EnumCase(class, case) => symbols::lookup(class).map(|c| {
+            let values = c.case_values.iter().filter(|(n, _)| n == case).cloned().collect();
+            (values, c.name.clone())
+        }),
+        _ => None,
+    };
+    if value && let Some((values, class)) = cases {
+        let mut types: Vec<Type> = values.iter().map(|(_, v)| resolve_str(v, Some(&class))).collect();
+        return match types.len() {
+            0 => Type::Never(NeverKind::Implicit),
+            1 => types.pop().expect("one"),
+            _ => Type::Union(types),
+        };
+    }
+    if t.is_iterable().no() {
+        return Type::Error;
+    }
+    if value { t.iterable_value_type() } else { t.iterable_key_type() }
 }
 
 impl Type {
@@ -661,6 +837,11 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
     let main = identifier(base, scope);
     let class_name = match &main {
         Type::Object(name, _) => name.clone(),
+        // a template's `getObjectClassNames()`: its object bound's class (`T<U>` is `Bound<U>`)
+        Type::Template(t) => match &t.bound {
+            Type::Object(name, _) => name.clone(),
+            _ => return Type::Error,
+        },
         _ => return Type::Error,
     };
     let Some(reflection) = symbols::lookup(&class_name) else {

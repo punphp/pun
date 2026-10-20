@@ -76,6 +76,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         Found { ty, unknown }
     }
 
+    /// [`Self::find_type_to_check()`] of an expression whose type is `ty` (`None`: no type known).
+    pub(in super::super) fn find_type_to_check_of(&self, ty: Option<Type>, criteria: &dyn Fn(&Type) -> bool) -> Option<Type> {
+        ty.and_then(|t| self.find_in(self.levels(), t, criteria, Some(&mut Vec::new())))
+    }
+
     /// `findTypeToCheckImplementation()`: `None` for an ErrorType. A strict `mixed` stays `mixed`, which
     /// [`Levels::strict_mixed`] tells apart.
     pub(super) fn find_in(&self, l: Levels, mut t: Type, criteria: &dyn Fn(&Type) -> bool, top: Option<&mut Vec<String>>) -> Option<Type> {
@@ -92,7 +97,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         };
         if let Some(explicit) = mixed {
             let strict = if explicit { l.check_explicit_mixed } else { l.check_implicit_mixed };
-            return strict.then_some(Type::Mixed { explicit });
+            // a template of `mixed` stays the template (`T of mixed` in messages)
+            return strict.then_some(t);
         }
         if matches!(t, Type::Never(_) | Type::Error) {
             return None;
@@ -112,7 +118,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         if !l.check_union_types && matches!(t, Type::ObjectWithoutClass | Type::ObjectShape(_)) {
             return None;
         }
-        if let Type::Union(types) | Type::Benevolent(types) = &t {
+        // a TemplateUnionType is a UnionType (TemplateBenevolentUnionType a benevolent one): filtered by its members
+        let template_union = match &t {
+            Type::Template(tt) if matches!(tt.bound, Type::Union(_) | Type::Benevolent(_)) => Some(tt.bound.clone()),
+            _ => None,
+        };
+        if let Type::Union(types) | Type::Benevolent(types) = template_union.as_ref().unwrap_or(&t) {
+            let t = template_union.as_ref().unwrap_or(&t);
             // checkBenevolentUnionTypes is off: a benevolent union is always filtered
             let filter = !l.check_union_types || matches!(t, Type::Benevolent(_));
             let kept: Vec<Type> = types

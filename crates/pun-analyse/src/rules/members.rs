@@ -92,8 +92,21 @@ impl Method<'_> {
 
     pub fn variants(&self) -> Variants {
         match self {
-            Method::User { f, .. } => Variants::of(f),
-            Method::Builtin { f, .. } => Variants::of_builtin(f),
+            Method::User { f, declaring } => {
+                let mut v = Variants::of(f);
+                for a in v.all.iter_mut() {
+                    let class = String::from_utf8_lossy(declaring.name.as_bytes()).into_owned();
+                    a.callee = a.callee.take().map(|(_, name)| (Some(class), name));
+                }
+                v
+            }
+            Method::Builtin { f, declaring } => {
+                let mut v = Variants::of_builtin(f);
+                for a in v.all.iter_mut().chain(v.named.iter_mut().flatten()) {
+                    a.class = Some(declaring.name.clone());
+                }
+                v
+            }
         }
     }
 }

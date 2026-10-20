@@ -20,7 +20,8 @@ declare(strict_types=1);
  * --resume skips test classes whose JSON exists; --budget stops starting new classes after that many seconds (the
  * full export is a few thousand PHPStan runs, so it is run in chunks). --level=N (default 0) exports the tests of
  * the rules registered at level N, run at level N, to crates/pun-analyse/tests/fixtures/levels/<N>/ instead (the PHP
- * files still go to rules/data/).
+ * files still go to rules/data/). --from=M (default N) takes the tests of the rules registered at level M instead, so
+ * a level-0 rule whose checks grow with the level (FunctionCallParametersCheck, RuleLevelHelper) is exported at N.
  */
 
 $root = dirname(__DIR__);
@@ -83,10 +84,16 @@ if ($level > 0) {
     @mkdir($work.'/ini', 0777, true);
     file_put_contents($work.'/ini/pun.ini', "max_memory_limit = -1\n");
 }
+$from = $level;
+foreach ($args as $a) {
+    if (str_starts_with($a, '--from=')) {
+        $from = (int) substr($a, 7);
+    }
+}
 $only = array_values(array_filter($args, fn ($a) => ! str_starts_with($a, '--')));
 $started = time();
 $cases = [];
-foreach (levelTests($src, $level) as $test) {
+foreach (levelTests($src, $from) as $test) {
     $short = basename($test, '.php');
     if ($only !== [] && ! in_array($short, $only, true)) {
         continue;

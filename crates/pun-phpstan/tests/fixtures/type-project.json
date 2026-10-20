@@ -16,5 +16,11 @@
         "*ERROR*",
         "*ERROR*",
         "PunProbe\\Coll<int, string>"
+    ],
+    [
+        "\\ArrayIterator<int, covariant string>",
+        "int",
+        "string",
+        null
     ]
 ]

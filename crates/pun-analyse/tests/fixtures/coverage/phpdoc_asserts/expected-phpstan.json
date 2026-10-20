@@ -238,6 +238,62 @@
    "identifier": "conditionalType.alwaysTrue",
    "message": "Condition \"array<T> is array\" in conditional return type is always true.",
    "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 46,
+   "identifier": "parameter.notFound",
+   "message": "Assert references unknown parameter $a.",
+   "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 46,
+   "identifier": "parameter.missing",
+   "message": "Method CovInherited\\Renamed::only() overrides method CovInherited\\Base::only() but misses parameter #1 $a.",
+   "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 53,
+   "identifier": "parameter.notFound",
+   "message": "Assert references unknown parameter $b.",
+   "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 53,
+   "identifier": "parameter.missing",
+   "message": "Method CovInherited\\Fewer::check() overrides method CovInherited\\Base::check() but misses parameter #2 $b.",
+   "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 64,
+   "identifier": "parameter.notFound",
+   "message": "Assert references unknown parameter $missing.",
+   "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 72,
+   "identifier": "parameter.notFound",
+   "message": "Assert references unknown parameter $extra.",
+   "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 72,
+   "identifier": "parameter.missing",
+   "message": "Method CovInherited\\Implementer::test() overrides method CovInherited\\Checks::test() but misses parameter #2 $extra.",
+   "tip": null
+  },
+  {
+   "file": "inherited.php",
+   "line": 79,
+   "identifier": "parameter.notFound",
+   "message": "Assert references unknown parameter $b.",
+   "tip": null
   }
  ]
 }

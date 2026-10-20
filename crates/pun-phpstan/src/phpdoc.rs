@@ -1,6 +1,6 @@
 //! phpstan/phpdoc-parser 2.3's `Lexer`, `TokenIterator`, `ConstExprParser`, `TypeParser` and `PhpDocParser`, with
 //! the `ParserException` messages PHPStan reports (InvalidPhpDocTagValueRule). The type AST is the part of
-//! phpdoc-parser's that Pun resolves: call-site variance and a callable's own templates are dropped.
+//! phpdoc-parser's that Pun resolves.
 //!
 //! Pun's own extension, used by the generated symbol data (scripts/export-phpstan-symbols.php) for types PHPStan's
 //! `toPhpDocNode()` cannot write: a whole type string `*ERROR*` or `*NEVER*` ([`parse`] only).
@@ -200,6 +200,8 @@ pub enum Node {
     This,
     /// `*` (a generic argument), `NEVER` / `ERROR` for `*NEVER*` / `*ERROR*`
     Star(String),
+    /// a generic argument's call-site variance: `covariant T` (true) or `contravariant T` (false)
+    Projection(bool, Box<Node>),
     Nullable(Box<Node>),
     Union(Vec<Node>),
     Inter(Vec<Node>),
@@ -226,6 +228,8 @@ pub enum Node {
     },
     Callable {
         ident: String,
+        /// `callable<T>(T): T`'s templates
+        templates: Vec<TemplateTag>,
         params: Vec<CallableParam>,
         ret: Box<Node>,
     },
@@ -721,11 +725,14 @@ fn parse_generic(t: &mut Tokens, base: String) -> R<Node> {
             break;
         }
         first = false;
-        // `parseGenericTypeArgument()`; ponytail: the variance is dropped (described as the invariant argument)
+        // `parseGenericTypeArgument()`
         if t.try_consume(Tok::Wildcard) {
             args.push(Node::Star("*".to_string()));
+        } else if t.try_consume_value("contravariant") {
+            args.push(Node::Projection(false, Box::new(parse_type(t)?)));
+        } else if t.try_consume_value("covariant") {
+            args.push(Node::Projection(true, Box::new(parse_type(t)?)));
         } else {
-            let _ = t.try_consume_value("contravariant") || t.try_consume_value("covariant");
             args.push(parse_type(t)?);
         }
         t.skip_nl();
@@ -779,8 +786,9 @@ fn try_parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> Option<No
 }
 
 fn parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> R<Node> {
+    let mut tags = Vec::new();
     if templates {
-        // `parseCallableTemplates()`; ponytail: the templates are dropped
+        // `parseCallableTemplates()`
         t.consume(Tok::OpenAngle)?;
         let mut first = true;
         while first || t.try_consume(Tok::Comma) {
@@ -789,7 +797,7 @@ fn parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> R<Node> {
                 break;
             }
             first = false;
-            parse_template(t, false)?;
+            tags.push(parse_template(t, false)?);
             t.skip_nl();
         }
         t.consume(Tok::CloseAngle)?;
@@ -814,6 +822,7 @@ fn parse_callable(t: &mut Tokens, ident: &str, templates: bool) -> R<Node> {
     let ret = parse_callable_return(t)?;
     Ok(Node::Callable {
         ident: ident.to_string(),
+        templates: tags,
         params,
         ret: Box::new(ret),
     })
