@@ -1,4 +1,4 @@
-//! NEON, ported from nette/neon v3.3.4 (the version bundled in PHPStan 2.2.7): `Lexer`, `TokenStream`, `Parser`, the
+//! NEON, ported from nette/neon v3.3.4 (the version bundled in PHPStan 2.3.1): `Lexer`, `TokenStream`, `Parser`, the
 //! node `toValue()`s and `Encoder`. Error messages and positions are nette/neon's.
 
 use std::sync::LazyLock;

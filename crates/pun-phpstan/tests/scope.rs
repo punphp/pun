@@ -1,4 +1,4 @@
-//! Type strings in a project scope and `decideType()`, against PHPStan 2.2.7
+//! Type strings in a project scope and `decideType()`, against PHPStan 2.3.1
 //! (`php scripts/export-phpstan-symbols.php probes` writes the fixtures).
 
 mod common;

@@ -1,4 +1,4 @@
-//! `pun analyse` (Phase 2, M2.3): PHPStan 2.2.7's rules, level by level, on Mago's parser, name resolution and
+//! `pun analyse` (Phase 2, M2.3): PHPStan 2.3.1's rules, level by level, on Mago's parser, name resolution and
 //! codex. Errors carry PHPStan's identifier and message so baselines and `ignoreErrors` keep matching.
 
 mod autoload;

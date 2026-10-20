@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Built-in function signatures exactly as PHPStan 2.2.7 reflects them, from the phar's own container
+ * Built-in function signatures exactly as PHPStan 2.3.1 reflects them, from the phar's own container
  * (ReflectionProvider -> NativeFunctionReflectionProvider: functionMap + PHP-version deltas, merged with
  * php-8-stubs, overlaid with stubs/*.stub PHPDocs, functionMetadata.php). Default config (no bleedingEdge,
  * so stricterFunctionMap is off).
@@ -161,7 +161,7 @@ function dump(int $phpVersion, array &$typeStrings): array
             $typeStrings[$i === 0 && preg_match('/\\b(static|self|parent)\\b|\\$this/i', $s) ? $class : ''][$s] = true;
         }
     }
-    $stubs = _PHPStan_88a9c7bcc\JetBrains\PHPStormStub\PhpStormStubsMap::class;
+    $stubs = _PHPStan_cb3b7e994\JetBrains\PHPStormStub\PhpStormStubsMap::class;
     $name = fn (string $n) => new PhpParser\Node\Name($n);
 
     $names = array_keys((new PHPStan\Php8StubsMap($phpVersion))->functions);
@@ -712,7 +712,7 @@ $reflected = array_replace_recursive($reflected, $reflected85);
 $delta = [];
 foreach ($v84 as $kind => $symbols) {
     foreach ($symbols + $v85[$kind] as $name => $_) {
-        if (($symbols[$name] ?? null) !== ($v85[$kind][$name] ?? null)) {
+        if (json_encode($symbols[$name] ?? null) !== json_encode($v85[$kind][$name] ?? null)) { // objects ({} docs) never compare identical
             $delta[$kind][$name] = $v85[$kind][$name] ?? null;
         }
     }

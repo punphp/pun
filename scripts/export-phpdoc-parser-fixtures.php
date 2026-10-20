@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Oracle fixtures for pun_phpstan::phpdoc (phpstan/phpdoc-parser as PHPStan 2.2.7 bundles it): the tags
+ * Oracle fixtures for pun_phpstan::phpdoc (phpstan/phpdoc-parser as PHPStan 2.3.1 bundles it): the tags
  * PhpDocParser reads from doc comments, with the ParserException messages of invalid values, and the result of
  * TypeStringResolver's parse step on type strings.
  *

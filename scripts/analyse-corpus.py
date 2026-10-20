@@ -2,7 +2,7 @@
 """Level-0 corpus parity for `pun analyse` (Phase 2 M2.3).
 
     scripts/analyse-corpus.py setup  [project...]   copy corpus/<p> to target-analyse/corpus/<p>, composer install,
-                                                    pin PHPStan 2.2.7 (symlink to .oracle/phpstan)
+                                                    pin PHPStan 2.3.1 (symlink to .oracle/phpstan)
     scripts/analyse-corpus.py oracle [project...]   phpstan analyse --level 0 --error-format=json (cold, no result
                                                     cache) -> target-analyse/oracle/<p>.json (+ seconds)
     scripts/analyse-corpus.py diff   [project...]   run Pun's analyser (target-analyse/$PUN_PROFILE/examples/analyse, default debug) and diff

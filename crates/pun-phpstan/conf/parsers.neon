@@ -58,8 +58,8 @@ services:
 	pathRoutingParser:
 		class: PHPStan\Parser\PathRoutingParser
 		arguments:
-			currentPhpVersionRichParser: @currentPhpVersionRichParser
-			currentPhpVersionSimpleParser: @currentPhpVersionSimpleParser
+			currentPhpVersionRichParser: @cachedRichParser
+			currentPhpVersionSimpleParser: @cachedSimpleParser
 			php8Parser: @php8Parser
 			singleReflectionFile: %singleReflectionFile%
 
@@ -72,13 +72,26 @@ services:
 
 		autowired: false
 
-	defaultAnalysisParser:
+	cachedRichParser:
 		class: PHPStan\Parser\CachedParser
 		arguments:
-			originalParser: @pathRoutingParser
+			originalParser: @currentPhpVersionRichParser
 			cachedNodesByStringCountMax: %cache.nodesByStringCountMax%
 			cachedSourceBytesMax: %cache.nodesByStringSourceBytesMax%
 
+		autowired: false
+
+	cachedSimpleParser:
+		class: PHPStan\Parser\CachedParser
+		arguments:
+			originalParser: @currentPhpVersionSimpleParser
+			cachedNodesByStringCountMax: %cache.nodesByStringCountMax%
+			cachedSourceBytesMax: %cache.nodesByStringSourceBytesMax%
+
+		autowired: false
+
+	defaultAnalysisParser:
+		factory: @pathRoutingParser
 		autowired: false
 
 	freshStubParser:

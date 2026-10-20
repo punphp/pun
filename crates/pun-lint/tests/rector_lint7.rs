@@ -3,7 +3,7 @@
 //! `pun lint --fix == expected` and `format(pun lint --fix) == format(expected)`.
 //!
 //! tests/lint7_report/<group>/<name>/*.php.inc is an input, `-----`, and what the upstream tool reported for it, one
-//! problem a line: `line: message` as PHPStan 2.2.7 with phpstan-strict-rules 2.0.12 (level 0, only that strict rule
+//! problem a line: `line: message` as PHPStan 2.3.1 with phpstan-strict-rules 2.0.12 (level 0, only that strict rule
 //! on, `--error-format=json`, filtered to the rule's identifier) reports them, sorted by line and message as PHPStan
 //! sorts them.
 

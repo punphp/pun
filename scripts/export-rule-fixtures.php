@@ -28,7 +28,7 @@ $src = realpath($root.'/.oracle/phpstan-src') ?: $root.'/.oracle/phpstan-src'; /
 $rulesTests = $src.'/tests/PHPStan/Rules';
 $phar = $root.'/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar';
 $out = $root.'/crates/pun-analyse/tests/fixtures/rules';
-$work = $root.'/target-analyse/tmp/rule-fixtures';
+$work = $root.'/target-analyse/tmp/rule-fixtures-'.getmypid(); // per process, so exports can run side by side
 
 if (($argv[1] ?? '') === '--collect') {
     collect($argv[2]);

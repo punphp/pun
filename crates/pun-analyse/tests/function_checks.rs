@@ -1,4 +1,4 @@
-//! PrintfHelper edge cases through the public analyser. Expectations come from PHPStan 2.2.7 at level 0,
+//! PrintfHelper edge cases through the public analyser. Expectations come from PHPStan 2.3.1 at level 0,
 //! with phpVersion 70400 and 80511: positional/star placeholders, scanf validation and array-size unions.
 
 use std::path::Path;

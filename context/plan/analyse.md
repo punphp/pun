@@ -449,7 +449,7 @@ Assistant's calls in analyse 3l (sealed hierarchies, interface method visibility
 Helper queue 4, printf rules (helper-forge-rqdv, 2026-10-19):
 - PrintfParametersRule and PrintfArrayParametersRule read the format and values from the existing per-file Mago
   inference run. Namespaced functions and imported aliases resolve before a built-in name is matched.
-- PrintfHelper uses PHPStan 2.2.7's PCRE pattern. Scanf counts port PHP 8.5's `ValidateFormat(format, 0)`, including
+- PrintfHelper uses PHPStan 2.3.1's PCRE pattern. Scanf counts port PHP 8.5's `ValidateFormat(format, 0)`, including
   suppression, positional indices, sets, NUL termination and invalid formats. PHPStan uses its runtime's `sscanf`
   even when the project's target PHP version is older.
 - Array sizes follow PHPStan's constant/range comparison. Disjoint sizes stay a union rather than becoming their

@@ -1,4 +1,4 @@
-//! `@phpstan-ignore*` comment parsing and `ignoreErrors` matching against PHPStan 2.2.7's own classes
+//! `@phpstan-ignore*` comment parsing and `ignoreErrors` matching against PHPStan 2.3.1's own classes
 //! (tests/fixtures/comments.json and ignore.json, exported by scripts/export-ignore-fixtures.php).
 
 mod common;

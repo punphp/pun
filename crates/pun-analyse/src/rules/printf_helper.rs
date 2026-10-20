@@ -1,4 +1,4 @@
-//! PHPStan 2.2.7 PrintfHelper; scanf's count is PHP 8.5 ValidateFormat(format, 0), not a printf regex.
+//! PHPStan 2.3.1 PrintfHelper; scanf's count is PHP 8.5 ValidateFormat(format, 0), not a printf regex.
 
 use std::collections::HashSet;
 use std::sync::OnceLock;
