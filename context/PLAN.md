@@ -9,7 +9,7 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for parallel work (AGENTS.md "How work runs"). All earlier
 agents and helper branches are stopped and merged; there is nothing in flight.
 
-- **Counts** (mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 282 385 of .
+- **Counts** (mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 282 of 385.
 - **Rule docs:** steps 1–5 built locally: all 1,249 rule pages, 64 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   Docs pushes are blocked by this runner's GitHub authentication; no docs commit has been published.
