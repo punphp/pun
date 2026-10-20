@@ -1,7 +1,6 @@
 //! FunctionAssertRule and MethodAssertRule (level 2, over AssertRuleHelper): a function's or method's
 //! `@phpstan-assert*` tags must name a parameter (or `$this`, its property or method) and assert a type that is
 //! resolvable, known, and neither impossible nor already certain for it.
-//! ponytail: `missingType.callable` (`checkMissingCallableSignature`, off by default) is not ported.
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::{Function, Method, Modifier};
@@ -238,6 +237,14 @@ fn check(c: &Checker, doc: &[u8], scope: &NameScope, sig: &declared::Signature, 
             errors.push((
                 "missingType.generics",
                 format!("PHPDoc tag {tag} for {expr} contains generic {inner} but does not specify its types: {list}"),
+                None,
+                None,
+            ));
+        }
+        for callable in missing_types::callables_without_signature(&asserted, c.missing_callable_signature) {
+            errors.push((
+                "missingType.callable",
+                format!("PHPDoc tag {tag} for {expr} has no signature specified for {callable}."),
                 None,
                 None,
             ));

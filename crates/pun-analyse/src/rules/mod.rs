@@ -819,6 +819,8 @@ pub struct Checker<'a, 'arena> {
     unused_label: bool,
     /// UninitializedPropertyRule: `checkUninitializedProperties`.
     uninitialized_properties: bool,
+    /// MissingTypehintCheck's `checkMissingCallableSignature`.
+    missing_callable_signature: bool,
     /// The phpstan-strict-rules switches.
     strict: crate::StrictRules,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).

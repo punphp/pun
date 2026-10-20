@@ -62,6 +62,8 @@ pub(crate) struct Checks {
     unused_label: bool,
     /// [`Project::check_uninitialized_properties`].
     uninitialized_properties: bool,
+    /// [`Project::check_missing_callable_signature`].
+    missing_callable_signature: bool,
     /// [`Project::strict_rules`].
     pub(super) strict: crate::StrictRules,
 }
@@ -103,6 +105,7 @@ impl Checks {
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
             uninitialized_properties: project.check_uninitialized_properties,
+            missing_callable_signature: project.check_missing_callable_signature,
             strict: project.strict_rules,
         }
     }
@@ -205,6 +208,7 @@ fn checker<'a, 'arena>(
         bleeding_edge: project.bleeding_edge,
         unused_label: project.unused_label,
         uninitialized_properties: project.uninitialized_properties,
+        missing_callable_signature: project.missing_callable_signature,
         strict: project.strict,
         closure_bind: 0,
         errors: Vec::new(),
